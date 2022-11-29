@@ -105,6 +105,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.ui.ThreemaSearchView;
@@ -1007,7 +1008,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					if (!expandable) {
 						alertDialog = TextWithCheckboxDialog.newInstance(getString(R.string.really_forward, recipientName), hasCaptions ? R.string.forward_captions : 0, R.string.send, R.string.cancel);
 					} else {
-						alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_forward, recipientName), R.string.add_caption_hint, presetCaption, R.string.send, R.string.cancel, expandable);
+						alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_forward, recipientName), R.string.add_caption_hint, presetCaption, R.string.send, R.string.cancel, true);
 					}
 					alertDialog.setData(recipients);
 					alertDialog.show(getSupportFragmentManager(), null);
@@ -1019,18 +1020,17 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						CompletableFuture
 							.runAsync(copyFilesRunnable, Executors.newSingleThreadExecutor())
 							.thenRunAsync(() -> {
-								int numEditableMedia = 0;
+								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_FILECOPY, true);
+
+								boolean containsGeoUri = false;
 								for (MediaItem mediaItem : mediaItems) {
-									String mimeType = mediaItem.getMimeType();
-									if (MimeUtil.isImageFile(mimeType) || MimeUtil.isVideoFile(mimeType)) {
-										numEditableMedia++;
+									if (mediaItem!= null && mediaItem.getUri() != null && "geo".equals(mediaItem.getUri().getScheme())) {
+										containsGeoUri = true;
+										break;
 									}
 								}
 
-								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_FILECOPY, true);
-
-								if (numEditableMedia == mediaItems.size() && mediaItems.size() <= MAX_EDITABLE_IMAGES) { // all files are images or videos
-									// all files are either images or videos => redirect to SendMediaActivity
+								if (mediaItems.size() <= MAX_EDITABLE_IMAGES && !containsGeoUri) { // use send media activity for a reasonable number of files
 									recipientMessageReceivers.clear();
 									for (Object model : recipients) {
 										MessageReceiver messageReceiver = getMessageReceiver(model);
@@ -1048,11 +1048,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								} else {
 									// mixed media
 									ExpandableTextEntryDialog alertDialog;
-									boolean expandable = mediaItems.size() == 1 && mediaItems.get(0).getType() != TYPE_LOCATION;
 									if (hideUi) {
-										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.app_name), getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, expandable);
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.app_name), getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, false);
 									} else {
-										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, expandable);
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, false);
 									}
 									alertDialog.setData(recipients);
 									alertDialog.show(getSupportFragmentManager(), null);

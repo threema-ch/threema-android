@@ -25,6 +25,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.sql.SQLException;
@@ -32,9 +36,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.base.ThreemaException;
@@ -48,7 +49,9 @@ import ch.threema.domain.protocol.csp.messages.GroupRequestSyncMessage;
 import ch.threema.domain.protocol.csp.messages.GroupSetPhotoMessage;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMemberModel;
+import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.access.GroupAccessModel;
 
 public interface GroupService extends AvatarService<GroupModel> {
@@ -56,15 +59,15 @@ public interface GroupService extends AvatarService<GroupModel> {
 	/**
 	 * Group state note yet determined
 	 */
-	public static final int UNDEFINED = 0;
+	int UNDEFINED = 0;
 	/**
 	 * A local notes "group"
 	 */
-	public static final int NOTES = 1;
+	int NOTES = 1;
 	/**
 	 * A group with other people in it
 	 */
-	public static final int PEOPLE = 2;
+	int PEOPLE = 2;
 
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({UNDEFINED, NOTES, PEOPLE})
@@ -104,7 +107,29 @@ public interface GroupService extends AvatarService<GroupModel> {
 	GroupCreateMessageResult processGroupCreateMessage(GroupCreateMessage groupCreateMessage);
 
 	GroupModel createGroup(String name, String[] groupMemberIdentities, Bitmap picture) throws Exception;
-	GroupModel updateGroup(GroupModel groupModel, String name, String[] groupMemberIdentities, Bitmap photo, boolean removePhoto) throws Exception;
+
+	/**
+	 * Update group properties and members.
+	 * This method triggers protocol messages to all group members that are affected by the change.
+	 *
+	 * @param groupModel Group that should be modified
+	 * @param name New name of group, {@code null} if unchanged.
+	 * @param groupDesc New group description for the group, {@code null} if unchanged.
+	 * @param groupMemberIdentities Identities of all group members.
+	 * @param photo New group photo, {@code null} if unchanged.
+	 * @param removePhoto Whether to remove the group photo.
+	 * @return Updated groupModel
+	 */
+	@NonNull
+	GroupModel updateGroup(
+		@NonNull GroupModel groupModel,
+		@Nullable String name,
+		@Nullable String groupDesc,
+		@Nullable String[] groupMemberIdentities,
+		@Nullable Bitmap photo,
+		boolean removePhoto
+	) throws Exception;
+
 	boolean renameGroup(GroupRenameMessage renameMessage) throws ThreemaException;
 
 	boolean renameGroup(GroupModel group, String newName) throws ThreemaException;
@@ -114,6 +139,14 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @throws InvalidEntryException
 	 */
 	@Nullable Boolean addMemberToGroup(GroupModel groupModel, String identity);
+
+	/**
+	 * Add one or more members to a group. Will fetch identities from server if not known
+	 * If "block unknown" is enabled, new contacts will not be created for group members not already in contacts
+	 * @param groupModel Group model to add members to
+	 * @param identities Array of identities to add
+	 * @return true if members have been added, false if no members have been specified, null if new identities could not be fetched
+	 */
 	Boolean addMembersToGroup(final GroupModel groupModel, final String[] identities);
 
 	boolean remove(GroupModel groupModel);
@@ -125,6 +158,11 @@ public interface GroupService extends AvatarService<GroupModel> {
 	boolean updateGroupPhoto(GroupSetPhotoMessage msg) throws Exception;
 	boolean deleteGroupPhoto(GroupDeletePhotoMessage msg);
 
+	/**
+	 * Return the identities of all members of this group including the creator and including the current user
+	 * @param groupModel Group model of the group
+	 * @return String array of identities (i.e. Threema IDs)
+	 */
 	@NonNull String[] getGroupIdentities(GroupModel groupModel);
 	GroupMemberModel getGroupMember(GroupModel groupModel, String identity);
 	List<GroupMemberModel> getGroupMembers(GroupModel groupModel);
@@ -141,9 +179,22 @@ public interface GroupService extends AvatarService<GroupModel> {
 	boolean isGroupOwner(GroupModel groupModel);
 	boolean isGroupMember(GroupModel groupModel);
 
+	GroupModel getByApiGroupIdAndCreator(@NonNull GroupId apiGroupId, @NonNull String creatorIdentity);
+
 	boolean removeMemberFromGroup(GroupLeaveMessage msg);
 
+	/**
+	 * Count members in a group
+	 * @param groupModel
+	 * @return Number of members in this group including group creator and the current user
+	 */
 	int countMembers(@NonNull GroupModel groupModel);
+
+	/**
+	 * Whether the provided group is an implicit note group (i.e. data is kept local)
+	 * @param groupModel of the group
+	 * @return true if the group is a note group, false otherwise
+	 */
 	boolean isNotesGroup(@NonNull GroupModel groupModel);
 
 	int getOtherMemberCount(GroupModel model);
@@ -163,6 +214,13 @@ public interface GroupService extends AvatarService<GroupModel> {
 	boolean processRequestSync(GroupRequestSyncMessage msg);
 
 	List<GroupModel> getGroupsByIdentity(String identity);
+
+	/**
+	 * Get group status info for the provided group
+	 * @param groupModel Group
+	 * @param allowEmpty Whether to allow access even if there are no other members in this group
+	 * @return GroupAccessModel
+	 */
 	GroupAccessModel getAccess(GroupModel groupModel, boolean allowEmpty);
 
 	@Deprecated
@@ -177,4 +235,13 @@ public interface GroupService extends AvatarService<GroupModel> {
 
 	Intent getGroupEditIntent(@NonNull GroupModel groupModel, @NonNull Activity activity);
 	void save(GroupModel model);
+
+	/**
+	 * Add or update an identity-specific state to the specified group message
+	 * Don't forget to call save() to update the model
+	 * @param messageModel group message to update
+	 * @param identityToAdd identity of initiator of state change
+	 * @param newState state for the specified identity
+	 */
+	void addGroupMessageState(@NonNull GroupMessageModel messageModel, @NonNull String identityToAdd, @NonNull MessageState newState);
 }

@@ -156,7 +156,8 @@
 	<dimen name="drag_handle_topbottom_margin">10dp</dimen>
 	<dimen name="gallery_drawer_corner_radius">15dp</dimen>
 	<dimen name="broken_image_icon_size">32dp</dimen>
-	<dimen name="send_items_grid_action_icon_margin">3dp</dimen>
+	<dimen name="send_items_grid_icon_margin">4dp</dimen>
+	<dimen name="send_items_grid_margin_top">9dp</dimen>
 
 	<!-- media attacher button dimensions -->
 	<dimen name="media_attach_button_radius">10dp</dimen>
@@ -226,11 +227,12 @@
 	<dimen name="mention_radius">5dp</dimen>
 
 	<!-- tooltip -->
-	<dimen name="tooltip_max_width">400dp</dimen>
+	<dimen name="tooltip_max_width">350dp</dimen>
 	<dimen name="tooltip_margin_right">40dp</dimen>
 	<dimen name="tooltip_text_size">15sp</dimen>
-	<dimen name="tooltip_arrow_offset">24dp</dimen>
+	<dimen name="tooltip_arrow_offset">8dp</dimen>
 	<dimen name="tooltip_arrow_size">12dp</dimen>
+	<dimen name="tooltip_border_radius">4dp</dimen>
 	<dimen name="myid_qrcode_size">72dp</dimen>
 	<dimen name="compose_title_avatar_size">40dp</dimen>
 	<dimen name="compose_bottom_panel_height">56dp</dimen>
@@ -303,9 +305,23 @@
 	<dimen name="zoom_view_bar_padding">64dp</dimen>
 	<dimen name="zoom_view_label_stroke_width">2dp</dimen>
 	<dimen name="video_timeline_progress_width">1.5dp</dimen>
+
+	<!-- Calls -->
 	<dimen name="caller_container_margin_top">8dp</dimen>
+	<dimen name="call_video_button_margin_top">4dp</dimen>
 	<dimen name="call_activity_small_button_size">56dp</dimen>
 	<dimen name="call_activity_margin">16dp</dimen>
+	<dimen name="call_title_text_size">32sp</dimen>
+	<dimen name="call_status_text_size">24sp</dimen>
+
+	<!-- Group calls -->
+	<dimen name="group_caller_container_margin_top">12dp</dimen>
+	<dimen name="group_call_participants_item_gutter">4dp</dimen>
+	<dimen name="group_call_participant_mute_icon_size">20dp</dimen>
+	<dimen name="group_call_participant_margin">10dp</dimen>
+	<dimen name="group_call_participant_text_size">16sp</dimen>
+	<dimen name="group_call_title_text_size">26sp</dimen>
+	<dimen name="group_call_status_text_size">18sp</dimen>
 
 	<!-- chip defaults -->
 	<dimen name="chip_start_padding">10dp</dimen>
@@ -329,4 +345,9 @@
 	<!-- override touch target size for me.zhanghai.android.fastscroll -->
 	<dimen name="afs_min_touch_target_size">24dp</dimen>
 	<dimen name="send_media_item_width">72dp</dimen>
+
+	<!-- acknowledge / decline popup -->
+	<dimen name="ackdec_popup_content_margin">8dp</dimen>
+	<dimen name="ackdec_emoji_size">40dp</dimen>
+	<dimen name="ackdec_popup_content_margin_horizontal">4dp</dimen>
 </resources>

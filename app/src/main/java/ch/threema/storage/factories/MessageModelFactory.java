@@ -389,7 +389,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 			try (cursor) {
 				List<MessageModel> messageModels = convertList(cursor);
 				for (MessageModel messageModel : messageModels) {
-					if (callId == messageModel.getVoipStatusData().getCallId()) {
+					if (messageModel.getVoipStatusData() != null && callId == messageModel.getVoipStatusData().getCallId()) {
 						return true;
 					}
 				}
@@ -468,7 +468,8 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 						"`" + MessageModel.COLUMN_MESSAGE_CONTENTS_TYPE +"` TINYINT ," +
 						"`" + MessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
 						"`" + MessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
-						"`" + MessageModel.COLUMN_READ_AT +"` DATETIME );",
+						"`" + MessageModel.COLUMN_READ_AT +"` DATETIME ," +
+						"`" + MessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 );",
 
 			//indices
 				"CREATE INDEX `messageUidIdx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_UID +"` )",

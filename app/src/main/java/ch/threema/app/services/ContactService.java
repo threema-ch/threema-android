@@ -23,13 +23,14 @@ package ch.threema.app.services;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
@@ -53,7 +54,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	String ALL_USERS_PLACEHOLDER_ID = "@@@@@@@@";
 
-	interface ContactProcessor {
+    interface ContactProcessor {
 		boolean process(ContactModel contactModel);
 	}
 
@@ -213,6 +214,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 	String getAndroidContactLookupUriString(ContactModel contactModel);
 	@Nullable ContactModel addWorkContact(@NonNull WorkContact workContact, @Nullable List<ContactModel> existingWorkContacts);
 	void createWorkContact(@NonNull String identity);
+	void setForwardSecurityState(@NonNull ContactModel contactModel, @ContactModel.ForwardSecurityState int state);
 
 	@WorkerThread
 	boolean resetReceiptsSettings();

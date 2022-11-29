@@ -25,6 +25,10 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,9 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -73,6 +74,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public PreferenceServiceImpl(Context context, PreferenceStoreInterface preferenceStore) {
 		this.context = context;
 		this.preferenceStore = preferenceStore;
+	}
+
+	@Nullable
+	private Uri ringtoneKeyToUri(@StringRes int ringtoneKey) {
+		String ringtone = this.preferenceStore.getString(this.getKeyName(ringtoneKey));
+		if (ringtone != null && ringtone.length() > 0 && !"null".equals(ringtone)) {
+			return Uri.parse(ringtone);
+		}
+		return null;
 	}
 
 	@Override
@@ -117,34 +127,32 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public Uri getNotificationSound() {
-		String ringTone = this.preferenceStore.getString(this.getKeyName(R.string.preferences__notification_sound));
-		if (ringTone != null && ringTone.length() > 0) {
-			return Uri.parse(ringTone);
-		}
-		return null;
+		return ringtoneKeyToUri(R.string.preferences__notification_sound);
 	}
 
 	@Override
 	public Uri getGroupNotificationSound() {
-		String ringTone = this.preferenceStore.getString(this.getKeyName(R.string.preferences__group_notification_sound));
-		if (ringTone != null && ringTone.length() > 0) {
-			return Uri.parse(ringTone);
-		}
-		return null;
+		return ringtoneKeyToUri(R.string.preferences__group_notification_sound);
+	}
+
+	@Override
+	public Uri getGroupCallRingtone() {
+		return ringtoneKeyToUri(R.string.preferences__group_calls_ringtone);
 	}
 
 	@Override
 	public Uri getVoiceCallSound() {
-		String ringTone = this.preferenceStore.getString(this.getKeyName(R.string.preferences__voip_ringtone));
-		if (ringTone != null && ringTone.length() > 0 && !"null".equals(ringTone)) {
-			return Uri.parse(ringTone);
-		}
-		return null;
+		return ringtoneKeyToUri(R.string.preferences__voip_ringtone);
 	}
 
 	@Override
 	public boolean isVoiceCallVibrate() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voip_vibration));
+	}
+
+	@Override
+	public boolean isGroupCallVibrate() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_calls_vibration));
 	}
 
 	@Override
@@ -1157,13 +1165,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public boolean getIsVideoCallTooltipShown() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__video_call_tooltip_shown));
+	public boolean getIsGroupCallsTooltipShown() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_calls_tooltip_shown));
 	}
 
 	@Override
-	public void setVideoCallTooltipShown(boolean shown) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__video_call_tooltip_shown), shown);
+	public void setGroupCallsTooltipShown(boolean shown) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__group_calls_tooltip_shown), shown);
 	}
 
 	@Override
@@ -1489,6 +1497,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	public boolean isGroupCallsEnabled() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_calls_enable));
+	}
+
+	@Override
 	@Nullable
 	public String getVideoCallsProfile() {
 		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__voip_video_profile));
@@ -1579,5 +1592,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void incrementMultipleRecipientsTooltipCount() {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__tooltip_multi_recipients), getMultipleRecipientsTooltipCount() + 1);
+	}
+
+	@Override
+	public boolean isGroupCallSendInitEnabled() {
+		return BuildConfig.DEBUG
+			&& this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_call_send_init), false);
 	}
 }

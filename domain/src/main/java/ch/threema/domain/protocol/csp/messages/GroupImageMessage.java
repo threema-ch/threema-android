@@ -71,7 +71,7 @@ public class GroupImageMessage extends AbstractGroupMessage {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			bos.write(blobId);
 			EndianUtils.writeSwappedInteger(bos, size);
 			bos.write(encryptionKey);

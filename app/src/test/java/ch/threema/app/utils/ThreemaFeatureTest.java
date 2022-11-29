@@ -21,8 +21,7 @@
 
 package ch.threema.app.utils;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.threema.domain.protocol.ThreemaFeature;
@@ -56,8 +55,10 @@ public class ThreemaFeatureTest {
 			.ballot(true)
 			.file(true)
 			.voip(true)
+			.videocalls(true)
+			.forwardSecurity(true)
 			.build();
-		Assert.assertEquals(31, maskAllFeatures);
+		Assert.assertEquals(127, maskAllFeatures);
 
 		final int maskPartialFeatures = new ThreemaFeature.Builder()
 			.audio(true)

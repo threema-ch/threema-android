@@ -33,6 +33,8 @@ import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 import ch.threema.base.utils.LoggingUtil;
 
 public class VideoTranscoderUtil {
@@ -64,7 +66,11 @@ public class VideoTranscoderUtil {
 					return Integer.parseInt(orientation);
 				}
 			} finally {
-				retriever.release();
+				try {
+					retriever.release();
+				} catch (IOException e) {
+					logger.debug("Failed to release MediaMetadataRetriever");
+				}
 			}
 		}
 		return 0;

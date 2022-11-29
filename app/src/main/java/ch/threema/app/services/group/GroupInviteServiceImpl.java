@@ -224,7 +224,7 @@ public class GroupInviteServiceImpl implements GroupInviteService {
 		return new GroupInviteData(groupLinkInfos[0],
 			GroupInviteToken.fromHexString(groupLinkInfos[1]),
 			groupLinkInfos[2],
-			Objects.requireNonNull(GroupInvite.InviteType.forNumber(Integer.parseInt(groupLinkInfos[3]))));
+			Objects.requireNonNull(GroupInvite.ConfirmationMode.forNumber(Integer.parseInt(groupLinkInfos[3]))));
 	}
 
 	/**

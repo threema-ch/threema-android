@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="voip_title">Звонок Threema</string>
     <string name="voip_hangup">Завершить</string>
     <string name="voip_toggle_mic">Переключить микрофон</string>
@@ -60,6 +60,7 @@
     <string name="voip_another_pstn_call">Не удается запустить звонок. Выполняется обычный телефонный звонок.</string>
     <string name="voip_call_status_off_hours">Звонок в нерабочее время</string>
     <string name="voip_peer_video_disabled">Видеозвонки отключены собеседником.</string>
+    <string name="voip_reject_channel_name">Изменение состояния звонка</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Диагностика WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Запустите это средство для отладки неполадок с настройкой соединения для голосовой связи</string>
@@ -69,4 +70,38 @@
     <string name="voip_webrtc_debug_done">Готово. Если у вас возникают неполадки с настройкой соединения для звонков, отправьте данные в службу поддержки Threema.</string>
     <string name="voip_webrtc_debug_copied">Данные скопированы в буфер обмена.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Копировать в буфер обмена</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Все члены группы уведомлены</string>
+    <string name="voip_gc_notification_channel_description">Групповые звонки</string>
+    <string name="voip_gc_notification_title">Групповой звонок</string>
+    <string name="voip_gc_notification_call_started">Пользователь %1$s начал групповой звонок в %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">Пользователь %1$s начал групповой звонок</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Вы начали групповой звонок</string>
+    <string name="voip_gc_dismiss_call">Игнорировать</string>
+    <string name="voip_gc_join_call">Участвовать</string>
+    <string name="voip_gc_ongoing_call">Текущий групповой звонок</string>
+    <string name="voip_gc_waiting_for_participants">Ожидаем участников</string>
+    <string name="voip_gc_participant_avatar_description">Аватар участника</string>
+    <string name="voip_gc_participant_mute_status_description">Статус звука участника</string>
+    <string name="voip_gc_notification_new_call_public">Начат новый групповой звонок</string>
+    <string name="voip_gc_open_call">Открыть</string>
+    <string name="voip_gc_call_started">Начат групповой звонок</string>
+    <string name="voip_gc_call_ended">Групповой звонок завершен</string>
+    <string name="voip_gc_in_call">Сейчас в групповом звонке</string>
+    <string name="voip_gc_sfu_not_available">Сервер недоступен, повторите попытку позже</string>
+    <string name="voip_gc_call_error">Не удалось начать групповой звонок</string>
+    <string name="voip_gc_call_full_generic">Достигнут максимум: новые участники больше не могут присоединиться к групповому звонку.</string>
+    <string name="voip_gc_call_full_n">Достигнут максимум (не более %1$d участников), вы не можете присоединиться к этому групповому звонку.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d участник</item>
+        <item quantity="other">%d участника(ов)</item>
+        <item quantity="few">%d участника</item>
+        <item quantity="many">%d участников</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Уведомление: один участник не может участвовать в групповых звонках.</item>
+        <item quantity="other">Уведомление: %d участника(ов) не могут участвовать в групповых звонках.</item>
+        <item quantity="few">Уведомление: %d участника не могут участвовать в групповых звонках.</item>
+        <item quantity="many">Уведомление: %d участников не могут участвовать в групповых звонках.</item>
+    </plurals>
 </resources>

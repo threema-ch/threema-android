@@ -49,6 +49,7 @@ import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.ViewModelFactory;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.voip.Config;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.GroupId;
@@ -78,6 +79,7 @@ public class IncomingGroupRequestActivity extends ThreemaToolbarActivity impleme
 			RuntimeUtil.runOnUiThread(() -> viewModel.onDataChanged());
 		}
 	};
+
 
 	@Override
 	public int getLayoutResource() {
@@ -197,10 +199,12 @@ public class IncomingGroupRequestActivity extends ThreemaToolbarActivity impleme
 	}
 
 	private void delete(List<IncomingGroupJoinRequestModel> checkedItems) {
-		String confirmText = String.format(getString(R.string.really_delete_incoming_request), checkedItems.size());
+		final int amountOfRequests = checkedItems.size();
+		final String confirmText = ConfigUtils.getSafeQuantityString(this, R.plurals.really_delete_incoming_request, amountOfRequests, amountOfRequests);
+		String reallyDeleteGroupRequestTitle = getString(amountOfRequests > 1 ? R.string.really_delete_group_request_title_plural : R.string.really_delete_group_request_title_singular);
 
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(
-			R.string.really_delete_group_request_title,
+			reallyDeleteGroupRequestTitle,
 			confirmText,
 			R.string.ok,
 			R.string.cancel);

@@ -40,6 +40,15 @@
 			android:orientation="vertical"
 			app:layout_behavior="ch.threema.app.ui.LinearLayoutBehavior">
 
+			<ch.threema.app.ui.OngoingCallNoticeView
+				android:id="@+id/ongoing_call_notice"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:animateLayoutChanges="true"
+				android:background="?attr/background_openNotice"
+				android:elevation="4dp"
+				android:visibility="gone" />
+
 			<ch.threema.app.ui.OpenBallotNoticeView
 				android:id="@+id/open_ballots_layout"
 				android:layout_width="match_parent"

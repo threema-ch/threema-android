@@ -28,12 +28,15 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayer;
 
 import org.slf4j.Logger;
 
-import androidx.annotation.NonNull;
+import java.io.IOException;
+
 import ch.threema.base.utils.LoggingUtil;
 
 public class VideoUtil {
@@ -62,7 +65,11 @@ public class VideoUtil {
 			//do not show the exception!
 			logger.error("Exception", e);
 		} finally {
-			retriever.release();
+			try {
+				retriever.release();
+			} catch (IOException e) {
+				logger.debug("Failed to release MediaMetadataRetriever");
+			}
 		}
 
 		//duration fallback

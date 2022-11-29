@@ -45,6 +45,8 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.QueueSendCompleteListener;
 
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
+
 /**
  * Helper class to simplify polling (both time-based and GCM based) by handling all the gory details
  * of connecting for new messages and ensuring that the connection is released once the server
@@ -129,7 +131,7 @@ public class PollingHelper implements QueueSendCompleteListener {
 				if(!lifetimeService.isActive()) {
 					AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 					PendingIntent pendingIntent = PendingIntent.getBroadcast(this.context, 0,
-							new Intent(this.context, FetchMessagesBroadcastReceiver.class), 0);
+							new Intent(this.context, FetchMessagesBroadcastReceiver.class), PENDING_INTENT_FLAG_MUTABLE);
 
 					// cancel pending alarms
 					alarmManager.cancel(pendingIntent);

@@ -1,32 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  android:id="@+id/indicator_container"
-			  android:layout_width="match_parent"
-			  android:layout_height="wrap_content"
-			  android:minHeight="16sp"
-			  android:layout_marginTop="2dp"
-			  android:paddingLeft="@dimen/chat_bubble_margin_end"
-			  android:paddingRight="@dimen/chat_bubble_margin_start"
-			  android:orientation="horizontal"
-			  android:gravity="right|bottom"
-			  android:layout_gravity="bottom">
+    android:id="@+id/indicator_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:layout_marginTop="2dp"
+    android:gravity="right|bottom"
+    android:minHeight="16sp"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/chat_bubble_margin_end"
+    android:paddingRight="@dimen/chat_bubble_margin_start">
 
-	<TextView
-			android:id="@+id/date_view"
-			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
-			android:layout_gravity="bottom"
-			android:singleLine="true"
-			android:ellipsize="none"
-			android:textSize="?attr/font_medium"
-			android:textColor="?attr/textColorSecondary"/>
+    <TextView
+        android:id="@+id/tap_to_resend"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:ellipsize="end"
+        android:text="@string/tap_to_resend"
+        android:textColor="@color/material_red"
+        android:textSize="?attr/font_medium"
+        android:visibility="gone" />
 
-	<ImageView
-			android:id="@+id/delivered_indicator"
-			android:layout_width="18dp"
-			android:layout_height="18dp"
-			android:layout_gravity="center_vertical"
-			android:paddingLeft="3dp"
-			android:visibility="gone"/>
+    <TextView
+        android:id="@+id/date_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="4dp"
+        android:ellipsize="none"
+        android:singleLine="true"
+        android:textColor="?attr/textColorSecondary"
+        android:textSize="?attr/font_medium" />
+
+    <include layout="@layout/conversation_bubble_footer_groupack_send" />
+
+    <ImageView
+        android:id="@+id/delivered_indicator"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="3dp"
+        android:visibility="gone" />
 
 </LinearLayout>

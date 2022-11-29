@@ -44,7 +44,7 @@ public class SystemUpdateToVersion40 extends  UpdateToVersion implements UpdateS
 		if(!this.fieldExist(this.sqLiteDatabase,
 				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_PUSH_TOKEN)) {
 			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
-					" ADD COLUMN " +  WebClientSessionModel.COLUMN_PUSH_TOKEN + " VARCHAR(255) NULL");
+					" ADD COLUMN " +  WebClientSessionModel.COLUMN_PUSH_TOKEN + " VARCHAR(255) DEFAULT NULL");
 		}
 
 		return true;

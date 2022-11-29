@@ -530,7 +530,8 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 		// Set up peer connection
 		assert this.webrtcExecutor != null;
 		this.webrtcExecutor.execute(() -> {
-			WebRTCUtil.initializeAndroidGlobals(this.getApplicationContext());
+			WebRTCUtil.initializePeerConnectionFactory(
+				this.getApplicationContext(), WebRTCUtil.Scope.DIAGNOSTIC);
 
 			final PeerConnection.RTCConfiguration rtcConfig;
 			try {

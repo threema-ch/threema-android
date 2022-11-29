@@ -97,7 +97,7 @@
     <string name="next">Далее</string>
     <string name="finish">Закончить</string>
     <string name="please_wait">Пожалуйста, подождите…</string>
-    <string name="wizard_first_create_id">Создание вашего Threema ID...</string>
+    <string name="wizard_first_create_id">Создание вашего Threema ID…</string>
     <string name="wizard1_sync_contacts">Выполняется синхронизация контактов…</string>
     <string name="wizard2_email_hint">Введите свой email</string>
     <string name="wizard2_email_linking">Привязка email к вашему ID</string>
@@ -111,6 +111,7 @@
     <string name="cancel">Отмена</string>
     <string name="copy_message_action">Копировать</string>
     <string name="delete_contact_action">Удалить контакт</string>
+    <string name="delete_multiple_contact_action">Удалить контакты</string>
     <string name="scan_id">Сканировать ID</string>
     <string name="id_scanned">ID считано</string>
     <string name="id_mismatch">Открытый ключ, который вы отсканировали, не соответствует ключу, который хранится на сервере
@@ -123,12 +124,12 @@
     <string name="share_via">Отправить через…</string>
     <string name="share_subject">Беседа в %s</string>
     <string name="message_delete_undo">Отмена</string>
-    <string name="message_deleted">Сообщение удалено</string>
     <string name="mobile_already_linked">Ваш Threema ID уже привязан к этому номеру мобильного телефона</string>
     <string name="email_already_linked">Ваш Threema ID уже привязан к этому email</string>
     <string name="whoaaa">Уведомление</string>
     <string name="really_delete_message_title">Удалить сообщение</string>
     <string name="really_delete_thread">Удалить чат</string>
+    <string name="really_delete_multiple_threads">Удалить чаты</string>
     <string name="really_delete_contact">Вы действительно хотите удалить этот контакт и все связанные сообщения?</string>
     <string name="image_placeholder">Изображение</string>
     <string name="invalid_threema_id">Неправильный Threema ID</string>
@@ -257,8 +258,6 @@
     <string name="prefs_masterkey_notification_newmsg_off">Новые сообщения не вызывают уведомление, когда главный ключ заблокирован</string>
     <string name="prefs_masterkey_notification_newmsg_on">Новые сообщения вызывают уведомление, когда главный ключ заблокирован</string>
     <string name="chat_history_attached">Журнал беседы приложен.</string>
-    <string name="new_message">Одно новое сообщение</string>
-    <string name="new_messages">новые сообщения</string>
     <string name="backup_data_title">Резервная копия данных</string>
     <string name="backup_data_password_msg">Ваши данные будут сохранены в ZIP-файл во внутренней памяти, и могут быть восстановлены на любом Android-устройстве. Пожалуйста, введите пароль для защиты резервной копии.</string>
     <string name="restore_data_password_msg">Введите пароль, который вы использовали при создании этой резервной копии.</string>
@@ -284,7 +283,7 @@
     <string name="prefs_group_notifications">Групповой чат</string>
     <string name="add_group_members_list">Участники группы</string>
     <string name="group_select_at_least_two">Чтобы продолжить, нужно выбрать как минимум одного участника</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">Вы не можете выбрать более чем %1$d участников группы</string>
+    <string name="group_select_max">Вы не можете выбрать более чем %1$d участников группы</string>
     <string name="search">Поиск</string>
     <string name="hint_search_keyword">Поиск по ключевому слову</string>
     <string name="add_group_owner">Создатель группы</string>
@@ -320,7 +319,7 @@
     <string name="updating_group">Обновление группы</string>
     <string name="status_create_group">Группа создана.</string>
     <string name="status_rename_group">Группа переименована в «%1$s»</string>
-    <string name="status_group_new_photo">Группа обновлена.</string>
+    <string name="status_group_new_photo">Аватар группы обновлен.</string>
     <string name="status_group_new_member">«%1$s» добавлен(а) в группу.</string>
     <string name="status_group_member_left">«%1$s» покинул группу.</string>
     <string name="status_group_member_kicked">«%1$s» удален(а) из группы.</string>
@@ -359,7 +358,6 @@
     <string name="contact_format_last_name_first_name">Фамилия Имя</string>
     <string name="block_contact">Заблокировать контакт</string>
     <string name="unblock_contact">Разблокировать контакт</string>
-    <string name="unread_messages">Непрочитанных сообщений: %d</string>
     <string name="one_unread_message">Непрочитанных сообщений: 1</string>
     <string name="really_unlink_contact_title">Отвязать контакт</string>
     <string name="really_unlink_contact">Вы действительно хотите отменить связь этого контакта?</string>
@@ -375,7 +373,6 @@
     <string name="save_image">Сохранить</string>
     <string name="share_image">Поделиться изображением</string>
     <string name="view_in_gallery">Посмотреть в галерее</string>
-    <string name="file_saved">%d Файл(ы) успешно сохранен(ы).</string>
     <string name="token_register_failed">Не удалось сбросить push-метку. Пожалуйста, попробуйте позже.</string>
     <string name="internet_connection_required">Нет подключения к интернету.</string>
     <string name="prefs_sum_save_media">Автоматически загружать, расшифровывать, и сохранять в галерею входящие мультимедиа-файлы</string>
@@ -417,8 +414,14 @@
     <string name="media_gallery_pictures">Изображения</string>
     <string name="media_gallery_videos">Видео</string>
     <string name="group_membership_title">Участник этих групп</string>
+    <string name="group_description">Описание группы</string>
+    <string name="change_group_description">Изменить описание группы</string>
+    <string name="add_group_description">Добавить описание группы</string>
+    <string name="read_more">читать больше</string>
+    <string name="read_less">читать меньше</string>
+    <string name="changed_group_desc_date">"\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0435: "</string>
     <string name="num_items_sected">%s выбрано</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Вы действительно хотите удалить %d мультимедиа-сообщений?</string>
+    <string name="really_delete_media">Вы действительно хотите удалить %d мультимедиа-сообщений?</string>
     <string name="check_updates">Проверить обновления</string>
     <string name="masterkey_lock_explain">Threema хранит кодовую фразу в памяти. Если вам приходиться вводить кодовую фразу слишком часто, убедитесь, что приложения \"Task killer\" и \"Battery saver\", которые могут прекращать работу Threema, отключены.</string>
     <string name="identity_already_exists">Этот ID уже есть в вашем списке контактов</string>
@@ -433,7 +436,6 @@
     <string name="sending_images">Отправка изображений</string>
     <string name="share_conversation_body">Чтобы разархивировать файл, нужен ZIP-архиватор с поддержкой AES, например http://www.7-zip.org или https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Чат будет отправлен зашифрованным zip-файлом. Пожалуйста, выберите пароль:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d новых сообщений в %2$d чатах</string>
     <string name="ballot_create">Новый опрос</string>
     <string name="ballot_choice_add">Добавить вариант</string>
     <string name="ballot_state_closed">Закрыт</string>
@@ -451,8 +453,6 @@
     <string name="ballot_overview">Опросы</string>
     <string name="ballot_copy">Копировать опрос</string>
     <string name="ballot_remove">Удалить опрос</string>
-    <string name="ballot_really_delete">Удалить опрос(ы)</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Вы действительно хотите удалить %1$d опрос? Вы не сможете восстановить голоса.</string>
     <string name="ballot_not_exist">Опрос не существует</string>
     <string name="ballot_tap_to_vote">Нажмите, чтобы проголосовать</string>
     <string name="ballot_tap_to_view_results">Опрос закрыт. Нажмите, чтобы посмотреть результаты</string>
@@ -469,7 +469,7 @@
     <string name="invalid_cannot_send">Вы не можете отправлять сообщения недействительному контакту</string>
     <string name="ballot_answer_count_error">Пожалуйста, задайте не менее двух вариантов ответов для этого опроса.</string>
     <string name="ballot_one_contact_not_supported">Внимание! %1$s не сможет участвовать в вашем опросе.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Внимание! %1$d контакта(-ов) не смогут участвовать в вашем опросе.</string>
+    <string name="ballot_x_contact_not_supported">Внимание! %1$d контакта(-ов) не смогут участвовать в вашем опросе.</string>
     <string name="contact_state_inactive">Не активен</string>
     <string name="contact_state_invalid">Недейств.</string>
     <string name="back">Назад</string>
@@ -483,6 +483,9 @@
     <string name="video_size_large">Низкая (больше данных)</string>
     <string name="video_size_original">Нет (очень большое количество данных)</string>
     <string name="prefs_video_size">Степень сжатия видео</string>
+    <string name="menu_video_size_small">Малый размер</string>
+    <string name="menu_video_size_medium">Средний размер</string>
+    <string name="menu_video_size_large">Оригинальный размер</string>
     <string name="show_contact">Показать контакт</string>
     <string name="chat_with">Чат с %1$s</string>
     <string name="kick_user_from_group">Выгнать %1$s из группы</string>
@@ -502,7 +505,7 @@
     <string name="send_media">Отправка мультимедиа</string>
     <string name="rotate">Вращать</string>
     <string name="remove">Удалить</string>
-    <string name="image_already_added">Это изображение уже добавлено.</string>
+    <string name="item_already_added">Этот элемент уже добавлен.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">(не менее %d символов)</string>
     <string name="mark_read">Пометить как прочитанное</string>
     <string name="attach_document">Файл</string>
@@ -512,7 +515,7 @@
     <string name="no_activity_for_mime_type">Не удалось найти приложение для открытия этого файла.</string>
     <string name="open_from">Открыть из</string>
     <string name="file_one_contact_not_supported">%1$s не может принимать файлы.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Внимание: %1$d контакта(-ов) не могут принять ваш файл.</string>
+    <string name="file_x_contact_not_supported">Внимание: %1$d контакта(-ов) не могут принять ваш файл.</string>
     <string name="mime_android_apk">пакет Android</string>
     <string name="mime_audio">Аудиофайл</string>
     <string name="mime_certificate">Цифровой сертификат</string>
@@ -551,7 +554,6 @@
     <string name="storage_explain">Если у вас заканчивается свободное место, вы можете удалить старые зашифрованные медиафайлы, освободив таким образом место. Миниатюры при этом будут сохранены.</string>
     <string name="delete_data">Удалить данные</string>
     <string name="delete_date_confirm_message">Если вы продолжите, файлы будут удалены, останутся только миниатюры.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">Удалено файлов мультимедиа: %d</string>
     <string name="storage_management">Управление памятью</string>
     <string name="media">Мультимедиа</string>
     <string name="prefs_storage_mgmt_title">Удаление мультимедиа, файлов и сообщений</string>
@@ -581,7 +583,6 @@
     <string name="fontsize_large">Большой</string>
     <string name="fontsize_xlarge">Очень большой</string>
     <string name="no_app_for_location">Карта приложений не найдена на этом устройстве</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%d чатов удалено</string>
     <string name="prefs_sendlog">Отправить лог</string>
     <string name="prefs_sendlog_summary">Отправить лог-файл в Threema для дальнейшего анализа в случае возникновения проблем</string>
     <string name="prefs_exportlog">Журнал экспорта</string>
@@ -592,7 +593,6 @@
     <string name="message_declined">Не согласен</string>
     <string name="notifications_settings">Настройки уведомлений</string>
     <string name="notifications_default">Настройки по умолчанию</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">%d ч.</string>
     <string name="notifications_until">До %s</string>
     <string name="notifications_mute">Приглушенный</string>
     <string name="notifications_choose_sound">Выбрать звук</string>
@@ -675,7 +675,7 @@
     <string name="prefs_proximity_sensor_explain">Использовать разговорный динамик для воспроизведения голосовых сообщений, если датчик приближения закрыт</string>
     <string name="error_creating_group">Ошибка создания группы</string>
     <string name="no_media_found_generic">Медиафайлов в этом чате не найдено</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">За раз можно отредактировать не более %d картинок</string>
+    <string name="max_images_reached">За раз можно отредактировать не более %d картинок</string>
     <string name="enter_description">Пожалуйста, опишите ошибку/проблему здесь.</string>
     <string name="add_caption_hint">Добавить подпись</string>
     <string name="disable">Отключить</string>
@@ -714,16 +714,14 @@
     <string name="restore_disable_energy_saving">Пожалуйста, подключите телефон к зарядному устройству и отключите все энергосберегающие опции, чтобы предотвратить прерывание процесса резервного копирования или восстановления.</string>
     <string name="draft">Проект</string>
     <string name="prefs_bigger_single_emojis">Большие одиночные смайлики</string>
-    <string name="wizard1_sync_work">Синхронизация данных...</string>
+    <string name="wizard1_sync_work">Синхронизация данных…</string>
     <string name="notification_hidden_text">Содержимое скрыто</string>
     <string name="really_reset_ringtones">Сбросить настройки звуковых уведомлений по умолчанию?</string>
     <string name="reset_ringtones_confirm">Настройки звуковых уведомлений были сброшены.</string>
     <string name="prefs_language_override">Язык</string>
     <string name="threema_channel_intro">Канал Threema предоставляет вам новости обо всех событиях Threema. Хотите подписаться на канал и добавить его в список контактов? Это бесплатно, и вы можете отписаться в любое время.</string>
     <string name="quote">Цитировать</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Вы действительно хотите удалить %1$d контактов и все связанные чаты?</string>
     <string name="contacts_deleted">Контакты были удалены</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d контактов не могут быть удалены, так как они все еще являются участниками группы</string>
     <string name="take_photo">Сфотографировать</string>
     <string name="select_from_gallery">Выбрать из галереи</string>
     <string name="palette">Палитра</string>
@@ -777,7 +775,7 @@
     <string name="menu_send_profilpic_off">Удалить из списка получателей аватара</string>
     <string name="menu_send_profilpic_now">Отправить аватар</string>
     <string name="profile_picture_sent">Аватар отправлен</string>
-    <string name="sending_messages">Отправка...</string>
+    <string name="sending_messages">Отправка…</string>
     <string name="backup_data_media_confirm">При сохранении больших мультимедийных файлов из локальной резервной копии может быть превышена емкость памяти устройства, сохранение также может занять много времени. Threema не будет отправлять и получать сообщения во время резервного копирования. Продолжить?</string>
     <string name="backup_data_cancelled">Рез. копиров. отменено</string>
     <string name="service_manager_not_available">База данных повреждена или неполна. Запуск невозможен.</string>
@@ -801,7 +799,7 @@
     <string name="strikethrough">Strikethru</string>
     <string name="italic">Курсив</string>
     <string name="bold">Полужирный</string>
-    <string name="shortcut_choice_title">Создайте ярлык для...</string>
+    <string name="shortcut_choice_title">Создайте ярлык для…</string>
     <string name="prefs_title_device_info">Сведения об устройстве</string>
     <string name="notifications_disabled_title">Уведомления отключены</string>
     <string name="notifications_disabled_text">Уведомления Threema были отключены в настройках системы. Вы не будете получать уведомления о новых сообщениях.</string>
@@ -849,7 +847,6 @@
     <string name="no_matching_work_contacts">Проверенных администратором контактов Threema Work не найдено</string>
     <string name="all">Все</string>
     <string name="webclient_session_stop_all">Закрыть все</string>
-    <string name="webclient_running_sessions">Запущенных сессий Threema Web: %d</string>
     <string name="passphrase_service_name">Служба кодовых фраз</string>
     <string name="passphrase_service_description">Уведомление при разблокировке кодовой фразы</string>
     <string name="webclient_service_description">Уведомление при активной сессии Threema Web</string>
@@ -867,7 +864,7 @@
     <string name="password_too_short_generic">Слишком короткий пароль</string>
     <string name="passwords_dont_match">Пароли не совпадают</string>
     <string name="test_unsuccessful">Тест не пройден</string>
-    <string name="preparing_threema_safe">Подготовка Threema Safe...</string>
+    <string name="preparing_threema_safe">Подготовка Threema Safe…</string>
     <string name="disable_powermanager_title">Ограничения по питанию</string>
     <string name="disable_autostart_title">Автозапуск</string>
     <string name="unchanged">без изменений</string>
@@ -890,7 +887,7 @@
     <string name="safe_select_id">Найдено несколько ID Threema. Выберите ID для использования:</string>
     <string name="safe_backup_now">Создать копию</string>
     <string name="safe_enable_explain_short">Включите Threema Safe для автоматического создания защищенных анонимных резервных копий всех ваших важных данных.</string>
-    <string name="safe_deleting">Удаление резервной копии Threema Safe...</string>
+    <string name="safe_deleting">Удаление резервной копии Threema Safe…</string>
     <string name="safe_delete_error">Ошибка удаления резервной копии: %s</string>
     <string name="safe_delete_success">Резервная копия успешно удалена с сервера</string>
     <string name="safe_error_preparing">Ошибка подготовки резервной копии Threema Safe</string>
@@ -942,7 +939,7 @@
     <string name="chat_updates">Обновления чата</string>
     <string name="backup_or_restore_progress">Ход резервного копирования/восстановления</string>
     <string name="tooltip_export_id">Нажмите здесь, чтобы поделиться зашифрованным ID Threema или распечатать его</string>
-    <string name="downloading">Скачивание...</string>
+    <string name="downloading">Скачивание…</string>
     <string name="today">Сегодня</string>
     <string name="restore_data_cancelled">Восстановление отменено</string>
     <string name="safe_change_password">Сменить пароль</string>
@@ -1002,7 +999,6 @@
     <string name="data_backup_last_date">Посл. успешное рез. копирование данных</string>
     <string name="archived">Архивировано</string>
     <string name="to_archive">Архив</string>
-    <string name="message_archived">Архивировано чатов: %d</string>
     <string name="archived_chats">Архивированные чаты</string>
     <string name="unarchive">Извлечь</string>
     <string name="no_archived_chats">Нет архивированных чатов.\nЧтобы архивировать чат, проведите по нему влево в списке сообщений</string>
@@ -1014,24 +1010,12 @@
     <string name="system_default">Системный по умолчан.</string>
     <string name="open_in_maps_app">Открыть в прил. «Карты»</string>
     <string name="delete">Удалить</string>
-    <string name="num_archived_chats">Архивированных чатов: %d</string>
     <string name="continue_recording">Продолжить запись</string>
-    <string name="whatsnew_title">Добро пожаловать в %1$s %2$s</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p><b>Новые функции в этой версии %s для Android:</b></p>
-		<p>
-		&bull; Множество новых эмодзи согласно стандарту Unicode 13.1. 😵‍💫❤️‍🔥
-		</p><p>
-		&bull; Поиск эмодзи по названию или значению (доступно на 17 языках).
-		</p><p>
-		&bull; Детерминированные цвета для контрактов и групп, у которых нет собственного аватара. Эти новые цвета действуют независимо от платформы и устройства.
-		</p><p>
-		&bull; Повышение эффективности прокрутки во многих списках.
-		</p><p>
-		&bull; Оптимизированная общая схема для редактора мультимедиа. Количество мультимедийных элементов, которые можно редактировать до отправки, увеличено до 256.
-		</p><p>
-		&bull; Множество мелких улучшений и исправлений ошибок
-		</p>
+		<p>Групповые звонки со сквозным шифрованием теперь доступны в %1$s для Android.</p>
+		<p>Чтобы начать звонок, откройте групповой чат и коснитесь значка камеры вверху.</p>
+		<p>Все участники группы получат уведомление и смогут сами решить, хотят ли они присоединиться к звонку.</p>
+		<p><b>Обратите внимание:</b> для iOS-приложения функция группового звонка будет реализована позже.</p>
 		]]></string>
     <string name="tap_to_start">Коснитесь здесь, чтобы запустить %s.</string>
     <string name="two_years">2 года</string>
@@ -1051,7 +1035,6 @@
     <string name="and">и</string>
     <string name="edit_type_content_description">Просмотр/редактир. %1$s %2$s</string>
     <string name="group">Группа</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Наша политика конфиденциальности была обновлена, чтобы отразить следующее изменение:</p><p>%1$s больше не зависит от Google Play и Google Maps в предоставлении карты и данных POI.</p>Просмотрите  политику конфиденциальности <a href="%2$s">здесь</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Сервисы не установлены. Невозможно переключиться на push-доставку Google FCM или HMS.</string>
     <string name="unable_to_get_current_location">Не удается определить текущее местоположение.</string>
     <string name="lp_search_place_min_chars">Для поиска места введите не менее трех символов.</string>
@@ -1072,7 +1055,7 @@
     <string name="media_files">Файлы</string>
     <string name="auto_download_limit_explain">Примечание. Видео и файлы размером более %s всегда будут скачиваться по запросу</string>
     <string name="quoted_message_deleted">Цитирование сообщения теперь недоступно</string>
-    <string name="searching">Идет поиск...</string>
+    <string name="searching">Идет поиск…</string>
     <string name="prefs_work_life_balance">Не беспокоить</string>
     <string name="prefs_title_working_days">Рабочие дни</string>
     <string name="prefs_working_days_sum">Выберите рабочие дни</string>
@@ -1096,7 +1079,7 @@
     <string name="call_with">Звонок %s</string>
     <string name="picture_in_picture_disabled_in_setting">Режим «картинка в картинке» отключен для %s. Включите его в системных настройках.</string>
     <string name="delete_everything">Удалить все</string>
-    <string name="prefs_title_voip_video_enable">Включить видеозвонки Threema</string>
+    <string name="prefs_title_voip_video_enable">Разрешить видео</string>
     <string name="video_calls">Видеозвонки Threema</string>
     <string name="prefs_videocall_profile">Предпочитаемое качество изображения</string>
     <string name="videocall_profile_auto">Сбалансированное (рекомендовано)</string>
@@ -1114,6 +1097,8 @@
     <string name="translators_thanks">Большое спасибо нашим переводчикам-волонтерам:\n%s</string>
     <string name="ballot_window_hide">Скрыть открытые опросы</string>
     <string name="ballot_window_show">Показать открытые опросы</string>
+    <string name="single_ballot_really_delete">Удалить этот опрос</string>
+    <string name="single_ballot_really_delete_text">Вы действительно хотите удалить этот опрос? Вы не сможете восстановить голоса.</string>
     <string name="tooltip_voip_other_party_video_on">Собеседник начал видеозвонок. Нажмите здесь, чтобы также включить камеру.</string>
     <string name="tooltip_voip_other_party_video_disabled">Собеседник не использует текущую версию приложения или не разрешает видеозвонки.</string>
     <string name="biometrics_not_enrolled">Биометрия не развернута в системе.</string>
@@ -1129,7 +1114,7 @@
     <string name="prefs_sum_disable_smart_replies">Подавлять функцию «Смарт-ответ» в уведомлениях Android</string>
     <string name="prefs_title_disable_smart_replies">Отключить «Смарт-ответ»</string>
     <string name="url_warning_body_alt">Имя хоста ссылки, которую вы собираетесь открыть, вызывает подозрения.\n\nВозможно, этот попытка завлечь вас на поддельный сайт.\n\nХотите продолжить?</string>
-    <string name="read_on">Читать дальше...</string>
+    <string name="read_on">Читать дальше…</string>
     <string name="forward_text">Переслать текст</string>
     <string name="an_error_occurred_during_send">При отправке одного или нескольких сообщений произошла ошибка.</string>
     <string name="state_processing">идет обработка</string>
@@ -1201,8 +1186,8 @@
     <string name="group_request_already_sent"><![CDATA[Вы уже отправили запрос вступления в группу для <b>%s</b> по этой ссылке. Нажмите на запрос, чтобы повторить.]]></string>
     <string name="group_link_none">Ссылка еще не создана</string>
     <string name="group_request_confirm_send"><![CDATA[Вы собираетесь отправить запрос вступления в группу <b>%1$s</b> ее администратору <b>%2$s</b>. Если ссылка действительна, вы будете автоматически добавлены в группу, как только ваш запрос поступит на устройство администратора.]]></string>
-    <string name="really_delete_outgoing_request">Действительно удалить запрос(ы) вступления в группу (%d)? Обратите внимание, что запрос не будет отозван, и вас все еще могут принять или не принять в группу, если запрос еще не рассмотрен.</string>
-    <string name="really_delete_group_request_title">Действительно удалить запрос в группу</string>
+    <string name="really_delete_group_request_title_singular">Удалить запрос в группу</string>
+    <string name="really_delete_group_request_title_plural">Удалить запросы в группу</string>
     <string name="sent_to">Кому отправлено: %s</string>
     <string name="sent_on">Когда отправлено: %s</string>
     <string name="group_response">Ответ на запрос в группу</string>
@@ -1210,7 +1195,7 @@
     <string name="group_response_full">Ваш запрос вступления в группу %s отклонен, т.к. группа переполнена</string>
     <string name="group_response_rejected">Ваш запрос вступления в группу %s отклонен</string>
     <string name="group_link_expiration_none">Без ограничений</string>
-    <string name="group_request_hint">Привет! Это я...</string>
+    <string name="group_request_hint">Привет! Это я…</string>
     <string name="group_request_send_title">Отправить запрос вступления в группу</string>
     <string name="group_request_message_empty">Текст запроса вступления в группу не может быть пустым</string>
     <string name="group_requests_all_title">Все запросы в группы</string>
@@ -1222,7 +1207,6 @@
     <string name="link_administration_off_explain">Эта ссылка уже настроена и отправлена раньше, изменить ее свойства уже нельзя. Создайте новую ссылку с нужными свойствами.</string>
     <string name="group_link_update_success">Ссылка успешно обновлена</string>
     <string name="no_group_links">Нет ссылок на группу. Чтобы создать ссылку на группу, нажмите кнопку «Добавить» внизу справа или активируйте ссылку по умолчанию в окне сведений о группе.</string>
-    <string name="really_delete_group_link">Действительно удалить ссылку или ссылки на группу (%d). Пользователи больше не смогут с их помощью отправлять запросы вступления. При этом ранее полученные запросы по-прежнему могут быть приняты или отклонены.</string>
     <string name="group_links_overview_title">Ссылки на группу %s</string>
     <string name="group_link_invalid">Просрочена</string>
     <string name="group_link_valid">Действует</string>
@@ -1238,7 +1222,6 @@
     <string name="open_group_requests_show">Показать запросы вступления</string>
     <string name="open_group_requests_hide">Скрыть запросы вступления</string>
     <string name="group_request_link_already_deleted">Ссылка на группу уже удалена</string>
-    <string name="really_delete_incoming_request">Действительно удалить запрос(ы) в группу (%d)? После удаления ответить на эти запросы будет невозможно.</string>
     <string name="incoming_group_request_no_message">Отправлено через открытую ссылку… нет сообщения</string>
     <string name="group_request_received_through">Через ссылку: %s</string>
     <string name="reaccept">Принять повторно</string>
@@ -1294,6 +1277,7 @@
     <string name="group_links_manage_menu">Управление ссылками на группу</string>
     <string name="group_request_sent_menu">Отправленные запросы в группу</string>
     <string name="really_delete_group_link_title">Удалить ссылку на группу</string>
+    <string name="really_delete_multiple_group_links_title">Удалить ссылки на группу</string>
     <string name="qr_scan_result_dialog_title">Результаты скан. QR-кода</string>
     <string name="scan_failure_dialog_title">Ошибка сканиров.</string>
     <string name="no_threema_qr_info">Это не QR-Code Threema. Расшифрованное содержимое:</string>
@@ -1304,7 +1288,7 @@
     <string name="group_request_already_sent_title">Запрос уже отправлен</string>
     <string name="qr_scanner_id_hint">Сканируйте QR-код контакта для проверки его личности. Чтобы показать код, попросите контакта нажать на аватар в левом верхнем углу на главном экране Threema.</string>
     <string name="enable_storage_access_for_media">Предоставьте доступ к памяти устройства для просмотра изображений и видео на нем.</string>
-    <string name="take_me_there">Перейти...</string>
+    <string name="take_me_there">Перейти…</string>
     <string name="notification_channel_group_join_request">Канал уведомлений о полученных запросах вступления в группу</string>
     <string name="reset_default_group_link_title">Сбросить сведения о ссылке по умолчанию</string>
     <string name="reset_default_group_link_desc">Ранее выложенная ссылка станет недействительной, а запросы через старую ссылку будут автоматически отклоняться с ответом «Просрочена».</string>
@@ -1372,7 +1356,18 @@
     <string name="threema_push_start_webclient_sessions_manually">Функция Threema Push активна. Таким образом, сеансы веб-версии и версии для ПК следует запускать вручную.</string>
     <string name="tooltip_multiple_recipients_title">Новинка: несколько получателей</string>
     <string name="tooltip_multiple_recipients_text">Зажмите кнопку, чтобы выбрать несколько получателей для отправки им одного и того же сообщения.</string>
-    <string name="synchronizing">Идет синхронизация...</string>
+    <string name="synchronizing">Идет синхронизация…</string>
+    <string name="forward_security">Отправлять сообщения с исп. Perfect Forward Secrecy</string>
+    <string name="forward_security_mode">Perfect Forward Secrecy</string>
+    <string name="forward_security_mode_none">нет</string>
+    <string name="clear_forward_security">Очистить сессии Perfect Forward Secrecy</string>
+    <string name="forward_security_cleared">Сессии Perfect Forward Secrecy с этим контактом очищены</string>
+    <string name="message_without_forward_security">Получено сообщение, в котором не использовался протокол Perfect Forward Secrecy. Проверьте, что отправитель намеренно отключил Perfect Forward Secrecy.</string>
+    <string name="forward_security_established">Сообщения в этом чате теперь защищены протоколом Perfect Forward Secrecy.</string>
+    <string name="forward_security_established_rx">Сообщения, получаемые в этом чате, теперь защищены протоколом Perfect Forward Secrecy. Включите Perfect Forward Secrecy в сведениях о контакте, чтобы защитить также отправляемые сообщения.</string>
+    <string name="forward_security_reset">Сессия Perfect Forward Secrecy с этим контактом сброшена. Это может произойти, если контакт перешел на другое устройство или переустановил приложение.</string>
+    <string name="forward_security_reset_simple">Сессия Perfect Forward Secrecy с этим контактом сброшена.</string>
+    <string name="forward_security_message_out_of_order">Получено сообщение, которое не удалось расшифровать.</string>
     <string name="self_updater_installation_failed">Не удалось загрузить обновление. Загрузите и установите обновение с веб-страницы <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> вручную.</string>
     <string name="spam_first_contact">Этот чат инициирован неизвестным контактом</string>
     <string name="spam_report">Сообщить о спаме</string>
@@ -1388,8 +1383,46 @@
     <string name="last_added_contact">Добавлен последним</string>
     <string name="directory_explain_text">Поиск в каталоге компании сотрудников, которых еще нет в вашем списке контактов.</string>
     <string name="cannot_display_location">Это местоположение невозможно показать.</string>
+    <string name="draw_reply">Ответ рисунком</string>
+    <string name="drawing">Рисунок</string>
+    <string name="background_color">Цвет фона</string>
+    <string name="send_video_muted">Убрать звук из видео</string>
+    <string name="send_without_audio">Удалить аудио</string>
+    <string name="edit_filename">Изменить имя файла</string>
     <string name="unable_to_restore_identity_because">Не удается восстановить ID. Причина: %s</string>
     <string name="share_with_app">Поделиться через Threema</string>
+    <string name="read_phone_state_dialog_allow">Предоставить разрешение</string>
+    <string name="read_phone_state_dialog_disallow">Продолжить</string>
+    <string name="read_phone_state_dialog_never_ask_again">Больше не спрашивать</string>
+    <string name="read_phone_state_dialog_title">Требуется разрешение</string>
+    <string name="read_phone_state_dialog_message">Чтобы звонки Threema не прерывали обычные звонки, требуется разрешение на доступ к телефону. Если это разрешение не предоставить, входящий звонок Threema будет звучать даже во время обычного звонка.</string>
+    <string name="read_phone_state_short_message">Чтобы приложение Threema могло проверять, есть ли текущие звонки, дайте ему доступ к телефону.</string>
+    <string name="prefs_title_read_phone_state">Предоставить доступ к телефону</string>
+    <string name="prefs_title_hibernation">Настройки неиспол. приложений</string>
+    <string name="prefs_summary_hibernation_api_32">Чтобы система не останавливала приложение Threema после его долгого бездействия, отключите системную настройку «Отозвать разрешения и освободить место».</string>
+    <string name="prefs_summary_hibernation_api">Чтобы система не останавливала приложение Threema после его долгого бездействия, отключите системную настройку «Останавливать, если приложение не используется».</string>
+    <string name="unable_to_fetch_configuration">Не удалось получить данные от сервера конфигурации. Повторите попытку позже.</string>
+    <string name="rogue_device_warning">Сервер обнаружил подключение с другого устройства с тем же Threema ID.\n\nЕсли вы недавно не использовали свой идентификатор Threema ID на другом устройстве, обратитесь в службу поддержки и по возможности пришлите файл журнала.</string>
+    <string name="fetch2_failure">Сбой синхронизации с сервером подготовки.</string>
+    <string name="no_members_support_group_calls">В этой группе нет других участников, которые могут отвечать на групповые звонки</string>
+    <string name="group_calls">Групповые звонки</string>
+    <string name="prefs_title_group_calls_enable">Включить групповые звонки</string>
+    <string name="group_no_members">В этой группе нет других участников</string>
+    <string name="group_call">Групповой звонок</string>
+    <string name="checking_compatibility">Проверка совместимости…</string>
+    <string name="group_call_mic_permission_rationale">Для совершения групповых звонков вы должны предоставить приложению %s доступ к микрофону в меню «Разрешения».</string>
+    <string name="group_call_camera_permission_rationale">Чтобы другие участники могли видеть ваше изображение, вы должны предоставить приложению %s доступ к камере в меню «Разрешения».</string>
+    <string name="settings">Настройки</string>
+    <string name="leave">Покинуть</string>
+    <string name="fs_key_mismatch">несоответствие ключей</string>
+    <string name="tap_to_resend">Нажмите, чтобы повторить</string>
+    <string name="group_calls_tooltip_title">Новинка: групповые звонки</string>
+    <string name="group_calls_tooltip_text">Нажмите здесь, чтобы пригласить всех участников группы присоединиться к звонку. Все участники группы получат уведомление и смогут сами решить, хотят ли они присоединиться к звонку.</string>
+    <string name="prefs_title_calls">Защищенные звонки</string>
+    <string name="prefs_sum_group_calls_vibration">Выберите, должно ли устройство вибрировать, когда начинается групповой звонок</string>
+    <string name="forward_security_mode_4dh">полное</string>
+    <string name="forward_security_mode_2dh">одностороннее</string>
+    <string name="forward_security_explanation">Протокол Perfect Forward Secrecy (PFS) защищает записанный обмен данными от ретроактивной зашифровки, даже если безопасность ключа долгосрочной расшифровки нарушена.\n\nЭтот параметр можно активировать, если приложение с обеих сторон поддерживает PFS.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>
@@ -1415,9 +1448,81 @@
         <item quantity="other">Выбрано изображений %d</item>
     </plurals>
     <plurals name="message_copied">
-        <item quantity="one">Сообщение скопировано</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Сообщение скопировано</item>
         <item quantity="other">Сообщения скопированы</item>
         <item quantity="few">Сообщения скопировано</item>
         <item quantity="many">Сообщений скопировано</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="few">%d новых сообщения</item>
+        <item quantity="many">%d новых сообщений</item>
+        <item quantity="one">%d новое сообщение</item>
+        <item quantity="other">%d новых сообщений(я)</item>
+    </plurals>
+    <plurals name="file_saved">
+        <item quantity="few">%d файла успешно сохранены.</item>
+        <item quantity="many">%d файлов успешно сохранены.</item>
+        <item quantity="one">%d файл успешно сохранен.</item>
+        <item quantity="other">%d файла(ов) успешно сохранены.</item>
+    </plurals>
+    <plurals name="ballot_really_delete">
+        <item quantity="few">Удалить опросы</item>
+        <item quantity="many">Удалить опросы</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Удалить опрос</item>
+        <item quantity="other">Удалить опросы</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="few">Вы действительно хотите удалить %1$d опроса? Вы не сможете восстановить голоса.</item>
+        <item quantity="many">Вы действительно хотите удалить %1$d опросов? Вы не сможете восстановить голоса.</item>
+        <item quantity="one">Вы действительно хотите удалить %1$d опрос? Вы не сможете восстановить голоса.</item>
+        <item quantity="other">Вы действительно хотите удалить %1$d опроса(ов)? Вы не сможете восстановить голоса.</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="few">%d сообщения удалены</item>
+        <item quantity="many">%d сообщений удалены</item>
+        <item quantity="one">%d сообщение удалено</item>
+        <item quantity="other">%d сообщений(я) удалены</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="few">На %d часа</item>
+        <item quantity="many">На %d часов</item>
+        <item quantity="one">На %d час</item>
+        <item quantity="other">На %d ч.</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="few">%d контакта не удалось удалить, поскольку они все еще входят в группу.</item>
+        <item quantity="many">%d контактов не удалось удалить, поскольку они все еще входят в группу.</item>
+        <item quantity="one">%d контакт не удалось удалить, поскольку он все еще входит в группу.</item>
+        <item quantity="other">%d контакта(ов) не удалось удалить, поскольку они все еще входят в группу.</item>
+    </plurals>
+    <plurals name="message_archived">
+        <item quantity="few">%d чата архивированы</item>
+        <item quantity="many">%d чатаов архивированы</item>
+        <item quantity="one">%d чат архивирован</item>
+        <item quantity="other">%d чата(ов) архивированы</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="few">%d сессии запущены</item>
+        <item quantity="many">%d сессий запущены</item>
+        <item quantity="one">%d сессия запущена</item>
+        <item quantity="other">%d сессий(и) запущены</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="few">%d чата удалены.</item>
+        <item quantity="many">%d чатов удалены.</item>
+        <item quantity="one">%d чат удален.</item>
+        <item quantity="other">%d чата(ов) удалены.</item>
+    </plurals>
+    <plurals name="forward_security_messages_skipped">
+        <item quantity="few">После получения последнего сообщения утрачены %d сообщения.</item>
+        <item quantity="many">После получения последнего сообщения утрачены %d сообщений.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">После получения последнего сообщения утрачено одно сообщение.</item>
+        <item quantity="other">После получения последнего сообщения утрачены %d сообщений(я).</item>
+    </plurals>
+    <plurals name="delete_messages">
+        <item quantity="few">Удалить %d сообщения на этом устройстве?</item>
+        <item quantity="many">Удалить %d сообщений на этом устройстве?</item>
+        <item quantity="one">Удалить %d сообщение на этом устройстве?</item>
+        <item quantity="other">Удалить %d сообщений(я) на этом устройстве?</item>
     </plurals>
 </resources>

@@ -53,7 +53,7 @@ public class GroupSetPhotoMessage extends AbstractGroupMessage {
 	public byte[] getBody() {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			bos.write(blobId);
 			EndianUtils.writeSwappedInteger(bos, size);
 			bos.write(encryptionKey);

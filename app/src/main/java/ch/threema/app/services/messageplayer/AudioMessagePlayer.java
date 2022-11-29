@@ -308,7 +308,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 
 	@Override
 	protected void makePause(int source) {
-		logger.info("makePause");
+		logger.info("makePause with source {}", source);
 
 		if (source != SOURCE_LIFECYCLE) {
 			if (this.mediaPlayer != null) {

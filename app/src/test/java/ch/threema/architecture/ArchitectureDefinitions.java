@@ -21,9 +21,9 @@
 
 package ch.threema.architecture;
 
-import com.tngtech.archunit.library.Architectures;
-
 import androidx.annotation.NonNull;
+
+import com.tngtech.archunit.library.Architectures;
 
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 

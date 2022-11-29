@@ -247,25 +247,43 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 	private void parseUrlAndCheck(Uri data) {
 		String query = data.getQuery();
-
 		if (!TestUtil.empty(query)) {
 			if (licenseService instanceof LicenseServiceUser) {
-				final String username = data.getQueryParameter("username");
-				final String password = data.getQueryParameter("password");
-				final String server = data.getQueryParameter("server");
-				if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
-					check(new UserCredentials(username, password), server);
-					return;
-				}
+				parseWorkLicense(data);
 			} else {
-				final String key = data.getQueryParameter("key");
-				if (!TestUtil.empty(key)) {
-					check(new SerialCredentials(key), null);
-					return;
-				}
+				parseConsumerLicense(data);
 			}
 		}
-		Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
+	}
+
+	private void parseConsumerLicense(Uri data) {
+		final String key = data.getQueryParameter("key");
+		if (!TestUtil.empty(key)) {
+			check(new SerialCredentials(key), null);
+		}
+	}
+
+	private void parseWorkLicense(Uri data) {
+		final String username = data.getQueryParameter("username");
+		final String password = data.getQueryParameter("password");
+		final String server = data.getQueryParameter("server");
+
+		if (ConfigUtils.isOnPremBuild()) {
+			if (!TestUtil.empty(username) && !TestUtil.empty(password) && !TestUtil.empty(server)) {
+				check(new UserCredentials(username, password), server);
+			} else {
+				licenseKeyOrUsernameText.setText(username);
+				passwordText.setText(password);
+				serverText.setText(server);
+			}
+		} else {
+			if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
+				check(new UserCredentials(username, password), null);
+			} else {
+				licenseKeyOrUsernameText.setText(username);
+				passwordText.setText(password);
+			}
+		}
 	}
 
 	private void doUnlock() {

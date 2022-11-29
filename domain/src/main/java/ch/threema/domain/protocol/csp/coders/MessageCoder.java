@@ -21,6 +21,8 @@
 
 package ch.threema.domain.protocol.csp.coders;
 
+import androidx.annotation.NonNull;
+
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.neilalexander.jnacl.NaCl;
@@ -36,7 +38,6 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Date;
 
-import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.utils.LoggingUtil;
@@ -58,6 +59,7 @@ import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
 import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
 import ch.threema.domain.protocol.csp.messages.GroupCreateMessage;
 import ch.threema.domain.protocol.csp.messages.GroupDeletePhotoMessage;
+import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage;
 import ch.threema.domain.protocol.csp.messages.GroupImageMessage;
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage;
 import ch.threema.domain.protocol.csp.messages.GroupLocationMessage;
@@ -77,10 +79,14 @@ import ch.threema.domain.protocol.csp.messages.ballot.GroupBallotVoteMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.file.FileMessage;
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage;
+import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityData;
+import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestData;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseData;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage;
+import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData;
+import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData;
@@ -133,7 +139,6 @@ public class MessageCoder {
 
 		// check if contact already exists
 		Contact contact = contactStore.getContactForIdentity(boxmsg.getFromIdentity());
-		boolean addContact = contact == null;
 
 		/* obtain public key of sender */
 		Contact fetchedContact = contactStore.getContactForIdentity(boxmsg.getFromIdentity(), fetch, false);
@@ -158,16 +163,183 @@ public class MessageCoder {
 		if (realDataLength < 1) {
 			throw new BadMessageException("Bad message padding");
 		}
-
-		// Check
-
 		MessageCoder.logger.debug("Effective data length is {}", realDataLength);
 
+		DeserializeDataResult result = deserializeData(data, realDataLength, boxmsg.getFromIdentity(), boxmsg.getToIdentity(), contact);
+
+		if (result.addContact) {
+			contactStore.addContact(fetchedContact, result.addHidden);
+		}
+
+		if (result.msg != null) {
+			/* copy header attributes from boxed message */
+			result.msg.setFromIdentity(boxmsg.getFromIdentity());
+			result.msg.setToIdentity(boxmsg.getToIdentity());
+			result.msg.setMessageId(boxmsg.getMessageId());
+			result.msg.setDate(boxmsg.getDate());
+			result.msg.setMessageFlags(boxmsg.getFlags());
+			result.msg.setPushFromName(boxmsg.getPushFromName());
+
+			// Decrypt metadata, if present
+			if (boxmsg.getMetadataBox() != null) {
+				MetadataCoder coder = new MetadataCoder(identityStore);
+				try {
+					MessageMetadata metadata = coder.decode(boxmsg.getNonce(), boxmsg.getMetadataBox(), fetchedContact.getPublicKey());
+
+					// Ensure message ID matches envelope message ID (so the server cannot swap it and
+					// cause messages to be misquoted or delivery receipts to be swapped)
+					if (metadata.getMessageId() != 0) {
+						MessageId metadataMessageId = new MessageId(metadata.getMessageId());
+						if (!metadataMessageId.equals(boxmsg.getMessageId())) {
+							throw new BadMessageException("Metadata message ID does not match envelope message ID");
+						}
+					}
+
+					// Take date from encrypted metadata
+					if (metadata.getCreatedAt() != 0) {
+						result.msg.setDate(new Date(metadata.getCreatedAt()));
+					}
+
+					// Take nickname from encrypted metadata
+					result.msg.setPushFromName(metadata.getNickname());
+				} catch (InvalidProtocolBufferException | ThreemaException e) {
+					throw new BadMessageException("Metadata decode failed", e);
+				}
+			}
+		}
+
+		return result.msg;
+	}
+
+	/**
+	 * Decode an encapsulated message (e.g. inside a forward security payload) that has already
+	 * been decrypted, and return it with the same attributes as the outer (envelope) message.
+	 *
+	 * @param data decrypted body
+	 * @param outer outer message
+	 * @param contact sender contact
+	 */
+	public AbstractMessage decodeEncapsulated(byte[] data, AbstractMessage outer, Contact contact) throws BadMessageException {
+		DeserializeDataResult result = deserializeData(data, data.length, outer.getFromIdentity(), outer.getToIdentity(), contact);
+
+		if (result.msg != null) {
+			/* copy header attributes from outer message */
+			result.msg.setFromIdentity(outer.getFromIdentity());
+			result.msg.setToIdentity(outer.getToIdentity());
+			result.msg.setMessageId(outer.getMessageId());
+			result.msg.setDate(outer.getDate());
+			result.msg.setMessageFlags(outer.getMessageFlags());
+			result.msg.setPushFromName(outer.getPushFromName());
+		}
+
+		return result.msg;
+	}
+
+	/**
+	 * Encrypt this message using the given contact and identity store and return the boxed result.
+	 *
+	 * @return boxed message
+	 * @throws ThreemaException
+	 */
+	public @NonNull
+	MessageBox encode(@NonNull AbstractMessage message, @NonNull NonceFactory nonceFactory) throws ThreemaException {
+		try {
+			/* prepare data for box */
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			bos.write(message.getType());
+			bos.write(message.getBody());
+
+			/* PKCS7 padding */
+			SecureRandom rnd = new SecureRandom();
+			int padbytes = rnd.nextInt(254) + 1;
+			if ((bos.size() + padbytes) < ProtocolDefines.MIN_MESSAGE_PADDED_LEN) {
+				padbytes = ProtocolDefines.MIN_MESSAGE_PADDED_LEN - bos.size();
+			}
+			MessageCoder.logger.debug("Adding {} padding bytes", padbytes);
+
+			byte[] paddata = new byte[padbytes];
+			for (int i = 0; i < padbytes; i++)
+				paddata[i] = (byte) padbytes;
+
+			bos.write(paddata);
+			byte[] boxData = bos.toByteArray();
+
+			/* obtain receiver's public key */
+			Contact receiver = contactStore.getContactForIdentity(message.getToIdentity(), false, true);
+			byte[] receiverPublicKey = receiver != null ? receiver.getPublicKey() : null;
+
+			if (receiverPublicKey == null) {
+				throw new ThreemaException("Missing public key for ID " + message.getToIdentity());
+			}
+
+			/* make random nonce; only save if the message is not a non-queued message */
+			byte[] nonce = nonceFactory.next(!message.flagNoServerQueuing());
+
+			/* sign/encrypt with our private key */
+			byte[] boxedData = identityStore.encryptData(boxData, nonce, receiverPublicKey);
+			if (boxedData == null) {
+				throw new ThreemaException("Data encryption failed");
+			}
+
+			/* Encrypt metadata */
+			MessageMetadata.Builder metadataBuilder = MessageMetadata.newBuilder()
+				.setMessageId(message.getMessageId().getMessageIdLong())
+				.setCreatedAt(message.getDate().getTime());
+
+			String nickname = message.getPushFromName() == null ? identityStore.getPublicNickname() : message.getPushFromName();
+
+			/* Only include if a nickname is present and the current message type allows sending profile information */
+			if (nickname != null && nickname.length() > 0 && message.allowSendingProfile()) {
+				byte[] padding = new byte[Math.max(0, 16 - nickname.getBytes().length)];
+				metadataBuilder.setPadding(ByteString.copyFrom(padding))
+					.setNickname(nickname);
+			}
+
+			MetadataBox metadataBox = new MetadataCoder(identityStore).encode(metadataBuilder.build(), nonce, receiverPublicKey);
+
+			/* make BoxedMessage */
+			MessageBox boxmsg = new MessageBox();
+			boxmsg.setFromIdentity(message.getFromIdentity());
+			boxmsg.setToIdentity(message.getToIdentity());
+			boxmsg.setMessageId(message.getMessageId());
+			boxmsg.setDate(message.getDate());
+
+			int flags = message.getMessageFlags();
+			if (message.flagSendPush())
+				flags |= ProtocolDefines.MESSAGE_FLAG_SEND_PUSH;
+			if (message.flagNoServerQueuing())
+				flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_QUEUING;
+			if (message.flagNoServerAck())
+				flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK;
+			if (message.flagGroupMessage())
+				flags |= ProtocolDefines.MESSAGE_FLAG_GROUP;
+			if (message.flagShortLivedServerQueuing())
+				flags |= ProtocolDefines.MESSAGE_FLAG_SHORT_LIVED;
+			boxmsg.setFlags(flags);
+
+			if (message.allowSendingProfile()) {
+				/* Include in header as well for the time being until most clients support the metadata box */
+				boxmsg.setPushFromName(nickname);
+			}
+			boxmsg.setMetadataBox(metadataBox);
+			boxmsg.setNonce(nonce);
+			boxmsg.setBox(boxedData);
+
+			return boxmsg;
+		} catch (IOException e) {
+			/* should never happen as we only write to a byte array */
+			logger.error(e.getMessage(), e);
+			throw new ThreemaException("Failed to create MessageBox");
+		}
+	}
+
+	private DeserializeDataResult deserializeData(byte[] data, int realDataLength, String fromIdentity, String toIdentity, Contact contact) throws BadMessageException {
 		/* first byte of data is type */
 		int type = data[0] & 0xFF;
 		AbstractMessage msg = null;
 
 		// Set this flag to true for message types that should add the contact as hidden contact
+		boolean addContact = contact == null;
 		boolean addHidden = false;
 
 		switch (type) {
@@ -318,13 +490,13 @@ public class MessageCoder {
 
 			case ProtocolDefines.MSGTYPE_GROUP_CREATE: {
 				if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.IDENTITY_LEN) ||
-						((realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN) % ProtocolDefines.IDENTITY_LEN) != 0) {
+					((realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN) % ProtocolDefines.IDENTITY_LEN) != 0) {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for group create message");
 				}
 
 				GroupCreateMessage groupcreatemsg = new GroupCreateMessage();
-				groupcreatemsg.setGroupCreator(boxmsg.getFromIdentity());
-				groupcreatemsg.setGroupId(new GroupId(data, 1));
+				groupcreatemsg.setGroupCreator(fromIdentity);
+				groupcreatemsg.setApiGroupId(new GroupId(data, 1));
 				int numMembers = ((realDataLength - ProtocolDefines.GROUP_ID_LEN - 1) / ProtocolDefines.IDENTITY_LEN);
 				String[] members = new String[numMembers];
 				for (int i = 0; i < numMembers; i++) {
@@ -341,8 +513,8 @@ public class MessageCoder {
 				}
 
 				GroupRequestSyncMessage groupRequestSyncMessage = new GroupRequestSyncMessage();
-				groupRequestSyncMessage.setGroupCreator(boxmsg.getToIdentity());
-				groupRequestSyncMessage.setGroupId(new GroupId(data, 1));
+				groupRequestSyncMessage.setGroupCreator(toIdentity);
+				groupRequestSyncMessage.setApiGroupId(new GroupId(data, 1));
 
 				msg = groupRequestSyncMessage;
 
@@ -355,8 +527,8 @@ public class MessageCoder {
 				}
 
 				GroupRenameMessage grouprenamemsg = new GroupRenameMessage();
-				grouprenamemsg.setGroupCreator(boxmsg.getFromIdentity());
-				grouprenamemsg.setGroupId(new GroupId(data, 1));
+				grouprenamemsg.setGroupCreator(fromIdentity);
+				grouprenamemsg.setApiGroupId(new GroupId(data, 1));
 				grouprenamemsg.setGroupName(new String(data, 1 + ProtocolDefines.GROUP_ID_LEN, realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN, UTF_8));
 				msg = grouprenamemsg;
 
@@ -370,7 +542,7 @@ public class MessageCoder {
 
 				GroupLeaveMessage groupleavemsg = new GroupLeaveMessage();
 				groupleavemsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				groupleavemsg.setGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
+				groupleavemsg.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
 				msg = groupleavemsg;
 				break;
 			}
@@ -382,7 +554,7 @@ public class MessageCoder {
 
 				GroupTextMessage grouptextmsg = new GroupTextMessage();
 				grouptextmsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				grouptextmsg.setGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
+				grouptextmsg.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
 				grouptextmsg.setText(new String(data, 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN, realDataLength - 1 - ProtocolDefines.IDENTITY_LEN - ProtocolDefines.GROUP_ID_LEN, UTF_8));
 				msg = grouptextmsg;
 				break;
@@ -394,10 +566,10 @@ public class MessageCoder {
 				}
 
 				GroupSetPhotoMessage groupsetphotomsg = new GroupSetPhotoMessage();
-				groupsetphotomsg.setGroupCreator(boxmsg.getFromIdentity());
+				groupsetphotomsg.setGroupCreator(fromIdentity);
 
 				int i = 1;
-				groupsetphotomsg.setGroupId(new GroupId(data, i));
+				groupsetphotomsg.setApiGroupId(new GroupId(data, i));
 				i += ProtocolDefines.GROUP_ID_LEN;
 				byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
 				System.arraycopy(data, i, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
@@ -419,8 +591,8 @@ public class MessageCoder {
 				}
 
 				GroupDeletePhotoMessage groupDeletePhotoMessage = new GroupDeletePhotoMessage();
-				groupDeletePhotoMessage.setGroupCreator(boxmsg.getFromIdentity());
-				groupDeletePhotoMessage.setGroupId(new GroupId(data, 1));
+				groupDeletePhotoMessage.setGroupCreator(fromIdentity);
+				groupDeletePhotoMessage.setApiGroupId(new GroupId(data, 1));
 
 				msg = groupDeletePhotoMessage;
 
@@ -437,7 +609,7 @@ public class MessageCoder {
 				GroupImageMessage groupimagemsg = new GroupImageMessage();
 				groupimagemsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
 				i += ProtocolDefines.IDENTITY_LEN;
-				groupimagemsg.setGroupId(new GroupId(data, i));
+				groupimagemsg.setApiGroupId(new GroupId(data, i));
 				i += ProtocolDefines.GROUP_ID_LEN;
 				byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
 				System.arraycopy(data, i, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
@@ -463,7 +635,7 @@ public class MessageCoder {
 				GroupVideoMessage groupvideomsg = new GroupVideoMessage();
 				groupvideomsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
 				i += ProtocolDefines.IDENTITY_LEN;
-				groupvideomsg.setGroupId(new GroupId(data, i));
+				groupvideomsg.setApiGroupId(new GroupId(data, i));
 				i += ProtocolDefines.GROUP_ID_LEN;
 				groupvideomsg.setDuration(EndianUtils.readSwappedShort(data, i));
 				i += 2;
@@ -505,7 +677,7 @@ public class MessageCoder {
 
 				GroupLocationMessage grouplocationmsg = new GroupLocationMessage();
 				grouplocationmsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				grouplocationmsg.setGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
+				grouplocationmsg.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
 				grouplocationmsg.setLatitude(Double.parseDouble(locArr[0]));
 				grouplocationmsg.setLongitude(Double.parseDouble(locArr[1]));
 
@@ -538,7 +710,7 @@ public class MessageCoder {
 				GroupAudioMessage groupaudiomsg = new GroupAudioMessage();
 				groupaudiomsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
 				i += ProtocolDefines.IDENTITY_LEN;
-				groupaudiomsg.setGroupId(new GroupId(data, i));
+				groupaudiomsg.setApiGroupId(new GroupId(data, i));
 				i += ProtocolDefines.GROUP_ID_LEN;
 				groupaudiomsg.setDuration(EndianUtils.readSwappedShort(data, i));
 				i += 2;
@@ -559,7 +731,7 @@ public class MessageCoder {
 			case ProtocolDefines.MSGTYPE_BALLOT_CREATE: {
 				BallotCreateMessage groupBallotCreateMessage = new BallotCreateMessage();
 				int pos = 1;
-				groupBallotCreateMessage.setBallotCreator(boxmsg.getFromIdentity());
+				groupBallotCreateMessage.setBallotCreator(fromIdentity);
 				groupBallotCreateMessage.setBallotId(new BallotId(data, pos));
 				pos += ProtocolDefines.BALLOT_ID_LEN;
 				groupBallotCreateMessage.setData(BallotData.parse(new String(data, pos, realDataLength - pos, UTF_8)));
@@ -596,10 +768,10 @@ public class MessageCoder {
 				groupBallotCreateMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
 				pos += ProtocolDefines.IDENTITY_LEN;
 
-				groupBallotCreateMessage.setGroupId(new GroupId(data, pos));
+				groupBallotCreateMessage.setApiGroupId(new GroupId(data, pos));
 				pos += ProtocolDefines.GROUP_ID_LEN;
 
-				groupBallotCreateMessage.setBallotCreator(boxmsg.getFromIdentity());
+				groupBallotCreateMessage.setBallotCreator(fromIdentity);
 				groupBallotCreateMessage.setBallotId(new BallotId(data, pos));
 				pos += ProtocolDefines.BALLOT_ID_LEN;
 
@@ -614,7 +786,7 @@ public class MessageCoder {
 				groupFileMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
 				pos += ProtocolDefines.IDENTITY_LEN;
 
-				groupFileMessage.setGroupId(new GroupId(data, pos));
+				groupFileMessage.setApiGroupId(new GroupId(data, pos));
 				pos += ProtocolDefines.GROUP_ID_LEN;
 
 				final String jsonObjectString = new String(data, pos, realDataLength - pos, UTF_8);
@@ -629,7 +801,7 @@ public class MessageCoder {
 				groupBallotVoteMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
 				pos += ProtocolDefines.IDENTITY_LEN;
 
-				groupBallotVoteMessage.setGroupId(new GroupId(data, pos));
+				groupBallotVoteMessage.setApiGroupId(new GroupId(data, pos));
 				pos += ProtocolDefines.GROUP_ID_LEN;
 
 				groupBallotVoteMessage.setBallotCreator(new String(data, pos, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
@@ -657,6 +829,21 @@ public class MessageCoder {
 				break;
 			}
 
+			case ProtocolDefines.MSGTYPE_GROUP_CALL_START: {
+				int headerLength = 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN;
+				if (realDataLength < headerLength) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group call start message");
+				}
+
+				final byte[] protobufPayload = Arrays.copyOfRange(data, headerLength, realDataLength);
+				final GroupCallStartData groupCallStartData = GroupCallStartData.fromProtobuf(protobufPayload);
+				final GroupCallStartMessage callStartMessage = new GroupCallStartMessage(groupCallStartData);
+				callStartMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
+				callStartMessage.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
+				msg = callStartMessage;
+				break;
+			}
+
 			case ProtocolDefines.MSGTYPE_DELIVERY_RECEIPT: {
 				addContact = false;
 				if (realDataLength < ProtocolDefines.MESSAGE_ID_LEN + 2 || ((realDataLength - 2) % ProtocolDefines.MESSAGE_ID_LEN) != 0) {
@@ -670,6 +857,31 @@ public class MessageCoder {
 				MessageId[] receiptMessageIds = new MessageId[numMsgIds];
 				for (int i = 0; i < numMsgIds; i++) {
 					receiptMessageIds[i] = new MessageId(data, 2 + i * ProtocolDefines.MESSAGE_ID_LEN);
+				}
+
+				receiptmsg.setReceiptMessageIds(receiptMessageIds);
+				msg = receiptmsg;
+
+				break;
+			}
+
+			case ProtocolDefines.MSGTYPE_GROUP_DELIVERY_RECEIPT: {
+				addContact = false;
+
+				int groupHeaderLength = ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN;
+				if ((realDataLength - groupHeaderLength) < ProtocolDefines.MESSAGE_ID_LEN + 2 || ((realDataLength - groupHeaderLength - 2) % ProtocolDefines.MESSAGE_ID_LEN) != 0) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group delivery receipt");
+				}
+
+				GroupDeliveryReceiptMessage receiptmsg = new GroupDeliveryReceiptMessage();
+				receiptmsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
+				receiptmsg.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
+				receiptmsg.setReceiptType(data[groupHeaderLength + 1] & 0xFF);
+
+				int numMsgIds = ((realDataLength - groupHeaderLength - 2) / ProtocolDefines.MESSAGE_ID_LEN);
+				MessageId[] receiptMessageIds = new MessageId[numMsgIds];
+				for (int i = 0; i < numMsgIds; i++) {
+					receiptMessageIds[i] = new MessageId(data, groupHeaderLength + 2 + i * ProtocolDefines.MESSAGE_ID_LEN);
 				}
 
 				receiptmsg.setReceiptMessageIds(receiptMessageIds);
@@ -696,7 +908,7 @@ public class MessageCoder {
 				}
 
 				ContactSetPhotoMessage contactSetPhotoMessage = new ContactSetPhotoMessage();
-				contactSetPhotoMessage.setFromIdentity(boxmsg.getFromIdentity());
+				contactSetPhotoMessage.setFromIdentity(fromIdentity);
 
 				int i = 1;
 				byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
@@ -771,150 +983,31 @@ public class MessageCoder {
 				break;
 			}
 
+			case ProtocolDefines.MSGTYPE_FS_ENVELOPE: {
+				final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
+				final ForwardSecurityData forwardSecurityData = ForwardSecurityData.fromProtobuf(protobufPayload);
+				msg = new ForwardSecurityEnvelopeMessage(forwardSecurityData);
+				break;
+			}
+
 			default:
 				MessageCoder.logger.info("Unsupported message type {}", type);
 				break;
 		}
 
-		if (addContact) {
-			contactStore.addContact(fetchedContact, addHidden);
-		}
-
-		if (msg != null) {
-			/* copy header attributes from boxed message */
-			msg.setFromIdentity(boxmsg.getFromIdentity());
-			msg.setToIdentity(boxmsg.getToIdentity());
-			msg.setMessageId(boxmsg.getMessageId());
-			msg.setDate(boxmsg.getDate());
-			msg.setMessageFlags(boxmsg.getFlags());
-			msg.setPushFromName(boxmsg.getPushFromName());
-
-			// Decrypt metadata, if present
-			if (boxmsg.getMetadataBox() != null) {
-				MetadataCoder coder = new MetadataCoder(identityStore);
-				try {
-					MessageMetadata metadata = coder.decode(boxmsg.getNonce(), boxmsg.getMetadataBox(), fetchedContact.getPublicKey());
-
-					// Ensure message ID matches envelope message ID (so the server cannot swap it and
-					// cause messages to be misquoted or delivery receipts to be swapped)
-					if (metadata.getMessageId() != 0) {
-						MessageId metadataMessageId = new MessageId(metadata.getMessageId());
-						if (!metadataMessageId.equals(boxmsg.getMessageId())) {
-							throw new BadMessageException("Metadata message ID does not match envelope message ID");
-						}
-					}
-
-					// Take date from encrypted metadata
-					if (metadata.getCreatedAt() != 0) {
-						msg.setDate(new Date(metadata.getCreatedAt()));
-					}
-
-					// Take nickname from encrypted metadata
-					msg.setPushFromName(metadata.getNickname());
-				} catch (InvalidProtocolBufferException | ThreemaException e) {
-					throw new BadMessageException("Metadata decode failed", e);
-				}
-			}
-		}
-
-		return msg;
+		return new DeserializeDataResult(msg, addContact, addHidden);
 	}
 
-	/**
-	 * Encrypt this message using the given contact and identity store and return the boxed result.
-	 *
-	 * @return boxed message
-	 * @throws ThreemaException
-	 */
-	public @NonNull
-	MessageBox encode(@NonNull AbstractMessage message, @NonNull NonceFactory nonceFactory) throws ThreemaException {
-		try {
-			/* prepare data for box */
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bos.write(message.getType());
-			bos.write(message.getBody());
 
-			/* PKCS7 padding */
-			SecureRandom rnd = new SecureRandom();
-			int padbytes = rnd.nextInt(254) + 1;
-			if ((bos.size() + padbytes) < ProtocolDefines.MIN_MESSAGE_PADDED_LEN) {
-				padbytes = ProtocolDefines.MIN_MESSAGE_PADDED_LEN - bos.size();
-			}
-			MessageCoder.logger.debug("Adding {} padding bytes", padbytes);
+	private static class DeserializeDataResult {
+		final AbstractMessage msg;
+		final boolean addContact;
+		final boolean addHidden;
 
-			byte[] paddata = new byte[padbytes];
-			for (int i = 0; i < padbytes; i++)
-				paddata[i] = (byte) padbytes;
-
-			bos.write(paddata);
-			byte[] boxData = bos.toByteArray();
-
-			/* obtain receiver's public key */
-			Contact receiver = contactStore.getContactForIdentity(message.getToIdentity(), false, true);
-			byte[] receiverPublicKey = receiver != null ? receiver.getPublicKey() : null;
-
-			if (receiverPublicKey == null) {
-				throw new ThreemaException("Missing public key for ID " + message.getToIdentity());
-			}
-
-			/* make random nonce; only save if the message is not a non-queued message */
-			byte[] nonce = nonceFactory.next(!message.flagNoServerQueuing());
-
-			/* sign/encrypt with our private key */
-			byte[] boxedData = identityStore.encryptData(boxData, nonce, receiverPublicKey);
-			if (boxedData == null) {
-				throw new ThreemaException("Data encryption failed");
-			}
-
-			/* Encrypt metadata */
-			MessageMetadata.Builder metadataBuilder = MessageMetadata.newBuilder()
-				.setMessageId(message.getMessageId().getMessageIdLong())
-				.setCreatedAt(message.getDate().getTime());
-
-			String nickname = message.getPushFromName() == null ? identityStore.getPublicNickname() : message.getPushFromName();
-
-			/* Only include if a nickname is present and the current message type allows sending profile information */
-			if (nickname != null && nickname.length() > 0 && message.allowSendingProfile()) {
-				byte[] padding = new byte[Math.max(0, 16 - nickname.getBytes().length)];
-				metadataBuilder.setPadding(ByteString.copyFrom(padding))
-					.setNickname(nickname);
-			}
-
-			MetadataBox metadataBox = new MetadataCoder(identityStore).encode(metadataBuilder.build(), nonce, receiverPublicKey);
-
-			/* make BoxedMessage */
-			MessageBox boxmsg = new MessageBox();
-			boxmsg.setFromIdentity(message.getFromIdentity());
-			boxmsg.setToIdentity(message.getToIdentity());
-			boxmsg.setMessageId(message.getMessageId());
-			boxmsg.setDate(message.getDate());
-
-			int flags = 0;
-			if (message.flagSendPush())
-				flags |= ProtocolDefines.MESSAGE_FLAG_SEND_PUSH;
-			if (message.flagNoServerQueuing())
-				flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_QUEUING;
-			if (message.flagNoServerAck())
-				flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK;
-			if (message.flagGroupMessage())
-				flags |= ProtocolDefines.MESSAGE_FLAG_GROUP;
-			if (message.flagShortLivedServerQueuing())
-				flags |= ProtocolDefines.MESSAGE_FLAG_SHORT_LIVED;
-			boxmsg.setFlags(flags);
-
-			if (message.allowSendingProfile()) {
-				/* Include in header as well for the time being until most clients support the metadata box */
-				boxmsg.setPushFromName(nickname);
-			}
-			boxmsg.setMetadataBox(metadataBox);
-			boxmsg.setNonce(nonce);
-			boxmsg.setBox(boxedData);
-
-			return boxmsg;
-		} catch (IOException e) {
-			/* should never happen as we only write to a byte array */
-			logger.error(e.getMessage(), e);
-			throw new ThreemaException("Failed to create MessageBox");
+		public DeserializeDataResult(AbstractMessage msg, boolean addContact, boolean addHidden) {
+			this.msg = msg;
+			this.addContact = addContact;
+			this.addHidden = addHidden;
 		}
 	}
 }

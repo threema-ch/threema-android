@@ -30,6 +30,7 @@ import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.QueueMessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 
 /**
  * Abstract base class for messages that can be sent via the Threema server interface,
@@ -43,10 +44,12 @@ public abstract class AbstractMessage {
 	private String pushFromName;
 	private Date date;
 	private int messageFlags;
+	private ForwardSecurityMode forwardSecurityMode;
 
 	public AbstractMessage() {
 		this.date = new Date();
 		this.messageId = new MessageId();
+		this.forwardSecurityMode = ForwardSecurityMode.NONE;
 	}
 
 	/* Methods to be overridden by subclasses */
@@ -188,5 +191,13 @@ public abstract class AbstractMessage {
 
 	public void setMessageFlags(int messageFlags) {
 		this.messageFlags = messageFlags;
+	}
+
+	public ForwardSecurityMode getForwardSecurityMode() {
+		return forwardSecurityMode;
+	}
+
+	public void setForwardSecurityMode(ForwardSecurityMode forwardSecurityMode) {
+		this.forwardSecurityMode = forwardSecurityMode;
 	}
 }

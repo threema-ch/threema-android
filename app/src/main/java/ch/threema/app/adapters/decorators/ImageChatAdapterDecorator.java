@@ -28,9 +28,10 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.activities.ThreemaActivity;
@@ -68,7 +69,14 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 
 		holder.messagePlayer = imageMessagePlayer;
 
-		setOnClickListener(view -> viewImage(getMessageModel(), holder.attachmentImage), holder.messageBlockView);
+		setOnClickListener(view -> {
+			if (
+				getMessageModel().getState() != MessageState.FS_KEY_MISMATCH &&
+				getMessageModel().getState() != MessageState.SENDFAILED
+			) {
+				viewImage(getMessageModel(), holder.attachmentImage);
+			}
+		}, holder.messageBlockView);
 
 		setControllerClickListener(holder, imageMessagePlayer);
 
@@ -78,7 +86,10 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 			holder.attachmentImage.setContentDescription(getContext().getString(R.string.image_placeholder));
 		}
 
-		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, getMessageModel().getImageData()));
+		RuntimeUtil.runOnUiThread(() -> {
+			setupResendStatus(holder);
+			setControllerState(holder, getMessageModel().getImageData());
+		});
 
 		configureBodyText(holder);
 
@@ -149,9 +160,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 							}
 							break;
 						case ControllerView.STATUS_READY_TO_RETRY:
-							if (onClickRetry != null) {
-								onClickRetry.onClick(getMessageModel());
-							}
+							// ignore (retries will be handled by click listener for messageView)
 							break;
 						case ControllerView.STATUS_READY_TO_DOWNLOAD:
 							imageMessagePlayer.open();
@@ -247,6 +256,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 				holder.controller.setProgressing();
 				break;
 			case SENDFAILED:
+			case FS_KEY_MISMATCH:
 				holder.controller.setRetry();
 				break;
 			default:

@@ -21,7 +21,6 @@
 
 package ch.threema.app.services
 
-import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.*
 import android.content.Context
@@ -38,6 +37,7 @@ import ch.threema.app.activities.DummyActivity
 import ch.threema.app.activities.ThreemaPushNotificationInfoActivity
 import ch.threema.app.notifications.NotificationBuilderWrapper
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
 import ch.threema.app.webclient.services.SessionAndroidService
 import ch.threema.base.utils.LoggingUtil
 import org.slf4j.Logger
@@ -56,15 +56,14 @@ class ThreemaPushService : Service() {
         // Create intent triggered by notification
         val intent = Intent(this, ThreemaPushNotificationInfoActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        @SuppressLint("UnspecifiedImmutableFlag") // Requires API level 23+
         val contentIntent = PendingIntent.getActivity(
             this,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT or PENDING_INTENT_FLAG_IMMUTABLE
         )
 
-        createNotificationChannel();
+        createNotificationChannel()
 
         // Create notification
         val builder: NotificationCompat.Builder = NotificationBuilderWrapper(

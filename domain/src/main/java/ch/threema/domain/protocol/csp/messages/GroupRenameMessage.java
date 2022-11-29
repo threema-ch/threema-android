@@ -51,7 +51,7 @@ public class GroupRenameMessage extends AbstractGroupMessage {
 	public byte[] getBody() {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			bos.write(groupName.getBytes(StandardCharsets.UTF_8));
 			return bos.toByteArray();
 		} catch (Exception e) {

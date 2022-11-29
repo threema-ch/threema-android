@@ -68,7 +68,7 @@ public class SystemUpdateToVersion38 extends  UpdateToVersion implements UpdateS
 		if(!this.fieldExist(this.sqLiteDatabase,
 				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_SALTY_RTC_HOST)) {
 			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
-					" ADD COLUMN " +  WebClientSessionModel.COLUMN_SALTY_RTC_HOST + " VARCHAR NULL");
+					" ADD COLUMN " +  WebClientSessionModel.COLUMN_SALTY_RTC_HOST + " VARCHAR DEFAULT NULL");
 
 			//append defaults
 			Cursor cursor = this.sqLiteDatabase.rawQuery("SELECT " +

@@ -54,6 +54,11 @@ public class GroupModel implements ReceiverModel {
 	public static final String COLUMN_SYNCHRONIZED_AT= "synchronizedAt";
 	public static final String COLUMN_DELETED= "deleted";
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this group has been archived by user */
+	public static final String COLUMN_GROUP_DESC = "groupDesc";
+	public static final String COLUMN_GROUP_DESC_CHANGED_TIMESTAMP = "changedGroupDescTimestamp";
+
+	private String groupDesc;
+	private Date changedGroupDescTimestamp;
 
 	private int id;
 	private GroupId apiGroupId;
@@ -139,6 +144,28 @@ public class GroupModel implements ReceiverModel {
 		return this;
 	}
 
+
+	public GroupModel setGroupDesc(String description) {
+		groupDesc = description;
+		return this;
+	}
+
+	public GroupModel setGroupDescTimestamp(Date groupDescDate) {
+		changedGroupDescTimestamp = groupDescDate;
+		return this;
+	}
+
+
+	public String getGroupDesc() {
+		return this.groupDesc;
+	}
+
+
+	public Date getGroupDescTimestamp() {
+		return this.changedGroupDescTimestamp;
+	}
+
+
 	public int getThemedColor(@NonNull Context context) {
 		if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
 			return getColorDark();
@@ -189,3 +216,4 @@ public class GroupModel implements ReceiverModel {
 		return Objects.hash(id);
 	}
 }
+

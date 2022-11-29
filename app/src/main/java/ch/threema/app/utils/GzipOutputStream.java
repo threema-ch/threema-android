@@ -42,11 +42,13 @@ public class GzipOutputStream extends DeflaterOutputStream {
 		crc.reset();
 	}
 
+	@Override
 	public synchronized void write(byte[] buf, int off, int len) throws IOException {
 		super.write(buf, off, len);
 		crc.update(buf, off, len);
 	}
 
+	@Override
 	public void finish() throws IOException {
 		if (!def.finished()) {
 			def.finish();

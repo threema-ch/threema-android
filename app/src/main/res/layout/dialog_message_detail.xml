@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+
+<ScrollView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:paddingLeft="24dp"
-	android:paddingRight="24dp"
+	android:background="@android:color/transparent"
+	android:paddingLeft="8dp"
+	android:paddingRight="8dp">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:paddingLeft="16dp"
+	android:paddingRight="16dp"
 	android:paddingTop="8dp"
 	android:paddingBottom="8dp">
 
@@ -28,7 +36,6 @@
 		android:id="@+id/created_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="12.4.2019 12:49"
 		app:layout_constraintBaseline_toBaselineOf="@id/created_text"
 		app:layout_constraintRight_toRightOf="parent"
 		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
@@ -55,7 +62,6 @@
 		android:id="@+id/posted_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="12.4.2019 12:49"
 		app:layout_constraintBaseline_toBaselineOf="@id/posted_text"
 		app:layout_constraintRight_toRightOf="parent"
 		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
@@ -83,7 +89,6 @@
 		android:id="@+id/delivered_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="12.4.2019 12:49"
 		app:layout_constraintBaseline_toBaselineOf="@id/delivered_text"
 		app:layout_constraintRight_toRightOf="parent"
 		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
@@ -111,7 +116,6 @@
 		android:id="@+id/read_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="12.4.2019 12:49"
 		app:layout_constraintBaseline_toBaselineOf="@id/read_text"
 		app:layout_constraintRight_toRightOf="parent"
 		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
@@ -139,7 +143,6 @@
 		android:id="@+id/modified_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="12.4.2019 12:49"
 		app:layout_constraintBaseline_toBaselineOf="@id/modified_text"
 		app:layout_constraintRight_toRightOf="parent"
 		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
@@ -167,7 +170,6 @@
 		android:id="@+id/messageid_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="12.4.2019 12:49"
 		app:layout_constraintBaseline_toBaselineOf="@id/messageid_text"
 		app:layout_constraintRight_toRightOf="parent"
 		android:enabled="true"
@@ -199,7 +201,6 @@
 		android:id="@+id/filetype_mime"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="video/mp4"
 		app:layout_constraintBaseline_toBaselineOf="@id/filetype_text"
 		app:layout_constraintRight_toRightOf="parent"
 		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
@@ -234,4 +235,140 @@
 		android:visibility="gone"
 		/>
 
+	<TextView
+		android:id="@+id/forward_security_mode_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/forward_security_mode"
+		android:layout_marginTop="4dp"
+		app:layout_constraintTop_toBottomOf="@id/filesize_text"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toLeftOf="@+id/forward_security_mode_data"
+		app:layout_constrainedWidth="true"
+		app:layout_constraintHorizontal_bias="0"
+		android:ellipsize="end"
+		android:singleLine="true"
+		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
+		android:visibility="gone"
+		/>
+
+	<TextView
+		android:id="@+id/forward_security_mode_data"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="4DH"
+		app:layout_constraintBaseline_toBaselineOf="@id/forward_security_mode_text"
+		app:layout_constraintRight_toRightOf="parent"
+		android:enabled="true"
+		android:textIsSelectable="true"
+		android:focusable="true"
+		android:longClickable="true"
+		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
+		android:visibility="gone"
+		/>
+
+	<com.google.android.material.divider.MaterialDivider
+		android:id="@+id/groupack_divider"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="12dp"
+		android:visibility="gone"
+		app:layout_constraintTop_toBottomOf="@id/forward_security_mode_text"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toRightOf="parent" />
+
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/ack_card"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		app:contentPadding="0dp"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/groupack_divider"
+		app:cardElevation="0dp"
+		app:strokeWidth="0dp"
+		android:visibility="gone">
+
+		<ImageView
+			android:id="@+id/ack_icon"
+			android:layout_width="20dp"
+			android:layout_height="20dp"
+			android:layout_marginTop="6dp"
+			android:layout_gravity="top"
+			android:contentDescription="@string/state_ack"
+			android:src="@drawable/ic_thumb_up_grey600_24dp"
+			android:scaleType="centerInside"
+			app:tint="@color/material_green" />
+
+		<com.google.android.material.chip.ChipGroup
+			android:id="@+id/ack_data"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="32dp"
+			android:layout_marginRight="32dp"
+			android:padding="0dp"
+			app:chipSpacingHorizontal="2dp"
+			app:chipSpacingVertical="2dp"
+			android:layout_gravity="center_vertical"/>
+
+		<ch.threema.app.ui.CountBoxView
+			android:id="@+id/ack_count"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="6dp"
+			android:layout_gravity="top|right"
+			app:backgroundOverride="@drawable/count_box_background_green"
+			/>
+
+	</com.google.android.material.card.MaterialCardView>
+
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/dec_card"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		app:contentPadding="0dp"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/ack_card"
+		app:cardElevation="0dp"
+		app:strokeWidth="0dp"
+		android:visibility="gone">
+
+		<ImageView
+			android:id="@+id/dec_icon"
+			android:layout_width="20dp"
+			android:layout_height="20dp"
+			android:layout_marginTop="6dp"
+			android:layout_gravity="top"
+			android:scaleType="centerInside"
+			android:contentDescription="@string/state_dec"
+			android:src="@drawable/ic_thumb_down_grey600_24dp"
+			app:tint="@color/material_orange" />
+
+		<com.google.android.material.chip.ChipGroup
+			android:id="@+id/dec_data"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="32dp"
+			android:layout_marginRight="32dp"
+			android:padding="0dp"
+			app:chipSpacingHorizontal="2dp"
+			app:chipSpacingVertical="2dp"
+			android:layout_gravity="center_vertical"/>
+
+		<ch.threema.app.ui.CountBoxView
+			android:id="@+id/dec_count"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="6dp"
+			android:layout_gravity="top|right"
+			app:backgroundOverride="@drawable/count_box_background_orange"
+			/>
+
+	</com.google.android.material.card.MaterialCardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

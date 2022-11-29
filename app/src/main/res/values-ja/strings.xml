@@ -121,7 +121,6 @@
     <string name="share_via">共有...</string>
     <string name="share_subject">%sの会話</string>
     <string name="message_delete_undo">やめる</string>
-    <string name="message_deleted">削除されたメッセージ</string>
     <string name="mobile_already_linked">あなたのThreema IDは既にこの電話番号に紐付けされています</string>
     <string name="email_already_linked">あなたのThreema IDは既にこのEメールアドレスに紐付けされています</string>
     <string name="whoaaa">Threemaの通知</string>
@@ -249,6 +248,8 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="emoji_emotions">顔と人</string>
     <string name="emoji_activities">アクティビティ</string>
     <string name="emoji_flags">旗</string>
+    <string name="emoji_search">絵文字を探す</string>
+    <string name="emoji_search_no_result">検索結果が見つかりません</string>
     <string name="title_lock">ロック</string>
     <string name="new_messages_locked">利用可能な新しいメッセージ</string>
     <string name="new_messages_locked_description">タッチして新しいメッセージを見る</string>
@@ -258,8 +259,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="prefs_masterkey_notification_newmsg_off">マスターキーでロックされているときに、新しいメッセージを通知しない</string>
     <string name="prefs_masterkey_notification_newmsg_on">マスターキーでロックされているときに、一般的な通知で新しいメッセージを通知します</string>
     <string name="chat_history_attached">会話のログを添付します。</string>
-    <string name="new_message">１件の新しいメッセージ</string>
-    <string name="new_messages">新しいメッセージ</string>
     <string name="backup_data_title">データのバックアップ</string>
     <string name="backup_data_password_msg">データは ZIP ファイルで内部 USB ストレージに保存され、どの Android 端末でも復元が行なえます。
 データのバックアップを暗号化するためのパスワードを入力してください。</string>
@@ -286,7 +285,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="prefs_group_notifications">グループトーク</string>
     <string name="add_group_members_list">グループのメンバー</string>
     <string name="group_select_at_least_two">継続するためには、少なくとも1名のメンバーを選択する必要があります。</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">グループメンバーを %1$d 人以上選択することはできません</string>
+    <string name="group_select_max">グループメンバーを %1$d 人以上選択することはできません</string>
     <string name="search">検索</string>
     <string name="hint_search_keyword">キーワードを検索</string>
     <string name="add_group_owner">グループの作成者</string>
@@ -361,7 +360,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="contact_format_last_name_first_name">名字 - 名前</string>
     <string name="block_contact">連絡先をブロック</string>
     <string name="unblock_contact">連絡先のブロックを解除</string>
-    <string name="unread_messages">%d件の未読のメッセージ</string>
     <string name="one_unread_message">1件の未読のメッセージ</string>
     <string name="really_unlink_contact_title">連絡先の紐付けを解除</string>
     <string name="really_unlink_contact">本当に連絡先の紐付けを解除しますか？</string>
@@ -377,7 +375,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="save_image">画像を保存</string>
     <string name="share_image">画像を共有</string>
     <string name="view_in_gallery">ギャラリーで見る</string>
-    <string name="file_saved">%d 個のファイルが正常に保存されました。</string>
     <string name="token_register_failed">プッシュトークンのアップデートに失敗しました。もう一度試してください。</string>
     <string name="internet_connection_required">インターネットに接続できません</string>
     <string name="prefs_sum_save_media">受信した写真やビデオ、送信したカメラ画像を保存する</string>
@@ -419,7 +416,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="media_gallery_videos">動画</string>
     <string name="group_membership_title">これらのグループのメンバー</string>
     <string name="num_items_sected">%s 件を選択中</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">本当に %d メディアメッセージを削除したいですか？</string>
+    <string name="really_delete_media">本当に %d メディアメッセージを削除したいですか？</string>
     <string name="check_updates">アップデートを確認する</string>
     <string name="masterkey_lock_explain">Threemaはメモリ内にパスフレーズを保持します。
 もしパスフレーズを何度も要求される場合は、Threemaを停止するタスクキラーまたはバッテリーセーバーが無効になっているかを確認してください。</string>
@@ -436,7 +433,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="share_conversation_body">ファイルを解凍するには、AESをサポートする最新のZIPツールが必要です。
 http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id425424353 などから入手してください。</string>
     <string name="enter_zip_password_body">トークは暗号化されたzipファイルとして送信されます。 パスワードを選択してください：</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%2$d 個のトークでの %1$d 個の新しいメッセージ</string>
     <string name="ballot_create">投票を作成</string>
     <string name="ballot_choice_add">選択を追加</string>
     <string name="ballot_state_closed">終了</string>
@@ -454,9 +450,6 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="ballot_overview">すべての投票</string>
     <string name="ballot_copy">投票を複製</string>
     <string name="ballot_remove">投票を削除</string>
-    <string name="ballot_really_delete">投票を削除</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">本当に%1$d個の投票を削除しますか？
-投票を復元することはできません。</string>
     <string name="ballot_not_exist">投票が存在しません</string>
     <string name="ballot_tap_to_vote">タップで投票</string>
     <string name="ballot_tap_to_view_results">投票は終了しました。タップして結果を表示する。</string>
@@ -471,7 +464,7 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="invalid_cannot_send">連絡先が非アクティブのため、メッセージを送信できません</string>
     <string name="ballot_answer_count_error">投票を作成するには2つ以上の選択肢を追加してください</string>
     <string name="ballot_one_contact_not_supported">警告: %1$sは投票に参加できなくなります。</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">警告: %1$dの連絡先は投票に参加できなくなります。</string>
+    <string name="ballot_x_contact_not_supported">警告: %1$dの連絡先は投票に参加できなくなります。</string>
     <string name="contact_state_inactive">非アクティブ</string>
     <string name="contact_state_invalid">無効</string>
     <string name="back">戻る</string>
@@ -505,7 +498,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="send_media">メディアを送信</string>
     <string name="rotate">回転</string>
     <string name="remove">削除</string>
-    <string name="image_already_added">この画像は既に追加しました</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">%d 文字以上</string>
     <string name="mark_read">既読にする</string>
     <string name="attach_document">ファイル</string>
@@ -515,7 +507,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="no_activity_for_mime_type">このファイルを開くためのアプリが見つかりませんでした</string>
     <string name="open_from">で開く</string>
     <string name="file_one_contact_not_supported">%1$sファイルを受信できません</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">警告: %1$d 連絡先がファイルを受信できません。</string>
+    <string name="file_x_contact_not_supported">警告: %1$d 連絡先がファイルを受信できません。</string>
     <string name="mime_android_apk">Androidパッケージ</string>
     <string name="mime_audio">音声ファイル</string>
     <string name="mime_certificate">電子証明書</string>
@@ -554,7 +546,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="storage_explain">空き容量が足りなくなった場合、古い暗号化されたメディアファイルを削除して空き容量を確保することができます。サムネイルはそのまま残ります。これは自動処理ではないことに注意してください。以下のボタンをクリックしない限り、何も削除されません。</string>
     <string name="delete_data">データを削除する</string>
     <string name="delete_date_confirm_message">続けると、ファイルは削除され、サムネイルだけが残ります。</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">%dメディアファイルが削除されました</string>
     <string name="storage_management">ストレージ管理</string>
     <string name="media">メディア</string>
     <string name="prefs_storage_mgmt_title">メディア、ファイル、メッセージを削除</string>
@@ -577,22 +568,22 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="name">名前</string>
     <string name="privacy_policy">プライバシーポリシー</string>
     <string name="terms_of_service">利用規約</string>
+    <string name="eula">エンドユーザーライセンス合意書</string>
     <string name="save_group_changes">グループの変更を保存しますか？</string>
     <string name="prefs_title_fontsize">フォントサイズ</string>
     <string name="fontsize_normal">正規</string>
     <string name="fontsize_large">大</string>
     <string name="fontsize_xlarge">特大</string>
     <string name="no_app_for_location">インストール済みのマップアプリが見つかりませんでした</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%dつのトークが削除されました</string>
     <string name="prefs_sendlog">ログを送信する</string>
     <string name="prefs_sendlog_summary">問題を分析するためにログファイルをThreemaに送信します</string>
+    <string name="prefs_exportlog">ログを出力する</string>
     <string name="permission_storage_required">メディアを保存したり送信したりするには、Threemaにストレージへのアクセス許可をしてください。</string>
     <string name="permission_location_required">位置情報を送信するには、Threemaに自分の位置情報へのアクセスを許可をしてください。</string>
     <string name="permission_contacts_required">連絡先を送信するには、Threemaに自分の連絡先へのアクセスを許可する必要があります。</string>
     <string name="message_declined">«反対» 送信</string>
     <string name="notifications_settings">通知設定</string>
     <string name="notifications_default">デフォルト設定</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">%d 時間のみ</string>
     <string name="notifications_until">%s まで</string>
     <string name="notifications_mute">ミュート</string>
     <string name="notifications_choose_sound">サウンドを選択</string>
@@ -673,7 +664,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_proximity_sensor_explain">近接センサーが覆われている場合、ボイスメッセージの再生にイヤホンを使用する</string>
     <string name="error_creating_group">グループ作成/アップデートのエラー</string>
     <string name="no_media_found_generic">このトーク内でメディアは見つかりませんでした</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">最大で %d 個のアイテムを一度に編集できます</string>
+    <string name="max_images_reached">最大で %d 個のアイテムを一度に編集できます</string>
     <string name="enter_description">ここにバグ/問題の詳細を書いてください</string>
     <string name="add_caption_hint">任意のキャプションの追加</string>
     <string name="disable">無効化</string>
@@ -719,9 +710,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_language_override">言語</string>
     <string name="threema_channel_intro">Threema Channelでは、Threemaに関するあらゆるニュースを提供しています。Threema Channelを購読して、連絡先に追加してみませんか？登録は無料で、いつでも解除することができます。</string>
     <string name="quote">引用</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">本当に %1$d 件の連絡先と関連するすべてのトークを削除しますか？</string>
     <string name="contacts_deleted">連絡先は削除されました</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%dがまだグループの一部であるため、削除できませんでした。</string>
     <string name="take_photo">写真を撮る</string>
     <string name="select_from_gallery">ギャラリーから選択</string>
     <string name="palette">パレット</string>
@@ -846,7 +835,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="no_matching_work_contacts">管理者が確認したThreema Workの連絡先は見つかりませんでした。</string>
     <string name="all">すべて</string>
     <string name="webclient_session_stop_all">すべて閉じる</string>
-    <string name="webclient_running_sessions">%d Threema Webセッションが実行されています。</string>
     <string name="passphrase_service_name">パスフレーズサービス</string>
     <string name="passphrase_service_description">パスフレーズが解除された時の通知</string>
     <string name="webclient_service_description">Threema Webセッションが始まったときに通知</string>
@@ -999,7 +987,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="data_backup_last_date">最後に成功したデータのバックアップ</string>
     <string name="archived">アーカイブ</string>
     <string name="to_archive">アーカイブ</string>
-    <string name="message_archived">%dつのトークがアーカイブされました</string>
     <string name="archived_chats">アーカイブされたトーク</string>
     <string name="unarchive">アーカイブを解除</string>
     <string name="no_archived_chats">アーカイブされたチャットはありません。\nトークをアーカイブするには、メッセージリストでトークを左にスワイプします。</string>
@@ -1011,7 +998,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="system_default">システム設定</string>
     <string name="open_in_maps_app">マップアプリで開く</string>
     <string name="delete">削除</string>
-    <string name="num_archived_chats">%d 件のアーカイブされたトーク</string>
     <string name="continue_recording">録音を続ける</string>
     <string name="tap_to_start">タップして %s を始めましょう</string>
     <string name="two_years">2年</string>
@@ -1031,7 +1017,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="and">と</string>
     <string name="edit_type_content_description">表示または編集 %1$s %2$s</string>
     <string name="group">グループ</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>当社のプライバシーポリシーは、以下の変更を反映して更新されました:</p><p>%1$sは、地図およびPOIデータを提供するためにGoogle PlayおよびGoogle Mapsに依存しなくなりました。</p>詳しくはプライバシーポリシーを読んでください<a href="%2$s">ここ</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Play Servicesがインストールされていません。«push»に切り替えることができません。</string>
     <string name="unable_to_get_current_location">現在の位置を把握することができません。</string>
     <string name="lp_search_place_min_chars">場所を検索するには、3文字以上を入力してください。</string>

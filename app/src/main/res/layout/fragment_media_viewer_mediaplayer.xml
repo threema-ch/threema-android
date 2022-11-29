@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@color/gallery_background">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/gallery_background">
 
-	<ImageView
-		android:id="@+id/preview_image"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:scaleType="fitCenter"/>
+	<FrameLayout
+		android:id="@+id/play_pause_layout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:gravity="center"
+		android:orientation="horizontal"
+		app:layout_constraintBottom_toTopOf="@id/filename_view"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<ImageButton
+			android:id="@id/exo_play"
+			style="@style/ExoMediaButton.Play"
+			android:contentDescription="@string/play" />
+
+		<ImageButton
+			android:id="@id/exo_pause"
+			style="@style/ExoMediaButton.Pause"
+			android:contentDescription="@string/pause" />
+
+	</FrameLayout>
 
 	<ProgressBar
 		android:id="@+id/progress_bar"
@@ -17,39 +36,50 @@
 		android:layout_height="48dp"
 		android:layout_gravity="center"
 		android:indeterminate="true"
-		android:visibility="gone"/>
-
-	<pl.droidsonroids.gif.GifImageView
-		android:id="@+id/gif_view"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"/>
+		android:visibility="gone"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
-		android:id="@+id/empty_text"
+		android:id="@+id/exo_position"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:fontFamily="sans-serif-light"
-		android:gravity="center_horizontal"
-		android:paddingLeft="10dp"
-		android:paddingRight="10dp"
-		android:textColor="@android:color/white"
-		android:textSize="18sp"
-		android:visibility="gone"/>
+		android:layout_marginBottom="4dp"
+		style="@style/ExoStyledControls.TimeText.Duration"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintBottom_toTopOf="@id/filename_view"/>
+
+	<com.google.android.exoplayer2.ui.DefaultTimeBar
+		android:id="@+id/time_bar"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		app:layout_constraintBottom_toTopOf="@id/filename_view"
+		app:layout_constraintStart_toEndOf="@id/exo_position"
+		app:layout_constraintEnd_toStartOf="@id/exo_duration" />
+
+	<TextView
+		android:id="@+id/exo_duration"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="4dp"
+		style="@style/ExoStyledControls.TimeText.Duration"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintBottom_toTopOf="@id/filename_view" />
 
 	<TextView
 		android:id="@+id/filename_view"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_gravity="center_horizontal|top"
-		android:layout_marginLeft="16dp"
-		android:layout_marginRight="16dp"
-		android:layout_marginTop="96dp"
+		android:paddingBottom="5dp"
+		android:paddingTop="5dp"
 		android:textAlignment="center"
 		android:textColor="@color/dark_text_color_secondary"
 		android:textSize="16sp"
-		android:visibility="gone"/>
+		android:visibility="visible"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent" />
 
-	<include layout="@layout/exo_player_control_view"/>
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

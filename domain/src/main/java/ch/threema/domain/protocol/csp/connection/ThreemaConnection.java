@@ -42,7 +42,6 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -56,6 +55,7 @@ import androidx.annotation.WorkerThread;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceCounter;
 import ch.threema.base.crypto.NonceFactory;
+import ch.threema.base.crypto.ThreemaKDF;
 import ch.threema.base.utils.AsyncResolver;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
@@ -66,6 +66,7 @@ import ch.threema.domain.protocol.Version;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.stores.IdentityStoreInterface;
+import ove.crypto.digest.Blake2b;
 
 @WorkerThread
 public class ThreemaConnection implements Runnable {
@@ -74,16 +75,20 @@ public class ThreemaConnection implements Runnable {
 	private static final int IDENTITY_LEN = 8;
 	private static final int COOKIE_LEN = 16;
 	private static final int SERVER_HELLO_BOXLEN = NaCl.PUBLICKEYBYTES + COOKIE_LEN + NaCl.BOXOVERHEAD;
-	private static final int VOUCH_LEN = NaCl.PUBLICKEYBYTES;
+	private static final int RESERVED1_LEN = 24;
+	private static final int VOUCH_LEN = 32;
+	private static final int RESERVED2_LEN = 16;
 	private static final int VERSION_LEN = 32;
-	private static final int LOGIN_LEN = IDENTITY_LEN + VERSION_LEN + COOKIE_LEN + NaCl.NONCEBYTES + VOUCH_LEN + NaCl.BOXOVERHEAD;
+	private static final int LOGIN_LEN = IDENTITY_LEN + VERSION_LEN + COOKIE_LEN + RESERVED1_LEN + VOUCH_LEN + RESERVED2_LEN;
 	private static final int LOGIN_ACK_RESERVED_LEN = 16;
 	private static final int LOGIN_ACK_LEN = LOGIN_ACK_RESERVED_LEN + NaCl.BOXOVERHEAD;
+	private static final int EPHEMERAL_KEY_HASH_LEN = 32;
 
 	/* Delegate objects */
 	private final IdentityStoreInterface identityStore;
 	private final NonceFactory nonceFactory;
 	private MessageProcessorInterface messageProcessor;
+	private RogueDeviceMonitor rogueDeviceMonitor;
 
 	/* Server address object */
 	private ServerAddressProvider serverAddressProvider;
@@ -162,6 +167,10 @@ public class ThreemaConnection implements Runnable {
 
 	public void setServerAddressProvider(ServerAddressProvider serverAddressProvider) {
 		this.serverAddressProvider = serverAddressProvider;
+	}
+
+	public void setRogueDeviceMonitor(RogueDeviceMonitor rogueDeviceMonitor) {
+		this.rogueDeviceMonitor = rogueDeviceMonitor;
 	}
 
 	private void getInetAdresses() throws UnknownHostException, ExecutionException, InterruptedException, ThreemaException {
@@ -431,12 +440,7 @@ public class ThreemaConnection implements Runnable {
 				byte[] extensionsBox = kclientTempServerTemp.encrypt(makeExtensions(), extensionsNonce);
 
 				/* prepare vouch sub packet */
-				byte[] vouchNonce = new byte[NaCl.NONCEBYTES];
-				random.nextBytes(vouchNonce);
-				byte[] vouchBox = identityStore.encryptData(clientTempKeyPub, vouchNonce, serverPubKeyCur);
-				if (vouchBox == null) {
-					throw new ThreemaException("Vouch box encryption failed");
-				}
+				byte[] vouch = makeVouch(serverPubKeyCur, serverCookie, clientTempKeyPub);
 
 				/* now prepare login packet */
 				byte[] cleverExtensionVersion = this.makeCleverExtensionVersion(extensionsBox.length);
@@ -448,12 +452,20 @@ public class ThreemaConnection implements Runnable {
 				login_i += VERSION_LEN;
 				System.arraycopy(serverCookie, 0, login, login_i, COOKIE_LEN);
 				login_i += COOKIE_LEN;
-				System.arraycopy(vouchNonce, 0, login, login_i, NaCl.NONCEBYTES);
-				login_i += NaCl.NONCEBYTES;
-				System.arraycopy(vouchBox, 0, login, login_i, VOUCH_LEN + NaCl.BOXOVERHEAD);
+				login_i += RESERVED1_LEN; // all zero
+				System.arraycopy(vouch, 0, login, login_i, VOUCH_LEN);
 
 				/* encrypt login packet */
 				byte[] loginBox = kclientTempServerTemp.encrypt(login, loginNonce);
+
+				/* tell rogue device monitor about the new keys */
+				byte[] ephemeralKeys = new byte[NaCl.PUBLICKEYBYTES*2];
+				System.arraycopy(clientTempKeyPub, 0, ephemeralKeys, 0, NaCl.PUBLICKEYBYTES);
+				System.arraycopy(serverTempKeyPub, 0, ephemeralKeys, NaCl.PUBLICKEYBYTES, NaCl.PUBLICKEYBYTES);
+				byte[] ephemeralKeyHash = Blake2b.Digest.newInstance(EPHEMERAL_KEY_HASH_LEN).digest(ephemeralKeys);
+				if (rogueDeviceMonitor != null) {
+					rogueDeviceMonitor.recordEphemeralKeyHash(ephemeralKeyHash, false);
+				}
 
 				/* send it! */
 				bos.write(loginBox);
@@ -472,6 +484,11 @@ public class ThreemaConnection implements Runnable {
 				}
 
 				logger.info("Login ack received");
+
+				/* record hash again post-login */
+				if (rogueDeviceMonitor != null) {
+					rogueDeviceMonitor.recordEphemeralKeyHash(ephemeralKeyHash, true);
+				}
 
 				/* clear socket timeout */
 				socket.setSoTimeout(0);
@@ -711,6 +728,10 @@ public class ThreemaConnection implements Runnable {
 			case ProtocolDefines.PLTYPE_QUEUE_SEND_COMPLETE:
 				notifyQueueSendComplete();
 				break;
+
+			case ProtocolDefines.PLTYPE_LAST_EPHEMERAL_KEY_HASH:
+				processLastEphemeralKeyHashPayload(payload);
+				break;
 		}
 	}
 
@@ -785,6 +806,17 @@ public class ThreemaConnection implements Runnable {
 		}
 	}
 
+	private void processLastEphemeralKeyHashPayload(Payload payload) throws PayloadProcessingException {
+		byte[] data = payload.getData();
+		if (data.length != NaCl.PUBLICKEYBYTES) {
+			throw new PayloadProcessingException("Bad length (" + data.length + ") for last ephemeral key hash payload");
+		}
+
+		if (rogueDeviceMonitor != null) {
+			rogueDeviceMonitor.checkEphemeralKeyHash(data);
+		}
+	}
+
 	private void sendAck(MessageId messageId, String identity) {
 		logger.debug("Sending ack for message ID {} from {}", messageId, identity);
 
@@ -852,6 +884,17 @@ public class ThreemaConnection implements Runnable {
 			}
 		}
 		return false;
+	}
+
+	private byte[] makeVouch(byte[] serverPubKeyCur, byte[] serverCookie, byte[] clientTempKeyPub) {
+		byte[] sharedSecret = identityStore.calcSharedSecret(serverPubKeyCur);
+		ThreemaKDF kdf = new ThreemaKDF("3ma-csp");
+
+		byte[] input = new byte[COOKIE_LEN + NaCl.PUBLICKEYBYTES];
+		System.arraycopy(serverCookie, 0, input, 0, COOKIE_LEN);
+		System.arraycopy(clientTempKeyPub, 0, input, COOKIE_LEN, NaCl.PUBLICKEYBYTES);
+		byte[] vouchKey = kdf.deriveKey("v", sharedSecret);
+		return Blake2b.Mac.newInstance(vouchKey, VOUCH_LEN).digest(input);
 	}
 
 	private byte[] makeCleverExtensionVersion(int extensionsBoxLength) throws IOException {

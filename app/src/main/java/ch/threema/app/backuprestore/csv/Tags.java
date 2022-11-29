@@ -60,6 +60,7 @@ public abstract class Tags {
 	public static final String TAG_CONTACT_THREEMA_ANDROID_CONTACT_ID = "tacid";
 	public static final String TAG_CONTACT_HIDDEN = "hidden";
 	public static final String TAG_CONTACT_ARCHIVED = "archived";
+	public static final String TAG_CONTACT_FORWARD_SECURITY = "forward_security";
 
 	public static final String TAG_GROUP_ID = "id";
 	public static final String TAG_GROUP_CREATOR = "creator";
@@ -68,6 +69,8 @@ public abstract class Tags {
 	public static final String TAG_GROUP_MEMBERS = "members";
 	public static final String TAG_GROUP_DELETED = "deleted";
 	public static final String TAG_GROUP_ARCHIVED = "archived";
+	public static final String TAG_GROUP_DESC = "groupDesc";
+	public static final String TAG_GROUP_DESC_TIMESTAMP = "groupDescTimestamp";
 
 	public static final String TAG_MESSAGE_UID = "uid";
 	public static final String TAG_MESSAGE_IDENTITY = "identity";
@@ -82,6 +85,7 @@ public abstract class Tags {
 	public static final String TAG_MESSAGE_MODIFIED_AT = "modified_at";
 	public static final String TAG_MESSAGE_DELIVERED_AT = "delivered_at";
 	public static final String TAG_MESSAGE_READ_AT = "read_at";
+	public static final String TAG_GROUP_MESSAGE_STATES = "g_msg_states";
 
 	public static final String TAG_MESSAGE_MESSAGE_STATE = "messagestae";
 	public static final String TAG_MESSAGE_IS_STATUS_MESSAGE = "isstatusmessage";

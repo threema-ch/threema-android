@@ -608,7 +608,11 @@ public class PreferenceStore implements PreferenceStoreInterface {
 		try {
 			if (crypt) {
 				byte[] data = this.getDataFromCryptedFile(key);
-				return new JSONArray(new String(data));
+				if (data.length == 0) {
+					return new JSONArray();
+				} else {
+					return new JSONArray(new String(data));
+				}
 			} else {
 				return new JSONArray(this.sharedPreferences.getString(key, "[]"));
 			}

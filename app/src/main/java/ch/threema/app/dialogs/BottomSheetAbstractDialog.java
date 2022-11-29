@@ -68,16 +68,14 @@ public abstract class BottomSheetAbstractDialog extends BottomSheetDialogFragmen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		try {
-			callback = (BottomSheetDialogCallback) getTargetFragment();
-		} catch (ClassCastException e) {
-			//
-		}
-
-		// called from an activity rather than a fragment
 		if (callback == null) {
-			if ((activity instanceof BottomSheetDialogCallback)) {
-				callback = (BottomSheetDialogCallback) activity;
+			try {
+				callback = (BottomSheetDialogCallback) getTargetFragment();
+			} catch (ClassCastException e) {
+				// called from an activity rather than a fragment
+				if ((activity instanceof BottomSheetDialogCallback)) {
+					callback = (BottomSheetDialogCallback) activity;
+				}
 			}
 		}
 	}
@@ -146,7 +144,7 @@ public abstract class BottomSheetAbstractDialog extends BottomSheetDialogFragmen
 					dismiss();
 					if (inlineCallback != null) {
 						inlineCallback.onSelected(items.get(i).getTag());
-					} else {
+					} else if (callback != null) {
 						callback.onSelected(items.get(i).getTag());
 					}
 				}
@@ -184,4 +182,9 @@ public abstract class BottomSheetAbstractDialog extends BottomSheetDialogFragmen
 			inlineCallback.onCancel(this.getTag());
 		}
 	}
+
+	public void setCallback(BottomSheetDialogCallback callback) {
+		this.callback = callback;
+	}
+
 }

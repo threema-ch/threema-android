@@ -21,6 +21,7 @@
 
 package ch.threema.app.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -31,22 +32,28 @@ import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
 import org.slf4j.Logger;
 
 import java.util.regex.Pattern;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.emojis.EmojiEditText;
+import ch.threema.app.services.ContactService;
+import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.storage.models.GroupModel;
 
-public class ComposeEditText extends EmojiEditText {
+public class ComposeEditText extends EmojiEditText implements MentionSelectorPopup.MentionSelectorListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeEditText");
 
 	private static final int CONTEXT_MENU_BOLD = 700;
@@ -57,6 +64,9 @@ public class ComposeEditText extends EmojiEditText {
 	private Context context;
 	private boolean isLocked = false;
 	private MentionTextWatcher mentionTextWatcher = null;
+	private MentionPopupData mentionPopupData;
+	private View mentionPopupBoundary;
+	private MentionSelectorPopup mentionPopup;
 
 	private final android.view.ActionMode.Callback textSelectionCallback = new android.view.ActionMode.Callback() {
 		private final Pattern pattern = Pattern.compile("\\B");
@@ -204,6 +214,57 @@ public class ComposeEditText extends EmojiEditText {
 //		setSelection(start + identity.length() + 1);
 	}
 
+	/**
+	 * Enable the mention popup for this edit text.
+	 */
+	public void enableMentionPopup(
+		@NonNull Activity activity,
+		@NonNull GroupService groupService,
+		@NonNull ContactService contactService,
+		@NonNull UserService userService,
+		@NonNull PreferenceService preferenceService,
+		@NonNull GroupModel groupModel
+	) {
+		mentionPopupData = new MentionPopupData(
+			activity,
+			groupService,
+			contactService,
+			userService,
+			preferenceService,
+			groupModel
+		);
+	}
+
+	/**
+	 * Enable the mention popup for this edit text.
+	 */
+	public void enableMentionPopup(@NonNull MentionPopupData data, @Nullable View boundary) {
+		this.mentionPopupData = data;
+		this.mentionPopupBoundary = boundary;
+	}
+
+	/**
+	 * Return true if the mention popup is currently showing
+	 */
+	public boolean isMentionPopupShowing() {
+		return mentionPopup != null && mentionPopup.isShowing();
+	}
+
+	/**
+	 * Dismiss the mention popup (if currently shown)
+	 */
+	public void dismissMentionPopup() {
+		if (this.mentionPopup != null) {
+			try {
+				this.mentionPopup.dismiss();
+			} catch(IllegalArgumentException ignored){
+				// whatever
+			} finally{
+				this.mentionPopup = null;
+			}
+		}
+	}
+
 	public void setLocked(boolean isLocked) {
 		this.isLocked = isLocked;
 		setLongClickable(!isLocked);
@@ -236,6 +297,70 @@ public class ComposeEditText extends EmojiEditText {
 			}
 		} else {
 			setMaxLines(maxLines);
+		}
+	}
+
+	@Override
+	protected void onTextChanged(CharSequence s, int start, int lengthBefore, int lengthAfter) {
+		super.onTextChanged(s, start, lengthBefore, lengthAfter);
+
+		if (mentionPopupData == null) {
+			return;
+		}
+
+		if (lengthAfter == 1 && s.charAt(start) == '@' && start < s.length() // if current char is @ and only if adding a new char
+			&& (start == 0 || s.charAt(start - 1) == ' ' || s.charAt(start - 1) == '\n') // and only show if at start or if there is empty space before to not interrupt typing mail addresses
+			&& (s.length() <= start + 1 || s.charAt(start + 1) == ' ' || s.charAt(start + 1) == '\n') // and only show if @ is at the very end or also has empty space in the back.
+		)
+		{
+			mentionPopup = new MentionSelectorPopup(
+				mentionPopupData.activity,
+				this,
+				mentionPopupData.groupService,
+				mentionPopupData.contactService,
+				mentionPopupData.userService,
+				mentionPopupData.preferenceService,
+				mentionPopupData.groupModel
+			);
+			mentionPopup.show(mentionPopupData.activity, this, mentionPopupBoundary);
+		}
+	}
+
+	@Override
+	public void onContactSelected(String identity, int length, int insertPosition) {
+		Editable editable = getText();
+		if (editable == null) {
+			return;
+		}
+
+		if (insertPosition >= 0 && insertPosition <= editable.length()) {
+			editable.delete(insertPosition, insertPosition + length);
+			addMention(identity);
+		}
+	}
+
+	public static class MentionPopupData {
+		final @NonNull Activity activity;
+		final @NonNull GroupService groupService;
+		final @NonNull ContactService contactService;
+		final @NonNull UserService userService;
+		final @NonNull PreferenceService preferenceService;
+		final @NonNull GroupModel groupModel;
+
+		public MentionPopupData(
+			@NonNull Activity activity,
+			@NonNull GroupService groupService,
+			@NonNull ContactService contactService,
+			@NonNull UserService userService,
+			@NonNull PreferenceService preferenceService,
+			@NonNull GroupModel groupModel
+		) {
+			this.activity = activity;
+			this.groupService = groupService;
+			this.contactService = contactService;
+			this.userService = userService;
+			this.preferenceService = preferenceService;
+			this.groupModel = groupModel;
 		}
 	}
 }

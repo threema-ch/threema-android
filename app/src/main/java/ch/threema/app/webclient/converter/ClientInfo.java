@@ -24,11 +24,12 @@ package ch.threema.app.webclient.converter;
 import android.content.Context;
 import android.os.Build;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -68,6 +69,7 @@ public class ClientInfo extends Converter {
 	private final static String QUOTES_V2 = "quotesV2";
 	private final static String IMAGE_FORMAT = "imageFormat";
 	private final static String MDM = "mdm";
+	private final static String GROUP_REACTIONS = "groupReactions";
 
 	// Image format keys
 	private final static String FORMAT_AVATAR = "avatar";
@@ -132,7 +134,7 @@ public class ClientInfo extends Converter {
 
 		// Configuration
 		final MsgpackObjectBuilder config = new MsgpackObjectBuilder();
-		if (!ConfigUtils.isCallsEnabled(appContext, preferenceService, licenseService)) {
+		if (!ConfigUtils.isCallsEnabled()) {
 			config.put(VOIP_ENABLED, false);
 		}
 		if (preferenceService.getForceTURN()) {
@@ -149,6 +151,7 @@ public class ClientInfo extends Converter {
 		capabilities.put(MAX_FILE_SIZE, ThreemaApplication.MAX_BLOB_SIZE);
 		capabilities.put(DISTRIBUTION_LISTS, true);
 		capabilities.put(QUOTES_V2, true);
+		capabilities.put(GROUP_REACTIONS, true);
 
 		// Image format
 		final MsgpackObjectBuilder imageFormat = new MsgpackObjectBuilder();
@@ -174,8 +177,7 @@ public class ClientInfo extends Converter {
 			if (AppRestrictionUtil.isMessagePreviewDisabled(appContext)) {
 				mdm.put(DISABLE_MESSAGE_PREVIEW, true);
 			}
-			// TODO account for new th_calls_policy restriction
-			if (AppRestrictionUtil.isCallsDisabled(appContext)) {
+			if (AppRestrictionUtil.isCallsDisabled()) {
 				mdm.put(DISABLE_CALLS, true);
 			}
 			if (AppRestrictionUtil.isReadonlyProfile(appContext)) {

@@ -161,7 +161,7 @@ public class ModifyGroupHandler extends MessageReceiver {
 
 		// Save changes
 		try {
-			this.groupService.updateGroup(groupModel, name, identities, avatar, false);
+			this.groupService.updateGroup(groupModel, name, null, identities, avatar, false);
 			this.success(temporaryId, groupModel);
 		} catch (Exception e1) {
 			this.failed(temporaryId, Protocol.ERROR_INTERNAL);

@@ -21,10 +21,10 @@
 
 package ch.threema.domain.protocol;
 
+import androidx.annotation.IntDef;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
 
 public class ThreemaFeature {
 	// Feature flags. When adding new flags, also update LATEST_FEATURE!
@@ -34,12 +34,14 @@ public class ThreemaFeature {
 	public final static int FILE = 0x08;
 	public final static int VOIP = 0x10;
 	public final static int VIDEOCALLS = 0x20;
+	public final static int FORWARD_SECURITY = 0x40;
+	public final static int GROUP_CALLS = 0x80;
 
 	// Should always point to latest feature
-	public final static int LATEST_FEATURE = VIDEOCALLS;
+	public final static int LATEST_FEATURE = GROUP_CALLS;
 
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({ AUDIO, GROUP_CHAT, BALLOT, FILE, VOIP, VIDEOCALLS})
+	@IntDef({ AUDIO, GROUP_CHAT, BALLOT, FILE, VOIP, VIDEOCALLS, FORWARD_SECURITY, GROUP_CALLS })
 	private @interface Feature {}
 
 	/**
@@ -70,6 +72,14 @@ public class ThreemaFeature {
 
 		public Builder videocalls(boolean enable) {
 			return this.set(ThreemaFeature.VIDEOCALLS, enable);
+		}
+
+		public Builder forwardSecurity(boolean enable) {
+			return this.set(ThreemaFeature.FORWARD_SECURITY, enable);
+		}
+
+		public Builder groupCalls(boolean enable) {
+			return this.set(ThreemaFeature.GROUP_CALLS, enable);
 		}
 
 		public int build() {
@@ -112,6 +122,12 @@ public class ThreemaFeature {
 	}
 	public static boolean canVideocall(int featureMask) {
 		return hasFeature(featureMask, VIDEOCALLS);
+	}
+	public static boolean canForwardSecurity(int featureMask) {
+		return hasFeature(featureMask, FORWARD_SECURITY);
+	}
+	public static boolean canGroupCalls(int featureMask) {
+		return hasFeature(featureMask, GROUP_CALLS);
 	}
 
 	public static boolean hasFeature(int featureMask, @Feature int feature) {

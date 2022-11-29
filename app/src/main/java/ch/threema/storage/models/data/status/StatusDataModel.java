@@ -25,6 +25,8 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
 
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -49,9 +51,10 @@ public abstract class StatusDataModel {
 	/**
 	 * convert a json string to a data model
 	 */
+	@Nullable
 	public static StatusDataModelInterface convert(String s) {
 		StatusDataModelInterface data = null;
-		if(s != null) {
+		if (s != null) {
 			JsonReader r = new JsonReader(new StringReader(s));
 
 			try {
@@ -61,6 +64,12 @@ public abstract class StatusDataModel {
 				switch (type) {
 					case VoipStatusDataModel.TYPE:
 						data = new VoipStatusDataModel();
+						break;
+					case GroupCallStatusDataModel.TYPE:
+						data = new GroupCallStatusDataModel();
+						break;
+					case ForwardSecurityStatusDataModel.TYPE:
+						data = new ForwardSecurityStatusDataModel();
 						break;
 				}
 

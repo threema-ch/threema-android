@@ -86,7 +86,7 @@ public class VoipStatusDataChatAdapterDecorator extends ChatAdapterDecorator {
 			@Override
 			public void onClick(View view) {
 				// load the the contact
-				if (ConfigUtils.isCallsEnabled(getContext(), getPreferenceService(), getLicenseService())) {
+				if (ConfigUtils.isCallsEnabled()) {
 					ContactModel contactModel = helper.getContactService().getByIdentity(getMessageModel().getIdentity());
 					if (contactModel != null) {
 						String name = NameUtil.getDisplayNameOrNickname(contactModel, false);

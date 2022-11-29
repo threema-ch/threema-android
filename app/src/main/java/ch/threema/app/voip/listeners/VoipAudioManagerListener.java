@@ -26,6 +26,7 @@ import java.util.HashSet;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.voip.VoipAudioManager;
 
 /**
@@ -36,8 +37,8 @@ public interface VoipAudioManagerListener {
 	 * Audio device changed, or list of available audio devices changed.
 	 */
 	@AnyThread default void onAudioDeviceChanged(
-		@Nullable VoipAudioManager.AudioDevice selectedAudioDevice,
-	    @NonNull HashSet<VoipAudioManager.AudioDevice> availableAudioDevices
+		@Nullable AudioDevice selectedAudioDevice,
+	    @NonNull HashSet<AudioDevice> availableAudioDevices
 	) { }
 
 	/**

@@ -25,7 +25,7 @@ import androidx.room.TypeConverter
 
 class DiversityConverters {
 	private companion object {
-		val DIVERSITY_SEPARATOR = ";"
+		const val DIVERSITY_SEPARATOR = ";"
 	}
 
 	@TypeConverter

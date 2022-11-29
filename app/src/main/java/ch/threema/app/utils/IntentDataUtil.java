@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
@@ -65,6 +67,9 @@ import ch.threema.storage.models.WebClientSessionModel;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.group.GroupInviteModel;
+
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+import static android.app.PendingIntent.FLAG_MUTABLE;
 
 public class IntentDataUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("RecipientListBaseActivity");
@@ -104,6 +109,9 @@ public class IntentDataUtil {
 	private static final String INTENT_HIDE_AFTER_UNLOCK = "hide_after_unlock";
 	private static final String INTENT_DATA_BALLOT_ID = "ballot_id";
 	private static final String INTENT_DATA_BALLOT_CHOICE_ID = "ballot_choide_id";
+
+	public static final int PENDING_INTENT_FLAG_IMMUTABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? FLAG_IMMUTABLE : 0;
+	public static final int PENDING_INTENT_FLAG_MUTABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? FLAG_MUTABLE : 0;
 
 	public static void append(BackupRestoreDataService.BackupData backupData, Intent intent) {
 		intent.putExtra(INTENT_DATA_BACKUP_FILE, backupData.getFile().getPath());
@@ -373,6 +381,31 @@ public class IntentDataUtil {
 		}
 
 		return getMessageReceiverFromExtras(intent.getExtras(), contactService, groupService, distributionListService);
+	}
+
+	/**
+	 * Copy the message receiver from one intent to the other.
+	 *
+	 * @param context    the context
+	 * @param fromIntent the intent where the message receiver is copied from
+	 * @param toIntent   the intent where the message receiver is copied to
+	 * @return {@code true} if copying the message receiver was successful, {@code false} otherwise
+	 */
+	public static boolean copyMessageReceiverFromIntentToIntent(@NonNull Context context, @Nullable Intent fromIntent, @Nullable Intent toIntent) {
+		if (fromIntent == null || toIntent == null) {
+			logger.warn("fromIntent or toIntent is null: {} {}", fromIntent == null, toIntent == null);
+			return false;
+		}
+
+		@SuppressWarnings("rawtypes") MessageReceiver messageReceiver = getMessageReceiverFromIntent(context, fromIntent);
+		if (messageReceiver == null) {
+			logger.warn("messageReceiver is null");
+			return false;
+		}
+
+		addMessageReceiverToIntent(toIntent, messageReceiver);
+
+		return true;
 	}
 
 	@Nullable

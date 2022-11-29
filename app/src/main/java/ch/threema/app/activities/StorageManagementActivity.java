@@ -326,7 +326,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 			protected void onPostExecute(Void result) {
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DELETE_MESSAGES_PROGRESS_TAG, true);
 
-				Snackbar.make(coordinatorLayout, String.valueOf(delCount) + " " + getString(R.string.message_deleted), Snackbar.LENGTH_LONG).show();
+				Snackbar.make(coordinatorLayout, ConfigUtils.getSafeQuantityString(StorageManagementActivity.this, R.plurals.message_deleted, delCount, delCount), Snackbar.LENGTH_LONG).show();
 
 				updateStorageDisplay();
 
@@ -431,7 +431,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 			protected void onPostExecute(Void result) {
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DELETE_PROGRESS_TAG, true);
 
-				Snackbar.make(coordinatorLayout, String.format(getString(R.string.media_files_deleted), delCount), Snackbar.LENGTH_LONG).show();
+				Snackbar.make(coordinatorLayout, ConfigUtils.getSafeQuantityString(StorageManagementActivity.this, R.plurals.media_files_deleted, delCount, delCount), Snackbar.LENGTH_LONG).show();
 
 				updateStorageDisplay();
 

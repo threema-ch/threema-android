@@ -28,11 +28,12 @@ import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 
 import java.io.File;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.messageplayer.MessagePlayer;
@@ -69,10 +70,17 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 
 		holder.messagePlayer = videoMessagePlayer;
 
-		RuntimeUtil.runOnUiThread(() -> setControllerState(holder));
+		RuntimeUtil.runOnUiThread(() -> {
+			setupResendStatus(holder);
+			setControllerState(holder);
+		});
 
 		setOnClickListener(v -> {
-			if (!isInChoiceMode() && getMessageModel().getState() != MessageState.TRANSCODING) {
+			if (!isInChoiceMode() &&
+				getMessageModel().getState() != MessageState.TRANSCODING &&
+				getMessageModel().getState() != MessageState.SENDFAILED &&
+				getMessageModel().getState() != MessageState.FS_KEY_MISMATCH
+			) {
 				videoMessagePlayer.open();
 			}
 		}, holder.messageBlockView);
@@ -254,11 +262,6 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 					case ControllerView.STATUS_TRANSCODING:
 						// no click while processing
 						break;
-					case ControllerView.STATUS_READY_TO_RETRY:
-						if (onClickRetry != null) {
-							onClickRetry.onClick(getMessageModel());
-						}
-						break;
 					default:
 						// no action taken for other statuses
 						break;
@@ -317,6 +320,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 				}
 				break;
 			case SENDFAILED:
+			case FS_KEY_MISMATCH:
 				holder.controller.setRetry();
 				if (holder.transcoderView != null) {
 					holder.transcoderView.setVisibility(View.GONE);

@@ -24,10 +24,14 @@ package ch.threema.domain.onprem;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
@@ -35,10 +39,13 @@ import ch.threema.domain.protocol.ProtocolStrings;
 
 public class OnPremConfigFetcher {
 
+	private static final int UNAUTHORIZED_MIN_RETRY_INTERVAL = 180000;
+
 	private final URL configUrl;
 	private final String[] trustedPublicKeys;
 
 	private OnPremConfig cachedConfig;
+	private Date lastUnauthorized = null;
 
 	public OnPremConfigFetcher(URL configUrl, String[] trustedPublicKeys) {
 		this.configUrl = configUrl;
@@ -50,8 +57,15 @@ public class OnPremConfigFetcher {
 			return this.cachedConfig;
 		}
 
+		if (lastUnauthorized != null && (new Date().getTime() - lastUnauthorized.getTime()) < UNAUTHORIZED_MIN_RETRY_INTERVAL) {
+			// Previous attempt led to 401 unauthorized. Enforce a minimum interval before trying again,
+			// to prevent triggering rate limit.
+			throw new UnauthorizedFetchException("Cannot fetch OnPrem config (check username/password) - retry delayed");
+		}
+
+		HttpsURLConnection uc = null;
 		try {
-			URLConnection uc = configUrl.openConnection();
+			uc = (HttpsURLConnection)configUrl.openConnection();
 			if (configUrl.getUserInfo() != null) {
 				String basicAuth = "Basic " + Base64.encodeBytes(URLDecoder.decode(configUrl.getUserInfo(), "UTF-8").getBytes());
 				uc.setRequestProperty("Authorization", basicAuth);
@@ -67,7 +81,16 @@ public class OnPremConfigFetcher {
 		} catch (LicenseExpiredException e) {
 			throw new ThreemaException("OnPrem license has expired");
 		} catch (Exception e) {
-			throw new ThreemaException("Cannot fetch OnPrem config (check username/password)", e);
+			try {
+				if (uc != null && (uc.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED || uc.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN)) {
+					lastUnauthorized = new Date();
+					throw new UnauthorizedFetchException("Cannot fetch OnPrem config (unauthorized; check username/password)");
+				}
+			} catch (IOException ignored) {
+				// ignored
+			}
+
+			throw new ThreemaException("Cannot fetch OnPrem config (check connectivity)", e);
 		}
 	}
 }

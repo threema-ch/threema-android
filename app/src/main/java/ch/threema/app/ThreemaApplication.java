@@ -26,11 +26,9 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ApplicationExitInfo;
+import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.NotificationManager;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -60,7 +58,9 @@ import androidx.multidex.MultiDexApplication;
 import androidx.preference.PreferenceManager;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -92,8 +92,6 @@ import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.grouplinks.IncomingGroupJoinRequestListener;
-import ch.threema.app.jobs.WorkSyncJobService;
-import ch.threema.app.jobs.WorkSyncService;
 import ch.threema.app.listeners.BallotVoteListener;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
@@ -142,6 +140,7 @@ import ch.threema.app.utils.LinuxSecureRandom;
 import ch.threema.app.utils.LoggingUEH;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.PushUtil;
+import ch.threema.app.utils.RogueDeviceMonitorImpl;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.StateBitmapUtil;
@@ -160,6 +159,7 @@ import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.app.workers.IdentityStatesWorker;
 import ch.threema.app.workers.ShareTargetUpdateWorker;
+import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.utils.LoggingUtil;
@@ -221,8 +221,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String EXTRA_OUTPUT_FILE = "output";
 	public static final String EXTRA_ORIENTATION = "rotate";
 	public static final String EXTRA_FLIP = "flip";
-	public static final String EXTRA_EXIF_ORIENTATION = "rotateExif";
-	public static final String EXTRA_EXIF_FLIP = "flipExif";
 	public static final String INTENT_DATA_CHECK_ONLY = "check";
 	public static final String INTENT_DATA_ANIM_CENTER = "itemPos";
 	public static final String INTENT_DATA_PICK_FROM_CAMERA = "useCam";
@@ -251,6 +249,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final int INCOMING_CALL_NOTIFICATION_ID = 800;
 	public static final int GROUP_RESPONSE_NOTIFICATION_ID = 801;
 	public static final int GROUP_REQUEST_NOTIFICATION_ID = 802;
+	public static final int INCOMING_GROUP_CALL_NOTIFICATION_ID = 803;
 
 	private static final String THREEMA_APPLICATION_LISTENER_TAG = "al";
 	public static final String AES_KEY_FILE = "key.dat";
@@ -270,10 +269,14 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final int MAX_PW_LENGTH_BACKUP = 256;
 	public static final int MIN_PW_LENGTH_ID_EXPORT_LEGACY = 4; // extremely ancient versions of the app on some platform accepted four-letter passwords when generating ID exports
 
-	private static final int WORK_SYNC_JOB_ID = 63339;
-
 	private static final String WORKER_IDENTITY_STATES_PERIODIC_NAME = "IdentityStates";
 	public static final String WORKER_SHARE_TARGET_UPDATE = "ShareTargetUpdate";
+	public static final String WORKER_WORK_SYNC = "WorkSync";
+	public static final String WORKER_PERIODIC_WORK_SYNC = "PeriodicWorkSync";
+	public static final String WORKER_THREEMA_SAFE_UPLOAD = "SafeUpload";
+	public static final String WORKER_PERIODIC_THREEMA_SAFE_UPLOAD = "PeriodicSafeUpload";
+	public static final String WORKER_CONNECTIVITY_CHANGE = "ConnectivityChange";
+
 	private static final String EXIT_REASON_LOGGING_TIMESTAMP = "exit_reason_timestamp";
 
 	private static Context context;
@@ -533,12 +536,19 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 								}
 							} else {
 								logger.info("*** Device waking up");
-								try {
-									serviceManager.getLifetimeService().unpause();
-								} catch (Exception e) {
-									logger.error("Exception while unpausing connection", e);
+								if (serviceManager != null) {
+									try {
+										serviceManager.getLifetimeService().unpause();
+									} catch (Exception e) {
+										logger.error("Exception while unpausing connection", e);
+									}
+									isDeviceIdle = false;
+								} else {
+									logger.info("Service manager unavailable");
+									if (masterKey != null && !masterKey.isLocked()) {
+										reset();
+									}
 								}
-								isDeviceIdle = false;
 							}
 						}
 					}, new IntentFilter(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED));
@@ -591,9 +601,12 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						@Override
 						public void onReceive(Context context, Intent intent) {
 							AppRestrictionService.getInstance().reload();
-							Intent syncIntent = new Intent();
-							syncIntent.putExtra(WorkSyncService.EXTRA_WORK_UPDATE_RESTRICTIONS_ONLY, true);
-							WorkSyncService.enqueueWork(getAppContext(), syncIntent, true);
+							try {
+								OneTimeWorkRequest workRequest = WorkSyncWorker.Companion.buildOneTimeWorkRequest(true, true, null);
+								WorkManager.getInstance(ThreemaApplication.getAppContext()).enqueueUniqueWork(WORKER_WORK_SYNC, ExistingWorkPolicy.REPLACE, workRequest);
+							} catch (IllegalStateException e) {
+								logger.error("Unable to schedule work sync one time work", e);
+							}
 						}
 					}, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
 				}
@@ -902,12 +915,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				nonceSqlcipherVersion = 3;
 			}
 
-			logger.info(
-				"*** App launched. Device/Android Version/Flavor: {} Version: {} Build: {}",
-				ConfigUtils.getDeviceInfo(getAppContext(), false),
-				BuildConfig.VERSION_NAME,
-				ConfigUtils.getBuildNumber(getAppContext())
-			);
+			logger.info("*** App launched");
+			logVersion();
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 				ActivityManager activityManager = (ActivityManager) getAppContext().getSystemService(Context.ACTIVITY_SERVICE);
@@ -994,6 +1003,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			);
 
 			connection.setServerAddressProvider(serviceManager.getServerAddressProviderService().getServerAddressProvider());
+
+			connection.setRogueDeviceMonitor(new RogueDeviceMonitorImpl(serviceManager));
 
 			// get application restrictions
 			if (ConfigUtils.isWorkBuild()) {
@@ -1083,6 +1094,19 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		}
 	}
 
+	public static void logVersion() {
+		String commitHash = BuildConfig.DEBUG
+			? ", Commit: " + BuildConfig.GIT_HASH
+			: "";
+		logger.info(
+			"*** App Version. Device/Android Version/Flavor: {} Version: {} Build: {}{}",
+			ConfigUtils.getDeviceInfo(getAppContext(), false),
+			BuildConfig.VERSION_NAME,
+			ConfigUtils.getBuildNumber(getAppContext()),
+			commitHash
+		);
+	}
+
 	private static void initMapLibre() {
 		if (ConfigUtils.hasNoMapLibreSupport()) {
 			logger.debug("*** MapLibre disabled due to faulty firmware");
@@ -1092,7 +1116,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		}
 	}
 
-	private static long getSchedulePeriod(PreferenceStore preferenceStore, int key) {
+	private static long getSchedulePeriodMs(PreferenceStore preferenceStore, int key) {
 		Integer schedulePeriod = preferenceStore.getInt(getAppContext().getString(key));
 		if (schedulePeriod == null || schedulePeriod == 0) {
 			schedulePeriod = (int) DateUtils.DAY_IN_MILLIS;
@@ -1104,14 +1128,14 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 	@WorkerThread
 	private static boolean scheduleIdentityStatesSync(PreferenceStore preferenceStore) {
-		long schedulePeriod = getSchedulePeriod(preferenceStore, R.string.preferences__identity_states_check_interval);
+		long schedulePeriod = getSchedulePeriodMs(preferenceStore, R.string.preferences__identity_states_check_interval);
 
 		logger.info("Initializing Identity States sync. Requested schedule period: {} ms", schedulePeriod);
 
 		try {
 			WorkManager workManager = WorkManager.getInstance(context);
 
-			if (WorkManagerUtil.cancelExistingWorkManagerInstance(
+			if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(
 				workManager,
 				WORKER_IDENTITY_STATES_PERIODIC_NAME,
 				schedulePeriod
@@ -1143,22 +1167,23 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			return false;
 		}
 
-		long schedulePeriod = getSchedulePeriod(preferenceStore, R.string.preferences__work_sync_check_interval);
+		long schedulePeriodMs = getSchedulePeriodMs(preferenceStore, R.string.preferences__work_sync_check_interval);
+		logger.info("Scheduling periodic work sync. Schedule period: {}", schedulePeriodMs);
 
-		logger.info("Scheduling Work Sync. Schedule period: {}", schedulePeriod);
-
-		// schedule the start of the service according to schedule period
-		JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-		if (jobScheduler != null) {
-			ComponentName serviceComponent = new ComponentName(context, WorkSyncJobService.class);
-			JobInfo.Builder builder = new JobInfo.Builder(WORK_SYNC_JOB_ID, serviceComponent)
-				.setPeriodic(schedulePeriod)
-				.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-			jobScheduler.schedule(builder.build());
-			return true;
+		try {
+			WorkManager workManager = WorkManager.getInstance(context);
+			PeriodicWorkRequest workRequest = WorkSyncWorker.Companion.buildPeriodicWorkRequest(schedulePeriodMs);
+			workManager.enqueueUniquePeriodicWork(WORKER_PERIODIC_WORK_SYNC,
+				WorkManagerUtil.shouldScheduleNewWorkManagerInstance(workManager, WORKER_PERIODIC_WORK_SYNC, schedulePeriodMs) ?
+					ExistingPeriodicWorkPolicy.REPLACE :
+					ExistingPeriodicWorkPolicy.KEEP,
+				workRequest);
+		} catch (IllegalStateException e) {
+			logger.error("Unable to schedule periodic work sync work", e);
+			return false;
 		}
-		logger.debug("unable to schedule work sync");
-		return false;
+
+		return true;
 	}
 
 	@WorkerThread
@@ -1170,7 +1195,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		try {
 			WorkManager workManager = WorkManager.getInstance(context);
 
-			if (WorkManagerUtil.cancelExistingWorkManagerInstance(
+			if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(
 				workManager,
 				WORKER_SHARE_TARGET_UPDATE,
 				schedulePeriod
@@ -1356,8 +1381,9 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				if (myIdentity != null && myIdentity.equals(identity)) {
 					// my own member status has changed
 					try {
+						serviceManager.getNotificationService().cancelGroupCallNotification(group.getId());
 						serviceManager.getConversationService().refresh(group);
-					} catch (ThreemaException e) {
+					} catch (Exception e) {
 						logger.error("Exception", e);
 					}
 				}
@@ -1377,7 +1403,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					serviceManager.getMessageService().createStatusMessage(
 							serviceManager.getContext().getString(R.string.status_group_member_kicked, memberName),
 							receiver);
-
 
 					BallotService ballotService = serviceManager.getBallotService();
 					ballotService.removeVotes(receiver, identity);
@@ -1408,7 +1433,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			@Override
 			public void onGroupStateChanged(GroupModel groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
-				logger.debug("&&& onGroupStateChanged: {} -> {}", oldState, newState);
+				logger.debug("onGroupStateChanged: {} -> {}", oldState, newState);
 
 				showNotesGroupNotice(groupModel, oldState, newState);
 			}
@@ -1454,7 +1479,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			public void onNew(AbstractMessageModel newMessage) {
 				logger.debug("MessageListener.onNewMessage");
 				if (!newMessage.isStatusMessage()) {
-					showConversationNotification(newMessage, false);
+						showConversationNotification(newMessage, false);
 				}
 			}
 
@@ -1525,14 +1550,15 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						DeadlineListService hiddenChatsListService = serviceManager.getHiddenChatsListService();
 
 						if (TestUtil.required(notificationService, contactService, groupService)) {
-
-							notificationService.addConversationNotification(ConversationNotificationUtil.convert(
-									getAppContext(),
-									newMessage,
-									contactService,
-									groupService,
-									hiddenChatsListService),
+							if (newMessage.getType() != MessageType.GROUP_CALL_STATUS) {
+								notificationService.addConversationNotification(ConversationNotificationUtil.convert(
+										getAppContext(),
+										newMessage,
+										contactService,
+										groupService,
+										hiddenChatsListService),
 									updateExisting);
+							}
 
 							// update widget on incoming message
 							WidgetUtil.updateWidgets(serviceManager.getContext());
@@ -1618,7 +1644,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					try {
 						serviceManager.getConversationService().removed(removedContactModel);
 						serviceManager.getNotificationService().cancel(new ContactMessageReceiver(
-							removedContactModel, serviceManager.getContactService(), null, null, null, null)
+							removedContactModel, serviceManager.getContactService(), null, null, null, null, null)
 						);
 
 						//remove custom avatar (ANDR-353)
@@ -1913,7 +1939,18 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						logger.info( "SessionAndroidService not running...starting");
 						intent.setAction(SessionAndroidService.ACTION_START);
 						logger.info( "sending ACTION_START to SessionAndroidService");
-						ContextCompat.startForegroundService(context, intent);
+						if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+							// Starting on version S, foreground services cannot be started from the background.
+							// When battery optimizations are disabled (recommended for Threema Web), then no
+							// exception is thrown. Otherwise we just log it.
+							try {
+								ContextCompat.startForegroundService(context, intent);
+							} catch (ForegroundServiceStartNotAllowedException exception) {
+								logger.error("Couldn't start foreground service", exception);
+							}
+						} else {
+							ContextCompat.startForegroundService(context, intent);
+						}
 					}
 				});
 			}

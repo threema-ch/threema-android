@@ -90,7 +90,7 @@ public class VideoTranscoder {
 
 	public static final int TRIM_TIME_END = -1;
 
-	private static final int POLLING_SUCCESS = 0;
+	private static final int POLLING_END_OF_STREAM = 0;
 	private static final int POLLING_ERROR = -1;
 	private static final int POLLING_CANCELED = 1;
 
@@ -338,7 +338,7 @@ public class VideoTranscoder {
 			// Poll output frames from the video decoder and feed the encoder
 			if (!videoDecoderDone && (mEncoderOutputVideoFormat == null || muxing)) {
 				int pollingResult = pollVideoFromDecoderAndFeedToEncoder(videoDecoderOutputBufferInfo);
-				videoDecoderDone = pollingResult == POLLING_SUCCESS;
+				videoDecoderDone = pollingResult == POLLING_END_OF_STREAM;
 
 				if (pollingResult == POLLING_CANCELED) {
 					return CANCELED;
@@ -713,7 +713,7 @@ public class VideoTranscoder {
 			logger.debug("video decoder: EOS");
 
 			mVideoEncoder.signalEndOfInputStream();
-			return POLLING_SUCCESS;
+			return POLLING_END_OF_STREAM;
 		}
 
 		mStats.videoDecodedFrameCount++;
@@ -953,7 +953,11 @@ public class VideoTranscoder {
 					e
 				);
 			} finally {
-				retriever.release();
+				try {
+					retriever.release();
+				} catch (IOException e) {
+					logger.debug("Failed to release MediaMetadataRetriever");
+				}
 			}
 		}
 

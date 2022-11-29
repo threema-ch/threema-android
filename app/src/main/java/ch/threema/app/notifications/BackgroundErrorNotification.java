@@ -39,6 +39,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 public class BackgroundErrorNotification {
 
@@ -113,7 +114,7 @@ public class BackgroundErrorNotification {
 				appContext,
 				(int) System.nanoTime(),
 				replyIntent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+				PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
 			// The intent should be triggered by tapping on a notification action
 			final NotificationCompat.Action action = new NotificationCompat.Action.Builder(

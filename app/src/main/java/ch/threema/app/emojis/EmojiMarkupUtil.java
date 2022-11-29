@@ -28,6 +28,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.StrikethroughSpan;
 import android.util.Pair;
 import android.widget.TextView;
 
@@ -157,6 +158,10 @@ public class EmojiMarkupUtil {
 			}
 		}
 
+		if (!ignoreMarkup) {
+			MarkupParser.getInstance().markify(builder);
+		}
+
 		if (!ignoreMentions) {
 			if (textView == null) {
 				builder = new SpannableStringBuilder(applyTextMentionMarkup(text));
@@ -165,14 +170,14 @@ public class EmojiMarkupUtil {
 			}
 		}
 
-		if (!ignoreMarkup) {
-			MarkupParser.getInstance().markify(builder);
-		}
-
 		return builder;
 	}
 
 	private SpannableStringBuilder applyMentionMarkup(Context context, SpannableStringBuilder inputText) {
+		return applyMentionMarkup(context, inputText, false);
+	}
+
+	private SpannableStringBuilder applyMentionMarkup(Context context, SpannableStringBuilder inputText, boolean isStrikeThrough) {
 		int start, end;
 
 		ArrayList<Pair<Integer, Integer>> matches = new ArrayList<>();
@@ -193,11 +198,37 @@ public class EmojiMarkupUtil {
 
 		SpannableStringBuilder s = new SpannableStringBuilder(inputText);
 
+		final StrikethroughSpan[] strikethroughSpans = s.getSpans(0, s.length(), StrikethroughSpan.class);
+		final MentionSpan[] mentionSpans = s.getSpans(0, s.length(), MentionSpan.class);
+
 		for (int i = matches.size() - 1; i >= 0; i--) {
 			start = matches.get(i).first;
 			end = matches.get(i).second;
 
-			s.setSpan(new MentionSpan(mentionColor, invertedMentionColor, mentionTextColor, invertedMentionTextColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			// Check if there is a strike through span surrounding this mention. If there is one,
+			// then the line must be drawn explicitly as the mention draws over the text.
+			boolean inStrikethroughSpan = isStrikeThrough;
+			for (StrikethroughSpan sts : strikethroughSpans) {
+				if (s.getSpanStart(sts) <= start && s.getSpanEnd(sts) >= end) {
+					inStrikethroughSpan = true;
+					break;
+				}
+			}
+
+			MentionSpan mentionSpan = null;
+			for (MentionSpan ms : mentionSpans) {
+				if (s.getSpanStart(ms) == start) {
+					mentionSpan = ms;
+					break;
+				}
+			}
+
+			// Create a new mention span if already available, otherwise update the existing span
+			if (mentionSpan == null) {
+				s.setSpan(new MentionSpan(mentionColor, invertedMentionColor, mentionTextColor, invertedMentionTextColor, inStrikethroughSpan), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			} else {
+				mentionSpan.setStrikeThrough(inStrikethroughSpan);
+			}
 			// hack: https://stackoverflow.com/questions/20069537/replacementspans-draw-method-isnt-called
 			if (inputText.length() == end - start) {
 				s.append(" ");
@@ -237,16 +268,20 @@ public class EmojiMarkupUtil {
 	public CharSequence addMarkup(Context context, CharSequence text) {
 		SpannableStringBuilder builder = new SpannableStringBuilder(text);
 
-		builder = applyMentionMarkup(context, builder);
 		MarkupParser.getInstance().markify(builder);
+		builder = applyMentionMarkup(context, builder);
 
 		return builder;
 	}
 
 	public CharSequence addMentionMarkup(Context context, CharSequence text) {
+		return addMentionMarkup(context, text, false);
+	}
+
+	public CharSequence addMentionMarkup(Context context, CharSequence text, boolean isStrikeThrough) {
 		SpannableStringBuilder builder = new SpannableStringBuilder(text);
 
-		builder = applyMentionMarkup(context, builder);
+		builder = applyMentionMarkup(context, builder, isStrikeThrough);
 
 		return builder;
 	}

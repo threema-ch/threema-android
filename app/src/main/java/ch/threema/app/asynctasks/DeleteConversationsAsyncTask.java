@@ -42,6 +42,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ConversationModel;
@@ -134,7 +135,7 @@ public class DeleteConversationsAsyncTask extends AsyncTask<Void, Integer, Integ
 
 			// API 19 min
 			if (feedbackView != null && feedbackView.isAttachedToWindow()) {
-				Snackbar.make(feedbackView, String.format(ThreemaApplication.getAppContext().getString(R.string.chat_deleted), count), Snackbar.LENGTH_SHORT).show();
+				Snackbar.make(feedbackView, (ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.chat_deleted, count, count)), Snackbar.LENGTH_SHORT).show();
 			}
 
 			if (runOnCompletion != null) {

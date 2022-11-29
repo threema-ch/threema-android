@@ -148,7 +148,8 @@ public class PeerConnectionWrapper {
 		logger.info("Initialize WebRTC PeerConnection");
 
 		// Initialise WebRTC for Android
-		WebRTCUtil.initializeAndroidGlobals(appContext);
+		WebRTCUtil.initializePeerConnectionFactory(
+			appContext, WebRTCUtil.Scope.CALL_OR_GROUP_CALL_OR_WEB_CLIENT);
 		this.factory = getPeerConnectionFactory();
 
 		// Store handler, listener, task and set message handler

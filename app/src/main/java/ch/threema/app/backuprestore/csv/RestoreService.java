@@ -37,15 +37,12 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import net.lingala.zip4j.model.FileHeader;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -59,6 +56,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -80,6 +80,7 @@ import ch.threema.app.utils.BackupUtils;
 import ch.threema.app.utils.CSVReader;
 import ch.threema.app.utils.CSVRow;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.JsonUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
@@ -116,6 +117,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 public class RestoreService extends Service {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("RestoreService");
@@ -131,7 +133,6 @@ public class RestoreService extends Service {
 	private GroupService groupService;
 	private DatabaseServiceNew databaseServiceNew;
 	private PreferenceService preferenceService;
-	private ThreemaConnection threemaConnection;
 	private PowerManager.WakeLock wakeLock;
 	private NotificationManager notificationManager;
 
@@ -152,14 +153,14 @@ public class RestoreService extends Service {
 	private ZipFile zipFile;
 	private String password;
 
-	private final int STEP_SIZE_PREPARE = 100;
-	private final int STEP_SIZE_IDENTITY = 100;
-	private final int STEP_SIZE_MAIN_FILES = 200;
-	private final int STEP_SIZE_MESSAGES = 1; // per message
-	private final int STEP_SIZE_GRPOUP_AVATARS = 50;
-	private final int STEP_SIZE_MEDIA = 25; // per media file
+	private static final int STEP_SIZE_PREPARE = 100;
+	private static final int STEP_SIZE_IDENTITY = 100;
+	private static final int STEP_SIZE_MAIN_FILES = 200;
+	private static final int STEP_SIZE_MESSAGES = 1; // per message
+	private static final int STEP_SIZE_GROUP_AVATARS = 50;
+	private static final int STEP_SIZE_MEDIA = 25; // per media file
 
-	private long stepSizeTotal = STEP_SIZE_PREPARE + STEP_SIZE_IDENTITY + STEP_SIZE_MAIN_FILES + STEP_SIZE_GRPOUP_AVATARS;
+	private long stepSizeTotal = (long) STEP_SIZE_PREPARE + STEP_SIZE_IDENTITY + STEP_SIZE_MAIN_FILES + STEP_SIZE_GROUP_AVATARS;
 
 	private static boolean isCanceled = false;
 	private static boolean isRunning = false;
@@ -276,7 +277,6 @@ public class RestoreService extends Service {
 			userService = serviceManager.getUserService();
 			groupService = serviceManager.getGroupService();
 			preferenceService = serviceManager.getPreferenceService();
-			threemaConnection = serviceManager.getConnection();
 		} catch (Exception e) {
 			logger.error("Could not instantiate all required services", e);
 			stopSelf();
@@ -353,6 +353,11 @@ public class RestoreService extends Service {
 		}
 	}
 
+	/**
+	 * CSV file processor
+	 *
+	 * The {@link #row(CSVRow)} method will be called for every row in the CSV file.
+	 */
 	private interface ProcessCsvFile {
 		void row(CSVRow row) throws RestoreCanceledException;
 	}
@@ -386,7 +391,19 @@ public class RestoreService extends Service {
 		}
 
 		try {
-			// we use two passes for a restore
+			// Ensure that the server connection is stopped before restoring the backup.
+			//
+			// This is important, because during the backup restore process, some outgoing
+			// messages (e.g. group sync messages) might be enqueued. However, we only want to
+			// send those messages if the backup restore succeeded.
+			//
+			// The connection will be resumed in {@link onFinished}.
+			final ThreemaConnection connection = serviceManager.getConnection();
+			if (connection != null && connection.isRunning()) {
+				connection.stop();
+			}
+
+			// We use two passes for a restore. The first pass only scans the files in the backup, but does not write to the database. In the second pass, the files are actually written.
 			for (int nTry = 0; nTry < 2; nTry++) {
 				logger.info("Attempt {}", nTry + 1);
 				if (nTry > 0) {
@@ -402,11 +419,6 @@ public class RestoreService extends Service {
 
 				if (this.writeToDb) {
 					updateProgress(STEP_SIZE_PREPARE);
-
-					/*
-					this.helper.getDatabaseService().close();
-					this.helper.getDatabaseService().drop();
-					*/
 
 					//clear tables!!
 					logger.info("Clearing current tables");
@@ -424,7 +436,7 @@ public class RestoreService extends Service {
 					databaseServiceNew.getGroupMessagePendingMessageIdModelFactory().deleteAll();
 					databaseServiceNew.getGroupRequestSyncLogModelFactory().deleteAll();
 
-					//remove all media files (don't remove recursive, tmp folder contain the restoring files
+					// Remove all media files (don't remove recursively, tmp folder contain the restoring files
 					logger.info("Deleting current media files");
 					fileService.clearDirectory(fileService.getAppDataPath(), false);
 				}
@@ -433,14 +445,12 @@ public class RestoreService extends Service {
 				@SuppressWarnings({"unchecked"})
 				List<FileHeader> fileHeaders = zipFile.getFileHeaders();
 
-				FileHeader settingsHeader = Functional.select(fileHeaders, new IPredicateNonNull<FileHeader>() {
-					@Override
-					public boolean apply(@NonNull FileHeader type) {
-						return TestUtil.compare(type.getFileName(), Tags.SETTINGS_FILE_NAME);
-					}
-				});
-
+				// The restore settings file contains the data backup format version
 				this.restoreSettings = new RestoreSettings();
+				FileHeader settingsHeader = Functional.select(
+					fileHeaders,
+					type -> TestUtil.compare(type.getFileName(), Tags.SETTINGS_FILE_NAME)
+				);
 				if (settingsHeader != null) {
 					try (InputStream inputStream = zipFile.getInputStream(settingsHeader);
 					     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -451,27 +461,19 @@ public class RestoreService extends Service {
 
 				// Restore the identity
 				logger.info("Restoring identity");
-				FileHeader identityHeader = Functional.select(fileHeaders, new IPredicateNonNull<FileHeader>() {
-					@Override
-					public boolean apply(@NonNull FileHeader type) {
-						return TestUtil.compare(type.getFileName(), Tags.IDENTITY_FILE_NAME);
-					}
-				});
+				FileHeader identityHeader = Functional.select(
+					fileHeaders,
+					type -> TestUtil.compare(type.getFileName(), Tags.IDENTITY_FILE_NAME)
+				);
 				if (identityHeader != null && this.writeToDb) {
-					//restore identity first!!
-
 					String identityContent;
 					try (InputStream inputStream = zipFile.getInputStream(identityHeader)) {
 						identityContent = IOUtils.toString(inputStream);
 					}
 
-					if (threemaConnection != null && threemaConnection.isRunning()) {
-						threemaConnection.stop();
-					}
-
 					try {
 						if (!userService.restoreIdentity(identityContent, this.password)) {
-							throw new ThreemaException("failed");
+							throw new ThreemaException("Restoring identity failed");
 						}
 					} catch (UnknownHostException e) {
 						throw e;
@@ -504,12 +506,12 @@ public class RestoreService extends Service {
 					//continue anyway!
 				}
 
-				updateProgress(STEP_SIZE_GRPOUP_AVATARS);
+				updateProgress(STEP_SIZE_GROUP_AVATARS);
 
 				logger.info("Restoring message media files");
 				mediaCount = this.restoreMessageMediaFiles(fileHeaders);
 				if (mediaCount == 0) {
-					logger.error("restore message media files failed");
+					logger.warn("No media files restored. Might be a backup without media?");
 					//continue anyway!
 				} else {
 					logger.info("{} media files found", mediaCount);
@@ -539,10 +541,10 @@ public class RestoreService extends Service {
 		} catch (RestoreCanceledException e) {
 			logger.error("Restore cancelled", e);
 			message = getString(R.string.restore_data_cancelled);
-		} catch (Exception x) {
+		} catch (Exception e) {
 			// wrong password? no connection? throw
-			logger.error("Exception while restoring backup", x);
-			message = x.getMessage();
+			logger.error("Exception while restoring backup", e);
+			message = e.getMessage();
 		}
 
 		onFinished(message);
@@ -604,13 +606,13 @@ public class RestoreService extends Service {
 			String fileName = fileHeader.getFileName();
 			if (fileName.startsWith(Tags.CONTACT_AVATAR_FILE_PREFIX)) {
 				if(!this.restoreContactAvatarFile(fileHeader)) {
-					logger.error("restore contact avatar " + fileName + " file failed or skipped");
+					logger.error("restore contact avatar {} file failed or skipped", fileName);
 					//continue anyway
 				}
 			}
 			else if (fileName.startsWith(Tags.CONTACT_PROFILE_PIC_FILE_PREFIX)) {
 				if(!this.restoreContactPhotoFile(fileHeader)) {
-					logger.error("restore contact profile pic " + fileName + " file failed or skipped");
+					logger.error("restore contact profile pic {} file failed or skipped", fileName);
 					//continue anyway
 				}
 			}
@@ -797,7 +799,7 @@ public class RestoreService extends Service {
 		return count;
 	}
 
-	private boolean restoreContactFile(FileHeader fileHeader) throws IOException, RestoreCanceledException {
+	private boolean restoreContactFile(@NonNull FileHeader fileHeader) throws IOException, RestoreCanceledException {
 		return this.processCsvFile(fileHeader, new ProcessCsvFile() {
 			@Override
 			public void row(CSVRow row) {
@@ -810,6 +812,7 @@ public class RestoreService extends Service {
 						restoreResult.incContactSuccess();
 					}
 				} catch (Exception x) {
+					logger.error("Could not restore contact", x);
 					if (writeToDb) {
 						//process next
 						restoreResult.incContactFailed();
@@ -819,65 +822,68 @@ public class RestoreService extends Service {
 		});
 	}
 
-	private boolean restoreContactAvatarFile(FileHeader fileHeader){
-		if(fileHeader != null) {
-//				fileHeader.getFileName().startsWith(Tags.CONTACT_AVATAR_FILE_PREFIX)) {
-			String filename = fileHeader.getFileName();
-			if(!TestUtil.empty(filename)) {
-				String identity = filename.substring(Tags.CONTACT_AVATAR_FILE_PREFIX.length());
-				if (!TestUtil.empty(identity)) {
-					ContactModel contactModel = contactService.getByIdentity(identity);
-					if (contactModel != null) {
-						try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
-							boolean success = fileService.writeContactAvatar(
-								contactModel,
-								IOUtils.toByteArray(inputStream));
-
-							if (contactModel.getIdentity().equals(contactService.getMe().getIdentity())) {
-								preferenceService.setProfilePicLastUpdate(new Date());
-							}
-							return success;
-						} catch (Exception e) {
-							logger.error("Exception", e);
-							//ignore, its only an avatar
-						} finally {
-							//
-							;
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean restoreContactPhotoFile(FileHeader fileHeader){
-		if(fileHeader != null) {
-			String filename = fileHeader.getFileName();
-			if(!TestUtil.empty(filename)) {
-				String identity = filename.substring(Tags.CONTACT_PROFILE_PIC_FILE_PREFIX.length());
-				if (!TestUtil.empty(identity)) {
-					ContactModel contactModel = contactService.getByIdentity(identity);
-					if (contactModel != null) {
-						try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
-							return fileService.writeContactPhoto(
-								contactModel,
-								IOUtils.toByteArray(inputStream));
-						} catch (Exception e) {
-							logger.error("Exception", e);
-							//ignore, its only an avatar
-						} finally {
-							//
-							;
-						}
-					}
-				}
-			}
+	private boolean restoreContactAvatarFile(@NonNull FileHeader fileHeader){
+		// Look up avatar filename
+		String filename = fileHeader.getFileName();
+		if (TestUtil.empty(filename)) {
+			return false;
 		}
 
-		return false;
+		// Look up contact model for this avatar
+		String identity = filename.substring(Tags.CONTACT_AVATAR_FILE_PREFIX.length());
+		if (TestUtil.empty(identity)) {
+			return false;
+		}
+		ContactModel contactModel = contactService.getByIdentity(identity);
+		if (contactModel == null) {
+			return false;
+		}
+
+		// Set contact avatar
+		try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
+			boolean success = fileService.writeContactAvatar(
+				contactModel,
+				IOUtils.toByteArray(inputStream)
+			);
+			if (contactModel.getIdentity().equals(contactService.getMe().getIdentity())) {
+				preferenceService.setProfilePicLastUpdate(new Date());
+			}
+			return success;
+		} catch (Exception e) {
+			logger.error("Exception while writing contact avatar", e);
+			return false;
+		}
 	}
-	private boolean restoreGroupFile(FileHeader fileHeader) throws IOException, RestoreCanceledException {
+
+	private boolean restoreContactPhotoFile(@NonNull FileHeader fileHeader){
+		// Look up profile picture filename
+		String filename = fileHeader.getFileName();
+		if(TestUtil.empty(filename)) {
+			return false;
+		}
+
+		// Look up contact model for this avatar
+		String identity = filename.substring(Tags.CONTACT_PROFILE_PIC_FILE_PREFIX.length());
+		if (TestUtil.empty(identity)) {
+			return false;
+		}
+		ContactModel contactModel = contactService.getByIdentity(identity);
+		if (contactModel == null) {
+			return false;
+		}
+
+		// Set contact profile picture
+		try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
+			return fileService.writeContactPhoto(
+				contactModel,
+				IOUtils.toByteArray(inputStream));
+		} catch (Exception e) {
+			logger.error("Exception while writing contact profile picture", e);
+			return false;
+		}
+	}
+
+	private boolean restoreGroupFile(@NonNull FileHeader fileHeader) throws IOException, RestoreCanceledException {
 		return this.processCsvFile(fileHeader, new ProcessCsvFile() {
 			@Override
 			public void row(CSVRow row) {
@@ -907,6 +913,7 @@ public class RestoreService extends Service {
 						}
 					}
 				} catch (Exception x) {
+					logger.error("Could not restore group", x);
 					if (writeToDb) {
 						//process next
 						restoreResult.incContactFailed();
@@ -916,7 +923,7 @@ public class RestoreService extends Service {
 		});
 	}
 
-	private boolean restoreDistributionListFile(FileHeader fileHeader) throws IOException, RestoreCanceledException {
+	private boolean restoreDistributionListFile(@NonNull FileHeader fileHeader) throws IOException, RestoreCanceledException {
 		return this.processCsvFile(fileHeader, new ProcessCsvFile() {
 			@Override
 			public void row(CSVRow row) {
@@ -939,6 +946,7 @@ public class RestoreService extends Service {
 						}
 					}
 				} catch (Exception x) {
+					logger.error("Could not restore distribution list", x);
 					if (writeToDb) {
 						//process next
 						restoreResult.incContactFailed();
@@ -948,9 +956,11 @@ public class RestoreService extends Service {
 		});
 	}
 
-	private void restoreBallotFile(FileHeader ballotMain,
-									  final FileHeader ballotChoice,
-									  FileHeader ballotVote) throws IOException, RestoreCanceledException {
+	private void restoreBallotFile(
+		@NonNull FileHeader ballotMain,
+		@NonNull final FileHeader ballotChoice,
+		@NonNull FileHeader ballotVote
+	) throws IOException, RestoreCanceledException {
 		this.processCsvFile(ballotMain, new ProcessCsvFile() {
 			@Override
 			public void row(CSVRow row) {
@@ -989,6 +999,7 @@ public class RestoreService extends Service {
 					}
 
 				} catch (Exception x) {
+					logger.error("Could not restore ballot", x);
 					if (writeToDb) {
 						//process next
 						restoreResult.incContactFailed();
@@ -1049,6 +1060,12 @@ public class RestoreService extends Service {
 		if(restoreSettings.getVersion() >= 14) {
 			groupModel.setArchived(row.getBoolean(Tags.TAG_GROUP_ARCHIVED));
 		}
+
+		if (restoreSettings.getVersion() >= 17) {
+			groupModel.setGroupDesc(row.getString(Tags.TAG_GROUP_DESC));
+			groupModel.setGroupDescTimestamp(row.getDate(Tags.TAG_GROUP_DESC_TIMESTAMP));
+		}
+
 		return groupModel;
 	}
 
@@ -1400,6 +1417,9 @@ public class RestoreService extends Service {
 		if(restoreSettings.getVersion() >= 14) {
 			contactModel.setArchived(row.getBoolean(Tags.TAG_CONTACT_ARCHIVED));
 		}
+		if(restoreSettings.getVersion() >= 18) {
+			contactModel.setForwardSecurityEnabled(row.getBoolean(Tags.TAG_CONTACT_FORWARD_SECURITY));
+		}
 		contactModel.setIsRestored(true);
 
 		return contactModel;
@@ -1431,6 +1451,8 @@ public class RestoreService extends Service {
 			state = MessageState.SENT;
 		} else if (messageState.equals(MessageState.CONSUMED.name())) {
 			state = MessageState.CONSUMED;
+		} else if (messageState.equals(MessageState.FS_KEY_MISMATCH.name())) {
+			state = MessageState.FS_KEY_MISMATCH;
 		}
 
 		messageModel.setState(state);
@@ -1469,6 +1491,9 @@ public class RestoreService extends Service {
 		} else if (typeAsString.equals(MessageType.VOIP_STATUS.name())) {
 			messageType = MessageType.VOIP_STATUS;
 			messageContentsType = MessageContentsType.VOIP_STATUS;
+		} else if (typeAsString.equals(MessageType.GROUP_CALL_STATUS.name())) {
+			messageType = MessageType.GROUP_CALL_STATUS;
+			messageContentsType = MessageContentsType.GROUP_CALL_STATUS;
 		}
 		messageModel.setType(messageType);
 		messageModel.setMessageContentsType(messageContentsType);
@@ -1544,6 +1569,17 @@ public class RestoreService extends Service {
 			messageModel.setDeliveredAt(row.getDate(Tags.TAG_MESSAGE_DELIVERED_AT));
 			messageModel.setReadAt(row.getDate(Tags.TAG_MESSAGE_READ_AT));
 		}
+		if (restoreSettings.getVersion() >= 17) {
+			String messageStatesJson = row.getString(Tags.TAG_GROUP_MESSAGE_STATES);
+			if (!TestUtil.empty(messageStatesJson)) {
+				try {
+					Map<String, Object> messageStatesMap = JsonUtil.convertObject(messageStatesJson);
+					messageModel.setGroupMessageStates(messageStatesMap);
+				} catch (JSONException ignored) {
+					// map may not be available, empty or invalid
+				}
+			}
+		}
 		return messageModel;
 	}
 
@@ -1571,11 +1607,10 @@ public class RestoreService extends Service {
 		return messageModel;
 	}
 
-	private boolean processCsvFile(FileHeader fileHeader, ProcessCsvFile processCsvFile) throws IOException, RestoreCanceledException {
-		if (processCsvFile == null) {
-			return false;
-		}
-
+	private boolean processCsvFile(
+		@NonNull FileHeader fileHeader,
+		@NonNull ProcessCsvFile processCsvFile
+	) throws IOException, RestoreCanceledException {
 		try (ZipInputStream inputStream = this.zipFile.getInputStream(fileHeader);
 		     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 		     CSVReader csvReader = new CSVReader(inputStreamReader, true)) {
@@ -1676,9 +1711,9 @@ public class RestoreService extends Service {
 		cancelIntent.putExtra(EXTRA_ID_CANCEL, true);
 		PendingIntent cancelPendingIntent;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			cancelPendingIntent = PendingIntent.getForegroundService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			cancelPendingIntent = PendingIntent.getForegroundService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 		} else {
-			cancelPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			cancelPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 		}
 
 		notificationBuilder = new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS, null)
@@ -1751,7 +1786,7 @@ public class RestoreService extends Service {
 		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
 			// Android Q does not allow restart in the background
 			Intent backupIntent = new Intent(this, HomeActivity.class);
-			PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
 			builder.setContentIntent(pendingIntent);
 

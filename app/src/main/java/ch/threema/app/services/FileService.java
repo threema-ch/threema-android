@@ -311,7 +311,7 @@ public interface FileService {
 	/**
 	 * return the "default" thumbnail
 	 */
-	Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType);
+	Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType, boolean returnNullIfNotCached);
 
 	/**
 	 * clear directory

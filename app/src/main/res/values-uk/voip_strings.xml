@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="voip_title">Виклик Threema</string>
     <string name="voip_hangup">Завершити</string>
     <string name="voip_toggle_mic">Увімкнути або вимкнути мікрофон</string>
@@ -60,6 +60,7 @@
     <string name="voip_another_pstn_call">Неможливо почати виклик Threema, поки триває звичайний телефонний виклик.</string>
     <string name="voip_call_status_off_hours">Виклик у неробочий час</string>
     <string name="voip_peer_video_disabled">Контакт вимкнув відеовиклики.</string>
+    <string name="voip_reject_channel_name">Зміна стану виклику</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Діагностика WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Скористайтеся цим інструментом, щоб виявити проблеми зі з\'єднанням під час голосового виклику</string>
@@ -69,4 +70,38 @@
     <string name="voip_webrtc_debug_done">Перевірку завершено. Якщо вам не вдається встановити з\'єднання під час голосового виклику, надішліть ці результати службі підтримки Threema.</string>
     <string name="voip_webrtc_debug_copied">Скопійовано в буфер обміну.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Копіювати в буфер обміну</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Усіх учасників групи сповіщено</string>
+    <string name="voip_gc_notification_channel_description">Групові виклики</string>
+    <string name="voip_gc_notification_title">Груповий виклик</string>
+    <string name="voip_gc_notification_call_started">Контакт \"%1$s\" почав груповий виклик у групі \"%2$s\"</string>
+    <string name="voip_gc_notification_call_started_generic">Контакт \"%1$s\" почав груповий виклик</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Ви почали груповий виклик</string>
+    <string name="voip_gc_dismiss_call">Ігнорувати</string>
+    <string name="voip_gc_join_call">Приєднатися</string>
+    <string name="voip_gc_ongoing_call">Триває груповий виклик</string>
+    <string name="voip_gc_waiting_for_participants">Очікування на учасників</string>
+    <string name="voip_gc_participant_avatar_description">Фото профілю учасника</string>
+    <string name="voip_gc_participant_mute_status_description">Стан мікрофона учасника</string>
+    <string name="voip_gc_notification_new_call_public">Розпочато новий груповий виклик</string>
+    <string name="voip_gc_open_call">Відкрити</string>
+    <string name="voip_gc_call_started">Груповий виклик розпочато</string>
+    <string name="voip_gc_call_ended">Груповий виклик завершено</string>
+    <string name="voip_gc_in_call">У груповому виклику</string>
+    <string name="voip_gc_sfu_not_available">Сервер недоступний. Повторіть спробу пізніше.</string>
+    <string name="voip_gc_call_error">Не вдалося почати груповий виклик</string>
+    <string name="voip_gc_call_full_generic">Максимальна кількість учасників: до цього групового виклику не може приєднатися більше людей.</string>
+    <string name="voip_gc_call_full_n">Ви не можете приєднатися до цього виклику, оскільки досягнуто максимальну кількість учасників (%1$d).</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d учасник</item>
+        <item quantity="other">%d учасника</item>
+        <item quantity="few">%d учасники</item>
+        <item quantity="many">%d учасників</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Примітка. Один учасник не може брати участь у групових викликах.</item>
+        <item quantity="other">Примітка. %d учасника не може брати участь у групових викликах.</item>
+        <item quantity="few">Примітка. %d учасники не можуть брати участь у групових викликах.</item>
+        <item quantity="many">Примітка. %d учасників не можуть брати участь у групових викликах.</item>
+    </plurals>
 </resources>

@@ -1,0 +1,10 @@
+{
+  "name": "threema-protocols",
+  "scripts": {
+    "lint": "prettier -c \"**/*.{js,json,md,yml}\"",
+    "lint:fix": "prettier --write \"**/*.{js,json,md,yml}\""
+  },
+  "devDependencies": {
+    "prettier": "2.7.1"
+  }
+}

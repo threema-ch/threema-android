@@ -55,6 +55,7 @@
 	<attr name="bubble_selected" format="reference|color"/>
 	<attr name="bubble_pressed" format="reference|color"/>
 	<attr name="bubble_status" format="reference|color"/>
+	<attr name="bubble_group_status" format="reference|color"/>
 	<attr name="bubble_recv" format="reference|color"/>
 	<attr name="bubble_send" format="reference|color"/>
 	<attr name="bubble_pressed_overlay" format="reference|color"/>

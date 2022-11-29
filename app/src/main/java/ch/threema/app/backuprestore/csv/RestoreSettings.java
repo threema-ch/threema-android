@@ -36,8 +36,10 @@ public class RestoreSettings {
 	 * 13: add hidden flag to contacts
 	 * 15: add quoted message id to messages
 	 * 16: added read and delivered date
+	 * 17: group message states (ack / dec) and group descriptions
+	 * 18: contact forward security flag
 	 */
-	public static final int CURRENT_VERSION = 16;
+	public static final int CURRENT_VERSION = 18;
 	private int version = 1;
 
 	public RestoreSettings(int version) {

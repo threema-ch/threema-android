@@ -28,6 +28,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
 import ch.threema.app.R;
 import ch.threema.app.activities.TextChatBubbleActivity;
 import ch.threema.app.emojis.EmojiConversationTextView;
@@ -38,6 +39,7 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QuoteUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -100,6 +102,8 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 				actionModeStatus.getActionModeEnabled(),
 				onClickElement);
 		}
+
+		RuntimeUtil.runOnUiThread(() -> setupResendStatus(holder));
 	}
 
 	@Nullable

@@ -60,6 +60,7 @@
     <string name="voip_another_pstn_call">Ikke mulig å igangsette et anrop. Et vanlig telefonanrop er fortsatt aktivt.</string>
     <string name="voip_call_status_off_hours">Anrop utenom arbeid</string>
     <string name="voip_peer_video_disabled">Videoanrop har blitt deaktivert av den andre part.</string>
+    <string name="voip_reject_channel_name">Anropsstatus endret</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC feilsøking</string>
     <string name="voip_prefs_webrtc_debug_summary">Start dette verktøyet for å feilsøke problemer med å etablere et anrop</string>
@@ -69,4 +70,30 @@
     <string name="voip_webrtc_debug_done">Ferdig. Om du opplever problemer med tilkoblingen til anropet, vennligst send denne loggen til Threema brukerstøtte.</string>
     <string name="voip_webrtc_debug_copied">Kopiert til utklippstavle.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Kopier til utklippstavle</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Alle gruppemedlemmer har blitt varslet</string>
+    <string name="voip_gc_notification_channel_description">Gruppesamtaler</string>
+    <string name="voip_gc_notification_title">Gruppesamtale</string>
+    <string name="voip_gc_notification_call_started">%1$s startet en gruppesamtale i %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s startet en gruppesamtale</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Du startet en gruppesamtale</string>
+    <string name="voip_gc_dismiss_call">Ignorer</string>
+    <string name="voip_gc_join_call">Bli med</string>
+    <string name="voip_gc_ongoing_call">Pågående gruppesamtale</string>
+    <string name="voip_gc_waiting_for_participants">Venter på deltakere</string>
+    <string name="voip_gc_participant_avatar_description">Profilbildet til deltaker</string>
+    <string name="voip_gc_participant_mute_status_description">Dempet-status for deltaker</string>
+    <string name="voip_gc_notification_new_call_public">En ny gruppesamtale har startet</string>
+    <string name="voip_gc_open_call">Åpne</string>
+    <string name="voip_gc_call_started">Gruppesamtale ble startet</string>
+    <string name="voip_gc_call_ended">Gruppesamtale ble avsluttet</string>
+    <string name="voip_gc_in_call">I gruppesamtale</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d deltaker</item>
+        <item quantity="other">%d deltakere</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Merk: Én medlem kan ikke delta i gruppesamtaler.</item>
+        <item quantity="other">Merk: %d medlemmer kan ikke delta i gruppesamtaler.</item>
+    </plurals>
 </resources>

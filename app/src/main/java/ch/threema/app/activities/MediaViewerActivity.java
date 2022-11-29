@@ -27,9 +27,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,14 +44,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.menu.MenuBuilder;
@@ -62,6 +54,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.PagerAdapter;
+
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
@@ -81,7 +82,6 @@ import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
-import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
@@ -94,6 +94,7 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.data.MessageContentsType;
 
 
 public class MediaViewerActivity extends ThreemaToolbarActivity implements
@@ -107,6 +108,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 	public static final String EXTRA_ID_IMMEDIATE_PLAY = "play";
 	public static final String EXTRA_ID_REVERSE_ORDER = "reverse";
+	public static final String EXTRA_FILTER = "filter";
 
 	private LockableViewPager pager;
 
@@ -206,6 +208,10 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 			return false;
 		}
 
+		final @MessageContentsType int[] filter = intent.hasExtra(EXTRA_FILTER)
+			? intent.getIntArrayExtra(EXTRA_FILTER)
+			: null;
+
 		//load all records of receiver to support list pager
 		try {
 			this.messageModels = this.currentReceiver.loadMessages(new MessageService.MessageFilter() {
@@ -245,8 +251,9 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 				}
 
 				@Override
+				@MessageContentsType
 				public int[] contentTypes() {
-					return null;
+					return filter;
 				}
 			});
 		} catch (Exception x) {
@@ -374,7 +381,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 	@SuppressLint("RestrictedApi")
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(@NonNull Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
 		getMenuInflater().inflate(R.menu.activity_media_viewer, menu);
@@ -474,14 +481,15 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 			Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
 			mediaGalleryIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			switch (this.currentReceiver.getType()) {
+				case MessageReceiver.Type_CONTACT:
+					mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, messageModel.getIdentity());
+					break;
 				case MessageReceiver.Type_GROUP:
 					mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, ((GroupMessageModel) messageModel).getGroupId());
 					break;
 				case MessageReceiver.Type_DISTRIBUTION_LIST:
 					mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, ((DistributionListMessageModel) messageModel).getDistributionListId());
 					break;
-				default:
-					mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, messageModel.getIdentity());
 			}
 			IntentDataUtil.append(messageModel, mediaGalleryIntent);
 			startActivity(mediaGalleryIntent);
@@ -571,7 +579,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		// fixes https://code.google.com/p/android/issues/detail?id=19917
 		super.onSaveInstanceState(outState);
 		if (outState.isEmpty()) {
@@ -637,19 +645,20 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 		private final MediaViewerActivity a;
 		private final FragmentManager mFragmentManager;
-		private SparseArray<Fragment> mFragments;
+		private final SparseArray<Fragment> mFragments;
 		private FragmentTransaction mCurTransaction;
 
 		public ScreenSlidePagerAdapter(MediaViewerActivity a, FragmentManager fm) {
-			super(fm);
+			super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 			this.a = a;
 			mFragmentManager = fm;
 			mFragments = new SparseArray<>();
 		}
 
+		@NonNull
 		@SuppressLint("CommitTransaction")
 		@Override
-		public Object instantiateItem(ViewGroup container, int position) {
+		public Object instantiateItem(@NonNull ViewGroup container, int position) {
 			Fragment fragment = getItem(position);
 			if (mCurTransaction == null) {
 				mCurTransaction = mFragmentManager.beginTransaction();
@@ -660,10 +669,11 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		}
 
 		@Override
-		public boolean isViewFromObject(View view, Object fragment) {
+		public boolean isViewFromObject(@NonNull View view, @NonNull Object fragment) {
 			return ((Fragment) fragment).getView() == view;
 		}
 
+		@NonNull
 		@Override
 		public Fragment getItem(final int position) {
 			logger.debug("getItem " + position);
@@ -686,11 +696,11 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 						break;
 					case FILE:
 						String mimeType = messageModel.getFileData().getMimeType();
-						if (MimeUtil.isImageFile(mimeType) && !MimeUtil.isGifFile(mimeType)) {
+						if (MimeUtil.isImageFile(mimeType)) {
 							f = new ImageViewFragment();
 						} else if (MimeUtil.isVideoFile(mimeType)) {
 							f = new VideoViewFragment();
-						} else if (IconUtil.getMimeIcon(mimeType) == R.drawable.ic_doc_audio) {
+						} else if (MimeUtil.isAudioFile(mimeType)) {
 							if (MimeUtil.isMidiFile(mimeType) || MimeUtil.isFlacFile(mimeType)) {
 								f = new MediaPlayerViewFragment();
 							} else {
@@ -739,7 +749,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 					}
 
 					@Override
-					public void thumbnailLoaded(Bitmap bitmap) {
+					public void thumbnailLoaded(Drawable bitmap) {
 						//do nothing!
 					}
 				});
@@ -751,7 +761,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 		@SuppressLint("CommitTransaction")
 		@Override
-		public void destroyItem(ViewGroup container, int position, Object object) {
+		public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
 			logger.debug("destroyItem " + position);
 
 			if (mCurTransaction == null) {
@@ -772,7 +782,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		}
 
 		@Override
-		public void finishUpdate(ViewGroup container) {
+		public void finishUpdate(@NonNull ViewGroup container) {
 			if (mCurTransaction != null) {
 				mCurTransaction.commitAllowingStateLoss();
 				mCurTransaction = null;
@@ -802,7 +812,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
-	                                       @NonNull String permissions[], @NonNull int[] grantResults) {
+	                                       @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		switch (requestCode) {
 			case PERMISSION_REQUEST_SAVE_MESSAGE:

@@ -37,14 +37,18 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
+import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.models.AbstractMessageModel;
+import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageModel;
@@ -53,6 +57,8 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.MessageContentsType;
+import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
+import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 /**
@@ -115,11 +121,26 @@ public interface MessageService {
 	 */
 	@Deprecated
 	AbstractMessageModel createStatusMessage(String statusMessage, MessageReceiver receiver);
+
 	AbstractMessageModel createVoipStatus(VoipStatusDataModel data,
-	                                         MessageReceiver receiver,
-	                                         boolean isOutbox,
-	                                         boolean isRead);
-	AbstractMessageModel sendText(String message, MessageReceiver receiver) throws Exception;
+										  MessageReceiver receiver,
+										  boolean isOutbox,
+										  boolean isRead);
+
+	AbstractMessageModel createGroupCallStatus(@NonNull GroupCallStatusDataModel data,
+											   @NonNull MessageReceiver receiver,
+											   @Nullable ContactModel contactModel,
+											   @Nullable GroupCallDescription call,
+											   boolean isOutbox,
+											   Date postedDate);
+
+	AbstractMessageModel createForwardSecurityStatus(
+		@NonNull MessageReceiver receiver,
+		@ForwardSecurityStatusDataModel.ForwardSecurityStatusType int type,
+		int quantity,
+		@Nullable String staticText);
+
+    AbstractMessageModel sendText(String message, MessageReceiver receiver) throws Exception;
 	AbstractMessageModel sendLocation(@NonNull Location location, String poiName, MessageReceiver receiver, CompletionHandler completionHandler) throws ThreemaException, IOException;
 
 	String getCorrelationId();
@@ -138,11 +159,8 @@ public interface MessageService {
 	@WorkerThread
 	AbstractMessageModel sendMedia(@NonNull List<MediaItem> mediaItems, @NonNull List<MessageReceiver> messageReceivers, @Nullable MessageServiceImpl.SendResultListener sendResultListener);
 
-	boolean sendUserAcknowledgement(AbstractMessageModel messageModel);
-
-	boolean sendUserAcknowledgement(AbstractMessageModel messageModel, boolean markAsRead);
-
-	boolean sendUserDecline(AbstractMessageModel messageModel);
+	@WorkerThread
+	boolean sendUserAcknowledgement(@NonNull AbstractMessageModel messageModel, boolean markAsRead);
 
 	boolean sendProfilePicture(MessageReceiver[] messageReceivers);
 
@@ -150,10 +168,12 @@ public interface MessageService {
 
 	AbstractMessageModel sendBallotMessage(BallotModel ballotModel) throws MessageTooLongException;
 
-	boolean sendUserDecline(AbstractMessageModel messageModel, boolean markAsRead);
+	@WorkerThread
+	boolean sendUserDecline(@NonNull AbstractMessageModel messageModel, boolean markAsRead);
 
-	void updateMessageState(final MessageId apiMessageId, final String identity, MessageState state, Date stateDate);
-	void updateMessageStateAtOutboxed(final MessageId apiMessageId, MessageState state, Date stateDate);
+	void updateMessageState(@NonNull final MessageId apiMessageId, MessageState state, @NonNull DeliveryReceiptMessage stateMessage);
+	void updateGroupMessageState(@NonNull final MessageId apiMessageId, @NonNull MessageState state, @NonNull GroupDeliveryReceiptMessage stateMessage);
+	void updateMessageStateForOutgoingMessage(final MessageId apiMessageId, MessageState state, Date stateDate);
 	boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException;
 
 	@WorkerThread
@@ -210,7 +230,7 @@ public interface MessageService {
 	boolean viewMediaMessage(Context context, AbstractMessageModel model, Uri uri);
 	boolean shareTextMessage(Context context, AbstractMessageModel model);
 	AbstractMessageModel getMessageModelFromId(int id, String type);
-	AbstractMessageModel getMessageModelByApiMessageId(String id, @MessageReceiver.MessageReceiverType int type);
+	@Nullable AbstractMessageModel getMessageModelByApiMessageId(String id, @MessageReceiver.MessageReceiverType int type);
 
 	void cancelVideoTranscoding(AbstractMessageModel messageModel);
 

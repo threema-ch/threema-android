@@ -43,6 +43,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
+import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
 import java8.util.stream.StreamSupport;
 
@@ -360,10 +361,10 @@ public class LifetimeServiceImpl implements LifetimeService {
 		intent.putExtra(AlarmManagerBroadcastReceiver.EXTRA_REQUEST_CODE, requestCode);
 
 		return PendingIntent.getBroadcast(
-				context,
-				requestCode,
-				intent,
-				0);
+			context,
+			requestCode,
+			intent,
+			IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
 	}
 
 	private void lockApp(){

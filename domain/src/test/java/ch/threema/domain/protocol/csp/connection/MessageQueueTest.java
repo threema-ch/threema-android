@@ -23,7 +23,7 @@ package ch.threema.domain.protocol.csp.connection;
 
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.stores.ContactStore;
-import ch.threema.domain.stores.TestHelpers;
+import ch.threema.domain.testhelpers.TestHelpers;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.helpers.DummyUsers;
 import ch.threema.domain.helpers.InMemoryContactStore;

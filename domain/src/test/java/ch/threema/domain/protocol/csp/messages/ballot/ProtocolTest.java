@@ -21,9 +21,11 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot;
 
-import ch.threema.base.crypto.NonceFactory;
-import ch.threema.domain.stores.TestHelpers;
+import org.junit.Assert;
+import org.junit.Test;
+
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.NonceFactory;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
@@ -33,9 +35,7 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.IdentityStoreInterface;
-
-import org.junit.Assert;
-import org.junit.Test;
+import ch.threema.domain.testhelpers.TestHelpers;
 
 public class ProtocolTest {
 
@@ -54,7 +54,7 @@ public class ProtocolTest {
 		GroupBallotCreateMessage b = new GroupBallotCreateMessage();
 		b.setFromIdentity(ballotCreator);
 		b.setToIdentity(myIdentity);
-		b.setGroupId(groupId);
+		b.setApiGroupId(groupId);
 		b.setGroupCreator(groupCreator);
 		b.setBallotId(ballotId);
 		b.setBallotCreator(ballotCreator);

@@ -21,15 +21,16 @@
 
 package ch.threema.app.webclient.services.instance.state;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
 import org.saltyrtc.client.SaltyRTCBuilder;
 import org.saltyrtc.client.exceptions.ConnectionException;
 import org.saltyrtc.client.exceptions.InvalidKeyException;
 
 import java.security.NoSuchAlgorithmException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
 
@@ -71,7 +72,7 @@ final class SessionStateConnecting extends SessionState {
 		// Connect to the SaltyRTC server asynchronously
 		try {
 			this.cctx.salty.connect();
-		} catch (ConnectionException error) {
+		} catch (ConnectionException | IllegalArgumentException error) {
 			logger.error("SaltyRTC connect failed", error);
 			throw new InvalidStateTransition(error.getMessage());
 		}

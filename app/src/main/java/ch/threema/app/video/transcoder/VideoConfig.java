@@ -149,7 +149,11 @@ public class VideoConfig {
 			logger.error("Exception querying MediaMetaDataRetriever", e);
 			throw new ThreemaException(e.getMessage());
 		} finally {
-			metaRetriever.release();
+			try {
+				metaRetriever.release();
+			} catch (IOException e) {
+				logger.debug("Failed to release MediaMetadataRetriever");
+			}
 		}
 
 		MediaExtractor extractor = new MediaExtractor();

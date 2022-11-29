@@ -29,9 +29,9 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.connection.MessageAckListener;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.QueueMessageId;
+import ch.threema.domain.protocol.csp.connection.MessageAckListener;
 import ch.threema.storage.models.MessageState;
 
 /**
@@ -65,7 +65,7 @@ public class MessageAckProcessor implements MessageAckListener {
 		}
 
 		if (this.messageService != null) {
-			this.messageService.updateMessageStateAtOutboxed(
+			this.messageService.updateMessageStateForOutgoingMessage(
 				queueMessageId.getMessageId(),
 				MessageState.SENT,
 				null

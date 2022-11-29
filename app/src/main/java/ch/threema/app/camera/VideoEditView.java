@@ -21,6 +21,8 @@
 
 package ch.threema.app.camera;
 
+import static com.google.android.exoplayer2.C.TIME_END_OF_SOURCE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -30,12 +32,14 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.format.Formatter;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
@@ -44,6 +48,7 @@ import android.widget.TextView;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.view.ViewCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -61,8 +66,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.media.AudioAttributesCompat;
+import androidx.media.AudioFocusRequestCompat;
+import androidx.media.AudioManagerCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -70,8 +79,6 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.app.video.VideoTimelineThumbnailTask;
 import ch.threema.base.utils.LoggingUtil;
-
-import static com.google.android.exoplayer2.C.TIME_END_OF_SOURCE;
 
 public class VideoEditView extends FrameLayout implements DefaultLifecycleObserver, VideoTimelineThumbnailTask.VideoTimelineListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoEditView");
@@ -83,10 +90,13 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	private static final int MARKER_MOVE_MESSAGE_QUEUE_ID = 771294;
 	private static final int MARKER_MOVE_UPDATE_FREQUENCY_MS = 200;
 
+	private static final float VOLUME_HIGH = 1f;
+	private static final float VOLUME_MUTED = 0f;
+
 	private Context context;
 	private int targetHeight, calculatedWidth;
 	private Paint borderPaint, arrowPaint, dashPaint, progressPaint, dimPaint;
-	private int arrowWidth, arrowHeight, borderWidth;
+	private int arrowWidth, arrowHeight;
 	private int offsetLeft = 0, offsetRight = 0, touchTargetWidth;
 	private long videoCurrentPosition = 0L, videoFileSize = 0L, clippedStartTimeMs, clippedEndTimeMs;
 	private MediaItem videoItem;
@@ -97,12 +107,16 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	private ExoPlayer videoPlayer;
 	private com.google.android.exoplayer2.MediaItem videoSourceMediaItem;
 	private DefaultMediaSourceFactory mediaSourceFactory;
-
+	private View startContainer, endContainer, sizeContainer;
 	private TextView startTimeTextView, endTimeTextView, sizeTextView;
 	private Thread thumbnailThread;
 	private final Handler progressHandler = new Handler();
 	private final Handler markerMoveHandler = new Handler(Looper.getMainLooper());
 	private final List<Rect> exclusionRects = new ArrayList<>();
+	private OnTimelineDragListener timelineDragListener;
+	private int numThumbnailsShown = -1;
+	private final AudioManager audioManager;
+	private final AudioFocusRequestCompat audioFocusRequest;
 
 	public VideoEditView(Context context) {
 		this(context, null);
@@ -115,6 +129,17 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	public VideoEditView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		init(context);
+
+		audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+		audioFocusRequest = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)
+			.setAudioAttributes(new AudioAttributesCompat.Builder()
+				.setContentType(AudioAttributesCompat.CONTENT_TYPE_MOVIE)
+				.build()
+			).setOnAudioFocusChangeListener(focusChange -> {
+				if (videoPlayer != null && (focusChange == AudioManager.AUDIOFOCUS_LOSS || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT)) {
+					videoPlayer.pause();
+				}
+			}).build();
 	}
 
 	private void init(Context context) {
@@ -122,7 +147,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		this.targetHeight = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_item_size);
 		this.arrowWidth = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_arrow_width);
 		this.arrowHeight = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_arrow_height);
-		this.borderWidth = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_border_width);
+		int borderWidth = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_border_width);
 		int progressWidth = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_progress_width);
 
 		this.touchTargetWidth = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_touch_target_width);
@@ -135,6 +160,9 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 
 		this.timelineGridLayout = findViewById(R.id.video_timeline);
 		this.videoView = findViewById(R.id.video_view);
+		this.startContainer = findViewById(R.id.start_container);
+		this.endContainer = findViewById(R.id.end_container);
+		this.sizeContainer = findViewById(R.id.size_container);
 		this.startTimeTextView = findViewById(R.id.start);
 		this.endTimeTextView = findViewById(R.id.end);
 		this.sizeTextView = findViewById(R.id.size);
@@ -144,7 +172,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		this.borderPaint.setStyle(Paint.Style.STROKE);
 		this.borderPaint.setColor(Color.WHITE);
 		this.borderPaint.setAntiAlias(true);
-		this.borderPaint.setStrokeWidth(this.borderWidth);
+		this.borderPaint.setStrokeWidth(borderWidth);
 
 		this.dimPaint = new Paint();
 
@@ -158,14 +186,14 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		this.arrowPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 		this.arrowPaint.setColor(Color.WHITE);
 		this.arrowPaint.setAntiAlias(true);
-		this.arrowPaint.setStrokeWidth(this.borderWidth);
+		this.arrowPaint.setStrokeWidth(borderWidth);
 
 		this.dashPaint = new Paint();
 
 		this.dashPaint.setStyle(Paint.Style.STROKE);
 		this.dashPaint.setColor(Color.WHITE);
 		this.dashPaint.setAntiAlias(true);
-		this.dashPaint.setStrokeWidth(this.borderWidth);
+		this.dashPaint.setStrokeWidth(borderWidth);
 		this.dashPaint.setPathEffect(new DashPathEffect(new float[]{3, 8}, 0));
 
 		this.progressPaint = new Paint();
@@ -174,8 +202,65 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		this.progressPaint.setColor(Color.WHITE);
 		this.progressPaint.setAntiAlias(true);
 		this.progressPaint.setStrokeWidth(progressWidth);
+	}
 
-		initVideoView();
+	/**
+	 * Set the video source for this player. Note that the video is only displayed if the view is
+	 * currently attached to the window. If there is currently a video shown this is removed and
+	 * replaced with the given video.
+	 *
+	 * @param mediaItem the media item of the video that is displayed
+	 */
+	public void setVideo(@NonNull MediaItem mediaItem) {
+		logger.debug("setVideo");
+		this.videoItem = mediaItem;
+		if (videoPlayer != null) {
+			releasePlayer();
+		}
+		if (isAttachedToWindow()) {
+			logger.debug("showing player from setVideo");
+			initVideoView();
+			displayVideo();
+		} else {
+			logger.warn("Error showing video: video edit view is not attached to window");
+		}
+	}
+
+	/**
+	 * Releases the video player.
+	 */
+	public void releasePlayer() {
+		if (videoPlayer != null) {
+			videoPlayer.release();
+			videoPlayer = null;
+		}
+	}
+
+	/**
+	 * Mute the player.
+	 */
+	public void mutePlayer() {
+		if (videoPlayer != null) {
+			videoPlayer.setVolume(VOLUME_MUTED);
+		}
+	}
+
+	/**
+	 * Unmute the player.
+	 */
+	public void unmutePlayer() {
+		if (videoPlayer != null) {
+			videoPlayer.setVolume(VOLUME_HIGH);
+		}
+	}
+
+	/**
+	 * Set a timeline drag listener. This can be used to detect when the user is dragging the timeline.
+	 *
+	 * @param listener the timeline drag listener
+	 */
+	public void setOnTimelineDragListener(@Nullable OnTimelineDragListener listener) {
+		this.timelineDragListener = listener;
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
@@ -187,6 +272,16 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			public void onPlaybackStateChanged(int playbackState) {
 				Player.Listener.super.onPlaybackStateChanged(playbackState);
 				updateProgressBar();
+			}
+
+			@Override
+			public void onIsPlayingChanged(boolean isPlaying) {
+				Player.Listener.super.onIsPlayingChanged(isPlaying);
+				if (isPlaying) {
+					AudioManagerCompat.requestAudioFocus(audioManager, audioFocusRequest);
+				} else {
+					AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocusRequest);
+				}
 			}
 		});
 
@@ -216,6 +311,10 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
+
+		if (videoItem != null && videoItem.getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE) {
+			return;
+		}
 
 		int left = this.timelineGridLayout.getLeft() + this.offsetLeft;
 		int right = this.timelineGridLayout.getRight() - this.offsetRight;
@@ -301,6 +400,10 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		if (videoItem.getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE) {
+			return super.onTouchEvent(event);
+		}
+
 		int action = event.getAction();
 		int x = (int) event.getX();
 		int y = (int) event.getY();
@@ -314,6 +417,9 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 				clippedEndTimeMs = videoItem.getEndTimeMs();
 
 				if (y >= (this.timelineGridLayout.getTop() - arrowHeight) && y <= (this.timelineGridLayout.getBottom() + arrowHeight)) {
+					if (timelineDragListener != null) {
+						timelineDragListener.onTimelineDragStart();
+					}
 					if (x >= (left - touchTargetWidth) && x <= (left + touchTargetWidth)) {
 						logger.debug("start moving left: {}", x);
 						isMoving = MOVING_LEFT;
@@ -384,7 +490,9 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP:
 				markerMoveHandler.removeCallbacksAndMessages(null);
-
+				if (timelineDragListener != null) {
+					timelineDragListener.onTimelineDragStop();
+				}
 				if (isMoving == MOVING_LEFT || isMoving == MOVING_RIGHT) {
 					videoItem.setStartTimeMs(getVideoPositionFromTimelinePosition(offsetLeft));
 					videoItem.setEndTimeMs(getVideoPositionFromTimelinePosition(this.timelineGridLayout.getWidth() - offsetRight));
@@ -397,19 +505,29 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 					return true;
 				}
 		}
-		return super.onTouchEvent(event);
+		return false;
 	}
 
 	@SuppressLint("StaticFieldLeak")
 	@UiThread
-	public void setVideo(MediaItem mediaItem) {
+	public void displayVideo() {
 		int numColumns = calculateNumColumns();
+		if (numColumns != numThumbnailsShown || isThumbnailBitmapMissing()) {
+			updateTimelineThumbnails(numColumns);
+		}
 
+		if (isAttachedToWindow() && context != null) {
+			videoSourceMediaItem = com.google.android.exoplayer2.MediaItem.fromUri(videoItem.getUri());
+			preparePlayer();
+		}
+
+		updateVideoTimelineVisibility();
+	}
+
+	private void updateTimelineThumbnails(int numColumns) {
 		if (numColumns <= 0 || numColumns > 64) {
 			numColumns = GridLayout.UNDEFINED;
 		}
-
-		this.videoItem = mediaItem;
 
 		if (thumbnailThread != null && thumbnailThread.isAlive()) {
 			thumbnailThread.interrupt();
@@ -464,12 +582,36 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		}
 	}
 
+	private boolean isThumbnailBitmapMissing() {
+		if (numThumbnailsShown < 0) {
+			return true;
+		}
+		for (int i = 0; i < numThumbnailsShown; i++) {
+			ImageView imageView = findViewWithTag(i);
+			if (imageView != null && imageView.getDrawable() == null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void updateVideoTimelineVisibility() {
+		int visibility = videoItem.getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE ? INVISIBLE : VISIBLE;
+
+		timelineGridLayout.setVisibility(visibility);
+		startContainer.setVisibility(visibility);
+		endContainer.setVisibility(visibility);
+		sizeContainer.setVisibility(visibility);
+
+		requestLayout();
+	}
+
 	private void preparePlayer() {
 		if (videoPlayer != null && videoSourceMediaItem != null) {
 			long startPosition = videoItem.getStartTimeMs() * 1000;
 			long endPosition = (videoItem.getEndTimeMs() == videoItem.getDurationMs() || videoItem.getEndTimeMs() == 0 || videoItem.getEndTimeMs() == MediaItem.TIME_UNDEFINED) ?
-							TIME_END_OF_SOURCE :
-							videoItem.getEndTimeMs() * 1000;
+				TIME_END_OF_SOURCE :
+				videoItem.getEndTimeMs() * 1000;
 
 			logger.debug("startPosition: " + startPosition + " endPosition: " + endPosition);
 
@@ -487,6 +629,9 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			videoPlayer.setMediaSource(clippingSource);
 			videoPlayer.setPlayWhenReady(false);
 			videoPlayer.prepare();
+			if (videoItem.isMuted()) {
+				videoPlayer.setVolume(VOLUME_MUTED);
+			}
 		}
 	}
 
@@ -530,7 +675,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		progressHandler.removeCallbacks(updateProgressAction);
 		// Schedule an update if necessary.
 		int playbackState = videoPlayer == null ? Player.STATE_IDLE : videoPlayer.getPlaybackState();
-		if (playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
+		if (playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED && isAttachedToWindow()) {
 			long delayMs;
 			if (videoPlayer != null && videoPlayer.getPlayWhenReady() && playbackState == Player.STATE_READY) {
 				delayMs = 100;
@@ -623,5 +768,10 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	@Override
 	public void onError(String errorMessage) {
 		logger.info("Unable to get video thumbnails. Reason: {}", errorMessage);
+	}
+
+	public interface OnTimelineDragListener {
+		void onTimelineDragStart();
+		void onTimelineDragStop();
 	}
 }

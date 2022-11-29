@@ -30,8 +30,9 @@ import androidx.annotation.Nullable;
 import ch.threema.app.utils.RandomUtil;
 import ch.threema.app.voip.signaling.ToSignalingMessage;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.protobuf.callsignaling.CallSignaling;
-import ch.threema.protobuf.callsignaling.CallSignaling.VideoQualityProfile.QualityProfile;
+import ch.threema.protobuf.Common;
+import ch.threema.protobuf.callsignaling.O2OCall;
+import ch.threema.protobuf.callsignaling.O2OCall.VideoQualityProfile.QualityProfile;
 
 /**
  * Manage video quality profiles.
@@ -67,7 +68,7 @@ public class VoipVideoParams implements ToSignalingMessage {
 
 	@Override
 	public int getType() {
-		return CallSignaling.Envelope.VIDEO_QUALITY_PROFILE_FIELD_NUMBER;
+		return O2OCall.Envelope.VIDEO_QUALITY_PROFILE_FIELD_NUMBER;
 	}
 
 	/**
@@ -235,7 +236,7 @@ public class VoipVideoParams implements ToSignalingMessage {
 	//region Protocol buffers
 
 	public static @Nullable VoipVideoParams fromSignalingMessage(
-		@NonNull CallSignaling.VideoQualityProfile profile
+		@NonNull O2OCall.VideoQualityProfile profile
 	) {
 		switch (profile.getProfile()) {
 			case LOW:
@@ -263,7 +264,7 @@ public class VoipVideoParams implements ToSignalingMessage {
 			logger.warn("Received message without max resolution");
 			return null;
 		}
-		final CallSignaling.Resolution resolution = profile.getMaxResolution();
+		final Common.Resolution resolution = profile.getMaxResolution();
 		if (resolution.getWidth() == 0 || resolution.getHeight() == 0) {
 			logger.warn("Received message with 0 width or height");
 			return null;
@@ -279,16 +280,16 @@ public class VoipVideoParams implements ToSignalingMessage {
 	}
 
 	@Override
-	public @NonNull CallSignaling.Envelope toSignalingMessage() {
-		final CallSignaling.Resolution.Builder resolution = CallSignaling.Resolution.newBuilder()
+	public @NonNull O2OCall.Envelope toSignalingMessage() {
+		final Common.Resolution.Builder resolution = Common.Resolution.newBuilder()
 			.setWidth(this.maxWidth)
 			.setHeight(this.maxHeight);
-		final CallSignaling.VideoQualityProfile.Builder profile = CallSignaling.VideoQualityProfile.newBuilder()
+		final O2OCall.VideoQualityProfile.Builder profile = O2OCall.VideoQualityProfile.newBuilder()
 			.setProfile(this.profile)
 			.setMaxBitrateKbps(this.maxBitrateKbps)
 			.setMaxFps(this.maxFps)
 			.setMaxResolution(resolution);
-		return CallSignaling.Envelope.newBuilder()
+		return O2OCall.Envelope.newBuilder()
 			.setPadding(ByteString.copyFrom(RandomUtil.generateRandomPadding(0, 255)))
 			.setVideoQualityProfile(profile)
 			.build();

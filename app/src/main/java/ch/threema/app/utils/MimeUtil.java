@@ -22,14 +22,17 @@
 package ch.threema.app.utils;
 
 import android.content.Context;
+import android.provider.DocumentsContract;
 
 import java.lang.annotation.Retention;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import ch.threema.app.R;
 import ch.threema.app.exceptions.MalformedMimeTypeException;
 import ch.threema.app.ui.MediaItem;
@@ -72,7 +75,7 @@ public class MimeUtil {
 	public static final String MIME_TYPE_TEXT = "text/plain";
 	public static final String MIME_TYPE_HTML = "text/html";
 	public static final String MIME_TYPE_DEFAULT = "application/octet-stream";
-	public static final String MIME_TYPE_EMAIL= "message/rfc822";
+	public static final String MIME_TYPE_EMAIL = "message/rfc822";
 
 	public static final String MIME_VIDEO = "video/";
 	public static final String MIME_AUDIO = "audio/";
@@ -85,36 +88,231 @@ public class MimeUtil {
 	public static final int MIME_TYPE_GIF_IND = 103;
 
 	// map from icon resource id to string resource id
-	protected static final Map<Integer, Integer> mimeToDescription = new HashMap<Integer, Integer>(){
-		{
-			put(R.drawable.ic_doc_apk, R.string.mime_android_apk);
-			put(R.drawable.ic_doc_audio, R.string.mime_audio);
-			put(R.drawable.ic_doc_certificate, R.string.mime_certificate);
-			put(R.drawable.ic_doc_codes, R.string.mime_codes);
-			put(R.drawable.ic_doc_compressed, R.string.mime_compressed);
-			put(R.drawable.ic_doc_contact_am, R.string.mime_contact);
-			put(R.drawable.ic_doc_event_am, R.string.mime_event);
-			put(R.drawable.ic_doc_font, R.string.mime_font);
-			put(R.drawable.ic_image_outline, R.string.mime_image);
-			put(R.drawable.ic_doc_pdf, R.string.mime_pdf);
-			put(R.drawable.ic_doc_presentation, R.string.mime_presentation);
-			put(R.drawable.ic_doc_spreadsheet_am, R.string.mime_spreadsheet);
-			put(R.drawable.ic_doc_text_am, R.string.mime_text);
-			put(R.drawable.ic_movie_outline, R.string.mime_video);
-			put(R.drawable.ic_doc_word, R.string.mime_word);
-			put(R.drawable.ic_doc_excel, R.string.mime_spreadsheet);
-			put(R.drawable.ic_doc_powerpoint, R.string.mime_presentation);
+	protected static final EnumMap<MimeCategory, Integer> mimeToDescription = new EnumMap<>(MimeCategory.class);
+
+	private static final Map<String, MimeCategory> mimeMap = new HashMap<>();
+
+	static {
+		mimeToDescription.put(MimeCategory.APK, R.string.mime_android_apk);
+		mimeToDescription.put(MimeCategory.AUDIO, R.string.mime_audio);
+		mimeToDescription.put(MimeCategory.CERTIFICATE, R.string.mime_certificate);
+		mimeToDescription.put(MimeCategory.CODES, R.string.mime_codes);
+		mimeToDescription.put(MimeCategory.COMPRESSED, R.string.mime_compressed);
+		mimeToDescription.put(MimeCategory.CONTACT, R.string.mime_contact);
+		mimeToDescription.put(MimeCategory.EVENT, R.string.mime_event);
+		mimeToDescription.put(MimeCategory.FONT, R.string.mime_font);
+		mimeToDescription.put(MimeCategory.IMAGE, R.string.mime_image);
+		mimeToDescription.put(MimeCategory.PDF, R.string.mime_pdf);
+		mimeToDescription.put(MimeCategory.PRESENTATION, R.string.mime_presentation);
+		mimeToDescription.put(MimeCategory.SPREADSHEET, R.string.mime_spreadsheet);
+		mimeToDescription.put(MimeCategory.TEXT, R.string.mime_text);
+		mimeToDescription.put(MimeCategory.VIDEO, R.string.mime_video);
+		mimeToDescription.put(MimeCategory.WORD, R.string.mime_word);
+		mimeToDescription.put(MimeCategory.EXCEL, R.string.mime_spreadsheet);
+		mimeToDescription.put(MimeCategory.POWERPOINT, R.string.mime_presentation);
+
+		// Package
+		mimeMap.put("application/vnd.android.package-archive", MimeCategory.APK);
+
+		// Audio
+		mimeMap.put("application/ogg", MimeCategory.AUDIO);
+		mimeMap.put("application/x-flac", MimeCategory.AUDIO);
+
+		// Certificate
+		mimeMap.put("application/pgp-keys", MimeCategory.CERTIFICATE);
+		mimeMap.put("application/pgp-signature", MimeCategory.CERTIFICATE);
+		mimeMap.put("application/x-pkcs12", MimeCategory.CERTIFICATE);
+		mimeMap.put("application/x-pkcs7-certreqresp", MimeCategory.CERTIFICATE);
+		mimeMap.put("application/x-pkcs7-crl", MimeCategory.CERTIFICATE);
+		mimeMap.put("application/x-x509-ca-cert", MimeCategory.CERTIFICATE);
+		mimeMap.put("application/x-x509-user-cert", MimeCategory.CERTIFICATE);
+		mimeMap.put("application/x-pkcs7-certificates", MimeCategory.CERTIFICATE);
+		mimeMap.put("application/x-pkcs7-mime", MimeCategory.CERTIFICATE);
+		mimeMap.put("application/x-pkcs7-signature", MimeCategory.CERTIFICATE);
+
+		// Source code
+		mimeMap.put("application/rdf+xml", MimeCategory.CODES);
+		mimeMap.put("application/rss+xml", MimeCategory.CODES);
+		mimeMap.put("application/x-object", MimeCategory.CODES);
+		mimeMap.put("application/xhtml+xml", MimeCategory.CODES);
+		mimeMap.put("text/css", MimeCategory.CODES);
+		mimeMap.put(MIME_TYPE_HTML, MimeCategory.CODES);
+		mimeMap.put("text/xml", MimeCategory.CODES);
+		mimeMap.put("text/x-c++hdr", MimeCategory.CODES);
+		mimeMap.put("text/x-c++src", MimeCategory.CODES);
+		mimeMap.put("text/x-chdr", MimeCategory.CODES);
+		mimeMap.put("text/x-csrc", MimeCategory.CODES);
+		mimeMap.put("text/x-dsrc", MimeCategory.CODES);
+		mimeMap.put("text/x-csh", MimeCategory.CODES);
+		mimeMap.put("text/x-haskell", MimeCategory.CODES);
+		mimeMap.put("text/x-java", MimeCategory.CODES);
+		mimeMap.put("text/x-literate-haskell", MimeCategory.CODES);
+		mimeMap.put("text/x-pascal", MimeCategory.CODES);
+		mimeMap.put("text/x-tcl", MimeCategory.CODES);
+		mimeMap.put("text/x-tex", MimeCategory.CODES);
+		mimeMap.put("application/x-latex", MimeCategory.CODES);
+		mimeMap.put("application/x-texinfo", MimeCategory.CODES);
+		mimeMap.put("application/atom+xml", MimeCategory.CODES);
+		mimeMap.put("application/ecmascript", MimeCategory.CODES);
+		mimeMap.put("application/json", MimeCategory.CODES);
+		mimeMap.put("application/javascript", MimeCategory.CODES);
+		mimeMap.put("application/xml", MimeCategory.CODES);
+		mimeMap.put("text/javascript", MimeCategory.CODES);
+		mimeMap.put("application/x-javascript", MimeCategory.CODES);
+
+		// Compressed
+		mimeMap.put("application/mac-binhex40", MimeCategory.COMPRESSED);
+		mimeMap.put("application/rar", MimeCategory.COMPRESSED);
+		mimeMap.put(MIME_TYPE_ZIP, MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-apple-diskimage", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-debian-package", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-gtar", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-iso9660-image", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-lha", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-lzh", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-lzx", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-stuffit", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-tar", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-webarchive", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-webarchive-xml", MimeCategory.COMPRESSED);
+		mimeMap.put("application/gzip", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-7z-compressed", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-deb", MimeCategory.COMPRESSED);
+		mimeMap.put("application/x-rar-compressed", MimeCategory.COMPRESSED);
+
+		// Contact
+		mimeMap.put(MIME_TYPE_VCARD, MimeCategory.CONTACT);
+		mimeMap.put(MIME_TYPE_VCARD_ALT, MimeCategory.CONTACT);
+
+		// Document
+		mimeMap.put("application/vnd.oasis.opendocument.text", MimeCategory.DOCUMENT);
+		mimeMap.put("application/vnd.oasis.opendocument.text-master", MimeCategory.DOCUMENT);
+		mimeMap.put("application/vnd.oasis.opendocument.text-template", MimeCategory.DOCUMENT);
+		mimeMap.put("application/vnd.oasis.opendocument.text-web", MimeCategory.DOCUMENT);
+		mimeMap.put("application/vnd.stardivision.writer", MimeCategory.DOCUMENT);
+		mimeMap.put("application/vnd.stardivision.writer-global", MimeCategory.DOCUMENT);
+		mimeMap.put("application/vnd.sun.xml.writer", MimeCategory.DOCUMENT);
+		mimeMap.put("application/vnd.sun.xml.writer.global", MimeCategory.DOCUMENT);
+		mimeMap.put("application/vnd.sun.xml.writer.template", MimeCategory.DOCUMENT);
+		mimeMap.put("application/x-abiword", MimeCategory.DOCUMENT);
+		mimeMap.put("application/x-kword", MimeCategory.DOCUMENT);
+
+		// Event
+		mimeMap.put("text/calendar", MimeCategory.EVENT);
+		mimeMap.put("text/x-vcalendar", MimeCategory.EVENT);
+
+		// Folder
+		mimeMap.put(DocumentsContract.Document.MIME_TYPE_DIR, MimeCategory.FOLDER);
+
+		// Font
+		mimeMap.put("application/x-font", MimeCategory.FONT);
+		mimeMap.put("application/font-woff", MimeCategory.FONT);
+		mimeMap.put("application/x-font-woff", MimeCategory.FONT);
+		mimeMap.put("application/x-font-ttf", MimeCategory.FONT);
+		mimeMap.put("font/ttf", MimeCategory.FONT);
+		mimeMap.put("font/woff", MimeCategory.FONT);
+
+		// Image
+		mimeMap.put("application/vnd.oasis.opendocument.graphics", MimeCategory.IMAGE);
+		mimeMap.put("application/vnd.oasis.opendocument.graphics-template", MimeCategory.IMAGE);
+		mimeMap.put("application/vnd.oasis.opendocument.image", MimeCategory.IMAGE);
+		mimeMap.put("application/vnd.stardivision.draw", MimeCategory.IMAGE);
+		mimeMap.put("application/vnd.sun.xml.draw", MimeCategory.IMAGE);
+		mimeMap.put("application/vnd.sun.xml.draw.template", MimeCategory.IMAGE);
+
+		// PDF
+		mimeMap.put(MIME_TYPE_PDF, MimeCategory.PDF);
+
+		// Presentation
+		mimeMap.put("application/vnd.stardivision.impress", MimeCategory.PRESENTATION);
+		mimeMap.put("application/vnd.sun.xml.impress", MimeCategory.PRESENTATION);
+		mimeMap.put("application/vnd.sun.xml.impress.template", MimeCategory.PRESENTATION);
+		mimeMap.put("application/x-kpresenter", MimeCategory.PRESENTATION);
+		mimeMap.put("application/vnd.oasis.opendocument.presentation", MimeCategory.PRESENTATION);
+
+		// Spreadsheet
+		mimeMap.put("application/vnd.oasis.opendocument.spreadsheet", MimeCategory.SPREADSHEET);
+		mimeMap.put("application/vnd.oasis.opendocument.spreadsheet-template", MimeCategory.SPREADSHEET);
+		mimeMap.put("application/vnd.stardivision.calc", MimeCategory.SPREADSHEET);
+		mimeMap.put("application/vnd.sun.xml.calc", MimeCategory.SPREADSHEET);
+		mimeMap.put("application/vnd.sun.xml.calc.template", MimeCategory.SPREADSHEET);
+		mimeMap.put("application/x-kspread", MimeCategory.SPREADSHEET);
+
+		// Text
+		mimeMap.put(MIME_TYPE_TEXT, MimeCategory.TEXT);
+
+		// Video
+		mimeMap.put("application/x-quicktimeplayer", MimeCategory.VIDEO);
+		mimeMap.put("application/x-shockwave-flash", MimeCategory.VIDEO);
+
+		// Word
+		mimeMap.put("application/msword", MimeCategory.WORD);
+		mimeMap.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", MimeCategory.WORD);
+		mimeMap.put("application/vnd.openxmlformats-officedocument.wordprocessingml.template", MimeCategory.WORD);
+
+		// Excel
+		mimeMap.put("application/vnd.ms-excel", MimeCategory.EXCEL);
+		mimeMap.put("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", MimeCategory.EXCEL);
+		mimeMap.put("application/vnd.openxmlformats-officedocument.spreadsheetml.template", MimeCategory.EXCEL);
+
+		// Powerpoint
+		mimeMap.put("application/vnd.ms-powerpoint", MimeCategory.POWERPOINT);
+		mimeMap.put("application/vnd.openxmlformats-officedocument.presentationml.presentation", MimeCategory.POWERPOINT);
+		mimeMap.put("application/vnd.openxmlformats-officedocument.presentationml.template", MimeCategory.POWERPOINT);
+		mimeMap.put("application/vnd.openxmlformats-officedocument.presentationml.slideshow", MimeCategory.POWERPOINT);
+	}
+
+	public enum MimeCategory {
+		APK,
+		AUDIO,
+		CERTIFICATE,
+		CODES,
+		COMPRESSED,
+		CONTACT,
+		DOCUMENT,
+		EVENT,
+		FOLDER,
+		FONT,
+		IMAGE,
+		PDF,
+		PRESENTATION,
+		SPREADSHEET,
+		TEXT,
+		VIDEO,
+		WORD,
+		EXCEL,
+		POWERPOINT,
+		OTHER,
+	}
+
+	public static @NonNull MimeCategory getMimeCategory(@Nullable String mimeType) {
+		MimeCategory category = mimeMap.get(mimeType);
+		if (category == null && mimeType != null) {
+			final String typeOnly = mimeType.split("/")[0];
+			if ("audio".equals(typeOnly)) {
+				category = MimeCategory.AUDIO;
+			} else if ("image".equals(typeOnly)) {
+				category = MimeCategory.IMAGE;
+			} else if ("text".equals(typeOnly)) {
+				category = MimeCategory.TEXT;
+			} else if ("video".equals(typeOnly)) {
+				category = MimeCategory.VIDEO;
+			}
 		}
-	};
+		return category != null ? category : MimeCategory.OTHER;
+	}
 
-	public static String getMimeDescription(Context context, String mimeType) {
-		int iconRes = IconUtil.getMimeIcon(mimeType);
-
-		if (iconRes == R.drawable.ic_doc_generic_am || iconRes == R.drawable.ic_doc_folder) {
+	public static @NonNull String getMimeDescription(@NonNull Context context, @NonNull String mimeType) {
+		@StringRes Integer description = getMimeDescription(getMimeCategory(mimeType));
+		if (description == null) {
 			return mimeType;
 		} else {
-			return context.getString(mimeToDescription.get(iconRes));
+			return context.getString(description);
 		}
+	}
+
+	public static @StringRes Integer getMimeDescription(@Nullable MimeCategory category) {
+		return mimeToDescription.get(category);
 	}
 
 	public static boolean isMidiFile(String mimeType) {
@@ -136,7 +334,7 @@ public class MimeUtil {
 
 	public static boolean isStaticImageFile(@Nullable String mimeType) {
 		return mimeType != null && (mimeType.startsWith(MIME_TYPE_IMAGE_PNG) || mimeType.startsWith(MIME_TYPE_IMAGE_JPG)
-		|| mimeType.startsWith(MIME_TYPE_IMAGE_HEIF) || mimeType.startsWith(MIME_TYPE_IMAGE_HEIC) || mimeType.startsWith(MIME_TYPE_IMAGE_TIFF));
+			|| mimeType.startsWith(MIME_TYPE_IMAGE_HEIF) || mimeType.startsWith(MIME_TYPE_IMAGE_HEIC) || mimeType.startsWith(MIME_TYPE_IMAGE_TIFF));
 	}
 
 	public static boolean isVideoFile(@Nullable String mimeType) {

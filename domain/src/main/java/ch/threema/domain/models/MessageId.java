@@ -65,9 +65,9 @@ public class MessageId implements Serializable {
 	 * Create a MessageId from an 8-byte array.
 	 * @throws ThreemaException If the source array has the wrong length.
 	 */
-	public MessageId(byte[] messageId) throws ThreemaException {
+	public MessageId(byte[] messageId) throws BadMessageIdException {
 		if (messageId.length != ProtocolDefines.MESSAGE_ID_LEN) {
-			throw new ThreemaException("Invalid message ID length");
+			throw new BadMessageIdException("Invalid message ID length");
 		}
 		this.messageId = messageId;
 	}
@@ -116,5 +116,11 @@ public class MessageId implements Serializable {
 	public int hashCode() {
 		/* message IDs are usually random, so just taking the first four bytes is fine */
 		return messageId[0] << 24 | (messageId[1] & 0xFF) << 16 | (messageId[2] & 0xFF) << 8 | (messageId[3] & 0xFF);
+	}
+
+	public static class BadMessageIdException extends ThreemaException {
+		public BadMessageIdException(String msg) {
+			super(msg);
+		}
 	}
 }

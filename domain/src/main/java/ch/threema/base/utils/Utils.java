@@ -22,6 +22,7 @@
 package ch.threema.base.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,6 +33,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class Utils {
+
+	private static final char[] HEX_LOOKUP_TABLE = {
+		'0', '1', '2', '3', '4', '5', '6', '7',
+		'8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+	};
 
 	private Utils() {}
 
@@ -57,19 +63,32 @@ public class Utils {
 	 */
 	public static String byteArrayToHexString(byte[] bytes) {
 		if(bytes != null) {
-			final char[] hexArray = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 			char[] hexChars = new char[bytes.length * 2];
 			int v;
 			for (int j = 0; j < bytes.length; j++) {
 				v = bytes[j] & 0xFF;
-				hexChars[j * 2] = hexArray[v >>> 4];
-				hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+				hexChars[j * 2] = HEX_LOOKUP_TABLE[v >>> 4];
+				hexChars[j * 2 + 1] = HEX_LOOKUP_TABLE[v & 0x0F];
 			}
 			return new String(hexChars);
 		}
 		return null;
 	}
 
+	@NonNull
+	public static String byteArrayToSeparatedHexString(@NonNull byte[] bytes, char separator) {
+		int stringLength = bytes.length * 3;
+		char[] chars = new char[stringLength > 0 ? stringLength - 1 : stringLength];
+		for (int byteOffset = 0, charOffset = 0; byteOffset < bytes.length; ++byteOffset) {
+			int value = bytes[byteOffset] & 0xFF;
+			chars[charOffset++] = HEX_LOOKUP_TABLE[value >>> 4];
+			chars[charOffset++] = HEX_LOOKUP_TABLE[value & 0x0F];
+			if (byteOffset < bytes.length - 1) {
+				chars[charOffset++] = separator;
+			}
+		}
+		return new String(chars);
+	}
 
 	public static String byteArrayToSha256HexString(byte[] bytes) throws NoSuchAlgorithmException {
 		MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -215,5 +234,21 @@ public class Utils {
 			}
 		}
 		return false;
+	}
+
+	public static byte[] concatByteArrays(byte[] a, byte[] b) {
+		return ByteBuffer.allocate(a.length + b.length)
+			.put(a)
+			.put(b)
+			.array();
+	}
+
+	public static byte[] concatByteArrays(byte[] a, byte[] b, byte[] c, byte[] d) {
+		return ByteBuffer.allocate(a.length + b.length + c.length + d.length)
+			.put(a)
+			.put(b)
+			.put(c)
+			.put(d)
+			.array();
 	}
 }

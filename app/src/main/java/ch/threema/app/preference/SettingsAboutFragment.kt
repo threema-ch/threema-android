@@ -19,6 +19,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("DEPRECATION")
+
 package ch.threema.app.preference
 
 import android.annotation.SuppressLint

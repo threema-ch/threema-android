@@ -22,6 +22,7 @@
 package ch.threema.app.webclient.converter;
 
 import androidx.annotation.AnyThread;
+
 import ch.threema.app.webclient.exceptions.ConversionException;
 
 @AnyThread
@@ -44,6 +45,7 @@ public class MessageState extends Converter {
 				case READ:
 					return MessageState.READ;
 				case SENDFAILED:
+				case FS_KEY_MISMATCH:
 					return MessageState.SENDFAILED;
 				case SENT:
 					return MessageState.SENT;

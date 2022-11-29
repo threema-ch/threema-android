@@ -26,6 +26,9 @@ import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.base.utils.Utils;
 import com.neilalexander.jnacl.NaCl;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class DummyUsers {
 	public static final User ALICE = new User("000ALICE", Utils.hexStringToByteArray("6eda2ebb8527ff5bd0e8719602f710c13e162a3be612de0ad2a2ff66f5050630"));
 	public static final User BOB = new User("00000BOB", Utils.hexStringToByteArray("533058227925006d86bb8dd88b0442ed73fbc49216b6e94b0870a7761d979eca"));
@@ -37,7 +40,7 @@ public class DummyUsers {
 	}
 
 	public static Contact getContactForUser(User user) {
-		return new Contact(user.identity, NaCl.derivePublicKey(user.privateKey));
+		return new DummyContact(user.identity, NaCl.derivePublicKey(user.privateKey));
 	}
 
 	public static class User {
@@ -55,6 +58,21 @@ public class DummyUsers {
 
 		public byte[] getPrivateKey() {
 			return privateKey;
+		}
+	}
+
+	public static class DummyContact extends Contact {
+		public DummyContact(String identity, byte[] publicKey) {
+			super(identity, publicKey);
+		}
+
+		// equals needed for Mockito
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Contact contact = (Contact) o;
+			return Objects.equals(getIdentity(), contact.getIdentity()) && Arrays.equals(getPublicKey(), contact.getPublicKey());
 		}
 	}
 }

@@ -116,6 +116,7 @@ import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.ResumePauseHandler;
@@ -133,6 +134,8 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
+import ch.threema.app.voip.activities.GroupCallActivity;
+import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -195,6 +198,7 @@ public class MessageSectionFragment extends MainFragment
 	private ConversationService conversationService;
 	private ContactService contactService;
 	private GroupService groupService;
+	private GroupCallManager groupCallManager;
 	private MessageService messageService;
 	private DistributionListService distributionListService;
 	private BackupChatService backupChatService;
@@ -217,6 +221,8 @@ public class MessageSectionFragment extends MainFragment
 	private String filterQuery;
 	private int cornerRadius;
 	private TagModel unreadTagModel;
+
+	private @Nullable String myIdentity;
 
 	private ArchiveSnackbar archiveSnackbar;
 
@@ -303,6 +309,16 @@ public class MessageSectionFragment extends MainFragment
 		}
 	};
 
+	private final GroupListener groupListener = new GroupListener() {
+		@Override
+		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
+			// If this user is added to an existing group
+			if (groupService != null && myIdentity != null && myIdentity.equals(newIdentity)) {
+				fireReceiverUpdate(groupService.createReceiver(group));
+			}
+		}
+	};
+
 	private final ChatListener chatListener = new ChatListener() {
 		@Override
 		public void onChatOpened(String conversationUid) {
@@ -385,6 +401,7 @@ public class MessageSectionFragment extends MainFragment
 				this.serviceManager,
 				this.contactListener,
 				this.groupService,
+				this.groupCallManager,
 				this.conversationService,
 				this.distributionListService,
 				this.fileService,
@@ -403,6 +420,7 @@ public class MessageSectionFragment extends MainFragment
 			try {
 				this.contactService = this.serviceManager.getContactService();
 				this.groupService = this.serviceManager.getGroupService();
+				this.groupCallManager = this.serviceManager.getGroupCallManager();
 				this.messageService = this.serviceManager.getMessageService();
 				this.conversationService = this.serviceManager.getConversationService();
 				this.distributionListService = this.serviceManager.getDistributionListService();
@@ -415,6 +433,10 @@ public class MessageSectionFragment extends MainFragment
 				this.preferenceService = this.serviceManager.getPreferenceService();
 				this.conversationTagService = this.serviceManager.getConversationTagService();
 				this.lockAppService = this.serviceManager.getLockAppService();
+				UserService userService = serviceManager.getUserService();
+				if (userService != null) {
+					myIdentity = userService.getIdentity();
+				}
 			} catch (MasterKeyLockedException e) {
 				logger.debug("Master Key locked!");
 			} catch (ThreemaException e) {
@@ -1088,6 +1110,14 @@ public class MessageSectionFragment extends MainFragment
 		AnimationUtil.startActivity(getActivity(), TestUtil.empty(filterQuery) ? view : null, intent);
 	}
 
+	@Override
+	public void onJoinGroupCallClick(ConversationModel conversationModel) {
+		GroupModel group = conversationModel.getGroup();
+		if (group != null) {
+			startActivity(GroupCallActivity.getStartOrJoinCallIntent(requireActivity(), group.getId()));
+		}
+	}
+
 	private void editGroup(ConversationModel model, View view) {
 		Intent intent = groupService.getGroupEditIntent(model.getGroup(), activity);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, model.getGroup().getId());
@@ -1455,6 +1485,7 @@ public class MessageSectionFragment extends MainFragment
 		ListenerManager.contactSettingsListeners.add(this.contactSettingsListener);
 		ListenerManager.synchronizeContactsListeners.add(this.synchronizeContactsListener);
 		ListenerManager.chatListener.add(this.chatListener);
+		ListenerManager.groupListeners.add(this.groupListener);
 	}
 
 	private void removeListeners() {
@@ -1465,6 +1496,7 @@ public class MessageSectionFragment extends MainFragment
 		ListenerManager.contactSettingsListeners.remove(this.contactSettingsListener);
 		ListenerManager.synchronizeContactsListeners.remove(this.synchronizeContactsListener);
 		ListenerManager.chatListener.remove(this.chatListener);
+		ListenerManager.groupListeners.remove(this.groupListener);
 	}
 
 	private void updateList() {
@@ -1525,6 +1557,7 @@ public class MessageSectionFragment extends MainFragment
 									MessageSectionFragment.this.activity,
 									contactService,
 									groupService,
+									groupCallManager,
 									distributionListService,
 									conversationService,
 									mutedChatsListService,
@@ -1665,9 +1698,9 @@ public class MessageSectionFragment extends MainFragment
 			}
 
 			if (getView() != null) {
-				String snackText = String.format(getString(R.string.message_archived), this.conversationModels.size());
+				int amountArchived = this.conversationModels.size();
+				String snackText = ConfigUtils.getSafeQuantityString(getContext(), R.plurals.message_archived, amountArchived, amountArchived, this.conversationModels.size());
 				this.snackbar = Snackbar.make(getView(), snackText, 7 * (int) DateUtils.SECOND_IN_MILLIS);
-
 				this.snackbar.setAction(R.string.undo, v -> conversationService.unarchive(conversationModels));
 				this.snackbar.addCallback(new Snackbar.Callback() {
 					@Override

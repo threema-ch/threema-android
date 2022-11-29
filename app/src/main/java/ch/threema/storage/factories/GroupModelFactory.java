@@ -113,6 +113,8 @@ public class GroupModelFactory extends ModelFactory {
 							.setCreatedAt(cursorHelper.getDateByString(GroupModel.COLUMN_CREATED_AT))
 							.setDeleted(cursorHelper.getBoolean(GroupModel.COLUMN_DELETED))
 							.setArchived(cursorHelper.getBoolean(GroupModel.COLUMN_IS_ARCHIVED))
+							.setGroupDesc(cursorHelper.getString(GroupModel.COLUMN_GROUP_DESC))
+							.setGroupDescTimestamp(cursorHelper.getDateByString(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP))
 					;
 
 					return false;
@@ -166,6 +168,8 @@ public class GroupModelFactory extends ModelFactory {
 		contentValues.put(GroupModel.COLUMN_SYNCHRONIZED_AT, groupModel.getSynchronizedAt() != null ? groupModel.getSynchronizedAt().getTime() : null);
 		contentValues.put(GroupModel.COLUMN_DELETED, groupModel.isDeleted());
 		contentValues.put(GroupModel.COLUMN_IS_ARCHIVED, groupModel.isArchived());
+		contentValues.put(GroupModel.COLUMN_GROUP_DESC, groupModel.getGroupDesc());
+		contentValues.put(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP, groupModel.getGroupDescTimestamp() !=null ? CursorHelper.dateAsStringFormat.get().format(groupModel.getGroupDescTimestamp()) : null);
 
 		return contentValues;
 	}
@@ -286,7 +290,7 @@ public class GroupModelFactory extends ModelFactory {
 	@Override
 	public String[] getStatements() {
 		return new String[]{
-				"CREATE TABLE `m_group` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `name` VARCHAR , `creatorIdentity` VARCHAR , `createdAt` VARCHAR , `synchronizedAt` BIGINT , `deleted` SMALLINT , `isArchived` TINYINT DEFAULT 0, `groupKind` INT DEFAULT 0 );",
+				"CREATE TABLE `m_group` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `name` VARCHAR , `creatorIdentity` VARCHAR , `createdAt` VARCHAR , `synchronizedAt` BIGINT , `deleted` SMALLINT , `isArchived` TINYINT DEFAULT 0, `groupKind` INT DEFAULT 0, `groupDesc` VARCHAR DEFAULT NULL, `changedGroupDescTimestamp` VARCHAR DEFAULT NULL);",
 				"CREATE UNIQUE INDEX `apiGroupIdAndCreator` ON `m_group` ( `apiGroupId`, `creatorIdentity` );"
 		};
 	}

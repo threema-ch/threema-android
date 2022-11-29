@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources>
-    <string name="voip_title">Threema araması</string>
+    <string name="voip_title">Threema Araması</string>
     <string name="voip_hangup">Sonlandır</string>
     <string name="voip_toggle_mic">Mikrofonu aç / kapat</string>
     <string name="voip_toggle_speaker">Hoparlörü aç / kapat</string>
@@ -20,10 +20,10 @@
     <!-- Shown when a call is being disconnected -->
     <string name="voip_status_disconnecting">Bağlantı kesiliyor</string>
     <!-- Shown when the device of the callee is ringing -->
-    <string name="voip_status_ringing">Çalıyor...</string>
+    <string name="voip_status_ringing">Çalıyor</string>
     <string name="voip_mic_enable">Mikrofonu etkinleştir</string>
     <string name="voip_mic_disable">Mikrofonu devre dışı bırak</string>
-    <string name="voip_checking_compatibility">Bu kişinin Threema aramalarını alıp alamayacağı kontrol ediliyor...</string>
+    <string name="voip_checking_compatibility">Bu kişinin Threema aramalarını alıp alamayacağı kontrol ediliyor</string>
     <string name="voip_incompatible">Bu kişi henüz Threema aramalarını alamıyor.</string>
     <string name="voip_call_status_unavailable">Aranan kişi müsait değil</string>
     <string name="voip_call_status_rejected">Reddedildi</string>
@@ -44,10 +44,10 @@
     <string name="voip_none">Müsait değil</string>
     <string name="voip_call_finished">Threema araması sona erdi</string>
     <string name="voip_another_call">Bağlanamıyor. Başka bir Threema araması şu anda aktif.</string>
-    <string name="voip_prefs_title_aec">Yankı giderimi</string>
+    <string name="voip_prefs_title_aec">Yankı Giderimi</string>
     <string name="voip_prefs_aec_sw">Yazılımsal yankı giderimi</string>
     <string name="voip_prefs_aec_hw">Donanımsal yankı giderimi</string>
-    <string name="voip_prefs_title_video_codec">Video kodlayıcıları</string>
+    <string name="voip_prefs_title_video_codec">Video Kodlayıcıları</string>
     <string name="voip_prefs_video_aec_hw">Donanımsal hızlandırma</string>
     <string name="voip_prefs_video_codec_no_vp8">VP8\'i devre dışı bırak</string>
     <string name="voip_prefs_video_codec_no_h264hip">H264-HiP\'yi devre dışı bırak</string>
@@ -55,11 +55,12 @@
     <string name="voip_connection_failed">Bağlantı kurulamadı</string>
     <string name="voip_connection_lost">Bağlantı koptu</string>
     <string name="prefs_voip_reject_incoming_calls_title">Mobil aramaları reddet</string>
-    <string name="prefs_voip_reject_incoming_calls_summary">Bir Threema araması etkinken gelen çağrıları reddet.</string>
-    <string name="voip_contact_not_found">Bu numara için Threema kişisi bulunamadı.</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Bir Threema Araması etkinken gelen cep telefonu aramalarını reddet.</string>
+    <string name="voip_contact_not_found">Bu numara için Threema kontağı bulunamadı.</string>
     <string name="voip_another_pstn_call">Arama başlatılamıyor. Normal bir telefon görüşmesi hala aktif.</string>
     <string name="voip_call_status_off_hours">Mesai dışı arama</string>
     <string name="voip_peer_video_disabled">Görüntülü aramalar karşı taraf tarafından devre dışı bırakıldı.</string>
+    <string name="voip_reject_channel_name">Çağrı durumu değişikliği</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC Tanılama</string>
     <string name="voip_prefs_webrtc_debug_summary">Sesli arama yapmak ile ilgili sorunları tanımlamak ve gidermek için bu aracı başlatın</string>
@@ -69,4 +70,34 @@
     <string name="voip_webrtc_debug_done">Tamamlandı. Arama yapmak ile ilgili sorunlar yaşıyorsanız, lütfen bu günlüğü Threema desteğine gönderin.</string>
     <string name="voip_webrtc_debug_copied">Panoya kopyalama işlemi tamamlandı.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Panoya kopyala</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Tüm grup üyeleri bilgilendirildi</string>
+    <string name="voip_gc_notification_channel_description">Grup çağrıları</string>
+    <string name="voip_gc_notification_title">Grup görüşmesi</string>
+    <string name="voip_gc_notification_call_started">%1$s, %2$s içinde bir grup araması başlattı</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s bir grup araması başlattı</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Bir grup araması başlattınız</string>
+    <string name="voip_gc_dismiss_call">Yoksay</string>
+    <string name="voip_gc_join_call">Katıl</string>
+    <string name="voip_gc_ongoing_call">Devam eden grup görüşmesi</string>
+    <string name="voip_gc_waiting_for_participants">Katılımcılar bekleniyor</string>
+    <string name="voip_gc_participant_avatar_description">Katılımcının profil resmi</string>
+    <string name="voip_gc_participant_mute_status_description">Katılımcı sessiz durumu</string>
+    <string name="voip_gc_notification_new_call_public">Yeni bir grup araması başlatıldı</string>
+    <string name="voip_gc_open_call">Açık</string>
+    <string name="voip_gc_call_started">Grup araması başlatıldı</string>
+    <string name="voip_gc_call_ended">Grup araması sona erdi</string>
+    <string name="voip_gc_in_call">grup görüşmesinde</string>
+    <string name="voip_gc_sfu_not_available">Sunucu kullanılamıyor, daha sonra tekrar deneyin</string>
+    <string name="voip_gc_call_error">Grup görüşmesi başlatılamadı</string>
+    <string name="voip_gc_call_full_generic">Maksimuma sayıya ulaşıldı: Bu grup görüşmesine başka katılımcı katılamaz.</string>
+    <string name="voip_gc_call_full_n">Maksimum %1$d katılımcıya ulaşıldı, bu grup görüşmesine katılamazsınız.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d katılımcı</item>
+        <item quantity="other">%d katılımcı</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Uyarı: Bir üye grup aramalarına katılamaz.</item>
+        <item quantity="other">Uyarı: %d üye grup aramalarına katılamaz.</item>
+    </plurals>
 </resources>

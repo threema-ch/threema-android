@@ -33,5 +33,5 @@ public class WorkData {
 	public String logoLight;
 	public String supportUrl;
 	public int checkInterval;
-
+	public int responseCode;
 }

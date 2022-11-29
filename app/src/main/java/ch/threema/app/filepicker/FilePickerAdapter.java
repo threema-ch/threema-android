@@ -93,7 +93,7 @@ public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 			viewHolder.extra.setVisibility(View.GONE);
 
 			if (fileInfo.getData().equalsIgnoreCase(Constants.FOLDER)) {
-				viewHolder.icon.setImageResource(R.drawable.ic_doc_folder);
+				viewHolder.icon.setImageResource(R.drawable.ic_folder);
 				viewHolder.extra.setVisibility(View.GONE);
 				tintItem(viewHolder, true);
 			} else if (fileInfo.getData().equalsIgnoreCase(

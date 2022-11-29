@@ -58,17 +58,10 @@ public class JsonUtil {
 		return l;
 	}
 
-
-
 	public static Map<String, Object> convertObject(String jsonObjectInputString) throws JSONException {
-
 		JSONObject jo = new JSONObject(jsonObjectInputString);
 
-		if (jo != null) {
-			return convert(jo);
-		}
-
-		return null;
+		return convert(jo);
 	}
 
 	public static Map<String, Object> convert(JSONObject jsonObjectInput) {

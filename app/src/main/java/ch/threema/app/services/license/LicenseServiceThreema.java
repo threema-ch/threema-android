@@ -22,6 +22,7 @@
 package ch.threema.app.services.license;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.domain.onprem.UnauthorizedFetchException;
 import ch.threema.domain.protocol.api.APIConnector;
 
 abstract public class  LicenseServiceThreema<T extends LicenseService.Credentials>  implements LicenseService<T> {
@@ -74,6 +75,10 @@ abstract public class  LicenseServiceThreema<T extends LicenseService.Credential
 				this.isLicensed = false;
 				return result.error;
 			}
+		} catch (UnauthorizedFetchException e) {
+			// Treat unauthorized OPPF fetch like (temporarily) bad license
+			this.isLicensed = false;
+			return e.getMessage();
 		} catch (Exception e) {
 			if(!allowException) {
 				return e.getMessage();

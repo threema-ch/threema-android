@@ -54,6 +54,10 @@
 			android:key="@string/preferences__background_data"
 			android:summary="@string/prefs_fix_background_data_desc"
 			android:title="@string/prefs_fix_background_data"/>
+		<Preference
+			android:key="@string/preferences__hibernation_mode"
+			android:summary="@string/prefs_summary_hibernation_api"
+			android:title="@string/prefs_title_hibernation"/>
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:key="pref_key_workarounds"
@@ -91,6 +95,10 @@
 			android:entryValues="@array/list_video_codec_values"
 			android:key="@string/preferences__voip_video_codec"
 			android:title="@string/voip_prefs_title_video_codec"/>
+		<Preference
+			android:key="@string/preferences__grant_read_phone_state_permission"
+			android:summary="@string/read_phone_state_dialog_message"
+			android:title="@string/prefs_title_read_phone_state"/>
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:key="pref_key_webclient"

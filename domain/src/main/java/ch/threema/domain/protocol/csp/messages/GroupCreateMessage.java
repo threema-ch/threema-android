@@ -51,7 +51,7 @@ public class GroupCreateMessage extends AbstractGroupMessage {
 	public byte[] getBody() {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			for (String member : members)
 				bos.write(member.getBytes(StandardCharsets.US_ASCII));
 			return bos.toByteArray();

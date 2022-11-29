@@ -197,7 +197,7 @@ public class MediaGalleryAdapter extends ArrayAdapter<AbstractMessageModel> {
 									holder.textContainerView.setVisibility(View.VISIBLE);
 								} else if (messageModel.getType() == MessageType.FILE) {
 									// try default avatar for mime type
-									thumbnail = fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType());
+									thumbnail = fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType(), false);
 									holder.topTextView.setText(messageModel.getFileData().getFileName());
 									holder.textContainerView.setVisibility(View.VISIBLE);
 									if (thumbnail != null) {

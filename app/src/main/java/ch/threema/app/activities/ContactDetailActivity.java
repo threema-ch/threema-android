@@ -21,6 +21,8 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.utils.QRScannerUtil.REQUEST_CODE_QR_SCANNER;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -38,6 +40,19 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -48,15 +63,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.ContactDetailAdapter;
@@ -101,8 +107,6 @@ import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
-import static ch.threema.app.utils.QRScannerUtil.REQUEST_CODE_QR_SCANNER;
-
 public class ContactDetailActivity extends ThreemaToolbarActivity
 		implements LifecycleOwner,
 					GenericAlertDialog.DialogClickListener,
@@ -130,7 +134,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	private IdListService blackListIdentityService, profilePicRecipientsService;
 	private MessageService messageService;
 	private DeadlineListService hiddenChatsListService;
-	private LicenseService licenseService;
 	private VoipStateService voipStateService;
 	private MenuItem blockMenuItem = null, profilePicItem = null, profilePicSendItem = null, callItem = null;
 	private boolean isReadonly;
@@ -143,6 +146,13 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	private List<GroupModel> groupList;
 	private boolean isDisabledProfilePicReleaseSettings = false;
 	private View workIcon;
+	private final ActivityResultLauncher<String> readPhoneStatePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+		if (!isGranted && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
+			ConfigUtils.showPermissionRationale(this, findViewById(R.id.main_content), R.string.read_phone_state_short_message);
+		} else {
+			VoipUtil.initiateCall(this, contact, false, null, null);
+		}
+	});
 
 	private final ResumePauseHandler.RunIfActive runIfActiveUpdate = new ResumePauseHandler.RunIfActive() {
 		@Override
@@ -298,7 +308,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			this.groupService = serviceManager.getGroupService();
 			this.messageService = serviceManager.getMessageService();
 			this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
-			this.licenseService = serviceManager.getLicenseService();
 			this.voipStateService = serviceManager.getVoipStateService();
 		} catch (Exception e) {
 			LogUtil.exception(e, this);
@@ -605,7 +614,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		if (callItem != null) {
 			if (
 				ContactUtil.canReceiveVoipMessages(contact, blackListIdentityService)
-					&& ConfigUtils.isCallsEnabled(ContactDetailActivity.this, preferenceService, licenseService)) {
+					&& ConfigUtils.isCallsEnabled()) {
 				logger.debug("updateVoipMenu newState " + newState);
 
 				callItem.setVisible(newState != null ? newState : voipStateService.getCallState().isIdle());
@@ -637,7 +646,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 				}
 				break;
 			case R.id.menu_threema_call:
-				VoipUtil.initiateCall(this, contact, false, null);
+				VoipUtil.initiateCall(this, contact, false, null, readPhoneStatePermissionLauncher);
 				break;
 			case R.id.action_block_contact:
 				if (this.blackListIdentityService != null && this.blackListIdentityService.has(this.contact.getIdentity())) {

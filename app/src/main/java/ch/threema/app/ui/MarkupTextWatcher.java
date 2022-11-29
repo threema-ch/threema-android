@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.ColorInt;
 import ch.threema.app.R;
+import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.emojis.MarkupParser;
 import ch.threema.app.utils.ConfigUtils;
 
@@ -42,8 +43,11 @@ public class MarkupTextWatcher implements TextWatcher {
 	@ColorInt private final int markerColor;
 	private boolean afterMarkup = false, beforeMarkup = false;
 	private final Pattern markupCharPattern;
+	private final Context context;
 
 	MarkupTextWatcher(Context context, EditText editor) {
+		this.context = context;
+
 		editText = editor;
 		editText.addTextChangedListener(this);
 
@@ -103,6 +107,9 @@ public class MarkupTextWatcher implements TextWatcher {
 			}
 
 			MarkupParser.getInstance().markify(s, markerColor);
+
+			// Also update the mention markup for strikethrough changes
+			EmojiMarkupUtil.getInstance().addMentionMarkup(context, s);
 		}
 	}
 

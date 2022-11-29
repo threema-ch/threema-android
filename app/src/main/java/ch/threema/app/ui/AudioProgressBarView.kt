@@ -157,7 +157,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
     private fun createEmptyBitmap() : Bitmap {
         val tmpBitmap = Bitmap.createBitmap(viewWidth, barHeight, Bitmap.Config.ARGB_8888)
         val unusedHeight: Float = (barHeight / 2F) - halfBarMinHeight
-        val halfSpace = spaceWidth.toFloat() / 2F;
+        val halfSpace = spaceWidth.toFloat() / 2F
 
         for (i: Int in 0 until numSamples) {
             tmpBitmap.applyCanvas {
@@ -261,7 +261,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
             }
         }
 
-        val cachedBitmap = thumbnailCache.get(newMessageModel.id);
+        val cachedBitmap = thumbnailCache.get(newMessageModel.id)
         if (cachedBitmap != null) {
             messageModel = newMessageModel
             waveBitmap = cachedBitmap
@@ -278,7 +278,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
             messageModel = newMessageModel
             waveFormTask = AudioWaveformGeneratorTask(newMessageModel,
                     numPreCalculatedSamples,
-                    this@AudioProgressBarView);
+                    this@AudioProgressBarView)
 
             ThreemaApplication.voiceMessageThumbnailExecutorService.execute(Thread(waveFormTask, "WaveformGenerator"))
         }

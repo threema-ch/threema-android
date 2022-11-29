@@ -72,9 +72,9 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 
 public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
-		GenericAlertDialog.DialogClickListener,
-		SelectorDialog.SelectorDialogClickListener,
-		TextEntryDialog.TextEntryDialogClickListener {
+	GenericAlertDialog.DialogClickListener,
+	SelectorDialog.SelectorDialogClickListener,
+	TextEntryDialog.TextEntryDialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupLinkOverviewActivity");
 
 	private static final String DIALOG_TAG_REALLY_DELETE_INVITE = "delete_invite";
@@ -388,10 +388,12 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void delete(List<GroupInviteModel> checkedItems) {
-		String confirmText = String.format(getString(R.string.really_delete_group_link), checkedItems.size());
+		int amountOfDeleteGroupLinks = checkedItems.size();
 
+		final String reallyDeleteGroupLinkTitle = getString(amountOfDeleteGroupLinks > 1 ? R.string.really_delete_multiple_group_links_title : R.string.really_delete_group_link_title);
+		String confirmText = ConfigUtils.getSafeQuantityString(this, R.plurals.really_delete_group_link, amountOfDeleteGroupLinks, amountOfDeleteGroupLinks);
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(
-			R.string.really_delete_group_link_title,
+			reallyDeleteGroupLinkTitle,
 			confirmText,
 			R.string.ok,
 			R.string.cancel);
@@ -426,7 +428,7 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
 					groupInviteRepository.update(new GroupInviteModel.Builder(groupInviteModel)
 						.withExpirationDate(new Date(date))
 						.build());
-						viewModel.onDataChanged();
+					viewModel.onDataChanged();
 				} catch (SQLException | GroupInviteModel.MissingRequiredArgumentsException e) {
 					LogUtil.error(String.format(getString(R.string.an_error_occurred_more), e.getMessage()), this);
 				}

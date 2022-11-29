@@ -131,33 +131,15 @@ public class DistributionListServiceImpl implements DistributionListService {
 		return distributionListModel;
 	}
 
-	@Override
-	@Nullable
-	public Bitmap getAvatar(DistributionListModel model, boolean highResolution) {
-		return avatarCacheService.getDistributionListAvatarLow(model);
-	}
-
 	@Nullable
 	@Override
-	public Bitmap getAvatar(@Nullable DistributionListModel model, boolean highResolution, boolean returnDefaultAvatarIfNone) {
+	public Bitmap getAvatar(@Nullable DistributionListModel model, @Nullable AvatarOptions options) {
 		return avatarCacheService.getDistributionListAvatarLow(model);
 	}
 
 	@Override
-	public void loadAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, AvatarOptions options) {
+	public void loadAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
 		avatarCacheService.loadDistributionListAvatarIntoImage(model, imageView, options);
-	}
-
-	@Nullable
-	@Override
-	public Bitmap getDefaultAvatar(@Nullable DistributionListModel model, boolean highResolution) {
-		return avatarCacheService.getDistributionListAvatarLow(model);
-	}
-
-	@Nullable
-	@Override
-	public Bitmap getNeutralAvatar(boolean highResolution) {
-		return avatarCacheService.getDistributionListAvatarLow(null);
 	}
 
 	@Override

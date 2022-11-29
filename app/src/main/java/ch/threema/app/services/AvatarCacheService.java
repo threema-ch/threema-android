@@ -41,27 +41,13 @@ public interface AvatarCacheService {
 	 * Get the avatar of the provided contact model in high resolution. If an error happens while loading
 	 * the avatar, the default avatar or null is returned.
 	 *
-	 * @param contactModel              if the contact model is null, the default contact avatar is returned
-	 * @param defaultOnly               it true, the default contact avatar of this contact is returned (colored - depending on the preference)
-	 * @param returnDefaultAvatarIfNone if true, the default avatar is returned if no custom avatar is set for the given contact, otherwise null is returned
+	 * @param contactModel if the contact model is null, the neutral contact avatar is returned
+	 * @param options      the options for loading the avatar
 	 * @return the contact avatar depending on the given choices
 	 */
 	@AnyThread
 	@Nullable
-	Bitmap getContactAvatarHigh(@Nullable ContactModel contactModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone);
-
-	/**
-	 * Get the avatar of the provided contact model in low resolution. If an error happens while loading
-	 * the avatar, the default avatar or null is returned.
-	 *
-	 * @param contactModel              if the contact model is null, the default contact avatar is returned
-	 * @param defaultOnly               it true, the default contact avatar of this contact is returned (colored - depending on the preference)
-	 * @param returnDefaultAvatarIfNone if true, the default avatar is returned if no custom avatar is set for the given contact, otherwise null is returned
-	 * @return the contact avatar depending on the given choices
-	 */
-	@AnyThread
-	@Nullable
-	Bitmap getContactAvatarLow(@Nullable ContactModel contactModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone);
+	Bitmap getContactAvatar(@Nullable ContactModel contactModel, @NonNull AvatarOptions options);
 
 	/**
 	 * Load the avatar directly into the given image view.
@@ -71,43 +57,19 @@ public interface AvatarCacheService {
 	 * @param options      the options for loading the image
 	 */
 	@AnyThread
-	void loadContactAvatarIntoImage(@NonNull ContactModel contactModel, @NonNull ImageView imageView, AvatarOptions options);
+	void loadContactAvatarIntoImage(@NonNull ContactModel contactModel, @NonNull ImageView imageView, @NonNull AvatarOptions options);
 
 	/**
 	 * Get the avatar of the provided group model in high resolution. If an error happens while loading
 	 * the avatar, the default avatar or null is returned.
 	 *
-	 * @param groupModel                if the group model is null, the default group avatar is returned
-	 * @param defaultOnly               it true, the default group avatar of this group is returned (colored - depending on the preference)
-	 * @param returnDefaultAvatarIfNone if true, the default avatar is returned if no custom avatar is set for the given group, otherwise null is returned
+	 * @param groupModel if the group model is null, the neutral group avatar is returned
+	 * @param options    the options for loading the avatar
 	 * @return the contact group depending on the given choices
 	 */
 	@AnyThread
 	@Nullable
-	Bitmap getGroupAvatarHigh(@Nullable GroupModel groupModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone);
-
-	/**
-	 * Get the avatar of the provided group model in low resolution. If an error happens while loading
-	 * the avatar, the default avatar or null is returned.
-	 *
-	 * @param groupModel                if the group model is null, the default group avatar is returned
-	 * @param defaultOnly               it true, the default group avatar of this group is returned (colored - depending on the preference)
-	 * @param returnDefaultAvatarIfNone if true, the default avatar is returned if no custom avatar is set for the given group, otherwise null is returned
-	 * @return the contact group depending on the given choices; might be null
-	 */
-	@AnyThread
-	@Nullable
-	Bitmap getGroupAvatarLow(@Nullable GroupModel groupModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone);
-
-	/**
-	 * Get the default neutral group avatar (default color).
-	 *
-	 * @param highResolution if true, the high resolution neutral avatar is returned
-	 * @return the neutral group avatar; null if an error occurred
-	 */
-	@AnyThread
-	@Nullable
-	Bitmap getGroupAvatarNeutral(boolean highResolution);
+	Bitmap getGroupAvatar(@Nullable GroupModel groupModel, @NonNull AvatarOptions options);
 
 	/**
 	 * Load the avatar directly into the given image view.
@@ -117,7 +79,7 @@ public interface AvatarCacheService {
 	 * @param options     the options for loading the image
 	 */
 	@AnyThread
-	void loadGroupAvatarIntoImage(@Nullable GroupModel groupModel, @NonNull ImageView imageView, AvatarOptions options);
+	void loadGroupAvatarIntoImage(@Nullable GroupModel groupModel, @NonNull ImageView imageView, @NonNull AvatarOptions options);
 
 	/**
 	 * Get the avatar of the provided model in low resolution. If an error happens while loading the

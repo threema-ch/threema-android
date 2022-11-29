@@ -33,7 +33,7 @@ import ch.threema.protobuf.url_payloads.GroupInvite;
 public class GroupInviteDataTest {
 	public static final String TEST_GROUP_NAME = "Test Group";
 	public static String TEST_IDENTITY = "K8P2F2Z6";
-	public static final GroupInvite.InviteType TEST_INVITE_TYPE_MANUAL = GroupInvite.InviteType.MANUAL;
+	public static final GroupInvite.ConfirmationMode TEST_CONFIRMATION_MODE_MANUAL = GroupInvite.ConfirmationMode.MANUAL;
 	public static GroupInviteToken TEST_TOKEN_VALID;
 
 	static {
@@ -47,20 +47,20 @@ public class GroupInviteDataTest {
 	static final GroupInvite TEST_PROTOBUF_GROUP_INVITE = GroupInvite.newBuilder()
 		.setToken(ByteString.copyFrom(TEST_TOKEN_VALID.get()))
 		.setGroupName(TEST_GROUP_NAME)
-		.setInviteType(TEST_INVITE_TYPE_MANUAL)
-		.setAdminIdentity(ByteString.copyFromUtf8(TEST_IDENTITY))
+		.setConfirmationMode(TEST_CONFIRMATION_MODE_MANUAL)
+		.setAdminIdentity(TEST_IDENTITY)
 		.build();
 
 	static void assertEqualsTestProperties (GroupInviteData data){
 		Assert.assertEquals(TEST_TOKEN_VALID, data.getToken());
 		Assert.assertEquals(TEST_GROUP_NAME, data.getGroupName());
 		Assert.assertEquals(TEST_IDENTITY, data.getAdminIdentity());
-		Assert.assertEquals(TEST_INVITE_TYPE_MANUAL, data.getInviteType());
+		Assert.assertEquals(TEST_CONFIRMATION_MODE_MANUAL, data.getConfirmationMode());
 	}
 
 	@Test
 	public void testValidData() {
-		final GroupInviteData data = new GroupInviteData(TEST_IDENTITY, TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_INVITE_TYPE_MANUAL);
+		final GroupInviteData data = new GroupInviteData(TEST_IDENTITY, TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_CONFIRMATION_MODE_MANUAL);
 		assertEqualsTestProperties(data);
 	}
 
@@ -73,7 +73,7 @@ public class GroupInviteDataTest {
 
 	@Test
 	public void testToProtobufMessage() {
-		final GroupInviteData data = new GroupInviteData(TEST_IDENTITY, TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_INVITE_TYPE_MANUAL);
+		final GroupInviteData data = new GroupInviteData(TEST_IDENTITY, TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_CONFIRMATION_MODE_MANUAL);
 		final GroupInvite generatedProtobufMessage = data.toProtobufMessage();
 
 		Assert.assertEquals(TEST_PROTOBUF_GROUP_INVITE, generatedProtobufMessage);

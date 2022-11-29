@@ -37,7 +37,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -58,7 +57,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
-import androidx.appcompat.widget.FitWindowsFrameLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -67,15 +65,16 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
 import ch.threema.app.actions.SendAction;
 import ch.threema.app.activities.EditSendContactActivity;
+import ch.threema.app.activities.ImagePaintActivity;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ballot.BallotWizardActivity;
 import ch.threema.app.camera.CameraUtil;
-import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.locationpicker.LocationPickerActivity;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -98,9 +97,8 @@ import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
 public class MediaAttachActivity extends MediaSelectionBaseActivity implements View.OnClickListener,
-									MediaAttachAdapter.ItemClickListener,
-									ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener,
-									GenericAlertDialog.DialogClickListener {
+	MediaAttachAdapter.ItemClickListener,
+	GenericAlertDialog.DialogClickListener {
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaAttachActivity");
 
@@ -112,17 +110,24 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	private static final int PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA = 6;
 
 	public static final String CONFIRM_TAG_REALLY_SEND_FILE = "reallySendFile";
-	public static final String DIALOG_TAG_PREPARE_SEND_FILE = "prepSF";
 
 	private ConstraintLayout sendPanel;
 	private LinearLayout attachPanel;
-	private ControlPanelButton attachGalleryButton, attachLocationButton, attachQRButton, attachBallotButton, attachContactButton, attachFileButton, sendButton, editButton, cancelButton, attachFromExternalCameraButton;
+	private ControlPanelButton attachGalleryButton, attachLocationButton, attachQRButton, attachBallotButton, attachContactButton, attachDrawingButton, attachFileButton, sendButton, editButton, cancelButton, attachFromExternalCameraButton;
 	private Button selectCounterButton;
 	private ImageView moreArrowView;
 	private HorizontalScrollView scrollView;
 
 	private MessageReceiver messageReceiver;
 	private MessageService messageService;
+
+	private final ActivityResultLauncher<Intent> fileSelectedResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			Intent intent = result.getData();
+			if (result.getResultCode() == Activity.RESULT_OK && intent != null) {
+				prepareSendFileMessage(FileUtil.getUrisFromResult(intent, getContentResolver()));
+			}
+		});
 
 	private final ActivityResultLauncher<Intent> editContactResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
 		r -> {
@@ -132,6 +137,22 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					String caption = (String) r.getData().getExtras().get(EditSendContactActivity.RESULT_CONTACT_NAME);
 					sendFileMessage(new ArrayList<>(Collections.singletonList(modifiedVcardUri)), new ArrayList<>(Collections.singletonList(caption)));
 				}
+			}
+			finish();
+		});
+
+	private final ActivityResultLauncher<Intent> drawingResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			if (result.getResultCode() == Activity.RESULT_OK) {
+				Intent resultIntent = result.getData();
+				if (resultIntent == null) {
+					logger.error("Result intent is null");
+					return;
+				}
+				MediaItem mediaItem = resultIntent.getParcelableExtra(Intent.EXTRA_STREAM);
+				@SuppressWarnings("rawtypes")
+				MessageReceiver drawingReceiver = IntentDataUtil.getMessageReceiverFromIntent(MediaAttachActivity.this, resultIntent);
+				messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(drawingReceiver));
 			}
 			finish();
 		});
@@ -216,6 +237,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		this.attachQRButton = attachPanel.findViewById(R.id.attach_qr_code);
 		this.attachBallotButton = attachPanel.findViewById(R.id.attach_poll);
 		this.attachContactButton = attachPanel.findViewById(R.id.attach_contact);
+		this.attachDrawingButton = attachPanel.findViewById(R.id.attach_drawing);
 		this.attachFromExternalCameraButton = attachPanel.findViewById(R.id.attach_system_camera);
 
 		// Send/edit/cancel buttons
@@ -261,6 +283,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		attachQRButton.setOnClickListener(this);
 		attachBallotButton.setOnClickListener(this);
 		attachContactButton.setOnClickListener(this);
+		attachDrawingButton.setOnClickListener(this);
 		sendButton.setOnClickListener(this);
 		editButton.setOnClickListener(this);
 		cancelButton.setOnClickListener(this);
@@ -315,7 +338,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				editButton.setLabelText(R.string.edit);
 			}
 			selectCounterButton.setText(String.format(LocaleUtil.getCurrentLocale(this), "%d", count));
-			selectCounterButton.setContentDescription(getResources().getQuantityString(R.plurals.selection_counter_label, count, count));
+			selectCounterButton.setContentDescription(ConfigUtils.getSafeQuantityString(this, R.plurals.selection_counter_label, count, count));
 
 		} else if (BottomSheetBehavior.from(bottomSheetLayout).getState() == STATE_EXPANDED) {
 			controlPanel.animate().translationY(
@@ -350,6 +373,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				AnimationUtil.bubbleAnimate(attachBallotButton, 50);
 			}
 			AnimationUtil.bubbleAnimate(attachContactButton, 75);
+			AnimationUtil.bubbleAnimate(attachDrawingButton, 75);
 			AnimationUtil.bubbleAnimate(attachQRButton, 75);
 			AnimationUtil.bubbleAnimate(attachFromExternalCameraButton, 100);
 		}
@@ -385,6 +409,9 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				if (ConfigUtils.requestContactPermissions(this, null, PERMISSION_REQUEST_ATTACH_CONTACT)) {
 					attachContact();
 				}
+				break;
+			case R.id.attach_drawing:
+				attachDrawing();
 				break;
 			case R.id.edit:
 				if (mediaAttachAdapter != null) {
@@ -481,6 +508,16 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	}
 
 	@Override
+	protected ActivityResultLauncher<Intent> getFileSelectedResultLauncher() {
+		return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+			result -> {
+				if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+					onEdit(FileUtil.getUrisFromResult(result.getData(), getContentResolver()), true);
+				}
+			});
+	}
+
+	@Override
 	public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		if (resultCode == Activity.RESULT_OK) {
@@ -516,34 +553,8 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					}
 					finish();
 					break;
-				case ThreemaActivity.ACTIVITY_ID_PICK_FILE:
-					prepareSendFileMessage(FileUtil.getUrisFromResult(intent, getContentResolver()));
-					break;
 			}
 		}
-	}
-
-	// expandable alert dialog listeners
-	@Override
-	public void onYes(String tag, Object data, String text) {
-		if (DIALOG_TAG_PREPARE_SEND_FILE.equals(tag)) {
-			ArrayList<Uri> uriList = (ArrayList<Uri>) data;
-			ArrayList<String> captions = new ArrayList<>(uriList.size());
-
-			int i = 0;
-			while (i < uriList.size()) {
-				captions.add(text);
-				i++;
-			}
-
-			sendFileMessage(uriList, captions);
-		}
-	}
-
-	@Override
-	public void onNo(String tag) {
-		FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
-		contentFrameLayout.setVisibility(View.VISIBLE);
 	}
 
 	//Generic Alert Dialog Listeners
@@ -551,7 +562,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	public void onYes(String tag, Object data) {
 		if (CONFIRM_TAG_REALLY_SEND_FILE.equals(tag)) {
 			preferenceService.setFileSendInfoShown(true);
-			FileUtil.selectFile(this, null, new String[]{MimeUtil.MIME_TYPE_ANY}, ThreemaActivity.ACTIVITY_ID_PICK_FILE, true, MAX_BLOB_SIZE, null);
+			selectFile();
 		}
 	}
 
@@ -564,32 +575,19 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
 	@UiThread
 	public void onEdit(final ArrayList<Uri> uriList) {
-		ArrayList<MediaItem> mediaItems = new ArrayList<>(uriList.size());
-		for (Uri uri: uriList) {
-			String mimeType = FileUtil.getMimeTypeFromUri(this, uri);
-			if (MimeUtil.isVideoFile(mimeType) || MimeUtil.isImageFile(mimeType)) {
-				Uri originalUri = uri;
-				try {
-					logger.info("Number of taken persistable uri permissions {}", getContentResolver().getPersistedUriPermissions().size());
-					getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-				} catch (Exception e) {
-					logger.info(e.getMessage());
-					uri = FileUtil.getFileUri(uri);
-				}
+		onEdit(uriList, false);
+	}
 
-				MediaItem mediaItem = new MediaItem(uri, mimeType, null);
-				mediaItem.setOriginalUri(originalUri);
-				mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
-				mediaItems.add(mediaItem);
-			}
-		}
+	@UiThread
+	public void onEdit(final List<Uri> uriList, boolean asFiles) {
+		ArrayList<MediaItem> mediaItems = MediaItem.getFromUris(uriList, this, asFiles);
 		if (mediaItems.size() > 0) {
 			Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
 			intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
 			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
 			// pass on last filter to potentially re-use it when adding more media items
 			if (mediaAttachViewModel.getLastQuery() != null) {
-				intent = IntentDataUtil.addLastMediaFilterToIntent(intent,
+				IntentDataUtil.addLastMediaFilterToIntent(intent,
 					mediaAttachViewModel.getLastQuery(),
 					mediaAttachViewModel.getLastQueryType());
 			}
@@ -601,28 +599,11 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
 	@UiThread
 	public void onSend(final ArrayList<Uri> list) {
-		List<MediaItem> mediaItems = new ArrayList<>();
 		if (!validateSendingPermission()) {
 			return;
 		}
 
-		for (Uri uri : list) {
-			Uri originalUri = uri;
-			try {
-				// log the number of permissions due to limit https://commonsware.com/blog/2020/06/13/count-your-saf-uri-permission-grants.html
-				logger.info("Number of taken persistable uri permissions {}", getContentResolver().getPersistedUriPermissions().size());
-				getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			} catch (Exception e) {
-				logger.info(e.getMessage());
-				uri = FileUtil.getFileUri(uri);
-			}
-
-			MediaItem mediaItem = new MediaItem(uri, FileUtil.getMimeTypeFromUri(this, uri), null);
-			mediaItem.setOriginalUri(originalUri);
-			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
-			mediaItems.add(mediaItem);
-		}
-
+		List<MediaItem> mediaItems = MediaItem.getFromUris(list, this, false);
 		if (mediaItems.size() > 0) {
 			messageService.sendMediaAsync(mediaItems, Collections.singletonList(messageReceiver));
 			finish();
@@ -637,8 +618,12 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				R.string.cancel);
 			dialog.show(getSupportFragmentManager(), CONFIRM_TAG_REALLY_SEND_FILE);
 		} else {
-			FileUtil.selectFile(this, null, new String[]{MimeUtil.MIME_TYPE_ANY}, ThreemaActivity.ACTIVITY_ID_PICK_FILE, true, MAX_BLOB_SIZE, null);
+			selectFile();
 		}
+	}
+
+	private void selectFile() {
+		FileUtil.selectFile(this, fileSelectedResultLauncher, new String[]{MimeUtil.MIME_TYPE_ANY}, true, MAX_BLOB_SIZE, null);
 	}
 
 
@@ -679,12 +664,22 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		}, 200);
 	}
 
+	private void attachDrawing() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager == null) {
+			logger.error("Service manager is null");
+			return;
+		}
+
+		Intent paintIntent = ImagePaintActivity.getDrawingIntent(this, messageReceiver);
+		drawingResultLauncher.launch(paintIntent);
+	}
+
 	private void prepareSendFileMessage(final ArrayList<Uri> uriList) {
-		FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
-		contentFrameLayout.setVisibility(View.GONE);
-		ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.send_as_files), R.string.add_caption_hint, R.string.send, R.string.cancel, true);
-		alertDialog.setData(uriList);
-		alertDialog.show(getSupportFragmentManager(), DIALOG_TAG_PREPARE_SEND_FILE);
+		Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
+		intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, MediaItem.getFromUris(uriList, this, true));
+		intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+		AnimationUtil.startActivityForResult(this, null, intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
 	}
 
 	private void sendLocationMessage(final Location location, final String poiName) {

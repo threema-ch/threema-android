@@ -120,7 +120,6 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="share_via">Compartir per...</string>
     <string name="share_subject">%s conversa</string>
     <string name="message_delete_undo">Desfer</string>
-    <string name="message_deleted">Missatge(s) esborrat(s)</string>
     <string name="mobile_already_linked">La vostra ID de Threema ja està enllaçada amb aquest número de mòbil</string>
     <string name="email_already_linked">La vostra ID de Threema ja està enllaçada amb aquesta adreça de correu electrònic</string>
     <string name="whoaaa">Notícia</string>
@@ -261,8 +260,6 @@ mestra està bloquejada</string>
     <string name="prefs_masterkey_notification_newmsg_on">Els missatges nous disparen una notificació genèrica quan la clau
 mestra està bloquejada</string>
     <string name="chat_history_attached">S\'ha adjuntat el registre de la conversa.</string>
-    <string name="new_message">1 nou missatge</string>
-    <string name="new_messages">nous missatges</string>
     <string name="backup_data_title">Còpia de les dades</string>
     <string name="backup_data_password_msg">Les vostres dades es guardaran en un fitxer ZIP en la vostra memòria interna USB i podran ser restaurades en qualsevols dispositiu Android. Entreu una contrasenya per protegir
 les dades de la vostra còpia de seguretat.</string>
@@ -368,7 +365,6 @@ de contacte</string>
     <string name="contact_format_last_name_first_name">Cognoms Nom</string>
     <string name="block_contact">Bloquejar contacte</string>
     <string name="unblock_contact">Desbloquejar contacte</string>
-    <string name="unread_messages">%d missatges sense llegir</string>
     <string name="one_unread_message">1 missatge sense llegir</string>
     <string name="really_unlink_contact_title">Desenllaçar contacte</string>
     <string name="really_unlink_contact">Realment voleu desenllaçar aquest contacte?</string>
@@ -384,7 +380,6 @@ de contacte</string>
     <string name="save_image">Desar Imatge</string>
     <string name="share_image">Compartir Imatge</string>
     <string name="view_in_gallery">Veure a la Galeria</string>
-    <string name="file_saved">%d fitxer(s) desat(s) correctament.</string>
     <string name="token_register_failed">Error actualitzant el testimoni push, torneu a intentar-ho més tard.</string>
     <string name="internet_connection_required">No hi ha connexió a Internet</string>
     <string name="prefs_sum_save_media">Desar les imatges i vídeos rebuts, així com les fotos de la càmera enviats sense xifrar</string>
@@ -441,7 +436,6 @@ de contacte</string>
     <string name="sending_images">Enviant imatges</string>
     <string name="share_conversation_body">Es necessita una eina ZIP moderna amb suport AES per descomprimir el fitxer, p. ex. http://www.7-zip.org or https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">El xat s\'enviarà com a fitxer zip xifrat. Escolliu una contrasenya:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d missatges nous en %2$d xats</string>
     <string name="ballot_create">Crear una enquesta</string>
     <string name="ballot_choice_add">Afegir una opció</string>
     <string name="ballot_state_closed">Tancada</string>
@@ -459,8 +453,6 @@ de contacte</string>
     <string name="ballot_overview">Totes les enquestes</string>
     <string name="ballot_copy">Copiar enquesta</string>
     <string name="ballot_remove">Eliminar enquesta</string>
-    <string name="ballot_really_delete">Eliminar enquesta/es</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Voleu eliminar %1$d enquesta/es? No podreu recuperar els vots.</string>
     <string name="ballot_not_exist">L\'enquesta no existeix</string>
     <string name="ballot_tap_to_vote">Toqueu per votar</string>
     <string name="ballot_tap_to_view_results">Enquesta tancada. Toqueu per veure els resultats</string>
@@ -508,8 +500,7 @@ de contacte</string>
     <string name="send_media">Enviar multimèdia</string>
     <string name="rotate">Girar</string>
     <string name="remove">Eliminar</string>
-    <string name="image_already_added">Aquesta imatge ja s\'ha afegit.</string>
-    <string name="password_too_short" tools:ignore="PluralsCandidate">Mínim %d caràcters.</string>
+    <string name="password_too_short">Mínim %d caràcters.</string>
     <string name="mark_read">Marcar com a llegit</string>
     <string name="attach_document">Fitxer</string>
     <string name="parent_directory">Pare</string>
@@ -557,7 +548,6 @@ de contacte</string>
     <string name="storage_explain">Si us quedeu sense espai, podeu eliminar els fitxers multimèdia xifrats més antics per fer espai. Les miniatures es guardaran. Tingueu en compte que no es tracta d\'un procés automàtic. A menys que cliqueu un dels botons de sota, res no s\'eliminarà.</string>
     <string name="delete_data">Eliminar les dades ara</string>
     <string name="delete_date_confirm_message">Si continueu, els fitxers s\'eliminaran i només les miniatures es conservaran.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">%d fitxers multimèdia eliminats</string>
     <string name="storage_management">Gestió de l\'emmagatzematge</string>
     <string name="media">Multimèdia</string>
     <string name="prefs_storage_mgmt_title">Netejar multimèdia, fitxers i missatges</string>
@@ -586,7 +576,6 @@ de contacte</string>
     <string name="fontsize_large">Gran</string>
     <string name="fontsize_xlarge">Extra Gran</string>
     <string name="no_app_for_location">No s\'ha trobat cap aplicació de mapes en aquest dispositiu</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%d xats eliminats</string>
     <string name="prefs_sendlog">Enviar registre</string>
     <string name="prefs_sendlog_summary">Enviar el fitxer de registre a Threema per una anàlisi posterior en cas de problemes</string>
     <string name="permission_storage_required">Per desar o enviar multimèdia, doneu a Threema permís per accedir a l\'emmagatzematge.</string>
@@ -595,7 +584,6 @@ de contacte</string>
     <string name="message_declined">«En desacord» enviat</string>
     <string name="notifications_settings">Configuració de les notificacions</string>
     <string name="notifications_default">Configuració del sistema</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">Per %d hora/es</string>
     <string name="notifications_until">Fins %s</string>
     <string name="notifications_mute">Silenciat</string>
     <string name="notifications_choose_sound">Escollir so</string>
@@ -686,7 +674,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_proximity_sensor_explain">Utilitzar l\'auricular per reproduir missatges de veu si el sensor de proximitat està cobert</string>
     <string name="error_creating_group">Error creant/actualitzant el grup</string>
     <string name="no_media_found_generic">No s\'ha trobat multimèdia en aquest xat</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Es poden editar com a màxim %d elements a la vegada</string>
+    <string name="max_images_reached">Es poden editar com a màxim %d elements a la vegada</string>
     <string name="enter_description">Descriviu l\'error/problema aquí.</string>
     <string name="add_caption_hint">Afegir una captura opcional</string>
     <string name="disable">Desactivar</string>
@@ -732,9 +720,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_language_override">Idioma</string>
     <string name="threema_channel_intro">El Canal Threema us proporciona notícies sobre totes les coses de Threema. Voleu subscriure-us al Canal Threema i afegir-lo als vostres contactes? És gratuït i podeu revocar la subscripció en qualsevol moment.</string>
     <string name="quote">Citar</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Voleu eliminar %1$d contactes i tots els xats associats?</string>
     <string name="contacts_deleted">Els contactes s\'han eliminat</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d contactes no s\'han pogut eliminar perquè continuen formant part d\'un grup</string>
     <string name="take_photo">Fer una foto</string>
     <string name="select_from_gallery">Seleccionar de la galeria</string>
     <string name="palette">Paleta</string>
@@ -859,7 +845,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="no_matching_work_contacts">No s\'han trobat contactes de Threema Work verificats per l\'administrador</string>
     <string name="all">Tots</string>
     <string name="webclient_session_stop_all">Tancar tots</string>
-    <string name="webclient_running_sessions">%d sessió(ns) actives</string>
     <string name="passphrase_service_name">Contrasenya del servei</string>
     <string name="passphrase_service_description">Notificació quan la contrasenya s\'ha desbloquejat</string>
     <string name="webclient_service_description">Notificació quan una sessió de Web/Escriptori està activa</string>
@@ -1012,7 +997,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="data_backup_last_date">Darrera còpia de les dades satisfactòria</string>
     <string name="archived">Arxivats</string>
     <string name="to_archive">Arxivar</string>
-    <string name="message_archived">%d xat(s) arxivat(s)</string>
     <string name="archived_chats">Xats arxivats</string>
     <string name="unarchive">Desarxivar</string>
     <string name="no_archived_chats">No hi ha xats arxivats.\nPer arxivar un xat, arrossegueu-lo cap a l\'esquerra a la llista de missatges</string>
@@ -1024,7 +1008,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="system_default">Igual que el sistema</string>
     <string name="open_in_maps_app">Obrir a l\'App de mapes</string>
     <string name="delete">Eliminar</string>
-    <string name="num_archived_chats">%d xats arxivats</string>
     <string name="continue_recording">Continuar gravant</string>
     <string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
     <string name="two_years">2 anys</string>
@@ -1044,7 +1027,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="and">i</string>
     <string name="edit_type_content_description">Veure o editar %1$s %2$s</string>
     <string name="group">Grup</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>La nostra Política de Privacitat s\'ha actualitzat per reflectir el canvi següent:</p><p>%1$s ja no depèn de Google Play i Google Maps per facilitar mapes i dades de punts d\'interès.</p>Reviseu la Política de Privacitat completa <a href="%2$s">aquí</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Serveis no instal·lats. No es pot canviar a \"push\".</string>
     <string name="unable_to_get_current_location">No es pot determinar la posició actual.</string>
     <string name="lp_search_place_min_chars">Entreu almenys tres caràcters per cercar un lloc.</string>
@@ -1194,8 +1176,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_request_already_sent"><![CDATA[Ja teniu una petició de grup oberta per a <b>%s</b> a través d\'aquest enllaç i resta pendent una resposta de l\'administrador de grup. Cliqueu a la petició de la llista si voleu intentar de tornar-la a enviar.]]></string>
     <string name="group_link_none">Encara no s\'ha generat un enllaç</string>
     <string name="group_request_confirm_send"><![CDATA[Esteu a punt d\'enviar una petició de grup per a <b>%1$s</b> a l\'administrador <b>%2$s</b>. Si l\'enllaç no està invalidat, sereu afegit automàticament al grup tan aviat com el dispositiu de l\'administrador rebi la vostra petició.]]></string>
-    <string name="really_delete_outgoing_request">Realment voleu eliminar %d petició de grup? Tingueu en compte que la petició no es revocarà i continuareu poden ser acceptat o rebutjat i la petició encara no havia estat resposta per l\'administrador de grup.</string>
-    <string name="really_delete_group_request_title">Segur que voleu eliminar la petició de grup</string>
     <string name="sent_to">Enviada a: %s</string>
     <string name="sent_on">Enviada: %s</string>
     <string name="group_response">Resposta a accés a grup</string>
@@ -1215,7 +1195,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="link_administration_off_explain">Aquest enllaç ja ha estat configurat i compartit prèviament, ara no és possible canviar aquesta propietat. Genereu un nou enllaç amb la propietat que necessiteu.</string>
     <string name="group_link_update_success">Enllaç actualitzat correctament</string>
     <string name="no_group_links">No hi ha enllaços de grup. Per crear-ne un, cliqueu al botó d\'afegir a baix a la dreta o activeu l\'enllaç predeterminat a la vista de detalls del grup.</string>
-    <string name="really_delete_group_link">Segur que voleu eliminar %d enllaços de grup? La gent no podrà enviar més peticions a través d\'aquest. Tot i això, les peticions rebudes prèviament es poden continuar acceptant o rebutjant.</string>
     <string name="group_links_overview_title">Enllaços de grup per a %s</string>
     <string name="group_link_invalid">Caducats</string>
     <string name="group_link_valid">Vàlids</string>
@@ -1231,7 +1210,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="open_group_requests_show">Mostrar peticions d\'accés</string>
     <string name="open_group_requests_hide">Amagar peticions d\'accés</string>
     <string name="group_request_link_already_deleted">Enllaç de grup mentre s\'elimina</string>
-    <string name="really_delete_incoming_request">Voleu eliminar %d peticions de grup? No podreu respondre a les peticions una vegada eliminades.</string>
     <string name="incoming_group_request_no_message">Enviat a través d\'un enllaç obert... cap missatge</string>
     <string name="group_request_received_through">A través de l\'enllaç: %s</string>
     <string name="reaccept">Reacceptar</string>

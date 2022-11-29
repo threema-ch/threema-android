@@ -62,7 +62,7 @@ public class GroupTextMessage extends AbstractGroupMessage {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			bos.write(text.getBytes(StandardCharsets.UTF_8));
 			return bos.toByteArray();
 		} catch (Exception e) {

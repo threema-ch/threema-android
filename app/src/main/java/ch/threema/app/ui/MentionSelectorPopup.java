@@ -39,6 +39,8 @@ import android.widget.PopupWindow;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
@@ -184,31 +186,26 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 		}
 	}
 
-	public void show(Activity activity, final ComposeEditText editText, final int originXOffset) {
+	public void show(@NonNull Activity activity, @NonNull final ComposeEditText editText, @Nullable View boundary) {
 		if (this.mentionAdapter == null) {
 			dismiss();
 			return;
 		}
 
-		int[] originLocation = {0, 0};
+		int[] coordinates = getPositionCoordinates(activity, boundary != null ? boundary : editText);
+
+		this.popupX = 0;
+		this.popupY = coordinates[1];
+
 		this.editText = editText;
 		editText.setLocked(true);
-		editText.getLocationInWindow(originLocation);
 		editText.addTextChangedListener(textWatcher);
 		this.filterStart = editText.getSelectionStart();
-		int screenHeight = activity.getWindowManager().getDefaultDisplay().getHeight();
-		this.popupX = originLocation[0];
-		this.popupY = screenHeight - originLocation[1] + ConfigUtils.getNavigationBarHeight(activity);
 
-		this.viewableSpaceHeight = originLocation[1] - ConfigUtils.getStatusBarHeight(context) - ConfigUtils.getActionBarSize(context);
+		this.viewableSpaceHeight = coordinates[2];
 		this.dividersHeight = 2 * context.getResources().getDimensionPixelSize(R.dimen.list_divider_height);
 
-		if (this.popupX > originXOffset) {
-			this.setWidth(activity.getWindowManager().getDefaultDisplay().getWidth() - this.popupX + originXOffset);
-			this.popupX -= originXOffset;
-		} else {
-			this.setWidth(activity.getWindowManager().getDefaultDisplay().getWidth());
-		}
+		this.setWidth(activity.getWindowManager().getDefaultDisplay().getWidth());
 		this.setHeight(this.viewableSpaceHeight);
 
 		try {
@@ -286,4 +283,37 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 	public interface MentionSelectorListener {
 		void onContactSelected(String identity, int length, int insertPosition);
 	}
+
+	@SuppressWarnings("deprecation")
+	private int[] getPositionCoordinates(@NonNull Activity activity, @NonNull View view) {
+		int[] windowLocation = {0, 0};
+		int[] screenLocation = {0, 0};
+		view.getLocationInWindow(windowLocation);
+		view.getLocationOnScreen(screenLocation);
+
+		// In the ExpandableTextEntryDialog we need the values from the screen location
+		boolean useLocationInWindow = windowLocation[1] == screenLocation[1];
+		int location;
+		if (useLocationInWindow) {
+			location = windowLocation[1];
+		} else {
+			location = screenLocation[1] - view.getMeasuredHeight() / 2;
+		}
+
+		int screenHeight = activity.getWindowManager().getDefaultDisplay().getHeight();
+
+		int x = useLocationInWindow ? windowLocation[0] : screenLocation[0];
+		x += view.getPaddingLeft();
+		int y = screenHeight - location;
+
+		if (useLocationInWindow) {
+			y += ConfigUtils.getNavigationBarHeight(activity);
+		}
+
+		// Status and action bar size is only included in window location
+		int height = location - (useLocationInWindow ? ConfigUtils.getStatusBarHeight(context) + ConfigUtils.getActionBarSize(context) : 0);
+
+		return new int[]{x, y, height};
+	}
+
 }

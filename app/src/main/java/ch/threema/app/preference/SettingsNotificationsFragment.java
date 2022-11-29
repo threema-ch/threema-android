@@ -32,15 +32,6 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
 
-import com.google.android.material.timepicker.MaterialTimePicker;
-
-import org.slf4j.Logger;
-
-import java.text.DateFormatSymbols;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Set;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -53,6 +44,16 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
+
+import com.google.android.material.timepicker.MaterialTimePicker;
+
+import org.slf4j.Logger;
+
+import java.text.DateFormatSymbols;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Set;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -75,6 +76,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	private static final String DIALOG_TAG_CONTACT_NOTIFICATION = "cn";
 	private static final String DIALOG_TAG_GROUP_NOTIFICATION = "gn";
 	private static final String DIALOG_TAG_VOIP_NOTIFICATION = "vn";
+	private static final String DIALOG_TAG_GROUP_CALLS_NOTIFICATION = "gc";
 	private static final String DIALOG_TAG_MIUI_NOTICE = "miui10_channel_notice";
 
 	private static final int INTENT_SYSTEM_NOTIFICATION_SETTINGS = 5199;
@@ -88,7 +90,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	private final String[] weekday_values = new String[]{"0", "1", "2", "3", "4", "5", "6"};
 	private Preference startPreference, endPreference;
 
-	private Preference ringtonePreference, groupRingtonePreference, voiceRingtonePreference;
+	private Preference ringtonePreference, groupRingtonePreference, voiceRingtonePreference, groupCallsRingtonePreference;
 
 	private final ActivityResultLauncher<Intent> voipRingtonePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
 		result -> {
@@ -113,6 +115,29 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 				onRingtoneSelected(DIALOG_TAG_GROUP_NOTIFICATION, uri);
 			}
 		});
+
+	private final ActivityResultLauncher<Intent> groupCallsTonePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+				Uri uri = result.getData().getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+				onRingtoneSelected(DIALOG_TAG_GROUP_CALLS_NOTIFICATION, uri);
+			}
+		});
+
+	private final Preference.OnPreferenceChangeListener systemRingtoneChangedListener = (preference, newValue) -> {
+		boolean newCheckedValue = newValue.equals(true);
+
+		String tag = preference.getKey().equals(getString(R.string.preferences__group_calls_use_system_ringtone)) ?
+			DIALOG_TAG_GROUP_CALLS_NOTIFICATION :
+			DIALOG_TAG_VOIP_NOTIFICATION;
+
+		if (newCheckedValue) {
+			onRingtoneSelected(tag, DEFAULT_RINGTONE_URI);
+		} else {
+			onRingtoneSelected(tag, RingtoneUtil.THREEMA_CALL_RINGTONE_URI);
+		}
+		return true;
+	};
 
 	private void initWorkingTimePrefs() {
 		if (!ConfigUtils.isWorkBuild()) {
@@ -258,6 +283,8 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		updateRingtoneSummary(groupRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__group_notification_sound), ""));
 		voiceRingtonePreference = findPreference(getResources().getString(R.string.preferences__voip_ringtone));
 		updateRingtoneSummary(voiceRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__voip_ringtone), ""));
+		groupCallsRingtonePreference = findPreference(getResources().getString(R.string.preferences__group_calls_ringtone));
+		updateRingtoneSummary(groupCallsRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__group_calls_ringtone), ""));
 
 		ringtonePreference.setOnPreferenceClickListener(preference -> {
 			chooseRingtone(RingtoneManager.TYPE_NOTIFICATION,
@@ -286,21 +313,23 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 				return true;
 			}
 		});
-
-		TwoStatePreference systemRingtonePreference = getPref(getString(R.string.preferences__use_system_ringtone));
-		systemRingtonePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+		groupCallsRingtonePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
-			public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-				boolean newCheckedValue = newValue.equals(true);
-
-				if (newCheckedValue) {
-					onRingtoneSelected(DIALOG_TAG_VOIP_NOTIFICATION, DEFAULT_RINGTONE_URI);
-				} else {
-					onRingtoneSelected(DIALOG_TAG_VOIP_NOTIFICATION, RingtoneUtil.THREEMA_CALL_RINGTONE_URI);
-				}
+			public boolean onPreferenceClick(@NonNull Preference preference) {
+				chooseRingtone(RingtoneManager.TYPE_RINGTONE|RingtoneManager.TYPE_NOTIFICATION,
+					getRingtoneFromRingtonePref(R.string.preferences__group_calls_ringtone),
+					RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
+					getString(R.string.prefs_voice_call_sound),
+					DIALOG_TAG_GROUP_CALLS_NOTIFICATION);
 				return true;
 			}
 		});
+
+		TwoStatePreference systemRingtonePreference = getPref(getString(R.string.preferences__use_system_ringtone));
+		systemRingtonePreference.setOnPreferenceChangeListener(systemRingtoneChangedListener);
+
+		TwoStatePreference groupCallsSystemRingtonePreference = getPref(getString(R.string.preferences__group_calls_use_system_ringtone));
+		groupCallsSystemRingtonePreference.setOnPreferenceChangeListener(systemRingtoneChangedListener);
 
 		if (ConfigUtils.isWorkRestricted()) {
 			CheckBoxPreference notificationPreview = getPref(getString(R.string.preferences__notification_preview));
@@ -340,6 +369,9 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 					break;
 				case DIALOG_TAG_GROUP_NOTIFICATION:
 					groupTonePickerLauncher.launch(intent);
+					break;
+				case DIALOG_TAG_GROUP_CALLS_NOTIFICATION:
+					groupCallsTonePickerLauncher.launch(intent);
 					break;
 			}
 		} catch (ActivityNotFoundException e) {
@@ -456,6 +488,10 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 			case DIALOG_TAG_VOIP_NOTIFICATION:
 				sharedPreferences.edit().putString(ThreemaApplication.getAppContext().getString(R.string.preferences__voip_ringtone), toneString).apply();
 				updateRingtoneSummary(voiceRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__voip_ringtone), ""));
+				break;
+			case DIALOG_TAG_GROUP_CALLS_NOTIFICATION:
+				sharedPreferences.edit().putString(ThreemaApplication.getAppContext().getString(R.string.preferences__group_calls_ringtone), toneString).apply();
+				updateRingtoneSummary(groupCallsRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__group_calls_ringtone), ""));
 				break;
 		}
 	}

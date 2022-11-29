@@ -36,12 +36,11 @@ import ch.threema.app.utils.AnimationUtil;
 
 public class RecentEmojiRemovePopup extends PopupWindow implements View.OnClickListener {
 
-	private View parentView;
+	private final View parentView;
 	private RemoveListener removeListener;
-	private ImageView originalImage;
-	private int popupHeight, popupOffsetLeft;
-
-	private final int[] location = new int[2];
+	private final ImageView originalImage;
+	private final int popupHeight;
+	private final int popupOffsetLeft;
 
 	public RecentEmojiRemovePopup(final Context context, View parentView) {
 		super(context);
@@ -79,8 +78,6 @@ public class RecentEmojiRemovePopup extends PopupWindow implements View.OnClickL
 			@Override
 			public void onGlobalLayout() {
 				getContentView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-
-				AnimationUtil.getViewCenter(originView, getContentView(), location);
 				AnimationUtil.popupAnimateIn(getContentView());
 			}
 		});

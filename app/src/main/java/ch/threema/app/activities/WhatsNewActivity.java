@@ -44,8 +44,9 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
 
 		setContentView(R.layout.activity_whatsnew);
 
-		((TextView) findViewById(R.id.whatsnew_title)).setText(getString(R.string.whatsnew_title, getString(R.string.app_name), BuildConfig.VERSION_NAME));
-		((TextView) findViewById(R.id.whatsnew_body)).setText(Html.fromHtml(getString(R.string.whatsnew_headline, getString(R.string.app_name))));
+		// TODO(ANDR-2065): Replace with correct placeholders `getString(R.string.app_name)` instead of "Threema"
+		((TextView) findViewById(R.id.whatsnew_title)).setText(getString(R.string.whatsnew_title, "Threema"));
+		((TextView) findViewById(R.id.whatsnew_body)).setText(Html.fromHtml(getString(R.string.whatsnew_headline, "Threema")));
 
 		findViewById(R.id.next_text).setOnClickListener(v -> {
 /*			startActivity(new Intent(WhatsNewActivity.this, WhatsNew2Activity.class));

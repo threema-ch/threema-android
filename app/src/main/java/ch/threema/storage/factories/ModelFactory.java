@@ -42,7 +42,7 @@ public abstract class ModelFactory {
 	ModelFactory(DatabaseServiceNew databaseService, String tableName) {
 		this.databaseService = databaseService;
 		this.tableName = tableName;
-		logger.debug("instantiate " + getClass().toString());
+		logger.debug("instantiate {}", getClass());
 	}
 
 	/**

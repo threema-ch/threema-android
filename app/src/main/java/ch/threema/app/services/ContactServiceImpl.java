@@ -31,6 +31,14 @@ import android.provider.ContactsContract;
 import android.text.format.DateUtils;
 import android.widget.ImageView;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
+import androidx.core.content.ContextCompat;
+
 import com.neilalexander.jnacl.NaCl;
 
 import net.sqlcipher.Cursor;
@@ -53,13 +61,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
-import androidx.core.content.ContextCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -101,6 +102,7 @@ import ch.threema.domain.protocol.blob.BlobLoader;
 import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
 import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
@@ -139,6 +141,7 @@ public class ContactServiceImpl implements ContactService {
 	private final WallpaperService wallpaperService;
 	private final LicenseService licenseService;
 	private final APIConnector apiConnector;
+	private final ForwardSecurityMessageProcessor fsmp;
 	private final Timer typingTimer;
 	private final Map<String,TimerTask> typingTimerTasks;
 
@@ -170,26 +173,27 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	public ContactServiceImpl(
-			Context context,
-			DatabaseContactStore contactStore,
-			AvatarCacheService avatarCacheService,
-			DatabaseServiceNew databaseServiceNew,
-			DeviceService deviceService,
-			UserService userService,
-			MessageQueue messageQueue,
-			IdentityStore identityStore,
-			PreferenceService preferenceService,
-			IdListService blackListIdentityService,
-			IdListService profilePicRecipientsService,
-			RingtoneService ringtoneService,
-			DeadlineListService mutedChatsListService,
-			DeadlineListService hiddenChatsListService,
-			FileService fileService,
-			CacheService cacheService,
-			ApiService apiService,
-			WallpaperService wallpaperService,
-			LicenseService licenseService,
-			APIConnector apiConnector) {
+		Context context,
+		DatabaseContactStore contactStore,
+		AvatarCacheService avatarCacheService,
+		DatabaseServiceNew databaseServiceNew,
+		DeviceService deviceService,
+		UserService userService,
+		MessageQueue messageQueue,
+		IdentityStore identityStore,
+		PreferenceService preferenceService,
+		IdListService blackListIdentityService,
+		IdListService profilePicRecipientsService,
+		RingtoneService ringtoneService,
+		DeadlineListService mutedChatsListService,
+		DeadlineListService hiddenChatsListService,
+		FileService fileService,
+		CacheService cacheService,
+		ApiService apiService,
+		WallpaperService wallpaperService,
+		LicenseService licenseService,
+		APIConnector apiConnector,
+		ForwardSecurityMessageProcessor fsmp) {
 
 		this.context = context;
 		this.avatarCacheService = avatarCacheService;
@@ -210,6 +214,7 @@ public class ContactServiceImpl implements ContactService {
 		this.wallpaperService = wallpaperService;
 		this.licenseService = licenseService;
 		this.apiConnector = apiConnector;
+		this.fsmp = fsmp;
 		this.typingTimer = new Timer();
 		this.typingTimerTasks = new HashMap<>();
 		this.contactModelCache = cacheService.getContactModelCache();
@@ -222,6 +227,7 @@ public class ContactServiceImpl implements ContactService {
 					this.userService.getIdentity(),
 					this.userService.getPublicKey()
 			);
+			this.me.setPublicNickName(this.userService.getPublicNickname());
 			this.me.setState(ContactModel.State.ACTIVE);
 			this.me.setFirstName(context.getString(R.string.me_myself_and_i));
 			this.me.setVerificationLevel(VerificationLevel.FULLY_VERIFIED);
@@ -851,48 +857,21 @@ public class ContactServiceImpl implements ContactService {
 
 	@AnyThread
 	@Override
-	@Nullable
-	public Bitmap getAvatar(ContactModel model, boolean highResolution) {
-		return getAvatar(model, highResolution, true);
-	}
+	public Bitmap getAvatar(@Nullable ContactModel contact, @NonNull AvatarOptions options) {
+		Bitmap b = this.avatarCacheService.getContactAvatar(contact, options);
 
-	@AnyThread
-	@Override
-	public Bitmap getAvatar(ContactModel contact, boolean highResolution, boolean returnDefaultAvatarIfNone) {
-		Bitmap b = null;
-
-		if(contact != null) {
-
-			if (highResolution) {
-				b = this.avatarCacheService.getContactAvatarHigh(contact, false, returnDefaultAvatarIfNone);
-			} else {
-				b = this.avatarCacheService.getContactAvatarLow(contact, false, returnDefaultAvatarIfNone);
-			}
-
-			//check if a business avatar update is necessary
-			if (ContactUtil.isChannelContact(contact) && ContactUtil.isAvatarExpired(contact)) {
-				//simple start
-				UpdateBusinessAvatarRoutine.startUpdate(contact, this.fileService, this, apiService);
-			}
+		//check if a business avatar update is necessary
+		if (ContactUtil.isChannelContact(contact) && ContactUtil.isAvatarExpired(contact)) {
+			//simple start
+			UpdateBusinessAvatarRoutine.startUpdate(contact, this.fileService, this, apiService);
 		}
 
 		return b;
 	}
 
-	@AnyThread
-	@Override
-	public Bitmap getDefaultAvatar(@Nullable ContactModel contact, boolean highResolution) {
-		if (highResolution) {
-			return avatarCacheService.getContactAvatarHigh(contact, true, true);
-		} else {
-			return avatarCacheService.getContactAvatarLow(contact, true, true);
-		}
-	}
-
 	@Override
 	public @ColorInt int getAvatarColor(@Nullable ContactModel contact) {
-		if ((this.preferenceService == null || this.preferenceService.isDefaultContactPictureColored())
-			&& contact != null && contact.getIdentity() != null && !contact.getIdentity().equals(identityStore.getIdentity())) {
+		if ((this.preferenceService == null || this.preferenceService.isDefaultContactPictureColored()) && contact != null) {
 			return contact.getThemedColor(context);
 		}
 		return ColorUtil.getInstance().getCurrentThemeGray(this.context);
@@ -900,13 +879,7 @@ public class ContactServiceImpl implements ContactService {
 
 	@AnyThread
 	@Override
-	public Bitmap getNeutralAvatar(boolean highResolution) {
-		return getDefaultAvatar(null, highResolution);
-	}
-
-	@AnyThread
-	@Override
-	public void loadAvatarIntoImage(@NonNull ContactModel model, @NonNull ImageView imageView, AvatarOptions options) {
+	public void loadAvatarIntoImage(@NonNull ContactModel model, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
 		avatarCacheService.loadContactAvatarIntoImage(model, imageView, options);
 	}
 
@@ -998,7 +971,8 @@ public class ContactServiceImpl implements ContactService {
 			this.databaseServiceNew,
 			this.messageQueue,
 			this.identityStore,
-			this.blackListIdentityService
+			this.blackListIdentityService,
+			this.fsmp
 		);
 	}
 
@@ -1413,6 +1387,12 @@ public class ContactServiceImpl implements ContactService {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void setForwardSecurityState(@NonNull ContactModel contactModel, @ContactModel.ForwardSecurityState int state) {
+		contactModel.setForwardSecurityState(state);
+		this.save(contactModel);
 	}
 
 	@Override

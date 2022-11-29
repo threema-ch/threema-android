@@ -60,6 +60,7 @@
     <string name="voip_another_pstn_call">无法建立通话，常规电话仍正在进行中。</string>
     <string name="voip_call_status_off_hours">非工作时间通话</string>
     <string name="voip_peer_video_disabled">对方已禁止视频通话。</string>
+    <string name="voip_reject_channel_name">呼叫状态改变</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC 诊断</string>
     <string name="voip_prefs_webrtc_debug_summary">启动此工具以调试与设置语音通话连接有关的问题</string>
@@ -69,4 +70,32 @@
     <string name="voip_webrtc_debug_done">大功告成。如果您在建立通话连接时遇到问题，请将错误日志发送给 Threema 支持。</string>
     <string name="voip_webrtc_debug_copied">已复制到剪贴板。</string>
     <string name="voip_webrtc_debug_copy_clipboard">复制到剪贴板</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">已通知所有群组成员进行群组通话</string>
+    <string name="voip_gc_notification_channel_description">群组通话</string>
+    <string name="voip_gc_notification_title">群组通话</string>
+    <string name="voip_gc_notification_call_started">%1$s在%2$s发起了群组通话</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s发起了群组通话</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">您发起了群组通话</string>
+    <string name="voip_gc_dismiss_call">忽略</string>
+    <string name="voip_gc_join_call">加入</string>
+    <string name="voip_gc_ongoing_call">正在进行的群组通话</string>
+    <string name="voip_gc_waiting_for_participants">正在等待参与者</string>
+    <string name="voip_gc_participant_avatar_description">参与者个人头像</string>
+    <string name="voip_gc_participant_mute_status_description">参与者静音状态</string>
+    <string name="voip_gc_notification_new_call_public">新的群组通话已开始</string>
+    <string name="voip_gc_open_call">打开</string>
+    <string name="voip_gc_call_started">群组通话已开始</string>
+    <string name="voip_gc_call_ended">群组通话已结束</string>
+    <string name="voip_gc_in_call">在群组通话中</string>
+    <string name="voip_gc_sfu_not_available">服务器现时无法使用，请稍后再试。</string>
+    <string name="voip_gc_call_error">无法发起群组通话</string>
+    <string name="voip_gc_call_full_generic">已达到人数上限：其他参与者无法加入此群组通话。</string>
+    <string name="voip_gc_call_full_n">已达到 %1$d 个参与者的上限，您无法加入此群组通话。</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="other">%d位参与者</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="other">注意：%d位成员不能参与群组通话。</item>
+    </plurals>
 </resources>

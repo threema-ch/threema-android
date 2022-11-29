@@ -69,7 +69,7 @@ public class GroupLocationMessage extends AbstractGroupMessage {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			String locStr = String.format(Locale.US, "%f,%f,%f", latitude, longitude, accuracy);
 			if (poiName != null)
 				locStr += "\n" + poiName;

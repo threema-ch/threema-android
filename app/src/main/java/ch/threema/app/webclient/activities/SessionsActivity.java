@@ -38,16 +38,6 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import org.saltyrtc.client.crypto.CryptoException;
-import org.saltyrtc.client.exceptions.InvalidKeyException;
-import org.slf4j.Logger;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,6 +48,17 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
+import org.saltyrtc.client.crypto.CryptoException;
+import org.saltyrtc.client.exceptions.InvalidKeyException;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -864,7 +865,7 @@ public class SessionsActivity extends ThreemaToolbarActivity
 			String saltyRtcHost = qrCodeResult.saltyRtcHost;
 			int saltyRtcPort = qrCodeResult.saltyRtcPort;
 			ServerAddressProvider serverAddressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
-			if (serverAddressProvider.getWebOverrideSaltyRtcHost() != null) {
+			if (!TestUtil.empty(serverAddressProvider.getWebOverrideSaltyRtcHost())) {
 				saltyRtcHost = serverAddressProvider.getWebOverrideSaltyRtcHost();
 			}
 			if (serverAddressProvider.getWebOverrideSaltyRtcPort() != 0) {

@@ -24,6 +24,10 @@ package ch.threema.app.services;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
@@ -32,9 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils.AppTheme;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
@@ -53,12 +54,13 @@ public interface PreferenceService {
 	int ImageScale_ORIGINAL = 4;
 	int ImageScale_SEND_AS_FILE = 5;
 
-	@IntDef({VideoSize_DEFAULT, VideoSize_SMALL, VideoSize_MEDIUM, VideoSize_ORIGINAL})
+	@IntDef({VideoSize_DEFAULT, VideoSize_SMALL, VideoSize_MEDIUM, VideoSize_ORIGINAL, VideoSize_SEND_AS_FILE})
 	@interface VideoSize {}
 	int VideoSize_DEFAULT = -1;
 	int VideoSize_SMALL = 0;
 	int VideoSize_MEDIUM = 1;
 	int VideoSize_ORIGINAL = 2;
+	int VideoSize_SEND_AS_FILE = 3;
 
 	int Theme_LIGHT = 0;
 	int Theme_DARK = 1;
@@ -103,9 +105,13 @@ public interface PreferenceService {
 
 	Uri getGroupNotificationSound();
 
+	Uri getGroupCallRingtone();
+
 	Uri getVoiceCallSound();
 
 	boolean isVoiceCallVibrate();
+
+	boolean isGroupCallVibrate();
 
 	void setNotificationSound(Uri uri);
 
@@ -409,8 +415,8 @@ public interface PreferenceService {
 	float getPrivacyPolicyAcceptedVersion();
 	void  setPrivacyPolicyAcceptedVersion(float version);
 
-	boolean getIsVideoCallTooltipShown();
-	void setVideoCallTooltipShown(boolean shown);
+	boolean getIsGroupCallsTooltipShown();
+	void setGroupCallsTooltipShown(boolean shown);
 
 	boolean getIsWorkHintTooltipShown();
 	void setIsWorkHintTooltipShown(boolean shown);
@@ -497,6 +503,9 @@ public interface PreferenceService {
 	int getPipPosition();
 
 	boolean isVideoCallsEnabled();
+
+	boolean isGroupCallsEnabled();
+
 	@Nullable String getVideoCallsProfile();
 
 	void setBallotOverviewHidden(boolean hidden);
@@ -523,4 +532,6 @@ public interface PreferenceService {
 
 	int getMultipleRecipientsTooltipCount();
 	void incrementMultipleRecipientsTooltipCount();
+
+	boolean isGroupCallSendInitEnabled();
 }

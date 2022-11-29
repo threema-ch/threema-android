@@ -61,9 +61,40 @@
 	<string name="voip_prefs_webrtc_debug">WebRTC Diagnose</string>
 	<string name="voip_prefs_webrtc_debug_summary">Starten Sie dieses Tool, um Probleme mit dem Anruf-Verbindungsaufbau zu diagnostizieren</string>
 	<string name="voip_webrtc_debug">WebRTC Diagnose</string>
-	<string name="voip_webrtc_debug_intro">Drücken Sie den \"Start\" Button um den Test zu starten.</string>
+	<string name="voip_webrtc_debug_intro">Drücken Sie den «Start» Button um den Test zu starten.</string>
 	<string name="voip_webrtc_debug_start">Start</string>
 	<string name="voip_webrtc_debug_done">Fertig. Wenn Sie von Problemen mit dem Anruf-Verbindungsaufbau betroffen sind, senden Sie bitte diesen Ouput an den Threema-Support.</string>
 	<string name="voip_webrtc_debug_copied">Text wurde in Zwischenablage kopiert.</string>
 	<string name="voip_webrtc_debug_copy_clipboard">In Zwischenablage kopieren</string>
+
+	<!-- Group Calls -->
+	<string name="voip_gc_members_notified">Alle Gruppenmitglieder wurden informiert</string>
+	<string name="voip_gc_notification_channel_description">Gruppenanrufe</string>
+	<string name="voip_gc_notification_title">Gruppenanruf</string>
+	<string name="voip_gc_notification_call_started">%1$s hat einen Gruppenanruf in %2$s gestartet</string>
+	<string name="voip_gc_notification_call_started_generic">%1$s hat einen Gruppenanruf gestartet</string>
+	<string name="voip_gc_notification_call_started_generic_outbox">Sie haben einen Gruppenanruf gestartet</string>
+	<string name="voip_gc_dismiss_call">Ignorieren</string>
+	<string name="voip_gc_join_call">Teilnehmen</string>
+	<string name="voip_gc_ongoing_call">Gruppenanruf läuft</string>
+	<string name="voip_gc_waiting_for_participants">Warte auf andere Teilnehmer</string>
+	<string name="voip_gc_participant_avatar_description">Profilbild des Teilnehmers</string>
+	<string name="voip_gc_participant_mute_status_description">Stummschalt-Status des Teilnehmers</string>
+	<string name="voip_gc_notification_new_call_public">Ein neuer Gruppenanruf wurde gestartet</string>
+	<string name="voip_gc_open_call">Öffnen</string>
+	<string name="voip_gc_call_started">Gruppenanruf wurde gestartet</string>
+	<string name="voip_gc_call_ended">Gruppenanruf hat geendet</string>
+	<string name="voip_gc_in_call">Im Gruppenanruf</string>
+	<string name="voip_gc_sfu_not_available">Server kann nicht erreicht werden</string>
+	<string name="voip_gc_call_error">Gruppenanruf konnte nicht gestartet werden</string>
+	<string name="voip_gc_call_full_generic">Keine Teilnahme möglich: Die maximale Teilnehmerzahl ist erreicht.</string>
+	<string name="voip_gc_call_full_n">Keine Teilnahme möglich: Die maximale Teilnehmerzahl (%1$d) ist erreicht.</string>
+    <plurals name="n_participants_in_call">
+		<item quantity="one">%d Teilnehmer</item>
+		<item quantity="other">%d Teilnehmer</item>
+	</plurals>
+	<plurals name="n_members_dont_support_group_calls">
+		<item quantity="one">Hinweis: Ein Mitglied kann nicht an Gruppenanrufen teilnehmen.</item>
+		<item quantity="other">Hinweis: %d Mitglieder können nicht an Gruppenanrufen teilnehmen.</item>
+	</plurals>
 </resources>

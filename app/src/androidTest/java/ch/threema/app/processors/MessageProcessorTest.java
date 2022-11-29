@@ -49,6 +49,7 @@ import ch.threema.app.services.group.IncomingGroupJoinRequestService;
 import ch.threema.app.testutils.CaptureLogcatOnTestFailureRule;
 import ch.threema.app.testutils.TestHelpers;
 import ch.threema.app.testutils.ThreemaAssert;
+import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
@@ -62,6 +63,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
 import ch.threema.domain.protocol.csp.connection.MessageProcessorInterface.ProcessIncomingResult;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.IdentityStoreInterface;
@@ -90,6 +92,7 @@ public class MessageProcessorTest {
 	private NotificationService notificationService;
 	private VoipStateService voipStateService;
 	private NonceFactory nonceFactory;
+	private GroupCallManager groupCallManager;
 
 	// Stores
 	private IdentityStoreInterface identityStore;
@@ -98,6 +101,7 @@ public class MessageProcessorTest {
 
 	// Message processor
 	private MessageProcessor messageProcessor;
+	private ForwardSecurityMessageProcessor forwardSecurityMessageProcessor;
 
 	@Before
 	public void setUp() throws Exception {
@@ -116,6 +120,8 @@ public class MessageProcessorTest {
 		this.notificationService = serviceManager.getNotificationService();
 		this.voipStateService = serviceManager.getVoipStateService();
 		this.nonceFactory = new NonceFactory(new InMemoryNonceStore());
+		this.forwardSecurityMessageProcessor = serviceManager.getForwardSecurityMessageProcessor();
+		this.groupCallManager = serviceManager.getGroupCallManager();
 
 		// Create in-memory stores
 		this.contactStore = new InMemoryContactStore();
@@ -153,7 +159,9 @@ public class MessageProcessorTest {
 			this.ballotService,
 			this.fileService,
 			this.notificationService,
-			this.voipStateService
+			this.voipStateService,
+			this.forwardSecurityMessageProcessor,
+			this.groupCallManager
 		);
 	}
 
@@ -231,7 +239,7 @@ public class MessageProcessorTest {
 		final String logs = this.getLogs();
 		ThreemaAssert.assertContains(
 			logs,
-			"MessageProcessor: Incoming message " + deliveryMessageId.toString()
+			"MessageProcessor: Incoming message " + deliveryMessageId
 				+ " from " + this.identityStore2.getIdentity()
 				+ " to " + this.identityStore.getIdentity()
 				+ " (type " + Utils.byteToHex((byte) ProtocolDefines.MSGTYPE_DELIVERY_RECEIPT, false, true) + ")"

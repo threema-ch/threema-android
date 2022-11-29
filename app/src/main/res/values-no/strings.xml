@@ -112,6 +112,7 @@ når den første meldingen mottas.</string>
     <string name="cancel">Avbryt</string>
     <string name="copy_message_action">Kopier</string>
     <string name="delete_contact_action">Slett kontakt</string>
+    <string name="delete_multiple_contact_action">Slett kontakter</string>
     <string name="scan_id">Skann ID</string>
     <string name="id_scanned">ID skannet</string>
     <string name="id_mismatch">Den offentlige nøkkelen du har skannet samsvarer ikke med nøkkelen som er lagret på serveren for denne IDen. Dette betyr at noen har manipulert den skannede koden og at du ikke bør stole på nøkkelen.</string>
@@ -123,12 +124,12 @@ når den første meldingen mottas.</string>
     <string name="share_via">Del via...</string>
     <string name="share_subject">%s samtale</string>
     <string name="message_delete_undo">Angre</string>
-    <string name="message_deleted">Melding(er) slettet</string>
     <string name="mobile_already_linked">Din Threema ID er allerede koblet til dette telefonnummeret</string>
     <string name="email_already_linked">Din Threema ID er allerede koblet til denne e-postadressen</string>
     <string name="whoaaa">Varsel</string>
     <string name="really_delete_message_title">Slett melding</string>
     <string name="really_delete_thread">Slett samtale</string>
+    <string name="really_delete_multiple_threads">Slett samtaler</string>
     <string name="really_delete_contact">Er du sikker på at du vil slette denne kontakten og alle tilhørende meldinger?</string>
     <string name="image_placeholder">Bilde</string>
     <string name="invalid_threema_id">Ugyldig Threema ID</string>
@@ -257,8 +258,6 @@ når den første meldingen mottas.</string>
     <string name="prefs_masterkey_notification_newmsg_off">Nye meldinger lager ikke et varsel når masternøkkelen er låst</string>
     <string name="prefs_masterkey_notification_newmsg_on">Nye beskjeder viser et generelt varsel når masternøkkelen er låst</string>
     <string name="chat_history_attached">Samtaleloggen er vedlagt.</string>
-    <string name="new_message">1 ny melding</string>
-    <string name="new_messages">Nye meldinger</string>
     <string name="backup_data_title">Sikkerhetskopi</string>
     <string name="backup_data_password_msg">Sikkerhetskopien blir lagret i en ZIP-fil på den interne USB lagringen og kan bli gjenoprettet på en hvilken som helst Android enhet. Vennligst skriv inn et passord for å beskytte din sikkerhetskopi.</string>
     <string name="restore_data_password_msg">Skriv inn passordet du brukte til å lage denne sikkerhetskopien.</string>
@@ -284,7 +283,7 @@ når den første meldingen mottas.</string>
     <string name="prefs_group_notifications">Gruppesamtale</string>
     <string name="add_group_members_list">Gruppemedlemmer</string>
     <string name="group_select_at_least_two">Du må velge minst én medlem for å fortsette</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">Du kan ikke velge mer enn %1$d gruppemedlemmer</string>
+    <string name="group_select_max">Du kan ikke velge mer enn %1$d gruppemedlemmer</string>
     <string name="search">Søk</string>
     <string name="hint_search_keyword">Søk etter nøkkelord</string>
     <string name="add_group_owner">Gruppegrunnlegger</string>
@@ -359,7 +358,6 @@ når den første meldingen mottas.</string>
     <string name="contact_format_last_name_first_name">Etternavn Fornavn</string>
     <string name="block_contact">Blokker kontakt</string>
     <string name="unblock_contact">Fjern kontaktblokkering</string>
-    <string name="unread_messages">%d uleste meldinger</string>
     <string name="one_unread_message">1 ulest melding</string>
     <string name="really_unlink_contact_title">Fjern kontaktkobling</string>
     <string name="really_unlink_contact">Vil du virkelig fjerne koblingen til denne kontakten?</string>
@@ -375,7 +373,6 @@ når den første meldingen mottas.</string>
     <string name="save_image">Lagre bilde</string>
     <string name="share_image">Del bilde</string>
     <string name="view_in_gallery">Vis i galleri</string>
-    <string name="file_saved">%d fil(er) vellykket lagret.</string>
     <string name="token_register_failed">Push token ble ikke oppdatert, vennligst prøv igjen.</string>
     <string name="internet_connection_required">Ingen tilgang til internett</string>
     <string name="prefs_sum_save_media">Lagre innkommende bilder og videoer, samt utgående bilder i ukryptert format</string>
@@ -417,8 +414,14 @@ når den første meldingen mottas.</string>
     <string name="media_gallery_pictures">Bilder</string>
     <string name="media_gallery_videos">Videoer</string>
     <string name="group_membership_title">Medlem av disse gruppene</string>
+    <string name="group_description">Beskrivelse av gruppen</string>
+    <string name="change_group_description">Endre beskrivelse av gruppen</string>
+    <string name="add_group_description">Legg til beskrivelse av gruppen</string>
+    <string name="read_more">les mer</string>
+    <string name="read_less">les mindre</string>
+    <string name="changed_group_desc_date">"Sist endret: "</string>
     <string name="num_items_sected">%s valgt</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Vil du virkelig slette %d media-meldinger?</string>
+    <string name="really_delete_media">Vil du virkelig slette %d media-meldinger?</string>
     <string name="check_updates">Sjekk for oppdateringer</string>
     <string name="masterkey_lock_explain">Threema tar vare på passfrasen i minnet. Om du ofte må skrive inn passfrasen på nytt, sørg for at strømsparingsinnstillinger på telefonen ikke stenger ned Threema.</string>
     <string name="identity_already_exists">Denne IDen er allerede i kontaktlisten din.</string>
@@ -434,7 +437,6 @@ når den første meldingen mottas.</string>
     <string name="share_conversation_body">Du trenger et moderne ZIP-verktøy med AES støtte for å åpne denne .zip filen, for eksempel:
 http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Samtalen vil bli sendt som en kryptert .zip fil. Vennligst skriv et passord:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d nye meldinger i %2$d samtaler</string>
     <string name="ballot_create">Lag en avstemning</string>
     <string name="ballot_choice_add">Legg til valg</string>
     <string name="ballot_state_closed">Stengt</string>
@@ -452,8 +454,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="ballot_overview">Alle avstemninger</string>
     <string name="ballot_copy">Kopier avstemning</string>
     <string name="ballot_remove">Fjern avstemning</string>
-    <string name="ballot_really_delete">Fjern avstemning(er)</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Vil du virkelig slette %1$d avstemning(er)? Det er ikke mulig å gjenopprette stemmene.</string>
     <string name="ballot_not_exist">Avstemning finnes ikke</string>
     <string name="ballot_tap_to_vote">Stem ved å trykke</string>
     <string name="ballot_tap_to_view_results">Avstemning stengt. Trykk for å vise resultatet</string>
@@ -468,7 +468,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="invalid_cannot_send">Du kan ikke sende meldinger til en ugyldig kontakt</string>
     <string name="ballot_answer_count_error">Vennligst skriv minimum to svar til avstemningen.</string>
     <string name="ballot_one_contact_not_supported">Varsel: %1$s vil ikke kunne delta i avstemningen.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Varsel: %1$d kontakter vil ikke kunne delta i avstemningen.</string>
+    <string name="ballot_x_contact_not_supported">Varsel: %1$d kontakter vil ikke kunne delta i avstemningen.</string>
     <string name="contact_state_inactive">Inaktiv</string>
     <string name="contact_state_invalid">Ugyldig</string>
     <string name="back">Tilbake</string>
@@ -482,6 +482,9 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="video_size_large">Lav (mer data)</string>
     <string name="video_size_original">Ingen (stor mengde data)</string>
     <string name="prefs_video_size">Videokomprimering</string>
+    <string name="menu_video_size_small">Liten størrelse</string>
+    <string name="menu_video_size_medium">Middels størrelse</string>
+    <string name="menu_video_size_large">Original størrelse</string>
     <string name="show_contact">Vis kontakt</string>
     <string name="chat_with">Samtale med %1$s</string>
     <string name="kick_user_from_group">Fjern %1$s fra gruppen</string>
@@ -501,7 +504,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="send_media">Send media</string>
     <string name="rotate">Roter</string>
     <string name="remove">Fjern</string>
-    <string name="image_already_added">Dette bildet har allerede blitt lagt til.</string>
+    <string name="item_already_added">Denne gjenstanden har allerede blitt lagt til.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">Minimum %d tegn.</string>
     <string name="mark_read">Merk som lest</string>
     <string name="attach_document">Fil</string>
@@ -511,7 +514,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="no_activity_for_mime_type">Fant ingen app for å åpne denne filen.</string>
     <string name="open_from">Åpne fra</string>
     <string name="file_one_contact_not_supported">%1$s kan ikke motta filer.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Varsel: %1$d kontakter kan ikke motta filen.</string>
+    <string name="file_x_contact_not_supported">Varsel: %1$d kontakter kan ikke motta filen.</string>
     <string name="mime_android_apk">Android pakke</string>
     <string name="mime_audio">Lydfil</string>
     <string name="mime_certificate">Digitalt sertifikat</string>
@@ -550,7 +553,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="storage_explain">Om du går tom for lagring, så kan du slette gamle krypterte mediafiler for å frigjøre plass. Miniatyrbilder vil ikke bli slettet. Merk at dette ikke er en automatisk prosess. Med mindre du trykker på noen av knappene nedenfor, så vil ingenting bli slettet.</string>
     <string name="delete_data">Slett data nå</string>
     <string name="delete_date_confirm_message">Om du vil fortsette, så vil filer bli slettet, men miniatyrbilder blir beholdt.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">%d mediafiler har blitt slettet</string>
     <string name="storage_management">Behandle lagring</string>
     <string name="media">Media</string>
     <string name="prefs_storage_mgmt_title">Rydd opp i media, filer og meldinger</string>
@@ -580,7 +582,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="fontsize_large">Stor</string>
     <string name="fontsize_xlarge">Ekstra stor</string>
     <string name="no_app_for_location">Ingen kart-applikasjon er funnet på denne enheten</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%d samtale(r) slettet</string>
     <string name="prefs_sendlog">Send loggfil</string>
     <string name="prefs_sendlog_summary">Send loggfil til Threema for videre analyse, i tilfelle du har problemer</string>
     <string name="prefs_exportlog">Eksport loggfil</string>
@@ -591,7 +592,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="message_declined">\"Uenig\" sendt</string>
     <string name="notifications_settings">Varsler</string>
     <string name="notifications_default">Standard innstillinger</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">For %d time(r)</string>
     <string name="notifications_until">Frem til %s</string>
     <string name="notifications_mute">Dempet</string>
     <string name="notifications_choose_sound">Velg lyd</string>
@@ -672,7 +672,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_proximity_sensor_explain">Bruk anropshøyttaler for lydmeldinger når nærhetssensoren er tildekket</string>
     <string name="error_creating_group">Feil ved oppretting/oppdatering av gruppe</string>
     <string name="no_media_found_generic">Ingen medier er funnet i denne samtalen</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Max. %d elementer kan bli redigert samtidig</string>
+    <string name="max_images_reached">Max. %d elementer kan bli redigert samtidig</string>
     <string name="enter_description">Vennligst beskriv bug/problem her.</string>
     <string name="add_caption_hint">Legg ved ekstra beskrivelse</string>
     <string name="disable">Deaktiver</string>
@@ -718,9 +718,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_language_override">Språk</string>
     <string name="threema_channel_intro">Threema Channel gir deg nyheter om alt som omhandler Threema. Vil du abonnere til Threema Channel og legge det til dine kontakter? Det er gratis og du kan avslutte abonnementet når som helst.</string>
     <string name="quote">Sitat</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Vil du virkelig slette %1$d kontakter og alle tilhørende samtaler?</string>
     <string name="contacts_deleted">Kontakter har blitt slettet</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d kontakter kunne ikke slettes fordi de er fortsatt en del av en gruppe</string>
     <string name="take_photo">Ta bilde</string>
     <string name="select_from_gallery">Velg fra galleri</string>
     <string name="palette">Palett</string>
@@ -846,7 +844,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="no_matching_work_contacts">Ingen admin-verifisert Threema Work kontakter er funnet</string>
     <string name="all">Alle</string>
     <string name="webclient_session_stop_all">Lukk alle</string>
-    <string name="webclient_running_sessions">%d sesjon(er) kjører</string>
     <string name="passphrase_service_name">Passfrase Tjeneste</string>
     <string name="passphrase_service_description">Varsel når passfrase er opplåst</string>
     <string name="webclient_service_description">Varsel når Web-/Skrivebordsøkt er aktiv</string>
@@ -999,7 +996,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="data_backup_last_date">Siste vellykkede sikkerhetskopi</string>
     <string name="archived">Arkivert</string>
     <string name="to_archive">Arkivér</string>
-    <string name="message_archived">%d samtaler arkivert</string>
     <string name="archived_chats">Arkiverte samtaler</string>
     <string name="unarchive">Ikke arkivér</string>
     <string name="no_archived_chats">Ingen arkiverte samtaler.\nFor å arkivere en samtale, sveip den til venstre i samtalelisten</string>
@@ -1011,25 +1007,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="system_default">Bruk systemstandard</string>
     <string name="open_in_maps_app">Åpne i kart-app</string>
     <string name="delete">Slett</string>
-    <string name="num_archived_chats">%d arkiverte samtaler</string>
     <string name="continue_recording">Fortsett opptak</string>
-    <string name="whatsnew_title">Velkommen til %1$s %2$s</string>
-    <string name="whatsnew_headline"><![CDATA[
-		<p><b>Nye funksjoner i denne versjonen av %s for Android: </b></p>
-		<p>
-		&bull; Mange nye emojier i samsvar med Unicode 13.1 standarden. 😵‍💫❤️‍🔥
-		</p><p>
-		&bull; Søk etter emojier ved bruk av navn eller betydning (tilgjengelig i 17 forskjellige språk).
-		</p><p>
-		&bull; Spesifikke farger for kontakter og grupper som ikke har et profilbilde. De nye fargene vil fungere på tvers av plattformer og enheter.
-		</p><p>
-		&bull; Forbedret ytelsen ved rulling i mange lister.
-		</p><p>
-		&bull; Optimalisert utseende i redigeringsmodus. Økt mengden medier som kan bli redigert før sending, til 256 medier.
-		</p><p>
-		&bull; Mange små forbedringer og feilfikser.
-		</p>
-		]]></string>
+    <string name="whatsnew_title">Nytt: %1$s Gruppesamtaler</string>
     <string name="tap_to_start">Trykk her for å starte %s nå.</string>
     <string name="two_years">2 år</string>
     <string name="invalid_backup_path">Ugyldig kopiplassering</string>
@@ -1048,7 +1027,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="and">og</string>
     <string name="edit_type_content_description">Vis eller endre %1$s %2$s</string>
     <string name="group">Gruppe</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Personvernerklæringen har blitt oppdatert for å reflektere den følgende endringen:</p><p>%1$s er ikke lenger avhengig av Google Play og Google Maps for å skaffe tilgang til kart og POI-data.</p>Vennligst les hele personvernerklæringen <a href="%2$s">her</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Tjenester er ikke installert. Kan ikke bytte til Google FCM eller HMS push.</string>
     <string name="unable_to_get_current_location">Kan ikke finne posisjon.</string>
     <string name="lp_search_place_min_chars">Skriv inn minst tre tegn for å søke etter en plass.</string>
@@ -1111,6 +1089,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="translators_thanks">Mange takk til våre frivillige oversettere: \n%s</string>
     <string name="ballot_window_hide">Skjul aktive avstemninger</string>
     <string name="ballot_window_show">Vis aktive avstemninger</string>
+    <string name="single_ballot_really_delete">Fjern avstemningen</string>
+    <string name="single_ballot_really_delete_text">Vil du virkelig fjerne denne avstemningen? Du kan ikke gjenopprette stemmene senere.</string>
     <string name="tooltip_voip_other_party_video_on">Den andre part startet et videoanrop. Trykk her for å skru på ditt kamera.</string>
     <string name="tooltip_voip_other_party_video_disabled">Den andre part bruker ikke en oppdatert versjon av appen eller godtar ikke videoanrop.</string>
     <string name="biometrics_not_enrolled">Det er ikke lagret noe biometri-data på enheten.</string>
@@ -1198,8 +1178,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_request_already_sent"><![CDATA[Du har allerede aktiv forespørsel for å bli med <b>%s</b> gjennom denne linken og du venter fortsatt på svar fra administratoren. Trykk på forespørselen i listen om du vil prøve å sende på nytt.]]></string>
     <string name="group_link_none">Det er ikke laget en link ennå</string>
     <string name="group_request_confirm_send"><![CDATA[Du er i ferd med å sende en forespørsel for <b>%1$s</b> til administrator <b>%2$s</b>. Om denne linken ikke er ugyldig, så vil du bli lagt til gruppen når administratorens enhet mottar din forespørsel.]]></string>
-    <string name="really_delete_outgoing_request">Vil du virkelig slette %d gruppeforespørselen(e)? Vær oppmerksom på at forespørselen(e) blir ikke tilbakekalt, så du kan fortsatt bli akseptert/avvist om forepørselen(e) ikke har blitt svart av administratoren enda.</string>
-    <string name="really_delete_group_request_title">Sikker på at du vil slette forespørsel?</string>
+    <string name="really_delete_group_request_title_singular">Slett gruppeforespørsel</string>
+    <string name="really_delete_group_request_title_plural">Slett gruppeforespørsler</string>
     <string name="sent_to">Sendt til: %s</string>
     <string name="sent_on">Sent på: %s</string>
     <string name="group_response">Svar på gruppeforespørsel</string>
@@ -1219,7 +1199,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="link_administration_off_explain">Denne linken er allerede opprettet og delt. Endring av egenskapene til linken er derfor umulig. Lag en ny link med egenskapene du trenger.</string>
     <string name="group_link_update_success">Link er oppdatert</string>
     <string name="no_group_links">Ingen gruppelinker. For å opprette en gruppelink, klikk på knappen nederst til høyre eller aktiver standardlinken som du finner i gruppedetaljer-vinduet.</string>
-    <string name="really_delete_group_link">Vil du virkelig slette %d gruppelink(er)? Ingen vil ha muligheten til å sende forespørsler gjennom den lenger. Forespørsler som allerede er mottatt kan fortsatt aksepteres/avvises.</string>
     <string name="group_links_overview_title">Gruppelinker for %s</string>
     <string name="group_link_invalid">Ugyldig</string>
     <string name="group_link_valid">Gyldig</string>
@@ -1235,7 +1214,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="open_group_requests_show">Vis forespørsler</string>
     <string name="open_group_requests_hide">Skjul forespørsler</string>
     <string name="group_request_link_already_deleted">Gruppelinken har blitt slettet</string>
-    <string name="really_delete_incoming_request">Vil du virkelig slette %d forespørsler? Du kan ikke svare på forespørsler etter at de har blitt slettet.</string>
     <string name="incoming_group_request_no_message">Sendt via åpen link... ingen melding</string>
     <string name="group_request_received_through">Gjennom link: %s</string>
     <string name="reaccept">Reaksepter</string>
@@ -1291,6 +1269,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_links_manage_menu">Administrer gruppelinker</string>
     <string name="group_request_sent_menu">Sendte gruppeforespørsler</string>
     <string name="really_delete_group_link_title">Slett gruppelink</string>
+    <string name="really_delete_multiple_group_links_title">Slett gruppelinker</string>
     <string name="qr_scan_result_dialog_title">QR-skann resultat</string>
     <string name="scan_failure_dialog_title">Skann feilet</string>
     <string name="no_threema_qr_info">Dette er ikke en QR-kode som hører til Threema. Det dekodede innholdet av koden er:</string>
@@ -1370,6 +1349,16 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="tooltip_multiple_recipients_title">Nyhet: Flere mottakere</string>
     <string name="tooltip_multiple_recipients_text">Langt trykk for å velge flere mottakere å sende den samme meldingen til.</string>
     <string name="synchronizing">Synkroniserer...</string>
+    <string name="forward_security">Send meldinger med Perfect Forward Secrecy</string>
+    <string name="forward_security_mode">Videresend Sikkerhet</string>
+    <string name="forward_security_mode_none">Ingen</string>
+    <string name="clear_forward_security">Fjern Videresending Sikkerhet-økter</string>
+    <string name="forward_security_cleared">Videresend Sikkerhet-økt med denne kontakten har blitt fjernet</string>
+    <string name="message_without_forward_security">En melding uten Videresend Sikkerhet er mottatt. Verifiser at avsender har skrudd av Videresend Sikkerhet med vilje.</string>
+    <string name="forward_security_established">Meldinger i denne samtalen er nå beskyttet av Videresend Sikkerhet.</string>
+    <string name="forward_security_established_rx">Meldinger mottatt i denne samtalen blir nå beskyttet av Videresend Sikkerhet. Skru på Videresend Sikkerhet i kontaktdetaljer for å beskytte sendte medlinger også.</string>
+    <string name="forward_security_reset">Videresend Sikkerhet-økten med denne kontakten har blitt resatt. Dette kan skje om kontakten har byttet enhet eller reinstallert appen.</string>
+    <string name="forward_security_message_out_of_order">En melding ble mottatt ute av rekkefølge og kunne derfor ikke bli dekryptert.</string>
     <string name="self_updater_installation_failed">Det skjedde en feil under nedlasting av oppdateringen. Vennligst last ned oppdateringen fra <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuelt.</string>
     <string name="spam_first_contact">Denne samtalen er fra en ukjent kontakt</string>
     <string name="spam_report">Rapporter spam</string>
@@ -1385,8 +1374,33 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="last_added_contact">Sist lagt til</string>
     <string name="directory_explain_text">Søk i firmaets oppføringsliste etter ansatte som ikke er lagt til i din kontaktliste.</string>
     <string name="cannot_display_location">Denne posisjonen kan ikke vises.</string>
+    <string name="draw_reply">Tegn et svar</string>
+    <string name="send_video_muted">Fjern lyd fra video</string>
+    <string name="send_without_audio">Fjern lyd</string>
+    <string name="edit_filename">Endre filnavn</string>
     <string name="unable_to_restore_identity_because">Ikke mulig å gjenopprette IDen. Årsak: %s</string>
     <string name="share_with_app">Del med Threema</string>
+    <string name="read_phone_state_dialog_allow">Gi tilgang</string>
+    <string name="read_phone_state_dialog_disallow">Fortsett uansett</string>
+    <string name="read_phone_state_dialog_never_ask_again">Ikke spør igjen</string>
+    <string name="read_phone_state_dialog_title">Tilgang er nødvendig</string>
+    <string name="read_phone_state_dialog_message">For å unngå at Threema-anrop avbryter vanlige anrop, så trenger vi Telefon-tilgang. Om denne tilgangen ikke blir gitt, så vil et anrop til Threema ringe, selv om det allerede er et aktivt anrop på telefonen.</string>
+    <string name="read_phone_state_short_message">For at Threema skal kunne se om der er pågående samtaler, gi tilgang til Telefon.</string>
+    <string name="prefs_title_read_phone_state">Gi tilgang til Telefon</string>
+    <string name="prefs_title_hibernation">Ubrukte apper-innstilling</string>
+    <string name="prefs_summary_hibernation_api_32">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Fjern tillatelser og frigjør plass\".</string>
+    <string name="prefs_summary_hibernation_api">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Sett en app i dvale om den er ubrukt\"</string>
+    <string name="unable_to_fetch_configuration">Ute av stand til å hente data fra konfigurasjonsserver. Prøv igjen senere.</string>
+    <string name="no_members_support_group_calls">Det er ingen andre medlemmer i denne gruppen som er i stand til å svare på gruppesamtale</string>
+    <string name="group_calls">Gruppesamtaler</string>
+    <string name="prefs_title_group_calls_enable">Aktiver gruppesamtaler</string>
+    <string name="group_no_members">Denne gruppen har ikke andre medlemmer</string>
+    <string name="group_call">Gruppesamtale</string>
+    <string name="checking_compatibility">Sjekker kompatibilitet...</string>
+    <string name="group_call_mic_permission_rationale">For å starte gruppesamtaler så må du tillate %s å få tilgang til mikrofon under \"Tillatelser\".</string>
+    <string name="group_call_camera_permission_rationale">For at andre deltakere skal kunne se bildet ditt, så må du tillate %s å få tilgang til kamera under \"Tillatelser\".</string>
+    <string name="settings">Innstillinger</string>
+    <string name="leave">Forlat</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1406,5 +1420,25 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <plurals name="message_copied">
         <item quantity="one">Melding kopiert</item>
         <item quantity="other">Meldinger kopiert</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="one">%d ny melding</item>
+        <item quantity="other">%d nye meldinger</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="one">%d kontakt kunne ikke bli slettet fordi den er fortsatt en del av en gruppe.</item>
+        <item quantity="other">%d kontakter kunne ikke bli slettet fordi de er fortsatt en del av en gruppe.</item>
+    </plurals>
+    <plurals name="new_messages_in_chats">
+        <item quantity="one">%1$d ny melding i %2$d samtaler</item>
+        <item quantity="other">%1$d nye meldinger i %2$d samtaler</item>
+    </plurals>
+    <plurals name="forward_security_messages_skipped">
+        <item quantity="one">En melding har blitt tapt siden den forrige meldingen.</item>
+        <item quantity="other">%d meldinger har blitt tapt siden den forrige meldingen.</item>
+    </plurals>
+    <plurals name="delete_messages">
+        <item quantity="one">Slett %d melding på denne enheten?</item>
+        <item quantity="other">Slett %d meldinger på denne enheten?</item>
     </plurals>
 </resources>

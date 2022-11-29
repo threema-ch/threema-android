@@ -41,10 +41,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -61,17 +72,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -89,6 +89,7 @@ import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.fragments.ContactsSectionFragment;
 import ch.threema.app.fragments.MessageSectionFragment;
 import ch.threema.app.fragments.MyIDFragment;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.globalsearch.GlobalSearchActivity;
 import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
 import ch.threema.app.listeners.AppIconListener;
@@ -122,6 +123,8 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.ui.IdentityPopup;
+import ch.threema.app.ui.OngoingCallNoticeModes;
+import ch.threema.app.ui.OngoingCallNoticeView;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
@@ -188,7 +191,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private boolean isLicenseCheckStarted = false, isInitialized = false, isWhatsNewShown = false, isUpdating = false;
 	private Toolbar toolbar;
 	private View connectionIndicator;
-	private LinearLayout noticeLayout, ongoingCallNoticeLayout;
+	private LinearLayout noticeLayout;
+	OngoingCallNoticeView ongoingCallNoticeLayout;
 
 	private ServiceManager serviceManager;
 	private NotificationService notificationService;
@@ -425,6 +429,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 					switch (modifiedMessageModel.getState()) {
 						case SENDFAILED:
+						case FS_KEY_MISMATCH:
 							updateUnsentMessagesList(modifiedMessageModel, true);
 							break;
 						default:
@@ -484,7 +489,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		@Override
 		public void onStart(String contact, long elpasedTimeMs) {
 			RuntimeUtil.runOnUiThread(() -> {
-				initOngoingCallNotice();
+				if (ongoingCallNoticeLayout != null) {
+					ongoingCallNoticeLayout.show(VoipCallService.getStartTime(), OngoingCallNoticeModes.MODE_VOIP, 0);
+				}
 			});
 		}
 
@@ -492,9 +499,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		public void onEnd() {
 			RuntimeUtil.runOnUiThread(() -> {
 				if (ongoingCallNoticeLayout != null) {
-					Chronometer chronometer = ongoingCallNoticeLayout.findViewById(R.id.call_duration);
-					chronometer.stop();
-					ongoingCallNoticeLayout.setVisibility(View.GONE);
+					ongoingCallNoticeLayout.hide();
 				}
 			});
 		}
@@ -618,7 +623,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	private void showWhatsNew() {
-		final boolean skipWhatsNew = true; // set this to false if you want to show a What's New screen
+		final boolean skipWhatsNew = false; // set this to false if you want to show a What's New screen
 
 		if (preferenceService != null) {
 			if (!preferenceService.isLatestVersion(this)) {
@@ -630,14 +635,16 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 				if (!ConfigUtils.isWorkBuild() && !RuntimeUtil.isInTest() && !isFinishing()) {
 					if (skipWhatsNew) {
-						isWhatsNewShown = false;
+						isWhatsNewShown = false; // make sure isWhatsNewShown is set to false here if whatsnew is skipped - otherwise pin unlock will not be shown once
 					} else {
-						isWhatsNewShown = true; // make sure this is set to false if whatsnew is skipped - otherwise pin unlock will not be shown once
+						isWhatsNewShown = true;
 
-						// Do not show whatsnew for users of the previous 4.5x version
 						int previous = preferenceService.getLatestVersion() % 1000;
 
-						if (previous < BuildConfig.VERSION_CODE) {
+						// To not show the same dialog twice, it is only shown if the previous version
+						// is prior to the first version that used this dialog.
+						// Use the version code of the first version where this dialog should be shown.
+						if (previous < 776) { // 776 => Threema v5.0
 							Intent intent = new Intent(this, WhatsNewActivity.class);
 							startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
 							overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
@@ -1024,22 +1031,28 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				userService.getMobileLinkingState() == UserService.LinkingState_PENDING ?
 						View.VISIBLE : View.GONE);
 
-		this.ongoingCallNoticeLayout = findViewById(R.id.ongoing_call_layout);
-		findViewById(R.id.call_container).setOnClickListener(v -> {
+		this.ongoingCallNoticeLayout = findViewById(R.id.ongoing_call_notice);
+		if (ongoingCallNoticeLayout != null) {
+			ongoingCallNoticeLayout.setContainerAction(() -> {
+				if (VoipCallService.isRunning()) {
+					final Intent openIntent = new Intent(HomeActivity.this, CallActivity.class);
+					openIntent.putExtra(EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL);
+					openIntent.putExtra(EXTRA_CONTACT_IDENTITY, VoipCallService.getOtherPartysIdentity());
+					openIntent.putExtra(EXTRA_START_TIME, VoipCallService.getStartTime());
+					startActivity(openIntent);
+				}
+			});
+			ongoingCallNoticeLayout.setButtonAction(() -> {
+				final Intent hangupIntent = new Intent(HomeActivity.this, VoipCallService.class);
+				hangupIntent.setAction(ACTION_HANGUP);
+				startService(hangupIntent);
+			});
 			if (VoipCallService.isRunning()) {
-				final Intent openIntent = new Intent(HomeActivity.this, CallActivity.class);
-				openIntent.putExtra(EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL);
-				openIntent.putExtra(EXTRA_CONTACT_IDENTITY, VoipCallService.getOtherPartysIdentity());
-				openIntent.putExtra(EXTRA_START_TIME, VoipCallService.getStartTime());
-				startActivity(openIntent);
+				ongoingCallNoticeLayout.show(VoipCallService.getStartTime(), OngoingCallNoticeModes.MODE_VOIP, 0);
+			} else {
+				ongoingCallNoticeLayout.hide();
 			}
-		});
-		findViewById(R.id.call_hangup).setOnClickListener(v -> {
-			final Intent hangupIntent = new Intent(HomeActivity.this, VoipCallService.class);
-			hangupIntent.setAction(ACTION_HANGUP);
-			startService(hangupIntent);
-		});
-		initOngoingCallNotice();
+		}
 
 		/*
 		 * setup fragments
@@ -1178,16 +1191,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	private void initOngoingCallNotice() {
-		if (ongoingCallNoticeLayout != null) {
-			if (VoipCallService.isRunning()) {
-				Chronometer chronometer = ongoingCallNoticeLayout.findViewById(R.id.call_duration);
-				chronometer.setBase(VoipCallService.getStartTime());
-				chronometer.start();
-				ongoingCallNoticeLayout.setVisibility(View.VISIBLE);
-			} else {
-				ongoingCallNoticeLayout.setVisibility(View.GONE);
-			}
-		}
+
 	}
 
 	/**
@@ -1206,7 +1210,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			new AsyncTask<Void, Void, Drawable>() {
 				@Override
 				protected Drawable doInBackground(Void... params) {
-					Bitmap bitmap = contactService.getAvatar(new ContactModel(userService.getIdentity(), null), false);
+					Bitmap bitmap = contactService.getAvatar(
+						new ContactModel(userService.getIdentity(), null),
+						new AvatarOptions.Builder()
+							.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK)
+							.toOptions()
+					);
 					if (bitmap != null) {
 						int size = getResources().getDimensionPixelSize(R.dimen.navigation_icon_size);
 						return new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, size, size, true));

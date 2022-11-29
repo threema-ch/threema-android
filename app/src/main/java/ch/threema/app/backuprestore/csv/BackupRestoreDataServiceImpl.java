@@ -56,12 +56,9 @@ public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 
 	@Override
 	public List<BackupData> getBackups() {
-		File[] files = this.fileService.getBackupPath().listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String filename) {
-				return filename.endsWith(".zip");
-			}
-		});
+		File[] files = this.fileService
+			.getBackupPath()
+			.listFiles((dir, filename) -> filename.endsWith(".zip"));
 
 		List<BackupData> result = new ArrayList<BackupData>();
 
@@ -74,12 +71,10 @@ public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 			}
 		}
 
-		Collections.sort(result, new Comparator<BackupData>() {
-			@Override
-			public int compare(BackupData lhs, BackupData rhs) {
-				return rhs.getBackupTime().compareTo(lhs.getBackupTime());
-			}
-		});
+		Collections.sort(
+			result,
+			(lhs, rhs) -> rhs.getBackupTime().compareTo(lhs.getBackupTime())
+		);
 		return result;
 	}
 

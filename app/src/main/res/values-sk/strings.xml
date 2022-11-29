@@ -122,7 +122,6 @@
     <string name="share_via">Zdieľať cez...</string>
     <string name="share_subject">%s konverzácia</string>
     <string name="message_delete_undo">Vrátiť späť</string>
-    <string name="message_deleted">Správa(vy) vymazaná(né)</string>
     <string name="mobile_already_linked">Vaše Threema ID je už s týmto číslom mobilného telefónu prepojené</string>
     <string name="email_already_linked">Vaše Threema ID je už s touto e-mailovou adresou prepojené</string>
     <string name="whoaaa">Oznámenie</string>
@@ -257,8 +256,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="prefs_masterkey_notification_newmsg_off">Po uzamknutí hlavným kľúčom nebudete upozornený na nové správy</string>
     <string name="prefs_masterkey_notification_newmsg_on">Po uzamknutí hlavným kľúčom budete upozornený na nové správy iba všeobecnou notifikáciou.</string>
     <string name="chat_history_attached">Záznam konverzácie je pripojený</string>
-    <string name="new_message">1 nová správa</string>
-    <string name="new_messages">nové správy</string>
     <string name="backup_data_title">Záloha údajov</string>
     <string name="backup_data_password_msg">Vaše údaje budú uložené v ZIP súbore na internom úložisku a môžu byť obnovené na hociakom Android zariadení. Na ochranu zálohy týchto údajov prosím vložte heslo.</string>
     <string name="restore_data_password_msg">Vložte prosím heslo, ktoré ste použili na vytvorenie tejto zálohy.</string>
@@ -284,7 +281,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="prefs_group_notifications">Skupinová konverzácia</string>
     <string name="add_group_members_list">Členovia skupiny</string>
     <string name="group_select_at_least_two">Pre pokračovanie musíte vybrať aspoň jedného člena</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">Nemôžete vybrať viac ako %1$d členov skupiny</string>
+    <string name="group_select_max">Nemôžete vybrať viac ako %1$d členov skupiny</string>
     <string name="search">Vyhľadať</string>
     <string name="hint_search_keyword">Nájsť kľúčové slovo</string>
     <string name="add_group_owner">Zakladateľ skupiny</string>
@@ -359,7 +356,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="contact_format_last_name_first_name">Priezvisko Meno</string>
     <string name="block_contact">Zablokovať kontakt</string>
     <string name="unblock_contact">Odblokovať kontakt</string>
-    <string name="unread_messages">"Neprečítané správy: %d "</string>
     <string name="one_unread_message">1 neprečítaná správa</string>
     <string name="really_unlink_contact_title">Odpojiť kontakt</string>
     <string name="really_unlink_contact">Naozaj chcete odpojiť tento kontakt?</string>
@@ -375,7 +371,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="save_image">Uložiť obrázok</string>
     <string name="share_image">Zdielať obrázok</string>
     <string name="view_in_gallery">Zobraziť v galérii</string>
-    <string name="file_saved">Úspešne uložené súbory: %d</string>
     <string name="token_register_failed">Aktualizáia push tokenu zlyhala, skúste to prosím neskôr.</string>
     <string name="internet_connection_required">Žiadne pripojenie k internetu.</string>
     <string name="prefs_sum_save_media">Ukladať prichádzajúce obrázky a videá, ako i odchádzajúce obrázky z fotoaparátu v nezašifrovanej forme</string>
@@ -418,7 +413,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="media_gallery_videos">Videá</string>
     <string name="group_membership_title">Člen uvedených skupín</string>
     <string name="num_items_sected">Vybratých: %s</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Naozaj chcete odstrániť %d mediálnych správ?</string>
+    <string name="really_delete_media">Naozaj chcete odstrániť %d mediálnych správ?</string>
     <string name="check_updates">Skontrolovať aktualizácie</string>
     <string name="masterkey_lock_explain">Threema uchováva heslo v pamäti. Pokiaľ musíte zadávať heslo príliš často uistite sa, že je aplikácia nastavená vo výnimkách šetriča batérie v nastavení Androidu. Pravdepodobne ju systém Android ukončuje z dôvodu šetrenia energie.</string>
     <string name="identity_already_exists">Toto ID sa už nachádza na zozname kontaktov</string>
@@ -433,7 +428,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="sending_images">Odosielanie obrázkov</string>
     <string name="share_conversation_body">Pre rozbalenie súboru je potrebný moderný ZIP nástroj s podporou AES, napr. http://www.7-zip.org alebo https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Konverzácia bude odoslaná ako zašifrovaný .zip súbor. Zadajte prosím heslo:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d nových správ v %2$d konverzáciach</string>
     <string name="ballot_create">Vytvoriť anketu</string>
     <string name="ballot_choice_add">Pridať voľbu</string>
     <string name="ballot_state_closed">Uzatvorená</string>
@@ -451,8 +445,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="ballot_overview">Všetky ankety</string>
     <string name="ballot_copy">Kopírovať anketu</string>
     <string name="ballot_remove">Odstrániť anketu</string>
-    <string name="ballot_really_delete">Odstrániť anketu(y)</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Naozaj chcete odstrániť nasledujúci počet ankiet: %1$d ? Hlasovanie už nebudete môcť obnoviť.</string>
     <string name="ballot_not_exist">Anketa neexistuje</string>
     <string name="ballot_tap_to_vote">Kliknutím hlasujte</string>
     <string name="ballot_tap_to_view_results">Anketa uzavretá. Kliknutím tu zobrazíte výsledok</string>
@@ -468,7 +460,7 @@ Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priat
     <string name="invalid_cannot_send">Nie je možné odoslať správu neplatnému kontaktu</string>
     <string name="ballot_answer_count_error">Zadajte do ankety aspoň dve odpovede.</string>
     <string name="ballot_one_contact_not_supported">Upozornenie: %1$s sa nebude môcť zúčastniť vašej ankety.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Upozornenie: %1$d kontaktov sa nebude môcť zúčastniť vašej ankety.</string>
+    <string name="ballot_x_contact_not_supported">Upozornenie: %1$d kontaktov sa nebude môcť zúčastniť vašej ankety.</string>
     <string name="contact_state_inactive">Neaktívny</string>
     <string name="contact_state_invalid">Neplatný</string>
     <string name="back">Späť</string>
@@ -501,7 +493,6 @@ Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priat
     <string name="send_media">Odoslať média</string>
     <string name="rotate">Otočenie</string>
     <string name="remove">Odstrániť</string>
-    <string name="image_already_added">Tento obrázok už bol pridaný</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">%d znakov min.</string>
     <string name="mark_read">Označiť ako prečítané</string>
     <string name="attach_document">Súbor</string>
@@ -511,7 +502,7 @@ Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priat
     <string name="no_activity_for_mime_type">Na otvorenie tohto súboru nenájdená aplikácia.</string>
     <string name="open_from">Otvoriť z</string>
     <string name="file_one_contact_not_supported">%1$s nemôže prijímať súbory</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Upozornenie: %1$d kontaktov nemôže prijať váš súbor.</string>
+    <string name="file_x_contact_not_supported">Upozornenie: %1$d kontaktov nemôže prijať váš súbor.</string>
     <string name="mime_android_apk">Balíček pre Android</string>
     <string name="mime_audio">Zvukový súbor</string>
     <string name="mime_certificate">Digitálny certifikát</string>
@@ -550,7 +541,6 @@ Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priat
     <string name="storage_explain">Ak vám dochádza miesto na disku, môžete vymazať staršie šifrované súbory médií. Náhľady týchto súborov budú ponechané. Majte na pamäti, že nejde o automatický proces. Pokiaľ nestlačíte niektoré z tlačidiel, nič nebude vymazané.</string>
     <string name="delete_data">Vymazať údaje</string>
     <string name="delete_date_confirm_message">Ak budete pokračovať, súbory budú vymazané a ponechané budú len náhľady.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">vymazaných %d mediálnych súborov</string>
     <string name="storage_management">Správa úložiska</string>
     <string name="media">Média</string>
     <string name="prefs_storage_mgmt_title">Čistenie správ a mediálnych súborov</string>
@@ -581,7 +571,6 @@ Už ich nebude možné obnoviť.</string>
     <string name="fontsize_large">Veľké</string>
     <string name="fontsize_xlarge">Extra veľké</string>
     <string name="no_app_for_location">V tomto zariadení nenájdená žiadna mapová aplikácia</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">Vymazané konverzácie: %d</string>
     <string name="prefs_sendlog">Odoslať log</string>
     <string name="prefs_sendlog_summary">V prípade problémov odoslať spoločnosti Threema log súbor pre ďalšiu analýzu</string>
     <string name="prefs_exportlog">Exportovať log</string>
@@ -592,7 +581,6 @@ Už ich nebude možné obnoviť.</string>
     <string name="message_declined">\"Nesúhlas\" odoslaný</string>
     <string name="notifications_settings">Nastavenia upozornení</string>
     <string name="notifications_default">Predvolené nastavenia</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">Po dobu %d hod.</string>
     <string name="notifications_until">Do %s</string>
     <string name="notifications_mute">Stlmené</string>
     <string name="notifications_choose_sound">Zmeniť zvuk</string>
@@ -673,7 +661,7 @@ Už ich nebude možné obnoviť.</string>
     <string name="prefs_proximity_sensor_explain">Ak je zakrytý senzor priblíženia, použijú sa pre prehrávanie hlasových správ slúchadlá</string>
     <string name="error_creating_group">Chyba výtvárania/aktualizácie skupiny</string>
     <string name="no_media_found_generic">V konverziácii nenájdené žiadne média</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Súčasne môže byť upravených max. %d položiek</string>
+    <string name="max_images_reached">Súčasne môže byť upravených max. %d položiek</string>
     <string name="enter_description">Prosím popíšte tu chybu/problém</string>
     <string name="add_caption_hint">Pridať voliteľný komentár</string>
     <string name="disable">Vypnúť</string>
@@ -719,9 +707,7 @@ Už ich nebude možné obnoviť.</string>
     <string name="prefs_language_override">Jazyk</string>
     <string name="threema_channel_intro">Kanál Threema je informačný kanál aplikácie Threema, ktorý vás formou správ informuje o všetkých novinkách. Chcete sa prihlásiť k odberu kanálu a pridať ho medzi kontakty? Je zadarmo a môžete sa z neho kedykoľvek odhlásiť.</string>
     <string name="quote">Citovať</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Naozaj chcete zmazať nasledujúci počet kontaktov: %1$d a všetky k nim pridružené konverzácie?</string>
     <string name="contacts_deleted">Kontakty boli vymazané</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">Nasledujúci počet kontaktov: %d nemohol byť vymazaný, pretože sú stále súčasťou skupiny</string>
     <string name="take_photo">Odfotiť</string>
     <string name="select_from_gallery">Vybrať z galérie</string>
     <string name="palette">Paleta</string>
@@ -848,7 +834,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="no_matching_work_contacts">Správcom overené kontakty Threema Work nenájdené</string>
     <string name="all">Všetko</string>
     <string name="webclient_session_stop_all">Zavrieť všetko</string>
-    <string name="webclient_running_sessions">Bežiace relácie: %d</string>
     <string name="passphrase_service_name">Služba hesiel</string>
     <string name="passphrase_service_description">Oznámenie pri odomknutí hesla</string>
     <string name="webclient_service_description">Oznámenie, ak je relácia Web/Desktop aktívna</string>
@@ -1001,7 +986,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="data_backup_last_date">Posledná úspešná záloha údajov</string>
     <string name="archived">Archivované</string>
     <string name="to_archive">Archivovať</string>
-    <string name="message_archived">Archivovaných konverzácií: %d</string>
     <string name="archived_chats">"Archivované konverzácie "</string>
     <string name="unarchive">Zrušiť archiváciu</string>
     <string name="no_archived_chats">Nemáte žiadne archivované konverzácie.\n\nAk chcete konverzáciu archivovať, v zozname správ s ňou potiahnite doľava</string>
@@ -1013,24 +997,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="system_default">Predvolený systémom</string>
     <string name="open_in_maps_app">Otvoriť v aplikácii Mapy</string>
     <string name="delete">Odstrániť</string>
-    <string name="num_archived_chats">Archivované konverzácie: %d</string>
     <string name="continue_recording">Pokračovať v nahrávaní</string>
-    <string name="whatsnew_title">Vitajte v %1$s %2$s</string>
-    <string name="whatsnew_headline"><![CDATA[
-<p><b>Nové funkcie v tejto verzii %s pre Android:</b></p>
-<p>
-&bull; Mnoho nových emotikonov v súlade so štandardom Unicode 13.1. 😵‍💫❤️‍🔥
-</p><p>
-&bull; Vyhľadajte emotikony podľa názvu alebo významu (dostupné v 17 jazykoch).
-</p><p>
-&bull; Deterministické farby pre kontakty a skupiny, ktoré nemajú vlastný profilový obrázok. Tieto nové farby budú fungovať naprieč platformami a zariadeniami.
-</p><p>
-&bull; Vylepšený výkon posúvania v mnohých zoznamoch.
-</p><p>
-&bull; Optimalizované rozloženie pre editor médií. Zvýšil sa počet mediálnych položiek, ktoré je možné pred odoslaním upraviť, na 256.
-</p><p>
-&bull; Veľa malých vylepšení a opráv chýb.
-</p> ]]></string>
     <string name="tap_to_start">Kliknutím sem spustíte aplikáciu %s.</string>
     <string name="two_years">2 roky</string>
     <string name="invalid_backup_path">Neplatná cesta pre zálohu</string>
@@ -1049,7 +1016,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="and">a</string>
     <string name="edit_type_content_description">Zobraziť alebo upraviť %1$s %2$s</string>
     <string name="group">Skupina</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Naše zásady ochrany osobných údajov boli aktualizované tak, aby zodpovedali nasledujúcim zmenám:</p><p>Údaje %1$s už nie sú závislé na službe Google Play a Google Mapy, ktoré poskytovali mapy a body záujmu.</p>Popis Zásad ochrany osobných údajov nájdete <a href="%2$s">tu</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Služby nie sú nainštalované. Nedá sa prepnúť na Google FCM alebo HMS push.</string>
     <string name="unable_to_get_current_location">Nie je možné získať aktuálnu polohu.</string>
     <string name="lp_search_place_min_chars">Ak chcete vyhľadať miesto, zadajte aspoň tri znaky.</string>
@@ -1199,8 +1165,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="group_request_already_sent"><![CDATA[Už ste žiadosť  o vstup do skupiny <b>%s</b> odoslali cez tento odkaz a čaká sa na odpoveď od správcu skupiny. Kliknite na žiadosť ak ju chcete opäť odoslať.]]></string>
     <string name="group_link_none">Odkaz nebol zatiaľ vygenerovaný.</string>
     <string name="group_request_confirm_send"><![CDATA[Chystáte sa odoslať žiadosť o vstup do skupiny <b>%1$s</b> správcovi <b>%2$s</b>. Pokiaľ nebol tento odkaz zneplatnený, budete do skupiny automaticky pridaný hneď, ako zariadenie správcu príjme túto vašu žiadosť.]]></string>
-    <string name="really_delete_outgoing_request">Chcete vymazať %d žiadosť(i) o vstup do skupiny? Zoberte prosím na vedomie, že pokiaľ sa na žiadosť ešte neodpovedalo, táto žiadosť nebude odvolaná a vy môžete byť stále prijatý alebo zamietnutý správcom skupiny.</string>
-    <string name="really_delete_group_request_title">Naozaj vymazať žiadosť o vstup do skupiny</string>
     <string name="sent_to">Odoslané pre: %s</string>
     <string name="sent_on">Odoslané: %s</string>
     <string name="group_response">Odpoveď pre vstup do skupiny</string>
@@ -1220,7 +1184,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="link_administration_off_explain">Odkaz bol už predtým nakonfigurovaný a nazdieľaný, zmena jeho vlastností preto nie je možná. Vygenerujte nový odkaz s vlastnosťami, ktoré požadujete.</string>
     <string name="group_link_update_success">Odkaz úspešne aktualizovaný</string>
     <string name="no_group_links">Žiadne skupinové odkazy. Ak chcete vytvoriť odkaz skupiny, kliknite na tlačidlo pridať v pravom dolnom rohu, alebo v detailoch skupiny aktivujte predvolený odkaz.</string>
-    <string name="really_delete_group_link">Naozaj chcete vymazať %d odkaz(ov) skupiny? Ľudia už viac nebudú schopní odoslať žiadne žiadosti. Dovtedy prijaté žiadosti je však stále možné akceptovať alebo zamietnúť.</string>
     <string name="group_links_overview_title">Skupinové odkazy pre %s</string>
     <string name="group_link_invalid">Expirované</string>
     <string name="group_link_valid">Platné</string>
@@ -1236,7 +1199,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="open_group_requests_show">Zobraziť žiadosti o vstup</string>
     <string name="open_group_requests_hide">Skryť žiadosti o vstup</string>
     <string name="group_request_link_already_deleted">Skupinový odkaz bol medzitým odstránený</string>
-    <string name="really_delete_incoming_request">Naozaj chcete vymazať %d žiadosť(i) skupiny? Po vymazaní už nebudete môcť na tieto žiadosti odpovedať.</string>
     <string name="incoming_group_request_no_message">Odoslané cez otvorený odkaz... žiadna správa</string>
     <string name="group_request_received_through">Cez odkaz: %s</string>
     <string name="reaccept">Znovu prijať</string>

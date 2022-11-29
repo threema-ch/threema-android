@@ -120,7 +120,6 @@
     <string name="share_via">Megosztás…</string>
     <string name="share_subject">%s-csevegés</string>
     <string name="message_delete_undo">Visszavonás</string>
-    <string name="message_deleted">Üzenet törölve</string>
     <string name="mobile_already_linked">Az Ön Threema ID-je már társítva van ehhez a mobilszámhoz.</string>
     <string name="email_already_linked">Az Ön Threema ID-je már társítva van ehhez az e-mail címhez.</string>
     <string name="whoaaa">Megjegyzés</string>
@@ -263,8 +262,6 @@
     <string name="prefs_masterkey_notification_newmsg_off">Nincs értesítés új üzenetekről, ha a főkulcs zárolva van</string>
     <string name="prefs_masterkey_notification_newmsg_on">Értesítés (részletek nélkül) új üzenetekről, ha a főkulcs zárolva van</string>
     <string name="chat_history_attached">A csevegési naplót csatoltuk.</string>
-    <string name="new_message">1 új üzenet</string>
-    <string name="new_messages">új üzenetek</string>
     <string name="backup_data_title">Adatmentés</string>
     <string name="backup_data_password_msg">Az azonosító, a csevegések, a kapcsolatok és a beállítások az USB-meghajtón egy
 		ZIP-fájlban tárolódnak, és egy másik Android-eszközön visszaállíthatók. Adjon meg egy jelszót az adatmentéshez.</string>
@@ -292,7 +289,7 @@
     <string name="prefs_group_notifications">Csoportos csevegés</string>
     <string name="add_group_members_list">Csoporttagok</string>
     <string name="group_select_at_least_two">Kérjük, válasszon legalább egy tagot</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">A csoporthoz legfeljebb %1$d tag adható hozzá.</string>
+    <string name="group_select_max">A csoporthoz legfeljebb %1$d tag adható hozzá.</string>
     <string name="search">Keresés</string>
     <string name="hint_search_keyword">Keresési kifejezés</string>
     <string name="add_group_owner">Létrehozó</string>
@@ -369,7 +366,6 @@
     <string name="contact_format_last_name_first_name">Vezetéknév Keresztnév</string>
     <string name="block_contact">Névjegy blokkolása</string>
     <string name="unblock_contact">Névjegy feloldása</string>
-    <string name="unread_messages">%d olvasatlan üzenet</string>
     <string name="one_unread_message">1 olvasatlan üzenet</string>
     <string name="really_unlink_contact_title">Kapcsolat összecsatolás feloldása</string>
     <string name="really_unlink_contact">Biztos, hogy el akarja távolítani a címjegyzéki kapcsolat összecsatolását?</string>
@@ -385,7 +381,6 @@
     <string name="save_image">Kép mentése</string>
     <string name="share_image">Kép megosztása</string>
     <string name="view_in_gallery">Megtekintés a galériában</string>
-    <string name="file_saved">%d fájl(ok) mentve.</string>
     <string name="token_register_failed">A push tokent nem sikerült frissíteni. Kérjük, próbálja meg később újra.</string>
     <string name="internet_connection_required">Nincs internetkapcsolat.</string>
     <string name="prefs_sum_save_media">A bejövő képek és videók, valamint a kimenő kameraképek titkosítás nélküli mentése</string>
@@ -427,7 +422,7 @@
     <string name="media_gallery_videos">Videók</string>
     <string name="group_membership_title">Ezeknek a csoportoknak a tagja</string>
     <string name="num_items_sected">%s kiválasztott</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Tényleg törölni szeretné ezt a(z) %d médiaüzenetet?</string>
+    <string name="really_delete_media">Tényleg törölni szeretné ezt a(z) %d médiaüzenetet?</string>
     <string name="check_updates">Frissítések keresése</string>
     <string name="masterkey_lock_explain">A Threema a jelszót a RAM memóriában tartja. Ha gyakran kéri a jelszót,
 		az lehet, hogy egy taskkiller vagy akkumulátorkímélő alkalmazás miatt van, amely eltávolítja a jelszót a memóriából.</string>
@@ -444,7 +439,6 @@
     <string name="share_conversation_body">A fájl megnyitásához egy modern, AES-támogatással rendelkező ZIP-programra
 		van szükség. pl. http://www.7-zip.org vagy https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">A csevegés titkosított zip-fájlként kerül elküldésre. Kérjük, válasszon egy jelszót:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d új üzenet %2$d csevegésben</string>
     <string name="ballot_create">Szavazás létrehozása</string>
     <string name="ballot_choice_add">válasz szövege</string>
     <string name="ballot_state_closed">zárva</string>
@@ -462,8 +456,6 @@
     <string name="ballot_overview">Összes szavazás</string>
     <string name="ballot_copy">Szavazás másolása</string>
     <string name="ballot_remove">Szavazás eltávolítása</string>
-    <string name="ballot_really_delete">Szavazás törlése</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Tényleg törölni akarja a %1$d szavazatot? A szavazatokat nem lehet visszaállítani.</string>
     <string name="ballot_not_exist">A szavazás nem létezik</string>
     <string name="ballot_tap_to_vote">Szavazás megérintéssel</string>
     <string name="ballot_tap_to_view_results">Szavazás lezárva. Érintse meg az eredményekért</string>
@@ -479,7 +471,7 @@
     <string name="invalid_cannot_send">Nem küldhet üzenetet érvénytelen kapcsolatnak</string>
     <string name="ballot_answer_count_error">Kérjük, legalább két választ adjon meg.</string>
     <string name="ballot_one_contact_not_supported">Figyelem: %1$s még nem tud részt venni a szavazásokban.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Figyelem: %1$d kapcsolat még nem tud részt venni a szavazásokban.</string>
+    <string name="ballot_x_contact_not_supported">Figyelem: %1$d kapcsolat még nem tud részt venni a szavazásokban.</string>
     <string name="contact_state_inactive">Inaktív</string>
     <string name="contact_state_invalid">Érvénytelen</string>
     <string name="back">Vissza</string>
@@ -515,7 +507,6 @@
     <string name="send_media">Média küldése</string>
     <string name="rotate">Elforgatni</string>
     <string name="remove">Eltávolítani</string>
-    <string name="image_already_added">Ez a kép már ki van választva.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">Legalább %d karakter</string>
     <string name="mark_read">Elolvasottként megjelölés</string>
     <string name="attach_document">Fájl</string>
@@ -525,7 +516,7 @@
     <string name="no_activity_for_mime_type">Nem találtunk megfelelő alkalmazást ehhez a fájlhoz.</string>
     <string name="open_from">Megnyitás</string>
     <string name="file_one_contact_not_supported">%1$s még nem tud fájlokat fogadni.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Figyelmeztetés: %1$d kapcsolat nem tud fájlokat fogadni.</string>
+    <string name="file_x_contact_not_supported">Figyelmeztetés: %1$d kapcsolat nem tud fájlokat fogadni.</string>
     <string name="mime_android_apk">Android csomag</string>
     <string name="mime_audio">Hangfájl</string>
     <string name="mime_certificate">Digitális tanúsítvány</string>
@@ -567,7 +558,6 @@
 		automatikus folyamat. Csak akkor törlődik, ha megérinti az alábbi gombok egyikét.</string>
     <string name="delete_data">Adatok törlése most</string>
     <string name="delete_date_confirm_message">A fájlok véglegesen törlődnek, és csak a miniatűrök maradnak meg.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">%d Média/fájlok törölve.</string>
     <string name="storage_management">Tároláskezelés</string>
     <string name="media">Média</string>
     <string name="prefs_storage_mgmt_title">Fájlok és üzenetek tisztítása</string>
@@ -597,7 +587,6 @@
     <string name="fontsize_large">Nagy</string>
     <string name="fontsize_xlarge">Nagyon nagy</string>
     <string name="no_app_for_location">Ezen a készüléken nem található térképalkalmazás.</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%d csevegés törölve</string>
     <string name="prefs_sendlog">Naplófájl küldése</string>
     <string name="prefs_sendlog_summary">Naplófájl elküldése a Threema számára a problémaelemzéshez.</string>
     <string name="permission_storage_required">Aktiválja a mentési engedélyt a média mentéséhez vagy küldéséhez.</string>
@@ -606,7 +595,6 @@
     <string name="message_declined">Üzenet elutasítva</string>
     <string name="notifications_settings">Értesítési beállítások</string>
     <string name="notifications_default">Alapértelmezett beállítás</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">%d órára</string>
     <string name="notifications_until">%s-ig</string>
     <string name="notifications_mute">Néma</string>
     <string name="notifications_choose_sound">Hang kiválasztása</string>
@@ -696,7 +684,7 @@
     <string name="prefs_proximity_sensor_explain">Hangüzeneteket a fülhallgatón keresztül visszajátszani, ha a közelségérzékelő le van fedve</string>
     <string name="error_creating_group">Hiba a csoport létrehozásában/frissítésében</string>
     <string name="no_media_found_generic">Nem találtunk médiát</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Egyszerre nem lehet több mint %d képet szerkeszteni</string>
+    <string name="max_images_reached">Egyszerre nem lehet több mint %d képet szerkeszteni</string>
     <string name="enter_description">Kérjük, írja le a problémát vagy hibát.</string>
     <string name="add_caption_hint">Felirat hozzáadása</string>
     <string name="disable">Kikapcsolás</string>
@@ -743,9 +731,7 @@
     <string name="threema_channel_intro">A Threema Channel a Threema-ról szóló hírekkel látja el Önt. Szeretne feliratkozni a
 		Threema Channelre és hozzáadni a névjegyzékbe? Ingyenes, és bármikor leiratkozhatsz róla.</string>
     <string name="quote">Idéz</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Biztosan törölni szeretne %1$d névjegyet és az összes kapcsolódó csevegést?</string>
     <string name="contacts_deleted">A névjegyek törölve lettek</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d névjegyet nem lehetett törölni, mert még mindig egy csoportban vannak.</string>
     <string name="take_photo">Fotózás</string>
     <string name="select_from_gallery">Galériából választás</string>
     <string name="palette">Paletta</string>
@@ -870,7 +856,6 @@
     <string name="no_matching_work_contacts">Nem találtunk olyan Threema Work névjegyet, amelyet a rendszergazda ellenőrzött.</string>
     <string name="all">Mind</string>
     <string name="webclient_session_stop_all">Mind leállítása</string>
-    <string name="webclient_running_sessions">%d futó munkamenet</string>
     <string name="passphrase_service_name">Jelszó szolgáltatás</string>
     <string name="passphrase_service_description">Értesítés ha a jelszó feloldva</string>
     <string name="webclient_service_description">Értesítés, ha egy webes/asztalos munkamenet aktív</string>
@@ -1022,7 +1007,6 @@
     <string name="data_backup_last_date">Utolsó sikeres biztonsági mentés</string>
     <string name="archived">Archív</string>
     <string name="to_archive">Archiválás</string>
-    <string name="message_archived">%d csevegés archiválva</string>
     <string name="archived_chats">Archivált csevegések</string>
     <string name="unarchive">Archívból törlés</string>
     <string name="no_archived_chats">Nincsenek archivált csevegések.\nHúzzon balra egy csevegést a csevegési listában az archiválásához.</string>
@@ -1034,7 +1018,6 @@
     <string name="system_default">Rendszer alapértelmezett</string>
     <string name="open_in_maps_app">Megnyitás a Térképalkalmazásban</string>
     <string name="delete">Törlés</string>
-    <string name="num_archived_chats">%d archivált csevegés</string>
     <string name="continue_recording">Felvétel folytatása</string>
     <string name="tap_to_start">Kattintson ide a %s indításához.</string>
     <string name="two_years">2 év</string>
@@ -1054,7 +1037,6 @@
     <string name="and">és</string>
     <string name="edit_type_content_description">%1$s %2$s megjelenítése vagy szerkesztése</string>
     <string name="group">Csoport</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Adatvédelmi szabályzatunk a következő változásnak megfelelően módosult:</p><p>%1$s már nem függ a Google Play és a Google Maps térkép- és OVI-adatoktól.</p>Kérjük, tekintse meg a teljes adatvédelmi szabályzatot <a href="%2$s">itt</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">A szolgáltatás nincs telepítve. Nem lehet «Push»-ra váltani.</string>
     <string name="unable_to_get_current_location">Nem tudjuk meghatározni az aktuális pozíciót.</string>
     <string name="lp_search_place_min_chars">Kérjük, legalább 3 karaktert adjon meg a helykereséshez.</string>
@@ -1204,8 +1186,6 @@
     <string name="group_request_already_sent"><![CDATA[Már van egy nyitott kérelme <b>%s</b> számára, és a csoportadminisztrátor válaszára vár. Kattintson a listában a kérelemre, ha újra el szeretné küldeni a kérelmet.]]></string>
     <string name="group_link_none">Még nem generált linket</string>
     <string name="group_request_confirm_send"><![CDATA[Csoportkérelmet készül küldeni <b>%1$s</b> számára <b>%2$s</b> adminisztrátornak. Ha ez a link időközben nem lett érvénytelenítve, akkor Önt hozzáadjuk a csoporthoz, amint az admin eszköze elérhetővé válik.]]></string>
-    <string name="really_delete_outgoing_request">Tényleg törölni akar %d csoportkérelmet? Ne feledje, hogy a nyitott kérelmet nem vonják vissza, és később is felvehetik a csoportba.</string>
-    <string name="really_delete_group_request_title">Tényleg törölné a csoportkérelmet?</string>
     <string name="sent_to">Ide küldve: %s</string>
     <string name="sent_on">Elküldve: %s</string>
     <string name="group_response">Válasz a csoportkérelemre</string>
@@ -1225,7 +1205,6 @@
     <string name="link_administration_off_explain">Ezt a linket már megosztották, és nyilvános. Az adminisztráció utólag nem módosítható. Egyszerűen hozzon létre egy új linket a kívánt opcióval.</string>
     <string name="group_link_update_success">Link frissítés sikeres</string>
     <string name="no_group_links">Nincsenek csoporthivatkozások. Csoporthivatkozások létrehozásához kattintson a \"Link létrehozása\" gombra, vagy aktiválja az alapértelmezett linket a csoport áttekintésében.</string>
-    <string name="really_delete_group_link">Tényleg törölni szeretne %d csoporthivatkozást? A törlés után a felhasználók már nem küldhetnek érvényes kérelmeket. A már beérkezett kérelmeket azonban továbbra is el lehet fogadni vagy el lehet utasítani.</string>
     <string name="group_links_overview_title">Csoporthivatkozások %s számára</string>
     <string name="group_link_invalid">Lejárt</string>
     <string name="group_link_valid">Érvényes</string>
@@ -1241,7 +1220,6 @@
     <string name="open_group_requests_show">Csoportkérelmek mutatása</string>
     <string name="open_group_requests_hide">Csoportkérelmek elrejtése</string>
     <string name="group_request_link_already_deleted">Csoporthivatkozás már törölve</string>
-    <string name="really_delete_incoming_request">Tényleg törölni akar %d csoportkérelmeket? A törlés után többé nem tudsz válaszolni rájuk.</string>
     <string name="incoming_group_request_no_message">Nyitott hivatkozáson keresztül küldték… Nincs üzenet</string>
     <string name="group_request_received_through">Hivatkozáson keresztül: %s</string>
     <string name="reaccept">Újra elfogad</string>

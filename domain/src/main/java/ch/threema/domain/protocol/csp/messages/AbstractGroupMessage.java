@@ -25,7 +25,7 @@ import ch.threema.domain.models.GroupId;
 
 public abstract class AbstractGroupMessage extends AbstractMessage {
 	private String groupCreator;
-	private GroupId groupId;
+	private GroupId apiGroupId;
 
 	public String getGroupCreator() {
 		return groupCreator;
@@ -35,12 +35,12 @@ public abstract class AbstractGroupMessage extends AbstractMessage {
 		this.groupCreator = groupCreator;
 	}
 
-	public GroupId getGroupId() {
-		return groupId;
+	public GroupId getApiGroupId() {
+		return apiGroupId;
 	}
 
-	public void setGroupId(GroupId groupId) {
-		this.groupId = groupId;
+	public void setApiGroupId(GroupId groupId) {
+		this.apiGroupId = groupId;
 	}
 
 	@Override

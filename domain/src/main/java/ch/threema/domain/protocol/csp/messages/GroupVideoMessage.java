@@ -78,7 +78,7 @@ public class GroupVideoMessage extends AbstractGroupMessage {
 
 		try {
 			bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			EndianUtils.writeSwappedShort(bos, (short)duration);
 			bos.write(videoBlobId);
 			EndianUtils.writeSwappedInteger(bos, videoSize);

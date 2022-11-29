@@ -21,6 +21,10 @@
 
 package ch.threema.app.processors;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
 import org.slf4j.Logger;
 
 import java.io.FileNotFoundException;
@@ -28,9 +32,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
@@ -44,6 +45,7 @@ import ch.threema.app.services.group.GroupJoinResponseService;
 import ch.threema.app.services.group.IncomingGroupJoinRequestService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageDiskSizeUtil;
+import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
@@ -53,6 +55,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
 import ch.threema.domain.protocol.csp.connection.MessageProcessorInterface;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
@@ -63,6 +66,7 @@ import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
 import ch.threema.domain.protocol.csp.messages.GroupCreateMessage;
 import ch.threema.domain.protocol.csp.messages.GroupDeletePhotoMessage;
+import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage;
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage;
 import ch.threema.domain.protocol.csp.messages.GroupRenameMessage;
 import ch.threema.domain.protocol.csp.messages.GroupRequestSyncMessage;
@@ -71,8 +75,10 @@ import ch.threema.domain.protocol.csp.messages.GroupTextMessage;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
+import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage;
+import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage;
@@ -87,7 +93,6 @@ import ch.threema.storage.models.ServerMessageModel;
 
 public class MessageProcessor implements MessageProcessorInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageProcessor");
-	private static final Logger validationLogger = LoggingUtil.getThreemaLogger("Validation");
 
 	private final MessageService messageService;
 	private final ContactService contactService;
@@ -102,23 +107,27 @@ public class MessageProcessor implements MessageProcessorInterface {
 	private final VoipStateService voipStateService;
 	private final FileService fileService;
 	private final NotificationService notificationService;
+	private final ForwardSecurityMessageProcessor forwardSecurityMessageProcessor;
+	private final GroupCallManager groupCallManager;
 
 	private final List<AbstractMessage> pendingMessages = new ArrayList<>();
 
 	public MessageProcessor(
-			MessageService messageService,
-			ContactService contactService,
-			IdentityStoreInterface identityStore,
-			ContactStore contactStore,
-			PreferenceService preferenceService,
-			GroupService groupService,
-			GroupJoinResponseService groupJoinResponseService,
-			IncomingGroupJoinRequestService incomingGroupJoinRequestService,
-			IdListService blackListService,
-			BallotService ballotService,
-			FileService fileService,
-			NotificationService notificationService,
-			VoipStateService voipStateService) {
+		MessageService messageService,
+		ContactService contactService,
+		IdentityStoreInterface identityStore,
+		ContactStore contactStore,
+		PreferenceService preferenceService,
+		GroupService groupService,
+		GroupJoinResponseService groupJoinResponseService,
+		IncomingGroupJoinRequestService incomingGroupJoinRequestService,
+		IdListService blackListService,
+		BallotService ballotService,
+		FileService fileService,
+		NotificationService notificationService,
+		VoipStateService voipStateService,
+		ForwardSecurityMessageProcessor forwardSecurityMessageProcessor,
+		GroupCallManager groupCallManager) {
 
 		this.messageService = messageService;
 		this.contactService = contactService;
@@ -133,6 +142,8 @@ public class MessageProcessor implements MessageProcessorInterface {
 		this.fileService = fileService;
 		this.notificationService = notificationService;
 		this.voipStateService = voipStateService;
+		this.forwardSecurityMessageProcessor = forwardSecurityMessageProcessor;
+		this.groupCallManager = groupCallManager;
 	}
 
 	@Override
@@ -166,21 +177,6 @@ public class MessageProcessor implements MessageProcessorInterface {
 				);
 			}
 
-			/* validation logging (for text messages only) */
-			if (msg instanceof BoxTextMessage || msg instanceof GroupTextMessage) {
-				if (validationLogger.isInfoEnabled()) {
-					validationLogger.info("< Nonce: {}", Utils.byteArrayToHexString(boxmsg.getNonce()));
-					validationLogger.info("< Data: {}", Utils.byteArrayToHexString(boxmsg.getBox()));
-
-					Contact contact = contactStore.getContactForIdentity(boxmsg.getFromIdentity(), true, true);
-					byte[] publicKey = contact != null ? contact.getPublicKey() : null;
-					if (publicKey != null) {
-						validationLogger.info("< Public key ({}): {}",
-							boxmsg.getFromIdentity(), Utils.byteArrayToHexString(publicKey));
-					}
-				}
-			}
-
 			//check if sender is on blacklist
 			if (!(msg instanceof AbstractGroupMessage)) {
 				if (this.blackListService != null && this.blackListService.has(msg.getFromIdentity())) {
@@ -193,47 +189,26 @@ public class MessageProcessor implements MessageProcessorInterface {
 			this.contactService.setActive(msg.getFromIdentity());
 
 			if (msg instanceof TypingIndicatorMessage) {
-				if (this.contactService.getByIdentity(boxmsg.getFromIdentity()) != null) {
-					this.contactService.setIsTyping(boxmsg.getFromIdentity(), ((TypingIndicatorMessage) msg).isTyping());
-					return ProcessIncomingResult.ok(msg);
-				} else {
-					logger.debug("Ignoring typing indicator message from unknown identity {}", boxmsg.getFromIdentity());
+				return processTypingIndicatorMessage((TypingIndicatorMessage) msg);
+			} else if (msg instanceof DeliveryReceiptMessage) {
+				return processDeliveryReceiptMessage((DeliveryReceiptMessage)msg);
+			} else if (msg instanceof GroupDeliveryReceiptMessage) {
+				return processGroupDeliveryReceiptMessage((GroupDeliveryReceiptMessage)msg);
+			} else if (msg instanceof ForwardSecurityEnvelopeMessage) {
+				if (!ConfigUtils.isForwardSecurityEnabled()) {
+					logger.debug("PFS is disabled in build");
 					return ProcessIncomingResult.ignore();
 				}
-			}
 
-			if (msg instanceof DeliveryReceiptMessage) {
-				final @Nullable MessageState state;
-				switch (((DeliveryReceiptMessage) msg).getReceiptType()) {
-					case ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED:
-						state = MessageState.DELIVERED;
-						break;
-					case ProtocolDefines.DELIVERYRECEIPT_MSGREAD:
-						state = MessageState.READ;
-						break;
-					case ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK:
-						state = MessageState.USERACK;
-						break;
-					case ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC:
-						state = MessageState.USERDEC;
-						break;
-					case ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED:
-						state = MessageState.CONSUMED;
-						break;
-					default:
-						state = null;
-						break;
-				}
-				if (state != null) {
-					for (MessageId msgId : ((DeliveryReceiptMessage) msg).getReceiptMessageIds()) {
-						logger.info("Message {}: delivery receipt for {} (state = {})", boxmsg.getMessageId(), msgId, state);
-						this.messageService.updateMessageState(msgId, msg.getFromIdentity(), state, msg.getDate());
-					}
-					return ProcessIncomingResult.ok(msg);
+				// Decapsulate PFS message
+				AbstractMessage decapMessage = forwardSecurityMessageProcessor.processEnvelopeMessage(this.contactService.getByIdentity(msg.getFromIdentity()), (ForwardSecurityEnvelopeMessage) msg);
+				if (decapMessage != null) {
+					// Replace current abstract message with decapsulated version
+					msg = decapMessage;
 				} else {
-					logger.warn("Message {} error: unknown delivery receipt type", boxmsg.getMessageId());
+					// Control message processed; nothing left to do
+					return ProcessIncomingResult.ignore();
 				}
-				return ProcessIncomingResult.ignore();
 			}
 
 			/* send delivery receipt (but not for non-queued messages or delivery receipts) */
@@ -293,6 +268,75 @@ public class MessageProcessor implements MessageProcessorInterface {
 		}
 	}
 
+	private ProcessIncomingResult processTypingIndicatorMessage(TypingIndicatorMessage msg) {
+		if (this.contactService.getByIdentity(msg.getFromIdentity()) != null) {
+			this.contactService.setIsTyping(msg.getFromIdentity(), msg.isTyping());
+			return ProcessIncomingResult.ok(msg);
+		} else {
+			logger.debug("Ignoring typing indicator message from unknown identity {}", msg.getFromIdentity());
+			return ProcessIncomingResult.ignore();
+		}
+	}
+
+	private ProcessIncomingResult processDeliveryReceiptMessage(@NonNull DeliveryReceiptMessage msg) {
+		final @Nullable MessageState state;
+		switch (msg.getReceiptType()) {
+			case ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED:
+				state = MessageState.DELIVERED;
+				break;
+			case ProtocolDefines.DELIVERYRECEIPT_MSGREAD:
+				state = MessageState.READ;
+				break;
+			case ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK:
+				state = MessageState.USERACK;
+				break;
+			case ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC:
+				state = MessageState.USERDEC;
+				break;
+			case ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED:
+				state = MessageState.CONSUMED;
+				break;
+			default:
+				state = null;
+				break;
+		}
+		if (state != null) {
+			for (MessageId msgId : msg.getReceiptMessageIds()) {
+				logger.info("Message {}: delivery receipt for {} (state = {})", msg.getMessageId(), msgId, state);
+				this.messageService.updateMessageState(msgId, state, msg);
+			}
+			return ProcessIncomingResult.ok(msg);
+		} else {
+			logger.warn("Message {} error: unknown delivery receipt type", msg.getMessageId());
+		}
+		return ProcessIncomingResult.ignore();
+	}
+
+	private ProcessIncomingResult processGroupDeliveryReceiptMessage(@NonNull GroupDeliveryReceiptMessage msg) {
+		final @Nullable MessageState state;
+		switch (msg.getReceiptType()) {
+			case ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK:
+				state = MessageState.USERACK;
+				break;
+			case ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC:
+				state = MessageState.USERDEC;
+				break;
+			default:
+				state = null;
+				break;
+		}
+		if (state != null) {
+			for (MessageId msgId : msg.getReceiptMessageIds()) {
+				logger.info("Message {}: group delivery receipt for {} (state = {})", msg.getMessageId(), msgId, state);
+				this.messageService.updateGroupMessageState(msgId, state, msg);
+			}
+			return ProcessIncomingResult.ok(msg);
+		} else {
+			logger.warn("Message {} error: unknown or unsupported delivery receipt type", msg.getMessageId());
+		}
+		return ProcessIncomingResult.ignore();
+	}
+
 	/**
 	 *
 	 * @param msg incoming message
@@ -306,14 +350,14 @@ public class MessageProcessor implements MessageProcessorInterface {
 			this.contactService.updatePublicNickName(msg);
 
 			//check available size on device..
-			long useableSpace = this.fileService.getInternalStorageFree();
+			long usableSpace = this.fileService.getInternalStorageFree();
 			long requiredSpace = MessageDiskSizeUtil.getSize(msg);
 
-			if(useableSpace < requiredSpace) {
+			if(usableSpace < requiredSpace) {
 				//show notification and do not try to save the message
-				this.notificationService.showNotEnoughDiskSpace(useableSpace, requiredSpace);
+				this.notificationService.showNotEnoughDiskSpace(usableSpace, requiredSpace);
 				logger.error("Abstract Message {}: error - out of disk space {}/{}",
-					msg.getMessageId(), requiredSpace, useableSpace);
+					msg.getMessageId(), requiredSpace, usableSpace);
 				return ProcessingResult.FAILED;
 			}
 
@@ -342,7 +386,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 									AbstractGroupMessage as = (AbstractGroupMessage)s;
 									if(
 											as.getGroupCreator().equals(((GroupCreateMessage) msg).getGroupCreator())
-											&& as.getGroupId().toString().equals(((GroupCreateMessage) msg).getGroupId().toString())) {
+											&& as.getApiGroupId().toString().equals(((GroupCreateMessage) msg).getApiGroupId().toString())) {
 
 										this.processAbstractMessage(s);
 										i.remove();
@@ -368,6 +412,9 @@ public class MessageProcessor implements MessageProcessorInterface {
 				}
 				else if(msg instanceof GroupRequestSyncMessage) {
 					processingSuccessful = this.groupService.processRequestSync((GroupRequestSyncMessage) msg);
+				}
+				else if (msg instanceof GroupCallControlMessage) {
+					processingSuccessful = groupCallManager.handleControlMessage((GroupCallControlMessage) msg);
 				}
 				else {
 					GroupModel groupModel = this.groupService.getGroup((AbstractGroupMessage)msg);
@@ -414,7 +461,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 			else if (msg instanceof ContactRequestPhotoMessage) {
 				processingSuccessful = this.contactService.requestContactPhoto((ContactRequestPhotoMessage) msg);
 			} else if (msg instanceof VoipMessage) {
-				if (this.preferenceService.isVoipEnabled()) {
+				if (ConfigUtils.isCallsEnabled()) {
 					/* as soon as we get a voip message, unhide the contact */
 					this.contactService.setIsHidden(msg.getFromIdentity(), false);
 					if (msg instanceof VoipCallOfferMessage) {

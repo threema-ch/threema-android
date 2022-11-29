@@ -21,10 +21,10 @@
 
 package ch.threema.storage.models.data;
 
+import androidx.annotation.IntDef;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
 
 @IntDef({
 	MessageContentsType.UNDEFINED,
@@ -39,7 +39,9 @@ import androidx.annotation.IntDef;
 	MessageContentsType.FILE,
 	MessageContentsType.VOIP_STATUS,
 	MessageContentsType.GIF,
-	MessageContentsType.CONTACT
+	MessageContentsType.CONTACT,
+	MessageContentsType.GROUP_CALL_STATUS,
+	MessageContentsType.FORWARD_SECURITY_STATUS
 })
 
 @Retention(RetentionPolicy.SOURCE)
@@ -57,5 +59,7 @@ public @interface MessageContentsType {
 	int VOIP_STATUS = 10;
 	int GIF = 11;
 	int CONTACT = 12;
+	int GROUP_CALL_STATUS = 13;
+	int FORWARD_SECURITY_STATUS = 14;
 }
 

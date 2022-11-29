@@ -49,6 +49,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.button.MaterialButton;
+
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -65,21 +80,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
-
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.button.MaterialButton;
-
-import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.EnterSerialActivity;
@@ -145,6 +145,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected TextView dateTextView, menuTitle, previewFilenameTextView, previewDateTextView;
 	protected DisplayMetrics displayMetrics;
 	protected MenuItem selectFromGalleryItem;
+	protected MenuItem selectFile;
 	protected PopupMenu bucketFilterMenu;
 	protected ViewPager2 previewPager;
 	private CheckableView checkBox;
@@ -167,6 +168,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	private boolean expandedForFirstTime = true;
 
 	BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior, previewBottomSheetBehavior;
+
+	private final ActivityResultLauncher<Intent> fileChooseLauncher = getFileSelectedResultLauncher();
 
 	// Locks
 	private final Object filterMenuLock = new Object();
@@ -381,6 +384,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			}
 		});
 	}
+
+	protected abstract ActivityResultLauncher<Intent> getFileSelectedResultLauncher();
 
 	protected void setDropdownMenu() {
 		this.bucketFilterMenu = new PopupMenuWrapper(this, menuTitle);
@@ -987,7 +992,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	protected void attachImageFromGallery() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			FileUtil.selectFile(this, null, new String[]{MimeUtil.MIME_TYPE_IMAGE, MimeUtil.MIME_TYPE_VIDEO}, REQUEST_CODE_ATTACH_FROM_GALLERY, true, MAX_BLOB_SIZE, null);
+			FileUtil.selectFile(this, fileChooseLauncher, new String[]{MimeUtil.MIME_TYPE_ANY}, true, MAX_BLOB_SIZE, null);
 		} else if (ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_ATTACH_FROM_GALLERY)) {
 			FileUtil.selectFromGallery(this, null, REQUEST_CODE_ATTACH_FROM_GALLERY, true);
 		}

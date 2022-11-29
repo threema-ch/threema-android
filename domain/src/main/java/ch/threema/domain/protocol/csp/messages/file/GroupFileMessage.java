@@ -21,13 +21,14 @@
 
 package ch.threema.domain.protocol.csp.messages.file;
 
-import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 
 public class GroupFileMessage extends AbstractGroupMessage
 	implements FileMessageInterface {
@@ -67,7 +68,7 @@ public class GroupFileMessage extends AbstractGroupMessage
 
 			//ballot stuff
 			bos.write(this.getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(this.getGroupId().getGroupId());
+			bos.write(this.getApiGroupId().getGroupId());
 			this.fileData.write(bos);
 			return bos.toByteArray();
 		} catch (Exception e) {

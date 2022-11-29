@@ -43,6 +43,7 @@
 	<string name="restriction__disable_video_calls">th_disable_video_calls</string>
 	<string name="restriction__onprem_server">th_onprem_server</string>
 	<string name="restriction__disable_work_directory">th_disable_work_directory</string>
+	<string name="restriction__disable_group_calls">th_disable_group_calls</string>
 
 	<!-- strings for policy controller -->
 	<string name="restriction_license_username">Corporate License Username</string>
@@ -129,4 +130,6 @@
 	<string name="restriction_onprem_server_desc">OnPrem server configuration URL</string>
 	<string name="restriction_disable_work_directory">Disable Work directory</string>
 	<string name="restriction_disable_work_directory_desc">Hide option for Work directory</string>
+	<string name="restriction_disable_group_calls">Disable group calls</string>
+	<string name="restriction_disable_group_calls_desc">Disable both incoming and outgoing Threema group (video) calls</string>
 </resources>

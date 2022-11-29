@@ -49,6 +49,17 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.util.Pair;
+import androidx.core.view.MenuItemCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -61,15 +72,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.util.Pair;
-import androidx.core.view.MenuItemCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
@@ -86,7 +88,6 @@ import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.TextWithCheckboxDialog;
 import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
-import ch.threema.app.jobs.WorkSyncService;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.ConversationListener;
@@ -94,6 +95,7 @@ import ch.threema.app.listeners.PreferenceListener;
 import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
@@ -117,14 +119,17 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.workers.IdentityStatesWorker;
+import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
 import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
 import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
+import static ch.threema.app.ThreemaApplication.WORKER_WORK_SYNC;
 
 public class ContactsSectionFragment
 		extends MainFragment
@@ -715,7 +720,7 @@ public class ContactsSectionFragment
 				}
 				if (numContacts > 1) {
 					final StringBuilder builder = new StringBuilder();
-					builder.append(getResources().getQuantityString(R.plurals.contacts_counter_label, numContacts, numContacts));
+					builder.append(ConfigUtils.getSafeQuantityString(getContext(), R.plurals.contacts_counter_label, numContacts, numContacts));
 					if (counts != null) {
 						builder.append(" (+").append(counts.last30d).append(" / ").append(getString(R.string.thirty_days_abbrev)).append(")");
 					}
@@ -1071,7 +1076,12 @@ public class ContactsSectionFragment
 		}
 
 		if (ConfigUtils.isWorkBuild()) {
-			WorkSyncService.enqueueWork(getActivity(), new Intent(), true);
+			try {
+				OneTimeWorkRequest workRequest = WorkSyncWorker.Companion.buildOneTimeWorkRequest(false, true, "WorkContactSync");
+				WorkManager.getInstance(ThreemaApplication.getAppContext()).enqueueUniqueWork(WORKER_WORK_SYNC, ExistingWorkPolicy.REPLACE, workRequest);
+			} catch (IllegalStateException e) {
+				logger.error("Unable to schedule work sync one time work", e);
+			}
 		}
 	}
 
@@ -1171,8 +1181,18 @@ public class ContactsSectionFragment
 			tags.add(SELECTOR_TAG_SHOW_CONTACT);
 
 			if (!ConfigUtils.isOnPremBuild()) {
-				items.add(new SelectorDialogItem(getString(R.string.spam_report), R.drawable.ic_outline_report_24));
-				tags.add(SELECTOR_TAG_REPORT_SPAM);
+				if (
+					contactModel.getAndroidContactLookupKey() == null &&
+					TestUtil.empty(contactModel.getFirstName()) &&
+					TestUtil.empty(contactModel.getLastName()) &&
+					contactModel.getVerificationLevel() == VerificationLevel.UNVERIFIED
+				) {
+					MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
+					if (messageReceiver != null && messageReceiver.getMessagesCount() > 0) {
+						items.add(new SelectorDialogItem(getString(R.string.spam_report), R.drawable.ic_outline_report_24));
+						tags.add(SELECTOR_TAG_REPORT_SPAM);
+					}
+				}
 			}
 
 			if (serviceManager.getBlackListService().has(contactModel.getIdentity())) {
@@ -1225,8 +1245,11 @@ public class ContactsSectionFragment
 
 	@SuppressLint("StringFormatInvalid")
 	private void deleteSelectedContacts() {
-		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.delete_contact_action,
-				String.format(getString(R.string.really_delete_contacts_message), contactListAdapter.getCheckedItemCount()),
+		int contactsSelectedToDelete = contactListAdapter.getCheckedItemCount();
+		final String deleteContactTitle = getString(contactsSelectedToDelete > 1 ? R.string.delete_multiple_contact_action : R.string.delete_contact_action);
+
+		GenericAlertDialog dialog = GenericAlertDialog.newInstance(deleteContactTitle,
+				String.format(ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.really_delete_contacts_message, contactsSelectedToDelete, contactsSelectedToDelete), contactListAdapter.getCheckedItemCount()),
 				R.string.ok,
 				R.string.cancel);
 
@@ -1255,7 +1278,7 @@ public class ContactsSectionFragment
 			public void run() {
 				if (isAdded()) {
 					if (failed > 0) {
-						Toast.makeText(getActivity(), String.format(getString(R.string.some_contacts_not_deleted), failed), Toast.LENGTH_LONG).show();
+						Toast.makeText(getActivity(), String.format(ConfigUtils.getSafeQuantityString(getContext(),  R.plurals.some_contacts_not_deleted, failed, failed)), Toast.LENGTH_LONG).show();
 					} else {
 						if (contactModels.size() > 1) {
 							Toast.makeText(getActivity(), R.string.contacts_deleted, Toast.LENGTH_LONG).show();

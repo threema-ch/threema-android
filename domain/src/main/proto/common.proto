@@ -83,5 +83,11 @@ message Timespan {
 // Container for a list of identities.
 message Identities {
   // List of identities
-  repeated string identifies = 1;
+  repeated string identities = 1;
+}
+
+// Generic 2D resolution
+message Resolution {
+  uint32 width = 1;
+  uint32 height = 2;
 }

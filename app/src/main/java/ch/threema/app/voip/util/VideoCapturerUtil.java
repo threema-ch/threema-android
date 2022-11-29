@@ -32,6 +32,7 @@ import org.webrtc.CameraVideoCapturer;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
+import ch.threema.app.webrtc.Camera;
 import ch.threema.base.utils.LoggingUtil;
 
 /**
@@ -53,11 +54,11 @@ public class VideoCapturerUtil {
 	 * Return null if no cameras were found or if initialization failed.
 	 */
 	@Nullable
-	public static CameraVideoCapturer createVideoCapturer(
+	public static Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> createVideoCapturer(
 		@NonNull Context context,
 		@Nullable CameraVideoCapturer.CameraEventsHandler eventsHandler
 	) {
-		final CameraVideoCapturer capturer;
+		final Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> capturer;
 		if (VideoCapturerUtil.useCamera2(context)) {
 			logger.debug("Creating capturer using camera2 API");
 			capturer = VideoCapturerUtil.createCameraCapturer(new Camera2Enumerator(context), eventsHandler);
@@ -77,7 +78,7 @@ public class VideoCapturerUtil {
 	 * Return null if no cameras were found or if initialization failed.
 	 */
 	@Nullable
-	private static CameraVideoCapturer createCameraCapturer(
+	private static Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> createCameraCapturer(
 		@NonNull CameraEnumerator enumerator,
 		@Nullable CameraVideoCapturer.CameraEventsHandler eventsHandler
 	) {
@@ -90,7 +91,7 @@ public class VideoCapturerUtil {
 				logger.debug("Found front camera, creating camera capturer");
 				final CameraVideoCapturer videoCapturer = enumerator.createCapturer(deviceName, eventsHandler);
 				if (videoCapturer != null) {
-					return videoCapturer;
+					return new Pair<>(videoCapturer, new Pair<>(deviceName, Camera.Facing.FRONT));
 				}
 			}
 		}
@@ -102,7 +103,7 @@ public class VideoCapturerUtil {
 				logger.debug("Non-front facing camera found, creating camera capturer");
 				final CameraVideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
 				if (videoCapturer != null) {
-					return videoCapturer;
+					return new Pair<>(videoCapturer, new Pair<>(deviceName, Camera.Facing.BACK));
 				}
 			}
 		}

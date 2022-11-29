@@ -22,12 +22,14 @@
 package ch.threema.storage.models;
 
 
-import java.util.Date;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Date;
+
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.MessageDataInterface;
@@ -36,6 +38,8 @@ import ch.threema.storage.models.data.media.BallotDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.ImageDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
+import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
+import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
 import ch.threema.storage.models.data.status.StatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
@@ -84,6 +88,8 @@ public abstract class AbstractMessageModel {
 	public static final String COLUMN_DELIVERED_AT = "deliveredAtUtc";
 	/** When the message was read. */
 	public static final String COLUMN_READ_AT = "readAtUtc";
+	/** The forward security mode in which the message was received/sent. */
+	public static final String COLUMN_FORWARD_SECURITY_MODE = "forwardSecurityMode";
 
 	private int id;
 	private String uid;
@@ -107,6 +113,7 @@ public abstract class AbstractMessageModel {
 	private String quotedMessageId;
 	private @MessageContentsType int messageContentsType;
 	private int messageFlags;
+	private ForwardSecurityMode forwardSecurityMode;
 
 	AbstractMessageModel() {
 	}
@@ -320,7 +327,7 @@ public abstract class AbstractMessageModel {
 		return this;
 	}
 
-	private MessageDataInterface dataObject;
+	protected MessageDataInterface dataObject;
 
 	public @NonNull LocationDataModel getLocationData() {
 		if(this.dataObject == null) {
@@ -367,11 +374,37 @@ public abstract class AbstractMessageModel {
 		this.dataObject = statusDataModel;
 	}
 
-	public @NonNull VoipStatusDataModel getVoipStatusData() {
+	public @Nullable VoipStatusDataModel getVoipStatusData() {
 		if(this.dataObject == null) {
 			this.dataObject = StatusDataModel.convert(this.getBody());
 		}
-		return (VoipStatusDataModel)this.dataObject;
+		return (VoipStatusDataModel) this.dataObject;
+	}
+
+	public void setGroupCallStatusData(GroupCallStatusDataModel statusDataModel) {
+		this.setType(MessageType.GROUP_CALL_STATUS);
+		this.setBody(StatusDataModel.convert(statusDataModel));
+		this.dataObject = statusDataModel;
+	}
+
+	public @Nullable GroupCallStatusDataModel getGroupCallStatusData() {
+		if(this.dataObject == null) {
+			this.dataObject = StatusDataModel.convert(this.getBody());
+		}
+		return (GroupCallStatusDataModel) this.dataObject;
+	}
+
+	public void setForwardSecurityStatusData(ForwardSecurityStatusDataModel statusDataModel) {
+		this.setType(MessageType.FORWARD_SECURITY_STATUS);
+		this.setBody(StatusDataModel.convert(statusDataModel));
+		this.dataObject = statusDataModel;
+	}
+
+	public @Nullable ForwardSecurityStatusDataModel getForwardSecurityStatusData() {
+		if(this.dataObject == null) {
+			this.dataObject = StatusDataModel.convert(this.getBody());
+		}
+		return (ForwardSecurityStatusDataModel) this.dataObject;
 	}
 
 	public void setImageData(ImageDataModel imageDataModel) {
@@ -483,6 +516,16 @@ public abstract class AbstractMessageModel {
 		return this;
 	}
 
+	@Nullable
+	public ForwardSecurityMode getForwardSecurityMode() {
+		return forwardSecurityMode;
+	}
+
+	public AbstractMessageModel setForwardSecurityMode(ForwardSecurityMode forwardSecurityMode) {
+		this.forwardSecurityMode = forwardSecurityMode;
+		return this;
+	}
+
 	/**
 	 * TODO: evil code!
 	 * @param sourceModel
@@ -501,6 +544,7 @@ public abstract class AbstractMessageModel {
 				.setBody(sourceModel.getBody())
 				.setCaption(sourceModel.getCaption())
 				.setQuotedMessageId(sourceModel.getQuotedMessageId())
+				.setForwardSecurityMode(sourceModel.getForwardSecurityMode())
 				;
 	}
 }

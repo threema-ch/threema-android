@@ -71,6 +71,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
@@ -89,9 +90,11 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.SingleToast;
+import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.utils.CloseableLock;
 import ch.threema.app.utils.CloseableReadWriteLock;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RandomUtil;
@@ -101,8 +104,8 @@ import ch.threema.app.voip.CallStateSnapshot;
 import ch.threema.app.voip.CpuMonitor;
 import ch.threema.app.voip.PeerConnectionClient;
 import ch.threema.app.voip.VoipAudioManager;
-import ch.threema.app.voip.VoipAudioManager.AudioDevice;
 import ch.threema.app.voip.activities.CallActivity;
+import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.listeners.VoipMessageListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
@@ -126,7 +129,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.protobuf.callsignaling.CallSignaling;
+import ch.threema.protobuf.callsignaling.O2OCall;
 import ch.threema.storage.models.ContactModel;
 import java8.util.function.Supplier;
 import java8.util.stream.StreamSupport;
@@ -203,6 +206,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	private VoipStateService voipStateService;
 	private PreferenceService preferenceService;
 	private ContactService contactService;
+	private GroupCallManager groupCallManager;
 
 	// Listeners
 	private VoipMessageListener voipMessageListener;
@@ -608,6 +612,12 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			return RESTART_BEHAVIOR;
 		}
 
+		// The call is going to be initiated. Therefore any ongoing group call must be stopped
+		if (groupCallManager.hasJoinedCall()) {
+			logger.info("Stop ongoing group call in favour of 1:1 call");
+			groupCallManager.abortCurrentCall();
+		}
+
 		final String contactIdentity = intent.getStringExtra(EXTRA_CONTACT_IDENTITY);
 		if (contactIdentity == null) {
 			logger.error("Missing contact identity in intent!");
@@ -658,6 +668,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			this.voipStateService = serviceManager.getVoipStateService();
 			this.preferenceService = serviceManager.getPreferenceService();
 			this.contactService = serviceManager.getContactService();
+			this.groupCallManager = serviceManager.getGroupCallManager();
 		} catch (Exception e) {
 			this.abortCall(R.string.voip_error_init_call, "Cannot instantiate services", e, false);
 			return;
@@ -702,7 +713,9 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 		telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		if (telephonyManager != null) {
-			telephonyManager.listen(hangUpRtcOnDeviceCallAnswered, PhoneStateListener.LISTEN_CALL_STATE);
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+				telephonyManager.listen(hangUpRtcOnDeviceCallAnswered, PhoneStateListener.LISTEN_CALL_STATE);
+			}
 		}
 
 		if (preferenceService.isRejectMobileCalls()) {
@@ -971,7 +984,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		}
 
 		// Start the call
-		startCall(!isInitiator, launchVideo);
+		startCall(launchVideo);
 	}
 
 	@UiThread
@@ -1027,7 +1040,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	}
 
 	@UiThread
-	private synchronized void startCall(boolean startActivity, boolean launchVideo) {
+	private synchronized void startCall(boolean launchVideo) {
 		final long callId = this.voipStateService.getCallState().getCallId();
 		logCallInfo(callId, "Start call");
 
@@ -1052,15 +1065,6 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			return;
 		}
 		logCallInfo(callId, "Setting up call with {}", contact.getIdentity());
-
-		// Start activity if desired
-		if (startActivity) {
-			final Intent intent = new Intent(this.getApplicationContext(), CallActivity.class);
-			intent.putExtra(EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL);
-			intent.putExtra(EXTRA_CONTACT_IDENTITY, contact.getIdentity());
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			this.getApplicationContext().startActivity(intent);
-		}
 
 		// Create and audio manager that will take care of audio routing,
 		// audio modes, audio device enumeration etc.
@@ -1977,7 +1981,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 	@Override
 	@WorkerThread
-	public void onSignalingMessage(long callId, @NonNull CallSignaling.Envelope envelope) {
+	public void onSignalingMessage(long callId, @NonNull O2OCall.Envelope envelope) {
 		if (envelope.hasCaptureStateChange()) {
 			this.handleCaptureStateChange(callId, envelope.getCaptureStateChange());
 		} else if (envelope.hasVideoQualityProfile()) {
@@ -2152,7 +2156,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			this,
 			(int)System.currentTimeMillis(),
 			hangupIntent,
-			PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent.FLAG_UPDATE_CURRENT | IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE);
 
 		// Prepare open action
 		final Intent openIntent = new Intent(this, CallActivity.class);
@@ -2163,7 +2167,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				this,
 				(int)System.currentTimeMillis(),
 				openIntent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+				PendingIntent.FLAG_UPDATE_CURRENT | IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE);
 
 		// Prepare notification
 		final NotificationCompat.Builder notificationBuilder = new NotificationBuilderWrapper(this, NotificationService.NOTIFICATION_CHANNEL_IN_CALL, null)
@@ -2466,7 +2470,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		}
 
 		/**
-		 * Called by {@link #handleCaptureStateChange(long, CallSignaling.CaptureState)}.
+		 * Called by {@link #handleCaptureStateChange(long, O2OCall.CaptureState)}.
 		 * Remote has signaled that video capturing has started.
 		 */
 		synchronized void onRemoteVideoCapturingEnabled() {
@@ -2483,7 +2487,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		}
 
 		/**
-		 * Called by {@link #handleCaptureStateChange(long, CallSignaling.CaptureState)}.
+		 * Called by {@link #handleCaptureStateChange(long, O2OCall.CaptureState)}.
 		 * Remote has signaled that video capturing has stopped.
 		 */
 		synchronized void onRemoteVideoCapturingDisabled() {
@@ -2565,7 +2569,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	 * @param captureStateChange The received signaling message.
 	 */
 	@AnyThread
-	private void handleCaptureStateChange(long callId, @NonNull CallSignaling.CaptureState captureStateChange) {
+	private void handleCaptureStateChange(long callId, @NonNull O2OCall.CaptureState captureStateChange) {
 		logCallInfo(
 			callId,
 			"Signaling: Call partner changed {} capturing state to {}",
@@ -2574,7 +2578,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		);
 
 		// Handle camera capturing state changes
-		if (CallSignaling.CaptureState.CaptureDevice.CAMERA == captureStateChange.getDevice()) {
+		if (O2OCall.CaptureState.CaptureDevice.CAMERA == captureStateChange.getDevice()) {
 			switch (captureStateChange.getState()) {
 				case ON:
 					this.remoteVideoStateDetector.onRemoteVideoCapturingEnabled();
@@ -2594,7 +2598,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	 * @param videoQualityProfile The received signaling message.
 	 */
 	@AnyThread
-	private void handleVideoQualityProfileChange(long callId, @NonNull CallSignaling.VideoQualityProfile videoQualityProfile) {
+	private void handleVideoQualityProfileChange(long callId, @NonNull O2OCall.VideoQualityProfile videoQualityProfile) {
 		logCallInfo(callId, "Signaling: Call partner changed video profile to {}", videoQualityProfile.getProfile());
 
 		final VoipVideoParams profile = VoipVideoParams.fromSignalingMessage(videoQualityProfile);

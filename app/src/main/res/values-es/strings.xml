@@ -111,6 +111,7 @@
     <string name="cancel">Cancelar</string>
     <string name="copy_message_action">Copiar</string>
     <string name="delete_contact_action">Eliminar contacto</string>
+    <string name="delete_multiple_contact_action">Eliminar contactos</string>
     <string name="scan_id">Escanear ID</string>
     <string name="id_scanned">ID escaneado</string>
     <string name="id_mismatch">«La clave pública que ha escaneado no coincide con la que tiene registrada el servidor para este ID». Eso significa que alguien ha modificado el código escaneado de forma malintencionada y que la clave no es segura.</string>
@@ -122,12 +123,12 @@
     <string name="share_via">Compartir mediante…</string>
     <string name="share_subject">Conversación de %s</string>
     <string name="message_delete_undo">Deshacer</string>
-    <string name="message_deleted">Mensaje eliminado</string>
     <string name="mobile_already_linked">Su ID de Threema ya está vinculado con este número de teléfono móvil</string>
     <string name="email_already_linked">Su ID de Threema ya está vinculado con esta dirección de correo electrónico</string>
     <string name="whoaaa">Aviso</string>
     <string name="really_delete_message_title">Eliminar mensaje</string>
     <string name="really_delete_thread">Eliminar chat</string>
+    <string name="really_delete_multiple_threads">Eliminar chats</string>
     <string name="really_delete_contact">¿Está seguro de que desea eliminar este contacto y todos los chats correspondientes?</string>
     <string name="image_placeholder">Imagen</string>
     <string name="invalid_threema_id">ID de Threema no válido</string>
@@ -257,8 +258,6 @@
     <string name="prefs_masterkey_notification_newmsg_off">Sin notificaciones de mensajes nuevos cuando la clave maestra está bloqueada</string>
     <string name="prefs_masterkey_notification_newmsg_on">Notificaciones (sin detalles) cuando la clave maestra está bloqueada</string>
     <string name="chat_history_attached">El protocolo de chat se incluye como adjunto.</string>
-    <string name="new_message">Mensaje nuevo</string>
-    <string name="new_messages">Mensajes nuevos</string>
     <string name="backup_data_title">Copia de seguridad de datos</string>
     <string name="backup_data_password_msg">Su ID, sus chats, sus contactos y su configuración se guardan en el dispositivo de almacenamiento USB en un archivo comprimido y se podrán recuperar en otro dispositivo. Introduzca una contraseña para proteger la copia de seguridad de sus datos.</string>
     <string name="restore_data_password_msg">Introduzca la contraseña que ha establecido al crear la copia de seguridad.</string>
@@ -285,7 +284,7 @@
     <string name="prefs_group_notifications">Notificaciones de grupo</string>
     <string name="add_group_members_list">Miembros del grupo</string>
     <string name="group_select_at_least_two">Seleccione un miembro como mínimo</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">Se pueden agregar al grupo %1$d miembros como máximo</string>
+    <string name="group_select_max">Se pueden agregar al grupo %1$d miembros como máximo</string>
     <string name="search">Buscar</string>
     <string name="hint_search_keyword">Palabra clave</string>
     <string name="add_group_owner">Creador</string>
@@ -321,7 +320,7 @@
     <string name="updating_group">Actualizar grupo</string>
     <string name="status_create_group">Grupo creado.</string>
     <string name="status_rename_group">Se ha cambiado el nombre del grupo a «%1$s»</string>
-    <string name="status_group_new_photo">Grupo actualizado.</string>
+    <string name="status_group_new_photo">Foto de grupo actualizada.</string>
     <string name="status_group_new_member">«%1$s» se ha agregado al grupo.</string>
     <string name="status_group_member_left">«%1$s» ha abandonado el grupo.</string>
     <string name="status_group_member_kicked">Se ha eliminado del grupo a «%1$s».</string>
@@ -360,7 +359,6 @@
     <string name="contact_format_last_name_first_name">Apellidos, Nombre de pila</string>
     <string name="block_contact">Bloquear contacto</string>
     <string name="unblock_contact">Desbloquear contacto</string>
-    <string name="unread_messages">%d mensajes no leídos</string>
     <string name="one_unread_message">1 mensaje no leído</string>
     <string name="really_unlink_contact_title">Cancelar vínculo</string>
     <string name="really_unlink_contact">¿Está seguro de que desea cancelar el vínculo con el contacto de la libreta de direcciones?</string>
@@ -376,7 +374,6 @@
     <string name="save_image">Guardar imagen</string>
     <string name="share_image">Compartir imagen</string>
     <string name="view_in_gallery">Ver en galería</string>
-    <string name="file_saved">%d archivo(s) guardado(s) correctamente.</string>
     <string name="token_register_failed">No se ha podido restablecer el símbolo push. Vuelva a intentarlo.</string>
     <string name="internet_connection_required">No hay conexión a Internet.</string>
     <string name="prefs_sum_save_media">Cargar los elementos multimedia de forma automática al recibirlos y guardarlos sin cifrar en la galería.</string>
@@ -418,8 +415,14 @@
     <string name="media_gallery_pictures">Fotos</string>
     <string name="media_gallery_videos">Vídeos</string>
     <string name="group_membership_title">Miembro de estos grupos</string>
+    <string name="group_description">Descripción del grupo</string>
+    <string name="change_group_description">Cambiar descripción del grupo</string>
+    <string name="add_group_description">Añadir una descripción del grupo</string>
+    <string name="read_more">leer más</string>
+    <string name="read_less">leer menos</string>
+    <string name="changed_group_desc_date">"\u00daltima modificaci\u00f3n: "</string>
     <string name="num_items_sected">Seleccionados: %s</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">¿Está seguro de que quiere borrar %d mensajes multimedia?</string>
+    <string name="really_delete_media">¿Está seguro de que quiere borrar %d mensajes multimedia?</string>
     <string name="check_updates">Comprobar si hay actualizaciones</string>
     <string name="masterkey_lock_explain">Threema guarda la frase de contraseña en la memoria. Si necesita volver a introducir la frase de contraseña a menudo, asegúrese de que las aplicaciones que puedan cerrar Threema antes de tiempo, como un administrador de tareas o una de ahorro de batería, estén desactivadas.</string>
     <string name="identity_already_exists">Este ID ya está en su lista de contactos</string>
@@ -434,7 +437,6 @@
     <string name="sending_images">Enviando imágenes</string>
     <string name="share_conversation_body">Para descomprimir el archivo se necesita una utilidad de compresión actual que soporte cifrado AES, como por ejemplo http://www.7-zip.org or https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">El chat se enviará en un archivo comprimido y cifrado. Elija una contraseña:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d mensajes nuevos en %2$d chats</string>
     <string name="ballot_create">Nuevo sondeo</string>
     <string name="ballot_choice_add">Agregar elección</string>
     <string name="ballot_state_closed">Cerrado</string>
@@ -452,8 +454,6 @@
     <string name="ballot_overview">Sondeos</string>
     <string name="ballot_copy">Copiar sondeo</string>
     <string name="ballot_remove">Eliminar sondeo</string>
-    <string name="ballot_really_delete">Eliminar sondeo(s)</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">¿Está seguro de que quiere borrar %1$d sondeo(s)? No podrá recuperar los votos.</string>
     <string name="ballot_not_exist">El sondeo no existe</string>
     <string name="ballot_tap_to_vote">Toque para votar</string>
     <string name="ballot_tap_to_view_results">Toque para ver los resultados</string>
@@ -471,7 +471,7 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="invalid_cannot_send">No puede enviar mensajes a un contacto no válido</string>
     <string name="ballot_answer_count_error">Defina por lo menos dos respuestas para el sondeo.</string>
     <string name="ballot_one_contact_not_supported">Aviso: %1$s no podrá participar en su sondeo.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Aviso: %1$d contactos no podrán participar en su sondeo.</string>
+    <string name="ballot_x_contact_not_supported">Aviso: %1$d contactos no podrán participar en su sondeo.</string>
     <string name="contact_state_inactive">Inactivo</string>
     <string name="contact_state_invalid">No válido</string>
     <string name="back">Volver</string>
@@ -485,6 +485,9 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="video_size_large">Baja (más datos)</string>
     <string name="video_size_original">Ninguna (gran cantidad de datos)</string>
     <string name="prefs_video_size">Compresión de vídeo</string>
+    <string name="menu_video_size_small">Tamaño pequeño</string>
+    <string name="menu_video_size_medium">Tamaño mediano</string>
+    <string name="menu_video_size_large">Tamaño original</string>
     <string name="show_contact">Mostrar contacto</string>
     <string name="chat_with">Chatear con %1$s</string>
     <string name="kick_user_from_group">Echar a %1$s del grupo</string>
@@ -504,7 +507,7 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="send_media">Enviar medios</string>
     <string name="rotate">Rotar</string>
     <string name="remove">Quitar</string>
-    <string name="image_already_added">Ya se ha añadido esta imagen.</string>
+    <string name="item_already_added">Ya se ha añadido este elemento.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">(mín. %d caracteres)</string>
     <string name="mark_read">Marcar como leído</string>
     <string name="attach_document">Archivo</string>
@@ -514,7 +517,7 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="no_activity_for_mime_type">No hay aplicaciones que puedan abrir este archivo.</string>
     <string name="open_from">Abrir desde</string>
     <string name="file_one_contact_not_supported">%1$s no puede recibir archivos.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Aviso: %1$d contactos no pueden recibir el archivo.</string>
+    <string name="file_x_contact_not_supported">Aviso: %1$d contactos no pueden recibir el archivo.</string>
     <string name="mime_android_apk">Paquete Android</string>
     <string name="mime_audio">Archivo de audio</string>
     <string name="mime_certificate">Certificado digital</string>
@@ -554,7 +557,6 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="delete_data">Borrar datos</string>
     <string name="delete_date_confirm_message">Si continúa, se borrarán los archivos y solo se mantendrán las
  miniaturas.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">%d archivos multimedia borrados</string>
     <string name="storage_management">Gestión del almacenamiento</string>
     <string name="media">Elementos multimedia</string>
     <string name="prefs_storage_mgmt_title">Limpiar contenido multimedia, archivos y mensajes</string>
@@ -586,7 +588,6 @@ almacenado.</string>
     <string name="fontsize_large">Grande</string>
     <string name="fontsize_xlarge">Extra grande</string>
     <string name="no_app_for_location">No se encuentra ninguna aplicación de mapas en este dispositivo</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%d chat(s) eliminado(s)</string>
     <string name="prefs_sendlog">Enviar registro</string>
     <string name="prefs_sendlog_summary">Envíe un archivo de registro a Threema para su posterior análisis en caso de problemas</string>
     <string name="prefs_exportlog">Exportar registro</string>
@@ -597,7 +598,6 @@ almacenado.</string>
     <string name="message_declined">«Rechazo» enviado</string>
     <string name="notifications_settings">Configuración de las notificaciones</string>
     <string name="notifications_default">Configuración por defecto</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">Durante %d hora(s)</string>
     <string name="notifications_until">Hasta %s</string>
     <string name="notifications_mute">Silenciado</string>
     <string name="notifications_choose_sound">Elija sonido</string>
@@ -684,7 +684,7 @@ almacenado.</string>
     <string name="prefs_proximity_sensor_explain">Utilziar auricular para reproducir mensajes de voz si el sensor de proximidad está tapado</string>
     <string name="error_creating_group">Error al crear el grupo</string>
     <string name="no_media_found_generic">Este chat no contiene elementos multimedia</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Se pueden editar un máximo de %d elementos a la vez.</string>
+    <string name="max_images_reached">Se pueden editar un máximo de %d elementos a la vez.</string>
     <string name="enter_description">Describa aquí el problema o error.</string>
     <string name="add_caption_hint">Añada una captura opcional.</string>
     <string name="disable">Desactivar</string>
@@ -730,9 +730,7 @@ almacenado.</string>
     <string name="prefs_language_override">Idioma</string>
     <string name="threema_channel_intro">Threema Channel le mantiene actualizado sobre todo lo relativo a Threema. ¿Desea añadir Threema Channel a sus contactos?</string>
     <string name="quote">Citar</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">¿Está seguro de que desea eliminar %1$d contactos y todos los chats correspondientes?</string>
     <string name="contacts_deleted">Se han eliminado los contactos.</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">No se han podido eliminar %d contactos porque todavía forman parte de un grupo.</string>
     <string name="take_photo">Hacer una foto</string>
     <string name="select_from_gallery">Seleccionarla de la galería</string>
     <string name="palette">Paleta</string>
@@ -858,7 +856,6 @@ almacenado.</string>
     <string name="no_matching_work_contacts">No se han encontrado contactos de Threema Work verificados por el administrador</string>
     <string name="all">Todo</string>
     <string name="webclient_session_stop_all">Cerrar todo</string>
-    <string name="webclient_running_sessions">%d sesión(es) de Threema Web en ejecución</string>
     <string name="passphrase_service_name">Servicio de contraseña</string>
     <string name="passphrase_service_description">Notificación cuando se desbloquea la contraseña</string>
     <string name="webclient_service_description">Notificación cuando haya una sesión de Threema Web activa</string>
@@ -1011,7 +1008,6 @@ almacenado.</string>
     <string name="data_backup_last_date">Última copia de seguridad correcta</string>
     <string name="archived">Archivado</string>
     <string name="to_archive">Archivar</string>
-    <string name="message_archived">%d chat(s) archivado(s)</string>
     <string name="archived_chats">Chats archivados</string>
     <string name="unarchive">Desarchivar</string>
     <string name="no_archived_chats">No hay chats archivados.\nPara archivar un chat, deslice el dedo a la izquierda sobre el mismo en la lista de mensajes.</string>
@@ -1023,25 +1019,12 @@ almacenado.</string>
     <string name="system_default">Estándar del sistema</string>
     <string name="open_in_maps_app">Abrir en Maps</string>
     <string name="delete">Borrar</string>
-    <string name="num_archived_chats">%d chats archivados</string>
     <string name="continue_recording">Continuar grabando</string>
-    <string name="whatsnew_title">Bienvenido a %1$s %2$s</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p><b>Nuevas funciones en esta versión de %s para Android:</b></p>
-		<p>
-		&bull; Muchos emojis nuevos de acuerdo con el estándar Unicode 13.1. 😵‍💫❤️‍🔥
-		</p><p>
-		&bull; Búsqueda de emojis por nombre o significado (disponible en 17 idiomas).
-		</p><p>
-		&bull; Colores deterministas para contactos y grupos que no tienen su propia foto de perfil. Estos nuevos colores funcionarán en todas las plataformas y dispositivos.
-		</p><p>
-		&bull; Rendimiento de desplazamiento mejorado en muchas listas.
-		</p><p>
-		&bull; Diseño optimizado para el Editor de archivos multimedia. Se ha aumentado la cantidad de elementos multimedia que se pueden editar antes de enviar a 256.
-		</p><p>
-		&bull; Muchas pequeñas mejoras y correcciones de errores.
-		</p>
-		]]></string>
+<p>Las llamadas grupales cifradas de extremo a extremo ya están disponibles en %1$s para Android.</p>
+<p>Para iniciar una llamada, abre un chat grupal y toca el botón de la cámara de la parte superior.</p>
+<p>Todos los miembros del grupo recibirán una notificación y podrán decidir si quieren unirse a la llamada.</p>
+<p><b>Importante:</b> Para iOS, la función de llamadas grupales se lanzará más adelante.</p> ]]></string>
     <string name="tap_to_start">Toque aquí para iniciar %s ahora.</string>
     <string name="two_years">2 años</string>
     <string name="invalid_backup_path">Ruta de backup no válida</string>
@@ -1060,7 +1043,6 @@ almacenado.</string>
     <string name="and">y</string>
     <string name="edit_type_content_description">Ver o editar %1$s %2$s</string>
     <string name="group">Grupo</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Nuestra política de privacidad se ha actualizado para reflejar el siguiente cambio:</p><p>%1$s ya no depende de Google Play y Google Maps para proporcionar datos de mapas y puntos de interés.</p>Por favor, revise la política de privacidad completa <a href="%2$s">aquí </a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Servicios no instalados. No se puede cambiar a Google FCM ni HMS push.</string>
     <string name="unable_to_get_current_location">No se puede determinar la ubicación actual.</string>
     <string name="lp_search_place_min_chars">Introduce tres caracteres como mínimo para buscar un lugar.</string>
@@ -1105,7 +1087,7 @@ almacenado.</string>
     <string name="call_with">Llamar a %s</string>
     <string name="picture_in_picture_disabled_in_setting">El modo imagen en imagen está desactivado para %s. Actívelo en los ajustes del sistema.</string>
     <string name="delete_everything">Borrar todo</string>
-    <string name="prefs_title_voip_video_enable">Activar videollamadas de Threema</string>
+    <string name="prefs_title_voip_video_enable">Permitir vídeo</string>
     <string name="video_calls">Videollamadas de Threema</string>
     <string name="prefs_videocall_profile">Calidad de imagen preferida</string>
     <string name="videocall_profile_auto">Equilibrado (recomendado)</string>
@@ -1123,6 +1105,8 @@ almacenado.</string>
     <string name="translators_thanks">Muchas gracias a nuestros traductores voluntarios:\n%s</string>
     <string name="ballot_window_hide">Oculta sondeos abiertos</string>
     <string name="ballot_window_show">Ver sondeos abiertos</string>
+    <string name="single_ballot_really_delete">Quitar este sondeo</string>
+    <string name="single_ballot_really_delete_text">¿Seguro que quieres eliminar este sondeo? No podrás recuperar los votos.</string>
     <string name="tooltip_voip_other_party_video_on">La otra parte inició una videollamada. Toque aquí para activar su cámara también.</string>
     <string name="tooltip_voip_other_party_video_disabled">La otra parte no usa una versión actual de la aplicación o no permite videollamadas.</string>
     <string name="biometrics_not_enrolled">No hay datos biométricos registrados en el sistema.</string>
@@ -1210,8 +1194,8 @@ almacenado.</string>
     <string name="group_request_already_sent"><![CDATA[Ya ha enviado una solicitud de grupo para <b>%s</b> a través de este enlace. Haga clic en la solicitud para volver a enviarla.]]></string>
     <string name="group_link_none">Aún no se ha generado ningún enlace</string>
     <string name="group_request_confirm_send"><![CDATA[Está a punto de enviar una solicitud de grupo para <b>%1$s</b> al administrador <b>%2$s</b>. Si este enlace no se ha invalidado, se le añadirá automáticamente al grupo en cuanto el dispositivo del administrador reciba su solicitud.]]></string>
-    <string name="really_delete_outgoing_request">¿Seguro que quiere eliminar %d solicitud(es) de grupo? Tenga en cuenta que la solicitud no se revocará y que aún se le podrá aceptar o preguntar si la solicitud aún no se ha respondido.</string>
-    <string name="really_delete_group_request_title">Eliminar la solicitud de grupo</string>
+    <string name="really_delete_group_request_title_singular">Eliminar solicitud grupal</string>
+    <string name="really_delete_group_request_title_plural">Eliminar solicitudes grupales</string>
     <string name="sent_to">Enviada a %s</string>
     <string name="sent_on">Enviada el: %s</string>
     <string name="group_response">Respuesta de unión al grupo</string>
@@ -1231,7 +1215,6 @@ almacenado.</string>
     <string name="link_administration_off_explain">Este enlace ya estaba configurado y se compartió anteriormente, por lo que ya no es posible cambiar esta propiedad. Genere un nuevo enlace con la propiedad que necesita.</string>
     <string name="group_link_update_success">Enlace actualizado correctamente</string>
     <string name="no_group_links">No hay enlaces de grupo. Para crear un enlace de grupo, pulse el botón de añadir en la parte inferior derecha o active el enlace predeterminado en la vista de detalles del grupo.</string>
-    <string name="really_delete_group_link">¿Seguro que quiere eliminar %d enlace(s) de grupo? Ya nadie podrá enviar solicitudes a través de él. Sin embargo, las solicitudes recibidas anteriormente se pueden seguir aceptando o rechazando.</string>
     <string name="group_links_overview_title">Enlaces de grupo para %s</string>
     <string name="group_link_invalid">Caducado</string>
     <string name="group_link_valid">Válido</string>
@@ -1247,7 +1230,6 @@ almacenado.</string>
     <string name="open_group_requests_show">Mostrar solicitudes de unión</string>
     <string name="open_group_requests_hide">Ocultar solicitudes de unión</string>
     <string name="group_request_link_already_deleted">Enlace de grupo mientras se elimina</string>
-    <string name="really_delete_incoming_request">¿Seguro que quiere eliminar %d solicitud(es) de grupo? No se puede responder a las solicitudes una vez eliminadas.</string>
     <string name="incoming_group_request_no_message">Enviado a través de enlace abierto... no hay mensaje</string>
     <string name="group_request_received_through">A través del enlace: %s</string>
     <string name="reaccept">Volver a aceptar</string>
@@ -1303,6 +1285,7 @@ almacenado.</string>
     <string name="group_links_manage_menu">Gestionar los enlaces de grupo</string>
     <string name="group_request_sent_menu">Enviar solicitudes de grupo</string>
     <string name="really_delete_group_link_title">Borrar enlace de grupo</string>
+    <string name="really_delete_multiple_group_links_title">Eliminar enlaces de grupo</string>
     <string name="qr_scan_result_dialog_title">Resultado del escáner QR</string>
     <string name="scan_failure_dialog_title">Análisis no completado</string>
     <string name="no_threema_qr_info">Este no es un código QR específico de Threema. El contenido decodificado es:</string>
@@ -1383,6 +1366,17 @@ almacenado.</string>
     <string name="tooltip_multiple_recipients_title">Nuevo: varios destinatarios</string>
     <string name="tooltip_multiple_recipients_text">Mantén pulsado para seleccionar varios destinatarios a los que enviar el mismo mensaje.</string>
     <string name="synchronizing">Sincronizando...</string>
+    <string name="forward_security">Enviar mensajes con Perfect Forward Secrecy</string>
+    <string name="forward_security_mode">Perfect Forward Secrecy</string>
+    <string name="forward_security_mode_none">no</string>
+    <string name="clear_forward_security">Borrar sesiones Perfect Forward Secrecy</string>
+    <string name="forward_security_cleared">Se han borrado las sesiones Perfect Forward Secrecy con este contacto</string>
+    <string name="message_without_forward_security">Se ha recibido un mensaje sin Perfect Forward Secrecy. Comprueba que el remitente ha desactivado el Perfect Forward Secrecy intencionadamente.</string>
+    <string name="forward_security_established">Los mensajes de este chat están protegidos con Perfect Forward Secrecy.</string>
+    <string name="forward_security_established_rx">Los mensajes recibidos en este chat están protegidos con Perfect Forward Secrecy. Activa Perfect Forward Secrecy en los datos de los contactos para proteger también los mensajes enviados.</string>
+    <string name="forward_security_reset">Se ha restablecido la sesión Perfect Forward Secrecy con este contacto. Podría deberse a que el contacto ha cambiado de dispositivo o ha reinstalado la app.</string>
+    <string name="forward_security_reset_simple">Se ha restablecido la sesión Perfect Forward Secrecy con este contacto.</string>
+    <string name="forward_security_message_out_of_order">Se ha recibido un mensaje inadecuado y no se ha podido descifrar.</string>
     <string name="self_updater_installation_failed">Error al descargar la actualización. Descargue e instale la actualización desde <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manualmente.</string>
     <string name="spam_first_contact">Este chat es de un contacto desconocido</string>
     <string name="spam_report">Reportar spam</string>
@@ -1398,8 +1392,46 @@ almacenado.</string>
     <string name="last_added_contact">Último añadido</string>
     <string name="directory_explain_text">Buscar en el directorio de la compañía empleados que todavía no estén en su lista de contactos.</string>
     <string name="cannot_display_location">No se puede mostrar la ubicación.</string>
+    <string name="draw_reply">Respuesta en dibujo</string>
+    <string name="drawing">Dibujo</string>
+    <string name="background_color">Color de fondo</string>
+    <string name="send_video_muted">Quitar sonido al vídeo</string>
+    <string name="send_without_audio">Quitar audio</string>
+    <string name="edit_filename">Editar nombre del archivo</string>
     <string name="unable_to_restore_identity_because">No se puede restaurar el ID. Motivo: %s</string>
     <string name="share_with_app">Compartir con Threema</string>
+    <string name="read_phone_state_dialog_allow">Conceder permiso</string>
+    <string name="read_phone_state_dialog_disallow">Continuar de todas formas</string>
+    <string name="read_phone_state_dialog_never_ask_again">No volver a preguntarme</string>
+    <string name="read_phone_state_dialog_title">Se requieren permisos</string>
+    <string name="read_phone_state_dialog_message">Para evitar que las llamadas de Threema interrumpan las llamadas regulares, se necesita acceso al teléfono. Si no concedes este permiso, las llamadas entrantes de Threema sonarán aunque haya en curso una llamada regular.</string>
+    <string name="read_phone_state_short_message">Para comprobar las llamadas en curso, concede acceso al teléfono a Threema.</string>
+    <string name="prefs_title_read_phone_state">Conceder acceso al teléfono</string>
+    <string name="prefs_title_hibernation">Ajustes de la app sin usar</string>
+    <string name="prefs_summary_hibernation_api_32">Para evitar que el sistema pause Threema tras un periodo prolongado de inactividad, desactiva el ajuste del sistema \"Eliminar permisos y liberar espacio\".</string>
+    <string name="prefs_summary_hibernation_api">Para evitar que el sistema pause Threema tras un periodo prolongado de inactividad, desactiva el ajuste del sistema \"Pausar actividad de la app cuando no esté en uso\".</string>
+    <string name="unable_to_fetch_configuration">No hemos podido acceder a los datos del servidor de configuración. Inténtalo de nuevo más tarde.</string>
+    <string name="rogue_device_warning">El servidor ha detectado una conexión desde otro dispositivo con la misma ID de Threema.\n\nSi no has utilizado tu ID de Threema en otro dispositivo o con una versión más antigua de la app, contacta con el equipo de asistencia y, si es posible, envíales el archivo de registro.</string>
+    <string name="fetch2_failure">Error en la sincronización con el servidor de aprovisionamiento.</string>
+    <string name="no_members_support_group_calls">No hay más miembros en este grupo que puedan responder a llamadas grupales</string>
+    <string name="group_calls">Llamadas grupales</string>
+    <string name="prefs_title_group_calls_enable">Activar llamadas grupales</string>
+    <string name="group_no_members">Este grupo no contiene más miembros</string>
+    <string name="group_call">Llamada grupal</string>
+    <string name="checking_compatibility">Comprobando compatibilidad...</string>
+    <string name="group_call_mic_permission_rationale">Para realizar llamadas grupales, tienes que permitir que %s acceda al micrófono en \"Permisos\".</string>
+    <string name="group_call_camera_permission_rationale">Para que otros participantes puedan ver tu foto, tienes que permitir que %s acceda a la cámara en \"Permisos\".</string>
+    <string name="settings">Ajustes</string>
+    <string name="leave">Salir</string>
+    <string name="fs_key_mismatch">las claves no coinciden</string>
+    <string name="tap_to_resend">Toca para reenviar</string>
+    <string name="group_calls_tooltip_title">Nuevo: llamadas grupales</string>
+    <string name="group_calls_tooltip_text">Toca aquí para invitar a todos los miembros del grupo a unirse a una llamada. Todos los miembros del grupo recibirán una notificación y podrán decidir si quieren participar en la llamada o no.</string>
+    <string name="prefs_title_calls">Llamadas seguras</string>
+    <string name="prefs_sum_group_calls_vibration">Indica si quieres que vibre cuando se haya iniciado una llamada grupal</string>
+    <string name="forward_security_mode_4dh">completado</string>
+    <string name="forward_security_mode_2dh">unilateral</string>
+    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protege una comunicación grabada del descifrado retroactivo incluso si la clave de cifrado a largo plazo se ve comprometida.\n\nLa opción se puede activar si la app es compatible con PFS por ambas partes.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>
@@ -1419,5 +1451,53 @@ almacenado.</string>
     <plurals name="message_copied">
         <item quantity="one">Mensaje copiado</item>
         <item quantity="other">Mensajes copiados</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="one">%d mensaje nuevo</item>
+        <item quantity="other">%d mensajes nuevos</item>
+    </plurals>
+    <plurals name="file_saved">
+        <item quantity="one">%d archivo guardado correctamente.</item>
+        <item quantity="other">%d archivos guardados correctamente.</item>
+    </plurals>
+    <plurals name="ballot_really_delete">
+        <item quantity="one">Eliminar sondeo</item>
+        <item quantity="other">Eliminar sondeos</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="one">¿Seguro que quieres eliminar la encuesta de %1$d? No podrás recuperar los votos.</item>
+        <item quantity="other">¿Seguro que quieres eliminar las encuestas de %1$d? No podrás recuperar los votos.</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="one">%d mensaje eliminado</item>
+        <item quantity="other">%d mensajes eliminados</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="one">Durante %d hora</item>
+        <item quantity="other">Durante %d horas</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="one">No se ha podido eliminar %d contacto porque sigue siendo parte de un grupo.</item>
+        <item quantity="other">No se han podido eliminar %d contactos porque siguen siendo parte de un grupo.</item>
+    </plurals>
+    <plurals name="message_archived">
+        <item quantity="one">%d chat archivado</item>
+        <item quantity="other">%d chats archivados</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="one">%d sesión en curso</item>
+        <item quantity="other">%d sesiones en curso</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="one">%d chat eliminado.</item>
+        <item quantity="other">%d chat eliminados.</item>
+    </plurals>
+    <plurals name="forward_security_messages_skipped">
+        <item quantity="one">Se ha perdido un mensaje desde el último mensaje.</item>
+        <item quantity="other">Se ha perdido %d mensajes desde el último mensaje.</item>
+    </plurals>
+    <plurals name="delete_messages">
+        <item quantity="one">¿Eliminar %d mensaje de este dispositivo?</item>
+        <item quantity="other">¿Eliminar %d mensajes de este dispositivo?</item>
     </plurals>
 </resources>

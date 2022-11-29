@@ -79,10 +79,20 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 
 		setThumbnail(holder, false);
 
-		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, fileData));
+		RuntimeUtil.runOnUiThread(() -> {
+			setupResendStatus(holder);
+			setControllerState(holder, fileData);
+		});
 
 		setControllerClickListener(holder);
-		setOnClickListener(view -> prepareDownload(fileData, fileMessagePlayer), holder.messageBlockView);
+		setOnClickListener(view -> {
+			if (
+				getMessageModel().getState() != MessageState.FS_KEY_MISMATCH &&
+				getMessageModel().getState() != MessageState.SENDFAILED
+			) {
+				prepareDownload(fileData, fileMessagePlayer);
+			}
+		}, holder.messageBlockView);
 
 		configureFileMessagePlayer(holder, position);
 		configureBodyText(holder);
@@ -245,11 +255,6 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 								fileMessagePlayer.cancel();
 							}
 							break;
-						case ControllerView.STATUS_READY_TO_RETRY:
-							if (onClickRetry != null) {
-								onClickRetry.onClick(getMessageModel());
-							}
-							break;
 						default:
 							// no action taken for other statuses
 							break;
@@ -317,7 +322,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 		} else {
 			if (thumbnail == null) {
 				try {
-					thumbnail = getFileService().getDefaultMessageThumbnailBitmap(context, getMessageModel(), null, fileData.getMimeType());
+					thumbnail = getFileService().getDefaultMessageThumbnailBitmap(context, getMessageModel(), null, fileData.getMimeType(), false);
 					if (thumbnail != null) {
 						thumbnail = AvatarConverterUtil.convert(getContext().getResources(), thumbnail, getContext().getResources().getColor(R.color.item_controller_color), Color.WHITE);
 					}
@@ -365,6 +370,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 				holder.controller.setProgressing();
 				break;
 			case SENDFAILED:
+			case FS_KEY_MISMATCH:
 				holder.controller.setRetry();
 				break;
 			case SENT:

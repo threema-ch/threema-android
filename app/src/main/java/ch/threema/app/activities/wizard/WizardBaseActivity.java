@@ -22,11 +22,11 @@
 package ch.threema.app.activities.wizard;
 
 import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.ThreemaApplication.WORKER_WORK_SYNC;
 
 import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,8 +43,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.viewpager.widget.ViewPager;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -58,6 +61,7 @@ import java.util.List;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
+import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -68,7 +72,6 @@ import ch.threema.app.fragments.wizard.WizardFragment1;
 import ch.threema.app.fragments.wizard.WizardFragment2;
 import ch.threema.app.fragments.wizard.WizardFragment3;
 import ch.threema.app.fragments.wizard.WizardFragment4;
-import ch.threema.app.jobs.WorkSyncService;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.ConversationService;
@@ -83,18 +86,22 @@ import ch.threema.app.ui.ParallaxViewPager;
 import ch.threema.app.ui.StepPagerStrip;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.app.workers.IdentityStatesWorker;
+import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkEmailException;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
-public class WizardBaseActivity extends ThreemaAppCompatActivity implements ViewPager.OnPageChangeListener,
+public class WizardBaseActivity extends ThreemaAppCompatActivity implements
+		LifecycleOwner,
+		ViewPager.OnPageChangeListener,
 		View.OnClickListener,
 		WizardFragment1.OnSettingsChangedListener,
 		WizardFragment2.OnSettingsChangedListener,
@@ -117,6 +124,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 	private static final long DIALOG_DELAY = 200;
 
 	public static final boolean DEFAULT_SYNC_CONTACTS = false;
+	private static final String DIALOG_TAG_WORK_SYNC = "workSync";
 
 	private static int lastPage = 0;
 	private ParallaxViewPager viewPager;
@@ -155,7 +163,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 	private Runnable showDialogDelayedTask(final int current, final int previous) {
 		return () -> {
 			RuntimeUtil.runOnUiThread(() -> {
-
 				if (current == WizardFragment2.PAGE_ID && previous == WizardFragment1.PAGE_ID && TestUtil.empty(getSafePassword())) {
 					if (safeConfig.isBackupForced()) {
 						setPage(WizardFragment1.PAGE_ID);
@@ -255,12 +262,14 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 		viewPager.addLayer(findViewById(R.id.layer0));
 		viewPager.addLayer(findViewById(R.id.layer1));
 
-		viewPager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager()));
-		viewPager.addOnPageChangeListener(this);
+		if (ConfigUtils.isWorkBuild()) {
+			performWorkSync();
+		} else {
+			setupConfig();
+		}
+	}
 
-		presetMobile = this.userService.getLinkedMobile();
-		presetEmail = this.userService.getLinkedEmail();
-
+	private void setupConfig() {
 		safeConfig = ThreemaSafeMDMConfig.getInstance();
 
 		if (ConfigUtils.isWorkRestricted()) {
@@ -318,6 +327,48 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 			userCannotChangeContactSync = true;
 			isSyncContacts = false;
 		}
+
+		viewPager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager()));
+		viewPager.addOnPageChangeListener(this);
+
+		presetMobile = this.userService.getLinkedMobile();
+		presetEmail = this.userService.getLinkedEmail();
+	}
+
+	/**
+	 * Perform an early synchronous fetch2. In case of failure due to rate-limiting, do not allow user to continue
+	 */
+	private void performWorkSync() {
+		final String workerTag = "WorkSyncWorker";
+
+		GenericProgressDialog.newInstance(R.string.work_data_sync_desc,
+			R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC);
+
+		OneTimeWorkRequest workRequest = WorkSyncWorker.Companion.buildOneTimeWorkRequest(false, true, workerTag);
+		WorkManager workManager = WorkManager.getInstance(ThreemaApplication.getAppContext());
+		workManager.getWorkInfosByTagLiveData(workerTag).observe(this, workInfos -> {
+			if (workInfos != null) {
+				for (WorkInfo workInfo : workInfos) {
+					if (workInfo.getState().isFinished()) {
+						DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
+					}
+
+					if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+						setupConfig();
+					} else if (workInfo.getState() == WorkInfo.State.FAILED) {
+						RuntimeUtil.runOnUiThread(() -> Toast.makeText(WizardBaseActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
+						logger.info("Unable to post work request for fetch2");
+						try {
+							userService.removeIdentity();
+						} catch (Exception e) {
+							logger.error("Unable to remove identity", e);
+						}
+						finishAndRemoveTask();
+					}
+				}
+			}
+		});
+		workManager.enqueueUniqueWork(WORKER_WORK_SYNC, ExistingWorkPolicy.REPLACE, workRequest);
 	}
 
 	private void splitMobile(String phoneNumber) {
@@ -902,7 +953,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 
 				@Override
 				protected void onPostExecute(Void result) {
-					startWorkSync();
 					startIdentityStatesSync();
 
 					finishHandler.removeCallbacks(finishTask);
@@ -972,12 +1022,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 		}
 	}
 
-	private void startWorkSync() {
-		if (ConfigUtils.isWorkBuild()) {
-			WorkSyncService.enqueueWork(this, new Intent(), true);
-		}
-	}
-
 	private void startIdentityStatesSync() {
 		OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(IdentityStatesWorker.class)
 				.build();
@@ -994,28 +1038,24 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements View
 			reallySyncContactsAndFinish();
 		} else {
 			preferenceService.setSyncContacts(false);
-			startWorkSync();
 			startIdentityStatesSync();
 			prepareThreemaSafe();
 		}
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode,
-										   @NonNull String permissions[], @NonNull int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		if (requestCode == PERMISSION_REQUEST_READ_CONTACTS) {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				this.isSyncContacts = true;
 				linkPhone();
+			} else if (userCannotChangeContactSync) {
+				ConfigUtils.showPermissionRationale(this, (View) viewPager.getParent(), R.string.permission_contacts_sync_required);
+				resetUi();
 			} else {
-				if (userCannotChangeContactSync) {
-					ConfigUtils.showPermissionRationale(this, (View) viewPager.getParent(), R.string.permission_contacts_sync_required);
-					resetUi();
-				} else {
-					this.isSyncContacts = false;
-					linkPhone();
-				}
+				this.isSyncContacts = false;
+				linkPhone();
 			}
 		}
 	}

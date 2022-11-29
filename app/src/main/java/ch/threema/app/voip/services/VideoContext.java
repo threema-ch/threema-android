@@ -65,8 +65,12 @@ public class VideoContext {
 	//region 0 Setup, teardown
 
 	public VideoContext() {
+		this(EglBase.create());
+	}
+
+	public VideoContext(@Nullable EglBase eglBase) {
 		logger.trace("Constructor");
-		this.eglBase = EglBase.create();
+		this.eglBase = eglBase;
 		this.localVideoSink = new ProxyVideoSink("Local");
 		this.remoteVideoSink = new ProxyVideoSink("Remote");
 	}

@@ -21,9 +21,18 @@
 
 package ch.threema.app.webclient.converter;
 
+import static ch.threema.storage.models.MessageState.DELIVERED;
+import static ch.threema.storage.models.MessageState.USERACK;
+import static ch.threema.storage.models.MessageState.USERDEC;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.webkit.MimeTypeMap;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 
@@ -33,11 +42,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType;
@@ -57,10 +63,13 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
+import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
+import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
+import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 @AnyThread
@@ -77,6 +86,9 @@ public class Message extends Converter {
 	public final static String IS_STATUS = "isStatus";
 	public final static String PARTNER_ID = "partnerId";
 	public final static String STATE = "state";
+	public final static String REACTIONS = "reactions";
+	public final static String REACTIONS_ACK = "ack";
+	public final static String REACTIONS_DEC = "dec";
 	public final static String DATE = "date";
 	public final static String EVENTS = "events";
 	public final static String SORT_KEY = "sortKey";
@@ -201,6 +213,14 @@ public class Message extends Converter {
 			}
 		}
 
+		if (message instanceof GroupMessageModel && virtualMessageType == ch.threema.storage.models.MessageType.GROUP_CALL_STATUS) {
+				return convertGroupCallStatus((GroupMessageModel) message);
+		}
+
+		if (virtualMessageType == ch.threema.storage.models.MessageType.FORWARD_SECURITY_STATUS) {
+			return convertForwardSecurityStatus((AbstractMessageModel) message);
+		}
+
 		// Serialize
 		final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
 		try {
@@ -234,7 +254,17 @@ public class Message extends Converter {
 
 				builder.put(PARTNER_ID, message.getIdentity());
 				builder.put(IS_UNREAD, MessageUtil.isUnread(message));
-				maybePutState(builder, STATE, message.getState());
+
+				ch.threema.storage.models.MessageState messageState = message.getState();
+				if (message instanceof GroupMessageModel) {
+					// web/webtop does not know how to handle group acks
+					if (messageState == USERACK
+						|| messageState == USERDEC) {
+						messageState = DELIVERED;
+					}
+					maybePutReactions(builder, REACTIONS, ((GroupMessageModel) message).getGroupMessageStates());
+				}
+				maybePutState(builder, STATE, messageState);
 				maybePutDate(builder, DATE, message);
 				maybePutEvents(builder, EVENTS, message);
 				maybePutCaption(builder, CAPTION, message);
@@ -276,14 +306,64 @@ public class Message extends Converter {
 		return builder;
 	}
 
+	private static MsgpackObjectBuilder convertGroupCallStatus(GroupMessageModel message) throws ConversionException {
+		final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+		try {
+			GroupCallStatusDataModel groupCallStatusDataModel = message.getGroupCallStatusData();
+			if (groupCallStatusDataModel != null) {
+				builder
+					.put(ID, String.valueOf(message.getId()))
+					.put(TYPE, MessageType.TEXT)
+					.put(SORT_KEY, message.getId())
+					.put(IS_OUTBOX, message.isOutbox())
+					.put(IS_STATUS, true)
+					.put(PARTNER_ID, groupCallStatusDataModel.getStatus() == GroupCallStatusDataModel.STATUS_STARTED ?
+						groupCallStatusDataModel.getCallerIdentity() :
+						getContactService().getMe().getIdentity())
+					.put(BODY, MessageUtil.getViewElement(ThreemaApplication.getAppContext(), message).text)
+					.put(IS_UNREAD, message.isRead())
+					.put(STATUS_TYPE, "text");
+				maybePutState(builder, STATE, DELIVERED);
+				maybePutDate(builder, DATE, message);
+				maybePutEvents(builder, EVENTS, message);
+			}
+		} catch (NullPointerException e) {
+			throw new ConversionException(e.toString());
+		}
+		return builder;
+	}
+
+	private static MsgpackObjectBuilder convertForwardSecurityStatus(AbstractMessageModel message) throws ConversionException {
+		final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+		try {
+			ForwardSecurityStatusDataModel forwardSecurityStatusDataModel = message.getForwardSecurityStatusData();
+			if (forwardSecurityStatusDataModel != null) {
+				builder
+					.put(ID, String.valueOf(message.getId()))
+					.put(TYPE, MessageType.TEXT)
+					.put(SORT_KEY, message.getId())
+					.put(IS_OUTBOX, message.isOutbox())
+					.put(IS_STATUS, true)
+					.put(PARTNER_ID, message.getIdentity())
+					.put(BODY, MessageUtil.getViewElement(ThreemaApplication.getAppContext(), message).text)
+					.put(IS_UNREAD, false)
+					.put(STATUS_TYPE, "text");
+				maybePutState(builder, STATE, DELIVERED);
+				maybePutDate(builder, DATE, message);
+				maybePutEvents(builder, EVENTS, message);
+			}
+		} catch (NullPointerException e) {
+			throw new ConversionException(e.toString());
+		}
+		return builder;
+	}
 
 	/**
 	 * Return the body for text, location and status messages. Everything else needs to be
 	 * requested on demand.
 	 */
 	private static String getBody(AbstractMessageModel message) {
-		switch (message.getType())
-		{
+		switch (message.getType()) {
 			case TEXT:
 			case STATUS:
 			case BALLOT:
@@ -296,6 +376,27 @@ public class Message extends Converter {
 			throws ConversionException {
 		if (state != null) {
 			builder.put(field, MessageState.convert(state));
+		}
+	}
+
+	private static void maybePutReactions(MsgpackObjectBuilder builder, String field, @Nullable Map<String, Object> messageStates) {
+		if (messageStates != null) {
+			final MsgpackArrayBuilder ackBuilder = new MsgpackArrayBuilder();
+			final MsgpackArrayBuilder decBuilder = new MsgpackArrayBuilder();
+
+			for (Map.Entry<String, Object> entry : messageStates.entrySet()) {
+				if (ch.threema.storage.models.MessageState.USERACK.toString().equals(entry.getValue())) {
+					ackBuilder.put(entry.getKey());
+				} else  if (ch.threema.storage.models.MessageState.USERDEC.toString().equals(entry.getValue())) {
+					decBuilder.put(entry.getKey());
+				}
+			}
+
+			builder.put(field,
+				new MsgpackObjectBuilder()
+					.put(REACTIONS_ACK, ackBuilder)
+					.put(REACTIONS_DEC, decBuilder)
+			);
 		}
 	}
 

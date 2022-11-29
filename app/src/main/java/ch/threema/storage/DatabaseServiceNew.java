@@ -25,6 +25,8 @@ import android.content.Context;
 import android.text.format.DateUtils;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
+
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDatabaseHook;
 import net.sqlcipher.database.SQLiteException;
@@ -35,7 +37,6 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
-import androidx.annotation.MainThread;
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.exceptions.DatabaseMigrationLockedException;
 import ch.threema.app.services.UpdateSystemService;
@@ -98,7 +99,15 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion7;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion70;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion71;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion72;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion73;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion74;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion75;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion76;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion77;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion78;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion79;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion8;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion80;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion9;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -113,6 +122,7 @@ import ch.threema.storage.factories.DistributionListMemberModelFactory;
 import ch.threema.storage.factories.DistributionListMessageModelFactory;
 import ch.threema.storage.factories.DistributionListModelFactory;
 import ch.threema.storage.factories.GroupBallotModelFactory;
+import ch.threema.storage.factories.GroupCallModelFactory;
 import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.factories.GroupMemberModelFactory;
 import ch.threema.storage.factories.GroupMessageModelFactory;
@@ -132,7 +142,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "threema.db";
 	public static final String DATABASE_NAME_V4 = "threema4.db";
 	public static final String DATABASE_BACKUP_EXT = ".backup";
-	private static final int DATABASE_VERSION = SystemUpdateToVersion72.VERSION;
+	private static final int DATABASE_VERSION = SystemUpdateToVersion80.VERSION;
 
 	private final Context context;
 	private final String key;
@@ -158,6 +168,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	private GroupInviteModelFactory groupInviteModelFactory;
 	private OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
 	private IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory;
+	private GroupCallModelFactory groupCallModelFactory;
 
 	public DatabaseServiceNew(final Context context,
 	                          final String databaseKey,
@@ -237,27 +248,29 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase sqLiteDatabase) {
-		for(ModelFactory f: new ModelFactory[] {this.getContactModelFactory(),
-		this.getMessageModelFactory(),
-		this.getGroupModelFactory(),
-		this.getGroupMemberModelFactory(),
-		this.getGroupMessageModelFactory(),
-		this.getDistributionListModelFactory(),
-		this.getDistributionListMemberModelFactory(),
-		this.getDistributionListMessageModelFactory(),
-		this.getGroupRequestSyncLogModelFactory(),
-		this.getBallotModelFactory(),
-		this.getBallotChoiceModelFactory(),
-		this.getBallotVoteModelFactory(),
-		this.getIdentityBallotModelFactory(),
-		this.getGroupBallotModelFactory(),
-		this.getGroupMessagePendingMessageIdModelFactory(),
-		this.getWebClientSessionModelFactory(),
-		this.getConversationTagFactory(),
-		this.getGroupInviteModelFactory(),
-		this.getIncomingGroupJoinRequestModelFactory(),
-		this.getOutgoingGroupJoinRequestModelFactory()})
-		{
+		for(ModelFactory f: new ModelFactory[] {
+			this.getContactModelFactory(),
+			this.getMessageModelFactory(),
+			this.getGroupModelFactory(),
+			this.getGroupMemberModelFactory(),
+			this.getGroupMessageModelFactory(),
+			this.getDistributionListModelFactory(),
+			this.getDistributionListMemberModelFactory(),
+			this.getDistributionListMessageModelFactory(),
+			this.getGroupRequestSyncLogModelFactory(),
+			this.getBallotModelFactory(),
+			this.getBallotChoiceModelFactory(),
+			this.getBallotVoteModelFactory(),
+			this.getIdentityBallotModelFactory(),
+			this.getGroupBallotModelFactory(),
+			this.getGroupMessagePendingMessageIdModelFactory(),
+			this.getWebClientSessionModelFactory(),
+			this.getConversationTagFactory(),
+			this.getGroupInviteModelFactory(),
+			this.getIncomingGroupJoinRequestModelFactory(),
+			this.getOutgoingGroupJoinRequestModelFactory(),
+			this.getGroupCallModelFactory()
+		}) {
 			String[] createTableStatement = f.getStatements();
 			if(createTableStatement != null) {
 				for (String statement : createTableStatement) {
@@ -409,6 +422,13 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 			this.outgoingGroupJoinRequestModelFactory = new OutgoingGroupJoinRequestModelFactory(this);
 		}
 		return this.outgoingGroupJoinRequestModelFactory;
+	}
+
+	public GroupCallModelFactory getGroupCallModelFactory() {
+		if (this.groupCallModelFactory == null) {
+			this.groupCallModelFactory = new GroupCallModelFactory(this);
+		}
+		return this.groupCallModelFactory;
 	}
 
 	// Note: Enable this to allow database downgrades.
@@ -623,6 +643,30 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		}
 		if (oldVersion < SystemUpdateToVersion72.VERSION) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion72(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion73.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion73(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion74.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion74(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion75.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion75(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion76.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion76(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion77.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion77(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion78.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion78(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion79.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion79(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion80.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion80(sqLiteDatabase));
 		}
 	}
 

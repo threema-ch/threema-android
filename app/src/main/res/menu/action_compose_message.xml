@@ -2,20 +2,6 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-	<item
-		android:id="@+id/menu_message_ack"
-		android:icon="@drawable/ic_thumb_up_grey600_24dp"
-		android:orderInCategory="10"
-		android:title="@string/acknowledge"
-		app:iconTint="?attr/colorAccent"
-		app:showAsAction="always"/>
-	<item
-		android:id="@+id/menu_message_dec"
-		android:icon="@drawable/ic_thumb_down_grey600_24dp"
-		android:orderInCategory="13"
-		android:title="@string/decline"
-		app:iconTint="?attr/colorAccent"
-		app:showAsAction="always"/>
 
 	<item
 		android:id="@+id/menu_message_quote"
@@ -80,14 +66,5 @@
 		app:iconTint="?attr/colorAccent"
 		android:visible="false"
 		app:showAsAction="never"/>
-
-	<item
-		android:id="@+id/menu_message_log"
-		android:icon="@drawable/ic_about_outline"
-		android:orderInCategory="90"
-		android:title="@string/message_log_title"
-		android:visible="false"
-		app:iconTint="?attr/colorAccent"
-		app:showAsAction="ifRoom"/>
 
 </menu>

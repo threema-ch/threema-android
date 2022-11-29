@@ -21,6 +21,25 @@
 
 package ch.threema.app.voip.services;
 
+import static androidx.media.AudioAttributesCompat.USAGE_NOTIFICATION_RINGTONE;
+import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
+import static ch.threema.app.ThreemaApplication.getAppContext;
+import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_INCOMING_CALL;
+import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_SILENT;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CALL;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.app.voip.activities.CallActivity.EXTRA_ACCEPT_INCOMING_CALL;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CALL_ID;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CONTACT_IDENTITY;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_REJECT_REASON;
+import static ch.threema.app.voip.services.VoipCallService.ACTION_ICE_CANDIDATES;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANCEL_WEAR;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANDIDATES;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -36,12 +55,21 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import org.slf4j.Logger;
 import org.webrtc.IceCandidate;
@@ -54,16 +82,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.Set;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
@@ -104,20 +126,6 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipMessage;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
-
-import static androidx.media.AudioAttributesCompat.USAGE_NOTIFICATION_RINGTONE;
-import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
-import static ch.threema.app.ThreemaApplication.getAppContext;
-import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_INCOMING_CALL;
-import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_SILENT;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CALL;
-import static ch.threema.app.voip.services.VoipCallService.ACTION_ICE_CANDIDATES;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANCEL_WEAR;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANDIDATES;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
 
 /**
  * The service keeping track of VoIP call state.
@@ -187,6 +195,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	// Timeouts
 	private static final int RINGING_TIMEOUT_SECONDS = 60;
 	private static final int VOIP_CONNECTION_LINGER = 1000 * 5;
+
+	private final AtomicBoolean timeoutReject = new AtomicBoolean(true);
 
 	private ScreenOffReceiver screenOffReceiver;
 
@@ -327,6 +337,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		if (callId != 0L) {
 			recentCallIds.add(callId);
 		}
+
+		// Enable rejecting calls after a timeout
+		enableTimeoutReject();
 	}
 
 	/**
@@ -503,23 +516,44 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	 * Create a new accept intent for the specified call ID / identity.
 	 */
 	public static Intent createAcceptIntent(long callId, @NonNull String identity) {
-		final Intent intent = new Intent(getAppContext(), VoipCallService.class);
+		final Intent intent = new Intent(getAppContext(), CallActivity.class);
 		intent.putExtra(EXTRA_CALL_ID, callId);
 		intent.putExtra(EXTRA_CONTACT_IDENTITY, identity);
 		intent.putExtra(EXTRA_IS_INITIATOR, false);
+		intent.putExtra(EXTRA_ACCEPT_INCOMING_CALL, true);
+		intent.putExtra(EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		return intent;
 	}
 
 	/**
 	 * Create a new reject intent for the specified call ID / identity.
 	 */
-	public static Intent createRejectIntent(long callId, @NonNull String identity, byte rejectReason) {
+	private static Intent createRejectIntent(long callId, @NonNull String identity) {
 		final Intent intent = new Intent(getAppContext(), CallRejectService.class);
 		intent.putExtra(EXTRA_CALL_ID, callId);
 		intent.putExtra(EXTRA_CONTACT_IDENTITY, identity);
 		intent.putExtra(EXTRA_IS_INITIATOR, false);
-		intent.putExtra(CallRejectService.EXTRA_REJECT_REASON, rejectReason);
+		intent.putExtra(CallRejectService.EXTRA_REJECT_REASON, VoipCallAnswerData.RejectReason.REJECTED);
 		return intent;
+	}
+
+	/**
+	 * Creates a reject work request builder.
+	 *
+	 * @param callId the call id of the call to be rejected
+	 * @param identity the contact identity of the call partner
+	 * @param rejectReason the reject reason
+	 * @return a work request builder
+	 */
+	private static OneTimeWorkRequest.Builder createRejectWorkRequestBuilder(long callId, @NonNull String identity, byte rejectReason) {
+		return new OneTimeWorkRequest.Builder(RejectIntentServiceWorker.class)
+			.setInputData(new Data.Builder()
+				.putLong(KEY_CALL_ID, callId)
+				.putString(KEY_CONTACT_IDENTITY, identity)
+				.putByte(KEY_REJECT_REASON, rejectReason
+				).build()
+			);
 	}
 
 	/**
@@ -582,7 +616,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Handle some reasons for rejecting calls...
 		Byte rejectReason = null; // Set to non-null in order to reject the call
 		boolean silentReject = false; // Set to true if you don't want a "missed call" chat message
-		if (!this.preferenceService.isVoipEnabled()) {
+		if (!ConfigUtils.isCallsEnabled()) {
 			// Calls disabled
 			logCallInfo(callId, "Rejecting call from {} (disabled)", contact.getIdentity());
 			rejectReason = VoipCallAnswerData.RejectReason.DISABLED;
@@ -634,34 +668,25 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		Bundle bundle = new Bundle();
 		bundle.putBoolean(EXTRA_CANCEL_WEAR, true);
 		answerIntent.putExtras(bundle);
-		final PendingIntent accept;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			accept = PendingIntent.getForegroundService(
-					this.appContext,
-					IdUtil.getTempId(contact),
-					answerIntent,
-					PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
-			);
-		} else {
-			accept = PendingIntent.getService(
-					this.appContext,
-					IdUtil.getTempId(contact),
-					answerIntent,
-					PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
-			);
-		}
+		final PendingIntent accept = PendingIntent.getActivity(
+			this.appContext,
+			-IdUtil.getTempId(contact),
+			answerIntent,
+			PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PENDING_INTENT_FLAG_IMMUTABLE
+		);
 		this.acceptIntent = accept;
 
 		// If the call is rejected, start the CallRejectService
 		final Intent rejectIntent = createRejectIntent(
 			callId,
-			msg.getFromIdentity(),
-			VoipCallAnswerData.RejectReason.REJECTED
+			msg.getFromIdentity()
 		);
 
-		final PendingIntent reject = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ?
-			PendingIntent.getForegroundService(this.appContext, -IdUtil.getTempId(contact), rejectIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT) :
-			PendingIntent.getService(this.appContext, -IdUtil.getTempId(contact), rejectIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+		final PendingIntent reject = PendingIntent.getService(
+			this.appContext,
+			-IdUtil.getTempId(contact),
+			rejectIntent,
+			PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PENDING_INTENT_FLAG_IMMUTABLE);
 
 		final ContactMessageReceiver messageReceiver = this.contactService.createReceiver(contact);
 
@@ -683,45 +708,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			logger.error(callId + ": Could not send ringing message", e);
 		}
 
-		// Start timer to reject the call after a while
-		final long originalCallCounter = this.callState.getIncomingCallCounter();
-		final Runnable ringerTimeoutRunnable = () -> {
-			final CallStateSnapshot currentCallState = this.getCallState();
-
-			// Note: Because different incoming calls might have the same call ID (0),
-			// as a transitional solution we're still using the call counter.
-
-			// Only reject the call if the state is still initializing with the same call id.
-			if (!currentCallState.isRinging()) {
-				logger.info(
-					"Ignoring ringer timeout for call #{} (state is {}, not RINGING)",
-					originalCallCounter,
-					currentCallState.getName()
-				);
-			} else if (currentCallState.getIncomingCallCounter() != originalCallCounter) {
-				logger.info(
-					"Ignoring ringer timeout for call #{} (current: #{})",
-					originalCallCounter,
-					currentCallState.getIncomingCallCounter()
-				);
-			} else {
-				logger.info(
-					"Ringer timeout for call #{} reached after {}s",
-					originalCallCounter,
-					RINGING_TIMEOUT_SECONDS
-				);
-
-				// Reject call
-				final Intent rejectIntent1 = createRejectIntent(
-					currentCallState.getCallId(),
-					msg.getFromIdentity(),
-					VoipCallAnswerData.RejectReason.TIMEOUT
-				);
-				ContextCompat.startForegroundService(appContext, rejectIntent1);
-			}
-		};
-		(new Handler(Looper.getMainLooper()))
-			.postDelayed(ringerTimeoutRunnable, RINGING_TIMEOUT_SECONDS * 1000);
+		// Reject the call after a while
+		OneTimeWorkRequest rejectWork = createRejectWorkRequestBuilder(callId, msg.getFromIdentity(), VoipCallAnswerData.RejectReason.TIMEOUT)
+			.setInitialDelay(RINGING_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+			.build();
+		WorkManager.getInstance(appContext).enqueue(rejectWork);
 
 		// Notify listeners
 		VoipListenerManager.messageListener.handle(listener -> {
@@ -1416,7 +1407,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	/**
 	 * Cancel all pending call notifications.
 	 */
-	void cancelCallNotificationsForNewCall() {
+	public void cancelCallNotificationsForNewCall() {
 		this.stopRingtone();
 
 		synchronized (this.callNotificationTags) {
@@ -1459,6 +1450,30 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			}
 			return (int) seconds;
 		}
+	}
+
+	/**
+	 * Disable automatically rejecting the call after a timeout.
+	 */
+	public synchronized void disableTimeoutReject() {
+		this.timeoutReject.set(false);
+	}
+
+	/**
+	 * Enable automatically rejecting the call after a timeout.
+	 */
+	public synchronized void enableTimeoutReject() {
+		this.timeoutReject.set(true);
+	}
+
+	/**
+	 * Return if the call should be auto rejected. Normally every call should be rejected after a
+	 * timeout. If the timeout is reached just after the user accepted the call (but the call did
+	 * not start yet), then this returns false and the call should not be rejected based on the
+	 * timeout.
+	 */
+	public synchronized boolean isTimeoutReject() {
+		return timeoutReject.get();
 	}
 
 	// Private helper methods
@@ -1640,7 +1655,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// and clicks the notification's expanded view.  It's also used to
 		// launch the InCallActivity immediately when when there's an incoming
 		// call (see the "fullScreenIntent" field below).
-		return PendingIntent.getActivity(appContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		return PendingIntent.getActivity(appContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 	}
 
 	/**

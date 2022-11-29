@@ -22,6 +22,7 @@
 package ch.threema.app.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -35,10 +36,12 @@ import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,6 +51,11 @@ import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerSwatch;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import org.slf4j.Logger;
 
@@ -58,15 +66,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.app.emojis.EmojiButton;
+import ch.threema.app.emojis.EmojiPicker;
+import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.motionviews.FaceItem;
 import ch.threema.app.motionviews.viewmodel.Font;
 import ch.threema.app.motionviews.viewmodel.Layer;
@@ -79,24 +97,58 @@ import ch.threema.app.motionviews.widget.MotionEntity;
 import ch.threema.app.motionviews.widget.MotionView;
 import ch.threema.app.motionviews.widget.PathEntity;
 import ch.threema.app.motionviews.widget.TextEntity;
+import ch.threema.app.services.ContactService;
+import ch.threema.app.services.GroupService;
+import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.UserService;
+import ch.threema.app.ui.ComposeEditText;
+import ch.threema.app.ui.LockableScrollView;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.PaintSelectionPopup;
 import ch.threema.app.ui.PaintView;
+import ch.threema.app.ui.SendButton;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.BitmapWorkerTask;
 import ch.threema.app.utils.BitmapWorkerTaskParams;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.app.utils.EditTextUtil;
+import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.storage.models.GroupModel;
 
 import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
 
 public class ImagePaintActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ImagePaintActivity");
 
+	private  enum ActivityMode {
+		/**
+		 * This is the mode where an image is taken as background and the user can draw on it.
+		 */
+		EDIT_IMAGE,
+		/**
+		 * In this mode, an image and a receiver is given and the user can directly send the image
+		 * after drawing on it.
+		 */
+		IMAGE_REPLY,
+		/**
+		 * In this mode, only a receiver is given and the user can directly send the drawing without
+		 * a background image.
+		 */
+		DRAWING
+	}
+
+	private static final String EXTRA_IMAGE_REPLY = "imageReply";
+	private static final String EXTRA_GROUP_ID = "groupId";
+	private static final String EXTRA_ACTIVITY_MODE = "activityMode";
+
 	private static final String DIALOG_TAG_COLOR_PICKER = "colp";
 	private static final String KEY_PEN_COLOR = "pc";
+	private static final String KEY_BACKGROUND_COLOR = "bc";
 	private static final int REQUEST_CODE_STICKER_SELECTOR = 44;
 	private static final int REQUEST_CODE_ENTER_TEXT = 45;
 	private static final String DIALOG_TAG_QUIT_CONFIRM = "qq";
@@ -113,15 +165,97 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	private PaintView paintView;
 	private MotionView motionView;
 	private FrameLayout imageFrame;
-	private int orientation, exifOrientation, flip, exifFlip, clipWidth, clipHeight;
-	private Uri imageUri, outputUri;
+	private LockableScrollView scrollView;
+	private ComposeEditText captionEditText;
 	private ProgressBar progressBar;
-	@ColorInt private int penColor;
+	private EmojiPicker emojiPicker;
+
+	private int orientation, exifOrientation, flip, exifFlip, clipWidth, clipHeight;
+
+	private File inputFile;
+	private Uri imageUri, outputUri;
+
+	@ColorInt private int penColor, backgroundColor;
+
 	private MenuItem undoItem, paletteItem, paintItem, pencilItem, blurFacesItem;
 	private PaintSelectionPopup paintSelectionPopup;
-	private ArrayList<MotionEntity> undoHistory = new ArrayList<>();
+	private final ArrayList<MotionEntity> undoHistory = new ArrayList<>();
 	private boolean saveSemaphore = false;
 	private int strokeMode = STROKE_MODE_BRUSH;
+	private ActivityMode activityMode = ActivityMode.EDIT_IMAGE;
+	private int groupId = -1;
+	private final ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
+
+	/**
+	 * Returns an intent to start the activity for editing a picture. The edited picture is stored
+	 * in the output file. On success, the activity finishes with {@code RESULT_OK}. If the activity
+	 * finishes with {@code RESULT_CANCELED}, no changes were made or an error occurred.
+	 *
+	 * @param context    the context
+	 * @param mediaItem  the media item containing the image uri and the orientation/flip information
+	 * @param outputFile the file where the edited image is stored in
+	 * @return the intent to start the {@code ImagePaintActivity}
+	 */
+	public static Intent getImageEditIntent(
+		@NonNull Context context,
+		@NonNull MediaItem mediaItem,
+		@NonNull File outputFile
+	) {
+		Intent intent = new Intent(context, ImagePaintActivity.class);
+		intent.putExtra(EXTRA_ACTIVITY_MODE, ActivityMode.EDIT_IMAGE.name());
+		intent.putExtra(Intent.EXTRA_STREAM, mediaItem);
+		intent.putExtra(ThreemaApplication.EXTRA_OUTPUT_FILE, Uri.fromFile(outputFile));
+		return intent;
+	}
+
+	/**
+	 * Returns an intent to start the activity for creating a fast reply. The edited picture is
+	 * stored in the output file. The message receiver and the updated media item will be part of
+	 * the activity result data.
+	 *
+	 * @param context         the context
+	 * @param mediaItem       the media item containing the image uri
+	 * @param outputFile      the output file where the edited image is stored in
+	 * @param messageReceiver the message receiver
+	 * @param groupModel      the group model (if sent to a group) for mentions
+	 * @return the intent to start the {@code ImagePaintActivity}
+	 */
+	public static Intent getImageReplyIntent(
+		@NonNull Context context,
+		@NonNull MediaItem mediaItem,
+		@NonNull File outputFile,
+		@SuppressWarnings("rawtypes") @NonNull MessageReceiver messageReceiver,
+		@Nullable GroupModel groupModel
+	) {
+		Intent intent = new Intent(context, ImagePaintActivity.class);
+		intent.putExtra(EXTRA_ACTIVITY_MODE, ActivityMode.IMAGE_REPLY.name());
+		intent.putExtra(Intent.EXTRA_STREAM, mediaItem);
+		intent.putExtra(ThreemaApplication.EXTRA_OUTPUT_FILE, Uri.fromFile(outputFile));
+		intent.putExtra(ImagePaintActivity.EXTRA_IMAGE_REPLY, true);
+		if (groupModel != null) {
+			intent.putExtra(EXTRA_GROUP_ID, groupModel.getId());
+		}
+		IntentDataUtil.addMessageReceiverToIntent(intent, messageReceiver);
+		return intent;
+	}
+
+	/**
+	 * Returns an intent to start the activity for creating a drawing. The edited picture is stored
+	 * in a file. The message receiver and the media item will be part of the activity result data.
+	 *
+	 * @param context         the context
+	 * @param messageReceiver the message receiver
+	 * @return the intent to start the {@code ImagePaintActivity}
+	 */
+	public static Intent getDrawingIntent(
+		@NonNull Context context,
+		@SuppressWarnings("rawtypes") @NonNull MessageReceiver messageReceiver
+	) {
+		Intent intent = new Intent(context, ImagePaintActivity.class);
+		intent.putExtra(EXTRA_ACTIVITY_MODE, ActivityMode.DRAWING.name());
+		IntentDataUtil.addMessageReceiverToIntent(intent, messageReceiver);
+		return intent;
+	}
 
 	@Override
 	public int getLayoutResource() {
@@ -138,7 +272,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 					R.string.cancel);
 			dialogFragment.show(getSupportFragmentManager(), DIALOG_TAG_QUIT_CONFIRM);
 		} else {
-			finish();
+			finishWithoutChanges();
 		}
 	}
 
@@ -221,22 +355,26 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
 
 		Intent intent = getIntent();
+
+		groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+
 		MediaItem mediaItem = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-		if (mediaItem == null) {
-			finish();
+
+		try {
+			String activityModeOrdinal = intent.getStringExtra(EXTRA_ACTIVITY_MODE);
+			activityMode = ActivityMode.valueOf(activityModeOrdinal);
+		} catch (IllegalArgumentException e) {
+			logger.error("Invalid activity mode", e);
+			finishWithoutChanges();
 			return;
 		}
 
-		this.imageUri = mediaItem.getUri();
-		if (this.imageUri == null) {
-			finish();
-			return;
+		if (mediaItem != null) {
+			this.orientation = mediaItem.getRotation();
+			this.flip = mediaItem.getFlip();
+			this.exifOrientation = mediaItem.getExifRotation();
+			this.exifFlip = mediaItem.getExifFlip();
 		}
-
-		this.orientation = intent.getIntExtra(ThreemaApplication.EXTRA_ORIENTATION, 0);
-		this.flip = intent.getIntExtra(ThreemaApplication.EXTRA_FLIP, BitmapUtil.FLIP_NONE);
-		this.exifOrientation = intent.getIntExtra(ThreemaApplication.EXTRA_EXIF_ORIENTATION, 0);
-		this.exifFlip = intent.getIntExtra(ThreemaApplication.EXTRA_EXIF_FLIP, BitmapUtil.FLIP_NONE);
 
 		this.outputUri = intent.getParcelableExtra(ThreemaApplication.EXTRA_OUTPUT_FILE);
 
@@ -244,11 +382,11 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		ActionBar actionBar = getSupportActionBar();
 
 		if (actionBar == null) {
-			finish();
+			finishWithoutChanges();
 			return;
 		}
 
-		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(activityMode == ActivityMode.EDIT_IMAGE);
 		actionBar.setTitle("");
 
 		this.paintView = findViewById(R.id.paint_view);
@@ -257,9 +395,20 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		this.motionView = findViewById(R.id.motion_view);
 
 		this.penColor = getResources().getColor(R.color.material_red);
+		this.backgroundColor = Color.WHITE;
 		if (savedInstanceState != null) {
 			this.penColor = savedInstanceState.getInt(KEY_PEN_COLOR, penColor);
+			this.backgroundColor = savedInstanceState.getInt(KEY_BACKGROUND_COLOR, backgroundColor);
 		}
+
+		initializeCaptionEditText();
+
+		// Lock the scroll view (the scroll view is needed so that the keyboard does not resize the drawing)
+		scrollView = findViewById(R.id.content_scroll_view);
+		scrollView.setScrollingEnabled(false);
+
+		// Set the height of the image to the size of the scrollview
+		this.imageFrame = findViewById(R.id.content_frame);
 
 		this.paintView.setColor(penColor);
 		this.paintView.setStrokeWidth(getResources().getDimensionPixelSize(R.dimen.imagepaint_brush_stroke_width));
@@ -352,33 +501,128 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			}
 		});
 
-		this.imageFrame = findViewById(R.id.content_frame);
-		this.imageFrame.post(() -> loadImage());
+		if (activityMode == ActivityMode.DRAWING) {
+			inputFile = createDrawingInputFile();
+			File outputFile = createDrawingOutputFile();
 
-		showTooltip();
+			if (inputFile == null || outputFile == null) {
+				logger.error("Input file '{}' or output file '{}' is null", inputFile, outputFile);
+				finishWithoutChanges();
+				return;
+			}
+
+			imageUri = Uri.fromFile(inputFile);
+			outputUri = Uri.fromFile(outputFile);
+
+			createBackground(inputFile, Color.WHITE);
+		} else {
+			if (mediaItem == null || mediaItem.getUri() == null) {
+				logger.error("No media uri given");
+				finishWithoutChanges();
+				return;
+			}
+			this.imageUri = mediaItem.getUri();
+			loadImageOnLayout();
+		}
+
+		// Don't show tooltip when creating a drawing or for image replies
+		if (activityMode == ActivityMode.EDIT_IMAGE) {
+			showTooltip();
+		}
+	}
+
+	/**
+	 * Create a file that is used for the drawing input (the background)
+	 */
+	private File createDrawingInputFile() {
+		try {
+			return serviceManager.getFileService().createTempFile(".blank", ".png");
+		} catch (IOException | FileSystemNotPresentException e) {
+			logger.error("Error while creating temporary drawing input file");
+			return null;
+		}
+	}
+
+	/**
+	 * Create a file that is used for the resulting output image (background + drawings)
+	 */
+	private File createDrawingOutputFile() {
+		try {
+			return serviceManager.getFileService().createTempFile(".drawing", ".png");
+		} catch (IOException | FileSystemNotPresentException e) {
+			logger.error("Error while creating temporary drawing output file", e);
+			return null;
+		}
+	}
+
+	/**
+	 * Create a background with the given color and store it into the given file. Afterwards display
+	 * the background.
+	 *
+	 * @param inputFile the file where the background is stored
+	 * @param color     the color of the background
+	 */
+	private void createBackground(File inputFile, int color) {
+		Futures.addCallback(
+			getDrawingImageFuture(inputFile, color),
+			new FutureCallback<>() {
+				@Override
+				public void onSuccess(@Nullable Void result) {
+					loadImageOnLayout();
+				}
+
+				@Override
+				public void onFailure(@NonNull Throwable t) {
+					logger.error("Error while getting the image uri", t);
+					finishWithoutChanges();
+				}
+			},
+			ContextCompat.getMainExecutor(this)
+		);
+	}
+
+	/**
+	 * Get a listenable future that creates a background image of the given color and stores it in
+	 * the given file.
+	 *
+	 * @param file  the file where the image of the given color is stored in
+	 * @param color the color of the background
+	 * @return the listenable future
+	 */
+	private ListenableFuture<Void> getDrawingImageFuture(@NonNull File file, int color) {
+		ListeningExecutorService executorService = MoreExecutors.listeningDecorator(threadPoolExecutor);
+		return executorService.submit(() -> {
+			try {
+				int dimension = ConfigUtils.getPreferredImageDimensions(PreferenceService.ImageScale_MEDIUM);
+				Bitmap bitmap = Bitmap.createBitmap(dimension, dimension, Bitmap.Config.RGB_565);
+				Canvas canvas = new Canvas(bitmap);
+				canvas.drawColor(color);
+				bitmap.compress(Bitmap.CompressFormat.PNG, 0, new FileOutputStream(file));
+			} catch (IOException e) {
+				logger.error("Exception while creating blanc drawing", e);
+			}
+			return null;
+		});
 	}
 
 	private void loadImage() {
 		BitmapWorkerTaskParams bitmapParams = new BitmapWorkerTaskParams();
 		bitmapParams.imageUri = this.imageUri;
 		bitmapParams.width = this.imageFrame.getWidth();
-		bitmapParams.height = this.imageFrame.getHeight();
+		bitmapParams.height = this.scrollView.getHeight();
 		bitmapParams.contentResolver = getContentResolver();
 		bitmapParams.orientation = this.orientation;
 		bitmapParams.flip = this.flip;
 		bitmapParams.exifOrientation = this.exifOrientation;
 		bitmapParams.exifFlip = this.exifFlip;
 
-		logger.debug("screen height: " + bitmapParams.height);
+		logger.debug("screen height: {}", bitmapParams.height);
 
 		// load main image
 		new BitmapWorkerTask(this.imageView) {
 			@Override
 			protected void onPreExecute() {
 				super.onPreExecute();
-				imageView.setVisibility(View.INVISIBLE);
-				paintView.setVisibility(View.INVISIBLE);
-				motionView.setVisibility(View.INVISIBLE);
 				progressBar.setVisibility(View.VISIBLE);
 			}
 
@@ -386,9 +630,6 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			protected void onPostExecute(Bitmap bitmap) {
 				super.onPostExecute(bitmap);
 				progressBar.setVisibility(View.GONE);
-				imageView.setVisibility(View.VISIBLE);
-				paintView.setVisibility(View.VISIBLE);
-				motionView.setVisibility(View.VISIBLE);
 
 				// clip other views to image size
 				if (bitmap != null) {
@@ -586,7 +827,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			}
 		}
 		undoItem.setVisible(undoHistory.size() > 0);
-		blurFacesItem.setVisible(motionView.getEntitiesCount() == 0);
+		blurFacesItem.setVisible(activityMode != ActivityMode.DRAWING && motionView.getEntitiesCount() == 0);
 		return true;
 	}
 
@@ -602,6 +843,10 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		pencilItem = menu.findItem(R.id.item_pencil);
 		blurFacesItem = menu.findItem(R.id.item_face);
 
+		if (activityMode == ActivityMode.DRAWING) {
+			menu.findItem(R.id.item_background).setVisible(true);
+		}
+
 		return true;
 	}
 
@@ -609,53 +854,45 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);
 
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				if (undoHistory.size() > 0) {
-					item.setEnabled(false);
-					renderImage();
-				} else {
-					finish();
-				}
-				return true;
-			case R.id.item_undo:
-				undo();
-				break;
-			case R.id.item_stickers:
-				selectSticker();
-				break;
-			case R.id.item_palette:
-				chooseColor();
-				break;
-			case R.id.item_text:
-				enterText();
-				break;
-			case R.id.item_draw:
-				if (strokeMode == STROKE_MODE_BRUSH && this.paintView.getActive()) {
-					// switch to selection mode
-					setDrawMode(false);
-				} else {
-					setStrokeMode(STROKE_MODE_BRUSH);
-					setDrawMode(true);
-				}
-				break;
-			case R.id.item_pencil:
-				if (strokeMode == STROKE_MODE_PENCIL && this.paintView.getActive()) {
-					// switch to selection mode
-					setDrawMode(false);
-				} else {
-					setStrokeMode(STROKE_MODE_PENCIL);
-					setDrawMode(true);
-				}
-				break;
-			case R.id.item_face_blur:
-				blurFaces(false);
-				break;
-			case R.id.item_face_emoji:
-				blurFaces(true);
-				break;
-			default:
-				break;
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			if (undoHistory.size() > 0) {
+				item.setEnabled(false);
+				renderImage();
+			} else {
+				finishWithoutChanges();
+			}
+			return true;
+		} else if (id == R.id.item_undo) {
+			undo();
+		} else if (id == R.id.item_stickers) {
+			selectSticker();
+		} else if (id == R.id.item_palette) {
+			choosePenColor();
+		} else if (id == R.id.item_text) {
+			enterText();
+		} else if (id == R.id.item_draw) {
+			if (strokeMode == STROKE_MODE_BRUSH && this.paintView.getActive()) {
+				// switch to selection mode
+				setDrawMode(false);
+			} else {
+				setStrokeMode(STROKE_MODE_BRUSH);
+				setDrawMode(true);
+			}
+		} else if (id == R.id.item_pencil) {
+			if (strokeMode == STROKE_MODE_PENCIL && this.paintView.getActive()) {
+				// switch to selection mode
+				setDrawMode(false);
+			} else {
+				setStrokeMode(STROKE_MODE_PENCIL);
+				setDrawMode(true);
+			}
+		} else if (id == R.id.item_face_blur) {
+			blurFaces(false);
+		} else if (id == R.id.item_face_emoji) {
+			blurFaces(true);
+		} else if (id == R.id.item_background) {
+			chooseBackgroundColor();
 		}
 		return false;
 	}
@@ -748,18 +985,63 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		// hack to adjust toolbar height after rotate
 		ConfigUtils.adjustToolbar(this, getToolbar());
 
-		this.imageFrame = findViewById(R.id.content_frame);
-		if (this.imageFrame != null) {
-			this.imageFrame.post(new Runnable() {
-				@Override
-				public void run() {
-					loadImage();
-				}
-			});
-		}
+		loadImageOnLayout();
 	}
 
-	private void chooseColor() {
+	/**
+	 * Updates the image frame height on next layout of the scroll view
+	 */
+	private void loadImageOnLayout() {
+		if (scrollView == null || imageFrame == null) {
+			logger.warn("scrollView or imageFrame is null");
+			return;
+		}
+		scrollView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+			@Override
+			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+				scrollView.removeOnLayoutChangeListener(this);
+				imageFrame.setMinimumHeight(bottom - top);
+				loadImage();
+			}
+		});
+		scrollView.requestLayout();
+	}
+
+	/**
+	 * Show a color picker and set the selected color as pen color
+	 */
+	private void choosePenColor() {
+		chooseColor(color -> {
+			paintView.setColor(color);
+			penColor = color;
+
+			ConfigUtils.themeMenuItem(paletteItem, penColor);
+			if (motionView.getSelectedEntity() != null) {
+				if (motionView.getSelectedEntity() instanceof TextEntity) {
+					TextEntity textEntity = (TextEntity) motionView.getSelectedEntity();
+					textEntity.getLayer().getFont().setColor(penColor);
+					textEntity.updateEntity();
+					motionView.invalidate();
+				} else {
+					// ignore color selection for stickers
+				}
+			} else {
+				setDrawMode(true);
+			}
+		}, penColor);
+	}
+
+	/**
+	 * Show a color picker and writes the selected color to the input file.
+	 */
+	private void chooseBackgroundColor() {
+		chooseColor(color -> {
+			backgroundColor = color;
+			createBackground(inputFile, color);
+		}, backgroundColor);
+	}
+
+	private void chooseColor(@NonNull ColorPickerSwatch.OnColorSelectedListener colorSelectedListener, int selectedColor) {
 		int[] colors = {
 				getResources().getColor(R.color.material_cyan),
 				getResources().getColor(R.color.material_blue),
@@ -784,29 +1066,8 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		};
 
 		ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
-		colorPickerDialog.initialize(R.string.color_picker_default_title, colors, 0, 4, colors.length);
-		colorPickerDialog.setSelectedColor(penColor);
-		colorPickerDialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
-			@Override
-			public void onColorSelected(int color) {
-				paintView.setColor(color);
-				penColor = color;
-
-				ConfigUtils.themeMenuItem(paletteItem, penColor);
-				if (motionView.getSelectedEntity() != null) {
-					if (motionView.getSelectedEntity() instanceof TextEntity) {
-						TextEntity textEntity = (TextEntity) motionView.getSelectedEntity();
-						textEntity.getLayer().getFont().setColor(penColor);
-						textEntity.updateEntity();
-						motionView.invalidate();
-					} else {
-						// ignore color selection for stickers
-					}
-				} else {
-					setDrawMode(true);
-				}
-			}
-		});
+		colorPickerDialog.initialize(R.string.color_picker_default_title, colors, selectedColor, 4, colors.length);
+		colorPickerDialog.setOnColorSelectedListener(colorSelectedListener);
 		colorPickerDialog.show(getSupportFragmentManager(), DIALOG_TAG_COLOR_PICKER);
 	}
 
@@ -863,8 +1124,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 						DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_SAVING_IMAGE, true);
 
 						if (success) {
-							setResult(RESULT_OK);
-							finish();
+							finishWithChanges();
 						} else {
 							Toast.makeText(ImagePaintActivity.this, R.string.error_saving_file, Toast.LENGTH_SHORT).show();
 						}
@@ -874,17 +1134,199 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		}.execute(bitmapParams);
 	}
 
+	private void initializeCaptionEditText() {
+		if (activityMode == ActivityMode.EDIT_IMAGE) {
+			// Don't show caption edit text when just editing the image
+			return;
+		}
+
+		captionEditText = findViewById(R.id.caption_edittext);
+
+		SendButton sendButton = findViewById(R.id.send_button);
+		sendButton.setEnabled(true);
+		sendButton.setOnClickListener(v -> renderImage());
+
+		View bottomPanel = findViewById(R.id.bottom_panel);
+		bottomPanel.setVisibility(View.VISIBLE);
+
+		if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
+			initializeEmojiView();
+		} else {
+			findViewById(R.id.emoji_button).setVisibility(View.GONE);
+			captionEditText.setPadding(getResources().getDimensionPixelSize(R.dimen.no_emoji_button_padding_left), this.captionEditText.getPaddingTop(), this.captionEditText.getPaddingRight(), this.captionEditText.getPaddingBottom());
+		}
+
+		if (groupId != -1) {
+			initializeMentions();
+		}
+
+	}
+
+	private void initializeMentions() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager == null) {
+			logger.error("Cannot enable mention popup: serviceManager is null");
+			return;
+		}
+		try {
+			GroupService groupService = serviceManager.getGroupService();
+			ContactService contactService = serviceManager.getContactService();
+			UserService userService = serviceManager.getUserService();
+			GroupModel groupModel = groupService.getById(groupId);
+
+			if (groupModel == null) {
+				logger.error("Cannot enable mention popup: no group model with id {} found", groupId);
+				return;
+			}
+
+			captionEditText.enableMentionPopup(
+				this,
+				groupService,
+				contactService,
+				userService,
+				preferenceService,
+				groupModel
+			);
+		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+			logger.error("Cannot enable mention popup", e);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void initializeEmojiView() {
+		final EmojiPicker.EmojiKeyListener emojiKeyListener = new EmojiPicker.EmojiKeyListener() {
+			@Override
+			public void onBackspaceClick() {
+				captionEditText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+			}
+
+			@Override
+			public void onEmojiClick(String emojiCodeString) {
+				RuntimeUtil.runOnUiThread(() -> captionEditText.addEmoji(emojiCodeString));
+			}
+
+			@Override
+			public void onShowPicker() {
+				logger.info("onShowPicker");
+				showEmojiPicker();
+			}
+		};
+
+		EmojiButton emojiButton = findViewById(R.id.emoji_button);
+		emojiButton.setOnClickListener(v -> showEmojiPicker());
+		emojiButton.setColorFilter(getResources().getColor(android.R.color.white));
+
+		emojiPicker = (EmojiPicker) ((ViewStub) findViewById(R.id.emoji_stub)).inflate();
+		emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService());
+		emojiButton.attach(this.emojiPicker, preferenceService.isFullscreenIme());
+		emojiPicker.setEmojiKeyListener(emojiKeyListener);
+
+		ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.image_paint_root).getRootView(), (v, insets) -> {
+			if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
+				onSoftKeyboardClosed();
+			} else {
+				onSoftKeyboardOpened(insets.getSystemWindowInsetBottom() - insets.getStableInsetBottom());
+			}
+			return insets;
+		});
+
+		addOnSoftKeyboardChangedListener(new OnSoftKeyboardChangedListener() {
+			@Override
+			public void onKeyboardHidden() {
+				// Nothing to do
+			}
+
+			@Override
+			public void onKeyboardShown() {
+				if (emojiPicker != null && emojiPicker.isShown()) {
+					emojiPicker.onKeyboardShown();
+				}
+			}
+		});
+	}
+
+	private void showEmojiPicker() {
+		if (isSoftKeyboardOpen() && !isEmojiPickerShown()) {
+			logger.info("Show emoji picker after keyboard close");
+			runOnSoftKeyboardClose(() -> {
+				if (emojiPicker != null) {
+					emojiPicker.show(loadStoredSoftKeyboardHeight());
+				}
+			});
+
+			captionEditText.post(() -> EditTextUtil.hideSoftKeyboard(captionEditText));
+		} else {
+			if (emojiPicker != null) {
+				if (emojiPicker.isShown()) {
+					logger.info("EmojiPicker currently shown. Closing.");
+					if (ConfigUtils.isLandscape(this) &&
+						!ConfigUtils.isTabletLayout() &&
+						preferenceService.isFullscreenIme()) {
+						emojiPicker.hide();
+					} else {
+						openSoftKeyboard(emojiPicker, captionEditText);
+						if (getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+							emojiPicker.hide();
+						}
+					}
+				} else {
+					emojiPicker.show(loadStoredSoftKeyboardHeight());
+				}
+			}
+		}
+	}
+
+	private boolean isEmojiPickerShown() {
+		return emojiPicker != null && emojiPicker.isShown();
+	}
+
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt(KEY_PEN_COLOR, penColor);
+		outState.putInt(KEY_BACKGROUND_COLOR, backgroundColor);
 	}
 
 	@Override
 	public void onYes(String tag, Object data) {
-		finish();
+		finishWithoutChanges();
 	}
 
 	@Override
 	public void onNo(String tag, Object data) {}
+
+	/**
+	 * Finish activity with changes (result ok)
+	 */
+	private void finishWithChanges() {
+		if (activityMode == ActivityMode.IMAGE_REPLY || activityMode == ActivityMode.DRAWING) {
+			MediaItem mediaItem = new MediaItem(outputUri, MediaItem.TYPE_IMAGE);
+			if (captionEditText != null && captionEditText.getText() != null) {
+				mediaItem.setCaption(captionEditText.getText().toString());
+			}
+
+			Intent result = new Intent();
+			boolean messageReceiverCopied = IntentDataUtil.copyMessageReceiverFromIntentToIntent(this, getIntent(), result);
+			if (!messageReceiverCopied) {
+				logger.warn("Could not copy message receiver to intent");
+				finishWithoutChanges();
+				return;
+			}
+			result.putExtra(Intent.EXTRA_STREAM, mediaItem);
+
+			setResult(RESULT_OK, result);
+		} else {
+			setResult(RESULT_OK);
+		}
+		finish();
+	}
+
+	/**
+	 * Finish activity without changes (result canceled)
+	 */
+	private void finishWithoutChanges() {
+		setResult(RESULT_CANCELED);
+		finish();
+	}
+
 }

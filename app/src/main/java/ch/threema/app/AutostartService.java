@@ -44,6 +44,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_NOTICE;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 public class AutostartService extends FixedJobIntentService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AutostartService");
@@ -76,7 +77,7 @@ public class AutostartService extends FixedJobIntentService {
 
 			Intent notificationIntent = IntentDataUtil.createActionIntentHideAfterUnlock(new Intent(this, HomeActivity.class));
 			notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PENDING_INTENT_FLAG_IMMUTABLE);
 			notificationCompat.setContentIntent(pendingIntent);
 			NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			notificationManager.notify(ThreemaApplication.MASTER_KEY_LOCKED_NOTIFICATION_ID, notificationCompat.build());

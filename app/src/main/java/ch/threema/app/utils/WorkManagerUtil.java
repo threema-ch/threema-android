@@ -44,7 +44,7 @@ public class WorkManagerUtil {
 	 * @return true if no periodic work with the same tag exists or the existing work has a different schedule period;
 	 *      false if the work already exists and has the same schedule period
 	 */
-	public static boolean cancelExistingWorkManagerInstance(WorkManager workManager, String tag, long schedulePeriod) {
+	public static boolean shouldScheduleNewWorkManagerInstance(WorkManager workManager, String tag, long schedulePeriod) {
 		// check if work is already scheduled or running, if yes, do not attempt launch a new request
 		ListenableFuture<List<WorkInfo>> workInfos = workManager.getWorkInfosForUniqueWork(tag);
 		try {

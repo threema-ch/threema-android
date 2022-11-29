@@ -77,11 +77,11 @@
 					android:layout_marginBottom="@dimen/lp_default_margin"
 					android:background="@drawable/circle_white"
 					android:elevation="4dp"
-					android:tint="@color/text_color_secondary"
 					app:layout_constraintBottom_toBottomOf="@id/map_container"
 					app:layout_constraintRight_toRightOf="@id/map_container"
 					app:srcCompat="@drawable/ic_gps_fixed"
-					tools:ignore="ContentDescription"/>
+					tools:ignore="ContentDescription"
+					app:tint="@color/text_color_secondary" />
 
 				<FrameLayout
 					android:id="@+id/send_location_container"

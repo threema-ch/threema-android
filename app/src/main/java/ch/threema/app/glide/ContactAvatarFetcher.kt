@@ -27,6 +27,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ch.threema.app.R
 import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.services.ContactService
+import ch.threema.app.services.PreferenceService
 import ch.threema.app.utils.AndroidContactUtil
 import ch.threema.app.utils.AvatarConverterUtil
 import ch.threema.app.utils.ColorUtil
@@ -38,7 +39,12 @@ import com.bumptech.glide.load.data.DataFetcher
 /**
  * This class is used to get the avatars from the database or create the default avatars. The results of the loaded bitmaps will be cached by glide (if possible).
  */
-class ContactAvatarFetcher(context: Context, private val contactService: ContactService?, private val contactAvatarConfig: AvatarCacheServiceImpl.ContactAvatarConfig) : AvatarFetcher(context) {
+class ContactAvatarFetcher(
+    context: Context,
+    private val contactService: ContactService?,
+    private val contactAvatarConfig: AvatarCacheServiceImpl.ContactAvatarConfig,
+    private val preferenceService: PreferenceService?
+    ) : AvatarFetcher(context) {
 
     private val contactDefaultAvatar: VectorDrawableCompat? by lazy { VectorDrawableCompat.create(context.resources, R.drawable.ic_contact, null) }
     private val contactBusinessAvatar: VectorDrawableCompat? by lazy { VectorDrawableCompat.create(context.resources, R.drawable.ic_business, null) }
@@ -46,22 +52,55 @@ class ContactAvatarFetcher(context: Context, private val contactService: Contact
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
         val contactModel = contactAvatarConfig.model
         val highRes = contactAvatarConfig.options.highRes
-        val defaultAvatar = contactAvatarConfig.options.defaultOnly
-        val returnDefaultIfNone = contactAvatarConfig.options.returnDefaultAvatarIfNone
+        // Show profile picture from contact (if set)
+        val profilePicReceive: Boolean
+        // Show default avatar
+        val defaultAvatar: Boolean
+        // Return default avatar if no other avatar is found
+        val returnDefaultIfNone: Boolean
+        when (contactAvatarConfig.options.defaultAvatarPolicy) {
+            AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK -> {
+                profilePicReceive = true
+                defaultAvatar = false
+                returnDefaultIfNone = true
+            }
+            AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR -> {
+                profilePicReceive = true
+                defaultAvatar = false
+                returnDefaultIfNone = false
+            }
+            AvatarOptions.DefaultAvatarPolicy.DEFAULT_AVATAR -> {
+                profilePicReceive = false
+                defaultAvatar = true
+                returnDefaultIfNone = true
+            }
+            AvatarOptions.DefaultAvatarPolicy.RESPECT_SETTINGS -> {
+                profilePicReceive = preferenceService?.profilePicReceive == true
+                defaultAvatar = false
+                returnDefaultIfNone = true
+            }
+        }
+        val backgroundColor = getBackgroundColor(contactAvatarConfig.options)
 
-        val avatar = if (defaultAvatar) buildDefaultAvatar(contactModel, highRes) else loadContactAvatar(contactModel, highRes, returnDefaultIfNone)
+        val avatar = if (defaultAvatar) {
+            buildDefaultAvatar(contactModel, highRes, backgroundColor)
+        } else {
+            loadContactAvatar(contactModel, highRes, profilePicReceive, returnDefaultIfNone, backgroundColor)
+        }
 
         callback.onDataReady(avatar)
     }
 
-    private fun loadContactAvatar(contactModel: ContactModel?, highRes: Boolean, returnDefaultIfNone: Boolean): Bitmap? {
+    private fun loadContactAvatar(contactModel: ContactModel?, highRes: Boolean, profilePicReceive: Boolean, returnDefaultIfNone: Boolean, backgroundColor: Int): Bitmap? {
         if (contactModel == null) {
-            return buildDefaultAvatar(null, highRes)
+            return buildDefaultAvatar(null, highRes, backgroundColor)
         }
 
         // try profile picture
-        getProfilePicture(contactModel, highRes)?.let {
-            return it
+        if (profilePicReceive) {
+            getProfilePicture(contactModel, highRes)?.let {
+                return it
+            }
         }
 
         // try local saved avatar
@@ -74,7 +113,7 @@ class ContactAvatarFetcher(context: Context, private val contactService: Contact
             return it
         }
 
-        return if (returnDefaultIfNone) buildDefaultAvatar(contactModel, highRes) else null
+        return if (returnDefaultIfNone) buildDefaultAvatar(contactModel, highRes, backgroundColor) else null
     }
 
     private fun getProfilePicture(contactModel: ContactModel, highRes: Boolean): Bitmap? {
@@ -117,11 +156,15 @@ class ContactAvatarFetcher(context: Context, private val contactService: Contact
         }
     }
 
-    private fun buildDefaultAvatar(contactModel: ContactModel?, highRes: Boolean): Bitmap {
+    private fun buildDefaultAvatar(contactModel: ContactModel?, highRes: Boolean, backgroundColor: Int): Bitmap {
         val color = contactService?.getAvatarColor(contactModel)
-                ?: ColorUtil.getInstance().getCurrentThemeGray(context)
+            ?: ColorUtil.getInstance().getCurrentThemeGray(context)
         val drawable = if (ContactUtil.isChannelContact(contactModel)) contactBusinessAvatar else contactDefaultAvatar
-        return if (highRes) buildDefaultAvatarHighRes(drawable, color) else buildDefaultAvatarLowRes(drawable, color)
+        return if (highRes) {
+            buildDefaultAvatarHighRes(drawable, color, backgroundColor)
+        } else {
+            buildDefaultAvatarLowRes(drawable, color)
+        }
     }
 
 }

@@ -27,6 +27,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -38,17 +39,25 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.services.ContactService;
+import ch.threema.app.services.GroupService;
+import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.storage.models.GroupModel;
 
 public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 	private ExpandableTextEntryDialogClickListener callback;
 	private Activity activity;
+	private ComposeEditText captionEditText;
+	private ComposeEditText.MentionPopupData mentionPopupData;
 	private AlertDialog alertDialog;
 
 	public static ExpandableTextEntryDialog newInstance(String title, int hint, int positive, int negative, boolean expandable) {
@@ -168,6 +177,18 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 			public void afterTextChanged(Editable s) {}
 		});
 
+		if (mentionPopupData != null) {
+			this.captionEditText = editText;
+			this.captionEditText.enableMentionPopup(mentionPopupData, editTextContainer);
+			editText.setOnKeyListener((v, keyCode, event) -> {
+				if (keyCode == KeyEvent.KEYCODE_BACK) {
+					ExpandableTextEntryDialog.this.captionEditText.dismissMentionPopup();
+					return true;
+				}
+				return false;
+			});
+		}
+
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity,  getTheme());
 		builder.setView(dialogView);
 
@@ -212,6 +233,40 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 		setCancelable(false);
 
 		return alertDialog;
+	}
+
+	/**
+	 * Enable mention popup on the caption edit text. This needs to be called before the dialog is shown/created.
+	 *
+	 * @param mentionPopupData the required data to enable mentions, if this is null, mentions are not enabled
+	 */
+	public void enableMentionPopup(@Nullable ComposeEditText.MentionPopupData mentionPopupData) {
+		this.mentionPopupData = mentionPopupData;
+	}
+
+	/**
+	 * Enable mention popup on the caption edit text. This needs to be called before the dialog is shown/created.
+	 */
+	public void enableMentionPopup(
+		@NonNull Activity activity,
+		@NonNull GroupService groupService,
+		@NonNull ContactService contactService,
+		@NonNull UserService userService,
+		@NonNull PreferenceService preferenceService,
+		@NonNull GroupModel groupModel
+	) {
+		mentionPopupData = new ComposeEditText.MentionPopupData(
+			activity,
+			groupService,
+			contactService,
+			userService,
+			preferenceService,
+			groupModel
+		);
+	}
+
+	public void dismissMentionPopup() {
+		captionEditText.dismissMentionPopup();
 	}
 
 	private void toggleLayout(ImageView button, View v) {

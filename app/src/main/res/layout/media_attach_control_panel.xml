@@ -114,6 +114,17 @@
 					app:labelText="@string/mime_contact" />
 
 				<ch.threema.app.mediaattacher.ControlPanelButton
+					android:id="@+id/attach_drawing"
+					android:layout_width="@dimen/media_attach_button_width"
+					android:layout_height="@dimen/media_attach_button_height"
+					android:layout_gravity="center_vertical"
+					app:fillColor="@color/material_amber"
+					app:foregroundColor="@color/material_amber"
+					app:fillColorAlpha="@integer/button_alpha"
+					app:labelIcon="@drawable/ic_drawing"
+					app:labelText="@string/drawing" />
+
+				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/attach_qr_code"
 					android:layout_width="@dimen/media_attach_button_width"
 					android:layout_height="@dimen/media_attach_button_height"

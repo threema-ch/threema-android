@@ -30,7 +30,7 @@ import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static ch.threema.domain.stores.TestHelpers.*;
+import static ch.threema.domain.testhelpers.TestHelpers.*;
 
 public class GroupJoinResponseMessageTest {
 

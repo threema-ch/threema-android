@@ -21,7 +21,6 @@
 
 package ch.threema.domain.protocol;
 
-import ch.threema.domain.protocol.ThreemaFeature;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -75,5 +74,13 @@ public class ThreemaFeatureTest {
 		Assert.assertTrue(ThreemaFeature.canVoip(0xfa | 0x10));
 		Assert.assertTrue(ThreemaFeature.canVoip(16));
 		Assert.assertTrue(ThreemaFeature.canVoip(17));
+
+		// Test GroupCalls Flag
+		Assert.assertFalse(ThreemaFeature.canGroupCalls(0x00));
+		Assert.assertFalse(ThreemaFeature.canGroupCalls(0x00 | 0x01 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
+		Assert.assertTrue(ThreemaFeature.canGroupCalls(0x80));
+		Assert.assertTrue(ThreemaFeature.canGroupCalls(0xfa | 0x80));
+		Assert.assertTrue(ThreemaFeature.canGroupCalls(128));
+		Assert.assertTrue(ThreemaFeature.canGroupCalls(129));
 	}
 }

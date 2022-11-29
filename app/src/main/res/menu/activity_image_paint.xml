@@ -117,6 +117,17 @@
 			app:showAsAction="always"
 			/>
 
+		<item
+			android:id="@+id/item_background"
+			android:enabled="true"
+			android:icon="@drawable/ic_drawing_background"
+			app:iconTint="@android:color/white"
+			android:orderInCategory="75"
+			android:title="@string/background_color"
+			android:visible="false"
+			app:showAsAction="always"
+			/>
+
 	</group>
 
 </menu>

@@ -23,6 +23,10 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -32,13 +36,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.ContactService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -50,23 +53,25 @@ import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
+import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
+import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 public class MessageUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageUtil");
 
-	private final static java.util.Set<MessageType> fileMessageModelTypes = EnumSet.of(
+	private final static Set<MessageType> fileMessageModelTypes = EnumSet.of(
 			MessageType.IMAGE,
 			MessageType.VOICEMESSAGE,
 			MessageType.VIDEO,
 			MessageType.FILE);
 
-	private final static java.util.Set<MessageType> thumbnailFileMessageModelTypes = EnumSet.of(
+	private final static Set<MessageType> thumbnailFileMessageModelTypes = EnumSet.of(
 			MessageType.IMAGE,
 			MessageType.VIDEO,
 			MessageType.FILE);
 
-	private final static java.util.Set<MessageType> lowProfileMessageModelTypes = EnumSet.of(
+	private final static Set<MessageType> lowProfileMessageModelTypes = EnumSet.of(
 			MessageType.IMAGE,
 			MessageType.VOICEMESSAGE);
 
@@ -112,13 +117,22 @@ public class MessageUtil {
 		return lowProfileMessageModelTypes;
 	}
 
-	public static boolean canSendDeliveryReceipt(AbstractMessageModel message) {
-		return message instanceof MessageModel
-			&& !message.isOutbox()
-			&& !message.isRead()
-			&& !message.isStatusMessage()
-			&& message.getType() != MessageType.VOIP_STATUS
-			&& !((message.getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) == ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS);
+	public static boolean canSendDeliveryReceipt(AbstractMessageModel message, int receiptType) {
+		if (ConfigUtils.isGroupAckEnabled() && (receiptType == ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK || receiptType == ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC)) {
+			return (message instanceof MessageModel || message instanceof GroupMessageModel)
+				&& !message.isOutbox()
+				&& !message.isRead()
+				&& !message.isStatusMessage()
+				&& message.getType() != MessageType.VOIP_STATUS
+				&& !((message.getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) == ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS);
+		} else {
+			return message instanceof MessageModel
+				&& !message.isOutbox()
+				&& !message.isRead()
+				&& !message.isStatusMessage()
+				&& message.getType() != MessageType.VOIP_STATUS
+				&& !((message.getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) == ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS);
+		}
 	}
 
 	/**
@@ -148,25 +162,70 @@ public class MessageUtil {
 	 * @return true, if the user-acknowledge flag can be set
 	 */
 	public static boolean canSendUserAcknowledge(AbstractMessageModel messageModel) {
-		return
+		if (ConfigUtils.isGroupAckEnabled()) {
+			return
 				messageModel != null
-						&& !messageModel.isOutbox()
-						&& messageModel.getState() != MessageState.USERACK
-						&& messageModel.getType() != MessageType.VOIP_STATUS
-						&& !(messageModel instanceof DistributionListMessageModel)
-						&& !(messageModel instanceof GroupMessageModel);
+					&& (!messageModel.isOutbox() || messageModel instanceof GroupMessageModel)
+					&& messageModel.getState() != MessageState.USERACK
+					&& messageModel.getType() != MessageType.VOIP_STATUS
+					&& messageModel.getType() != MessageType.GROUP_CALL_STATUS
+					&& !messageModel.isStatusMessage()
+					&& !(messageModel instanceof DistributionListMessageModel);
+		} else {
+			return
+				messageModel != null
+					&& !messageModel.isOutbox()
+					&& messageModel.getState() != MessageState.USERACK
+					&& messageModel.getType() != MessageType.VOIP_STATUS
+					&& messageModel.getType() != MessageType.GROUP_CALL_STATUS
+					&& !messageModel.isStatusMessage()
+					&& !(messageModel instanceof DistributionListMessageModel)
+					&& !(messageModel instanceof GroupMessageModel);
+		}
 	}
 	/**
 	 * @return true, if the user-decline flag can be set
 	 */
 	public static boolean canSendUserDecline(AbstractMessageModel messageModel) {
-		return
+		if (ConfigUtils.isGroupAckEnabled()) {
+			return
 				messageModel != null
-						&& !messageModel.isOutbox()
-						&& messageModel.getState() != MessageState.USERDEC
-						&& messageModel.getType() != MessageType.VOIP_STATUS
-						&& !(messageModel instanceof DistributionListMessageModel)
-						&& !(messageModel instanceof GroupMessageModel);
+					&& (!messageModel.isOutbox() || messageModel instanceof GroupMessageModel)
+					&& messageModel.getState() != MessageState.USERDEC
+					&& messageModel.getType() != MessageType.VOIP_STATUS
+					&& messageModel.getType() != MessageType.GROUP_CALL_STATUS
+					&& !messageModel.isStatusMessage()
+					&& !(messageModel instanceof DistributionListMessageModel);
+		} else {
+			return
+				messageModel != null
+					&& !messageModel.isOutbox()
+					&& messageModel.getState() != MessageState.USERDEC
+					&& messageModel.getType() != MessageType.VOIP_STATUS
+					&& messageModel.getType() != MessageType.GROUP_CALL_STATUS
+					&& !messageModel.isStatusMessage()
+					&& !(messageModel instanceof DistributionListMessageModel)
+					&& !(messageModel instanceof GroupMessageModel);
+		}
+	}
+
+	public static boolean canSendImageReply(@Nullable AbstractMessageModel messageModel) {
+		if (messageModel == null || messageModel.getMessageContentsType() != MessageContentsType.IMAGE) {
+			return false;
+		}
+		try {
+			return messageModel.getFileData().isDownloaded();
+		} catch (ClassCastException exception) {
+			// No file data
+			logger.warn("No file data available");
+		}
+		try {
+			return messageModel.getImageData().isDownloaded();
+		} catch (ClassCastException ignored) {
+			// No image data
+			logger.warn("No image data available");
+			return false;
+		}
 	}
 
 	/**
@@ -174,7 +233,7 @@ public class MessageUtil {
 	 */
 	public static boolean showStatusIcon(AbstractMessageModel messageModel) {
 		boolean showState = false;
-		if(messageModel != null) {
+		if (messageModel != null) {
 			if (messageModel.getType() == MessageType.VOIP_STATUS) {
 				return false;
 			}
@@ -182,36 +241,40 @@ public class MessageUtil {
 			MessageState messageState = messageModel.getState();
 
 			//group message/distribution list message icons only on pending or failing states
-			if(messageModel instanceof GroupMessageModel) {
-				showState = messageState != null
-						&& ((messageModel.isOutbox() && messageState == MessageState.SENDFAILED)
-							|| (messageModel.isOutbox() && messageState == MessageState.SENDING)
-							|| (messageModel.isOutbox() && messageState == MessageState.PENDING && messageModel.getType() != MessageType.BALLOT)
-							|| (!messageModel.isOutbox() && messageModel.getState() == MessageState.CONSUMED));
-			} else if (messageModel instanceof DistributionListMessageModel) {
-				showState = false;
-			}
-			else if (messageModel instanceof MessageModel) {
-				if(!messageModel.isOutbox()) {
-					//inbox show icon only on acknowledged/declined or consumed
+			if (messageModel instanceof GroupMessageModel) {
+				if (messageState != null) {
+					if (messageModel.isOutbox()) {
+						showState = messageState == MessageState.SENDFAILED
+							|| messageState == MessageState.FS_KEY_MISMATCH
+							|| messageState == MessageState.SENDING
+							|| (messageState == MessageState.PENDING && messageModel.getType() != MessageType.BALLOT);
+					} else {
+						showState = messageModel.getState() == MessageState.CONSUMED
+							|| messageModel.getState() == MessageState.USERACK
+							|| messageModel.getState() == MessageState.USERDEC;
+					}
+				}
+			} else if (messageModel instanceof MessageModel) {
+				if (!messageModel.isOutbox()) {
+					// inbox show icon only on acknowledged/declined or consumed
 					showState = messageState != null
 							&& (messageModel.getState() == MessageState.USERACK
 							|| messageModel.getState() == MessageState.USERDEC
 							|| messageModel.getState() == MessageState.CONSUMED);
 				}
 				else {
-					//on outgoing message
+					// on outgoing message
 					if (ContactUtil.isChannelContact(messageModel.getIdentity())) {
-						showState = (messageState == MessageState.SENDFAILED
+						showState = messageState == MessageState.SENDFAILED
+							|| messageState == MessageState.FS_KEY_MISMATCH
 							|| messageState == MessageState.PENDING
-							|| messageState == MessageState.SENDING);
+							|| messageState == MessageState.SENDING;
 					} else {
 						showState = true;
 					}
 				}
 			}
 		}
-
 		return showState;
 	}
 
@@ -291,11 +354,13 @@ public class MessageUtil {
 			case DELIVERED:
 				return fromState == MessageState.SENDING
 						|| fromState == MessageState.SENDFAILED
+						|| fromState == MessageState.FS_KEY_MISMATCH
 						|| fromState == MessageState.PENDING
 						|| fromState == MessageState.SENT;
 			case READ:
 				return fromState == MessageState.SENDING
 						|| fromState == MessageState.SENDFAILED
+						|| fromState == MessageState.FS_KEY_MISMATCH
 						|| fromState == MessageState.PENDING
 						|| fromState == MessageState.SENT
 						|| fromState == MessageState.DELIVERED;
@@ -303,9 +368,15 @@ public class MessageUtil {
 				return fromState == MessageState.SENDING
 						|| fromState == MessageState.PENDING
 						|| fromState == MessageState.TRANSCODING;
+			case FS_KEY_MISMATCH:
+				return fromState == MessageState.SENDING
+						|| fromState == MessageState.PENDING
+						|| fromState == MessageState.TRANSCODING
+						|| fromState == MessageState.SENT;
 			case SENT:
 				return fromState == MessageState.SENDING
 						|| fromState == MessageState.SENDFAILED
+						|| fromState == MessageState.FS_KEY_MISMATCH
 						|| fromState == MessageState.PENDING
 						|| fromState == MessageState.TRANSCODING;
 			case USERACK:
@@ -316,9 +387,11 @@ public class MessageUtil {
 				return fromState != MessageState.USERACK
 					&& fromState != MessageState.USERDEC;
 			case PENDING:
-				return fromState == MessageState.SENDFAILED;
+				return fromState == MessageState.SENDFAILED
+						|| fromState == MessageState.FS_KEY_MISMATCH;
 			case SENDING:
 				return fromState == MessageState.SENDFAILED
+						|| fromState == MessageState.FS_KEY_MISMATCH
 						|| fromState == MessageState.PENDING
 						|| fromState == MessageState.TRANSCODING;
 			default:
@@ -365,6 +438,15 @@ public class MessageUtil {
 		return null;
 	}
 
+	/**
+	 * Check if the provided MessageState is acceptable as a group message state and should be saved to the database
+	 * @param state MessageState
+	 * @return true if MessageState is acceptable, false otherwise
+	 */
+	public static boolean isAllowedGroupMessageState(MessageState state) {
+		return state == MessageState.USERACK || state == MessageState.USERDEC;
+	}
+
 	public static class MessageViewElement {
 		public final @Nullable @DrawableRes Integer icon;
 		public final @Nullable String placeholder;
@@ -382,7 +464,7 @@ public class MessageUtil {
 
 	@NonNull
 	public static MessageViewElement getViewElement(Context context, AbstractMessageModel messageModel) {
-		if (messageModel != null) {
+		if (messageModel != null && messageModel.getType() != null) {
 			switch (messageModel.getType()) {
 				case TEXT:
 					return new MessageViewElement(null,
@@ -480,8 +562,8 @@ public class MessageUtil {
 							null,
 							null);
 				case VOIP_STATUS:
-					if (messageModel.getVoipStatusData() != null) {
-
+					VoipStatusDataModel voipStatusDataModel = messageModel.getVoipStatusData();
+					if (voipStatusDataModel != null) {
 						switch (messageModel.getVoipStatusData().getStatus()) {
 							case VoipStatusDataModel.REJECTED:
 								// Determine reject reason
@@ -569,9 +651,109 @@ public class MessageUtil {
 						}
 					}
 					break;
+				case GROUP_CALL_STATUS:
+					GroupCallStatusDataModel groupCallStatusDataModel = messageModel.getGroupCallStatusData();
+					if (groupCallStatusDataModel != null) {
+						switch (groupCallStatusDataModel.getStatus()) {
+							case GroupCallStatusDataModel.STATUS_STARTED:
+								String body = context.getString(R.string.voip_gc_call_started);
+								if (groupCallStatusDataModel.getCallerIdentity() != null) {
+									try {
+										ContactService contactService = ThreemaApplication.getServiceManager().getContactService();
+										body = String.format(
+											context.getString(messageModel.isOutbox() ?
+												R.string.voip_gc_notification_call_started_generic_outbox :
+												R.string.voip_gc_notification_call_started_generic),
+											NameUtil.getShortName(groupCallStatusDataModel.getCallerIdentity(), contactService));
+									} catch (Exception e) {
+										logger.debug("Contact service unavailable");
+									}
+								}
+
+								return new MessageViewElement(
+									R.drawable.ic_group_call,
+									context.getString(R.string.voip_gc_call_started),
+									body,
+									null,
+									R.color.group_call_accent
+								);
+							case GroupCallStatusDataModel.STATUS_ENDED:
+								return new MessageViewElement(
+									R.drawable.ic_group_call,
+									context.getString(R.string.voip_gc_call_ended),
+									context.getString(R.string.voip_gc_call_ended),
+									null,
+									R.color.group_call_accent
+								);
+						}
+						break;
+					}
+				case FORWARD_SECURITY_STATUS:
+					ForwardSecurityStatusDataModel forwardSecurityStatusDataModel = messageModel.getForwardSecurityStatusData();
+					if (forwardSecurityStatusDataModel != null) {
+						switch (forwardSecurityStatusDataModel.getStatus()) {
+							case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET:
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_off_24,
+									context.getString(R.string.forward_security_reset_simple),
+									context.getString(R.string.forward_security_reset_simple),
+									null,
+									R.color.material_red
+								);
+							case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED:
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_24,
+									context.getString(R.string.forward_security_established),
+									context.getString(R.string.forward_security_established),
+									null,
+									R.color.material_green
+								);
+							case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX:
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_24,
+									context.getString(R.string.forward_security_established_rx),
+									context.getString(R.string.forward_security_established_rx),
+									null,
+									R.color.material_green
+								);
+							case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED:
+								String body = ConfigUtils.getSafeQuantityString(context, R.plurals.forward_security_messages_skipped, forwardSecurityStatusDataModel.getQuantity(), forwardSecurityStatusDataModel.getQuantity());
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_24,
+									body,
+									body,
+									null,
+									null
+								);
+							case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER:
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_24,
+									context.getString(R.string.forward_security_message_out_of_order),
+									context.getString(R.string.forward_security_message_out_of_order),
+									null,
+									null
+								);
+							case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY:
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_off_24,
+									context.getString(R.string.message_without_forward_security),
+									context.getString(R.string.message_without_forward_security),
+									null,
+									null
+								);
+							default:
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_24,
+									forwardSecurityStatusDataModel.getStaticText(),
+									forwardSecurityStatusDataModel.getStaticText(),
+									null,
+									null
+								);
+						}
+					}
+					break;
 			}
 		}
 		return new MessageViewElement(null, null, null, null, null);
 	}
-
 }

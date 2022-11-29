@@ -46,13 +46,10 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Process;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Rational;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -87,6 +84,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -124,6 +122,8 @@ import ch.threema.app.ui.BottomSheetItem;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.utils.AnimationUtil;
+import ch.threema.app.utils.AudioDevice;
+import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.NameUtil;
@@ -131,7 +131,6 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.AudioSelectorButton;
 import ch.threema.app.voip.CallStateSnapshot;
-import ch.threema.app.voip.VoipAudioManager;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.services.CallRejectService;
@@ -152,6 +151,7 @@ import java8.util.concurrent.CompletableFuture;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
 import static ch.threema.app.voip.services.VideoContext.CAMERA_FRONT;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
 import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_INCOMING;
 import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_NONE;
 import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_OUTGOING;
@@ -169,6 +169,7 @@ public class CallActivity extends ThreemaActivity implements
 	private static final String LIFETIME_SERVICE_TAG = "CallActivity";
 	private static final String SENSOR_TAG_CALL = "voipcall";
 	public static final String EXTRA_CALL_FROM_SHORTCUT = "shortcut";
+	public static final String EXTRA_ACCEPT_INCOMING_CALL = "ACCEPT_INCOMING_CALL";
 	private static final String DIALOG_TAG_OK = "ok";
 
 	// saved activity states
@@ -273,7 +274,7 @@ public class CallActivity extends ThreemaActivity implements
 	private boolean isInPictureInPictureMode = false;
 	private int pipPosition;
 	private int layoutMargin;
-	private VoipAudioManager.AudioDevice currentAudioDevice;
+	private AudioDevice currentAudioDevice;
 	private TooltipPopup toggleVideoTooltip, audioSelectorTooltip;
 
 	private NotificationManagerCompat notificationManagerCompat;
@@ -513,12 +514,12 @@ public class CallActivity extends ThreemaActivity implements
 							}
 						}
 
-						if (!audioSelectorTooltipShown && currentAudioDevice == VoipAudioManager.AudioDevice.EARPIECE) {
+						if (!audioSelectorTooltipShown && currentAudioDevice == AudioDevice.EARPIECE) {
 							// remind user to switch audio device to Speakerphone
 							if (commonViews != null && commonViews.audioSelectorButton.getVisibility() == View.VISIBLE) {
 								commonViews.audioSelectorButton.postDelayed(() -> {
 									if (navigationShown) {
-										if (!audioSelectorTooltipShown && currentAudioDevice == VoipAudioManager.AudioDevice.EARPIECE
+										if (!audioSelectorTooltipShown && currentAudioDevice == AudioDevice.EARPIECE
 											&& (voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_INCOMING) == VIDEO_RENDER_FLAG_INCOMING
 											&& (voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) != VIDEO_RENDER_FLAG_OUTGOING) {
 											int[] location = new int[2];
@@ -576,7 +577,7 @@ public class CallActivity extends ThreemaActivity implements
 						voipStateService.setVideoRenderMode(voipStateService.getVideoRenderMode() | VIDEO_RENDER_FLAG_OUTGOING);
 						updateVideoButton(true);
 						updateVideoViews();
-						setPreferredAudioDevice(VoipAudioManager.AudioDevice.SPEAKER_PHONE);
+						setPreferredAudioDevice(AudioDevice.SPEAKER_PHONE);
 
 						// autohide navigation
 						commonViews.parentLayout.postDelayed(new Runnable() {
@@ -646,12 +647,12 @@ public class CallActivity extends ThreemaActivity implements
 	//endregion
 	private final VoipAudioManagerListener audioManagerListener = new VoipAudioManagerListener() {
 		@Override
-		public void onAudioDeviceChanged(@Nullable VoipAudioManager.AudioDevice selectedAudioDevice, @NonNull HashSet<VoipAudioManager.AudioDevice> availableAudioDevices) {
+		public void onAudioDeviceChanged(@Nullable AudioDevice selectedAudioDevice, @NonNull HashSet<AudioDevice> availableAudioDevices) {
 			if (selectedAudioDevice != null) {
 				currentAudioDevice = selectedAudioDevice;
 				logger.debug("Audio device changed. New device = " + selectedAudioDevice.name());
 				if (sensorService != null) {
-					if (selectedAudioDevice == VoipAudioManager.AudioDevice.EARPIECE) {
+					if (selectedAudioDevice == AudioDevice.EARPIECE) {
 						if (!sensorService.isSensorRegistered(SENSOR_TAG_CALL)) {
 							sensorService.registerSensors(SENSOR_TAG_CALL, CallActivity.this, false);
 						}
@@ -661,7 +662,7 @@ public class CallActivity extends ThreemaActivity implements
 						sensorEnabled = false;
 					}
 				}
-				if (currentAudioDevice == VoipAudioManager.AudioDevice.SPEAKER_PHONE) {
+				if (currentAudioDevice == AudioDevice.SPEAKER_PHONE) {
 					setVolumeControlStream(AudioManager.STREAM_MUSIC);
 				} else {
 					setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
@@ -736,6 +737,14 @@ public class CallActivity extends ThreemaActivity implements
 			logger.error("Could not instantiate services", e);
 			finish();
 			return;
+		}
+
+		if (getIntent().getBooleanExtra(EXTRA_ACCEPT_INCOMING_CALL, false)) {
+			// Don't reject call automatically after timeout
+			voipStateService.disableTimeoutReject();
+			// In case of an incoming call we cancel the incoming call notification. Otherwise the
+			// notification would stay visible until for example the microphone permission is granted
+			voipStateService.cancelCallNotificationsForNewCall();
 		}
 
 		// Get audio manager
@@ -878,7 +887,7 @@ public class CallActivity extends ThreemaActivity implements
 		}
 
 		this.bluetoothConnectPermissionResponse = new CompletableFuture<>();
-		if (ConfigUtils.requestBluetoothConnectPermissions(this, null, PERMISSION_REQUEST_BLUETOOTH_CONNECT)) {
+		if (ConfigUtils.requestBluetoothConnectPermissions(this, null, PERMISSION_REQUEST_BLUETOOTH_CONNECT, true)) {
 			this.bluetoothConnectPermissionResponse.complete(new PermissionRequestResult(true, true));
 		}
 
@@ -1168,6 +1177,9 @@ public class CallActivity extends ThreemaActivity implements
 				if (this.commonViews.backgroundView != null) {
 					this.commonViews.backgroundView.setVisibility(View.VISIBLE);
 				}
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ConfigUtils.supportsPictureInPicture(this)) {
+					setPictureInPictureParams(new PictureInPictureParams.Builder().setAutoEnterEnabled(false).build());
+				}
 			}
 		}
 	}
@@ -1234,23 +1246,10 @@ public class CallActivity extends ThreemaActivity implements
 			new AsyncTask<Void, Void, Bitmap>() {
 				@Override
 				protected Bitmap doInBackground(Void... voids) {
-					Bitmap blurredAvatar = contactService.getAvatar(contact, true);
-					if (blurredAvatar != null && blurredAvatar.getConfig() != null) {
-						// Use blurry background instead dialer background image
-						final RenderScript rs = RenderScript.create(CallActivity.this);
-						final Allocation input = Allocation.createFromBitmap(rs, blurredAvatar);
-						final Allocation output = Allocation.createTyped(rs, input.getType());
-						final ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-						blurScript.setRadius(12f);
-						blurScript.setInput(input);
-						blurScript.forEach(output);
-						output.copyTo(blurredAvatar);
-						blurScript.destroy();
-						input.destroy();
-						output.destroy();
-						rs.destroy();
-					}
-					return blurredAvatar;
+					return BitmapUtil.blurBitmap(
+						contactService.getAvatar(contact, true),
+						CallActivity.this
+					);
 				}
 
 				@Override
@@ -1278,6 +1277,13 @@ public class CallActivity extends ThreemaActivity implements
 
 		final long callId = this.voipStateService.getCallState().getCallId();
 		final Boolean isInitiator = this.voipStateService.isInitiator();
+
+		// Start service if it is an incoming call
+		if (intent.getBooleanExtra(EXTRA_ACCEPT_INCOMING_CALL, false)) {
+			Intent voipCallServiceIntent = new Intent(this, VoipCallService.class);
+			voipCallServiceIntent.putExtras(intent.getExtras());
+			ContextCompat.startForegroundService(this, voipCallServiceIntent);
+		}
 
 		// Initialize view groups
 		this.commonViews = new CommonViews();
@@ -1350,7 +1356,7 @@ public class CallActivity extends ThreemaActivity implements
 			int i = 0, currentDeviceIndex = -1;
 			ArrayList<BottomSheetItem> items = new ArrayList<>();
 
-			for (VoipAudioManager.AudioDevice device : audioDevices) {
+			for (AudioDevice device : audioDevices) {
 				int index = device.ordinal();
 				items.add(new BottomSheetItem(
 						audioDeviceIcons[index],
@@ -1626,6 +1632,16 @@ public class CallActivity extends ThreemaActivity implements
 				public void onFrameResolutionChanged(int x, int y, int a) {
 					logger.info("Fullscreen: Resolution changed to {}x{}∠{}°", x, y, a);
 					videoContext.setFrameDimensions(x, y);
+
+					// Set picture in picture params to the given aspect ratio
+					if (ConfigUtils.supportsPictureInPicture(CallActivity.this)) {
+						PictureInPictureParams params = createPictureInPictureParams();
+						if (params != null) {
+							setPictureInPictureParams(params);
+						} else {
+							logger.info("PictureInPictureParams are null");
+						}
+					}
 				}
 			});
 			this.videoViews.fullscreenVideoRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_BALANCED);
@@ -1807,9 +1823,15 @@ public class CallActivity extends ThreemaActivity implements
 		logger.info("Answer call");
 		this.activityMode = MODE_ANSWERED_CALL;
 
-		final Intent answerIntent = new Intent(getIntent());
-		answerIntent.setClass(getApplicationContext(), VoipCallService.class);
-		ContextCompat.startForegroundService(this, answerIntent);
+		// Recreate activity with correct activity mode and with EXTRA_ACCEPT_INCOMING_CALL
+		Intent restartActivityIntent = new Intent(this, CallActivity.class);
+		restartActivityIntent.putExtras(getIntent().getExtras());
+		restartActivityIntent.putExtra(EXTRA_ACCEPT_INCOMING_CALL, true);
+		restartActivityIntent.putExtra(EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL);
+
+		finish();
+		startActivity(restartActivityIntent);
+		overridePendingTransition(0, 0);
 	}
 
 	/**
@@ -1825,7 +1847,7 @@ public class CallActivity extends ThreemaActivity implements
 			rejectIntent.putExtra(VoipCallService.EXTRA_CONTACT_IDENTITY, contact.getIdentity());
 			rejectIntent.putExtra(VoipCallService.EXTRA_CALL_ID, callId);
 			rejectIntent.putExtra(CallRejectService.EXTRA_REJECT_REASON, reason);
-			ContextCompat.startForegroundService(this, rejectIntent);
+			startService(rejectIntent);
 		} else if (this.activityMode == MODE_ACTIVE_CALL) {
 			VoipUtil.sendVoipCommand(CallActivity.this, VoipCallService.class, VoipCallService.ACTION_HANGUP);
 			setResult(RESULT_CANCELED);
@@ -2012,12 +2034,12 @@ public class CallActivity extends ThreemaActivity implements
 		logger.debug("*** onSelected");
 		if (!TestUtil.empty(tag)) {
 			int ordinal = Integer.valueOf(tag);
-			final VoipAudioManager.AudioDevice device = VoipAudioManager.AudioDevice.values()[ordinal];
+			final AudioDevice device = AudioDevice.values()[ordinal];
 			this.selectAudioDevice(device);
 		}
 	}
 
-	public void selectAudioDevice(@NonNull VoipAudioManager.AudioDevice device) {
+	public void selectAudioDevice(@NonNull AudioDevice device) {
 		final Intent intent = new Intent();
 		intent.setAction(VoipCallService.ACTION_SET_AUDIO_DEVICE);
 		intent.putExtra(VoipCallService.EXTRA_AUDIO_DEVICE, device);
@@ -2027,7 +2049,7 @@ public class CallActivity extends ThreemaActivity implements
 	/**
 	 * Override audio device selection, but only if no headphone (wired or bluetooth) is connected.
 	 */
-	public void setPreferredAudioDevice(@NonNull VoipAudioManager.AudioDevice device) {
+	public void setPreferredAudioDevice(@NonNull AudioDevice device) {
 		logger.info("setPreferredAudioDevice {}", device);
 
 		if (audioManager.isWiredHeadsetOn()) {
@@ -2126,8 +2148,10 @@ public class CallActivity extends ThreemaActivity implements
 		enterPictureInPictureMode(false);
 	}
 
+	@RequiresApi(api = Build.VERSION_CODES.O)
 	@Override
-	public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
+	public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+		super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
 		this.isInPictureInPictureMode = isInPictureInPictureMode;
 
 		if (isInPictureInPictureMode) {
@@ -2142,6 +2166,39 @@ public class CallActivity extends ThreemaActivity implements
 		}
 	}
 
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	private PictureInPictureParams createPictureInPictureParams() {
+		final VideoContext videoContext = this.voipStateService.getVideoContext();
+		final CommonViews common = this.commonViews;
+
+		if (videoContext == null || common == null) {
+			return null;
+		}
+
+		Rational aspectRatio;
+		Rect launchBounds;
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			aspectRatio = new Rational(videoContext.getFrameWidth(), videoContext.getFrameHeight());
+		} else {
+			aspectRatio = new Rational(videoContext.getFrameHeight(), videoContext.getFrameWidth());
+		}
+
+		launchBounds = new Rect(common.backgroundView.getLeft(),
+			common.backgroundView.getTop(),
+			common.backgroundView.getRight(),
+			common.backgroundView.getBottom());
+
+		PictureInPictureParams.Builder pipParamsBuilder = new PictureInPictureParams.Builder()
+			.setAspectRatio(aspectRatio)
+			.setSourceRectHint(launchBounds);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			pipParamsBuilder.setAutoEnterEnabled(true);
+		}
+
+		return pipParamsBuilder.build();
+	}
+
 	private void enterPictureInPictureMode(boolean launchedByUser) {
 		if (voipStateService.getVideoRenderMode() == VIDEO_RENDER_FLAG_NONE || this.videoViews == null) {
 			return;
@@ -2152,43 +2209,18 @@ public class CallActivity extends ThreemaActivity implements
 		}
 
 		AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
-		if (appOpsManager != null && !(appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, android.os.Process.myUid(), getPackageName()) == AppOpsManager.MODE_ALLOWED)) {
+		if (appOpsManager != null && appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, Process.myUid(), getPackageName()) != AppOpsManager.MODE_ALLOWED) {
 			if (launchedByUser) {
 				SimpleStringAlertDialog.newInstance(R.string.enable_picture_in_picture, getString(R.string.picture_in_picture_disabled_in_setting, getString(R.string.app_name))).show(getSupportFragmentManager(), "pipdis");
 			}
 			return;
 		}
 
-		final VideoContext videoContext = this.voipStateService.getVideoContext();
-
-		if (videoContext == null) {
-			return;
-		}
-
 		hideNavigation(false);
 
-		// setup pip builder
-		Rational aspectRatio;
-		Rect launchBounds;
-		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			aspectRatio = new Rational(videoContext.getFrameWidth(), videoContext.getFrameHeight());
-		} else {
-			aspectRatio = new Rational(videoContext.getFrameHeight(), videoContext.getFrameWidth());
-		}
-
 		if (this.commonViews != null) {
-			launchBounds = new Rect(this.commonViews.backgroundView.getLeft(),
-				this.commonViews.backgroundView.getTop(),
-				this.commonViews.backgroundView.getRight(),
-				this.commonViews.backgroundView.getBottom());
-
-			PictureInPictureParams pipParams = new PictureInPictureParams.Builder()
-				.setAspectRatio(aspectRatio)
-				.setSourceRectHint(launchBounds)
-				.build();
-
 			try {
-				enterPictureInPictureMode(pipParams);
+				enterPictureInPictureMode();
 			} catch (IllegalArgumentException e) {
 				logger.error("Unable to enter PIP mode", e);
 				unhideNavigation(false);

@@ -21,12 +21,19 @@
 
 package ch.threema.app.utils;
 
+import android.os.Build;
 import android.text.Spannable;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.lang.reflect.Method;
 
 public class ViewUtil {
 	/**
@@ -122,5 +129,47 @@ public class ViewUtil {
 
 		view.setChecked(checked);
 		return true;
+	}
+
+
+	/**
+	 * Determine if the supplied coordinates are within the boundaries of the view
+	 * @param view View to check
+	 * @param x x coordinates
+	 * @param y y coordinates
+	 * @return true if coordinates are on the view, false if outside or if the view does not exist
+	 */
+	public static boolean isClickOnView(@Nullable View view, float x, float y) {
+		if (view == null) {
+			return false;
+		}
+
+		int[] locationOnScreen = new int[2];
+		view.getLocationOnScreen(locationOnScreen);
+
+		return (y >= locationOnScreen[1]
+			&& y <= (locationOnScreen[1] + view.getHeight())
+			&& x >= locationOnScreen[0]
+			&& x < (locationOnScreen[0] + view.getWidth()));
+	}
+
+	/**
+	 * Set touchModal flag of PopupWindow which is hidden on API<29
+	 * @param popupWindow PopupWindow
+	 * @param touchModal whether to enable or disable the flag
+	 */
+	public static void setTouchModal(@NonNull PopupWindow popupWindow, boolean touchModal) {
+		if (Build.VERSION.SDK_INT >= 29) {
+			popupWindow.setTouchModal(touchModal);
+		} else {
+			Method method;
+			try {
+				method = PopupWindow.class.getDeclaredMethod("setTouchModal", boolean.class);
+				method.setAccessible(true);
+				method.invoke(popupWindow, touchModal);
+			} catch (Exception e) {
+				// ignore
+			}
+		}
 	}
 }

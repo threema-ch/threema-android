@@ -38,19 +38,32 @@ public interface MessageProcessorInterface {
 			this.abstractMessage = abstractMessage;
 		}
 
+		/**
+		 * Processing a message failed. It should not be acked towards the chat server.
+		 */
 		public static ProcessIncomingResult failed() {
 			return new ProcessIncomingResult(false, null);
 		}
+
+		/**
+		 * A message should be ignored and dropped. It should be acked towards the chat server.
+		 */
 		public static ProcessIncomingResult ignore() {
 			return new ProcessIncomingResult(true, null);
 		}
+
+		/**
+		 * A message was successfully processed. It should be acked towards the chat server.
+		 */
 		public static ProcessIncomingResult ok(AbstractMessage abstractMessage) {
 			return new ProcessIncomingResult(true, abstractMessage);
 		}
 	}
+
 	/**
 	 * Process an incoming message. This method should return true if the message has been processed
-	 * successfully, or false on error. An ACK will only be sent to the server if the return value is true.
+	 * successfully, or false on error. An ACK will only be sent to the server if the return value
+	 * is true.
 	 *
 	 * @param boxmsg boxed message to be processed
 	 */

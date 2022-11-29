@@ -26,20 +26,24 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import androidx.core.view.ViewCompat;
 
 public class PaintView extends View {
-	private static final String TAG = "PaintView";
-
 	private float mX, mY;
 	private int currentColor, currentStrokeWidth, currentWidth, currentHeight;
 	private static final float TOUCH_TOLERANCE = 4;
 	private boolean isActive = true, hasMoved;
 	private TouchListener onTouchListener;
+	private final List<Rect> drawingRect = Collections.singletonList(new Rect());
 
 	private ArrayList<Path> paths = new ArrayList<>();
 	private ArrayList<Paint> paints = new ArrayList<>();
@@ -106,6 +110,14 @@ public class PaintView extends View {
 		}
 	}
 
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+		super.onLayout(changed, left, top, right, bottom);
+
+		getDrawingRect(drawingRect.get(0));
+		ViewCompat.setSystemGestureExclusionRects(this, drawingRect);
+	}
+
 	private void touch_start(float x, float y) {
 		// new path
 		Path path = createPath();
@@ -162,6 +174,8 @@ public class PaintView extends View {
 			case MotionEvent.ACTION_MOVE:
 				touch_move(x, y);
 				break;
+			case MotionEvent.ACTION_CANCEL:
+				// Handle a cancel action the same as action up (for system gestures)
 			case MotionEvent.ACTION_UP:
 				touch_up(x, y);
 				this.onTouchListener.onTouchUp();

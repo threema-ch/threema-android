@@ -23,6 +23,8 @@ package ch.threema.app.fragments.mediaviews;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -39,7 +41,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -48,6 +53,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.BitmapUtil;
+import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
@@ -69,7 +75,7 @@ abstract public class MediaViewFragment extends Fragment {
 		void decrypting();
 		void decrypted(boolean success);
 		void loaded(File file);
-		void thumbnailLoaded(Bitmap bitmap);
+		void thumbnailLoaded(Drawable bitmap);
 	}
 
 	public interface OnMediaOpenListener {
@@ -160,6 +166,12 @@ abstract public class MediaViewFragment extends Fragment {
 		this.created(savedInstanceState);
 		this.decryptThumbnail();
 
+		if (messageModel.getType() == MessageType.FILE) {
+			handleMimeCategory(MimeUtil.getMimeCategory(messageModel.getFileData().getMimeType()));
+
+			handleFileName(messageModel.getFileData().getFileName());
+		}
+
 		return rootView;
 	}
 
@@ -189,30 +201,30 @@ abstract public class MediaViewFragment extends Fragment {
 
 	private void decryptThumbnail() {
 		if(TestUtil.required(this.messageModel, this.fileService)) {
-			boolean isGeneric = false;
-
 			logger.debug("show thumbnail of " + this.position);
-			Bitmap thumbnail = null;
+			Drawable thumbnail = null;
 			try {
-				thumbnail = this.fileService.getMessageThumbnailBitmap(messageModel, null);
+				Bitmap messageThumbnail = this.fileService.getMessageThumbnailBitmap(messageModel, null);
+				if (messageThumbnail != null) {
+					thumbnail = new BitmapDrawable(getResources(), messageThumbnail);
+				}
 			} catch (Exception e) {
 				// no thumbnail file
 			}
 
-			String filename = null;
-
 			if (thumbnail == null) {
 				if (messageModel.getMessageContentsType() == VOICE_MESSAGE) {
-					thumbnail = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(getContext(), R.drawable.ic_keyboard_voice_outline), getResources().getColor(R.color.material_dark_grey));
+					thumbnail = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_keyboard_voice_outline);
+					if (thumbnail != null) {
+						thumbnail.setTint(ContextCompat.getColor(requireContext(), R.color.material_dark_grey));
+					}
 				} else if (messageModel.getType() == MessageType.FILE) {
-					thumbnail = BitmapUtil.tintImage(fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType()), getResources().getColor(R.color.material_dark_grey));
-					filename = messageModel.getFileData().getFileName();
-					isGeneric = true;
+					thumbnail = new BitmapDrawable(getResources(), BitmapUtil.tintImage(fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType(), true), ContextCompat.getColor(requireContext(), R.color.material_dark_grey)));
 				}
 			}
 
-			if(thumbnail != null && !thumbnail.isRecycled()) {
-				this.showThumbnail(thumbnail, isGeneric, filename);
+			if (thumbnail != null) {
+				this.showThumbnail(thumbnail);
 
 				this.imageState = ImageState_THUMBNAIL;
 				if(this.onMediaLoadListener != null) {
@@ -350,17 +362,43 @@ abstract public class MediaViewFragment extends Fragment {
 		keepAliveHandler.removeCallbacksAndMessages(null);
 	}
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-	}
-
 	protected abstract void created(Bundle savedInstanceState);
 	protected abstract int getFragmentResourceId();
 	public abstract boolean inquireClose();
-	abstract protected void showThumbnail(Bitmap thumbnail, boolean isGeneric, String filename);
-	abstract protected void hideThumbnail();
+
+	/**
+	 * This method is called with a thumbnail when the fragment is created. It can be overridden to
+	 * set the thumbnail. Otherwise no thumbnail is shown. The given thumbnail has low quality,
+	 * therefore it is only recommended to use as thumbnail.
+	 *
+	 * @param thumbnail the thumbnail of the displayed file
+	 */
+	protected void showThumbnail(@NonNull Drawable thumbnail) {
+		// nothing to do
+	}
 	protected abstract void handleDecryptingFile();
 	protected abstract void handleDecryptFailure();
 	abstract protected void handleDecryptedFile(File file);
+
+	/**
+	 * This method is called with the mime category when the fragment is created. If a subclass needs
+	 * the mime category, this method can be overridden.
+	 * Note that this is only called for messages of type MessageType.FILE
+	 *
+	 * @param category the mime category of the displayed file
+	 */
+	protected void handleMimeCategory(@NonNull MimeUtil.MimeCategory category) {
+		// nothing to do
+	}
+
+	/**
+	 * This method is called with the filename when the fragment is created. If a subclass needs the
+	 * filename, this method can be overridden.
+	 * Note that this is only called for messages of type MessageType.FILE
+	 *
+	 * @param filename the filename of the displayed file
+	 */
+	protected void handleFileName(@Nullable String filename) {
+		// nothing to do
+	}
 }

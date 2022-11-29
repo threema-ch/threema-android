@@ -21,6 +21,9 @@
 
 package ch.threema.app.utils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,14 +31,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -220,21 +222,27 @@ public class MessageUtilTest  {
 
 	@Test
 	public void canSendDeliveryReceipt() {
-		assertTrue(MessageUtil.canSendDeliveryReceipt(this.contactMessageModelInbox));
-		assertTrue(MessageUtil.canSendDeliveryReceipt(this.contactMessageModelInboxUserAcknowledged));
-		assertFalse(MessageUtil.canSendDeliveryReceipt(this.contactMessageModelOutbox));
-		assertFalse(MessageUtil.canSendDeliveryReceipt(this.contactMessageModelOutboxUserAcknowledged));
+		assertTrue(MessageUtil.canSendDeliveryReceipt(this.contactMessageModelInbox, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
+		assertTrue(MessageUtil.canSendDeliveryReceipt(this.contactMessageModelInboxUserAcknowledged, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
+		assertFalse(MessageUtil.canSendDeliveryReceipt(this.contactMessageModelOutbox, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
+		assertFalse(MessageUtil.canSendDeliveryReceipt(this.contactMessageModelOutboxUserAcknowledged, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
 
-		assertTrue(MessageUtil.canSendDeliveryReceipt(this.businessContactMessageModelInbox));
-		assertTrue(MessageUtil.canSendDeliveryReceipt(this.businessContactMessageModelInboxUserAcknowledged));
-		assertFalse(MessageUtil.canSendDeliveryReceipt(this.businessContactMessageModelOutbox));
-		assertFalse(MessageUtil.canSendDeliveryReceipt(this.businessContactMessageModelOutboxUserAcknowledged));
+		assertTrue(MessageUtil.canSendDeliveryReceipt(this.businessContactMessageModelInbox, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
+		assertTrue(MessageUtil.canSendDeliveryReceipt(this.businessContactMessageModelInboxUserAcknowledged, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
+		assertFalse(MessageUtil.canSendDeliveryReceipt(this.businessContactMessageModelOutbox, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
+		assertFalse(MessageUtil.canSendDeliveryReceipt(this.businessContactMessageModelOutboxUserAcknowledged, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
 
+		assertFalse(MessageUtil.canSendDeliveryReceipt(this.groupMessageModelInbox, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
 
-		assertFalse(MessageUtil.canSendDeliveryReceipt(this.groupMessageModelInbox));
-		assertFalse(MessageUtil.canSendDeliveryReceipt(this.groupMessageModelInbox));
+		if (ConfigUtils.isGroupAckEnabled()) {
+			assertTrue(MessageUtil.canSendDeliveryReceipt(this.groupMessageModelInbox, ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK));
+			assertTrue(MessageUtil.canSendDeliveryReceipt(this.groupMessageModelInbox, ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC));
+		} else {
+			assertFalse(MessageUtil.canSendDeliveryReceipt(this.groupMessageModelInbox, ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK));
+			assertFalse(MessageUtil.canSendDeliveryReceipt(this.groupMessageModelInbox, ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC));
+		}
 
-		assertFalse(MessageUtil.canSendDeliveryReceipt(this.distributionListMessageModelOutbox));
+		assertFalse(MessageUtil.canSendDeliveryReceipt(this.distributionListMessageModelOutbox, ProtocolDefines.DELIVERYRECEIPT_MSGREAD));
 
 	}
 
@@ -269,11 +277,11 @@ public class MessageUtilTest  {
 		//business contact message (outbox) with state UserAck can not be acknowledge by the user
 		assertFalse(MessageUtil.canSendUserAcknowledge(this.businessContactMessageModelOutboxUserAcknowledged));
 
-		//group message (inbox) can not be acknowledge by the user
-		assertFalse(MessageUtil.canSendUserAcknowledge(this.groupMessageModelInbox));
+		//group message (inbox) can be acknowledged by the user
+		assertTrue(MessageUtil.canSendUserAcknowledge(this.groupMessageModelInbox));
 
-		//group message (outbox) can not be acknowledge by the user
-		assertFalse(MessageUtil.canSendUserAcknowledge(this.groupMessageModelOutbox));
+		//group message (outbox) can be acknowledged by the user
+		assertTrue(MessageUtil.canSendUserAcknowledge(this.groupMessageModelOutbox));
 
 		//group message (outbox) can not be acknowledge by the user
 		assertFalse(MessageUtil.canSendUserAcknowledge(this.distributionListMessageModelOutbox));
@@ -311,11 +319,11 @@ public class MessageUtilTest  {
 		//business contact message (outbox) with state UserAck can not be acknowledge by the user
 		assertFalse(MessageUtil.canSendUserDecline(this.businessContactMessageModelOutboxUserDeclined));
 
-		//group message (inbox) can not be acknowledge by the user
-		assertFalse(MessageUtil.canSendUserDecline(this.groupMessageModelInbox));
+		//group message (inbox) can be declined by the user
+		assertTrue(MessageUtil.canSendUserDecline(this.groupMessageModelInbox));
 
-		//group message (outbox) can not be acknowledge by the user
-		assertFalse(MessageUtil.canSendUserDecline(this.groupMessageModelOutbox));
+		//group message (outbox) can be declined by the user
+		assertTrue(MessageUtil.canSendUserDecline(this.groupMessageModelOutbox));
 
 		//group message (outbox) can not be acknowledge by the user
 		assertFalse(MessageUtil.canSendUserDecline(this.distributionListMessageModelOutbox));
@@ -564,7 +572,7 @@ public class MessageUtilTest  {
 
 	private ContactMessageReceiver createContactMessageReceiver(@Nullable String identity) {
 		ContactModel contactModel = new ContactModel(identity, null);
-		return new ContactMessageReceiver(contactModel, null, null, null, null, null);
+		return new ContactMessageReceiver(contactModel, null, null, null, null, null, null);
 
 	}
 
@@ -578,7 +586,7 @@ public class MessageUtilTest  {
 		ContactService contactService = mock(ContactService.class);
 		when(contactService.createReceiver(any())).thenAnswer(invocation -> {
 			ContactModel contactModel = invocation.getArgument(0, ContactModel.class);
-			return new ContactMessageReceiver(contactModel, null, null, null, null, null);
+			return new ContactMessageReceiver(contactModel, null, null, null, null, null, null);
 		});
 
 		return new DistributionListMessageReceiver(null, contactService, null, distributionListService);

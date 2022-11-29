@@ -11,7 +11,7 @@
     <string name="title_enter_id">输入ID</string>
     <string name="title_invite_friend">邀请朋友</string>
     <string name="invite_via">通过…邀请朋友</string>
-    <string name="invite_email_body">您好，\n\n我使用%1$s，这是保护用户隐私的安全即时通讯工具。\n\n我的Threema ID：https://threema.id/%2$s\n\n让我们通过%1$s进行通信s！\n\n干杯\n</string>
+    <string name="invite_email_body">您好，\n\n我使用%1$s，这是保护用户隐私的安全即时通讯工具。\n\n我的Threema ID：https://threema.id/%2$s\n\n让我们通过%1$s进行通信吧！\n\n\n谨启</string>
     <string name="invite_sms_body">嗨！让我们使用%1$s以安全和符合隐私的方式进行交流！我的Threema ID：https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema，保护隐私的安全通讯工具。</string>
     <string name="enter_id_hint">输入 Threema ID</string>
@@ -112,6 +112,7 @@
     <string name="cancel">取消</string>
     <string name="copy_message_action">复制</string>
     <string name="delete_contact_action">删除联系人</string>
+    <string name="delete_multiple_contact_action">删除联系人</string>
     <string name="scan_id">扫描ID</string>
     <string name="id_scanned">ID已扫描</string>
     <string name="id_mismatch">您扫描的公钥与服务器为该ID存储的密钥不匹配。这意味着有人操纵了扫描后的代码，并且该密钥不应受到信任。</string>
@@ -123,12 +124,12 @@
     <string name="share_via">分享到...</string>
     <string name="share_subject">%s 对话</string>
     <string name="message_delete_undo">撤消</string>
-    <string name="message_deleted">信息已删除</string>
     <string name="mobile_already_linked">您的 Threema ID 已链接到此手机号码</string>
     <string name="email_already_linked">您的 Threema ID 已链接到此电子邮箱地址</string>
     <string name="whoaaa">Threema 公告</string>
     <string name="really_delete_message_title">删除消息</string>
     <string name="really_delete_thread">删除会话</string>
+    <string name="really_delete_multiple_threads">删除会话</string>
     <string name="really_delete_contact">您确定要删除此联系人和所有关联的消息吗？</string>
     <string name="image_placeholder">图片</string>
     <string name="invalid_threema_id">无效的 Threema ID</string>
@@ -266,8 +267,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="prefs_masterkey_notification_newmsg_on">当主密钥锁定时，
 新消息会触发通用通知</string>
     <string name="chat_history_attached">会话日志已附加。</string>
-    <string name="new_message">1条新消息</string>
-    <string name="new_messages">新消息</string>
     <string name="backup_data_title">数据备份</string>
     <string name="backup_data_password_msg">您的数据将保存在内部 USB 存储设备上的 ZIP 文件中，并且可以
 在任何 Android 设备上恢复。请输入密码以保护您的数据备份。</string>
@@ -294,7 +293,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="prefs_group_notifications">群组会话</string>
     <string name="add_group_members_list">群组成员</string>
     <string name="group_select_at_least_two">需要选择至少一个成员才能继续</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">您不能选择超过%1$d个群组成员</string>
+    <string name="group_select_max">您不能选择超过%1$d个群组成员</string>
     <string name="search">搜索</string>
     <string name="hint_search_keyword">搜索关键词</string>
     <string name="add_group_owner">群组创建者</string>
@@ -330,7 +329,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="updating_group">正在更新群组</string>
     <string name="status_create_group">群组已创建。</string>
     <string name="status_rename_group">群组名称改为 “%1$s”</string>
-    <string name="status_group_new_photo">群组已更新。</string>
+    <string name="status_group_new_photo">群组头像已更新。</string>
     <string name="status_group_new_member">%1$s 已添加到群组。</string>
     <string name="status_group_member_left">%1$s 离开了群组。</string>
     <string name="status_group_member_kicked">%1$s 已从群组中移除。</string>
@@ -373,7 +372,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="contact_format_last_name_first_name">先姓氏，后名字</string>
     <string name="block_contact">屏蔽联系人</string>
     <string name="unblock_contact">解除屏蔽联系人</string>
-    <string name="unread_messages">%d条未读消息</string>
     <string name="one_unread_message">1条未读消息</string>
     <string name="really_unlink_contact_title">解除链接联系人</string>
     <string name="really_unlink_contact">您是否真的要解除与此联系人的链接？</string>
@@ -389,7 +387,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="save_image">保存图片</string>
     <string name="share_image">分享图片</string>
     <string name="view_in_gallery">在相册中查看</string>
-    <string name="file_saved">%d 个文件已成功保存。</string>
     <string name="token_register_failed">更新推送令牌失败，请稍后再试。</string>
     <string name="internet_connection_required">没有网络连接。</string>
     <string name="prefs_sum_save_media">以未加密的形式保存收到的图片和视频，以及发送的相机图片。</string>
@@ -397,8 +394,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="title_add_distribution_list">创建通讯组列表</string>
     <string name="title_edit_distribution_list">编辑通讯组列表</string>
     <string name="really_delete_distribution_list">删除通讯组列表</string>
-    <string name="really_delete_distribution_list_message">您是否真的要移除此列表并删除其
-消息？</string>
+    <string name="really_delete_distribution_list_message">您是否真的要移除此列表并删除其消息？</string>
     <string name="enter_distribution_list_name">为此列表选择名称</string>
     <string name="distribution_list">通讯组列表</string>
     <string name="title_tab_distribution_list">通讯组列表</string>
@@ -433,8 +429,14 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="media_gallery_pictures">图片</string>
     <string name="media_gallery_videos">影片</string>
     <string name="group_membership_title">这些群组的成员</string>
+    <string name="group_description">群组描述</string>
+    <string name="change_group_description">更改群组描述</string>
+    <string name="add_group_description">添加群组描述</string>
+    <string name="read_more">阅读更多</string>
+    <string name="read_less">阅读更少</string>
+    <string name="changed_group_desc_date">"\u6700\u540e\u66f4\u6539\u65f6\u95f4: "</string>
     <string name="num_items_sected">已选择 %s</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">您确定要删除%d条媒体消息吗？</string>
+    <string name="really_delete_media">您确定要删除%d条媒体消息吗？</string>
     <string name="check_updates">检查更新</string>
     <string name="masterkey_lock_explain">Threema 一直记录密码。如果您遇到需要经常重新输入密码
 的情况，请确保已禁用可能会过早结束 Threema 的任务管理器和电池优化应用。</string>
@@ -451,7 +453,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="share_conversation_body">您需要具有 AES 支持的现代 ZIP 工具才能解压缩文件，例如
 http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">此会话将作为加密的zip文件发送。请选择密码：</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%2$d个会话中有%1$d条新消息</string>
     <string name="ballot_create">建立投票</string>
     <string name="ballot_choice_add">添加选项</string>
     <string name="ballot_state_closed">已关闭</string>
@@ -469,9 +470,6 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="ballot_overview">所有投票</string>
     <string name="ballot_copy">复制投票</string>
     <string name="ballot_remove">删除投票</string>
-    <string name="ballot_really_delete">删除投票</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">您确定要删除%1$d个投票吗？您将无法恢复
-投票。</string>
     <string name="ballot_not_exist">投票不存在</string>
     <string name="ballot_tap_to_vote">点击即可投票</string>
     <string name="ballot_tap_to_view_results">投票已关闭。点击即可查看结果</string>
@@ -486,7 +484,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="invalid_cannot_send">您无法向无效的联系人发送信息</string>
     <string name="ballot_answer_count_error">请输入至少两个答案进行投票。</string>
     <string name="ballot_one_contact_not_supported">警告：%1$s 将无法参与您的投票。</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d个联系人将无法参与您的投票。</string>
+    <string name="ballot_x_contact_not_supported">警告：%1$d个联系人将无法参与您的投票。</string>
     <string name="contact_state_inactive">不活跃</string>
     <string name="contact_state_invalid">无效</string>
     <string name="back">返回</string>
@@ -500,6 +498,9 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="video_size_large">低质量（使用数据较多）</string>
     <string name="video_size_original">无（使用大量数据）</string>
     <string name="prefs_video_size">视频压缩</string>
+    <string name="menu_video_size_small">小型尺寸</string>
+    <string name="menu_video_size_medium">中型尺寸</string>
+    <string name="menu_video_size_large">原始尺寸</string>
     <string name="show_contact">显示联系人</string>
     <string name="chat_with">与 %1$s 聊天</string>
     <string name="kick_user_from_group">将 %1$s 踢出群组</string>
@@ -519,7 +520,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="send_media">发送媒体</string>
     <string name="rotate">旋转</string>
     <string name="remove">删除</string>
-    <string name="image_already_added">该图片已被添加。</string>
+    <string name="item_already_added">此项目已被添加。</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">至少%d个字符。</string>
     <string name="mark_read">标记为已读</string>
     <string name="attach_document">文件</string>
@@ -529,12 +530,12 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="no_activity_for_mime_type">找不到打开此文件的应用。</string>
     <string name="open_from">从...打开</string>
     <string name="file_one_contact_not_supported">%1$s 无法接收文件。</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">警告：%1$d个联系人无法收到您的文件。</string>
+    <string name="file_x_contact_not_supported">警告：%1$d个联系人无法收到您的文件。</string>
     <string name="mime_android_apk">Android 套件</string>
     <string name="mime_audio">音频文件</string>
     <string name="mime_certificate">数字证书</string>
     <string name="mime_codes">源代码</string>
-    <string name="mime_compressed">封存</string>
+    <string name="mime_compressed">归档</string>
     <string name="mime_contact">联系人</string>
     <string name="mime_event">日历活动</string>
     <string name="mime_font">字体</string>
@@ -572,7 +573,6 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="delete_data">立即删除数据</string>
     <string name="delete_date_confirm_message">如果继续，这些文件将被删除，并且仅
 保留缩略图。</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">已删除%d个媒体文件</string>
     <string name="storage_management">存储管理</string>
     <string name="media">媒体</string>
     <string name="prefs_storage_mgmt_title">清理媒体，文件和消息</string>
@@ -604,7 +604,6 @@ Threema 支持的所有表情符号。</string>
     <string name="fontsize_large">大</string>
     <string name="fontsize_xlarge">超大</string>
     <string name="no_app_for_location">在此设备上找不到地图应用程序</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">已删除%d个会话</string>
     <string name="prefs_sendlog">发送日志</string>
     <string name="prefs_sendlog_summary">将日志发送给 Threema，以便在出现问题时进行进一步分析</string>
     <string name="prefs_exportlog">导出日志文件</string>
@@ -615,7 +614,6 @@ Threema 支持的所有表情符号。</string>
     <string name="message_declined">您对这条消息表示 “不同意”。</string>
     <string name="notifications_settings">通知设置</string>
     <string name="notifications_default">默认设置</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">持续 %d 小时</string>
     <string name="notifications_until">直到%s</string>
     <string name="notifications_mute">已静音</string>
     <string name="notifications_choose_sound">选择声音</string>
@@ -711,7 +709,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_proximity_sensor_explain">如果覆盖了近距离传感器，请使用听筒播放语音消息</string>
     <string name="error_creating_group">创建/更新群组时发生错误</string>
     <string name="no_media_found_generic">在此会话中找不到媒体</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">一次最多可以编辑%d个项目</string>
+    <string name="max_images_reached">一次最多可以编辑%d个项目</string>
     <string name="enter_description">请在这里描述错误/问题。</string>
     <string name="add_caption_hint">添加可选描述</string>
     <string name="disable">禁用</string>
@@ -757,9 +755,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_language_override">语言</string>
     <string name="threema_channel_intro">Threema 频道为您提供关于 Threema 的所有新闻。您想订阅Threema 频道并将其添加到您的联系人中吗？这是免费的，您可以随时退订。</string>
     <string name="quote">引用</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">您是否真的要删除%1$d个联系人和所有相关的会话记录？</string>
     <string name="contacts_deleted">联系人已被删除</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">无法删除%d个联系人，因为他们仍存在于群组</string>
     <string name="take_photo">拍摄照片</string>
     <string name="select_from_gallery">从图库中选择</string>
     <string name="palette">调色盘</string>
@@ -885,7 +881,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="no_matching_work_contacts">找不到经过管理员验证的 Threema Work 联系人</string>
     <string name="all">所有</string>
     <string name="webclient_session_stop_all">关闭所有</string>
-    <string name="webclient_running_sessions">%d 个会话正在运行</string>
     <string name="passphrase_service_name">密码服务</string>
     <string name="passphrase_service_description">密码解锁时的通知</string>
     <string name="webclient_service_description">Threema 网页版/桌面版会话运行时的通知</string>
@@ -1036,12 +1031,11 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="data_backup_save_path">备份路径</string>
     <string name="change">更改</string>
     <string name="data_backup_last_date">上次成功的数据备份</string>
-    <string name="archived">已封存会话</string>
-    <string name="to_archive">封存</string>
-    <string name="message_archived">已封存%d个会话</string>
-    <string name="archived_chats">已封存会话</string>
-    <string name="unarchive">取消封存</string>
-    <string name="no_archived_chats">没有已封存的会话记录。\n要将会话记录封存，请在消息列表中向左滑动。</string>
+    <string name="archived">已归档会话</string>
+    <string name="to_archive">归档</string>
+    <string name="archived_chats">已归档会话</string>
+    <string name="unarchive">取消归档</string>
+    <string name="no_archived_chats">没有已归档的会话记录。\n如要将会话记录归档，请在消息列表中向左滑动。</string>
     <string name="add_contact_enter_id_hint">请输入您要添加的联系人的Threema ID</string>
     <string name="notification_channel_new_contact">新联系人</string>
     <string name="notification_channel_new_contact_desc">关于新联系人的通知</string>
@@ -1050,23 +1044,12 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="system_default">系统默认</string>
     <string name="open_in_maps_app">在地图应用中打开</string>
     <string name="delete">删除</string>
-    <string name="num_archived_chats">%d个已封存的会话</string>
     <string name="continue_recording">继续录音</string>
-    <string name="whatsnew_title">欢迎使用 %1$s %2$s</string>
-    <string name="whatsnew_headline"><![CDATA[<p><b>%s 安卓版此版本的新功能：</b></p>
-<p>
-&bull; 添加了许多符合 Unicode 13.1 标准的新表情符号。😵💫❤️🔥
-</p><p>
-&bull; 按名称或含义搜索表情符号（适用于17种语言）。
-</p><p>
-&bull; 为没有设置头像的联系人和群组选定颜色。这些新的颜色将在跨平台和设备生效。
-</p><p>
-&bull; 改进许多列表的滚动性能。
-</p><p>
-&bull; 优化媒体编辑器的布局。将发送消息前可编辑的媒体项目的数量增加到256个。
-</p><p>
-&bull; 许多小改进和错误修复。
-</p>]]></string>
+    <string name="whatsnew_title">新功能：%1$s 群组通话</string>
+    <string name="whatsnew_headline"><![CDATA[<p>安卓版的 %1$s 现在可以进行端对端加密群组通话了。</p>
+<p>如要发起群组通话，首先打开任意一个群组会话，然后点击顶部的相机图标即可。</p>
+<p>所有群组成员都会收到通知，并可以决定是否加入通话。</p>
+<p><b>请注意：</b>iOS 的群组通话功能将在稍后发布。</p>]]></string>
     <string name="whatsnew2_title">(an empty phrase)</string>
     <string name="whatsnew2_body">(an empty phrase)</string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
@@ -1087,8 +1070,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="and">和</string>
     <string name="edit_type_content_description">查看或编辑 %1$s %2$s</string>
     <string name="group">群组</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>我们的隐私政策已更新，以反映以下更改： </p>
-<p>%1$s不再依赖 Google Play 和 Google Maps 提供地图和POI数据。</p>请在<a href="%2$s">这里</a>查看完整的隐私政策。]]></string>
     <string name="play_services_not_installed_unable_to_use_push">由于您还未安装推送服务，因此无法切换到 Google FCM 或 HMS 推送消息。</string>
     <string name="unable_to_get_current_location">无法确定当前位置。</string>
     <string name="lp_search_place_min_chars">请输入至少三个字符以搜索地点。</string>
@@ -1151,6 +1132,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="translators_thanks">非常感谢我们的翻译志愿者：\n%s</string>
     <string name="ballot_window_hide">隐藏公开的投票</string>
     <string name="ballot_window_show">显示公开的投票</string>
+    <string name="single_ballot_really_delete">移除这个投票</string>
+    <string name="single_ballot_really_delete_text">您确定要删除这个投票吗？你将无法恢复原来的票数。</string>
     <string name="tooltip_voip_other_party_video_on">对方已建立视频通话，点击这里打开摄像头。</string>
     <string name="tooltip_voip_other_party_video_disabled">对方使用的应用程序版本不支持或不允许进行视频通话。</string>
     <string name="biometrics_not_enrolled">系统未注册任何生物识别信息</string>
@@ -1217,7 +1200,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="transcoder_unsupported_audio_format">由于缺少系统支持，音频无法转码。</string>
     <string name="transcoder_unknown_audio_error">发生未知的音频转码错误。</string>
     <string name="video_size_explain">就算设置为未压缩，体积非常大的视频都有可能被压缩。</string>
-    <string name="status_create_notes">*在此会话中只有您一个人能访问*\n将此会话作为保存文本、媒体和文件的安全笔记本。</string>
+    <string name="status_create_notes">*在此会话中只有您一个人能访问*
+将此会话作为保存文本、媒体和文件的安全笔记本。</string>
     <string name="status_create_notes_off">*在此会话中不再只有您一个人能访问*\n新消息将被发送到所有群组成员。</string>
     <string name="note_group_howto">提示：如果您不添加任何群组成员，发送到这个群组的信息将保留在本地。这样能方便您安全地存储笔记、媒体和文件，或将文件转移到桌面。</string>
     <string name="mark_unread">标记为未读</string>
@@ -1238,8 +1222,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_request_already_sent"><![CDATA[您已经通过这个链接发送了 <b>%s</b> 公开群组加入请求，正在等待群组管理员的回复。如果您想重新发送请求，请再次点击列表中的链接。]]></string>
     <string name="group_link_none">尚未生成链接</string>
     <string name="group_request_confirm_send"><![CDATA[您即将向管理员 <b>%2$s</b> 发送 <b>%1$s</b> 群组加入请求。如果此链接没有失效，管理员一收到您的请求，您就会自动添加到群组。]]></string>
-    <string name="really_delete_outgoing_request">您确定要删除 %d 群组加入的请求吗？请注意，删除请求井不会撤销请求。如果群组管理员尚未回复，您仍然可能被批准或拒绝加入群组。</string>
-    <string name="really_delete_group_request_title">您确定要删除群组加入请求吗？</string>
+    <string name="really_delete_group_request_title_singular">删除群组加入请求</string>
+    <string name="really_delete_group_request_title_plural">删除群组加入请求</string>
     <string name="sent_to">发送到：%s</string>
     <string name="sent_on">发送日期：%s</string>
     <string name="group_response">群组加入回应</string>
@@ -1259,7 +1243,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="link_administration_off_explain">由于这个链接之前已被配置和分享，因此现在无法更改此属性，您需要生成新链接。</string>
     <string name="group_link_update_success">链接已成功更新</string>
     <string name="no_group_links">没有群组链接。如要创建一个群组链接，请点击右下角的添加按钮或群组详细信息视图中的默认链接。</string>
-    <string name="really_delete_group_link">你确定要删除 %d 群组的链接吗？其他人将不能再通过链接发送请求。但以前收到的请求仍然可以选择批准或拒绝加入群组。</string>
     <string name="group_links_overview_title">%s 群组的链接</string>
     <string name="group_link_invalid">已过期</string>
     <string name="group_link_valid">有效</string>
@@ -1275,7 +1258,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="open_group_requests_show">显示加入请求</string>
     <string name="open_group_requests_hide">隐藏加入请求</string>
     <string name="group_request_link_already_deleted">同时删除群组链接</string>
-    <string name="really_delete_incoming_request">您确定要删除%d个群组加入请求吗？一旦删除，你就不能回应这些请求。</string>
     <string name="incoming_group_request_no_message">通过公开链接发送…没有消息</string>
     <string name="group_request_received_through">通过链接加入群组：%s</string>
     <string name="reaccept">重新接受</string>
@@ -1331,6 +1313,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_links_manage_menu">管理群组链接</string>
     <string name="group_request_sent_menu">发送群组加入请求</string>
     <string name="really_delete_group_link_title">删除群组链接</string>
+    <string name="really_delete_multiple_group_links_title">删除群组链接</string>
     <string name="qr_scan_result_dialog_title">二维码扫描结果</string>
     <string name="scan_failure_dialog_title">扫描失败</string>
     <string name="no_threema_qr_info">这不是 Threema 特定的二维码。 解码后的内容为：</string>
@@ -1410,6 +1393,17 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="tooltip_multiple_recipients_title">新功能：一条消息同时发送到多个收件人</string>
     <string name="tooltip_multiple_recipients_text">长按可将一条消息同时发送到多个收件人。</string>
     <string name="synchronizing">同步中…</string>
+    <string name="forward_security">以完美前向保密发送消息</string>
+    <string name="forward_security_mode">完美前向保密</string>
+    <string name="forward_security_mode_none">否</string>
+    <string name="clear_forward_security">清除完美前向保密会话</string>
+    <string name="forward_security_cleared">与此联系人的完美前向保密会话已被清除</string>
+    <string name="message_without_forward_security">您收到一条没有完美前向保密的消息，您可以验证发件人是否主动禁用完美前向保密。</string>
+    <string name="forward_security_established">此会话中的消息现正受完美前向保密的保护。</string>
+    <string name="forward_security_established_rx">在此会话中收到的消息现正受完美前向保密的保护。在联系人详细信息中启用完美前向保密以保护已发送的消息。</string>
+    <string name="forward_security_reset">与此联系人的完美前向保密会话已被重置。如果联系人更换了设备或重新安装了此应用程序，就会重置会话。</string>
+    <string name="forward_security_reset_simple">与此联系人的完美前向保密会话已重置。</string>
+    <string name="forward_security_message_out_of_order">收到的消息乱序，无法解密。</string>
     <string name="self_updater_installation_failed">下载更新失败。请手动从 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下载并安装更新。</string>
     <string name="spam_first_contact">此会话来自一个未知联系人</string>
     <string name="spam_report">举报垃圾消息</string>
@@ -1425,8 +1419,46 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="last_added_contact">最后添加</string>
     <string name="directory_explain_text">在公司目录中搜索任何尚未列在您的联系人列表中的员工。</string>
     <string name="cannot_display_location">无法显示此位置。</string>
+    <string name="draw_reply">随机回复</string>
+    <string name="drawing">绘画</string>
+    <string name="background_color">背景颜色</string>
+    <string name="send_video_muted">从视频中删除声音</string>
+    <string name="send_without_audio">移除音频</string>
+    <string name="edit_filename">编辑文件名</string>
     <string name="unable_to_restore_identity_because">无法恢复ID。原因：%s</string>
     <string name="share_with_app">分享到 Threema</string>
+    <string name="read_phone_state_dialog_allow">授予权限</string>
+    <string name="read_phone_state_dialog_disallow">仍然继续</string>
+    <string name="read_phone_state_dialog_never_ask_again">下次不再提示</string>
+    <string name="read_phone_state_dialog_title">需要权限</string>
+    <string name="read_phone_state_dialog_message">为防止 Threema 通话中断一般通话，需要授予通话权限。 如果未授予此权限，当正在进行一般通话时，Threema 通话有来电也会同时响铃，阻碍一般通话。</string>
+    <string name="read_phone_state_short_message">如要检查正在进行的通话，请授予 Threema 通话权限。</string>
+    <string name="prefs_title_read_phone_state">授予通话权限</string>
+    <string name="prefs_title_hibernation">未使用的应用设置</string>
+    <string name="prefs_summary_hibernation_api_32">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “撤消权限并释放空间” 。</string>
+    <string name="prefs_summary_hibernation_api">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “暂停未使用应用的活动” 。</string>
+    <string name="unable_to_fetch_configuration">无法从配置服务器获取数据，请稍后再试。</string>
+    <string name="rogue_device_warning">服务器检测到有人试图从另一台设备登录现有的 Threema ID。\n\n如果您之前没有在其他设备上登录您的 Threema ID，或者使用旧版本的应用程序，请联系支持人员并发送日志文件。</string>
+    <string name="fetch2_failure">与配置服务器同步失败。</string>
+    <string name="no_members_support_group_calls">此群组中没有成员可以接听群组通话</string>
+    <string name="group_calls">群组通话</string>
+    <string name="prefs_title_group_calls_enable">启用群组通话</string>
+    <string name="group_no_members">此群组不包含任何其他成员</string>
+    <string name="group_call">群组通话</string>
+    <string name="checking_compatibility">正在检查兼容性...</string>
+    <string name="group_call_mic_permission_rationale">如要进行群组通话，您必须在系统 “权限” 设置下允许 %s 访问麦克风权限。</string>
+    <string name="group_call_camera_permission_rationale">为了让其他参与者看到你的照片，您必须在系统 “权限” 设置下允许 %s 访问相机权限。</string>
+    <string name="settings">设置</string>
+    <string name="leave">退出</string>
+    <string name="fs_key_mismatch">密钥不匹配</string>
+    <string name="tap_to_resend">点击重新发送</string>
+    <string name="group_calls_tooltip_title">新功能：群组通话</string>
+    <string name="group_calls_tooltip_text">点击这里可邀请所有群组成员加入通话。所有群组成员都会收到通知，并可以决定是否要加入通话。</string>
+    <string name="prefs_title_calls">加密通话</string>
+    <string name="prefs_sum_group_calls_vibration">选择是否在群组通话开始时进行振动</string>
+    <string name="forward_security_mode_4dh">双向保密</string>
+    <string name="forward_security_mode_2dh">单向保密</string>
+    <string name="forward_security_explanation">完全前向保密 (PFS) 可保护记录的通信，即使长期加密密钥已泄露也不会被追溯解密。\n\n如果双方的应用程序都支持完全前向保密，则可以启用该选项。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>
@@ -1441,5 +1473,62 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     </plurals>
     <plurals name="message_copied">
         <item quantity="other">消息已复制</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="other">%d条新消息</item>
+    </plurals>
+    <plurals name="file_saved">
+        <item quantity="other">%d个文件已成功保存。</item>
+    </plurals>
+    <plurals name="ballot_really_delete">
+        <item quantity="other">移除投票</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="other">您确定要删除%1$d个投票吗？你将无法恢复原来的票数。</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="other">已删除%d条消息</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="other">%d小时</item>
+    </plurals>
+    <plurals name="really_delete_contacts_message">
+        <item quantity="other">您确定要删除%1$d个联系人和所有关联的消息吗？</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="other">无法删除%d个联系人，因为他(们)仍然是群组成员之一。</item>
+    </plurals>
+    <plurals name="message_archived">
+        <item quantity="other">已归档%d个会话</item>
+    </plurals>
+    <plurals name="new_messages_in_chats">
+        <item quantity="other">%2$d个会话中有%1$d条新消息</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="other">%d个会话正在运行</item>
+    </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="other">您确定要删除%d个群组加入请求吗？请注意，删除请求并不会撤销加入请求。如果群组管理员还未回复请求，你仍然可能被接受或拒绝加入群组。</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="other">您确定要删除%d个群组加入请求吗？
+一旦删除，您就不能处理群组加入请求。</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="other">您确定要删除%d个群组链接吗？
+其他人将无法再通过链接发送群组加入请求。
+群组管理员仍然可以选择接受或拒绝以前收到的群组加入请求。</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="other">已删除%d个会话</item>
+    </plurals>
+    <plurals name="num_archived_chats">
+        <item quantity="other">%d个已归档会话</item>
+    </plurals>
+    <plurals name="forward_security_messages_skipped">
+        <item quantity="other">自上一条消息以来，已丢失%d条消息。</item>
+    </plurals>
+    <plurals name="delete_messages">
+        <item quantity="other">删除此设备上的%d条消息？</item>
     </plurals>
 </resources>

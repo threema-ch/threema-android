@@ -54,6 +54,11 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 	public FrameLayout readOnContainer;
 	public Chip readOnButton;
 	public MaterialButton messageTypeButton;
+	public View groupAckContainer;
+	public ImageView groupAckThumbsUpImage, groupAckThumbsDownImage;
+	public TextView groupAckThumbsUpCount, groupAckThumbsDownCount;
+	public TextView tapToResend;
+	public View footerView;
 
 	public ControllerView controller;
 

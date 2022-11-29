@@ -25,8 +25,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.junit.Test;
 
-import ch.threema.protobuf.callsignaling.CallSignaling;
-import ch.threema.protobuf.callsignaling.CallSignaling.VideoQualityProfile.QualityProfile;
+import ch.threema.protobuf.Common;
+import ch.threema.protobuf.callsignaling.O2OCall;
+import ch.threema.protobuf.callsignaling.O2OCall.VideoQualityProfile;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
@@ -46,12 +47,12 @@ public class VoipVideoParamsTest {
 		byte[] bytes = highProfile.toSignalingMessageBytes();
 
 		// Deserialize
-		final CallSignaling.Envelope envelope = CallSignaling.Envelope.parseFrom(bytes);
+		final O2OCall.Envelope envelope = O2OCall.Envelope.parseFrom(bytes);
 
 		assertTrue(envelope.hasVideoQualityProfile());
-		final CallSignaling.VideoQualityProfile profile = envelope.getVideoQualityProfile();
+		final VideoQualityProfile profile = envelope.getVideoQualityProfile();
 		assertTrue(profile.hasMaxResolution());
-		assertEquals(QualityProfile.HIGH, profile.getProfile());
+		assertEquals(VideoQualityProfile.QualityProfile.HIGH, profile.getProfile());
 		assertEquals(2000, profile.getMaxBitrateKbps());
 		assertEquals(25, profile.getMaxFps());
 		assertEquals(1280, profile.getMaxResolution().getWidth());
@@ -83,7 +84,7 @@ public class VoipVideoParamsTest {
 		};
 		for (Pair pair : pairs) {
 			final VoipVideoParams common = pair.a.findCommonProfile(pair.b, false);
-			assertEquals(QualityProfile.LOW, common.getProfile());
+			assertEquals(VideoQualityProfile.QualityProfile.LOW, common.getProfile());
 		}
 	}
 
@@ -99,7 +100,7 @@ public class VoipVideoParamsTest {
 		};
 		for (Pair pair : pairs) {
 			final VoipVideoParams common = pair.a.findCommonProfile(pair.b, false);
-			assertEquals(QualityProfile.HIGH, common.getProfile());
+			assertEquals(VideoQualityProfile.QualityProfile.HIGH, common.getProfile());
 		}
 	}
 
@@ -113,8 +114,8 @@ public class VoipVideoParamsTest {
 
 		final VoipVideoParams commonNonRelayed = a.findCommonProfile(b, false);
 		final VoipVideoParams commonRelayed = a.findCommonProfile(b, true);
-		assertEquals(QualityProfile.MAX, commonNonRelayed.getProfile());
-		assertEquals(QualityProfile.HIGH, commonRelayed.getProfile());
+		assertEquals(VideoQualityProfile.QualityProfile.MAX, commonNonRelayed.getProfile());
+		assertEquals(VideoQualityProfile.QualityProfile.HIGH, commonRelayed.getProfile());
 	}
 
 	/**
@@ -139,12 +140,12 @@ public class VoipVideoParamsTest {
 	public void findCommonProfileRawValues() {
 		final VoipVideoParams a = VoipVideoParams.high();
 		final VoipVideoParams b = VoipVideoParams.fromSignalingMessage(
-			CallSignaling.VideoQualityProfile.newBuilder()
+			O2OCall.VideoQualityProfile.newBuilder()
 				.setProfileValue(1234) // Invalid / unknown
 				.setMaxBitrateKbps(600)
 				.setMaxFps(23)
 				.setMaxResolution(
-					CallSignaling.Resolution.newBuilder()
+					Common.Resolution.newBuilder()
 						.setWidth(2000)
 						.setHeight(700)
 				).build()
@@ -166,12 +167,12 @@ public class VoipVideoParamsTest {
 	public void findCommonProfileRawValuesWithClamping() {
 		final VoipVideoParams a = VoipVideoParams.high();
 		final VoipVideoParams b = VoipVideoParams.fromSignalingMessage(
-			CallSignaling.VideoQualityProfile.newBuilder()
+			O2OCall.VideoQualityProfile.newBuilder()
 				.setProfileValue(1234) // Invalid / unknown
 				.setMaxBitrateKbps(1)
 				.setMaxFps(1)
 				.setMaxResolution(
-					CallSignaling.Resolution.newBuilder()
+					Common.Resolution.newBuilder()
 						.setWidth(1)
 						.setHeight(1)
 				).build()

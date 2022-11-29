@@ -21,6 +21,8 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.fragments.ComposeMessageFragment.SCROLLBUTTON_VIEW_TIMEOUT;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -43,6 +45,9 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
@@ -55,8 +60,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.MediaGalleryAdapter;
@@ -91,8 +94,6 @@ import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
-
-import static ch.threema.app.fragments.ComposeMessageFragment.SCROLLBUTTON_VIEW_TIMEOUT;
 
 public class MediaGalleryActivity extends ThreemaToolbarActivity implements AdapterView.OnItemClickListener, ActionBar.OnNavigationListener, GenericAlertDialog.DialogClickListener, FastScrollGridView.ScrollListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaGalleryActivity");
@@ -570,7 +571,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 
 	@SuppressLint("StaticFieldLeak")
 	private void reallyDiscardMessages(final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages) {
-		new AsyncTask<Void, Integer, Void>() {
+		new AsyncTask<Void, Integer, Integer>() {
 			boolean cancelled = false;
 
 			@Override
@@ -588,8 +589,9 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 			}
 
 			@Override
-			protected Void doInBackground(Void... params) {
+			protected Integer doInBackground(Void... params) {
 				int i = 0;
+				int deleted = 0;
 				Iterator<AbstractMessageModel> checkedItemsIterator = selectedMessages.iterator();
 				while (checkedItemsIterator.hasNext() && !cancelled) {
 					publishProgress(i++);
@@ -598,6 +600,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 
 						if (messageModel != null) {
 							messageService.remove(messageModel);
+							deleted++;
 						 	RuntimeUtil.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
@@ -609,13 +612,14 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 						logger.error("Exception", e);
 					}
 				}
-				return null;
+				return deleted;
 			}
 
 			@Override
-			protected void onPostExecute(Void result) {
+			protected void onPostExecute(Integer deletedMessages) {
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_DELETING_MEDIA, true);
-				Snackbar.make(gridView, R.string.message_deleted, Snackbar.LENGTH_LONG).show();
+				String text = ConfigUtils.getSafeQuantityString(gridView.getContext(), R.plurals.message_deleted, deletedMessages, deletedMessages);
+				Snackbar.make(gridView, text, Snackbar.LENGTH_LONG).show();
 				if (actionMode != null) {
 					actionMode.finish();
 				}
@@ -702,6 +706,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		IntentDataUtil.append(m, intent);
 		intent.putExtra(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, true);
 		intent.putExtra(MediaViewerActivity.EXTRA_ID_REVERSE_ORDER, false);
+		intent.putExtra(MediaViewerActivity.EXTRA_FILTER, this.spinnerMessageFilter.contentTypes());
 		AnimationUtil.startActivityForResult(this, v, intent, ACTIVITY_ID_MEDIA_VIEWER);
 	}
 

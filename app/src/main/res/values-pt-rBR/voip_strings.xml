@@ -60,6 +60,7 @@
     <string name="voip_another_pstn_call">Não foi possível iniciar a ligação. Uma ligação por telefone regular ainda está ativa.</string>
     <string name="voip_call_status_off_hours">Chamada durante folga</string>
     <string name="voip_peer_video_disabled">As chamadas de vídeo foram desativadas pelo outro participante.</string>
+    <string name="voip_reject_channel_name">Mudança de estado de chamada</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnóstico WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Inicie esta ferramenta para depurar problemas com a configuração de uma conexão por chamada de voz</string>
@@ -69,4 +70,34 @@
     <string name="voip_webrtc_debug_done">Pronto. Se você tiver problemas com o estabelecimento da conexão da chamada, envie este resultado para o suporte do Threema.</string>
     <string name="voip_webrtc_debug_copied">Copiado à área de transferência.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Copiar à área de transferência</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Todos os membros do grupo foram notificados</string>
+    <string name="voip_gc_notification_channel_description">Chamadas de grupo</string>
+    <string name="voip_gc_notification_title">Chamada de grupo</string>
+    <string name="voip_gc_notification_call_started">%1$s iniciou uma chamada de grupo em %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s iniciou uma chamada de grupo</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Você iniciou uma chamada de grupo</string>
+    <string name="voip_gc_dismiss_call">Ignorar</string>
+    <string name="voip_gc_join_call">Entrar</string>
+    <string name="voip_gc_ongoing_call">Chamadas de grupo em andamento</string>
+    <string name="voip_gc_waiting_for_participants">Aguardando participantes</string>
+    <string name="voip_gc_participant_avatar_description">Foto de perfil do participante</string>
+    <string name="voip_gc_participant_mute_status_description">Status silencioso do participante</string>
+    <string name="voip_gc_notification_new_call_public">Uma nova chamada de grupo começou</string>
+    <string name="voip_gc_open_call">Abrir</string>
+    <string name="voip_gc_call_started">A chamada de grupo começou</string>
+    <string name="voip_gc_call_ended">A chamada de grupo terminou</string>
+    <string name="voip_gc_in_call">Em chamada de grupo</string>
+    <string name="voip_gc_sfu_not_available">Servidor indisponível, tente novamente mais tarde</string>
+    <string name="voip_gc_call_error">Problema ao iniciar a chamada de grupo</string>
+    <string name="voip_gc_call_full_generic">Máximo atingido: Não é possível adicionar mais participantes a esta chamada de grupo.</string>
+    <string name="voip_gc_call_full_n">Máximo de %1$d participantes atingido, você não pode participar desta chamada de grupo.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d participante</item>
+        <item quantity="other">%d participantes</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Obs: um membro não pode participar de chamadas de grupo.</item>
+        <item quantity="other">Obs: %d membros não podem participar de chamadas de grupo.</item>
+    </plurals>
 </resources>

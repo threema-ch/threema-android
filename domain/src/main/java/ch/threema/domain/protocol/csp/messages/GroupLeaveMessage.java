@@ -50,7 +50,7 @@ public class GroupLeaveMessage extends AbstractGroupMessage {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			return bos.toByteArray();
 		} catch (Exception e) {
 			logger.error(e.getMessage());

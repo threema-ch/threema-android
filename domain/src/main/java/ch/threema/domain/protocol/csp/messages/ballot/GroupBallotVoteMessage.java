@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 /**
  * A group ballot vote message.
@@ -93,7 +93,7 @@ public class GroupBallotVoteMessage extends AbstractGroupMessage
 
 			//ballot stuff
 			bos.write(this.getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(this.getGroupId().getGroupId());
+			bos.write(this.getApiGroupId().getGroupId());
 			bos.write(this.getBallotCreator().getBytes(StandardCharsets.US_ASCII));
 			bos.write(this.getBallotId().getBallotId());
 

@@ -4,21 +4,32 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
 	<item
+		android:id="@+id/menu_gallery"
+		android:icon="@drawable/ic_collections_white_24dp"
+		app:iconTint="@android:color/white"
+		android:orderInCategory="20"
+		android:title="@string/media_gallery"
+		app:showAsAction="always"/>
+
+	<!-- TODO(DES-54) replace with more appropriate icon -->
+
+	<item
+		android:id="@+id/menu_group_call"
+		android:icon="@drawable/ic_group_call"
+		app:iconTint="@android:color/white"
+		android:orderInCategory="30"
+		android:title="@string/group_call"
+		android:visible="false"
+		app:showAsAction="always"/>
+
+	<item
 		android:id="@+id/action_send_message"
 		android:enabled="true"
 		android:icon="@drawable/ic_chat_bubble"
 		app:iconTint="@android:color/white"
-		android:orderInCategory="30"
+		android:orderInCategory="40"
 		android:title="@string/title_compose_message"
 		android:visible="true"
-		app:showAsAction="always"/>
-
-	<item
-		android:id="@+id/menu_gallery"
-		android:icon="@drawable/ic_collections_white_24dp"
-		app:iconTint="@android:color/white"
-		android:orderInCategory="40"
-		android:title="@string/media_gallery"
 		app:showAsAction="always"/>
 
 	<item
@@ -29,7 +40,6 @@
 		android:visible="false"
 		android:title="@string/group_links_manage_menu"
 		app:showAsAction="never" />
-
 
 	<item
 		android:id="@+id/menu_resync"

@@ -21,6 +21,11 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_PROVIDER;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
@@ -36,11 +41,19 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.provider.Settings;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.chip.Chip;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
@@ -63,12 +76,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.OnApplyWindowInsetsListener;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -85,16 +92,10 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.data.LocationDataModel;
 
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_PROVIDER;
-
 public class MapActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MapActivity");
 
 	private static final String DIALOG_TAG_ENABLE_LOCATION_SERVICES = "lss";
-	private static final String DIALOG_TAG_PRIVACY_POLICY_40_ACCEPT = "40acc";
 
 	private static final int REQUEST_CODE_LOCATION_SETTINGS = 22229;
 	private static final int PERMISSION_REQUEST_LOCATION = 49;
@@ -201,18 +202,8 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 			}
 		}
 
-		if (preferenceService.getPrivacyPolicyAcceptedVersion() < 4.0f) {
-			GenericAlertDialog alertDialog = GenericAlertDialog.newInstanceHtml(
-				R.string.privacy_policy,
-				getString(R.string.send_location_privacy_policy_v4_0, getString(R.string.app_name), ConfigUtils.getPrivacyPolicyURL(this)),
-				R.string.prefs_title_accept_privacy_policy,
-				R.string.cancel,
-				false);
-			alertDialog.show(getSupportFragmentManager(), DIALOG_TAG_PRIVACY_POLICY_40_ACCEPT);
-		} else {
-			initUi();
-			initMap();
-		}
+		initUi();
+		initMap();
 	}
 
 	private void initUi() {
@@ -460,27 +451,14 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 
 	@Override
 	public void onYes(String tag, Object data) {
-		switch (tag) {
-			case DIALOG_TAG_PRIVACY_POLICY_40_ACCEPT:
-				preferenceService.setPrivacyPolicyAcceptedVersion(ConfigUtils.getAppVersionFloat(this));
-				initUi();
-				initMap();
-				break;
-			case DIALOG_TAG_ENABLE_LOCATION_SERVICES:
-				startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_CODE_LOCATION_SETTINGS);
-				break;
+		if (DIALOG_TAG_ENABLE_LOCATION_SERVICES.equals(tag)) {
+			startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_CODE_LOCATION_SETTINGS);
 		}
 	}
 
 	@Override
 	public void onNo(String tag, Object data) {
-		switch (tag) {
-			case DIALOG_TAG_PRIVACY_POLICY_40_ACCEPT:
-				finish();
-				break;
-			case DIALOG_TAG_ENABLE_LOCATION_SERVICES:
-				break;
-		}
+		// do nothing
 	}
 
 	@Override

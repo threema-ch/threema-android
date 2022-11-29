@@ -146,14 +146,15 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						audioMessagePlayer.cancel();
 					}
 					break;
-				case ControllerView.STATUS_READY_TO_RETRY:
-					if (onClickRetry != null) {
-						onClickRetry.onClick(getMessageModel());
-					}
+				default:
+					// no action taken for other statuses
+					break;
 			}
 		});
 
 		RuntimeUtil.runOnUiThread(() -> {
+			setupResendStatus(holder);
+
 			holder.controller.setNeutral();
 
 			//reset progressbar
@@ -347,6 +348,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						holder.controller.setProgressing();
 						break;
 					case SENDFAILED:
+					case FS_KEY_MISMATCH:
 						holder.controller.setRetry();
 						break;
 					default:

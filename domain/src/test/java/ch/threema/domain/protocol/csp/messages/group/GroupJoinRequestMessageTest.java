@@ -27,7 +27,7 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 
-import static ch.threema.domain.stores.TestHelpers.*;
+import static ch.threema.domain.testhelpers.TestHelpers.*;
 
 import org.junit.Assert;
 import org.junit.Test;

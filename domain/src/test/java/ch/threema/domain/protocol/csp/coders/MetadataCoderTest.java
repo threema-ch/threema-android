@@ -24,7 +24,7 @@ package ch.threema.domain.protocol.csp.coders;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
-import ch.threema.domain.stores.TestHelpers;
+import ch.threema.domain.testhelpers.TestHelpers;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.helpers.DummyUsers;
 import ch.threema.protobuf.csp.e2e.MessageMetadata;

@@ -198,6 +198,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 		this.groupService.updateGroup(
 			group,
 			groupNameFallback != null ? groupNameFallback : group.getName(),
+			null,
 			this.groupService.getGroupIdentities(group),
 			null,
 			false

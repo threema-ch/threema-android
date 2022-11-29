@@ -34,8 +34,6 @@ public class ProtocolDefines {
 	public static final int BLOB_LOAD_TIMEOUT = 100;
 	public static final int API_REQUEST_TIMEOUT = 20;
 
-	public static final int CLIENT_TEMPKEY_MAXAGE = 7*86400;
-
 	public static final int RECONNECT_BASE_INTERVAL = 2;
 	public static final int RECONNECT_MAX_INTERVAL = 10;
 
@@ -94,6 +92,7 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_GROUP_LEAVE = 0x4c;
 	public static final int MSGTYPE_GROUP_JOIN_REQUEST = 0x4d;
 	public static final int MSGTYPE_GROUP_JOIN_RESPONSE = 0x4e;
+	public static final int MSGTYPE_GROUP_CALL_START = 0x4f;
 	public static final int MSGTYPE_GROUP_SET_PHOTO = 0x50;
 	public static final int MSGTYPE_GROUP_REQUEST_SYNC = 0x51;
 	public static final int MSGTYPE_GROUP_BALLOT_CREATE = 0x52;
@@ -105,7 +104,9 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_VOIP_CALL_HANGUP = 0x63;
 	public static final int MSGTYPE_VOIP_CALL_RINGING = 0x64;
 	public static final int MSGTYPE_DELIVERY_RECEIPT = 0x80;
+	public static final int MSGTYPE_GROUP_DELIVERY_RECEIPT = 0x81;
 	public static final int MSGTYPE_TYPING_INDICATOR = 0x90;
+	public static final int MSGTYPE_FS_ENVELOPE = 0xa0;
 	public static final int MSGTYPE_AUTH_TOKEN = 0xff;
 
 	/* message flags */
@@ -134,6 +135,7 @@ public class ProtocolDefines {
 	public static final int PLTYPE_PUSH_ALLOWED_IDENTITIES = 0x21;
 	public static final int PLTYPE_VOIP_PUSH_NOTIFICATION_TOKEN = 0x24;
 	public static final int PLTYPE_QUEUE_SEND_COMPLETE = 0xd0;
+	public static final int PLTYPE_LAST_EPHEMERAL_KEY_HASH = 0xd1;
 	public static final int PLTYPE_ERROR = 0xe0;
 	public static final int PLTYPE_ALERT = 0xe1;
 
@@ -151,4 +153,21 @@ public class ProtocolDefines {
 	public static final byte[] CONTACT_PHOTO_NONCE = new byte[]{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01};
 	public static final byte[] FILE_NONCE = new byte[]{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01};
 	public static final byte[] FILE_THUMBNAIL_NONCE = new byte[]{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02};
+
+	/* forward security */
+	public static final int FS_SESSION_ID_LENGTH = 16;
+
+	/* Group Calls */
+	// TODO(ANDR-1974) Move gc-constants to other location
+	public static final int GC_PROTOCOL_VERSION = 1;
+	public static final int GC_GCK_LENGTH = 32;
+	public static final int GC_CALL_ID_LENGTH = 32;
+	public static final int GC_PCMK_LENGTH = 32;
+	public static final int GC_PEEK_TIMEOUT_MILLIS = 5000;
+	public static final int GC_JOIN_TIMEOUT_MILLIS = 20000;
+	public static final long GC_GROUP_CALL_REFRESH_STEPS_TIMEOUT_SECONDS = 10;
+	public static final long GC_GROUP_CALL_UPDATE_PERIOD_SECONDS = 10;
+	public static final int GC_PEEK_FAILED_ABANDON_MIN_TRIES = 3;
+	public static final long GC_PEEK_FAILED_ABANDON_MIN_CALL_AGE_MILLIS = 1000L * 60L * 60L * 10L; // 10 hours
+	public static final String GC_ALLOWED_BASE_URL_PROTOCOL = "https";
 }

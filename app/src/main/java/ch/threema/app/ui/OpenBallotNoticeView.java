@@ -38,15 +38,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipDrawable;
-import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
-import org.slf4j.Logger;
-
-import java.util.List;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -61,6 +52,16 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.transition.Fade;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipDrawable;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import org.slf4j.Logger;
+
+import java.util.List;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.NotAllowedException;
@@ -537,8 +538,8 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 
 	private void delete(BallotModel model) {
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
-			.setTitle(R.string.ballot_really_delete)
-			.setMessage(getContext().getString(R.string.ballot_really_delete_text, 1))
+			.setTitle(R.string.single_ballot_really_delete)
+			.setMessage(getContext().getString(R.string.single_ballot_really_delete_text))
 			.setNegativeButton(R.string.no, null)
 			.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 				@Override

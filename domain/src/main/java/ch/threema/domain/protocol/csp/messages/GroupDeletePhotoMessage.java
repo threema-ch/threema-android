@@ -48,7 +48,7 @@ public class GroupDeletePhotoMessage extends AbstractGroupMessage {
 	public byte[] getBody() {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			return bos.toByteArray();
 		} catch (Exception e) {
 			logger.error(e.getMessage());

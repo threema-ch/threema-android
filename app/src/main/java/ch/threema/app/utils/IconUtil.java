@@ -32,15 +32,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.provider.DocumentsContract;
-import android.provider.DocumentsContract.Document;
 import android.provider.MediaStore;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.WorkerThread;
 
 import org.msgpack.core.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.util.HashMap;
+import java.io.IOException;
 
-import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.base.utils.LoggingUtil;
@@ -50,206 +51,55 @@ import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 
 public class IconUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("IconUtil");
-	private static final HashMap<String, Integer> mimeIcons = new HashMap<>();
 
-	private static void add(String mimeType, int resId) {
-		if (mimeIcons.put(mimeType, resId) != null) {
-			throw new RuntimeException(mimeType + " already registered!");
+	public static @DrawableRes int getMimeCategoryIcon(MimeUtil.MimeCategory category) {
+		switch (category) {
+			case APK:
+				return R.drawable.ic_doc_apk;
+			case AUDIO:
+				return R.drawable.ic_doc_audio;
+			case CERTIFICATE:
+				return R.drawable.ic_doc_certificate;
+			case CODES:
+				return R.drawable.ic_doc_codes;
+			case COMPRESSED:
+				return R.drawable.ic_doc_compressed;
+			case CONTACT:
+				return R.drawable.ic_doc_contact;
+			case DOCUMENT:
+				return R.drawable.ic_doc_document;
+			case EVENT:
+				return R.drawable.ic_doc_event;
+			case FOLDER:
+				return R.drawable.ic_doc_folder;
+			case FONT:
+				return R.drawable.ic_doc_font;
+			case IMAGE:
+				return R.drawable.ic_doc_image;
+			case PDF:
+				return R.drawable.ic_doc_pdf;
+			case PRESENTATION:
+				return R.drawable.ic_doc_presentation;
+			case SPREADSHEET:
+				return R.drawable.ic_doc_spreadsheet;
+			case TEXT:
+				return R.drawable.ic_doc_text;
+			case VIDEO:
+				return R.drawable.ic_doc_video;
+			case WORD:
+				return R.drawable.ic_doc_word;
+			case EXCEL:
+				return R.drawable.ic_doc_excel;
+			case POWERPOINT:
+				return R.drawable.ic_doc_powerpoint;
+			default:
+				return R.drawable.ic_doc_file;
 		}
 	}
 
-	static {
-		int icon;
-
-		// Package
-		icon = R.drawable.ic_doc_apk;
-		add("application/vnd.android.package-archive", icon);
-
-		// Audio
-		icon = R.drawable.ic_doc_audio;
-		add("application/ogg", icon);
-		add("application/x-flac", icon);
-
-		// Certificate
-		icon = R.drawable.ic_doc_certificate;
-		add("application/pgp-keys", icon);
-		add("application/pgp-signature", icon);
-		add("application/x-pkcs12", icon);
-		add("application/x-pkcs7-certreqresp", icon);
-		add("application/x-pkcs7-crl", icon);
-		add("application/x-x509-ca-cert", icon);
-		add("application/x-x509-user-cert", icon);
-		add("application/x-pkcs7-certificates", icon);
-		add("application/x-pkcs7-mime", icon);
-		add("application/x-pkcs7-signature", icon);
-
-		// Source code
-		icon = R.drawable.ic_doc_codes;
-		add("application/rdf+xml", icon);
-		add("application/rss+xml", icon);
-		add("application/x-object", icon);
-		add("application/xhtml+xml", icon);
-		add("text/css", icon);
-		add("text/html", icon);
-		add("text/xml", icon);
-		add("text/x-c++hdr", icon);
-		add("text/x-c++src", icon);
-		add("text/x-chdr", icon);
-		add("text/x-csrc", icon);
-		add("text/x-dsrc", icon);
-		add("text/x-csh", icon);
-		add("text/x-haskell", icon);
-		add("text/x-java", icon);
-		add("text/x-literate-haskell", icon);
-		add("text/x-pascal", icon);
-		add("text/x-tcl", icon);
-		add("text/x-tex", icon);
-		add("application/x-latex", icon);
-		add("application/x-texinfo", icon);
-		add("application/atom+xml", icon);
-		add("application/ecmascript", icon);
-		add("application/json", icon);
-		add("application/javascript", icon);
-		add("application/xml", icon);
-		add("text/javascript", icon);
-		add("application/x-javascript", icon);
-
-		// Compressed
-		icon = R.drawable.ic_doc_compressed;
-		add("application/mac-binhex40", icon);
-		add("application/rar", icon);
-		add("application/zip", icon);
-		add("application/x-apple-diskimage", icon);
-		add("application/x-debian-package", icon);
-		add("application/x-gtar", icon);
-		add("application/x-iso9660-image", icon);
-		add("application/x-lha", icon);
-		add("application/x-lzh", icon);
-		add("application/x-lzx", icon);
-		add("application/x-stuffit", icon);
-		add("application/x-tar", icon);
-		add("application/x-webarchive", icon);
-		add("application/x-webarchive-xml", icon);
-		add("application/gzip", icon);
-		add("application/x-7z-compressed", icon);
-		add("application/x-deb", icon);
-		add("application/x-rar-compressed", icon);
-
-		// Contact
-		icon = R.drawable.ic_doc_contact_am;
-		add("text/x-vcard", icon);
-		add("text/vcard", icon);
-
-		// Event
-		icon = R.drawable.ic_doc_event_am;
-		add("text/calendar", icon);
-		add("text/x-vcalendar", icon);
-
-		// Font
-		icon = R.drawable.ic_doc_font;
-		add("application/x-font", icon);
-		add("application/font-woff", icon);
-		add("application/x-font-woff", icon);
-		add("application/x-font-ttf", icon);
-
-		// Image
-		icon = R.drawable.ic_image_outline;
-		add("application/vnd.oasis.opendocument.graphics", icon);
-		add("application/vnd.oasis.opendocument.graphics-template", icon);
-		add("application/vnd.oasis.opendocument.image", icon);
-		add("application/vnd.stardivision.draw", icon);
-		add("application/vnd.sun.xml.draw", icon);
-		add("application/vnd.sun.xml.draw.template", icon);
-
-		// PDF
-		icon = R.drawable.ic_doc_pdf;
-		add("application/pdf", icon);
-
-		// Presentation
-		icon = R.drawable.ic_doc_presentation;
-		add("application/vnd.stardivision.impress", icon);
-		add("application/vnd.sun.xml.impress", icon);
-		add("application/vnd.sun.xml.impress.template", icon);
-		add("application/x-kpresenter", icon);
-		add("application/vnd.oasis.opendocument.presentation", icon);
-
-		// Spreadsheet
-		icon = R.drawable.ic_doc_spreadsheet_am;
-		add("application/vnd.oasis.opendocument.spreadsheet", icon);
-		add("application/vnd.oasis.opendocument.spreadsheet-template", icon);
-		add("application/vnd.stardivision.calc", icon);
-		add("application/vnd.sun.xml.calc", icon);
-		add("application/vnd.sun.xml.calc.template", icon);
-		add("application/x-kspread", icon);
-
-		// Text
-		icon = R.drawable.ic_doc_text_am;
-		add("application/vnd.oasis.opendocument.text", icon);
-		add("application/vnd.oasis.opendocument.text-master", icon);
-		add("application/vnd.oasis.opendocument.text-template", icon);
-		add("application/vnd.oasis.opendocument.text-web", icon);
-		add("application/vnd.stardivision.writer", icon);
-		add("application/vnd.stardivision.writer-global", icon);
-		add("application/vnd.sun.xml.writer", icon);
-		add("application/vnd.sun.xml.writer.global", icon);
-		add("application/vnd.sun.xml.writer.template", icon);
-		add("application/x-abiword", icon);
-		add("application/x-kword", icon);
-
-		// Video
-		icon = R.drawable.ic_movie_outline;
-		add("application/x-quicktimeplayer", icon);
-		add("application/x-shockwave-flash", icon);
-
-		// Word
-		icon = R.drawable.ic_doc_word;
-		add("application/msword", icon);
-		add("application/vnd.openxmlformats-officedocument.wordprocessingml.document", icon);
-		add("application/vnd.openxmlformats-officedocument.wordprocessingml.template", icon);
-
-		// Excel
-		icon = R.drawable.ic_doc_excel;
-		add("application/vnd.ms-excel", icon);
-		add("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", icon);
-		add("application/vnd.openxmlformats-officedocument.spreadsheetml.template", icon);
-
-		// Powerpoint
-		icon = R.drawable.ic_doc_powerpoint;
-		add("application/vnd.ms-powerpoint", icon);
-		add("application/vnd.openxmlformats-officedocument.presentationml.presentation", icon);
-		add("application/vnd.openxmlformats-officedocument.presentationml.template", icon);
-		add("application/vnd.openxmlformats-officedocument.presentationml.slideshow", icon);
-	}
-
-	public static int getMimeIcon(@Nullable String mimeType) {
-		if (mimeType == null) {
-			return R.drawable.ic_doc_generic_am;
-		}
-
-		// folder
-		if (Document.MIME_TYPE_DIR.equals(mimeType)) {
-			return R.drawable.ic_doc_folder;
-		}
-
-		// Look for exact match first
-		Integer resId = mimeIcons.get(mimeType);
-		if (resId != null) {
-			return resId;
-		}
-
-		// Otherwise look for partial match
-		final String typeOnly = mimeType.split("/")[0];
-		if ("audio".equals(typeOnly)) {
-			return R.drawable.ic_doc_audio;
-		} else if ("image".equals(typeOnly)) {
-			return R.drawable.ic_image_outline;
-		} else if ("text".equals(typeOnly)) {
-			return R.drawable.ic_doc_text_am;
-		} else if ("video".equals(typeOnly)) {
-			return R.drawable.ic_movie_outline;
-		} else {
-			return R.drawable.ic_doc_generic_am;
-		}
+	public static @DrawableRes int getMimeIcon(@Nullable String mimeType) {
+		MimeUtil.MimeCategory category = MimeUtil.getMimeCategory(mimeType);
+		return getMimeCategoryIcon(category);
 	}
 
 	@WorkerThread
@@ -363,7 +213,11 @@ public class IconUtil {
 			//do not show the exception!
 			logger.error("Exception", e);
 		} finally {
-			retriever.release();
+			try {
+				retriever.release();
+			} catch (IOException e) {
+				logger.debug("Failed to release MediaMetadataRetriever");
+			}
 		}
 		return null;
 	}
@@ -382,7 +236,11 @@ public class IconUtil {
 			//do not show the exception!
 			logger.error("Exception", e);
 		} finally {
-			retriever.release();
+			try {
+				retriever.release();
+			} catch (IOException e) {
+				logger.debug("Failed to release MediaMetadataRetriever");
+			}
 		}
 		return null;
 	}

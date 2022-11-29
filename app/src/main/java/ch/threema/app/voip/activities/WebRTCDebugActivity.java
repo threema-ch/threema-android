@@ -27,7 +27,6 @@ import android.content.ClipboardManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -69,8 +68,7 @@ import ch.threema.app.utils.WebRTCUtil;
 import ch.threema.app.voip.PeerConnectionClient;
 import ch.threema.app.voip.util.SdpPatcher;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.logging.WebRTCLoggable;
-import ch.threema.protobuf.callsignaling.CallSignaling;
+import ch.threema.protobuf.callsignaling.O2OCall;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.preference.SettingsTroubleshootingFragment.THREEMA_SUPPORT_IDENTITY;
@@ -218,9 +216,6 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		this.introText.setVisibility(View.GONE);
 		this.doneText.setVisibility(View.GONE);
 		this.footerButtons.setVisibility(View.GONE);
-
-		// Change log level in the log forwarder
-		WebRTCLoggable.setMinLevelFilter(Log.INFO);
 
 		// Initialize peer connection client
 		final boolean useOpenSLES = false;
@@ -375,7 +370,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 	}
 
 	@Override
-	public void onSignalingMessage(long callId, @NonNull CallSignaling.Envelope envelope) {
+	public void onSignalingMessage(long callId, @NonNull O2OCall.Envelope envelope) {
 		logger.info("onSignalingMessage: {}", envelope);
 	}
 
@@ -385,9 +380,6 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 	@AnyThread
 	private void onComplete() {
 		this.gatheringComplete = true;
-
-		// Reset log level
-		WebRTCLoggable.setMinLevelFilter(Log.WARN);
 
 		RuntimeUtil.runOnUiThread(() -> {
 			progressBar.setVisibility(View.GONE);

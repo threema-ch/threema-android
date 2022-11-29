@@ -738,6 +738,13 @@ public class FileServiceImpl implements FileService {
 				contentValues.put(MediaStore.MediaColumns.IS_PENDING, false);
 				context.getContentResolver().update(fileUri, contentValues, null, null);
 			} else {
+				logger.error("Cannot open file '{}' with mime type '{}' at '{}/{}' for content uri '{}'",
+					filename,
+					mimeType,
+					relativePath,
+					BuildConfig.MEDIA_PATH,
+					contentUri
+				);
 				throw new Exception("Unable to open file");
 			}
 		} else {
@@ -1223,12 +1230,16 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType) {
+	public Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType, boolean returnNullIfNotCached) {
 		if (thumbnailCache != null) {
 			Bitmap cached = thumbnailCache.get(messageModel.getId());
 			if (cached != null && !cached.isRecycled()) {
 				return cached;
 			}
+		}
+
+		if (returnNullIfNotCached) {
+			return null;
 		}
 
 		// supply fallback thumbnail based on mime type
@@ -1509,12 +1520,13 @@ public class FileServiceImpl implements FileService {
 				if (activity != null) {
 					DialogUtil.dismissDialog(activity.getSupportFragmentManager(), DIALOG_TAG_SAVING_MEDIA, true);
 					if (feedbackView != null) {
-						Snackbar.make(feedbackView, String.format(activity.getString(R.string.file_saved), saved), Snackbar.LENGTH_SHORT).show();
+						Snackbar.make(feedbackView, String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.file_saved, saved, saved)), Snackbar.LENGTH_SHORT).show();
 					} else {
-						Toast.makeText(activity, String.format(activity.getString(R.string.file_saved), saved), Toast.LENGTH_LONG).show();
+						Toast.makeText(activity, String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.file_saved, saved, saved)), Toast.LENGTH_SHORT).show();
 					}
 				}
 			}
+
 
 			@Override
 			protected void onProgressUpdate(Integer... index) {

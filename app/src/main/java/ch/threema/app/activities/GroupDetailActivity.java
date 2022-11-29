@@ -21,6 +21,7 @@
 
 package ch.threema.app.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -34,8 +35,24 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -46,19 +63,9 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -68,12 +75,12 @@ import ch.threema.app.asynctasks.DeleteMyGroupAsyncTask;
 import ch.threema.app.asynctasks.LeaveGroupAsyncTask;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.app.dialogs.GroupDescEditDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.emojis.EmojiEditText;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.grouplinks.GroupLinkOverviewActivity;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
@@ -91,22 +98,27 @@ import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.app.utils.GroupCallUtilKt;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.voip.groupcall.GroupCallDescription;
+import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
+
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
 
 public class GroupDetailActivity extends GroupEditActivity implements SelectorDialog.SelectorDialogClickListener,
 	GenericAlertDialog.DialogClickListener,
 	TextEntryDialog.TextEntryDialogClickListener,
-	GroupDetailAdapter.OnGroupDetailsClickListener
-	{
+	GroupDetailAdapter.OnGroupDetailsClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDetailActivity");
 	// static values
 	private final int MODE_EDIT = 1;
@@ -119,6 +131,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private static final String DIALOG_TAG_RESYNC_GROUP = "resyncGroup";
 	private static final String DIALOG_TAG_DELETE_GROUP = "delG";
 	private static final String DIALOG_TAG_CLONE_GROUP = "cg";
+	private static final String DIALOG_TAG_CHANGE_GROUP_DESC = "cgDesc";
 	private static final String DIALOG_TAG_CLONE_GROUP_CONFIRM = "cgc";
 	private static final String DIALOG_TAG_CLONING_GROUP = "cgi";
 	public static final String DIALOG_SHOW_ONCE_RESET_LINK_INFO = "resetGroupLink";
@@ -134,6 +147,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private GroupInviteService groupInviteService;
 	private DeviceService deviceService;
 	private IdListService blackListIdentityService;
+	private GroupCallManager groupCallManager;
 
 	private GroupModel groupModel;
 	private GroupDetailViewModel groupDetailViewModel;
@@ -144,6 +158,13 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private ResumePauseHandler resumePauseHandler;
 	private AvatarEditView avatarEditView;
 	private ExtendedFloatingActionButton floatingActionButton;
+
+	private final ActivityResultLauncher<String> readPhoneStatePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+		if (!isGranted && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
+			ConfigUtils.showPermissionRationale(this, findViewById(R.id.main_content), R.string.read_phone_state_short_message);
+		}
+		// Note that the call cannot be started from here if the permission has just been granted.
+	});
 
 	private String myIdentity;
 	private int operationMode;
@@ -304,7 +325,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			this.blackListIdentityService = serviceManager.getBlackListService();
 			this.licenseService = serviceManager.getLicenseService();
 			this.groupInviteService = serviceManager.getGroupInviteService();
-		} catch (FileSystemNotPresentException | MasterKeyLockedException e) {
+			this.groupCallManager = serviceManager.getGroupCallManager();
+		} catch (ThreemaException e) {
 			logger.error("Exception, could not get required services", e);
 			finishUp();
 			return;
@@ -325,6 +347,15 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			// new instance
 			this.groupDetailViewModel.setGroupContacts(this.contactService.getByIdentities(groupService.getGroupIdentities(this.groupModel)));
 			this.groupDetailViewModel.setGroupName(this.groupModel.getName());
+			String groupDesc = this.groupModel.getGroupDesc();
+			if (groupDesc == null || groupDesc.isEmpty()) {
+				this.groupDetailViewModel.setGroupDesc(null);
+				this.groupDetailViewModel.setGroupDescState(NONE);
+			} else {
+				this.groupDetailViewModel.setGroupDesc(groupDesc);
+				this.groupDetailViewModel.setGroupDescState(COLLAPSED);
+			}
+			this.groupDetailViewModel.setGroupDescTimestamp(this.groupModel.getGroupDescTimestamp());
 		}
 
 		this.avatarEditView.setHires(true);
@@ -380,8 +411,17 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 
 		groupDetailRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
 		setupAdapter();
+
+		Fragment dialogFragment = getSupportFragmentManager().findFragmentByTag(DIALOG_TAG_CHANGE_GROUP_DESC);
+		if (dialogFragment instanceof GroupDescEditDialog) {
+			GroupDescEditDialog dialog = (GroupDescEditDialog) dialogFragment;
+			dialog.setCallback(newGroupDesc -> {
+				hideKeyboard(); // is used for older devices
+				onGroupDescChange(newGroupDesc);
+			});
+		}
+
 
 		groupDetailRecyclerView.setAdapter(this.groupDetailAdapter);
 
@@ -413,7 +453,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	}
 
 	private void setupAdapter() {
-		this.groupDetailAdapter = new GroupDetailAdapter(this, this.groupModel);
+		this.groupDetailAdapter = new GroupDetailAdapter(this, this.groupModel, groupDetailViewModel);
 		this.groupDetailAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
 			@Override
 			public void onChanged() {
@@ -451,7 +491,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		final boolean isSortingFirstName = preferenceService.isContactListSortingFirstName();
 		List<ContactModel> contactModels = groupDetailViewModel.getGroupContacts();
 		Collections.sort(contactModels, (model1, model2) -> ContactUtil.getSafeNameString(model1, isSortingFirstName).compareTo(
-				ContactUtil.getSafeNameString(model2, isSortingFirstName)
+			ContactUtil.getSafeNameString(model2, isSortingFirstName)
 		));
 		groupDetailViewModel.setGroupContacts(contactModels);
 	}
@@ -487,12 +527,15 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		MenuItem cloneMenu = menu.findItem(R.id.menu_clone_group);
 		MenuItem mediaGalleryMenu = menu.findItem(R.id.menu_gallery);
 		MenuItem groupLinkMenu = menu.findItem(R.id.menu_group_links_manage);
+		MenuItem groupCallMenu = menu.findItem(R.id.menu_group_call);
 
 		if (AppRestrictionUtil.isCreateGroupDisabled(this)) {
 			cloneMenu.setVisible(false);
 		}
 
 		if (groupModel != null) {
+			GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
+			groupCallMenu.setVisible(GroupCallUtilKt.qualifiesForGroupCalls(groupService, groupModel) && !hasChanges && call == null);
 			leaveGroupMenu.setVisible(true);
 			deleteGroupMenu.setVisible(true);
 			if (groupService.isGroupOwner(this.groupModel)) {
@@ -509,7 +552,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		if (operationMode != MODE_READONLY) {
 			menu.findItem(R.id.action_send_message).setVisible(false);
 		}
-
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -586,6 +628,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
 				startActivity(mediaGalleryIntent);
 			}
+		} else if (itemId == R.id.menu_group_call) {
+			GroupCallUtilKt.initiateCall(this, groupModel);
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -621,6 +665,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 							newGroupName,
 							groupService.getGroupIdentities(groupModel),
 							avatar);
+					model.setGroupDesc(groupModel.getGroupDesc());
+					model.setGroupDescTimestamp(groupModel.getGroupDescTimestamp());
 				} catch (Exception e) {
 					logger.error("Exception, cloning group failed", e);
 					return null;
@@ -685,6 +731,10 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			this.groupDetailViewModel.setGroupName("");
 		}
 
+		groupModel.setGroupDesc(groupDetailViewModel.getGroupDesc());
+		groupModel.setGroupDescTimestamp(groupDetailViewModel.getGroupDescTimestamp());
+
+
 		new AsyncTask<Void, Void, GroupModel>() {
 			@Override
 			protected void onPreExecute() {
@@ -703,11 +753,12 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 					Bitmap avatar = groupDetailViewModel.getAvatarFile() != null ? BitmapFactory.decodeFile(groupDetailViewModel.getAvatarFile().getPath()) : null;
 
 					model = groupService.updateGroup(
-							groupModel,
-							groupDetailViewModel.getGroupName(),
-							groupDetailViewModel.getGroupIdentities(),
-							avatar,
-							groupDetailViewModel.getIsAvatarRemoved()
+						groupModel,
+						groupDetailViewModel.getGroupName(),
+						groupDetailViewModel.getGroupDesc(),
+						groupDetailViewModel.getGroupIdentities(),
+						avatar,
+						groupDetailViewModel.getIsAvatarRemoved()
 					);
 				} catch (Exception x) {
 					logger.error("Exception", x);
@@ -788,7 +839,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 					removeMemberFromGroup(selectorInfo.contactModel);
 					break;
 				case SELECTOR_OPTION_CALL:
-					VoipUtil.initiateCall(this, selectorInfo.contactModel, false, null);
+					VoipUtil.initiateCall(this, selectorInfo.contactModel, false, null, readPhoneStatePermissionLauncher);
 					break;
 				default:
 					break;
@@ -811,8 +862,33 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 	}
 
+	public void onGroupDescChange(String newGroupDesc) {
+		if (newGroupDesc.equals(groupModel.getGroupDesc())) {
+			return;
+		}
+		groupDetailViewModel.setGroupDescTimestamp(new Date());
+
+
+		// delete group description
+		if (newGroupDesc.isEmpty()) {
+			removeGroupDescription();
+			return;
+		}
+
+		// create or update description
+		groupDetailViewModel.setGroupDesc(newGroupDesc);
+		if (groupDetailViewModel.getGroupDescState() == NONE) {
+			groupDetailViewModel.setGroupDescState(COLLAPSED);
+		}
+		groupDetailAdapter.updateGroupDescriptionLayout();
+	}
+
+
 	@Override
-	public void onNo(String tag) {}
+	public void onNo(String tag) {
+		// do nothing
+	}
+
 
 	@Override
 	public void onNeutral(String tag) {}
@@ -934,7 +1010,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			optionsMap.add(SELECTOR_OPTION_CHAT);
 
 			if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService)
-				&& ConfigUtils.isCallsEnabled(GroupDetailActivity.this, preferenceService, licenseService)
+				&& ConfigUtils.isCallsEnabled()
 			) {
 				items.add(new SelectorDialogItem(String.format(getString(R.string.call_with), shortName), R.drawable.ic_phone_locked_outline));
 				optionsMap.add(SELECTOR_OPTION_CALL);
@@ -965,9 +1041,34 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		RuntimeUtil.runOnUiThread(() -> ShowOnceDialog.newInstance(R.string.reset_default_group_link_title, R.string.reset_default_group_link_desc).show(getSupportFragmentManager(), DIALOG_SHOW_ONCE_RESET_LINK_INFO));
 	}
 
-		@Override
+	@Override
 	public void onShareLinkClick() {
 		// option only enabled if there is a default link
 		groupInviteService.shareGroupLink(this, groupInviteService.getDefaultGroupInvite(groupModel).get());
+	}
+
+	@Override
+	public void onGroupDescriptionEditClick() {
+		showGroupDescEditDialog();
+	}
+
+	// hide keyboard on older devices after ok clicked when group description changed
+	public void hideKeyboard() {
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+	}
+
+	public void showGroupDescEditDialog() {
+		String groupDescText = groupDetailViewModel.getGroupDesc();
+		GroupDescEditDialog descriptionDialog = GroupDescEditDialog.newGroupDescriptionInstance(R.string.change_group_description, groupDescText, newGroupDesc -> {
+			hideKeyboard(); // is used for older devices
+			onGroupDescChange(newGroupDesc);
+		});
+		descriptionDialog.show(getSupportFragmentManager(), DIALOG_TAG_CHANGE_GROUP_DESC);
+	}
+
+	private void removeGroupDescription() {
+		groupDetailViewModel.setGroupDesc(null);
+		groupDetailViewModel.setGroupDescState(NONE);
+		groupDetailAdapter.updateGroupDescriptionLayout();
 	}
 }

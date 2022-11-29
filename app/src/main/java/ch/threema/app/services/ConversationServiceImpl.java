@@ -21,6 +21,9 @@
 
 package ch.threema.app.services;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import net.sqlcipher.Cursor;
 
 import org.slf4j.Logger;
@@ -30,8 +33,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.listeners.ConversationListener;
@@ -41,7 +42,6 @@ import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.MessageUtil;
-import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
@@ -764,7 +764,7 @@ public class ConversationServiceImpl implements ConversationService {
 			final ConversationModel model = this.getCached(this.getIndex(messageModel));
 			//if the newest message is deleted, reload
 			if (model != null && model.getLatestMessage() != null && messageModel != null) {
-				if(model.getLatestMessage().getId() == messageModel.getId()) {
+				if(model.getLatestMessage().getId() >= messageModel.getId()) {
 					updateLatestConversationMessageAfterDelete(model);
 
 					final int oldPosition = model.getPosition();
@@ -1042,7 +1042,6 @@ public class ConversationServiceImpl implements ConversationService {
 	private void updateLatestConversationMessageAfterDelete(ConversationModel conversationModel) {
 		AbstractMessageModel newestMessage;
 
-		//dirty diana hack
 		newestMessage = Functional.select(this.messageService.getMessagesForReceiver(conversationModel.getReceiver(), new MessageService.MessageFilter() {
 			@Override
 			public long getPageSize() {

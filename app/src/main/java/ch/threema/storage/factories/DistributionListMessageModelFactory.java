@@ -34,6 +34,7 @@ import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.DistributionListMessageModel;
+import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class DistributionListMessageModelFactory extends AbstractMessageModelFactory {
@@ -286,7 +287,8 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 						"`" + DistributionListMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE +"` TINYINT ," +
 						"`" + DistributionListMessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
 						"`" + DistributionListMessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
-						"`" + DistributionListMessageModel.COLUMN_READ_AT +"` DATETIME );",
+						"`" + DistributionListMessageModel.COLUMN_READ_AT +"` DATETIME ," +
+						"`" + DistributionListMessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0);",
 
 			//indices
 				"CREATE INDEX `distributionListDistributionListIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `"+ DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID +"` )",

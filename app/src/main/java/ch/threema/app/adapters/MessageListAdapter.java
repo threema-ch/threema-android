@@ -22,25 +22,32 @@
 package ch.threema.app.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.emojis.EmojiMarkupUtil;
+import ch.threema.app.listeners.ConversationListener;
+import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
@@ -59,11 +66,16 @@ import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
+import ch.threema.app.voip.groupcall.GroupCallDescription;
+import ch.threema.app.voip.groupcall.GroupCallManager;
+import ch.threema.app.voip.groupcall.GroupCallObserver;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.TagModel;
 
@@ -76,6 +88,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 	private final Context context;
 	private final GroupService groupService;
+	private final GroupCallManager groupCallManager;
 	private final ConversationTagService conversationTagService;
 	private final ContactService contactService;
 	private final DistributionListService distributionListService;
@@ -97,7 +110,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 	private final TagModel starTagModel, unreadTagModel;
 
-	public static class MessageListViewHolder extends RecyclerView.ViewHolder {
+	public static class MessageListViewHolder extends RecyclerView.ViewHolder implements GroupCallObserver {
 
 		TextView fromView;
 		protected TextView dateView;
@@ -115,8 +128,14 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		protected ConversationModel conversationModel;
 		AvatarListItemHolder avatarListItemHolder;
 		final View tagStarOn;
+		final GroupCallManager groupCallManager;
 
-		MessageListViewHolder(final View itemView) {
+		private final View ongoingGroupCallContainer;
+		private final Chip joinGroupCallButton;
+		private final TextView ongoingCallDivider, ongoingCallText;
+		private final Chronometer groupCallDuration;
+
+		MessageListViewHolder(final View itemView, final GroupCallManager groupCallManager) {
 			super(itemView);
 
 			tagStarOn = itemView.findViewById(R.id.tag_star_on);
@@ -139,6 +158,62 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			avatarListItemHolder = new AvatarListItemHolder();
 			avatarListItemHolder.avatarView = avatarView;
 			avatarListItemHolder.avatarLoadingAsyncTask = null;
+			ongoingGroupCallContainer = itemView.findViewById(R.id.ongoing_group_call_container);
+			ongoingCallText = itemView.findViewById(R.id.ongoing_call_text);
+			joinGroupCallButton = itemView.findViewById(R.id.join_group_call_button);
+			ongoingCallDivider = itemView.findViewById(R.id.ongoing_call_divider);
+			groupCallDuration = itemView.findViewById(R.id.group_call_duration);
+
+			this.groupCallManager = groupCallManager;
+		}
+
+		@Override
+		public void onGroupCallUpdate(@Nullable GroupCallDescription call) {
+			if (ConfigUtils.isGroupCallsEnabled()) {
+				if (call != null && isMatchingGroup(call.getGroupIdInt()) && isNotPrivate()) {
+					updateGroupCallDuration(call);
+				} else {
+					stopGroupCallDuration();
+				}
+				ListenerManager.conversationListeners.handle(listener -> listener.onModified(conversationModel, null));
+			}
+		}
+
+		@AnyThread
+		private void updateGroupCallDuration(@NonNull GroupCallDescription call) {
+			Long runningSince = call.getRunningSince();
+			if (runningSince == null) {
+				stopGroupCallDuration();
+			} else {
+				startGroupCallDuration(runningSince);
+			}
+		}
+
+		@AnyThread
+		private void startGroupCallDuration(long base) {
+			RuntimeUtil.runOnUiThread(() -> {
+				groupCallDuration.setBase(base);
+				groupCallDuration.start();
+				groupCallDuration.setVisibility(View.VISIBLE);
+				ongoingCallDivider.setVisibility(View.VISIBLE);
+			});
+		}
+
+		@AnyThread
+		private void stopGroupCallDuration() {
+			RuntimeUtil.runOnUiThread(() -> {
+				groupCallDuration.stop();
+				groupCallDuration.setVisibility(View.GONE);
+				ongoingCallDivider.setVisibility(View.GONE);
+			});
+		}
+
+		private boolean isMatchingGroup(int groupId) {
+			return conversationModel.isGroupConversation() && conversationModel.getGroup().getId() == groupId;
+		}
+
+		private boolean isNotPrivate() {
+			return hiddenStatus.getVisibility() != View.VISIBLE;
 		}
 
 		public View getItem() {
@@ -146,6 +221,16 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		}
 
 		public ConversationModel getConversationModel() { return conversationModel; }
+
+		@Override
+		public void onGroupCallStart(@NonNull GroupModel groupModel, @Nullable GroupCallDescription call) {
+			ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
+				@Override
+				public void handle(ConversationListener listener) {
+					listener.onModified(conversationModel, null);
+				}
+			});
+		}
 	}
 
 	public static class FooterViewHolder extends RecyclerView.ViewHolder {
@@ -159,21 +244,23 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		boolean onItemLongClick(View view, int position, ConversationModel conversationModel);
 		void onAvatarClick(View view, int position, ConversationModel conversationModel);
 		void onFooterClick(View view);
+		void onJoinGroupCallClick(ConversationModel conversationModel);
 	}
 
 	public MessageListAdapter(
-			Context context,
-			ContactService contactService,
-			GroupService groupService,
-			DistributionListService distributionListService,
-			ConversationService conversationService,
-			DeadlineListService mutedChatsListService,
-			DeadlineListService mentionOnlyChatsListService,
-			DeadlineListService hiddenChatsListService,
-			ConversationTagService conversationTagService,
-			RingtoneService ringtoneService,
-			String highlightUid,
-			ItemClickListener clickListener) {
+		Context context,
+		ContactService contactService,
+		GroupService groupService,
+		GroupCallManager groupCallManager,
+		DistributionListService distributionListService,
+		ConversationService conversationService,
+		DeadlineListService mutedChatsListService,
+		DeadlineListService mentionOnlyChatsListService,
+		DeadlineListService hiddenChatsListService,
+		ConversationTagService conversationTagService,
+		RingtoneService ringtoneService,
+		String highlightUid,
+		ItemClickListener clickListener) {
 
 		this.context = context;
 		this.inflater = LayoutInflater.from(context);
@@ -201,6 +288,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 		this.starTagModel = this.conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
 		this.unreadTagModel = this.conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
+
+		this.groupCallManager = groupCallManager;
 	}
 
 	@Override
@@ -219,6 +308,16 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		}
 	}
 
+	@Override
+	public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+		super.onViewRecycled(holder);
+		if (holder instanceof MessageListViewHolder && ((MessageListViewHolder) holder).conversationModel.isGroupConversation()) {
+			MessageListViewHolder messageListViewHolder = (MessageListViewHolder) holder;
+			GroupModel group = messageListViewHolder.conversationModel.getGroup();
+			groupCallManager.removeGroupCallObserver(group, messageListViewHolder);
+		}
+	}
+
 	@NonNull
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
@@ -227,7 +326,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			itemView.setClickable(true);
 			// TODO: MaterialCardView: Setting a custom background is not supported.
 			itemView.setBackgroundResource(R.drawable.listitem_background_selector);
-			return new MessageListViewHolder(itemView);
+			return new MessageListViewHolder(itemView, groupCallManager);
 		}
 		return new FooterViewHolder(inflater.inflate(R.layout.footer_message_section, viewGroup, false));
 	}
@@ -253,28 +352,31 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 				}
 			});
 
-			holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					// position may have changed after the item was bound. query current position from holder
-					int currentPos = holder.getLayoutPosition();
+			holder.itemView.setOnLongClickListener(v -> {
+				// position may have changed after the item was bound. query current position from holder
+				int currentPos = holder.getLayoutPosition();
 
-					if (currentPos >= 0) {
-						return clickListener.onItemLongClick(v, currentPos, getEntity(currentPos));
-					}
-					return false;
+				if (currentPos >= 0) {
+					return clickListener.onItemLongClick(v, currentPos, getEntity(currentPos));
+				}
+				return false;
+			});
+
+			holder.avatarView.setOnClickListener(v -> {
+				// position may have changed after the item was bound. query current position from holder
+				int currentPos = holder.getLayoutPosition();
+
+				if (currentPos >= 0) {
+					clickListener.onAvatarClick(v, currentPos, getEntity(currentPos));
 				}
 			});
 
-			holder.avatarView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					// position may have changed after the item was bound. query current position from holder
-					int currentPos = holder.getLayoutPosition();
+			holder.joinGroupCallButton.setOnClickListener(v -> {
+				// position may have changed after the item was bound. query current position from holder
+				int currentPos = holder.getLayoutPosition();
 
-					if (currentPos >= 0) {
-						clickListener.onAvatarClick(v, currentPos, getEntity(currentPos));
-					}
+				if (currentPos >= 0) {
+					clickListener.onJoinGroupCallClick(getEntity(currentPos));
 				}
 			});
 
@@ -332,6 +434,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 					holder.attachmentView.setVisibility(View.GONE);
 					holder.dateView.setVisibility(View.INVISIBLE);
 					holder.deliveryView.setVisibility(View.GONE);
+					holder.joinGroupCallButton.setVisibility(View.GONE);
+					holder.ongoingGroupCallContainer.setVisibility(View.GONE);
 				} else {
 					holder.hiddenStatus.setVisibility(View.GONE);
 					holder.dateView.setText(MessageUtil.getDisplayDate(this.context, messageModel, false));
@@ -345,16 +449,20 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 						holder.deliveryView.setVisibility(View.GONE);
 						holder.dateView.setText(" " + context.getString(R.string.draft));
 						holder.dateView.setContentDescription(null);
-						holder.dateView.setTextAppearance(context, R.style.Threema_TextAppearance_List_ThirdLine_Bold);
+						holder.dateView.setTextAppearance(context, R.style.Threema_TextAppearance_List_ThirdLine_Red);
 						holder.dateView.setVisibility(View.VISIBLE);
 						holder.subjectView.setText(emojiMarkupUtil.formatBodyTextString(context, draft + " ", 100));
 					} else {
 						if (conversationModel.isGroupConversation()) {
-							if (holder.groupMemberName != null) {
+							if (holder.groupMemberName != null && messageModel.getType() != MessageType.GROUP_CALL_STATUS) {
 								holder.groupMemberName.setText(NameUtil.getShortName(this.context, messageModel, this.contactService) + ": ");
 								holder.groupMemberName.setVisibility(View.VISIBLE);
 							}
+						} else {
+							holder.joinGroupCallButton.setVisibility(View.GONE);
+							holder.ongoingGroupCallContainer.setVisibility(View.GONE);
 						}
+
 						// Configure subject
 						MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(this.context, messageModel);
 						String subject = viewElement.text;
@@ -400,19 +508,23 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 						if (messageModel.getType() == MessageType.VOIP_STATUS) {
 							// Always show the phone icon
 							holder.deliveryView.setImageResource(R.drawable.ic_phone_locked);
+						} else if (messageModel.getType() == MessageType.GROUP_CALL_STATUS) {
+							holder.deliveryView.setImageResource(R.drawable.ic_group_call);
 						} else {
 							if (!messageModel.isOutbox()) {
 								holder.deliveryView.setImageResource(R.drawable.ic_reply_filled);
 								holder.deliveryView.setContentDescription(context.getString(R.string.state_sent));
 
-								if (messageModel.getState() != null) {
-									switch (messageModel.getState()) {
-										case USERACK:
-											holder.deliveryView.setColorFilter(this.ackColor);
-											break;
-										case USERDEC:
-											holder.deliveryView.setColorFilter(this.decColor);
-											break;
+								if (conversationModel.isContactConversation()){
+									if (messageModel.getState() != null) {
+										switch (messageModel.getState()) {
+											case USERACK:
+												holder.deliveryView.setColorFilter(this.ackColor);
+												break;
+											case USERDEC:
+												holder.deliveryView.setColorFilter(this.decColor);
+												break;
+										}
 									}
 								}
 								holder.deliveryView.setVisibility(View.VISIBLE);
@@ -459,7 +571,11 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 				holder.subjectView.setContentDescription("");
 				holder.muteStatus.setVisibility(View.GONE);
 				holder.hiddenStatus.setVisibility(uniqueId != null && hiddenChatsListService.has(uniqueId) ? View.VISIBLE : View.GONE);
+				holder.joinGroupCallButton.setVisibility(View.GONE);
+				holder.ongoingGroupCallContainer.setVisibility(View.GONE);
 			}
+
+			initializeGroupCallIndicator(holder, conversationModel);
 
 			AdapterUtil.styleConversation(holder.fromView, groupService, conversationModel);
 
@@ -491,8 +607,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			int archivedCount = conversationService.getArchivedCount();
 			if (archivedCount > 0) {
 				archivedChip.setVisibility(View.VISIBLE);
-				archivedChip.setOnClickListener(v -> clickListener.onFooterClick(v));
-				archivedChip.setText(String.format(context.getString(R.string.num_archived_chats), archivedCount));
+				archivedChip.setOnClickListener(clickListener::onFooterClick);
+				archivedChip.setText(ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.num_archived_chats, archivedCount, archivedCount));
 				if (recyclerView != null) {
 					((EmptyRecyclerView) recyclerView).setNumHeadersAndFooters(0);
 				}
@@ -502,6 +618,52 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 					((EmptyRecyclerView) recyclerView).setNumHeadersAndFooters(1);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Initializes the view holder regarding ongoing group calls. If a group call is running, it
+	 * makes the join group call button visible and disables all the views that would be hidden
+	 * by the button.
+	 */
+	private void initializeGroupCallIndicator(@NonNull MessageListViewHolder holder, @NonNull ConversationModel conversationModel) {
+		GroupModel groupModel = conversationModel.getGroup();
+		if (conversationModel.isGroupConversation()
+			&& !groupService.isNotesGroup(groupModel)
+			&& groupService.isGroupMember(groupModel)
+		) {
+			GroupCallDescription call = groupCallManager.getCurrentChosenCall(holder.conversationModel.getGroup());
+			if (call != null && ConfigUtils.isGroupCallsEnabled()) {
+				boolean isJoined = groupCallManager.isJoinedCall(call);
+
+				holder.joinGroupCallButton.setVisibility(View.VISIBLE);
+				holder.joinGroupCallButton.setText(isJoined ? R.string.voip_gc_open_call : R.string.voip_gc_join_call);
+				ColorStateList groupCallTextColor = ColorStateList.valueOf(context.getResources().getColor(R.color.group_call_accent));
+				holder.joinGroupCallButton.setTextColor(groupCallTextColor);
+				holder.joinGroupCallButton.setChipBackgroundColor(groupCallTextColor.withAlpha(0x1a));
+				holder.ongoingCallText.setText(isJoined ? R.string.voip_gc_in_call : R.string.voip_gc_ongoing_call);
+				holder.ongoingGroupCallContainer.setVisibility(View.VISIBLE);
+
+				holder.unreadCountView.setVisibility(View.GONE);
+				holder.pinIcon.setVisibility(View.GONE);
+				holder.typingContainer.setVisibility(View.GONE);
+				holder.deliveryView.setVisibility(View.GONE);
+				holder.subjectView.setVisibility(View.GONE);
+				holder.dateView.setVisibility(View.GONE);
+				holder.attachmentView.setVisibility(View.GONE);
+				holder.groupMemberName.setVisibility(View.GONE);
+				holder.muteStatus.setVisibility(View.GONE);
+			} else {
+				holder.joinGroupCallButton.setVisibility(View.GONE);
+				holder.ongoingGroupCallContainer.setVisibility(View.GONE);
+			}
+			groupCallManager.addGroupCallObserver(groupModel, holder);
+		} else {
+			if (groupModel != null) {
+				groupCallManager.removeGroupCallObserver(groupModel, holder);
+			}
+			holder.joinGroupCallButton.setVisibility(View.GONE);
+			holder.ongoingGroupCallContainer.setVisibility(View.GONE);
 		}
 	}
 

@@ -136,12 +136,12 @@
 	<string name="share_via">Teilen mittels…</string>
 	<string name="share_subject">%s-Chat</string>
 	<string name="message_delete_undo">Rückgängig</string>
-	<string name="message_deleted">Nachricht(en) gelöscht</string>
 	<string name="mobile_already_linked">Ihre Threema-ID ist bereits mit dieser Handynummer verknüpft</string>
 	<string name="email_already_linked">Ihre Threema-ID ist bereits mit dieser E-Mail-Adresse verknüpft</string>
 	<string name="whoaaa">Hinweis</string>
 	<string name="really_delete_message_title">Nachricht(en) löschen</string>
 	<string name="really_delete_thread">Chat löschen</string>
+	<string name="really_delete_multiple_threads">Chats löschen</string>
 	<string name="really_delete_contact">Möchten Sie diesen Kontakt und alle dazugehörigen Chats wirklich löschen?
 	</string>
 	<string name="image_placeholder">Bild</string>
@@ -298,8 +298,6 @@
 		Hauptschlüssel gesperrt ist
 	</string>
 	<string name="chat_history_attached">Das Chatprotokoll liegt als Anhang bei.</string>
-	<string name="new_message">1 neue Nachricht</string>
-	<string name="new_messages">neue Nachrichten</string>
 	<string name="backup_data_title">Daten-Backup</string>
 	<string name="backup_data_password_msg">Ihre ID, Chats, Kontakte und Einstellungen werden im USB-Speicher in einer
 		ZIP-Datei abgelegt und können auf einem anderen Android-Gerät wiederhergestellt werden. Geben Sie ein Passwort
@@ -367,7 +365,7 @@
 	<string name="updating_group">Gruppe aktualisieren</string>
 	<string name="status_create_group">Gruppe erstellt.</string>
 	<string name="status_rename_group">Gruppe umbenannt zu «%1$s»</string>
-	<string name="status_group_new_photo">Gruppe aktualisiert.</string>
+	<string name="status_group_new_photo">Gruppenbild aktualisiert.</string>
 	<string name="status_group_new_member">«%1$s» wurde zur Gruppe hinzugefügt.</string>
 	<string name="status_group_member_left">«%1$s» hat die Gruppe verlassen.</string>
 	<string name="status_group_member_kicked">«%1$s» wurde aus der Gruppe entfernt.</string>
@@ -418,7 +416,6 @@
 	<string name="contact_format_last_name_first_name">Nachname Vorname</string>
 	<string name="block_contact">Kontakt blockieren</string>
 	<string name="unblock_contact">Kontakt deblockieren</string>
-	<string name="unread_messages">%d ungelesene Nachrichten</string>
 	<string name="one_unread_message">1 ungelesene Nachricht</string>
 	<string name="really_unlink_contact_title">Verknüpfung aufheben</string>
 	<string name="really_unlink_contact">Möchten Sie die Verknüpfung zum Adressbuch-Kontakt wirklich aufheben?</string>
@@ -434,7 +431,6 @@
 	<string name="save_image">Bild speichern</string>
 	<string name="share_image">Bild teilen</string>
 	<string name="view_in_gallery">In Galerie ansehen</string>
-	<string name="file_saved">%d Datei(en) gespeichert.</string>
 	<string name="token_register_failed">Push-Token konnte nicht aktualisiert werden. Bitte versuchen Sie es später
 		erneut.
 	</string>
@@ -506,8 +502,9 @@
 	<string name="enter_zip_password_body">Der Chat wird als verschlüsselte Zip-Datei versendet. Bitte wählen Sie ein
 		Passwort:
 	</string>
-	<string name="new_messages_in_chats">%1$d neue Nachrichten in %2$d Chats</string>
 	<string name="ballot_create">Umfrage erstellen</string>
+	<string name="single_ballot_really_delete">Diese Umfrage löschen</string>
+	<string name="single_ballot_really_delete_text">Möchten Sie diese Umfrage wirklich löschen? Die Antworten können nicht wiederhergestellt werden.</string>
 	<string name="ballot_choice_add">Antworttext</string>
 	<string name="ballot_state_closed">geschlossen</string>
 	<string name="ballot_vote">Abstimmen</string>
@@ -525,10 +522,6 @@
 	<string name="ballot_overview">Alle Umfragen</string>
 	<string name="ballot_copy">Umfrage kopieren</string>
 	<string name="ballot_remove">Umfrage entfernen</string>
-	<string name="ballot_really_delete">Umfrage löschen</string>
-	<string name="ballot_really_delete_text">Möchten Sie wirklich %1$d Abstimmungen löschen? Die Stimmen können nicht
-		wiederhergestellt werden.
-	</string>
 	<string name="ballot_not_exist">Umfrage existiert nicht</string>
 	<string name="ballot_tap_to_vote">Zum Abstimmen tippen</string>
 	<string name="ballot_tap_to_view_results">Umfrage beendet. Tippen für Resultate</string>
@@ -560,6 +553,9 @@
 	<string name="video_size_small">Hoch (kleine Datenmenge)</string>
 	<string name="video_size_large">Gering (mittlere Datenmenge)</string>
 	<string name="video_size_original" tools:ignore="Typos">Keine (grosse Datenmenge)</string>
+	<string name="menu_video_size_small">Kleine Grösse</string>
+	<string name="menu_video_size_medium">Mittlere Grösse</string>
+	<string name="menu_video_size_large">Originalgrösse</string>
 	<string name="prefs_video_size">Video-Komprimierung</string>
 	<string name="show_contact">Kontakt anzeigen</string>
 	<string name="chat_with">Chat mit %1$s</string>
@@ -583,7 +579,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="send_media">Medien senden</string>
 	<string name="rotate">Drehen</string>
 	<string name="remove">Entfernen</string>
-	<string name="image_already_added">Dieses Bild ist bereits ausgewählt.</string>
+	<string name="item_already_added">Diese Datei ist bereits ausgewählt.</string>
 	<string name="password_too_short">Mindestens %d Zeichen</string>
 	<string name="mark_read">Als gelesen markieren</string>
 	<string name="emoji_flags">Flaggen</string>
@@ -640,7 +636,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="delete_date_confirm_message">Die Dateien werden endgültig gelöscht und nur noch Vorschaubilder
 		behalten.
 	</string>
-	<string name="media_files_deleted">%d Medien/Dateien gelöscht.</string>
 	<string name="storage_management">Speichermanagement</string>
 	<string name="media">Medien</string>
 	<string name="prefs_storage_mgmt_title">Dateien und Nachrichten aufräumen</string>
@@ -676,7 +671,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="fontsize_large">Gross</string>
 	<string name="fontsize_xlarge">Sehr gross</string>
 	<string name="no_app_for_location">Keine Karten-App auf diesem Gerät gefunden.</string>
-	<string name="chat_deleted">%d Chat(s) gelöscht</string>
 	<string name="prefs_sendlog">Logdatei versenden</string>
 	<string name="prefs_sendlog_summary">Logdatei für Problemanalyse an Threema senden</string>
 	<string name="prefs_exportlog">Logdatei teilen</string>
@@ -689,7 +683,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="message_declined">Nachricht abgelehnt</string>
 	<string name="notifications_settings">Benachrichtigungseinstellungen</string>
 	<string name="notifications_default">Standardeinstellung</string>
-	<string name="notifications_for_x_hours">Für %d Stunde(n)</string>
 	<string name="notifications_until">Bis %s</string>
 	<string name="notifications_mute">Stumm</string>
 	<string name="notifications_choose_sound">Ton wählen</string>
@@ -838,9 +831,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_language_override">Sprache</string>
 	<string name="threema_channel_intro">Der Threema Channel versorgt Sie mit Neuigkeiten zu Threema. Möchten Sie Threema Channel abonnieren und zu Ihren Kontakten hinzufügen? Es ist kostenlos und Sie können sich jederzeit abmelden.</string>
 	<string name="quote">Zitieren</string>
-	<string name="really_delete_contacts_message">Möchten Sie wirklich %1$d Kontakte und alle dazugehörigen Chats löschen?</string>
 	<string name="contacts_deleted">Kontakte wurden gelöscht</string>
-	<string name="some_contacts_not_deleted">%d Kontakte konnten nicht gelöscht werden, da sie sich noch in einer Gruppe befinden</string>
 	<string name="take_photo">Foto aufnehmen</string>
 	<string name="select_from_gallery">Aus Galerie auswählen</string>
 	<string name="palette">Palette</string>
@@ -966,7 +957,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="no_matching_work_contacts">Keine vom Administrator überprüften Threema Work-Kontakte gefunden</string>
 	<string name="all">Alle</string>
 	<string name="webclient_session_stop_all">Alle beenden</string>
-	<string name="webclient_running_sessions">%d laufende Sitzung(en)</string>
 	<string name="passphrase_service_name">Passphrase-Dienst</string>
 	<string name="passphrase_service_description">Benachrichtigung, wenn die Passphrase entsperrt ist</string>
 	<string name="webclient_service_description">Benachrichtigung, wenn eine Web-/Desktop-Sitzung aktiv ist</string>
@@ -1119,7 +1109,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="data_backup_last_date">Letztes erfolgreiches Backup</string>
 	<string name="archived">Archiviert</string>
 	<string name="to_archive">Archivieren</string>
-	<string name="message_archived">%d Chat(s) archiviert</string>
 	<string name="archived_chats">Archivierte Chats</string>
 	<string name="unarchive">Unarchivieren</string>
 	<string name="no_archived_chats">Keine archivierten Chats.\nUm einen Chat zu archivieren, wischen Sie ihn in der Chat-Liste nach links</string>
@@ -1131,25 +1120,14 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="system_default">Systemstandard</string>
 	<string name="open_in_maps_app">In Maps-App öffnen</string>
 	<string name="delete">Löschen</string>
-	<string name="num_archived_chats">%d archivierte Chats</string>
 	<string name="continue_recording">Weiter aufnehmen</string>
-	<string name="whatsnew_title">Willkommen zu %1$s %2$s</string>
+	<string name="whatsnew_title">Neu: %1$s-Gruppenanrufe</string>
 	<string name="whatsnew_headline">
 		<![CDATA[
-		<p><b>Neue Funktionen in dieser Version von %s für Android</b></p>
-		<p>
-		&bull; Viele neue Emojis gemäss dem Unicode 13.1-Standard. 😵‍💫❤️‍🔥
-		</p><p>
-		&bull; Suche nach Emojis nach Namen oder Bedeutung (verfügbar in 17 Sprachen).
-		</p><p>
-		&bull; Deterministische Farben für Kontakte und Gruppen, die kein eigenes Profilbild haben. Diese neuen Farben sind künftig plattform- und geräteübergreifend.
-		</p><p>
-		&bull; Verbesserte Scroll-Performance in vielen Listen.
-		</p><p>
-		&bull; Optimiertes Layout für den Medieneditor. Die Anzahl der Medienelemente, die vor dem Senden bearbeitet werden können, wurde auf 256 erhöht.
-		</p><p>
-		&bull; Viele kleine Verbesserungen und Fehlerbehebungen.
-		</p>
+		<p>Ende-zu-Ende-verschlüsselte Gruppenanrufe sind jetzt in %1$s für Android möglich.</p>
+		<p>Um einen Anruf zu starten, öffnen Sie den Gruppenchat und tippen Sie auf das Kamera-Symbol oben.</p>
+		<p>Die Gruppenmitglieder erhalten eine Benachrichtigung und entscheiden selbst, ob sie teilnehmen möchten oder nicht.</p>
+		<p><b>Hinweis:</b> Für iOS folgt das Feature zu einem späteren Zeitpunkt.</p>
 		]]>
 	</string>
 	<string name="tap_to_start">Tippen Sie hier, um %s jetzt zu starten.</string>
@@ -1170,7 +1148,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="and">und</string>
 	<string name="edit_type_content_description">%1$s %2$s anzeigen oder bearbeiten</string>
 	<string name="group">Gruppe</string>
-	<string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Unsere Datenschutzerklärung wurde angepasst, um die folgende Änderung widerzuspiegeln:</p><p>%1$s ist nicht mehr von Google Play und Google Maps abhängig, um Karten- und OVI-Daten bereitzustellen.</p>Bitte überprüfen Sie die vollständige Datenschutzerklärung <a href="%2$s">hier</a>.]]></string>
 	<string name="play_services_not_installed_unable_to_use_push">Dienste nicht installiert. Kann nicht auf Google FCM- oder HMS-Push umschalten.</string>
 	<string name="unable_to_get_current_location">Der aktuelle Standort kann nicht ermittelt werden.</string>
 	<string name="lp_search_place_min_chars">Bitte geben Sie mindestens 3 Zeichen ein, um nach einem Ort zu suchen.</string>
@@ -1216,7 +1193,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="call_with">%s anrufen</string>
 	<string name="picture_in_picture_disabled_in_setting">Die Bild-im-Bild-Funktion wurde für %s deaktiviert. Bitte aktivieren sie ihn in den Handy-Einstellungen.</string>
 	<string name="delete_everything">Alles löschen</string>
-	<string name="prefs_title_voip_video_enable">Videoanrufe ermöglichen</string>
+	<string name="prefs_title_voip_video_enable">Video erlauben</string>
 	<string name="video_calls">Videoanrufe</string>
 	<string name="prefs_videocall_profile">Bevorzugte Bildqualität</string>
 	<string name="videocall_profile_auto">Ausgewogen (empfohlen)</string>
@@ -1316,8 +1293,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="group_request_already_sent"><![CDATA[Sie haben bereits eine offene Anfrage für <b>%s</b> und es wird auf eine Antwort des Gruppen Administrators gewartet. Klicken Sie auf die Anfrage in der Liste, falls Sie die Anfrage erneut senden möchten.]]></string>
 	<string name="group_link_none">Noch keinen Link generiert</string>
 	<string name="group_request_confirm_send"><![CDATA[Sie sind dabei eine Gruppenanfrage für <b>%1$s</b> an Admin <b>%2$s</b> zu senden. Falls dieser Link in der Zwischenzeit nicht invalidiert wurde, werden Sie zur Gruppe hinzugefügt, sobald das Gerät des Admin erreichbar ist.]]></string>
-	<string name="really_delete_outgoing_request">Möchten Sie wirklich %d Gruppenanfragen(n) löschen? Seien Sie sich bewusst, dass die offene Anfrage nicht zurückgezogen wird und Sie später trotzdem noch in die Gruppe aufgenommen werden können.</string>
-	<string name="really_delete_group_request_title">Gruppenanfrage wirklich löschen?</string>
 	<string name="sent_to">Gesendet an: %s</string>
 	<string name="sent_on">Gesendet am: %s</string>
 	<string name="group_response">Antwort auf Gruppenanfrage</string>
@@ -1337,7 +1312,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="link_administration_off_explain">Dieser Link wurde bereits geteilt und ist öffentlich. Die Administration kann nicht nachträglich verändert werden. Generieren Sie einfach einen neuen Link mit der gwünschten Option.</string>
 	<string name="group_link_update_success">Link update erfolgreich</string>
 	<string name="no_group_links">Keine Gruppen-Links. Um einen Gruppen-Link zu kreieren, klicken Sie auf den "Link erstellen"-Knopf oder aktivieren Sie den default Link in der Gruppenübersicht.</string>
-	<string name="really_delete_group_link">Möchten Sie wirklich %d Gruppen-Link(s) löschen? Einmal gelöscht, können Nutzer keine gültigen Anfragen mehr schicken. Bereits erhaltene Anfragen können jedoch noch angenommen oder abgelehnt werden.</string>
 	<string name="group_links_overview_title">Gruppen-Links für %s</string>
 	<string name="group_link_invalid">Abgelaufen</string>
 	<string name="group_link_valid">Gültig</string>
@@ -1350,10 +1324,11 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="group_request_state_expired">Abgelaufen</string>
 	<string name="group_request_state_pending">Ausstehend</string>
 	<string name="group_request_state_accepted">Angenommen</string>
+	<string name="really_delete_group_request_title_singular">Gruppen-Anfrage löschen</string>
+	<string name="really_delete_group_request_title_plural">Gruppen-Anfragen löschen</string>
 	<string name="open_group_requests_show">Gruppenanfragen anzeigen</string>
 	<string name="open_group_requests_hide">Gruppenanfragen verbergen</string>
 	<string name="group_request_link_already_deleted">Gruppen-Link bereits gelöscht</string>
-	<string name="really_delete_incoming_request">Möchten Sie wirklich %d Gruppenanfragen löschen? Einmal gelöscht, können Sie nicht mehr auf diese Anfragen antworten. </string>
 	<string name="incoming_group_request_no_message">Über einen offenen Link gesendet… Keine Nachricht</string>
 	<string name="group_request_received_through">Durch Link: %s</string>
 	<string name="reaccept">Nochmal annehmen</string>
@@ -1406,7 +1381,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="group_requests_show_menu_title">Offene Gruppenanfragen anzeigen</string>
 	<string name="group_request_show_all">Alle Gruppenanfragen anzeigen</string>
 	<string name="group_links_manage_menu">Gruppen-Links managen</string>
-	<string name="group_request_sent_menu">Gesendete Gruppenanfrage</string>
 	<string name="really_delete_group_link_title">Gruppen-Links löschen</string>
 	<string name="qr_scan_result_dialog_title">QR Scan Resultat</string>
 	<string name="scan_failure_dialog_title">Scan fehlgeschlagen</string>
@@ -1431,7 +1405,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="not_voted_user_list">Diese Teilnehmer haben nicht abgestimmt: %s</string>
 	<string name="contact_update">Aktualisierung der Kontakte-Informationen</string>
 	<string name="invalid_onprem_id">Entweder existiert diese ID nicht (mehr), oder sie ist nicht mit Ihrer ID kompatibel.</string>
-	<string name="enable_unknown_sources">Installieren nicht möglich. Bitte aktivieren Sie \"Unbekannte Apps installieren\" für %s.</string>
+	<string name="enable_unknown_sources">Installieren nicht möglich. Bitte aktivieren Sie «Unbekannte Apps installieren» für %s.</string>
 	<string name="add_shortcut_success">Verknüpfung wurde erstellt</string>
 	<string name="add_shortcut_error">Fehler beim Erstellen der Desktop-Verknüpfung</string>
 	<string name="web_link">Link</string>
@@ -1479,6 +1453,17 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="contact_details_id_copied">ID wurde in die Zwischenablage kopiert.</string>
 	<string name="contact_details_nickname_copied">Nickname wurde in die Zwischenablage kopiert.</string>
 	<string name="synchronizing">Synchronisation läuft…</string>
+	<string name="forward_security">Nachrichten mit Perfect Forward Secrecy senden</string>
+	<string name="forward_security_mode">Perfect Forward Secrecy</string>
+	<string name="forward_security_mode_none">nein</string>
+	<string name="clear_forward_security">Perfect Forward Secrecy-Sitzungen löschen</string>
+	<string name="forward_security_cleared">Perfect Forward Secrecy-Sitzungen mit diesem Kontakt wurden gelöscht</string>
+	<string name="message_without_forward_security">Eine Nachricht ohne Perfect Forward Secrecy wurde empfangen. Stellen Sie sicher, dass der Absender absichtlich Perfect Forward Secrecy deaktiviert hat.</string>
+	<string name="forward_security_established">Nachrichten in diesem Chat sind nun durch Perfect Forward Secrecy geschützt.</string>
+	<string name="forward_security_established_rx">Nachrichten, die in diesem Chat empfangen werden, sind nun durch Perfect Forward Secrecy geschützt. Aktivieren Sie Perfect Forward Secrecy in den Kontaktdetails, um auch gesendete Nachrichten zu schützen.</string>
+	<string name="forward_security_reset">Die Perfect Forward Secrecy-Sitzung mit diesem Kontakt wurde zurückgesetzt. Dies kann passieren, wenn der Kontakt ein neues Gerät hat oder die App neu installiert hat.</string>
+	<string name="forward_security_reset_simple">Die Perfect Forward Secrecy-Sitzung mit diesem Kontakt wurde zurückgesetzt.</string>
+	<string name="forward_security_message_out_of_order">Eine Nachricht wurde in falscher Reihenfolge empfangen und konnte nicht entschlüsselt werden.</string>
 	<string name="self_updater_installation_failed">Der Download des Updates ist fehlgeschlagen. Bitte laden Sie das Update von der Webseite <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> herunter und installieren Sie es manuell.</string>
 	<string name="spam_first_contact">Dieser Chat stammt von einem unbekannten Kontakt</string>
 	<string name="spam_report">Spam melden</string>
@@ -1489,14 +1474,58 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="spam_error_reporting">Beim Melden als Spam ist ein Fehler aufgetreten: %s</string>
 	<string name="spam_report_short">Melden</string>
 	<string name="wizard_incompatible_contact_sync_params">Es sind inkompatible MDM Parameter gesetzt. Der Threema MDM Parameter th_contact_sync kann nicht auf true gesetzt werden, wenn die Restriction DISALLOW_MODIFY_ACCOUNTS aktiviert ist. Bitte kontaktieren Sie Ihren Systemadministator.</string>
+	<string name="changed_group_desc_date">Zuletzt geändert:\u0020</string>
+	<string name="group_description">Gruppenbeschreibung</string>
+	<string name="change_group_description">Gruppenbeschreibung ändern</string>
+	<string name="add_group_description">Gruppenbeschreibung hinzufügen</string>
+	<string name="read_more">mehr lesen</string>
+	<string name="read_less">weniger lesen</string>
 	<string name="messages_cannot_be_recovered">Die Nachrichten können nicht wiederhergestellt werden.</string>
 	<string name="contact_deleted">Kontakt wurde gelöscht</string>
 	<string name="last_added_contact">Zuletzt hinzugefügt</string>
 	<string name="directory_explain_text">Suchen Sie im Firmenverzeichnis nach beliebigen Mitarbeitern, die sich noch nicht in Ihrer Kontaktliste befinden.</string>
 	<string name="cannot_display_location">Dieser Ort kann nicht angezeigt werden.</string>
+	<string name="draw_reply">Zeichnungsantwort</string>
+	<string name="drawing">Zeichnung</string>
+	<string name="background_color">Hintergrundfarbe</string>
+	<string name="send_video_muted">Video ohne Ton versenden</string>
+	<string name="send_without_audio">Audio entfernen</string>
+	<string name="edit_filename">Dateiname bearbeiten</string>
     <string name="unable_to_restore_identity_because">Die ID konnte nicht wiederhergestellt werden. Grund: %s</string>
 	<string name="share_with_app">Mit Threema teilen</string>
 	<string name="new_wizard_info_sync_contacts_dialog">Die Kontakt-Synchronisation hilft Ihnen, Ihre Freunde automatisch zu finden. Wenn Sie zustimmen, werden Handynummern und E-Mail-Adressen aus Ihrem Telefonbuch verschlüsselt an unseren Server gesendet und dort verglichen, um passende Kontakte zu finden. Die Daten werden weder gespeichert noch weitergegeben.\n\nMöchten Sie die Kontakt-Synchronisation aktivieren?</string>
+	<string name="read_phone_state_dialog_allow">Zulassen</string>
+	<string name="read_phone_state_dialog_disallow">Trotzdem fortfahren</string>
+	<string name="read_phone_state_dialog_never_ask_again">Nicht mehr fragen</string>
+	<string name="read_phone_state_dialog_title">Berechtigung benötigt</string>
+	<string name="read_phone_state_dialog_message">Um zu verhindern, dass Threema Anrufe reguläre Anrufe unterbrechen, wird die Telefon-Berechtigung benötigt. Falls diese Berechtigung nicht gegeben ist, wird ein Threema Anruf einen regulären Anruf unterbrechen und umgekehrt.</string>
+	<string name="read_phone_state_short_message">Um laufende Anrufe zu berücksichtigen, wird die Telefon-Berechtigung benötigt.</string>
+	<string name="prefs_title_read_phone_state">Telefon-Berechtigung erteilen</string>
+	<string name="prefs_title_hibernation">Nicht verwendete Apps</string>
+	<string name="prefs_summary_hibernation_api_32">Um zu verhindern, dass Threema bei längerer Inaktivität nicht mehr funktioniert, deaktivieren Sie «Berechtigungen löschen und Speicherplatz freigeben» in den Systemeinstellungen.</string>
+	<string name="prefs_summary_hibernation_api">Um zu verhindern, dass Threema bei längerer Inaktivität nicht mehr funktioniert, deaktivieren Sie «App-Aktivität bei Nichtnutzung stoppen» in den Systemeinstellungen.</string>
+	<string name="unable_to_fetch_configuration">Konfiguration kann nicht vom Server geladen werden. Versuchen Sie es später erneut.</string>
+	<string name="rogue_device_warning">Der Server hat eine Verbindung von einem anderen Gerät mit derselben Threema-ID erkannt.\n\nWenn Sie Ihre Threema-ID in der Zwischenzeit nicht auf einem anderen Gerät oder mit einer älteren App-Version genutzt haben, kontaktieren Sie bitte den Support und senden Sie falls möglich die Logdatei mit.</string>
+    <string name="fetch2_failure">Der Abgleich mit dem Bereitstellungsserver ist fehlgeschlagen.</string>
+    <string name="no_members_support_group_calls">Keines der anderen Gruppenmitglieder kann an Gruppenanrufen teilnehmen</string>
+	<string name="group_calls">Gruppenanrufe</string>
+	<string name="prefs_title_group_calls_enable">Gruppenanrufe aktivieren</string>
+	<string name="group_no_members">Diese Gruppe hat keine weiteren Mitglieder</string>
+    <string name="group_call">Gruppenanruf</string>
+	<string name="checking_compatibility">Die Kompatibilität wird überprüft…</string>
+    <string name="group_call_mic_permission_rationale">Um Gruppenanrufe tätigen zu können, müssen Sie unter «Berechtigungen» %s den Zugriff aufs Mikrofon erlauben.</string>
+    <string name="settings">Einstellungen</string>
+	<string name="group_call_camera_permission_rationale">Damit die anderen Teilnehmer Ihr Bild sehen können, müssen Sie unter «Berechtigungen» %s den Zugriff auf die Kamera erlauben.</string>
+	<string name="leave">Verlassen</string>
+    <string name="fs_key_mismatch">schlüsselfehler</string>
+    <string name="tap_to_resend">Tippen f. neuen Sendevers.</string>
+    <string name="group_calls_tooltip_title">Neu: Gruppenanrufe</string>
+	<string name="group_calls_tooltip_text">Hier tippen, um die Gruppenmitglieder zu einem gemeinsamen Anruf einzuladen. Die Gruppenmitglieder erhalten eine Benachrichtigung und entscheiden selbst, ob sie teilnehmen möchten oder nicht.</string>
+	<string name="prefs_title_calls">Sichere Anrufe</string>
+	<string name="prefs_sum_group_calls_vibration">Vibrieren, wenn ein Gruppenanruf gestartet wurde</string>
+	<string name="forward_security_mode_4dh">vollständig</string>
+	<string name="forward_security_mode_2dh">einseitig</string>
+	<string name="forward_security_explanation">Perfect Forward Secrecy (PFS) schützt eine aufgezeichnete Kommunikation auch bei Kenntnis des Langzeitschlüssels vor nachträglicher Entschlüsselung.\n\nDie Option kann aktiviert werden, wenn die App auf beiden Seiten PFS unterstützt.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>
@@ -1506,7 +1535,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 		<item quantity="other">Möchten Sie wirklich %d Chats löschen?</item>
 	</plurals>
 	<plurals name="sending_message_failed">
-		<item quantity="one">Eine Nachricht konnte nicht gesendet werden</item>
+		<item quantity="one">%1$d Nachricht konnte nicht gesendet werden</item>
 		<item quantity="other">%1$d Nachrichten konnten nicht gesendet werden</item>
 	</plurals>
 	<plurals name="selection_counter_label">
@@ -1517,4 +1546,96 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 		<item quantity="one">Nachricht kopiert</item>
 		<item quantity="other">Nachrichten kopiert</item>
 	</plurals>
+	<plurals name="notifications_for_x_hours">
+		<item quantity="one">Für %d Stunde</item>
+		<item quantity="other">Für %d Stunden</item>
+	</plurals>
+	<plurals name="message_archived">
+		<item quantity="one">%d Chat archiviert</item>
+		<item quantity="other">%d Chats archiviert</item>
+	</plurals>
+	<plurals name="message_deleted">
+		<item quantity="one">%d Nachricht gelöscht</item>
+		<item quantity="other">%d Nachrichten gelöscht</item>
+	</plurals>
+	<plurals name="really_delete_contacts_message">
+		<item quantity="one">Möchtest du wirklich %1$d Kontakt und alle dazugehörigen Chats löschen?</item>
+		<item quantity="other">Möchtest du wirklich %1$d Kontakte und alle dazugehörigen Chats löschen?</item>
+	</plurals>
+	<plurals name="media_files_deleted">
+		<item quantity="one">%d Mediendatei gelöscht</item>
+		<item quantity="other">%d Mediendateien gelöscht</item>
+	</plurals>
+	<plurals name="file_saved">
+		<item quantity="one">%d Datei erfolgreich gespeichert.</item>
+		<item quantity="other">%d Dateien erfolgreich gespeichert</item>
+	</plurals>
+	<plurals name="unread_messages">
+		<item quantity="one">%d ungelesene Nachricht</item>
+		<item quantity="other">%d ungelesene Nachrichten</item>
+	</plurals>
+	<plurals name="new_messages">
+		<item quantity="one">%d neue Nachricht</item>
+		<item quantity="other">%d neue Nachrichten</item>
+	</plurals>
+	<plurals name="ballot_really_delete_text">
+		<item quantity="one">Möchten Sie wirklich %1$d Umfrage löschen? Die Stimmen können nicht wiederhergestellt werden.</item>
+		<item quantity="other">Möchten Sie wirklich %1$d Umfragen löschen? Die Stimmen können nicht wiederhergestellt werden.</item>
+	</plurals>
+	<plurals name="new_messages_in_chats">
+		<item quantity="one">%1$d neue Nachricht in %2$d Chats</item>
+		<item quantity="other">%1$d neue Nachrichten in %2$d Chats</item>
+	</plurals>
+	<plurals name="some_contacts_not_deleted">
+		<item quantity="one">%d Kontakt konnte nicht gelöscht werden, da dieser noch einer Gruppe angehört.</item>
+		<item quantity="other">%d Kontakte konnten nicht gelöscht werden, da diese noch einer Gruppe angehören.</item>
+	</plurals>
+	<plurals name="webclient_running_sessions">
+		<item quantity="one">%d Sitzung läuft</item>
+		<item quantity="other">%d Sitzungen laufen</item>
+	</plurals>
+	<plurals name="really_delete_outgoing_request">
+		<item quantity="one">Möchten Sie wirklich %d Gruppen-Anfrage löschen?
+			Beachten Sie, dass die Anfrage nicht widerrufen wird und Sie möglicherweise
+			noch akzeptiert oder angefordert werden, wenn die Anfrage noch nicht beantwortet wurde.</item>
+		<item quantity="other">Möchten Sie wirklich %d Gruppen-Anfragen löschen?
+		Beachten Sie, dass die Anfragen nicht widerrufen werden und Sie möglicherweise
+			noch akzeptiert oder angefordert werden, wenn die Anfragen noch nicht beantwortet wurden. </item>
+	</plurals>
+	<plurals name="really_delete_incoming_request">
+		<item quantity="one">Möchten Sie wirklich %d Gruppen Anfrage löschen? Sie können nicht auf Anfragen antworten, sobald sie gelöscht wurde.</item>
+		<item quantity="other">Möchten Sie wirklich %d Gruppen Anfragen löschen? Sie können nicht auf Anfragen antworten, sobald sie gelöscht wurden.</item>
+	</plurals>
+	<plurals name="really_delete_group_link">
+		<item quantity="one">Möchten Sie wirklich %d Gruppenlink löschen? Personen werden nicht mehr in der Lage sein, Anfragen zu senden. Kürzlich erhaltene Anfragen können immer noch akzeptiert oder zurückgewiesen werden.</item>
+		<item quantity="other">Möchten Sie wirklich %d Gruppenlinks löschen? Personen werden nicht mehr in der Lage sein, Anfragen zu senden. Kürzlich erhaltene Anfragen können immer noch akzeptiert oder zurückgewiesen werden.</item>
+	</plurals>
+	<plurals name="ballot_really_delete">
+		<item quantity="one">Umfrage löschen</item>
+		<item quantity="other">Umfragen löschen</item>
+	</plurals>
+	<plurals name="chat_deleted">
+		<item quantity="one">%d Chat gelöscht.</item>
+		<item quantity="other">%d Chats gelöscht.</item>
+	</plurals>
+	<plurals name="num_archived_chats">
+		<item quantity="one">%d archivierter Chat</item>
+		<item quantity="other">%d archivierte Chats</item>
+	</plurals>
+	<plurals name="forward_security_messages_skipped">
+		<item quantity="one">Eine Nachricht ist seit der letzten Nachricht verloren gegangen.</item>
+		<item quantity="other">%d Nachrichten sind seit der letzten Nachricht verloren gegangen.</item>
+	</plurals>
+	<plurals name="delete_messages">
+		<item quantity="one">%d Nachricht auf diesem Gerät löschen?</item>
+		<item quantity="other">%d Nachrichten auf diesem Gerät löschen?</item>
+	</plurals>
+    <string name="delete_multiple_contact_action">Kontakte löschen</string>
+	<string name="server_hint">Server</string>
+	<string name="edit_answer">Antwort bearbeiten</string>
+	<string name="group_request_sent_menu">Gruppemamfragen senden</string>
+	<string name="really_delete_multiple_group_links_title">Gruppenlinks löschen</string>
+	<string name="send_contact">Kontakt senden</string>
+	<string name="edit_send_contact_detail_icon">Kontaktdetail-Typ</string>
+	<string name="contact_picture_content_description">Kontaktbild</string>
 </resources>

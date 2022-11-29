@@ -28,6 +28,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 
+import androidx.annotation.RequiresPermission;
+
 import com.google.common.collect.ListMultimap;
 
 import org.slf4j.Logger;
@@ -38,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.RequiresPermission;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.IdListService;
@@ -297,7 +298,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 
 					if (createNewRawContact) {
 						boolean supportsVoiceCalls = ContactUtil.canReceiveVoipMessages(contact, this.blackListIdentityService)
-							&& ConfigUtils.isCallsEnabled(context, preferenceService, licenseService);
+							&& ConfigUtils.isCallsEnabled();
 
 						// create a raw contact for our stuff and aggregate it
 						AndroidContactUtil.getInstance().createThreemaRawContact(

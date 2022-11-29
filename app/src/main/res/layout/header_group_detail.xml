@@ -8,6 +8,92 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<ImageView
+			android:id="@+id/change_group_desc_btn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="10dp"
+			android:background="@drawable/circle_transparent"
+			android:clickable="true"
+			android:contentDescription="@string/edit"
+			android:focusable="true"
+			android:padding="10dp"
+			android:scaleType="fitCenter"
+			app:layout_anchor="@id/group_desc_text"
+			app:layout_anchorGravity="top|right"
+			app:layout_constraintBottom_toBottomOf="@+id/group_desc_text"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintHorizontal_bias="1.0"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:srcCompat="@drawable/ic_pencil_outline"
+			app:tint="?attr/colorAccent" />
+
+		<ch.threema.app.ui.SectionHeaderView
+			android:id="@+id/group_desc_title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp"
+			android:text="@string/group_description"
+			app:layout_constraintBottom_toTopOf="@+id/group_desc_text"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<ch.threema.app.emojis.EmojiConversationTextView
+			android:id="@+id/group_desc_text"
+			android:clickable="true"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:ellipsize="end"
+			android:textColor="?android:textColorPrimary"
+			android:text=""
+			android:ems="10"
+			android:maxLines="3"
+			android:singleLine="false"
+			android:linksClickable="true"
+			android:textSize="14sp"
+			android:layout_marginBottom="32dp"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toStartOf="@+id/change_group_desc_btn"
+			app:layout_constraintHorizontal_chainStyle="packed"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_goneMarginRight="2dp"
+			android:focusable="true" />
+
+		<TextView
+			android:id="@+id/expand_group_desc_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:clickable="true"
+			android:focusable="true"
+			android:gravity="center"
+			android:text="@string/read_more"
+			android:textColor="@color/material_green"
+			android:textSize="16sp"
+			android:textStyle="normal|bold"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/group_desc_text"
+			app:layout_constraintVertical_bias="0.0" />
+
+		<ch.threema.app.ui.SectionHeaderView
+			android:id="@+id/group_desc_changed_date"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp"
+			android:layout_marginTop="12dp"
+			android:text="@string/changed_group_desc_date"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/expand_group_desc_text"
+			app:layout_constraintVertical_bias="0.255"
+			tools:layout_editor_absoluteX="0dp" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
 	<LinearLayout android:id="@+id/group_owner_container"
 				  android:layout_width="wrap_content"
 				  android:layout_height="wrap_content"

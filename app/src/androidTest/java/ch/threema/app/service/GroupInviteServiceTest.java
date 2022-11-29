@@ -56,7 +56,7 @@ public class GroupInviteServiceTest {
 	static final String TEST_GROUP_NAME = "A nice little group";
 	static final String TEST_INVITE_NAME = "New unnamed link";
 	static String TEST_IDENTITY = "ECHOECHO";
-	static final GroupInvite.InviteType TEST_INVITE_TYPE_AUTOMATIC = GroupInvite.InviteType.AUTOMATIC;
+	static final GroupInvite.ConfirmationMode TEST_CONFIRMATION_MODE_AUTOMATIC = GroupInvite.ConfirmationMode.AUTOMATIC;
 	static GroupInviteToken TEST_TOKEN_VALID;
 	static GroupInviteModel TEST_INVITE_MODEL;
 	static String TEST_ENCODED_INVITE = "RUNIT0VDSE86MDAwMTAyMDMwNDA1MDYwNzA4MDkwYTBiMGMwZDBlMGY6QSBuaWNlIGxpdHRsZSBncm91cDow";
@@ -79,7 +79,7 @@ public class GroupInviteServiceTest {
 		TEST_IDENTITY,
 		TEST_TOKEN_VALID,
 		TEST_GROUP_NAME,
-		TEST_INVITE_TYPE_AUTOMATIC
+		TEST_CONFIRMATION_MODE_AUTOMATIC
 	);
 
 	@Before
@@ -303,6 +303,6 @@ public class GroupInviteServiceTest {
 		Assert.assertEquals(TEST_INVITE_DATA.getAdminIdentity(),  inviteDataFromDecodedUri.getAdminIdentity());
 		Assert.assertEquals(TEST_INVITE_DATA.getToken(), inviteDataFromDecodedUri.getToken());
 		Assert.assertEquals(TEST_INVITE_DATA.getGroupName(), inviteDataFromDecodedUri.getGroupName());
-		Assert.assertEquals(TEST_INVITE_DATA.getInviteType(), inviteDataFromDecodedUri.getInviteType());
+		Assert.assertEquals(TEST_INVITE_DATA.getConfirmationMode(), inviteDataFromDecodedUri.getConfirmationMode());
 	}
 }

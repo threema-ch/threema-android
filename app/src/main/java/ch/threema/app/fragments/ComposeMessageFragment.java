@@ -32,6 +32,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -69,25 +70,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.AnyThread;
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -96,7 +82,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.view.MenuItemCompat;
@@ -109,6 +97,27 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
+
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.SendAction;
@@ -119,6 +128,7 @@ import ch.threema.app.activities.ContactNotificationsActivity;
 import ch.threema.app.activities.DistributionListAddActivity;
 import ch.threema.app.activities.GroupNotificationsActivity;
 import ch.threema.app.activities.HomeActivity;
+import ch.threema.app.activities.ImagePaintActivity;
 import ch.threema.app.activities.MediaGalleryActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.activities.SendMediaActivity;
@@ -177,13 +187,16 @@ import ch.threema.app.services.WallpaperService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
+import ch.threema.app.ui.AckjiPopup;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.ContentCommitComposeEditText;
 import ch.threema.app.ui.ConversationListView;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.ListViewSwipeListener;
 import ch.threema.app.ui.LockableScrollView;
-import ch.threema.app.ui.MentionSelectorPopup;
+import ch.threema.app.ui.MediaItem;
+import ch.threema.app.ui.OngoingCallNoticeModes;
+import ch.threema.app.ui.OngoingCallNoticeView;
 import ch.threema.app.ui.OpenBallotNoticeView;
 import ch.threema.app.ui.QRCodePopup;
 import ch.threema.app.ui.ReportSpamView;
@@ -204,6 +217,7 @@ import ch.threema.app.utils.ConversationUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.GroupCallUtilKt;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -218,6 +232,10 @@ import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ToolbarUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
+import ch.threema.app.voip.activities.GroupCallActivity;
+import ch.threema.app.voip.groupcall.GroupCallDescription;
+import ch.threema.app.voip.groupcall.GroupCallManager;
+import ch.threema.app.voip.groupcall.GroupCallObserver;
 import ch.threema.app.voip.listeners.VoipCallEventListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.services.VoipStateService;
@@ -239,12 +257,17 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
+import ch.threema.storage.models.data.MessageContentsType;
 
 import static android.view.WindowManager.LayoutParams.FLAG_SECURE;
 import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_AUDIORECORDER;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_LIFECYCLE;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_VOIP;
+import static ch.threema.app.ui.AckjiPopup.ITEM_ACK;
+import static ch.threema.app.ui.AckjiPopup.ITEM_DEC;
+import static ch.threema.app.ui.AckjiPopup.ITEM_IMAGE_REPLY;
+import static ch.threema.app.ui.AckjiPopup.ITEM_INFO;
 import static ch.threema.app.utils.LinkifyUtil.DIALOG_TAG_CONFIRM_LINK;
 import static ch.threema.app.utils.ShortcutUtil.TYPE_CHAT;
 
@@ -256,7 +279,6 @@ public class ComposeMessageFragment extends Fragment implements
 	ChatAdapterDecorator.ActionModeStatus,
 	SelectorDialog.SelectorDialogClickListener,
 	EmojiPicker.EmojiPickerListener,
-	MentionSelectorPopup.MentionSelectorListener,
 	OpenBallotNoticeView.VisibilityListener,
 	ReportSpamView.OnReportButtonClickListener,
 	ThreemaToolbarActivity.OnSoftKeyboardChangedListener,
@@ -272,6 +294,8 @@ public class ComposeMessageFragment extends Fragment implements
 	private static final String DIALOG_TAG_DECRYPTING_MESSAGES = "dcr";
 	private static final String DIALOG_TAG_SEARCHING = "src";
 	private static final String DIALOG_TAG_LOADING_MESSAGES = "loadm";
+	private static final String DIALOG_TAG_MESSAGE_DETAIL = "messageLog";
+	private static final String DIALOG_TAG_CONFIRM_MESSAGE_DELETE = "msgdel";
 
 	public static final String EXTRA_API_MESSAGE_ID = "apimsgid";
 	public static final String EXTRA_SEARCH_QUERY = "searchQuery";
@@ -305,10 +329,15 @@ public class ComposeMessageFragment extends Fragment implements
 	private ComposeMessageAdapter composeMessageAdapter;
 	private View isTypingView;
 
-	private MenuItem mutedMenuItem = null, blockMenuItem = null, deleteDistributionListItem = null,
-		callItem = null, shortCutItem = null, showOpenBallotWindowMenuItem = null,
-		showBallotsMenuItem = null, showAllGroupRequestsMenuItem = null,
-		showOpenGroupRequestsMenuItem = null;
+	private MenuItem mutedMenuItem = null;
+	private MenuItem blockMenuItem = null;
+	private MenuItem deleteDistributionListItem = null;
+	private MenuItem callItem = null;
+	private MenuItem shortCutItem = null;
+	private MenuItem showOpenBallotWindowMenuItem = null;
+	private MenuItem showBallotsMenuItem = null;
+	private MenuItem showAllGroupRequestsMenuItem = null;
+	private MenuItem showOpenGroupRequestsMenuItem = null;
 	private TextView dateTextView;
 
 	private ActionMode actionMode = null;
@@ -323,7 +352,6 @@ public class ComposeMessageFragment extends Fragment implements
 	private long intentTimestamp = 0L;
 	private int longClickItem = AbsListView.INVALID_POSITION;
 	private int listViewTop = 0, lastFirstVisibleItem = -1;
-	private Snackbar deleteSnackbar;
 	private TypingIndicatorTextWatcher typingIndicatorTextWatcher;
 	private Map<String, Integer> identityColors;
 	private MediaFilterQuery lastMediaFilter;
@@ -345,6 +373,40 @@ public class ComposeMessageFragment extends Fragment implements
 	private LicenseService licenseService;
 
 	private ActivityResultLauncher<Intent> wallpaperLauncher;
+	private final ActivityResultLauncher<Intent> imageReplyLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+		Intent resultIntent = result.getData();
+		if (resultIntent == null) {
+			logger.error("Result intent must not be null");
+			return;
+		}
+
+		@SuppressWarnings("rawtypes")
+		MessageReceiver receiver = IntentDataUtil.getMessageReceiverFromIntent(getContext(), resultIntent);
+		MediaItem mediaItem = resultIntent.getParcelableExtra(Intent.EXTRA_STREAM);
+		if (receiver == null) {
+			logger.error("The receiver must not be null");
+			return;
+		}
+		if (mediaItem == null) {
+			logger.error("The media item must not be null");
+			return;
+		}
+
+		messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(receiver));
+	});
+
+	private final ActivityResultLauncher<String> readPhoneStatePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+		Activity composeActivity = getActivity();
+		if (composeActivity == null) {
+			logger.warn("Activity is null; cannot check if permission rationale should be shown");
+			return;
+		}
+		if (!isGranted && !ActivityCompat.shouldShowRequestPermissionRationale(composeActivity, Manifest.permission.READ_PHONE_STATE)) {
+			ConfigUtils.showPermissionRationale(composeActivity, composeActivity.findViewById(R.id.compose_activity_parent), R.string.read_phone_state_short_message);
+		} else {
+			initiateCall();
+		}
+	});
 
 	private boolean listUpdateInProgress = false, isPaused = false;
 	private final List<AbstractMessageModel> unreadMessages = new ArrayList<>();
@@ -363,8 +425,8 @@ public class ComposeMessageFragment extends Fragment implements
 	private AvatarView actionBarAvatarView;
 	private ImageView wallpaperView;
 	private ActionBar actionBar;
-	private MentionSelectorPopup mentionPopup;
 	private TooltipPopup workTooltipPopup;
+	private AckjiPopup ackjiPopup;
 	private OpenBallotNoticeView openBallotNoticeView;
 	private OpenGroupRequestNoticeView openGroupRequestNoticeView;
 	private ReportSpamView reportSpamView;
@@ -377,6 +439,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private ListViewSwipeListener listViewSwipeListener;
 
 	private GroupService groupService;
+	private GroupCallManager groupCallManager;
 	private boolean isGroupChat = false;
 	private GroupModel groupModel;
 	private Date listInitializedAt;
@@ -393,6 +456,9 @@ public class ComposeMessageFragment extends Fragment implements
 	private TextView searchCounter;
 	private ProgressBar searchProgress;
 	private ImageView searchNextButton, searchPreviousButton;
+
+	private OngoingCallNoticeView ongoingCallNoticeView;
+	private GroupCallObserver groupCallObserver;
 
 	@SuppressLint("SimpleDateFormat")
 	private final SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyyMMdd");
@@ -512,7 +578,7 @@ public class ComposeMessageFragment extends Fragment implements
 					if (isAdded() && !isDetached() && !isRemoving()) {
 						if (newMessage.isOutbox()) {
 							if (addMessageToList(newMessage)) {
-								if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
+								if (!newMessage.isStatusMessage() && newMessage.getType() != MessageType.VOIP_STATUS && newMessage.getType() != MessageType.GROUP_CALL_STATUS) {
 									playSentSound();
 
 									if (reportSpamView != null && reportSpamView.getVisibility() == View.VISIBLE) {
@@ -522,7 +588,7 @@ public class ComposeMessageFragment extends Fragment implements
 							}
 						} else {
 							if (addMessageToList(newMessage) && !isPaused) {
-								if (!newMessage.isStatusMessage() && (newMessage.getType() != MessageType.VOIP_STATUS)) {
+								if (!newMessage.isStatusMessage() && newMessage.getType() != MessageType.VOIP_STATUS && newMessage.getType() != MessageType.GROUP_CALL_STATUS) {
 									playReceivedSound();
 								}
 							}
@@ -623,6 +689,14 @@ public class ComposeMessageFragment extends Fragment implements
 		@Override
 		public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
 			updateToolBarTitleInUIThread();
+
+			if (!groupService.isGroupMember(group)) {
+				// Remove ongoing group call notice if not a member of the group anymore
+				RuntimeUtil.runOnUiThread(() -> {
+					updateOngoingGroupCallState(null);
+					removeGroupCallObserver();
+				});
+			}
 		}
 
 		@Override
@@ -1003,6 +1077,65 @@ public class ComposeMessageFragment extends Fragment implements
 		return this.fragmentView;
 	}
 
+	private void initOngoingCallState() {
+		ongoingCallNoticeView = fragmentView.findViewById(R.id.ongoing_call_notice);
+		if (ongoingCallNoticeView != null && groupModel != null && groupService.isGroupMember(groupModel)) {
+			ongoingCallNoticeView.setButtonAction(() -> {
+				if (groupModel != null) {
+					GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
+					if (call != null) {
+						startActivity(GroupCallActivity.getStartOrJoinCallIntent(requireActivity(), groupModel.getId()));
+					}
+				}
+			});
+			ongoingCallNoticeView.setContainerAction(null);
+			registerGroupCallObserver();
+		} else if (ongoingCallNoticeView != null) {
+			updateOngoingGroupCallState(null);
+		}
+	}
+
+	private void unsetOngoingCallState() {
+		if (ongoingCallNoticeView != null) {
+			ongoingCallNoticeView.setButtonAction(null);
+			ongoingCallNoticeView.setContainerAction(null);
+		}
+		removeGroupCallObserver();
+	}
+
+	private void registerGroupCallObserver() {
+		removeGroupCallObserver();
+		if (groupModel != null && groupCallManager != null) {
+			groupCallObserver = new GroupCallObserver() {
+				@Override
+				public void onGroupCallUpdate(@Nullable GroupCallDescription call) {
+					RuntimeUtil.runOnUiThread(() -> ComposeMessageFragment.this.updateOngoingGroupCallState(call));
+				}
+
+				@Override
+				public void onGroupCallStart(@NonNull GroupModel groupModel, @Nullable GroupCallDescription call) {
+					// noop
+				}
+			};
+			groupCallManager.addGroupCallObserver(groupModel, groupCallObserver);
+		}
+	}
+
+	@UiThread
+	private void updateOngoingGroupCallState(@Nullable GroupCallDescription call) {
+		if (call != null && ConfigUtils.isGroupCallsEnabled()) {
+			int participantsCount = call.getCallState() != null ?
+				call.getCallState().getParticipants().size() :
+				0;
+
+			ongoingCallNoticeView.show(call.getRunningSince(), groupCallManager.isJoinedCall(call) ? OngoingCallNoticeModes.MODE_GROUP_CALL_JOINED : OngoingCallNoticeModes.MODE_GROUP_CALL_RUNNING, participantsCount);
+			updateVoipCallMenuItem(false);
+		} else {
+			ongoingCallNoticeView.hide();
+			updateVoipCallMenuItem(true);
+		}
+	}
+
 	private boolean isEmojiPickerShown() {
 		return emojiPicker != null && emojiPicker.isShown();
 	}
@@ -1128,6 +1261,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 			// update menus
 			updateMuteMenu();
+			updateGroupCallMenuItem();
 
 			// start media players again
 			this.messagePlayerService.resumeAll(getActivity(), this.messageReceiver, SOURCE_LIFECYCLE);
@@ -1160,6 +1294,13 @@ public class ComposeMessageFragment extends Fragment implements
 			// update group requests as they could have been changed when coming back from the overview activity
 			if (ConfigUtils.supportsGroupLinks() && groupService.isGroupOwner(this.groupModel)) {
 				this.openGroupRequestNoticeView.updateGroupRequests();
+			}
+
+			if (groupModel != null && groupCallManager != null && groupService.isGroupMember(groupModel)) {
+				GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
+				if (call != null) {
+					updateOngoingGroupCallState(call);
+				}
 			}
 		}
 	}
@@ -1220,6 +1361,12 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		unsetOngoingCallState();
+	}
+
+	@Override
 	public void onDestroy() {
 		logger.debug("onDestroy");
 
@@ -1276,13 +1423,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 			//remove wallpaper
 			this.wallpaperView.setImageBitmap(null);
-
-			// delete pending deleteable messages
-			deleteDeleteableMessages();
-
-			if (this.deleteSnackbar != null && this.deleteSnackbar.isShownOrQueued()) {
-				this.deleteSnackbar.dismiss();
-			}
 
 			removeIsTypingFooter();
 			this.isTypingView = null;
@@ -1409,7 +1549,8 @@ public class ComposeMessageFragment extends Fragment implements
 
 					if (viewType == ComposeMessageAdapter.TYPE_STATUS ||
 						viewType == ComposeMessageAdapter.TYPE_FIRST_UNREAD ||
-						viewType == ComposeMessageAdapter.TYPE_DATE_SEPARATOR) {
+						viewType == ComposeMessageAdapter.TYPE_DATE_SEPARATOR  ||
+						viewType == ComposeMessageAdapter.TYPE_GROUP_CALL_STATUS) {
 						return false;
 					}
 
@@ -1530,9 +1671,6 @@ public class ComposeMessageFragment extends Fragment implements
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				ThreemaApplication.activityUserInteract(activity);
 				updateSendButton(s);
-				if (isGroupChat  && s.length() > 0 && getActivity() != null && getActivity().getCurrentFocus() == messageText) {
-					checkPossibleMention(s, start, before, count);
-				}
 			}
 
 			@Override
@@ -1583,21 +1721,6 @@ public class ComposeMessageFragment extends Fragment implements
 		messageText.setPadding(messageText.getPaddingLeft(), messageText.getPaddingTop(), marginRight, messageText.getPaddingBottom());
 	}
 
-	private void checkPossibleMention(CharSequence s, int start, int before, int count) {
-		if (count == 1 && s.charAt(start) == '@' && start < s.length() // if current char is @ and only if adding a new char
-				&& (start == 0 || s.charAt(start - 1) == ' ' || s.charAt(start - 1) == '\n') // and only show if at start or if there is empty space before to not interrupt typing mail addresses
-				&& (s.length() <= start + 1 || s.charAt(start + 1) == ' ' || s.charAt(start + 1) == '\n') // and only show if @ is at the very end or also has empty space in the back.
-		)
-		{
-			dismissTooltipPopup(workTooltipPopup, true);
-			workTooltipPopup = null;
-
-			dismissMentionPopup();
-			mentionPopup = new MentionSelectorPopup(getActivity(), this, groupService, this.contactService, this.userService, this.preferenceService, groupModel);
-			mentionPopup.show(getActivity(), this.messageText, emojiButton.getWidth());
-		}
-	}
-
 	private void updateSendButton(CharSequence s) {
 		if (isQuotePanelShown()) {
 			if (TestUtil.empty(s)) {
@@ -1626,6 +1749,8 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void resetDefaultValues() {
+		removeGroupCallObserver();
+
 		this.distributionListId = 0L;
 		this.groupId = 0;
 		this.identity = null;
@@ -1639,14 +1764,17 @@ public class ComposeMessageFragment extends Fragment implements
 		this.listInstanceReceiverId = null;
 
 		if (ConfigUtils.isTabletLayout()) {
-			// apply pending deletes upon reentering a chat through onNewIntent() in multi-frame environment
-			deleteDeleteableMessages();
-
-			if (this.deleteSnackbar != null && this.deleteSnackbar.isShownOrQueued()) {
-				this.deleteSnackbar.dismiss();
-			}
-
 			closeQuoteMode();
+		}
+
+		// remove message detail dialog if still open
+		DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_MESSAGE_DETAIL, true);
+	}
+
+	private void removeGroupCallObserver() {
+		if (groupModel != null && groupCallObserver != null && groupCallManager != null) {
+			groupCallManager.removeGroupCallObserver(groupModel, groupCallObserver);
+			groupCallObserver = null;
 		}
 	}
 
@@ -1732,6 +1860,10 @@ public class ComposeMessageFragment extends Fragment implements
 						}
 					}
 				}
+			} else if (groupModel != null) {
+				if (ConfigUtils.isGroupCallsEnabled()) {
+					showTooltip();
+				}
 			}
 		}
 
@@ -1744,6 +1876,54 @@ public class ComposeMessageFragment extends Fragment implements
 			if (actionBar != null) {
 				actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
 				actionBar.setCustomView(actionBarTitleView);
+			}
+		}
+	}
+
+	@UiThread
+	public void showTooltip() {
+		if (activity == null) {
+			return;
+		}
+
+		if (!preferenceService.getIsGroupCallsTooltipShown()) {
+			Toolbar toolbar = activity.getToolbar();
+			if (toolbar != null) {
+				toolbar.postDelayed(() -> {
+					if (activity == null || !activity.hasWindowFocus() || !isGroupChat) {
+						return;
+					}
+					final View itemView = toolbar.findViewById(R.id.menu_threema_call);
+					try {
+						TapTargetView.showFor(activity,
+							TapTarget.forView(itemView, getString(R.string.group_calls_tooltip_title), getString(R.string.group_calls_tooltip_text))
+								.outerCircleColor(ConfigUtils.getAppTheme(activity) == ConfigUtils.THEME_DARK ? R.color.dark_accent : R.color.accent_light)      // Specify a color for the outer circle
+								.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
+								.targetCircleColor(android.R.color.white)   // Specify a color for the target circle
+								.titleTextSize(24)                  // Specify the size (in sp) of the title text
+								.titleTextColor(android.R.color.white)      // Specify the color of the title text
+								.descriptionTextSize(18)            // Specify the size (in sp) of the description text
+								.descriptionTextColor(android.R.color.white)  // Specify the color of the description text
+								.textColor(android.R.color.white)            // Specify a color for both the title and description text
+								.textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
+								.dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+								.drawShadow(true)                   // Whether to draw a drop shadow or not
+								.cancelable(true)                  // Whether tapping outside the outer circle dismisses the view
+								.tintTarget(true)                   // Whether to tint the target view's color
+								.transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
+								.targetRadius(50),                  // Specify the target radius (in dp)
+							new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
+								@Override
+								public void onTargetClick(TapTargetView view) {
+									super.onTargetClick(view);
+									itemView.performClick();
+								}
+							});
+						preferenceService.setGroupCallsTooltipShown(true);
+					} catch (Exception ignore) {
+						// catch null typeface exception on CROSSCALL Action-X3
+					}
+				}, 2000);
 			}
 		}
 	}
@@ -1783,6 +1963,15 @@ public class ComposeMessageFragment extends Fragment implements
 				this.openGroupRequestNoticeView.setGroupIdReference(this.groupModel.getApiGroupId());
 				this.openGroupRequestNoticeView.updateGroupRequests();
 			}
+
+			this.messageText.enableMentionPopup(
+				requireActivity(),
+				groupService,
+				this.contactService,
+				this.userService,
+				this.preferenceService,
+				groupModel
+			);
 		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST) || this.distributionListId != 0) {
 			this.isDistributionListChat = true;
 
@@ -1840,6 +2029,8 @@ public class ComposeMessageFragment extends Fragment implements
 			this.typingIndicatorTextWatcher = new TypingIndicatorTextWatcher(this.userService, contactModel);
 			this.conversationUid = ConversationUtil.getIdentityConversationUid(this.identity);
 		}
+
+		initOngoingCallState();
 
 		if (this.messageReceiver == null) {
 			logger.error("invalid receiver", activity, (Runnable) this::finishActivity);
@@ -1958,44 +2149,13 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void deleteSelectedMessages() {
-		int deleteableMessagesCount = 0;
+		deleteableMessages.clear();
 
 		if (selectedMessages != null && selectedMessages.size() > 0) {
-			// sort highest first for removal
-			Collections.sort(selectedMessages, (lhs, rhs) -> rhs.getId() - lhs.getId());
-
-			synchronized (deleteableMessages) {
-				for (AbstractMessageModel messageModel : selectedMessages) {
-					if (messageModel != null) {
-						// remove from adapter but not from database
-						int position = composeMessageAdapter.getPosition(messageModel);
-
-						AbstractMessageModel previousMessage = null;
-						if (position > 0) {
-							previousMessage = composeMessageAdapter.getItem(position - 1);
-						}
-
-						if (previousMessage != null && previousMessage instanceof DateSeparatorMessageModel) {
-							AbstractMessageModel nextMessage = null;
-							if (position < (composeMessageAdapter.getCount() - 1)) {
-								nextMessage = composeMessageAdapter.getItem(position + 1);
-							}
-							if (nextMessage == null ||
-									!dayFormatter.format(messageModel.getCreatedAt()).equals(dayFormatter.format(nextMessage.getCreatedAt()))) {
-								deleteableMessages.add(new Pair<>(previousMessage, position - 1));
-								composeMessageAdapter.remove(previousMessage);
-							}
-						}
-
-						deleteableMessages.add(new Pair<>(messageModel, position));
-						deleteableMessagesCount++;
-						composeMessageAdapter.remove(messageModel);
-					}
+			for (AbstractMessageModel messageModel : selectedMessages) {
+				if (messageModel != null) {
+					deleteableMessages.add(new Pair<>(messageModel, composeMessageAdapter.getPosition(messageModel)));
 				}
-				composeMessageAdapter.notifyDataSetChanged();
-
-				// sort lowest first for insertion
-				Collections.sort(deleteableMessages, (lhs, rhs) -> lhs.second - rhs.second);
 			}
 			selectedMessages.clear();
 
@@ -2003,25 +2163,10 @@ public class ComposeMessageFragment extends Fragment implements
 				actionMode.finish();
 			}
 
-			try {
-				deleteSnackbar = Snackbar.make(coordinatorLayout, deleteableMessagesCount + " " + getString(R.string.message_deleted), 7 * (int) DateUtils.SECOND_IN_MILLIS);
-				deleteSnackbar.setAction(R.string.message_delete_undo, v -> RuntimeUtil.runOnUiThread(this::undoDeleteMessages));
-				deleteSnackbar.setCallback(new Snackbar.Callback() {
-					@Override
-					public void onDismissed(Snackbar snackbar, int event) {
-						super.onDismissed(snackbar, event);
-
-						if (event != DISMISS_EVENT_ACTION && event != DISMISS_EVENT_CONSECUTIVE && event != DISMISS_EVENT_MANUAL) {
-								RuntimeUtil.runOnUiThread(() -> deleteDeleteableMessages());
-						}
-					}
-				});
-				deleteSnackbar.show();
-			} catch (Exception e) {
-				logger.debug("https://issuetracker.google.com/issues/63793040");
-				RuntimeUtil.runOnUiThread(this::undoDeleteMessages);
-			}
-
+			GenericAlertDialog.newInstance(null,
+				ConfigUtils.getSafeQuantityString(getContext(), R.plurals.delete_messages, deleteableMessages.size(), deleteableMessages.size()),
+				R.string.delete,
+				R.string.cancel).setTargetFragment(this).show(getParentFragmentManager(), DIALOG_TAG_CONFIRM_MESSAGE_DELETE);
 		} else {
 			if (actionMode != null) {
 				actionMode.finish();
@@ -2106,16 +2251,6 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		return true;
-	}
-
-	private void undoDeleteMessages() {
-		synchronized (deleteableMessages) {
-			for (Pair<AbstractMessageModel, Integer> m : deleteableMessages) {
-				composeMessageAdapter.insert(m.first, m.second);
-			}
-			deleteableMessages.clear();
-		}
-		composeMessageAdapter.notifyDataSetChanged();
 	}
 
 	private synchronized void deleteDeleteableMessages() {
@@ -2500,20 +2635,17 @@ public class ComposeMessageFragment extends Fragment implements
 			composeMessageAdapter.setGroupId(groupId);
 			composeMessageAdapter.setOnClickListener(new ComposeMessageAdapter.OnClickListener() {
 				@Override
-				public void resend(AbstractMessageModel messageModel) {
-					if (messageModel.isOutbox() && messageModel.getState() == MessageState.SENDFAILED && messageReceiver.isMessageBelongsToMe(messageModel)) {
+				public void click(View view, int position, AbstractMessageModel messageModel) {
+					if (messageModel.isOutbox() && (messageModel.getState() == MessageState.SENDFAILED || messageModel.getState() == MessageState.FS_KEY_MISMATCH) && messageReceiver.isMessageBelongsToMe(messageModel)) {
 						try {
 							messageService.resendMessage(messageModel, messageReceiver, null);
 						} catch (Exception e) {
 							RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.original_file_no_longer_avilable, Toast.LENGTH_LONG).show());
 						}
-					}
-				}
-
-				@Override
-				public void click(View view, int position, AbstractMessageModel messageModel) {
-					if (searchActionMode == null) {
-						onListItemClick(view, position, messageModel);
+					} else {
+						if (searchActionMode == null) {
+							onListItemClick(view, position, messageModel);
+						}
 					}
 				}
 
@@ -2746,6 +2878,8 @@ public class ComposeMessageFragment extends Fragment implements
 						Toast.makeText(getContext().getApplicationContext(), R.string.quoted_message_deleted, Toast.LENGTH_SHORT).show();
 					}
 				}
+			} else if (messageModel.getType() == MessageType.TEXT && !messageModel.isStatusMessage()) {
+				showTextChatBubble(messageModel);
 			}
 		}
 	}
@@ -2804,7 +2938,9 @@ public class ComposeMessageFragment extends Fragment implements
 	@UiThread
 	private void onListItemLongClick(@NonNull View view, final int position) {
 		int viewType = composeMessageAdapter.getItemViewType(position);
-		if (viewType == ComposeMessageAdapter.TYPE_FIRST_UNREAD  || viewType == ComposeMessageAdapter.TYPE_DATE_SEPARATOR) {
+		if (viewType == ComposeMessageAdapter.TYPE_FIRST_UNREAD  ||
+			viewType == ComposeMessageAdapter.TYPE_DATE_SEPARATOR) {
+			// Do not allow to select these view types
 			return;
 		}
 
@@ -2828,6 +2964,51 @@ public class ComposeMessageFragment extends Fragment implements
 		// see: http://stackoverflow.com/questions/16047215/android-how-to-stop-linkify-on-long-press
 		longClickItem = position;
 
+		if (viewType == ComposeMessageAdapter.TYPE_STATUS_DATA_RECV ||
+			viewType == ComposeMessageAdapter.TYPE_STATUS_DATA_SEND) {
+			// Don't show popup for these view types (but allow them to be selected)
+			return;
+		}
+
+		if (ackjiPopup == null) {
+			ackjiPopup = new AckjiPopup(getContext(), convListView);
+			ackjiPopup.setListener(new AckjiPopup.AckDecPopupListener() {
+				@Override
+				public void onAckjiClicked(final int clickedItem) {
+					if (actionMode == null) {
+						return;
+					}
+
+					switch (clickedItem) {
+						case ITEM_ACK:
+							sendUserAck();
+							actionMode.finish();
+							break;
+						case ITEM_DEC:
+							sendUserDec();
+							actionMode.finish();
+							break;
+						case ITEM_IMAGE_REPLY:
+							sendImageReply();
+							actionMode.finish();
+							break;
+						case ITEM_INFO:
+							showMessageLog(selectedMessages.get(0));
+							actionMode.finish();
+							break;
+					}
+				}
+
+				@Override
+				public void onOpen() {
+				}
+
+				@Override
+				public void onClose() {
+				}
+			});
+		}
+		ackjiPopup.show(view.findViewById(R.id.message_block), selectedMessages.get(0));
 	}
 
 	private boolean isMuted() {
@@ -3106,16 +3287,6 @@ public class ComposeMessageFragment extends Fragment implements
 			new ArrayList<>(uris), text);
 	}
 
-	@Override
-	public void onContactSelected(String identity, int length, int insertPosition) {
-		Editable editable = this.messageText.getText();
-
-		if (insertPosition >= 0 && insertPosition <= editable.length()) {
-			editable.delete(insertPosition, insertPosition + length);
-			this.messageText.addMention(identity);
-		}
-	}
-
 	private void startQuoteMode(AbstractMessageModel messageModel, Runnable onFinishRunnable) {
 		if (messageModel == null) {
 			messageModel = selectedMessages.get(0);
@@ -3200,15 +3371,13 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
-	private void showMessageLog() {
-		AbstractMessageModel messageModel = selectedMessages.get(0);
-
+	private void showMessageLog(@Nullable AbstractMessageModel messageModel) {
 		if (messageModel == null) {
 			return;
 		}
 
-		MessageDetailDialog.newInstance(R.string.message_log_title, messageModel.getId(), messageModel.getClass().toString()).
-			show(getFragmentManager(), "messageLog");
+		MessageDetailDialog.newInstance(R.string.message_log_title, messageModel.getId(), messageModel.getClass().toString(), messageModel.getForwardSecurityMode()).
+			show(getParentFragmentManager(), DIALOG_TAG_MESSAGE_DETAIL);
 	}
 
 	private void updateToolbarTitle() {
@@ -3235,7 +3404,7 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 			actionBarSubtitleTextView.setText(groupService.getMembersString(groupModel));
 			actionBarSubtitleTextView.setVisibility(View.VISIBLE);
-			groupService.loadAvatarIntoImage(groupModel, actionBarAvatarView.getAvatarView(), AvatarOptions.DEFAULT);
+			groupService.loadAvatarIntoImage(groupModel, actionBarAvatarView.getAvatarView(), AvatarOptions.PRESET_DEFAULT_FALLBACK);
 			actionBarAvatarView.setBadgeVisible(false);
 		} else if (this.isDistributionListChat) {
 			actionBarSubtitleTextView.setText(this.distributionListService.getMembersString(this.distributionListModel));
@@ -3244,14 +3413,14 @@ public class ComposeMessageFragment extends Fragment implements
 				actionBarAvatarView.setVisibility(View.GONE);
 				actionBarTitleTextView.setText(getString(R.string.threema_message_to, ""));
 			} else {
-				distributionListService.loadAvatarIntoImage(distributionListModel, actionBarAvatarView.getAvatarView(), AvatarOptions.DEFAULT_NO_CACHE);
+				distributionListService.loadAvatarIntoImage(distributionListModel, actionBarAvatarView.getAvatarView(), AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE);
 			}
 			actionBarAvatarView.setBadgeVisible(false);
 		} else {
 			if (contactModel != null) {
 				this.actionBarSubtitleImageView.setContactModel(contactModel);
 				this.actionBarSubtitleImageView.setVisibility(View.VISIBLE);
-				contactService.loadAvatarIntoImage(contactModel, this.actionBarAvatarView.getAvatarView(), AvatarOptions.DEFAULT);
+				contactService.loadAvatarIntoImage(contactModel, this.actionBarAvatarView.getAvatarView(), AvatarOptions.PRESET_RESPECT_SETTINGS);
 				this.actionBarAvatarView.setBadgeVisible(contactService.showBadge(contactModel));
 			}
 		}
@@ -3446,19 +3615,35 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	@AnyThread
-	private void updateVoipCallMenuItem(final Boolean newState) {
+	private void updateVoipCallMenuItem(@Nullable final Boolean newState) {
 		RuntimeUtil.runOnUiThread(() -> {
-			if (callItem != null) {
-				if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService)
-						&& ConfigUtils.isCallsEnabled(getContext(), preferenceService, licenseService)) {
+			if (isGroupChat) {
+				updateGroupCallMenuItem();
+			} else if (callItem != null) {
+				if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService) && ConfigUtils.isCallsEnabled()) {
 					logger.debug("updateVoipMenu newState " + newState);
-
+					callItem.setIcon(R.drawable.ic_phone_locked_outline);
+					callItem.setTitle(R.string.threema_call);
 					callItem.setVisible(newState != null ? newState : voipStateService.getCallState().isIdle());
 				} else {
 					callItem.setVisible(false);
 				}
 			}
 		});
+	}
+
+	@UiThread
+	private void updateGroupCallMenuItem() {
+		if (isGroupChat && callItem != null) {
+			if (GroupCallUtilKt.qualifiesForGroupCalls(groupService, groupModel)) {
+				GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
+				callItem.setIcon(R.drawable.ic_group_call);
+				callItem.setTitle(R.string.group_call);
+				callItem.setVisible(call == null);
+			} else {
+				callItem.setVisible(false);
+			}
+		}
 	}
 
 	private Intent addExtrasToIntent(Intent intent, MessageReceiver receiver) {
@@ -3503,7 +3688,7 @@ public class ComposeMessageFragment extends Fragment implements
 				activity.startActivity(addExtrasToIntent(mediaGalleryIntent, this.messageReceiver));
 				break;
 			case R.id.menu_threema_call:
-				VoipUtil.initiateCall(activity, contactModel, false, null);
+				initiateCall();
 				break;
 			case R.id.menu_wallpaper:
 				wallpaperService.selectWallpaper(this, this.wallpaperLauncher, this.messageReceiver, () -> RuntimeUtil.runOnUiThread(this::setBackgroundWallpaper));
@@ -3587,6 +3772,14 @@ public class ComposeMessageFragment extends Fragment implements
 		return false;
 	}
 
+	private void initiateCall() {
+		if (isGroupChat) {
+			GroupCallUtilKt.initiateCall(activity, groupModel);
+		} else {
+			VoipUtil.initiateCall(activity, contactModel, false, null, readPhoneStatePermissionLauncher);
+		}
+	}
+
 	private void emptyChat() {
 		new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, getParentFragmentManager(), false, () -> {
 			if (isAdded()) {
@@ -3619,7 +3812,7 @@ public class ComposeMessageFragment extends Fragment implements
 		if (!this.isGroupChat &&
 			!this.isDistributionListChat &&
 			ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService) &&
-			ConfigUtils.isCallsEnabled(getContext(), preferenceService, licenseService)) {
+			ConfigUtils.isCallsEnabled()) {
 							ArrayList<SelectorDialogItem> items = new ArrayList<>();
 				items.add(new SelectorDialogItem(getString(R.string.prefs_header_chat), R.drawable.ic_outline_chat_bubble_outline));
 				items.add(new SelectorDialogItem(getString(R.string.threema_call), R.drawable.ic_call_outline));
@@ -3683,7 +3876,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	public class ComposeMessageAction implements ActionMode.Callback {
 		private final int position;
-		private MenuItem ackItem, decItem, quoteItem, logItem, discardItem, forwardItem, saveItem, copyItem, qrItem, shareItem, showText;
+		private MenuItem quoteItem, discardItem, forwardItem, saveItem, copyItem, qrItem, shareItem, showText;
 
 		ComposeMessageAction(int position) {
 			this.position = position;
@@ -3692,10 +3885,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		private void updateActionMenu() {
 			// workaround for support library bug, see https://code.google.com/p/android/issues/detail?id=81192
-			MenuItemCompat.setShowAsAction(ackItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
-			MenuItemCompat.setShowAsAction(decItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
 			MenuItemCompat.setShowAsAction(quoteItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
-			MenuItemCompat.setShowAsAction(logItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
 			MenuItemCompat.setShowAsAction(discardItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
 			MenuItemCompat.setShowAsAction(saveItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
 			MenuItemCompat.setShowAsAction(copyItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
@@ -3703,12 +3893,9 @@ public class ComposeMessageFragment extends Fragment implements
 			MenuItemCompat.setShowAsAction(qrItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
 			MenuItemCompat.setShowAsAction(shareItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
 
-			decItem.setVisible(false);
-			ackItem.setVisible(false);
 			quoteItem.setVisible(false);
 			qrItem.setVisible(false);
 			copyItem.setVisible(false);
-			logItem.setVisible(false);
 			saveItem.setVisible(false);
 			shareItem.setVisible(false);
 			showText.setVisible(false);
@@ -3729,7 +3916,9 @@ public class ComposeMessageFragment extends Fragment implements
 									// or a ballot
 									|| message.getType() == MessageType.BALLOT
 									// or a voip status
-									|| message.getType() == MessageType.VOIP_STATUS)) {
+									|| message.getType() == MessageType.VOIP_STATUS
+									|| message.getType() == MessageType.GROUP_CALL_STATUS
+					)) {
 						isForwardable = false;
 					}
 					if (isMedia && !message.isAvailable() ||
@@ -3758,16 +3947,10 @@ public class ComposeMessageFragment extends Fragment implements
 				if (selectedMessage.isStatusMessage()) {
 					forwardItem.setVisible(false);
 					copyItem.setVisible(true);
-					logItem.setVisible(true);
 				} else {
 					boolean isValidReceiver = messageReceiver.validateSendingPermission(null);
 
 					quoteItem.setVisible(isValidReceiver && QuoteUtil.isQuoteable(selectedMessage));
-
-					decItem.setVisible(MessageUtil.canSendUserDecline(selectedMessage) && isValidReceiver);
-					ackItem.setVisible(MessageUtil.canSendUserAcknowledge(selectedMessage) && isValidReceiver);
-
-					logItem.setVisible(true);
 
 					switch (selectedMessage.getType()) {
 						case IMAGE:
@@ -3812,12 +3995,12 @@ public class ComposeMessageFragment extends Fragment implements
 							showText.setVisible(true);
 							break;
 						case VOIP_STATUS:
+						case GROUP_CALL_STATUS:
 							saveItem.setVisible(false);
 							forwardItem.setVisible(false);
 							copyItem.setVisible(false);
 							qrItem.setVisible(false);
 							shareItem.setVisible(false);
-							logItem.setVisible(false);
 							break;
 						case LOCATION:
 							shareItem.setVisible(true);
@@ -3851,9 +4034,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 			ConfigUtils.addIconsToOverflowMenu(null, menu);
 
-			decItem = menu.findItem(R.id.menu_message_dec);
-			ackItem = menu.findItem(R.id.menu_message_ack);
-			logItem = menu.findItem(R.id.menu_message_log);
 			discardItem = menu.findItem(R.id.menu_message_discard);
 			forwardItem = menu.findItem(R.id.menu_message_forward);
 			saveItem = menu.findItem(R.id.menu_message_save);
@@ -3897,22 +4077,10 @@ public class ComposeMessageFragment extends Fragment implements
 					startForwardMessage();
 					mode.finish();
 					break;
-				case R.id.menu_message_ack:
-					sendUserAck();
-					mode.finish();
-					break;
-				case R.id.menu_message_dec:
-					sendUserDec();
-					mode.finish();
-					break;
 				case R.id.menu_message_save:
 					if (ConfigUtils.requestWriteStoragePermissions(activity, ComposeMessageFragment.this, PERMISSION_REQUEST_SAVE_MESSAGE)) {
 						fileService.saveMedia(activity, coordinatorLayout, new CopyOnWriteArrayList<>(selectedMessages), false);
 					}
-					mode.finish();
-					break;
-				case R.id.menu_message_log:
-					showMessageLog();
 					mode.finish();
 					break;
 				case R.id.menu_message_qrcode:
@@ -3931,7 +4099,7 @@ public class ComposeMessageFragment extends Fragment implements
 					mode.finish();
 					break;
 				case R.id.menu_show_text:
-					showTextChatBubble();
+					showTextChatBubble(selectedMessages.get(0));
 					mode.finish();
 					break;
 				default:
@@ -3950,6 +4118,10 @@ public class ComposeMessageFragment extends Fragment implements
 			convListView.requestLayout();
 			convListView.post(() -> convListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE));
 
+			if (ackjiPopup != null) {
+				ackjiPopup.dismiss();
+			}
+
 			// If the action mode has been left without clearing up the selected messages, we need
 			// to trigger a refresh so that linkified links work again (selectedMessages will be cleared lazily)
 			if (!selectedMessages.isEmpty() && composeMessageAdapter != null) {
@@ -3958,9 +4130,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
-	private void showTextChatBubble() {
-		AbstractMessageModel messageModel = selectedMessages.get(0);
-
+	private void showTextChatBubble(AbstractMessageModel messageModel) {
 		Intent intent = new Intent(getContext(), TextChatBubbleActivity.class);
 		IntentDataUtil.append(messageModel, intent);
 		activity.startActivity(intent);
@@ -3975,17 +4145,72 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
+	@MainThread
 	private void sendUserAck() {
-		messageService.sendUserAcknowledgement(selectedMessages.get(0));
-		Toast.makeText(getActivity(), R.string.message_acknowledged, Toast.LENGTH_SHORT).show();
+		AbstractMessageModel messageModel = selectedMessages.get(0);
+
+		if (messageModel != null) {
+			new Thread(() -> messageService.sendUserAcknowledgement(messageModel, false)).start();
+			Toast.makeText(getActivity(), R.string.message_acknowledged, Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	@MainThread
+	private void sendUserDec() {
+		AbstractMessageModel messageModel = selectedMessages.get(0);
+
+		if (messageModel != null) {
+			new Thread(() -> messageService.sendUserDecline(messageModel, false)).start();
+			Toast.makeText(getActivity(), R.string.message_declined, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	/**
-	 * Send a Decline Message
+	 * Start the {@code ImagePaintActivity} to edit the (first) currently selected message.
 	 */
-	private void sendUserDec() {
-		messageService.sendUserDecline(selectedMessages.get(0));
-		Toast.makeText(getActivity(), R.string.message_declined, Toast.LENGTH_SHORT).show();
+	private void sendImageReply() {
+		final AbstractMessageModel messageModel = selectedMessages.get(0);
+		if (messageModel == null || messageModel.getMessageContentsType() != MessageContentsType.IMAGE) {
+			logger.error("Invalid message model: {}", messageModel);
+			return;
+		}
+		fileService.loadDecryptedMessageFile(messageModel, new FileService.OnDecryptedFileComplete() {
+			@Override
+			public void complete(File decryptedFile) {
+				if (messageModel.isAvailable()) {
+					Uri uri = null;
+					if (decryptedFile != null) {
+						uri = Uri.fromFile(decryptedFile);
+					}
+
+					MediaItem mediaItem = new MediaItem(uri, MediaItem.TYPE_IMAGE);
+
+					File outputFile;
+					try {
+						outputFile = fileService.createTempFile(".imageReply", ".png");
+					} catch (IOException e) {
+						logger.error("Couldn't create temporary file", e);
+						return;
+					}
+
+					Context context = getContext();
+					if (context == null) {
+						logger.error("Context is null");
+						return;
+					}
+
+					Intent imageReplyIntent = ImagePaintActivity.getImageReplyIntent(context, mediaItem, outputFile, messageReceiver, groupModel);
+					IntentDataUtil.addMessageReceiverToIntent(imageReplyIntent, messageReceiver);
+
+					imageReplyLauncher.launch(imageReplyIntent);
+				}
+			}
+
+			@Override
+			public void error(String message) {
+				RuntimeUtil.runOnUiThread(() -> SingleToast.getInstance().showLongText(getString(R.string.an_error_occurred_during_send)));
+			}
+		});
 	}
 
 	public boolean onBackPressed() {
@@ -3995,7 +4220,7 @@ public class ComposeMessageFragment extends Fragment implements
 			emojiPicker.hide();
 			return true;
 		} else {
-			if (mentionPopup != null && mentionPopup.isShowing()) {
+			if (messageText != null && messageText.isMentionPopupShowing()) {
 				dismissMentionPopup();
 				return true;
 			}
@@ -4212,35 +4437,34 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	protected void instantiate() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			this.preferenceService = serviceManager.getPreferenceService();
-			try {
-				this.userService = serviceManager.getUserService();
-				this.contactService = serviceManager.getContactService();
-				this.groupService = serviceManager.getGroupService();
-				this.messageService = serviceManager.getMessageService();
-				this.fileService = serviceManager.getFileService();
-				this.notificationService = serviceManager.getNotificationService();
-				this.distributionListService = serviceManager.getDistributionListService();
-				this.messagePlayerService = serviceManager.getMessagePlayerService();
-				this.blackListIdentityService = serviceManager.getBlackListService();
-				this.ballotService = serviceManager.getBallotService();
-				this.databaseServiceNew = serviceManager.getDatabaseServiceNew();
-				this.conversationService = serviceManager.getConversationService();
-				this.deviceService =serviceManager.getDeviceService();
-				this.wallpaperService = serviceManager.getWallpaperService();
-				this.wallpaperLauncher = wallpaperService.getWallpaperActivityResultLauncher(this, this::setBackgroundWallpaper, () -> this.messageReceiver);
-				this.mutedChatsListService = serviceManager.getMutedChatsListService();
-				this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
-				this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
-				this.ringtoneService = serviceManager.getRingtoneService();
-				this.voipStateService = serviceManager.getVoipStateService();
-				this.downloadService = serviceManager.getDownloadService();
-				this.licenseService = serviceManager.getLicenseService();
-			} catch (Exception e) {
-				LogUtil.exception(e, activity);
-			}
+		ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
+		this.preferenceService = serviceManager.getPreferenceService();
+		try {
+			this.userService = serviceManager.getUserService();
+			this.contactService = serviceManager.getContactService();
+			this.groupService = serviceManager.getGroupService();
+			this.groupCallManager = serviceManager.getGroupCallManager();
+			this.messageService = serviceManager.getMessageService();
+			this.fileService = serviceManager.getFileService();
+			this.notificationService = serviceManager.getNotificationService();
+			this.distributionListService = serviceManager.getDistributionListService();
+			this.messagePlayerService = serviceManager.getMessagePlayerService();
+			this.blackListIdentityService = serviceManager.getBlackListService();
+			this.ballotService = serviceManager.getBallotService();
+			this.databaseServiceNew = serviceManager.getDatabaseServiceNew();
+			this.conversationService = serviceManager.getConversationService();
+			this.deviceService =serviceManager.getDeviceService();
+			this.wallpaperService = serviceManager.getWallpaperService();
+			this.wallpaperLauncher = wallpaperService.getWallpaperActivityResultLauncher(this, this::setBackgroundWallpaper, () -> this.messageReceiver);
+			this.mutedChatsListService = serviceManager.getMutedChatsListService();
+			this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
+			this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
+			this.ringtoneService = serviceManager.getRingtoneService();
+			this.voipStateService = serviceManager.getVoipStateService();
+			this.downloadService = serviceManager.getDownloadService();
+			this.licenseService = serviceManager.getLicenseService();
+		} catch (Exception e) {
+			LogUtil.exception(e, activity);
 		}
 	}
 
@@ -4261,7 +4485,7 @@ public class ComposeMessageFragment extends Fragment implements
 				BallotUtil.closeBallot((AppCompatActivity) requireActivity(), (BallotModel) data, ballotService);
 				break;
 			case DIALOG_TAG_CONFIRM_CALL:
-				VoipUtil.initiateCall((AppCompatActivity) requireActivity(), contactModel, false, null);
+				VoipUtil.initiateCall((AppCompatActivity) requireActivity(), contactModel, false, null, readPhoneStatePermissionLauncher);
 				break;
 			case DIALOG_TAG_EMPTY_CHAT:
 				emptyChat();
@@ -4273,6 +4497,9 @@ public class ComposeMessageFragment extends Fragment implements
 			case DIALOG_TAG_CONFIRM_LINK:
 				Uri uri = (Uri) data;
 				LinkifyUtil.getInstance().openLink(getContext(), uri);
+				break;
+			case DIALOG_TAG_CONFIRM_MESSAGE_DELETE:
+				deleteDeleteableMessages();
 				break;
 			default:
 				break;
@@ -4335,15 +4562,7 @@ public class ComposeMessageFragment extends Fragment implements
 	/* properly dispose of popups */
 
 	private void dismissMentionPopup() {
-		if (this.mentionPopup != null) {
-			try {
-				this.mentionPopup.dismiss();
-			} catch( final IllegalArgumentException e){
-				// whatever
-			} finally{
-				this.mentionPopup = null;
-			}
-		}
+		messageText.dismissMentionPopup();
 	}
 
 	private void dismissTooltipPopup(TooltipPopup tooltipPopup, boolean immediate) {

@@ -219,4 +219,29 @@ public class AvatarConverterUtil {
 
 		return result;
 	}
+
+	/**
+	 * Build the default avatar bitmap in high resolution.
+	 *
+	 * @param drawable        the icon drawable
+	 * @param avatarSize      the size of the avatar
+	 * @param color           the color of the icon
+	 * @param backgroundColor the color of the background
+	 * @return the high resolution bitmap
+	 */
+	public static Bitmap buildDefaultAvatarHighRes(Drawable drawable, int avatarSize, int color, int backgroundColor) {
+		int borderWidth = avatarSize * 3 / 2;
+		Bitmap defaultBitmap = AvatarConverterUtil.getAvatarBitmap(drawable, backgroundColor, avatarSize);
+		defaultBitmap.setDensity(Bitmap.DENSITY_NONE);
+		Bitmap.Config config = Bitmap.Config.ARGB_8888;
+		Bitmap newBitmap = Bitmap.createBitmap(defaultBitmap.getWidth() + borderWidth, defaultBitmap.getHeight() + borderWidth, config);
+		Canvas canvas = new Canvas(newBitmap);
+		Paint paint = new Paint();
+		paint.setColor(color);
+		canvas.drawRect(0f, 0f, newBitmap.getWidth(), newBitmap.getHeight(), paint);
+		canvas.drawBitmap(defaultBitmap, borderWidth / 2f, borderWidth / 2f, null);
+		BitmapUtil.recycle(defaultBitmap);
+		return newBitmap;
+	}
+
 }

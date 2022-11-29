@@ -4,6 +4,7 @@
 	<string name="enter_serial_hint" translatable="false">XXXXX-XXXXX</string>
 	<string name="threema_channel" translatable="false">Threema Channel</string>
 	<string name="default_notification_sound" translatable="false">content://settings/system/notification_sound</string>
+	<string name="default_ringtone" translatable="false">content://settings/system/ringtone</string>
 	<string name="webclient_info_url" translatable="false">https://threema.ch/threema-web</string>
 	<string name="privacy_policy_url" translatable="false">https://threema.ch/privacy_policy/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
 	<string name="terms_of_service_url" translatable="false">https://threema.ch/tos/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>

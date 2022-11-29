@@ -24,6 +24,10 @@ package ch.threema.app.utils;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -31,9 +35,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.AppRestrictionService;
@@ -75,8 +76,8 @@ public class AppRestrictionUtil {
 		return getBoolRestriction(context, R.string.restriction__disable_message_preview);
 	}
 
-	public static boolean isCallsDisabled(Context context) {
-		return getBoolRestriction(context, R.string.restriction__disable_calls);
+	public static boolean isCallsDisabled() {
+		return getBoolRestriction(ThreemaApplication.getAppContext(), R.string.restriction__disable_calls);
 	}
 
 	public static boolean isReadonlyProfile(Context context) {
@@ -97,6 +98,10 @@ public class AppRestrictionUtil {
 
 	public static boolean isWorkDirectoryDisabled() {
 		return getBoolRestriction(ThreemaApplication.getAppContext(), R.string.restriction__disable_work_directory);
+	}
+
+	public static boolean isGroupCallsDisabled() {
+		return getBoolRestriction(ThreemaApplication.getAppContext(), R.string.restriction__disable_group_calls);
 	}
 
 	/**

@@ -257,7 +257,7 @@
 💤|çizgi roman|duygu|horlama|uyuma|zzz
 👋|el|sallama
 🤚|elinin tersini kaldırma|kaldırma
-🖐|avuç|beden|el|parmaklar açık el kaldırma
+🖐️|avuç|beden|el|parmaklar açık el kaldırma
 ✋|el kaldırma|havada el
 🖖|beden|el|parmak|spock|vulcan selamı|vulkan selamı
 👌|el|işaret|tamam el işareti|tamam işareti
@@ -403,7 +403,7 @@
 👮|görevli|kişiler|polis memuru
 👮‍♂️|adam|aynasız|erkek polis memuru|memur|polis
 👮‍♀️|aynasız|bayan|kadın polis memuru|memur|polis
-🕵|casus|dedektif|hafiye
+🕵️|casus|dedektif|hafiye
 🕵️‍♂️|adam|casus|dedektif|erkek|hafiye
 🕵️‍♀️|bayan|casus|dedektif|hafiye|kadın
 💂|bekçi|kişiler|muhafız
@@ -505,7 +505,7 @@
 🏇|at yarışı|jokey|spor|yarış atı
 ⛷️|kar|kayakçı
 🏂|snowboard yapmak|snowbordçu|spor
-🏌|golf oynayan kişi|top
+🏌️|golf oynayan kişi|top
 🏌️‍♂️|adam|erkek|golf oynayan erkek
 🏌️‍♀️|bayan|golf oynayan kadın|kadın
 🏄|sörf yapan kişi|sörfçü|spor
@@ -517,10 +517,10 @@
 🏊|spor|yüzen kişi|yüzme
 🏊‍♂️|adam|erkek|yüzen erkek|yüzme
 🏊‍♀️|bayan|kadın|yüzen kadın|yüzme
-⛹|top sektiren kişi
+⛹️|top sektiren kişi
 ⛹️‍♂️|adam|erkek|top sektiren erkek
 ⛹️‍♀️|bayan|kadın|top sektiren kadın
-🏋|ağırlık kaldıran kişi|halter
+🏋️|ağırlık kaldıran kişi|halter
 🏋️‍♂️|adam|ağırlık kaldıran erkek|erkek
 🏋️‍♀️|ağırlık kaldıran kadın|bayan|kadın
 🚴|bisiklet süren kişi
@@ -1430,7 +1430,7 @@
 📶|anten|çubuk işaretli anten|mobil|sinyal gücü|telefon
 📳|cep telefonu|mobil|mod|telefon|titreşim modu
 📴|cep telefonu kapalı|kapalı|mobil|telefon
-⚧|transgender sembolü|transseksüel
+⚧️|transgender sembolü|transseksüel
 ♾️|evrensel|sınırsız|sonsuzluk
 ‼️|!!|çift ünlem|işaret|noktalama|ünlem
 💱|bozdurma|döviz|kambiyo|para

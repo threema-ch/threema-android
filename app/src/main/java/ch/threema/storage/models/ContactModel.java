@@ -24,6 +24,10 @@ package ch.threema.storage.models;
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.lang.annotation.Retention;
@@ -33,9 +37,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
@@ -71,6 +72,8 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this contact has been archived by user */
 	public static final String COLUMN_READ_RECEIPTS = "readReceipts"; /* whether read receipts should be sent to this contact */
 	public static final String COLUMN_TYPING_INDICATORS = "typingIndicators"; /* whether typing indicators should be sent to this contact */
+	public static final String COLUMN_FORWARD_SECURITY_ENABLED = "forwardSecurityEnabled"; /* whether forward security should be used when sending to this contact */
+	public static final String COLUMN_FORWARD_SECURITY_STATE = "forwardSecurityState"; /* current state of forward security with this contact */
 
 	public enum State {
 		/**
@@ -98,6 +101,16 @@ public class ContactModel extends Contact implements ReceiverModel {
 	@IntDef({DEFAULT, SEND, DONT_SEND})
 	public @interface OverridePolicy {}
 
+	/**
+	 * Forward Security state constants
+	 */
+	public static final int FS_OFF = 0; // last message from this contact did not have FS enabled
+	public static final int FS_ON = 1; // last message from this contact was received with FS
+
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({FS_OFF, FS_ON})
+	public @interface ForwardSecurityState {}
+
 	// Timeout for avatars of linked contacts
 	public static long DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY = DateUtils.DAY_IN_MILLIS * 14;
 
@@ -112,6 +125,8 @@ public class ContactModel extends Contact implements ReceiverModel {
 	private Date avatarExpires, profilePicSent, dateCreated;
 	private @IdentityType.Type int type;
 	private @OverridePolicy int readReceipts, typingIndicators;
+	private boolean forwardSecurityEnabled;
+	private int forwardSecurityState;
 
 	public ContactModel(String identity, byte[] publicKey) {
 		super(identity, publicKey);
@@ -408,6 +423,25 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this;
 	}
 
+	public boolean isForwardSecurityEnabled() {
+		return forwardSecurityEnabled;
+	}
+
+	public ContactModel setForwardSecurityEnabled(boolean forwardSecurityEnabled) {
+		this.forwardSecurityEnabled = forwardSecurityEnabled;
+		return this;
+	}
+
+	@ForwardSecurityState
+	public int getForwardSecurityState() {
+		return forwardSecurityState;
+	}
+
+	public ContactModel setForwardSecurityState(@ForwardSecurityState int forwardSecurityState) {
+		this.forwardSecurityState = forwardSecurityState;
+		return this;
+	}
+
 	public Object[] getModifiedValueCandidates() {
 		return new Object[] {
 			this.getPublicKey(),
@@ -430,7 +464,9 @@ public class ContactModel extends Contact implements ReceiverModel {
 			this.isRestored,
 			this.isArchived,
 			this.readReceipts,
-			this.typingIndicators
+			this.typingIndicators,
+			this.forwardSecurityEnabled,
+			this.forwardSecurityState
 		};
 	}
 

@@ -41,6 +41,7 @@
 		<item name="bubble_recv">@color/bubble_receive</item>
 		<item name="bubble_send">@color/bubble_send</item>
 		<item name="bubble_status">@color/bubble_status</item>
+		<item name="bubble_group_status">@color/bubble_group_status</item>
 		<item name="bubble_selected_overlay">@color/bubble_selected_overlay</item>
 		<item name="bubble_pressed_overlay">@color/bubble_pressed_overlay</item>
 		<item name="bubble_thumbnail_placeholder_tint">@color/bubble_thumbnail_placeholder_tint</item>
@@ -187,6 +188,10 @@
 		<item name="background_secondary">@color/activity_background_secondary</item>
 	</style>
 
+	<style name="Theme.Threema.TransparentStatusbar_Fullscreen" parent="Theme.Threema.TransparentStatusbar">
+		<item name="android:windowFullscreen">true</item>
+	</style>
+
 	<style name="Theme.Threema.WithToolbarAndCheck" parent="Theme.Threema.WithToolbar">
 		<item name="android:homeAsUpIndicator">@drawable/ic_done_white_24dp</item>
 		<item name="homeAsUpIndicator">@drawable/ic_done_white_24dp</item>
@@ -322,6 +327,7 @@
 		<item name="bubble_recv">@color/dark_bubble_receive</item>
 		<item name="bubble_send">@color/dark_bubble_send</item>
 		<item name="bubble_status">@color/dark_bubble_status</item>
+		<item name="bubble_group_status">@color/dark_bubble_group_status</item>
 		<item name="bubble_selected_overlay">@color/dark_bubble_selected_overlay</item>
 		<item name="bubble_pressed_overlay">@color/dark_bubble_pressed_overlay</item>
 		<item name="bubble_thumbnail_placeholder_tint">@color/dark_bubble_thumbnail_placeholder_tint</item>

@@ -255,6 +255,7 @@ public class NameUtil {
 	/**
 	 * Return the name used for quotes and mentions.
 	 */
+	@NonNull
 	public static String getQuoteName(@Nullable ContactModel contactModel, @NonNull UserService userService) {
 		if (contactModel == null) {
 			return "";
@@ -275,6 +276,7 @@ public class NameUtil {
 	/**
 	 * Return the name used for quotes and mentions.
 	 */
+	@NonNull
 	public static String getQuoteName(@Nullable String identity, ContactService contactService, UserService userService) {
 		if (contactService == null || userService == null || identity == null) {
 			return "";

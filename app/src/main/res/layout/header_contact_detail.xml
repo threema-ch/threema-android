@@ -159,20 +159,61 @@
 
 		</com.google.android.material.textfield.TextInputLayout>
 
+		<RelativeLayout
+			android:id="@+id/forward_security_container"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="5dp"
+			android:visibility="gone">
+
+			<com.google.android.material.checkbox.MaterialCheckBox
+				android:id="@+id/forward_security_enabled"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_alignParentLeft="true"
+				android:layout_toLeftOf="@+id/forward_security_info"
+				android:maxLines="2"
+				android:text="@string/forward_security" />
+
+			<ImageButton
+				android:id="@+id/forward_security_info"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:contentDescription="@string/new_wizard_more_information"
+				android:padding="8dp"
+				app:srcCompat="@drawable/ic_info_outline"
+				app:tint="?attr/textColorSecondary" />
+
+		</RelativeLayout>
+
 		<com.google.android.material.chip.Chip
 			android:id="@+id/public_key_button"
 			style="@style/Threema.Chip.Action"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="12dp"
+			android:layout_marginTop="0dp"
 			android:layout_gravity="center_horizontal"
 			android:text="@string/show_public_key" />
+
+		<com.google.android.material.chip.Chip
+			android:id="@+id/clear_forward_security"
+			style="@style/Threema.Chip.Action"
+			app:chipBackgroundColor="@color/material_red"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="2dp"
+			android:layout_gravity="center_horizontal"
+			android:text="@string/clear_forward_security"
+			android:visibility="gone" />
 
 		<LinearLayout
 			android:id="@+id/group_members_title_container"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="12dp"
+			android:layout_marginTop="14dp"
 			android:layout_marginBottom="5dp"
 			android:orientation="vertical"
 			android:visibility="visible">

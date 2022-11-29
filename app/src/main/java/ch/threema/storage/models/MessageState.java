@@ -74,4 +74,9 @@ public enum MessageState {
 	 * A "thumbs down" reaction was sent by the recipient.
 	 */
 	USERDEC,
+
+	/**
+	 * The FS key has changed for this message.
+	 */
+	FS_KEY_MISMATCH,
 }

@@ -206,7 +206,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode,
-								 final Intent intent) {
+	                             final Intent intent) {
 		switch (requestCode) {
 			case ID_HIDDEN_CHECK_ON_CREATE:
 				super.onActivityResult(requestCode, resultCode, intent);

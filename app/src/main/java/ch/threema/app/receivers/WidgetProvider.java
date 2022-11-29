@@ -39,6 +39,9 @@ import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.services.WidgetService;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
+
 public class WidgetProvider extends AppWidgetProvider {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetProvider");
 
@@ -53,10 +56,10 @@ public class WidgetProvider extends AppWidgetProvider {
 			int appWidgetId = appWidgetIds[i];
 
 			Intent intent = new Intent(context, RecipientListBaseActivity.class);
-			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PENDING_INTENT_FLAG_IMMUTABLE);
 
 			Intent titleIntent = new Intent(context, HomeActivity.class);
-			PendingIntent titlePendingIntent = PendingIntent.getActivity(context, 0, titleIntent, 0);
+			PendingIntent titlePendingIntent = PendingIntent.getActivity(context, 0, titleIntent, PENDING_INTENT_FLAG_IMMUTABLE);
 
 			// Get the layout for the App Widget and attach an on-click listener
 			// to the button
@@ -85,7 +88,7 @@ public class WidgetProvider extends AppWidgetProvider {
 			itemIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 			itemIntent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 			itemIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-			PendingIntent itemPendingIntent = PendingIntent.getActivity(context, 0, itemIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent itemPendingIntent = PendingIntent.getActivity(context, 0, itemIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_MUTABLE);
 			views.setPendingIntentTemplate(R.id.widget_list, itemPendingIntent);
 
 			// Tell the AppWidgetManager to perform an update on the current app widget

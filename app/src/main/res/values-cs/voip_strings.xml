@@ -60,6 +60,7 @@
     <string name="voip_another_pstn_call">Volání nelze zahájit. Stále probíhá běžný telefonní hovor.</string>
     <string name="voip_call_status_off_hours">Hovor mimo pracovní dobu</string>
     <string name="voip_peer_video_disabled">Videohovory jsou u protistrany zakázány.</string>
+    <string name="voip_reject_channel_name">Změna stavu hovoru</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnostika WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Spuštění tohoto nástroje vám umožní hledat zdroj problémů s nastavením spojení hlasového hovoru</string>
@@ -69,4 +70,38 @@
     <string name="voip_webrtc_debug_done">Hotovo. Pokud zaznamenáváte problémy s navázáním spojení hovoru, odešlete prosím tento výstup podpoře společnosti Threema.</string>
     <string name="voip_webrtc_debug_copied">Zkopírováno do schránky.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Zkopírovat do schránky</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Všichni členové skupiny obdrželi oznámení</string>
+    <string name="voip_gc_notification_channel_description">Skupinové hovory</string>
+    <string name="voip_gc_notification_title">Skupinový hovor</string>
+    <string name="voip_gc_notification_call_started">%1$s zahájil(a) skupinový hovor ve skupině %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s zahájil(a) skupinový hovor</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Vy jste zahájil(a) skupinový hovor</string>
+    <string name="voip_gc_dismiss_call">Ignorovat</string>
+    <string name="voip_gc_join_call">Připojit se</string>
+    <string name="voip_gc_ongoing_call">Probíhající skupinový hovor</string>
+    <string name="voip_gc_waiting_for_participants">Čeká se na účastníky</string>
+    <string name="voip_gc_participant_avatar_description">Profilový obrázek účastníka</string>
+    <string name="voip_gc_participant_mute_status_description">Stav ztlumení účastníka</string>
+    <string name="voip_gc_notification_new_call_public">Byl zahájen nový skupinový hovor</string>
+    <string name="voip_gc_open_call">Otevřít</string>
+    <string name="voip_gc_call_started">Skupinový hovor byl zahájen</string>
+    <string name="voip_gc_call_ended">Skupinový hovor skončil</string>
+    <string name="voip_gc_in_call">Hovor ve skupině</string>
+    <string name="voip_gc_sfu_not_available">Server není dostupný, zkuste to prosím později</string>
+    <string name="voip_gc_call_error">Nepodařilo se zahájit skupinový hovor</string>
+    <string name="voip_gc_call_full_generic">Bylo dosaženo maxima: Do tohoto skupinového hovoru se nemůže připojit více účastníků.</string>
+    <string name="voip_gc_call_full_n">Bylo dosaženo maximálního počtu účastníků (%1$d). Do tohoto skupinového hovoru se už nemůžete připojit.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d účastník</item>
+        <item quantity="other">%d účastníků</item>
+        <item quantity="few">%d účastníci</item>
+        <item quantity="many">%d účastníků</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Upozornění: Jeden člen se nemůže účastnit skupinových hovorů.</item>
+        <item quantity="other">Upozornění: %d členů se nemůže účastnit skupinových hovorů.</item>
+        <item quantity="few">Upozornění: %d členové se nemohou účastnit skupinových hovorů.</item>
+        <item quantity="many">Upozornění: %d členů se nemůže účastnit skupinových hovorů.</item>
+    </plurals>
 </resources>

@@ -21,6 +21,7 @@
 
 package ch.threema.app.glide;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -29,44 +30,87 @@ import androidx.annotation.Nullable;
 public class AvatarOptions {
 
 	/**
-	 * Load the avatar in low resolution. If no avatar is found, load the default avatar.
+	 * Define whether the custom or the default avatar should be loaded.
 	 */
-	public static final AvatarOptions DEFAULT = new Builder().toOptions();
+	public enum DefaultAvatarPolicy {
+		/**
+		 * Try to load the custom avatar. If no custom avatar available, then return the default avatar instead of null.
+		 */
+		DEFAULT_FALLBACK,
+		/**
+		 * Load the custom avatar. If no custom avatar is set, then return null.
+		 */
+		CUSTOM_AVATAR,
+		/**
+		 * Load the default avatar even if a custom avatar would be available.
+		 */
+		DEFAULT_AVATAR,
+		/**
+		 * Load the custom avatar if not prevented by settings. Otherwise returns the default avatar.
+		 */
+		RESPECT_SETTINGS
+	}
 
 	/**
-	 * Load the avatar with default options but do not cache it.
+	 * Load the avatar in low resolution. If no avatar is found, load the default avatar.
 	 */
-	public static final AvatarOptions DEFAULT_NO_CACHE = new Builder().disableCache().toOptions();
+	public static final AvatarOptions PRESET_DEFAULT_FALLBACK = new Builder()
+		.setReturnPolicy(DefaultAvatarPolicy.DEFAULT_FALLBACK)
+		.toOptions();
+
+	/**
+	 * Load the avatar in low resolution. If no avatar is found, or custom avatars are disabled in settings,
+	 * load the default avatar.
+	 */
+	public static final AvatarOptions PRESET_RESPECT_SETTINGS = new Builder()
+		.setReturnPolicy(DefaultAvatarPolicy.RESPECT_SETTINGS)
+		.toOptions();
+
+	/**
+	 * Load the avatar with default fallback and do not cache it.
+	 */
+	public static final AvatarOptions PRESET_DEFAULT_AVATAR_NO_CACHE = new Builder()
+		.setReturnPolicy(DefaultAvatarPolicy.DEFAULT_AVATAR)
+		.disableCache()
+		.toOptions();
 
 	/**
 	 * Defines whether the avatar should be loaded in high or low resolution
 	 */
 	public final boolean highRes;
+
 	/**
-	 * Defines whether the default avatar should be loaded (even if a custom avatar is available)
+	 * Defines whether to load the custom avatar with the default avatar as fallback, the custom
+	 * avatar without fallback, the default avatar, or the avatar based on the settings
 	 */
-	public final boolean defaultOnly;
-	/**
-	 * Defines whether the the default avatar or null should be returned if no custom avatar is found
-	 */
-	public final boolean returnDefaultAvatarIfNone;
+	@NonNull
+	public final DefaultAvatarPolicy defaultAvatarPolicy;
+
 	/**
 	 * Disable the cache for this query
 	 */
 	public final boolean disableCache;
 
-	private AvatarOptions(boolean highRes, boolean defaultOnly, boolean returnDefaultAvatarIfNone, boolean disableCache) {
+	/**
+	 * Use a darkened background
+	 */
+	public final boolean darkerBackground;
+
+	private AvatarOptions(boolean highRes, @NonNull DefaultAvatarPolicy defaultAvatarPolicy, boolean disableCache, boolean darkerBackground) {
 		this.highRes = highRes;
-		this.defaultOnly = defaultOnly;
-		this.returnDefaultAvatarIfNone = returnDefaultAvatarIfNone;
+		this.defaultAvatarPolicy = defaultAvatarPolicy;
 		this.disableCache = disableCache;
+		this.darkerBackground = darkerBackground;
 	}
 
 	@Override
 	public boolean equals(@Nullable Object obj) {
 		if (obj instanceof AvatarOptions) {
 			AvatarOptions other = (AvatarOptions) obj;
-			return this.highRes == other.highRes && this.defaultOnly == other.defaultOnly && this.returnDefaultAvatarIfNone == other.returnDefaultAvatarIfNone && this.disableCache == other.disableCache;
+			return this.highRes == other.highRes
+					&& this.defaultAvatarPolicy == other.defaultAvatarPolicy
+					&& this.disableCache == other.disableCache
+					&& this.darkerBackground == other.darkerBackground;
 		}
 
 		return false;
@@ -81,8 +125,7 @@ public class AvatarOptions {
 	@Override
 	public int hashCode() {
 		int hashCode = highRes ? 2 : 3;
-		hashCode = 31 * hashCode + (defaultOnly ? 1 : 2);
-		hashCode = 31 * hashCode + (returnDefaultAvatarIfNone ? 1 : 2);
+		hashCode = 31 * hashCode + defaultAvatarPolicy.ordinal();
 		return hashCode;
 	}
 
@@ -91,22 +134,17 @@ public class AvatarOptions {
 	 */
 	public static class Builder {
 		private boolean highRes = false;
-		private boolean defaultOnly = false;
-		private boolean returnDefaultAvatarIfNone = true;
+		private @NonNull DefaultAvatarPolicy defaultAvatarPolicy = DefaultAvatarPolicy.RESPECT_SETTINGS;
 		private boolean disableCache = false;
+		private boolean darkerBackground = false;
 
 		public Builder setHighRes(boolean highRes) {
 			this.highRes = highRes;
 			return this;
 		}
 
-		public Builder setDefaultOnly(boolean defaultOnly) {
-			this.defaultOnly = defaultOnly;
-			return this;
-		}
-
-		public Builder setReturnDefaultAvatarIfNone(boolean returnDefaultAvatarIfNone) {
-			this.returnDefaultAvatarIfNone = returnDefaultAvatarIfNone;
+		public Builder setReturnPolicy(@NonNull DefaultAvatarPolicy defaultAvatarPolicy) {
+			this.defaultAvatarPolicy = defaultAvatarPolicy;
 			return this;
 		}
 
@@ -115,8 +153,13 @@ public class AvatarOptions {
 			return this;
 		}
 
+		public Builder setDarkerBackground(boolean darkerBackground) {
+			this.darkerBackground = darkerBackground;
+			return this;
+		}
+
 		public AvatarOptions toOptions() {
-			return new AvatarOptions(highRes, defaultOnly, returnDefaultAvatarIfNone, disableCache);
+			return new AvatarOptions(highRes, defaultAvatarPolicy, disableCache, darkerBackground);
 		}
 	}
 

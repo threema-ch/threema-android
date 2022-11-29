@@ -37,6 +37,8 @@ import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.utils.WidgetUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
+
 public class PinLockService implements LockAppService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockService");
 
@@ -150,7 +152,7 @@ public class PinLockService implements LockAppService {
 			if(time > 0) {
 				Intent lockingIntent = new Intent(context, AlarmManagerBroadcastReceiver.class);
 				lockingIntent.putExtra(LifetimeServiceImpl.REQUEST_CODE_KEY, LifetimeServiceImpl.REQUEST_LOCK_APP);
-				this.lockTimerIntent = PendingIntent.getBroadcast(context, LifetimeServiceImpl.REQUEST_LOCK_APP, lockingIntent, 0);
+				this.lockTimerIntent = PendingIntent.getBroadcast(context, LifetimeServiceImpl.REQUEST_LOCK_APP, lockingIntent, PENDING_INTENT_FLAG_MUTABLE);
 				this.lockTimeStamp = System.currentTimeMillis() + time * DateUtils.SECOND_IN_MILLIS;
 				alarmManager.set(AlarmManager.RTC_WAKEUP, this.lockTimeStamp, this.lockTimerIntent);
 			} else {

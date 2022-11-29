@@ -301,12 +301,12 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 			else {
 				// show info that request was already sent with info about resend option
 				GenericAlertDialog.newInstance(
-					R.string.group_request_already_sent_title,
-					HtmlCompat.fromHtml(
-						String.format(getString(R.string.group_request_already_sent), groupInvite.getGroupName()),
-						HtmlCompat.FROM_HTML_MODE_COMPACT),
-					R.string.ok,
-					0)
+						R.string.group_request_already_sent_title,
+						HtmlCompat.fromHtml(
+							String.format(getString(R.string.group_request_already_sent), groupInvite.getGroupName()),
+							HtmlCompat.FROM_HTML_MODE_COMPACT),
+						R.string.ok,
+						0)
 					.show(getSupportFragmentManager(), DIALOG_TAG_REQUEST_ALREADY_SENT);
 				return;
 			}
@@ -329,17 +329,17 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 			if (outgoingGroupJoinRequestModel.get().getStatus() == OutgoingGroupJoinRequestModel.Status.UNKNOWN) {
 				// show info that request was already sent with info about resend option
 				GenericAlertDialog.newInstance(
-					R.string.group_request_already_sent_title,
-					HtmlCompat.fromHtml(
-						String.format(getString(R.string.group_request_already_sent), groupInvite.getGroupName()),
-						HtmlCompat.FROM_HTML_MODE_COMPACT),
-					R.string.ok,
-					0)
+						R.string.group_request_already_sent_title,
+						HtmlCompat.fromHtml(
+							String.format(getString(R.string.group_request_already_sent), groupInvite.getGroupName()),
+							HtmlCompat.FROM_HTML_MODE_COMPACT),
+						R.string.ok,
+						0)
 					.show(getSupportFragmentManager(), DIALOG_TAG_REQUEST_ALREADY_SENT);
 				return;
 			}
 		}
-		if (groupInvite.getInviteType() == GroupInvite.InviteType.AUTOMATIC) {
+		if (groupInvite.getConfirmationMode() == GroupInvite.ConfirmationMode.AUTOMATIC) {
 			confirmSend(
 				NameUtil.getDisplayName(contactService.getByIdentity(groupInvite.getAdminIdentity())),
 				groupInvite.getGroupName()
@@ -354,10 +354,12 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 	}
 
 	private void delete(List<OutgoingGroupJoinRequestModel> checkedItems) {
-		String confirmText = String.format(getString(R.string.really_delete_outgoing_request), checkedItems.size());
+		Integer amountOfOutgoingRequests = checkedItems.size();
+		String confirmText = String.format(ConfigUtils.getSafeQuantityString(this, R.plurals.really_delete_outgoing_request, amountOfOutgoingRequests, amountOfOutgoingRequests));
+		String reallyDeleteGroupRequestTitle = getString(amountOfOutgoingRequests > 1 ? R.string.really_delete_group_request_title_plural : R.string.really_delete_group_request_title_singular);
 
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(
-			R.string.really_delete_group_request_title,
+			reallyDeleteGroupRequestTitle,
 			confirmText,
 			R.string.ok,
 			R.string.cancel);
@@ -393,12 +395,12 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 
 	private void confirmSend(String admin, String groupName) {
 		GenericAlertDialog.newInstance(R.string.group_request_send_title,
-			HtmlCompat.fromHtml(String.format(
-				getString(R.string.group_request_confirm_send),
-				groupName,
-				admin
-			), HtmlCompat.FROM_HTML_MODE_COMPACT),
-			R.string.send, R.string.cancel)
+				HtmlCompat.fromHtml(String.format(
+					getString(R.string.group_request_confirm_send),
+					groupName,
+					admin
+				), HtmlCompat.FROM_HTML_MODE_COMPACT),
+				R.string.send, R.string.cancel)
 			.show(getSupportFragmentManager(), DIALOG_TAG_REQUEST_CONFIRM_SEND);
 	}
 

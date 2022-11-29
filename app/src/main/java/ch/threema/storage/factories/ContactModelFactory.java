@@ -23,6 +23,8 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
+import androidx.annotation.Nullable;
+
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteException;
 
@@ -31,7 +33,6 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
@@ -144,7 +145,9 @@ public class ContactModelFactory extends ModelFactory {
 					.setIsRestored(cursorFactory.getInt(ContactModel.COLUMN_IS_RESTORED) == 1)
 					.setArchived(cursorFactory.getInt(ContactModel.COLUMN_IS_ARCHIVED) == 1)
 					.setReadReceipts(cursorFactory.getInt(ContactModel.COLUMN_READ_RECEIPTS))
-					.setTypingIndicators(cursorFactory.getInt(ContactModel.COLUMN_TYPING_INDICATORS));
+					.setTypingIndicators(cursorFactory.getInt(ContactModel.COLUMN_TYPING_INDICATORS))
+					.setForwardSecurityEnabled(cursorFactory.getBoolean(ContactModel.COLUMN_FORWARD_SECURITY_ENABLED))
+					.setForwardSecurityState(cursorFactory.getInt(ContactModel.COLUMN_FORWARD_SECURITY_STATE));
 
 				// Convert state to enum
 				switch (cursorFactory.getString(ContactModel.COLUMN_STATE)) {
@@ -235,6 +238,8 @@ public class ContactModelFactory extends ModelFactory {
 		contentValues.put(ContactModel.COLUMN_IS_ARCHIVED, contactModel.isArchived());
 		contentValues.put(ContactModel.COLUMN_READ_RECEIPTS, contactModel.getReadReceipts());
 		contentValues.put(ContactModel.COLUMN_TYPING_INDICATORS, contactModel.getTypingIndicators());
+		contentValues.put(ContactModel.COLUMN_FORWARD_SECURITY_ENABLED, contactModel.isForwardSecurityEnabled());
+		contentValues.put(ContactModel.COLUMN_FORWARD_SECURITY_STATE, contactModel.getForwardSecurityState());
 
 		if (insert) {
 			//never update identity field
@@ -287,6 +292,8 @@ public class ContactModelFactory extends ModelFactory {
 						"`" + ContactModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_READ_RECEIPTS + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_TYPING_INDICATORS + "` TINYINT DEFAULT 0," +
+						"`" + ContactModel.COLUMN_FORWARD_SECURITY_ENABLED + "` TINYINT DEFAULT 0," +
+						"`" + ContactModel.COLUMN_FORWARD_SECURITY_STATE + "` TINYINT DEFAULT 0," +
 					"PRIMARY KEY (`" + ContactModel.COLUMN_IDENTITY + "`) );"
 		};
 	}

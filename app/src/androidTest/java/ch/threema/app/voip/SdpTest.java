@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.webrtc.IceCandidate;
 import org.webrtc.PeerConnection;
-import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.AndroidJUnit4;
-
 import ch.threema.app.voip.util.SdpPatcher;
 
 import static junit.framework.Assert.assertEquals;
@@ -374,8 +372,6 @@ public class SdpTest {
 		expectedMatchesPart1.add("^a=ssrc:\\d+ cname:[^ ]+$");
 		if (isOffer) {
 			expectedMatchesPart1.add("^a=ssrc:\\d+ msid:3MACALL 3MACALLa0$");
-			expectedMatchesPart1.add("^a=ssrc:\\d+ mslabel:3MACALL$");
-			expectedMatchesPart1.add("^a=ssrc:\\d+ label:3MACALLa0$");
 		}
 		if (videoEnabled) {
 			expectedMatchesPart1.add("^m=video 9 UDP/TLS/RTP/SAVPF( \\d+)+$");

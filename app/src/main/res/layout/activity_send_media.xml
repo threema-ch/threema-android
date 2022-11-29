@@ -15,59 +15,10 @@
 		android:layout_weight="2"
 		android:visibility="invisible">
 
-		<FrameLayout
-			android:id="@+id/cardview"
+		<androidx.viewpager2.widget.ViewPager2
+			android:id="@+id/view_pager"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_alignParentTop="true"
-			android:orientation="vertical">
-
-			<ScrollView
-				android:id="@+id/wallpaper_scroll"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_gravity="top"
-				android:fillViewport="true">
-
-				<FrameLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content">
-
-					<pl.droidsonroids.gif.GifImageView
-						android:id="@+id/gif_image"
-						android:layout_width="match_parent"
-						android:layout_height="match_parent"
-						android:layout_gravity="center"
-						android:adjustViewBounds="false"
-						android:scaleType="fitCenter"
-						android:visibility="gone"/>
-
-					<ImageView
-						android:id="@+id/preview_image"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_gravity="center"
-						android:adjustViewBounds="true"
-						android:scaleType="center"/>
-
-					<ProgressBar
-						android:id="@+id/progress"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_gravity="center"
-						android:visibility="gone"/>
-
-					<ch.threema.app.camera.VideoEditView
-						android:id="@+id/video_edit_view"
-						android:layout_width="match_parent"
-						android:layout_height="match_parent"
-						android:visibility="invisible"/>
-
-				</FrameLayout>
-
-			</ScrollView>
-
-		</FrameLayout>
+			android:layout_height="match_parent" />
 
 		<FrameLayout
 			android:id="@+id/item_count_container"
@@ -205,6 +156,7 @@
 			android:id="@+id/item_list"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:clipChildren="false"
 			android:layout_alignParentBottom="true"
 			android:scrollbars="none"
 			android:gravity="center"

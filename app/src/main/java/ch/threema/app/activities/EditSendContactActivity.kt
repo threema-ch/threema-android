@@ -239,17 +239,17 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         toolbar.animation?.cancel()
         toolbar.alpha = 1f
         toolbar.animate().alpha(0f).setDuration(100).setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator?) {}
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationStart(animation: Animator) {}
+            override fun onAnimationEnd(animation: Animator) {
                 toolbar.visibility = View.INVISIBLE
                 window.statusBarColor = ConfigUtils.getColorFromAttribute(this@EditSendContactActivity, R.attr.attach_status_bar_color_collapsed)
             }
 
-            override fun onAnimationCancel(animation: Animator?) {
+            override fun onAnimationCancel(animation: Animator) {
                 window.statusBarColor = ConfigUtils.getColorFromAttribute(this@EditSendContactActivity, R.attr.attach_status_bar_color_collapsed)
             }
 
-            override fun onAnimationRepeat(animation: Animator?) {}
+            override fun onAnimationRepeat(animation: Animator) {}
         })
     }
 

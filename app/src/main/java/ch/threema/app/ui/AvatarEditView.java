@@ -21,6 +21,10 @@
 
 package ch.threema.app.ui;
 
+import static android.app.Activity.RESULT_OK;
+import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX;
+import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_WIDTH_PX;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -41,16 +45,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.WeakReference;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,9 +60,21 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.CropImageActivity;
+import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
@@ -86,10 +92,6 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
-
-import static android.app.Activity.RESULT_OK;
-import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX;
-import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_WIDTH_PX;
 
 public class AvatarEditView extends FrameLayout implements DefaultLifecycleObserver, View.OnClickListener, View.OnLongClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarEditView");
@@ -180,7 +182,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 		@Override
 		public boolean handle(String identity) {
-			if (avatarData.getContactModel() != null) {
+			if (avatarData != null && avatarData.getContactModel() != null) {
 				return TestUtil.compare(avatarData.getContactModel().getIdentity(), identity);
 			}
 			return false;
@@ -199,18 +201,56 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 		try {
 			if (contactModel != null) {
-				Bitmap bitmap = contactService.getAvatar(contactModel, true);
+				// Get the custom avatar (or null if no custom avatar available)
+				Bitmap bitmap = contactService.getAvatar(contactModel, new AvatarOptions.Builder()
+					.setHighRes(true)
+					.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
+					.toOptions()
+				);
+				boolean isCustomAvatar = true;
+				if (bitmap == null) {
+					// Get default avatar as no custom avatar is available
+					bitmap = contactService.getAvatar(contactModel, new AvatarOptions.Builder()
+						.setHighRes(true)
+						.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_AVATAR)
+						.setDarkerBackground(isAvatarEditable())
+						.toOptions()
+					);
+					isCustomAvatar = false;
+				}
+
+				// If it is my profile picture then make it round
 				if (isMyProfilePicture) {
-					// If it is "my" profile picture, then the AvatarEditView is round
 					avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getContext().getResources(), bitmap));
 				} else {
 					avatarImage.setImageBitmap(bitmap);
+				}
+
+				// If it is a custom avatar, we may need to adjust the darkness
+				if (isCustomAvatar) {
 					adjustColorFilter(bitmap);
 				}
 			} else {
-				Bitmap bitmap = groupService.getAvatar(groupModel, true);
-				avatarImage.setImageBitmap(bitmap);
-				adjustColorFilter(bitmap);
+				// Display a group avatar
+				Bitmap bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
+					.setHighRes(true)
+					.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
+					.toOptions()
+				);
+				if (bitmap != null) {
+					// A custom avatar is set and the bitmap may need to be darkened
+					avatarImage.setImageBitmap(bitmap);
+					adjustColorFilter(bitmap);
+				} else {
+					// The default avatar is loaded with already darkened background
+					bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
+						.setHighRes(true)
+						.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_AVATAR)
+						.setDarkerBackground(isAvatarEditable())
+						.toOptions()
+					);
+					avatarImage.setImageBitmap(bitmap);
+				}
 			}
 		} catch (RuntimeException e) {
 			logger.debug("Unable to set avatar bitmap",e );
@@ -258,27 +298,26 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		}
 		menuBuilder.setCallback(new MenuBuilder.Callback() {
 			@Override
-			public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-				switch (item.getItemId()) {
-					case R.id.menu_take_photo:
-						if (ConfigUtils.requestCameraPermissions(getActivity(), getFragment(), REQUEST_CODE_CAMERA_PERMISSION)) {
-							openCamera();
-						}
-						break;
-					case R.id.menu_select_from_gallery:
-						FileUtil.selectFromGallery(getActivity(), getFragment(), REQUEST_CODE_FILE_SELECTOR_ID, false);
-						break;
-					case R.id.menu_remove_picture:
-						removeAvatar();
-						break;
-					default:
-						return false;
+			public boolean onMenuItemSelected(@NonNull MenuBuilder menu, @NonNull MenuItem item) {
+				final int id = item.getItemId();
+				if (id == R.id.menu_take_photo) {
+					if (ConfigUtils.requestCameraPermissions(getActivity(), getFragment(), REQUEST_CODE_CAMERA_PERMISSION)) {
+						openCamera();
+					}
+				} else if (id == R.id.menu_select_from_gallery) {
+					FileUtil.selectFromGallery(getActivity(), getFragment(), REQUEST_CODE_FILE_SELECTOR_ID, false);
+				} else if (id == R.id.menu_remove_picture) {
+					removeAvatar();
+				} else {
+					return false;
 				}
 				return true;
 			}
 
 			@Override
-			public void onMenuModeChange(MenuBuilder menu) { }
+			public void onMenuModeChange(@NonNull MenuBuilder menu) {
+				// do nothing
+			}
 		});
 
 		Context wrapper = new ContextThemeWrapper(getContext(), ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK ? R.style.AppBaseTheme_Dark : R.style.AppBaseTheme);
@@ -337,9 +376,9 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 	private void loadDefaultAvatar(ContactModel contactModel, GroupModel groupModel) {
 		if (contactModel != null) {
-			setAvatarBitmap(contactService.getDefaultAvatar(avatarData.getContactModel(), true));
+			setAvatarBitmap(contactService.getDefaultAvatar(avatarData.getContactModel(), true, isAvatarEditable()));
 		} else if (groupModel != null) {
-			setAvatarBitmap(groupService.getDefaultAvatar(avatarData.getGroupModel(), true));
+			setAvatarBitmap(groupService.getDefaultAvatar(avatarData.getGroupModel(), true, isAvatarEditable()));
 		}
 	}
 
@@ -354,6 +393,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 			try {
 				groupService.updateGroup(
 					avatarData.getGroupModel(),
+					null,
 					null,
 					null,
 					avatar,
@@ -653,9 +693,9 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	public void setUndefinedAvatar(@AvatarTypeDef int avatarType) {
 		Bitmap avatar;
 		if (avatarType == AVATAR_TYPE_CONTACT) {
-			avatar = contactService.getNeutralAvatar(hires);
+			avatar = contactService.getNeutralAvatar(new AvatarOptions.Builder().setHighRes(hires).toOptions());
 		} else {
-			avatar = groupService.getNeutralAvatar(hires);
+			avatar = groupService.getNeutralAvatar(new AvatarOptions.Builder().setHighRes(hires).toOptions());
 		}
 		setAvatarBitmap(avatar);
 	}

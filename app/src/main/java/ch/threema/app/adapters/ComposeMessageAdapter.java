@@ -57,6 +57,8 @@ import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.DateSeparatorChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.FileChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.FirstUnreadChatAdapterDecorator;
+import ch.threema.app.adapters.decorators.ForwardSecurityStatusChatAdapterDecorator;
+import ch.threema.app.adapters.decorators.GroupCallStatusDataChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.ImageChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.LocationChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.StatusChatAdapterDecorator;
@@ -141,7 +143,9 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		TYPE_DATE_SEPARATOR,
 		TYPE_FILE_MEDIA_SEND,
 		TYPE_FILE_MEDIA_RECV,
-		TYPE_FILE_VIDEO_SEND
+		TYPE_FILE_VIDEO_SEND,
+		TYPE_GROUP_CALL_STATUS,
+		TYPE_FORWARD_SECURITY_STATUS
 	})
 	public @interface ItemType {}
 
@@ -169,15 +173,16 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	public static final int TYPE_FILE_MEDIA_SEND = 21;
 	public static final int TYPE_FILE_MEDIA_RECV = 22;
 	public static final int TYPE_FILE_VIDEO_SEND = 23;
+	public static final int TYPE_GROUP_CALL_STATUS = 24;
+	public static final int TYPE_FORWARD_SECURITY_STATUS = 25;
 
 	// don't forget to update this after adding new types:
-	private static final int TYPE_MAX_COUNT = TYPE_FILE_VIDEO_SEND + 1;
+	private static final int TYPE_MAX_COUNT = TYPE_FORWARD_SECURITY_STATUS + 1;
 
 	private OnClickListener onClickListener;
 	private Map<String, Integer> identityColors = null;
 
 	public interface OnClickListener {
-		void resend(AbstractMessageModel messageModel);
 		void click(View view, int position, AbstractMessageModel messageModel);
 		void longClick(View view, int position, AbstractMessageModel messageModel);
 		boolean touch(View view, MotionEvent motionEvent, AbstractMessageModel messageModel);
@@ -305,8 +310,17 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		if(m != null) {
 			if(m.isStatusMessage()) {
 				// Special handling for data status messages
-				return m instanceof FirstUnreadMessageModel ? TYPE_FIRST_UNREAD : m instanceof DateSeparatorMessageModel ? TYPE_DATE_SEPARATOR :
-				TYPE_STATUS;
+				if (m instanceof FirstUnreadMessageModel) {
+					return TYPE_FIRST_UNREAD;
+				} else if (m instanceof DateSeparatorMessageModel) {
+					return TYPE_DATE_SEPARATOR;
+				} else if (m.getType() == MessageType.GROUP_CALL_STATUS) {
+					return TYPE_GROUP_CALL_STATUS;
+				} else if (m.getType() == MessageType.FORWARD_SECURITY_STATUS) {
+					return TYPE_FORWARD_SECURITY_STATUS;
+				} else {
+					return TYPE_STATUS;
+				}
 			}
 			else {
 				boolean o = m.isOutbox();
@@ -338,6 +352,10 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 						return o ? TYPE_BALLOT_SEND : TYPE_BALLOT_RECV;
 					case VOIP_STATUS:
 						return o ? TYPE_STATUS_DATA_SEND : TYPE_STATUS_DATA_RECV;
+					case GROUP_CALL_STATUS:
+						return TYPE_GROUP_CALL_STATUS;
+					case FORWARD_SECURITY_STATUS:
+						return TYPE_FORWARD_SECURITY_STATUS;
 					default:
 						if (QuoteUtil.getQuoteType(m) != QuoteUtil.QUOTE_TYPE_NONE) {
 							return o ? TYPE_TEXT_QUOTE_SEND : TYPE_TEXT_QUOTE_RECV;
@@ -356,6 +374,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			case TYPE_RECV:
 				return R.layout.conversation_list_item_recv;
 			case TYPE_STATUS:
+			case TYPE_FORWARD_SECURITY_STATUS:
 				return R.layout.conversation_list_item_status;
 			case TYPE_FIRST_UNREAD:
 				return R.layout.conversation_list_item_unread;
@@ -397,6 +416,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				return R.layout.conversation_list_item_voip_status_recv;
 			case TYPE_DATE_SEPARATOR:
 				return R.layout.conversation_list_item_date_separator;
+			case TYPE_GROUP_CALL_STATUS:
+				return R.layout.conversation_list_item_group_call_status;
 		}
 
 		//return default!?
@@ -432,10 +453,12 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			if (itemView != null) {
 				holder.bodyTextView = itemView.findViewById(R.id.text_view);
 				holder.messageBlockView = itemView.findViewById(R.id.message_block);
+				holder.footerView = itemView.findViewById(R.id.indicator_container);
+				holder.dateView = itemView.findViewById(R.id.date_view);
+
 				if (isUserMessage(itemType)) {
 					holder.senderView = itemView.findViewById(R.id.group_sender_view);
 					holder.senderName = itemView.findViewById(R.id.group_sender_name);
-					holder.dateView = itemView.findViewById(R.id.date_view);
 					holder.deliveredIndicator = itemView.findViewById(R.id.delivered_indicator);
 					holder.attachmentImage = itemView.findViewById(R.id.attachment_image_view);
 					holder.avatarView = itemView.findViewById(R.id.avatar_view);
@@ -452,6 +475,12 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					holder.readOnContainer = itemView.findViewById(R.id.read_on_container);
 					holder.readOnButton = itemView.findViewById(R.id.read_on_button);
 					holder.messageTypeButton = itemView.findViewById(R.id.message_type_button);
+					holder.groupAckContainer = itemView.findViewById(R.id.groupack_container);
+					holder.groupAckThumbsUpCount = itemView.findViewById(R.id.groupack_thumbsup_count);
+					holder.groupAckThumbsDownCount = itemView.findViewById(R.id.groupack_thumbsdown_count);
+					holder.groupAckThumbsUpImage = itemView.findViewById(R.id.groupack_thumbsup);
+					holder.groupAckThumbsDownImage = itemView.findViewById(R.id.groupack_thumbsdown);
+					holder.tapToResend = itemView.findViewById(R.id.tap_to_resend);
 				}
 				itemView.setTag(holder);
 			}
@@ -523,6 +552,12 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				case VOIP_STATUS:
 					decorator = new VoipStatusDataChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
 					break;
+				case GROUP_CALL_STATUS:
+					decorator = new GroupCallStatusDataChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+					break;
+				case FORWARD_SECURITY_STATUS:
+					decorator = new ForwardSecurityStatusChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+					break;
 					// Fallback to text chat adapter
 				default:
 					if (messageModel.isStatusMessage()) {
@@ -542,16 +577,12 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			}
 
 			if(this.onClickListener != null) {
-				decorator.setOnClickRetry(messageModel1 -> onClickListener.resend(messageModel1));
-
 				final View v = itemView;
 				decorator.setOnClickElement(messageModel12 -> onClickListener.click(v, position, messageModel12));
 
 				decorator.setOnLongClickElement(messageModel13 -> onClickListener.longClick(v, position, messageModel13));
 
-				decorator.setOnTouchElement((motionEvent, messageModel14) -> {
-					return onClickListener.touch(v, motionEvent, messageModel14);
-				});
+				decorator.setOnTouchElement((motionEvent, messageModel14) -> onClickListener.touch(v, motionEvent, messageModel14));
 
 				if (!messageModel.isOutbox() && holder.avatarView != null) {
 					if (groupId > 0) {
@@ -656,7 +687,11 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	 * @return true if it's a user-generated message, false otherwise
 	 */
 	private boolean isUserMessage(@ItemType int itemType) {
-		return (itemType != TYPE_STATUS && itemType != TYPE_FIRST_UNREAD && itemType != TYPE_DATE_SEPARATOR);
+		return (itemType != TYPE_STATUS &&
+			itemType != TYPE_FIRST_UNREAD &&
+			itemType != TYPE_DATE_SEPARATOR &&
+			itemType != TYPE_GROUP_CALL_STATUS &&
+			itemType != TYPE_FORWARD_SECURITY_STATUS);
 	}
 
 	public class ConversationListFilter extends Filter {
