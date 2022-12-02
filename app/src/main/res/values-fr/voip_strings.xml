@@ -92,14 +92,12 @@
     <string name="voip_gc_call_error">Impossible de lancer l\'appel de groupe</string>
     <string name="voip_gc_call_full_generic">Maximum atteint : plus aucun participant ne peut rejoindre cet appel de groupe.</string>
     <string name="voip_gc_call_full_n">Maximum de %1$d participants atteint, vous ne pouvez pas rejoindre cet appel de groupe.</string>
-    <plurals name="n_participants_in_call">
+    <plurals name="n_participants_in_call" tools:ignore="MissingQuantity">
         <item quantity="one">%d participant</item>
-        <item quantity="many">%d participants</item>
         <item quantity="other">%d participants</item>
     </plurals>
-    <plurals name="n_members_dont_support_group_calls">
+    <plurals name="n_members_dont_support_group_calls" tools:ignore="MissingQuantity">
         <item quantity="one" tools:ignore="ImpliedQuantity">Attention : un membre ne peut pas participer aux appels de groupe.</item>
-        <item quantity="many">Attention : %d membres ne peuvent pas participer aux appels de groupe.</item>
         <item quantity="other">Attention : %d membres ne peuvent pas participer aux appels de groupe.</item>
     </plurals>
 </resources>

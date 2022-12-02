@@ -120,7 +120,7 @@
     <string name="linked_email">E-posta</string>
     <string name="linked_mobile">Cep telefonu numarası</string>
     <string name="public_nickname">Takma isim</string>
-    <string name="share_via">Paylaş...</string>
+    <string name="share_via">Paylaş…</string>
     <string name="share_subject">%s görüşmesi</string>
     <string name="message_delete_undo">Geri al</string>
     <string name="mobile_already_linked">Threema kimliğiniz zaten bu cep telefonu numarasına bağlı</string>
@@ -258,8 +258,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="prefs_masterkey_notification_newmsg_off">Yeni mesajlar, ana anahtar kilitliyken bildirim tetiklemez</string>
     <string name="prefs_masterkey_notification_newmsg_on">Yeni mesajlar, ana anahtar kilitliyken genel bir bildirim tetikler</string>
     <string name="chat_history_attached">Konuşma günlüğü eklendi.</string>
-    <string name="backup_data_title">Veri yedekleme</string>
-    <string name="backup_data_password_msg">Verileriniz dahili USB depolama biriminizde bir ZIP dosyasına kaydedilecek ve herhangi bir Android cihazda geri yüklenebilir olacaktır. Lütfen veri yedeklemenizi korumak için bir şifre girin.</string>
+    <string name="backup_data_title">Veri Yedekleme</string>
+    <string name="backup_data_password_msg">Verileriniz dahili USB depolama alanınızdaki bir ZIP dosyasına kaydedilecek ve herhangi bir Android cihazda geri yüklenebilir. Veri yedeğinizi korumak için lütfen bir parola girin.</string>
     <string name="restore_data_password_msg">Bu yedeklemeyi oluşturmak için kullandığınız şifreyi girin.</string>
     <string name="backup_data_media">Büyük medya dosyalarını (video, belgeler, orijinal resimler) dahil edin</string>
     <string name="backup_data_new">Veri yedeği oluştur</string>
@@ -272,7 +272,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="prefs_sum_pin_grace">Ekran kilidinin etkinleşmesine kadar geçen süre</string>
     <string name="click_here_to_change_pin">PIN kodu ayarlandı. Değiştirmek için buraya dokunun</string>
     <string name="set_pin_menu_title">Yeni PIN kodu ayarla</string>
-    <string name="set_pin_summary_intro">Sayısal bir PIN kodu (yalnızca rakamlar) ayarlayarak gizliliğinizi koruyun. Bu PIN kodu, belirli bir sürenin ardından uygulamanın kullanıcı arayüzüne erişimini kilitlemek veya özel sohbetleri korumak için kullanılabilir</string>
+    <string name="set_pin_summary_intro">Sayısal bir PIN kodu (yalnızca rakamlar) ayarlayarak gizliliğinizi koruyun. Bu PIN kodu, belirli bir sürenin ardından uygulamanın kullanıcı arayüzüne erişimi kilitlemek veya özel sohbetleri korumak için kullanılabilir.</string>
     <string name="set_pin_again_summary">PIN kodunu tekrar girin</string>
     <string name="set_pin_hint">PIN kodu</string>
     <string name="title_addgroup">Yeni grup</string>
@@ -385,10 +385,10 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="distribution_list">Dağıtım listesi</string>
     <string name="title_tab_distribution_list">Dağıtım listeleri</string>
     <string name="no_matching_distribution_lists">Eşleşen dağıtım listesi yok</string>
-    <string name="is_typing">yazıyor...</string>
+    <string name="is_typing">yazıyor…</string>
     <string name="push_not_available_title">Push hizmeti bulunamadı</string>
     <string name="push_not_available_text1">Google Play Hizmetleri yüklü veya güncel olmadığı için cihazınızda bir push hizmeti bulamadık.</string>
-    <string name="push_not_available_text2">%s sunucuya kalıcı bir arka plan bağlantısı açmaya çalışacak. Cihazınızın pil optimizasyon mekanizmaları arka plan bağlantısını engelliyorsa, güvenilir bir şekilde çalışmayabilir.</string>
+    <string name="push_not_available_text2">%s sunucuya kalıcı bir arka plan bağlantısı açmaya çalışacak. Cihazınızın pil optimizasyon mekanizmaları arka plan bağlantısını engelliyorsa, bu güvenilir şekilde çalışmayabilir.</string>
     <string name="backup_in_progress">Yedekleme devam ediyor</string>
     <string name="backup_or_restore_success_body">Veri yedekleme başarıyla tamamlandı</string>
     <string name="backup_or_restore_error">Threema yedekleme</string>
@@ -404,7 +404,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="verification_level3_explain">Kare kodunu tarayarak kimliğini ve genel anahtarını kişisel olarak doğruladığınız kişi.</string>
     <string name="verification_level2_explain">Telefon numarası ve / veya e-posta adresi rehberinizde bulunan kişi.</string>
     <string name="verification_level1_explain">Bilinmeyen kişi; bu kişi kimliğine telefon numarası veya e-posta adresi bağlamadı ya da adres defteriniz bu iletişim bilgilerini içermiyor.</string>
-    <string name="state_dialog_received">Alınan</string>
+    <string name="state_dialog_received">Alındı</string>
     <string name="prefs_title_hide_screenshots">Küçük resim ve ekran görüntüsü yok</string>
     <string name="prefs_summary_hide_screenshots">Uygulama geçişinde küçük resimleri gösterme ve ekran görüntülerini devre dışı bırak</string>
     <string name="media_gallery">Galeri</string>
@@ -486,7 +486,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="menu_video_size_large">Orijinal boyut</string>
     <string name="show_contact">Kişiyi göster</string>
     <string name="chat_with">%1$s ile sohbet et</string>
-    <string name="kick_user_from_group">%1$s gruptan at</string>
+    <string name="kick_user_from_group">%1$s kişisini gruptan çıkar</string>
     <string name="show_as_qrcode">Kare kod olarak göster</string>
     <string name="qr_code">Kare kod</string>
     <string name="really_leave_id_export">Henüz yapmadıysanız, dışa aktarılan kimliğinize ait metin dizesini veya ilgili kare kodunuzu güvenli bir yere kaydedin veya yazdırın. Threema kimliğiniz, yedek olmadan geri yüklenemez.</string>
@@ -566,7 +566,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="prefs_android_emojis">Sistem emojileri</string>
     <string name="prefs_default_emojis">Threema emojileri (varsayılan)</string>
     <string name="android_emojis_warning">Not: Sistemin karakter seti Threema tarafından desteklenen tüm emojileri görüntüleyemeyebilir.</string>
-    <string name="crop">Kırp</string>
+    <string name="crop">Bitti</string>
     <string name="scan_id_mismatch_title">Kimlik uyuşmazlığı</string>
     <string name="scan_id_mismatch_message">Taradığınız kimlik, kaydettiğiniz kişiyle eşleşmiyor.</string>
     <string name="title_remove_picture">Resmi kaldır</string>
@@ -652,7 +652,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="error_saving_file">Dosya kaydedilirken hata oluştu. İzinleri kontrol edin.</string>
     <string name="wait_one_minute">Lütfen arama talebinde bulunmadan önce kısa mesajın gelmesi için en az 10 dakika bekleyin.</string>
     <string name="backup_id">Dışa aktarılan kimlik</string>
-    <string name="backup_data">Veri yedekleme</string>
+    <string name="backup_data">Veri Yedekleme</string>
     <string name="really_leave_group_admin_message">Bu grubun yöneticisi sizsiniz. Şimdi bırakırsanız yöneticisiz kalacak. Diğer üyeler hala sohbet edebilecek, ancak değişiklikler artık mümkün olmayacak</string>
     <string name="action_delete_group">Grubu sil</string>
     <string name="delete_my_group_message">Bu grubu gerçekten tamamen silmek istiyor musunuz? Tüm iletiler kaldırılacak ve kalan üyeler artık grubu kullanamaz.</string>
@@ -679,8 +679,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="continue_anyway">Devam et</string>
     <string name="invalid_input">Geçersiz giriş</string>
     <string name="already_licensed">Zaten lisanslı</string>
-    <string name="hide_chat">Özel sohbetler</string>
-    <string name="really_hide_chat_message">Bu sohbeti özel olarak işaretlemek ister misiniz? Mesaj listesindeki özel sohbetlerin görünürlüğünü değiştirmek için menüyü kullanın.</string>
+    <string name="hide_chat">Özel Sohbetler</string>
+    <string name="really_hide_chat_message">Bu sohbeti özel olarak işaretlemek istiyor musunuz? Mesaj listesindeki özel sohbetlerin görünürlüğünü değiştirmek için menüyü kullanın.</string>
     <string name="chat_hidden">Sohbet özel olarak işaretlendi</string>
     <string name="title_show_private_chats">Özel sohbetleri göster</string>
     <string name="title_hide_private_chats">Özel sohbetleri gizle</string>
@@ -689,7 +689,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="lock_option_none">Hiçbiri</string>
     <string name="lock_option_pin">PIN kodu</string>
     <string name="lock_option_screenlock">Sistem ekran kilidi</string>
-    <string name="hide_chat_message_explain">Threema, belirli sohbetleri bir PIN kodu ile korumanıza ve bunları geçici olarak mesaj listenizde gizlemenize imkan tanır. Özel sohbetleri etkinleştirmek için lütfen bir PIN kodu ayarlayın veya ayarlarda sistem ekran kilidi\'ni (Android 6.0+) etkinleştirin.</string>
+    <string name="hide_chat_message_explain">Threema, belirli sohbetleri bir PIN kodu ile korumanıza ve bunları geçici olarak mesaj listenizde gizlemenize imkan tanır. Özel sohbetleri etkinleştirmek için lütfen bir PIN kodu ayarlayın veya ayarlarda sistem ekran kilidini (Android 6.0+) etkinleştirin.</string>
     <string name="set_lock">Kurulumu başlat</string>
     <string name="prefs_title_access_protection">Erişim koruması</string>
     <string name="private_chat_subject">Özel</string>
@@ -701,7 +701,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="grace_thirty_minutes">30 dakika</string>
     <string name="grace_never">Asla (manuel)</string>
     <string name="never">Asla</string>
-    <string name="unhide_chats_confirm">Erişim korumasını şimdi kaldırırsanız, özel sohbetleriniz tekrar görünür hale gelecektir.</string>
+    <string name="unhide_chats_confirm">Erişim korumasını şimdi kaldırırsanız, özel sohbetleriniz tekrar görünür hale gelir.</string>
     <string name="verification_started">Doğrulama başladı</string>
     <string name="cannot_open_file">Dosya açılamadı</string>
     <string name="prefs_title_image_attach_previews">Hızlı medya seçimi</string>
@@ -926,7 +926,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="empty_chat_confirm">Bu sohbetteki tüm mesajlar silinecektir. Devam edilsin mi?</string>
     <string name="emptying_chat">Sohbet temizleniyor</string>
     <string name="set_private">\"Özel sohbet\" olarak işaretle</string>
-    <string name="unset_private">\"Özel sohbet\" devre dışı bırak</string>
+    <string name="unset_private">\"Özel sohbet\" seçeneğini devre dışı bırak</string>
     <string name="delete_group_message">Bu gruptan ayrılıp tamamen silmek istiyor musunuz? Tüm mesajlar kaldırılacaktır.</string>
     <string name="delete_left_group_message">Bu grubu gerçekten silmek istiyor musunuz? Tüm mesajlar kaldırılacaktır.</string>
     <string name="chats">Sohbetler</string>
@@ -950,7 +950,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="add_answer">Cevap ekle</string>
     <string name="title_cannot_be_empty">Anket başlığı boş bırakılamaz</string>
     <string name="voip_disabled">Threema aramaları devre dışı bırakıldı</string>
-    <string name="hide_chat_enter_message_explain">Bu sohbet özel sohbet olarak işaretlendi. Giriş yapmak için lütfen önce erişim korumasını ayarlayın.</string>
+    <string name="hide_chat_enter_message_explain">Bu sohbet özel sohbet olarak işaretlendi. Giriş yapmak için öncelikle lüfen erişim korumasını kurun.</string>
     <string name="unknown">Bilinmeyen</string>
     <string name="miui_notification_title">MIUI\'deki bildirimler hakkında önemli uyarı</string>
     <string name="miui_notification_body">MIUI 10, varsayılan olarak tüm yeni oluşturulan bildirim kanalları için sesi ve ışıkları devre dışı bırakır (Xiaomi tarafından \"önemli\" kabul edilen bazı uygulamalar hariç). Telefonunuzun uygulamaya özel bildirim ayarları ekranında her kanal için bunları açıkça etkinleştirmeniz gerekir. Daha fazla bilgi için telefonunuzun üreticisine başvurun.</string>
@@ -990,7 +990,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="lp_search_place">Şehir girin</string>
     <string name="lp_no_nearby_places_found">Yakınlarda yer bulunamadı</string>
     <string name="select_directory_for_backup">Burayı kaydet</string>
-    <string name="data_backup_headline">Sohbetler ve medya dahil tüm verilerinizi kaydetmek için bir yedek oluşturun.</string>
+    <string name="data_backup_headline">Sohbetler ve medya dahil tüm verilerinizi kaydetmek için bir veri yedeği oluşturun.</string>
     <string name="data_backup_save_path">Yedekleme dizini</string>
     <string name="change">Değiştir</string>
     <string name="data_backup_last_date">Son başarılı veri yedekleme</string>
@@ -1012,7 +1012,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="whatsnew_headline"><![CDATA[<p>Uçtan uca şifrelenmiş grup aramaları artık Android için %1$s içinde kullanılabilir.</p>
 <p>Bir arama başlatmak için bir grup sohbeti açın ve üst kısımdaki kamera düğmesine dokunun.</p>
 <p>Tüm grup üyeleri bir bildirim alacak ve aramaya katılmak isteyip istemeyeceklerine karar verebilecekler.</p>
-<p><b>Lütfen dikkat:</b> iOS için grup görüşmesi özelliği daha sonra kullanıma sunulacaktır.</p>]]></string>
+<p><b>Lütfen dikkat:</b> iOS için grup araması özelliği daha sonra kullanıma sunulacaktır.</p>]]></string>
     <string name="whatsnew2_title">(boş bir cümle)</string>
     <string name="whatsnew2_body">(boş bir cümle)</string>
     <string name="tap_to_start">%s şimdi başlatmak için buraya dokunun.</string>
@@ -1021,7 +1021,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="backup_data_no_permission">Bu dizine yazılamıyor. Lütfen başka bir yer seçin.</string>
     <string name="prefs_sum_show_unread_badge">Alt gezinme sekmelerinde rozetleri göster</string>
     <string name="prefs_title_show_unread_badge">Rozetler</string>
-    <string name="pinning_not_trusted">Sertifika sabitleme hatası. Lütfen cihazınızın kimlik bilgileri deposunda \"Entrust Root Certification Authority - G2\" yüklü ve etkinleştirilmiş olup olmadığını kontrol edin.</string>
+    <string name="pinning_not_trusted">Sertifika Sabitleme Hatası. Lütfen cihazınızın kimlik bilgileri deposunda “Entrust Root Certification Authority - G2” kurulu ve etkinleştirilmiş olup olmadığını kontrol edin.</string>
     <string name="pinning_failed">Sertifika sabitleme hatası. Olası ortadaki adam saldırısı. \"AdGuard\" gibi bir reklam engelleyici, içerik filtresi veya güvenlik duvarı uygulamanız varsa, lütfen Threema için devre dışı bırakın.</string>
     <string name="open_myid_popup">Hızlı erişim penceresini aç</string>
     <string name="logo">Logo / Yukarı kaydır</string>
@@ -1045,7 +1045,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="mime_type">MIME türü</string>
     <string name="password_does_not_comply">Parola yönetici tarafından belirlenen yönergelere uymuyor.</string>
     <string name="audio_mute_due_to_focus_loss">Odak kaybı nedeniyle ses geçici olarak kapatıldı</string>
-    <string name="restore_data_backup_explain">Bir veri yedeğini geri yüklemek için, önce \"Profilim\" ekranından Threema kimliğinizi silin. Uygulama yeniden başladığında, \"Yedekten geri yükle\", \"Diğer geri yükleme seçenekleri\", \"Veri yedekleme\" öğelerini seçin ve ardından geri yüklemek istediğiniz yedek dosyasını seçin.</string>
+    <string name="restore_data_backup_explain">Bir veri yedeğini geri yüklemek için önce Threema kimliğinizi \"Profilim\" ekranından silin.\n\nUygulama yeniden başladığında, \"Yedekten geri yükle\", \"Diğer geri yükleme seçenekleri\", \"Veri Yedeği\" ni seçin ve ardından geri yüklemek istediğiniz veri yedeği dosyasını seçin.</string>
     <string name="audio_focus_loss_complete">Ses odağının tamamen kaybolması nedeniyle arama sonlandı.</string>
     <string name="tap_for_picture_hold_for_video">Resim için dokunun, video için basılı tutun</string>
     <string name="sending_media">Medya gönderiliyor</string>
@@ -1118,7 +1118,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="state_processing">işleniyor</string>
     <string name="passphrase_locked">Parola kilitli</string>
     <string name="selected_media">Seçiminiz</string>
-    <string name="attach_gif">Gif</string>
+    <string name="attach_gif">GIF</string>
     <string name="attach_gallery">Galeri</string>
     <string name="attach_picture">Resim</string>
     <string name="attach_video">Video</string>
@@ -1171,7 +1171,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="unread">Okunmadı</string>
     <string name="missing_app_licence">Uygulama mağazası satın alma işleminizi doğrulayamadı. Google Play kullanıyorsanız, lütfen Google Play Store Uygulamasının verilerini temizleyin ve cihazınızı yeniden başlatın.</string>
     <string name="set_backup_path">Yedekleme dizinini ayarla</string>
-    <string name="set_backup_path_intro">Aşağıdaki ekranda lütfen veri yedeğinin kaydedileceği klasörü seçin.</string>
+    <string name="set_backup_path_intro">Aşağıdaki ekranda lütfen veri yedeklerinin kaydedileceği klasörü seçin.</string>
     <string name="discard_changes_title">Değişiklikleri yoksay</string>
     <string name="group_join_request_message_info"><![CDATA[<b>%1$s</b> grup yöneticisine, <b>%2$s</b> grubuna neden katılmak istediğinizi belirten kısa bir mesaj yazın.]]></string>
     <string name="group_join_request">Gruba katılma isteği</string>
@@ -1183,7 +1183,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="reject">Reddet</string>
     <string name="group_request_already_sent"><![CDATA[Bu bağlantı üzerinden <b>%s</b> için zaten devam eden gruba katılma talebiniz var ve grup yöneticisinden yanıt bekleniyor. Yeniden talep göndermeyi denemek istiyorsanız listedeki seçeneğe tıklayın.]]></string>
     <string name="group_link_none">Henüz bağlantı oluşturulmadı</string>
-    <string name="group_request_confirm_send"><![CDATA[<b>%1$s</b> için <b>%2$s</b> yöneticisine grup isteği göndermek üzeresiniz. Bu bağlantı geçersiz kılınmadıysa, yöneticinin cihazı, isteğinizi alır almaz otomatik olarak gruba eklenirsiniz.]]></string>
+    <string name="group_request_confirm_send"><![CDATA[<b>%2$s</b> yöneticisine <b>%1$s</b> için bir grup isteği göndermek üzeresiniz. Bu bağlantı geçersiz kılınmadıysa, yöneticinin cihazı isteğinizi alır almaz gruba otomatik olarak ekleneceksiniz.]]></string>
     <string name="really_delete_group_request_title_singular">Grup isteğini sil</string>
     <string name="really_delete_group_request_title_plural">Grup isteklerini sil</string>
     <string name="sent_to">%s gönderildi</string>
@@ -1299,11 +1299,11 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="not_voted_user_list">Bu katılımcılar oy vermedi: %s</string>
     <string name="contact_update">Kişi durumları güncelleniyor</string>
     <string name="invalid_onprem_id">Bu kimlik (artık) mevcut değil veya kimliğiniz ile uyumlu değil.</string>
-    <string name="enable_unknown_sources">Yükleme başarısız. Lütfen %s için \"Bilinmeyen uygulamaları yükle\" seçeneğinin etkinleştirildiğinden emin olun.</string>
+    <string name="enable_unknown_sources">Yüklenemiyor. Lütfen %s için \"Bilinmeyen uygulamaları yükle\" seçeneğinin etkinleştirildiğinden emin olun.</string>
     <string name="threema_push">Threema Push</string>
     <string name="threema_push_notification_text">Daha fazlasını öğrenmek için dokunun.</string>
     <string name="threema_push_notification_info_text_1">Threema Push, gelen mesajlar ve aramalar hakkında sizi bilgilendirmek için arka planda çalışıyor.</string>
-    <string name="threema_push_notification_info_text_2">Uygulamalar, kalıcı bir bildirim göstermeden arka planda çalışamaz. Bu bildirimi göstererek, uygulamayı aktif olarak kullanmadığınızda bile Threema Push\'un etkin kalmasını sağlayabiliriz.</string>
+    <string name="threema_push_notification_info_text_2">Uygulamalar, kalıcı bir bildirim göstermeden arka planda çalışamaz. Bu bildirimi göstererek, uygulamayı aktif olarak kullanmadığınızda bile Threema Push\'un aktif kalmasını sağlayabiliriz.</string>
     <string name="threema_push_notification_info_text_3">Gecikmeli veya eksik bildirimlerle ilgili sorun yaşamaya devam ederseniz, uygulamanın arka planda herhangi bir kısıtlama olmaksızın etkin olabilmesini ve tüm pil tasarruflarının devre dışı bırakılmasını sağlamak için lütfen sistem ayarlarınızı yapın.</string>
     <string name="threema_push_service_description">Threema Push aktifken gösterilen kalıcı bildirim</string>
     <string name="threema_push_activated">Threema Push etkinleştirildi.</string>
@@ -1350,14 +1350,14 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="contact_picture_content_description">Kişi resmi</string>
     <string name="prefs_title_use_system_ringtone">Sistem zil sesini kullan</string>
     <string name="organization_type">Kuruluş</string>
-    <string name="permission_bluetooth_connect_required">Bağlı bluetooth kulaklıkları bulmak için \"Yakındaki cihazlar\" iznini etkinleştir</string>
+    <string name="permission_bluetooth_connect_required">Bağlı Bluetooth kulaklıkları bulmak için \"Yakındaki cihazlar\" iznini etkinleştir</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push aktif. Threema web ve masaüstü oturumları bu nedenle manuel olarak başlatılmalıdır.</string>
     <string name="tooltip_multiple_recipients_title">Yeni: Birden çok alıcı</string>
     <string name="tooltip_multiple_recipients_text">Aynı mesajı göndermek üzere birden fazla alıcı seçmek için uzun dokunun.</string>
     <string name="synchronizing">Eşitleniyor...</string>
     <string name="forward_security">Mükemmel İletme Gizliliği ile mesaj gönder</string>
     <string name="forward_security_mode">Mükemmel İletme Gizliliği</string>
-    <string name="forward_security_mode_none">no</string>
+    <string name="forward_security_mode_none">Hayır</string>
     <string name="clear_forward_security">Mükemmel İletme Gizliliği Oturumlarını Temizle</string>
     <string name="forward_security_cleared">Bu kişiyle Mükemmel İletme Gizliliği oturumları temizlendi</string>
     <string name="message_without_forward_security">Mükemmel İletme Gizliliği olmayan bir mesaj alındı. Gönderenin Mükemmel İletme Gizliliğini kasıtlı olarak devre dışı bıraktığını doğrulayın.</string>
@@ -1397,10 +1397,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="read_phone_state_short_message">Devam eden aramaları kontrol etmek için Threema\'ya Telefon izni verin.</string>
     <string name="prefs_title_read_phone_state">Telefon izni ver</string>
     <string name="prefs_title_hibernation">Kullanılmayan uygulama ayarları</string>
-    <string name="prefs_summary_hibernation_api_32">Threema\'nın daha uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"İzinleri kaldır ve yer aç\" sistem ayarını devre dışı bırakın.</string>
-    <string name="prefs_summary_hibernation_api">Threema\'nın daha uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"Kullanılmıyorsa uygulama etkinliğini duraklat\" sistem ayarını devre dışı bırakın.</string>
+    <string name="prefs_summary_hibernation_api_32">Threema\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"İzinleri kaldır ve yer aç\" sistem ayarını devre dışı bırakın.</string>
+    <string name="prefs_summary_hibernation_api">Threema\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"Kullanılmıyorsa uygulama etkinliğini duraklat\" sistem ayarını devre dışı bırakın.</string>
     <string name="unable_to_fetch_configuration">Yapılandırma sunucusundan veri alınamıyor. Daha sonra tekrar deneyin</string>
-    <string name="rogue_device_warning">Sunucu, aynı Threema kimliğine sahip farklı bir cihazdan bağlantı tespit etti.\n\nBu arada Threema kimliğinizi başka bir cihazda veya daha eski bir uygulama sürümünde kullanmadıysanız, lütfen destek ekibiyle iletişime geçin ve mümkünse günlük dosyasını gönderin.</string>
+    <string name="rogue_device_warning">Sunucu, aynı Threema kimliğine sahip farklı bir cihazdan bir bağlantı tespit etti.\nBu arada Threema kimliğinizi başka bir cihazda veya daha eski bir uygulama sürümünde kullanmadıysanız, lütfen destek ekibiyle iletişime geçin ve mümkünse günlük dosyasını gönderin.</string>
     <string name="fetch2_failure">Konfigurasyon sunucusuyla eşitleme başarısız oldu.</string>
     <string name="no_members_support_group_calls">Bu grupta grup aramalarına cevap verebilecek başka üye yok</string>
     <string name="group_calls">Grup aramaları</string>
@@ -1408,8 +1408,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="group_no_members">Bu grup başka üye içermiyor</string>
     <string name="group_call">Grup araması</string>
     <string name="checking_compatibility">Uyumluluk kontrol ediliyor…</string>
-    <string name="group_call_mic_permission_rationale">Grup aramaları yapmak için, «izinler» altında mikrofon erişimine %s için izin vermelisiniz.</string>
-    <string name="group_call_camera_permission_rationale">Diğer katılımcıların resminizi görebilmesi için, «izinler» altında kamera erişimine %s için izin vermelisiniz.</string>
+    <string name="group_call_mic_permission_rationale">Grup aramaları gerçekleştirmek için, \"izinler\" altında %s için mikrofon erişimine izin vermelisiniz.</string>
+    <string name="group_call_camera_permission_rationale">Diğer katılımcıların resminizi görmesi için, \"izinler\" altında %s için kamera erişimine izin vermelisiniz.</string>
     <string name="settings">Ayarlar</string>
     <string name="leave">Ayrıl</string>
     <string name="fs_key_mismatch">anahtar uyuşmazlığı</string>
@@ -1420,7 +1420,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_sum_group_calls_vibration">Bir grup araması başlatıldığında titreyip titremeyeceğini seçin</string>
     <string name="forward_security_mode_4dh">tamamlandı</string>
     <string name="forward_security_mode_2dh">tek taraflı</string>
-    <string name="forward_security_explanation">Mükemmel İletme Gizliliği (Perfect Forward Secrecy) (PFS), uzun süreli şifreleme anahtarının gizliliği ihlal edilmiş olsa bile kayıtlı bir iletişimi geriye dönük şifre çözme işleminden korur.\n\nHer iki taraftaki uygulama PFS\'i destekliyorsa seçenek etkinleştirilebilir.</string>
+    <string name="forward_security_explanation">Mükemmel İletme Gizliliği (Perfect Forward Secrecy (PFS)), uzun süreli şifreleme anahtarının gizliliği ihlal edilmiş olsa bile kayıtlı bir iletişimi geriye dönük şifre çözme işleminden korur.\n\nHer iki taraftaki uygulama PFS\'i destekliyorsa seçenek etkinleştirilebilir.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>

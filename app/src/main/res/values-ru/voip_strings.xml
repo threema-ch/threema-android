@@ -23,7 +23,7 @@
     <string name="voip_status_ringing">Звоним</string>
     <string name="voip_mic_enable">Включить микрофон</string>
     <string name="voip_mic_disable">Отключить микрофон</string>
-    <string name="voip_checking_compatibility">Проверка возможности приема звонков Threema контактом...</string>
+    <string name="voip_checking_compatibility">Проверка возможности приема звонков Threema контактом…</string>
     <string name="voip_incompatible">Этот контакт пока не может принимать звонки Threema.</string>
     <string name="voip_call_status_unavailable">Адресат звонка недоступен</string>
     <string name="voip_call_status_rejected">Звонок отклонен</string>

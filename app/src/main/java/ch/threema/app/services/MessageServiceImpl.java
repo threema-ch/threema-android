@@ -381,6 +381,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
+	@Nullable
 	public AbstractMessageModel createGroupCallStatus(
 		@NonNull GroupCallStatusDataModel data,
 		@NonNull MessageReceiver receiver,
@@ -388,8 +389,12 @@ public class MessageServiceImpl implements MessageService {
 		@Nullable GroupCallDescription call,
 		boolean isOutbox,
 		Date postedDate) {
-		logger.info("Storing group call status message for call={}", call != null ? call.getCallId() : "n/a");
+		if (receiver instanceof GroupMessageReceiver && ((GroupMessageReceiver) receiver).getGroup() == null) {
+			logger.info("Unable to store group call status message. Group no longer exists");
+			return null;
+		}
 
+		logger.info("Storing group call status message for call={}", call != null ? call.getCallId() : "n/a");
 		final AbstractMessageModel model = receiver.createLocalModel(
 			MessageType.GROUP_CALL_STATUS,
 			MessageContentsType.GROUP_CALL_STATUS,

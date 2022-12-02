@@ -1052,7 +1052,7 @@ Threema 支援的所有表情符號。</string>
     <string name="backup_data_no_permission">無法寫入此目錄。請選擇另一個。</string>
     <string name="prefs_sum_show_unread_badge">在導覽列顯示未讀訊息提示</string>
     <string name="prefs_title_show_unread_badge">未讀訊息提示</string>
-    <string name="pinning_not_trusted">憑證固定失敗。請檢查裝置認證儲存中是否安裝並啟動了「委託根認證機構 - G2」。</string>
+    <string name="pinning_not_trusted">憑證鎖定失敗。請檢查您的裝置上的認證儲存中是否安裝並啟動了「Entrust Root Certification Authority - G2」。</string>
     <string name="pinning_failed">憑證固定失敗。可能發生了中間人攻擊。如果您安裝了廣告攔截器、內容過濾器或防火牆應用程式，例如 AdGuard，請停用後重啟 Threema。</string>
     <string name="open_myid_popup">開啟快速存取彈出式視窗</string>
     <string name="logo">標誌/回到頁首</string>
@@ -1214,7 +1214,7 @@ Threema 支援的所有表情符號。</string>
     <string name="reject">拒絕</string>
     <string name="group_request_already_sent"><![CDATA[您已經透過這個連結傳送了 <b>%s</b> 公開群組加入要求，正在等待群組管理員的回覆。如果您想重新傳送要求，請重按清單中的連結。]]></string>
     <string name="group_link_none">尚未生成連結</string>
-    <string name="group_request_confirm_send"><![CDATA[您即將向管理員 <b>%2$s</b> 傳送 <b>%1$s</b> 群組加入要求。如果此連結沒有失效，管理員一收到您的要求，您就會自動新增至群組。]]></string>
+    <string name="group_request_confirm_send"><![CDATA[您即將向管理員 <b>%2$s</b> 傳送 <b>%1$s</b> 群組加入要求。如果此連結沒有失效，而且管理員接受您的加入要求後，您就會自動加入至群組。]]></string>
     <string name="really_delete_group_request_title_singular">刪除群組加入要求</string>
     <string name="really_delete_group_request_title_plural">刪除群組加入要求</string>
     <string name="sent_to">傳送至：%s</string>
@@ -1330,11 +1330,11 @@ Threema 支援的所有表情符號。</string>
     <string name="not_voted_user_list">這些參與者沒有投票：%s</string>
     <string name="contact_update">更新聯絡人狀態</string>
     <string name="invalid_onprem_id">此ID(永久)不再存在，或者與您的ID不相容。</string>
-    <string name="enable_unknown_sources">無法安裝。請確保為 %s 啟用了「安裝未知應用程式」。</string>
+    <string name="enable_unknown_sources">無法安裝。請確保為 %s 啟用了「安裝不明的應用程式」。</string>
     <string name="threema_push">Threema Push</string>
     <string name="threema_push_notification_text">按一下了解更多資訊。</string>
     <string name="threema_push_notification_info_text_1">Threema Push 在背景持續執行，以通知您新收到的訊息和來電。</string>
-    <string name="threema_push_notification_info_text_2">如果不能顯示永久通知，應用程式就不能在背景執行。透過顯示永久通知，可以確保 Threema Push 即使在您不主動使用應用程式時也會保持執行。</string>
+    <string name="threema_push_notification_info_text_2">如果不能顯示永久通知，此應用程式就不能在背景執行。透過顯示永久通知，可以確保 Threema Push 即使在您不主動使用此應用程式時也會保持執行。</string>
     <string name="threema_push_notification_info_text_3">如果您仍然遇到延遲或丟失通知的問題，請調整您的系統設定，以確保應用程式可以在背景不受任何限制地運行，並停用省電模式。</string>
     <string name="threema_push_service_description">當 Threema Push 執行時，顯示永久通知</string>
     <string name="threema_push_activated">Threema Push 現在已開啟。</string>
@@ -1440,7 +1440,7 @@ Threema 支援的所有表情符號。</string>
     <string name="group_call">群組通話</string>
     <string name="checking_compatibility">正在檢查相容性...</string>
     <string name="group_call_mic_permission_rationale">如要進行群組通話，您必須在系統「權限」設定下允許 %s 取用麥克風權限。</string>
-    <string name="group_call_camera_permission_rationale">為了讓其他參與者看到你的照片，您必須在系統「權限」設定下允許 %s 取用相機權限。</string>
+    <string name="group_call_camera_permission_rationale">為了讓其他參與者看到您的照片，您必須在系統「權限」設定下允許 %s 取用相機權限。</string>
     <string name="settings">設定</string>
     <string name="leave">離開</string>
     <string name="fs_key_mismatch">密鑰不相符</string>
@@ -1451,7 +1451,7 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_sum_group_calls_vibration">選擇是否在群組通話開始時震動</string>
     <string name="forward_security_mode_4dh">雙向保密</string>
     <string name="forward_security_mode_2dh">單向保密</string>
-    <string name="forward_security_explanation">完全前向保密 (PFS) 可保護記錄的通訊，即使長期加密密鑰已洩露也不會被追溯解密。\n\n如果雙方的應用程式都支援完全前向保密，則可以啟用該選項。</string>
+    <string name="forward_security_explanation">完全前向保密 (PFS) 可保護對話記錄的通訊，即使長期加密密鑰已洩露也不會被追溯解密。\n\n如果雙方的應用程式都支援完全前向保密，則可以啟用該選項。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

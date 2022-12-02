@@ -36,7 +36,7 @@ class Failed internal constructor(call: GroupCall, val reason: Throwable) : Grou
         // Make sure the [connectedSignal] is completed in case someone is waiting for it
         call.connectedSignal.completeExceptionally(reason)
 
-        logger.error("Call failed, tearing down", reason)
+        logger.error("Call failed, tearing down\n{}", reason.stackTraceToString())
         call.teardown()
         null
     })

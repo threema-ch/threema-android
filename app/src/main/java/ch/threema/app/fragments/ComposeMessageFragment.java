@@ -4400,6 +4400,14 @@ public class ComposeMessageFragment extends Fragment implements
 		//update header
 		if(contactModel.getIdentity().equals(identity)) {
 			updateToolbarTitle();
+
+			if (this.contactModel != contactModel) {
+				// Update the contact model (and the receiver) to have the current setting for
+				// sending messages (forward security). This needs to be done if the contact model
+				// cache has been reset and therefore a new contact model object has been created.
+				this.contactModel = contactModel;
+				messageReceiver = this.contactService.createReceiver(this.contactModel);
+			}
 		}
 
 		if (composeMessageAdapter != null) {

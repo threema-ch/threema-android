@@ -278,10 +278,7 @@ class GroupCallService : Service() {
     // TODO(ANDR-1964): Could this be called twice for a call and cause problems?
     //   make sure groupCallController and audioManager will only be initialised once per service lifetime
     private fun joinCall() {
-        logger.info("Join call")
-        if (BuildConfig.DEBUG) {
-            logger.info("callId={}, sfuBaseUrl={}", callId, sfuBaseUrl)
-        }
+        logger.info("Join call (callId={}, sfuBaseUrl={})", callId, sfuBaseUrl)
         stopOngoingOneToOneCall()
 
         setPSTNCallStateListener()

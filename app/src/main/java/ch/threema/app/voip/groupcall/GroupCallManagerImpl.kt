@@ -660,8 +660,7 @@ class GroupCallManagerImpl(
 		// Step 8 is handled by getting the chosen call before sending a GroupCallStart and therefore
 		// this step is not part in the group call refresh steps implementation here
 
-		// Step 9 is currently not implemented
-		logger.info("consolidate joined call")
+		// Step 9
 		consolidateJoinedCall(chosenCall, groupId)
 
 		// Step 10: return chosen-call

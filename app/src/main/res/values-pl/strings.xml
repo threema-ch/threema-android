@@ -1027,7 +1027,7 @@ anonimowo?</string>
     <string name="open_in_maps_app">Otwórz w aplikacji Mapy</string>
     <string name="delete">Usuń</string>
     <string name="continue_recording">Kontynuuj nagrywanie</string>
-    <string name="whatsnew_headline"><![CDATA[<p>%sW aplikacji %1$ na Androida są teraz dostępne połączenia grupowe z szyfrowaniem od końca do końca.</p>
+    <string name="whatsnew_headline"><![CDATA[<p>W aplikacji %1$s na Androida są teraz dostępne połączenia grupowe z szyfrowaniem od końca do końca.</p>
 <p>Aby zainicjować połączenie, otwórz czat grupowy i stuknij przycisk kamery na górze.</p>
 <p>Wszyscy członkowie grupy otrzymają powiadomienie i będą mogli zdecydować, czy chcą dołączyć do połączenia, czy też nie.</p>
 <p><b>Uwaga:</b> W przypadku systemu iOS funkcja połączeń grupowych zostanie wprowadzona w późniejszym terminie.</p> ]]></string>

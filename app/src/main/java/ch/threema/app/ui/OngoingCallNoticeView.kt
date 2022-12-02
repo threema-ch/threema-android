@@ -99,10 +99,10 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 				callContainer.isClickable = true
 				callContainer.isFocusable = true
 				actionButton.text = context.getString(R.string.voip_hangup)
-				actionButton.chipBackgroundColor = getDefaultBackgroundColor()
-				actionButton.setTextColor(getTextColor())
+				actionButton.chipBackgroundColor = getDangerousBackgroundColor()
+				actionButton.setTextColor(getDangerousTextColor())
 				actionButton.chipIcon = AppCompatResources.getDrawable(context, R.drawable.ic_call_end_outline)
-				actionButton.chipIconTint = getTextColor()
+				actionButton.chipIconTint = getDangerousTextColor()
 				callText.setText(R.string.call_ongoing)
 				participantsText.visibility = GONE
 			}
@@ -168,6 +168,15 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 
 	private fun getTextColor(): ColorStateList {
 		return ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(context, R.attr.colorAccent))
+	}
+
+	private fun getDangerousTextColor(): ColorStateList {
+		return ColorStateList.valueOf(resources.getColor(R.color.material_red))
+	}
+
+	private fun getDangerousBackgroundColor(): ColorStateList {
+		val backgroundColor = ColorStateList.valueOf(resources.getColor(R.color.material_red))
+		return backgroundColor.withAlpha(0x1a)
 	}
 
 	private fun setViewAction(view: View?, action: Runnable?) {

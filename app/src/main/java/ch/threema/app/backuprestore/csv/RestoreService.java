@@ -21,6 +21,10 @@
 
 package ch.threema.app.backuprestore.csv;
 
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -36,6 +40,10 @@ import android.os.StrictMode;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
@@ -56,9 +64,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -67,7 +72,6 @@ import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.asynctasks.DeleteIdentityAsyncTask;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.RestoreCanceledException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
@@ -114,10 +118,6 @@ import ch.threema.storage.models.ballot.LinkBallotModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.BallotDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
-
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 public class RestoreService extends Service {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("RestoreService");
@@ -473,7 +473,7 @@ public class RestoreService extends Service {
 
 					try {
 						if (!userService.restoreIdentity(identityContent, this.password)) {
-							throw new ThreemaException("Restoring identity failed");
+							throw new ThreemaException(getString(R.string.unable_to_restore_identity_because, "n/a"));
 						}
 					} catch (UnknownHostException e) {
 						throw e;

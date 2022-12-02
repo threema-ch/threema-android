@@ -282,7 +282,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="prefs_sum_pin_grace">直到屏幕锁定被激活的时间</string>
     <string name="click_here_to_change_pin">PIN 码已设置。点击这里即可更改。</string>
     <string name="set_pin_menu_title">设置新 PIN 码</string>
-    <string name="set_pin_summary_intro">通过设置 PIN 码（仅数字）来保护您的隐私。此 PIN 码可用于在限制时间后锁定应用，或保护私人会话</string>
+    <string name="set_pin_summary_intro">通过设置 PIN 码（仅数字）来保护您的隐私。此 PIN 码可用于在限制时间后锁定应用，或保护私人会话。</string>
     <string name="set_pin_again_summary">再次输入 PIN 码</string>
     <string name="set_pin_hint">PIN 码</string>
     <string name="title_addgroup">新建群组</string>
@@ -1058,7 +1058,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="backup_data_no_permission">无法写入此目录。请选择另一个。</string>
     <string name="prefs_sum_show_unread_badge">在底部导航栏显示未读消息提示</string>
     <string name="prefs_title_show_unread_badge">未读消息提示</string>
-    <string name="pinning_not_trusted">证书固定失败。请检查是否在设备的凭据存储中安装并激活了 “委托根证书颁发机构-G2”。</string>
+    <string name="pinning_not_trusted">证书固定失败。请检查您的设备上的凭据存储中是否安装并激活了 “Entrust Root Certification Authority - G2”。</string>
     <string name="pinning_failed">证书固定失败。可能发生中间人攻击。如果您安装了广告拦截器、内容过滤器或防火墙应用程序，例如 AdGuard，请禁用后重开 Threema。</string>
     <string name="open_myid_popup">打开快速访问弹出窗口</string>
     <string name="logo">标志/回到顶部</string>
@@ -1221,7 +1221,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="reject">拒绝</string>
     <string name="group_request_already_sent"><![CDATA[您已经通过这个链接发送了 <b>%s</b> 公开群组加入请求，正在等待群组管理员的回复。如果您想重新发送请求，请再次点击列表中的链接。]]></string>
     <string name="group_link_none">尚未生成链接</string>
-    <string name="group_request_confirm_send"><![CDATA[您即将向管理员 <b>%2$s</b> 发送 <b>%1$s</b> 群组加入请求。如果此链接没有失效，管理员一收到您的请求，您就会自动添加到群组。]]></string>
+    <string name="group_request_confirm_send"><![CDATA[您即将向管理员 <b>%2$s</b> 发送 <b>%1$s</b> 群组加入请求。如果此链接没有失效，而且管理员接受您的加入请求后，您就会自动加入到群组。]]></string>
     <string name="really_delete_group_request_title_singular">删除群组加入请求</string>
     <string name="really_delete_group_request_title_plural">删除群组加入请求</string>
     <string name="sent_to">发送到：%s</string>
@@ -1341,7 +1341,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="threema_push">Threema Push</string>
     <string name="threema_push_notification_text">点击了解更多。</string>
     <string name="threema_push_notification_info_text_1">Threema Push 在后台持续运行，以通知您新收到的消息和来电。</string>
-    <string name="threema_push_notification_info_text_2">如果不能显示永久通知，应用程序就不能在后台运行。通过显示永久通知，可以确保 Threema Push 即使在您不主动使用该应用程序时也会保持运行。</string>
+    <string name="threema_push_notification_info_text_2">如果不能显示永久通知，此应用程序就不能在后台运行。通过显示永久通知，可以确保 Threema Push 即使在您不主动使用此应用程序时也会保持运行。</string>
     <string name="threema_push_notification_info_text_3">如果您仍然遇到延迟或丢失通知的问题，请调整您的系统设置，以确保应用程序可以在后台不受任何限制地运行，并禁用节电模式。</string>
     <string name="threema_push_service_description">当 Threema Push 运行时，显示永久通知</string>
     <string name="threema_push_activated">Threema Push 现在已激活。</string>
@@ -1435,7 +1435,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="read_phone_state_short_message">如要检查正在进行的通话，请授予 Threema 通话权限。</string>
     <string name="prefs_title_read_phone_state">授予通话权限</string>
     <string name="prefs_title_hibernation">未使用的应用设置</string>
-    <string name="prefs_summary_hibernation_api_32">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “撤消权限并释放空间” 。</string>
+    <string name="prefs_summary_hibernation_api_32">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “撤销权限并释放空间” 。</string>
     <string name="prefs_summary_hibernation_api">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “暂停未使用应用的活动” 。</string>
     <string name="unable_to_fetch_configuration">无法从配置服务器获取数据，请稍后再试。</string>
     <string name="rogue_device_warning">服务器检测到有人试图从另一台设备登录现有的 Threema ID。\n\n如果您之前没有在其他设备上登录您的 Threema ID，或者使用旧版本的应用程序，请联系支持人员并发送日志文件。</string>
@@ -1447,7 +1447,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_call">群组通话</string>
     <string name="checking_compatibility">正在检查兼容性...</string>
     <string name="group_call_mic_permission_rationale">如要进行群组通话，您必须在系统 “权限” 设置下允许 %s 访问麦克风权限。</string>
-    <string name="group_call_camera_permission_rationale">为了让其他参与者看到你的照片，您必须在系统 “权限” 设置下允许 %s 访问相机权限。</string>
+    <string name="group_call_camera_permission_rationale">为了让其他参与者看到您的照片，您必须在系统 “权限” 设置下允许 %s 访问相机权限。</string>
     <string name="settings">设置</string>
     <string name="leave">退出</string>
     <string name="fs_key_mismatch">密钥不匹配</string>
@@ -1458,7 +1458,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_sum_group_calls_vibration">选择是否在群组通话开始时进行振动</string>
     <string name="forward_security_mode_4dh">双向保密</string>
     <string name="forward_security_mode_2dh">单向保密</string>
-    <string name="forward_security_explanation">完全前向保密 (PFS) 可保护记录的通信，即使长期加密密钥已泄露也不会被追溯解密。\n\n如果双方的应用程序都支持完全前向保密，则可以启用该选项。</string>
+    <string name="forward_security_explanation">完全前向保密 (PFS) 可保护会话记录的通信，即使长期加密密钥已泄露也不会被追溯解密。\n\n如果双方的应用程序都支持完全前向保密，则可以启用该选项。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

@@ -113,39 +113,55 @@
 //
 // 1. Let `running` be the list of group calls that are currently considered
 //    running within the group.
-// 2. Let `calls` be a copy of `running`.
-// 3. For each `call` of `calls`, run the following steps concurrently and wait
-//    for them to return:
-//    1. If the user is currently participating in `call`, abort these
+// 2. Let `calls` be a copy of `running`. Reset the _token-refreshed_ mark of
+//    each `call` of `calls` (or simply scope it to the execution of these
+//    steps).
+// 3. For each `call` of `calls`, run the following steps (labelled _peek-call_)
+//    concurrently and wait for them to return:
+//    1. If the user is currently participating in `call`, abort the _peek-call_
 //       sub-steps.
-//    2. _Peek_ the `call` via `SfuHttpRequest.Peek`.
-//    3. If the received status code is `401`, refresh the _SFU Token_ and
-//       restart the _Group Call Refresh Steps_ from the beginning.
-//    4. If the received status code is `5xx`, remove `call` from `calls` and
-//       abort these sub-steps.
-//    5. If the received status code is not `200`, remove `call` from `calls`
-//       and from `running` and abort these sub-steps.
+//    2. _Peek_ the `call` via `SfuHttpRequest.Peek`. If this does not result in
+//       a response within 5s, remove `call` from `calls` and abort the
+//       _peek-call_ sub-steps.
+//    3. If the received status code for `call` is `401` and `call` is not
+//       marked with _token-refreshed_:
+//       1. Refresh the _SFU Token_. If the _SFU Token_ refresh fails or does
+//          not yield an _SFU Token_ within 10s, remove `call` from `calls` and
+//          abort the _peek-call_ sub-steps.
+//       2. Mark the `call` as _token-refreshed_.
+//       3. Restart the _peek-call_ sub-steps for this `call`.
+//    4. If the server could not be reached or the received status code is not
+//       `200` or if the _Peek_ response could not be decoded:
+//       1. Remove `call` from `calls`.
+//       2. If the received status code is `404`, remove `call` from `running`
+//          and abort the _peek-call_ sub-steps.
+//       3. If the `call`'s _failed_ counter is `>= 3` and the `call` was
+//          received more than 10h ago, remove `call` from `running` and abort
+//          the _peek-call_ sub-steps.
+//       4. Increase the _failed_ counter for `call` by `1` and abort the
+//          _peek-call_ sub-steps.
+//    5. Reset the `call`'s _failed_ counter to `0`.
 //    6. If the protocol version of the `call` is not supported, remove `call`
 //       from `calls`, log a warning that a group call with an unsupported
-//       version is currently running and abort these sub-steps.
-//    7. If the SFU did not provide a _peek_ response within 5s, remove `call`
-//       from `calls` and abort these sub-steps.
-// 4. Let `chosen-call` be any call of `calls` with the highest `started_at`
+//       version is currently running and abort the _peek-call_ sub-steps.
+//    7. (`call` is kept in `calls` and in `running`.)
+// 4. If `running` is empty, cancel the timer to periodically re-run the _Group
+//    Call Refresh Steps_ of this group. Otherwise, restart or schedule the
+//    timer to re-run the _Group Call Refresh Steps_ of this group in 10s.
+// 5. Let `chosen-call` be any call of `calls` with the highest `started_at`
 //    value (i.e. the most recently created call) as provided by the _peek_
 //    result.
-// 5. If `chosen-call` is not defined, cancel the timer to periodically re-run
-//    the _Group Call Refresh Steps_ of this group and abort these steps.
-// 6. If the user is currently in the process of starting a new group call
+// 6. If `chosen-call` is not defined, display that no group call is currently
+//    running within the group, abort these steps and return `chosen-call`.
+// 7. Display `chosen-call` as the currently running group call within the
+//    group.
+// 8. If the user is currently in the process of starting a new group call
 //    within the group, prior to sending a `GroupCallStart` message (see the
 //    associated creation steps), cancel that process and join `chosen-call`
 //    instead.
-// 7. If the user is currently participating in a group call of this group which
+// 9. If the user is currently participating in a group call of this group which
 //    does not match `chosen-call`, exit the call immediately and join
 //    `chosen-call`.
-// 8. Schedule the timer to re-run the _Group Call Refresh Steps_ of this group
-//    in 10s.
-// 9. Display `chosen-call` as the currently running group call within the
-//    group.
 // 10. Return `chosen-call`.
 //
 // Note: The above steps have been carefully crafted to gracefully handle cases

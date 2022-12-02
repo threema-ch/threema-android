@@ -73,13 +73,13 @@
     <!-- Group Calls -->
     <string name="voip_gc_members_notified">Tüm grup üyeleri bilgilendirildi</string>
     <string name="voip_gc_notification_channel_description">Grup çağrıları</string>
-    <string name="voip_gc_notification_title">Grup görüşmesi</string>
+    <string name="voip_gc_notification_title">Grup araması</string>
     <string name="voip_gc_notification_call_started">%1$s, %2$s içinde bir grup araması başlattı</string>
     <string name="voip_gc_notification_call_started_generic">%1$s bir grup araması başlattı</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Bir grup araması başlattınız</string>
     <string name="voip_gc_dismiss_call">Yoksay</string>
     <string name="voip_gc_join_call">Katıl</string>
-    <string name="voip_gc_ongoing_call">Devam eden grup görüşmesi</string>
+    <string name="voip_gc_ongoing_call">Devam eden grup araması</string>
     <string name="voip_gc_waiting_for_participants">Katılımcılar bekleniyor</string>
     <string name="voip_gc_participant_avatar_description">Katılımcının profil resmi</string>
     <string name="voip_gc_participant_mute_status_description">Katılımcı sessiz durumu</string>
@@ -87,11 +87,11 @@
     <string name="voip_gc_open_call">Açık</string>
     <string name="voip_gc_call_started">Grup araması başlatıldı</string>
     <string name="voip_gc_call_ended">Grup araması sona erdi</string>
-    <string name="voip_gc_in_call">grup görüşmesinde</string>
+    <string name="voip_gc_in_call">grup aramasında</string>
     <string name="voip_gc_sfu_not_available">Sunucu kullanılamıyor, daha sonra tekrar deneyin</string>
-    <string name="voip_gc_call_error">Grup görüşmesi başlatılamadı</string>
-    <string name="voip_gc_call_full_generic">Maksimuma sayıya ulaşıldı: Bu grup görüşmesine başka katılımcı katılamaz.</string>
-    <string name="voip_gc_call_full_n">Maksimum %1$d katılımcıya ulaşıldı, bu grup görüşmesine katılamazsınız.</string>
+    <string name="voip_gc_call_error">Grup araması başlatılamadı</string>
+    <string name="voip_gc_call_full_generic">Maksimuma sayıya ulaşıldı: Bu grup aramasına başka katılımcı katılamaz.</string>
+    <string name="voip_gc_call_full_n">Maksimum %1$d katılımcıya ulaşıldı, bu grup aramasına katılamazsınız.</string>
     <plurals name="n_participants_in_call">
         <item quantity="one">%d katılımcı</item>
         <item quantity="other">%d katılımcı</item>
