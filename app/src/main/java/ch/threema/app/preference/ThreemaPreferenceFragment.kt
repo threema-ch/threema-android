@@ -84,11 +84,11 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat() {
     /**
      * Get the preference with the given key. Returns null if there is no such preference.
      */
-    protected fun <T : Preference> getPrefOrNull(string: String): T? {
+    protected fun <T : Preference> getPrefOrNull(key: String): T? {
         return try {
-            getPref(string)
+            getPref(key)
         } catch (e: Exception) {
-            logger.error("Preference not found", e)
+            logger.warn("Preference '$key' not found")
             null
         }
     }
@@ -172,8 +172,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat() {
     }
 
     private fun preferenceNotFound(pref: String): Nothing {
-        logger.error("No preference '$pref' found")
-        throw IllegalArgumentException("Exception")
+        throw IllegalArgumentException("No preference '$pref' found")
     }
 
 }

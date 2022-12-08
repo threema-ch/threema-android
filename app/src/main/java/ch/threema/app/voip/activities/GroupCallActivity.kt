@@ -281,8 +281,10 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 			}
 		})
 
-		intent?.getBooleanExtra(EXTRA_MICROPHONE_ACTIVE, true)?.let {
-			viewModel.microphoneActiveDefault = it
+		if (intent?.hasExtra(EXTRA_MICROPHONE_ACTIVE) == true) {
+			intent?.getBooleanExtra(EXTRA_MICROPHONE_ACTIVE, true)?.let {
+				viewModel.microphoneActiveDefault = it
+			}
 			intent?.removeExtra(EXTRA_MICROPHONE_ACTIVE)
 		}
 	}

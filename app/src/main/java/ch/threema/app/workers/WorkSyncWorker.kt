@@ -249,6 +249,14 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 if (preset != null) {
                     editor.putBoolean(context.getString(R.string.preferences__voip_enable), !preset)
                 }
+                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_video_calls))
+                if (preset != null) {
+                    editor.putBoolean(context.getString(R.string.preferences__voip_video_enable), !preset)
+                }
+                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_group_calls))
+                if (preset != null) {
+                    editor.putBoolean(context.getString(R.string.preferences__group_calls_enable), !preset)
+                }
                 preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__hide_inactive_ids))
                 if (preset != null) {
                     editor.putBoolean(context.getString(R.string.preferences__show_inactive_contacts), !preset)

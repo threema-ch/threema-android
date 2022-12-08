@@ -74,7 +74,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 
 	private lateinit var audioManager: CallAudioManager
 
-	var microphoneActiveDefault = true
+	var microphoneActiveDefault: Boolean? = null
 
 	private val audioDevices = MutableLiveData<Set<AudioDevice>>(setOf())
 	fun getAudioDevices(): LiveData<Set<AudioDevice>> = audioDevices
@@ -323,7 +323,9 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 
 	@UiThread
 	private fun initMicrophoneState() {
-		muteMicrophone(!microphoneActiveDefault)
+		val enableMicrophone = microphoneActiveDefault ?: callController.microphoneActive
+		muteMicrophone(!enableMicrophone)
+		microphoneActiveDefault = null
 	}
 
 	@UiThread

@@ -434,6 +434,13 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void addGroupCallNotification(@NonNull GroupModel group, @NonNull ContactModel contactModel) {
+		// Treat the visibility of a group call notification the same as a group message that contains a mention.
+		MessageReceiver<?> messageReceiver = groupService.createReceiver(group);
+		DNDUtil dndUtil = DNDUtil.getInstance();
+		if (dndUtil.isMutedChat(messageReceiver) || dndUtil.isMutedWork()) {
+			return;
+		}
+
 		NotificationCompat.Action joinAction = new NotificationCompat.Action(
 			R.drawable.ic_group_call,
 			context.getString(R.string.voip_gc_join_call),
@@ -928,10 +935,10 @@ public class NotificationServiceImpl implements NotificationService {
 			}
 
 			if (newestGroup.getMessageReceiver() instanceof GroupMessageReceiver) {
-				builder.addAction(getMarkAsReadAction(markReadPendingIntent));
 				if (unreadMessagesCount == 1) {
 					builder.addAction(getThumbsUpAction(ackPendingIntent));
 				}
+				showMarkAsReadAction = true;
 			} else if (newestGroup.getMessageReceiver() instanceof ContactMessageReceiver) {
 
 				if (conversationNotification.getMessageType().equals(MessageType.VOIP_STATUS))  {
