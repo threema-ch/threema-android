@@ -1172,12 +1172,12 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 		try {
 			WorkManager workManager = WorkManager.getInstance(context);
+			ExistingPeriodicWorkPolicy policy = WorkManagerUtil.shouldScheduleNewWorkManagerInstance(workManager, WORKER_PERIODIC_WORK_SYNC, schedulePeriodMs) ?
+				ExistingPeriodicWorkPolicy.REPLACE :
+				ExistingPeriodicWorkPolicy.KEEP;
+			logger.info("{}: {} existing periodic work", WORKER_PERIODIC_WORK_SYNC, policy);
 			PeriodicWorkRequest workRequest = WorkSyncWorker.Companion.buildPeriodicWorkRequest(schedulePeriodMs);
-			workManager.enqueueUniquePeriodicWork(WORKER_PERIODIC_WORK_SYNC,
-				WorkManagerUtil.shouldScheduleNewWorkManagerInstance(workManager, WORKER_PERIODIC_WORK_SYNC, schedulePeriodMs) ?
-					ExistingPeriodicWorkPolicy.REPLACE :
-					ExistingPeriodicWorkPolicy.KEEP,
-				workRequest);
+			workManager.enqueueUniquePeriodicWork(WORKER_PERIODIC_WORK_SYNC, policy, workRequest);
 		} catch (IllegalStateException e) {
 			logger.error("Unable to schedule periodic work sync work", e);
 			return false;

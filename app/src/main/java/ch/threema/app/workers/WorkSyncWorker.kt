@@ -84,17 +84,18 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
 
         fun buildPeriodicWorkRequest(schedulePeriodMs: Long): PeriodicWorkRequest {
             val data = Data.Builder()
-                    .putBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, false)
-                    .putBoolean(EXTRA_FORCE_UPDATE, false)
-                    .build()
+                .putBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, false)
+                .putBoolean(EXTRA_FORCE_UPDATE, false)
+                .build()
             val constraints = Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
 
             return PeriodicWorkRequestBuilder<WorkSyncWorker>(schedulePeriodMs, TimeUnit.MILLISECONDS)
-                    .setConstraints(constraints)
-                    .apply { setInputData(data) }
-                    .build()
+                .setConstraints(constraints)
+                .addTag(schedulePeriodMs.toString())
+                .apply { setInputData(data) }
+                .build()
         }
     }
 
