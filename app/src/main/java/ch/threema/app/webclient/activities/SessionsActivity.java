@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2022 Threema GmbH
+ * Copyright (c) 2016-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -845,16 +845,6 @@ public class SessionsActivity extends ThreemaToolbarActivity
 				this.finish();
 				return;
 			}
-
-			// Signaling hosts may be constrained
-			if (!AppRestrictionUtil.isWebHostAllowed(this, qrCodeResult.saltyRtcHost)) {
-				final SimpleStringAlertDialog dialog = SimpleStringAlertDialog.newInstance(
-					R.string.webclient_cannot_start,
-					R.string.webclient_constrained_by_mdm
-				);
-				dialog.show(getSupportFragmentManager(), DIALOG_TAG_MDM_CONSTRAINTS);
-				return;
-			}
 		}
 
 		try {
@@ -870,6 +860,17 @@ public class SessionsActivity extends ThreemaToolbarActivity
 			}
 			if (serverAddressProvider.getWebOverrideSaltyRtcPort() != 0) {
 				saltyRtcPort = serverAddressProvider.getWebOverrideSaltyRtcPort();
+			}
+
+			// Signaling hosts may be constrained
+			if (ConfigUtils.isWorkRestricted() &&
+				!AppRestrictionUtil.isWebHostAllowed(this, saltyRtcHost)) {
+				final SimpleStringAlertDialog dialog = SimpleStringAlertDialog.newInstance(
+					R.string.webclient_cannot_start,
+					R.string.webclient_constrained_by_mdm
+				);
+				dialog.show(getSupportFragmentManager(), DIALOG_TAG_MDM_CONSTRAINTS);
+				return;
 			}
 
 			// Create new session

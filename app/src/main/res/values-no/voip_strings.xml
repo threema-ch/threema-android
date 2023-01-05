@@ -88,6 +88,11 @@
     <string name="voip_gc_call_started">Gruppesamtale ble startet</string>
     <string name="voip_gc_call_ended">Gruppesamtale ble avsluttet</string>
     <string name="voip_gc_in_call">I gruppesamtale</string>
+    <string name="voip_gc_sfu_not_available">Server ikke tilgjengelig, prøv igjen senere</string>
+    <string name="voip_gc_call_error">Kunne ikke starte en gruppesamtale</string>
+    <string name="voip_gc_call_start_error">Gruppesamtalen kunne ikke startes</string>
+    <string name="voip_gc_call_full_generic">Maks antall oppnådd: Ingen flere kan bli med i samtalen.</string>
+    <string name="voip_gc_call_full_n">Maks antall %1$d medlemmer er nådd, du kan ikke bli med på gruppesamtalen.</string>
     <plurals name="n_participants_in_call">
         <item quantity="one">%d deltaker</item>
         <item quantity="other">%d deltakere</item>

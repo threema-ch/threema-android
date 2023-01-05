@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -116,23 +116,21 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
             }
 
             val videoCallEnable: CheckBoxPreference = getPref(R.string.preferences__voip_video_enable)
-
             if (disableVideoCalls != null) {
                 // admin does not want user to tamper with video call setting
                 videoCallEnable.isEnabled = false
                 videoCallEnable.isSelectable = false
                 videoCallEnable.isChecked = !disableVideoCalls
-            }
 
-            if (disableVideoCalls == null || !disableVideoCalls) {
-                // video calls are force-enabled or left to the user - user may change profile setting
-                videoCallEnable.isEnabled = true
-                videoCallEnable.isSelectable = true
-
-                val videoCallProfile: DropDownPreference = getPref(R.string.preferences__voip_video_profile)
-                videoCallProfile.dependency = null
-                videoCallProfile.isEnabled = true
-                videoCallProfile.isSelectable = true
+                if (!disableVideoCalls) {
+                    val videoCallProfile: DropDownPreference = getPref(R.string.preferences__voip_video_profile)
+                    videoCallProfile.dependency = null
+                    videoCallProfile.isEnabled = true
+                    videoCallProfile.isSelectable = true
+                }
+            } else if (disableCalls == false) {
+                // remove dependency to allow user to manipulate video setting if calls are force-enabled
+                videoCallEnable.dependency = null
             }
 
             if (disableGroupCalls != null) {
@@ -140,12 +138,6 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
                 groupCallsEnable.isEnabled = false
                 groupCallsEnable.isSelectable = false
                 groupCallsEnable.isChecked = !disableGroupCalls
-            }
-
-            if (disableGroupCalls == null || !disableGroupCalls) {
-                // group calls are force-enabled or left to the user - user may change profile setting
-                groupCallsEnable.isEnabled = true
-                groupCallsEnable.isSelectable = true
             }
         }
     }

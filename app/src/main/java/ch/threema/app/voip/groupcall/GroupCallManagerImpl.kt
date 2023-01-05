@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -230,11 +230,15 @@ class GroupCallManagerImpl(
 		CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
 			val groupCallDescription = getChosenCall(groupModel.localGroupId) ?: return@launch
 			val sfuToken = obtainToken()
-			sendGroupCallStartMessage(groupModel, GroupCallStartData(
+			if (sfuToken == null) {
+				logger.warn("Could not send group call start to new members")
+			} else {
+				sendGroupCallStartMessage(groupModel, GroupCallStartData(
 					ProtocolDefines.GC_PROTOCOL_VERSION.toUInt(),
 					groupCallDescription.gck,
 					sfuToken.sfuBaseUrl
-			), groupCallDescription.getStartedAtDate(), newMembers.toTypedArray())
+				), groupCallDescription.getStartedAtDate(), newMembers.toTypedArray())
+			}
 		}
 	}
 
@@ -310,19 +314,8 @@ class GroupCallManagerImpl(
 
 		logger.debug("Got controller")
 
-		// TODO(ANDR-1963): abort if a new call has been started while we are waiting for the sfu connection and the 'Hello'-Message
 		val (startedAt, participantIds) = callController.connectedSignal.await()
 		callDescription.startedAt = startedAt
-
-		logger.debug("Got {} participants", participantIds.size)
-
-		if (participantIds.isNotEmpty()) {
-			logger.trace("Participants: {}", participantIds)
-			callController.declineCall()
-			throw GroupCallException("Invalid participants list for creation of group call (must be empty)")
-		} else {
-			callController.confirmCall()
-		}
 
 		// Make function cancellable. This enables cancelling call creation before GroupCallStart
 		// is sent to other group members.
@@ -337,6 +330,16 @@ class GroupCallManagerImpl(
 			callController.callDisposedSignal.await()
 			logger.warn("There is already another chosen call for group ${group.localGroupId}")
 			return joinCall(group)
+		}
+
+		logger.debug("Got {} participants", participantIds.size)
+
+		if (participantIds.isNotEmpty()) {
+			logger.trace("Participants: {}", participantIds)
+			callController.declineCall()
+			throw GroupCallException("Invalid participants list for creation of group call (must be empty)")
+		} else {
+			callController.confirmCall()
 		}
 
 		sendGroupCallStartMessage(group, callStartData, callDescription.getStartedAtDate(), null)
@@ -531,7 +534,7 @@ class GroupCallManagerImpl(
 	private suspend fun isInvalidSfuBaseUrl(baseUrl: String): Boolean {
 		GroupCallThreadUtil.assertDispatcherThread()
 
-		return !obtainToken().isAllowedBaseUrl(baseUrl)
+		return !(obtainToken()?.isAllowedBaseUrl(baseUrl) ?: false)
 	}
 
 	@WorkerThread
@@ -552,7 +555,7 @@ class GroupCallManagerImpl(
 	private suspend fun createGroupCallStartData(): GroupCallStartData {
 		GroupCallThreadUtil.assertDispatcherThread()
 
-		val sfuToken = obtainToken()
+		val sfuToken = requireToken()
 		return GroupCallStartData(
 			ProtocolDefines.GC_PROTOCOL_VERSION.toUInt(),
 			createGck(),
@@ -865,7 +868,7 @@ class GroupCallManagerImpl(
 	private suspend fun peekCall(call: GroupCallDescription, retriesOnInvalidToken: Int, forceTokenRefresh: Boolean): PeekResponse {
 		GroupCallThreadUtil.assertDispatcherThread()
 
-		val token = obtainToken(forceTokenRefresh)
+		val token = requireToken(forceTokenRefresh)
 		val peekResponse = sfuConnection.peek(token, call.sfuBaseUrl, call.callId)
 		return if (peekResponse.statusCode == HTTP_STATUS_TOKEN_INVALID && retriesOnInvalidToken > 0) {
 			logger.info("Retry peeking with refreshed token")
@@ -876,7 +879,17 @@ class GroupCallManagerImpl(
 	}
 
 	@WorkerThread
-	private suspend fun obtainToken(forceTokenRefresh: Boolean = false): SfuToken {
+	private suspend fun obtainToken(forceTokenRefresh: Boolean = false): SfuToken? {
+		return try {
+			requireToken(forceTokenRefresh)
+		} catch (e: SfuException) {
+			logger.error("Could not obtain sfu token", e)
+			null
+		}
+	}
+
+	@WorkerThread
+	private suspend fun requireToken(forceTokenRefresh: Boolean = false): SfuToken {
 		// TODO(ANDR-2090): Use a timeout according to protocol
 		return sfuConnection.obtainSfuToken(forceTokenRefresh)
 	}

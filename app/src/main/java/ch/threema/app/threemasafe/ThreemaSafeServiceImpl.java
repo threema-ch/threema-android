@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -20,16 +20,6 @@
  */
 
 package ch.threema.app.threemasafe;
-
-import static ch.threema.app.ThreemaApplication.WORKER_PERIODIC_THREEMA_SAFE_UPLOAD;
-import static ch.threema.app.ThreemaApplication.WORKER_THREEMA_SAFE_UPLOAD;
-import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_EVERYONE;
-import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_NOBODY;
-import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_SOME;
-import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_OPEN_HOME_ACTIVITY;
-import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_WORK_FORCE_PASSWORD;
-import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_MAX_BACKUP_BYTES;
-import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_RETENTION_DAYS;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -135,6 +125,16 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
+
+import static ch.threema.app.ThreemaApplication.WORKER_PERIODIC_THREEMA_SAFE_UPLOAD;
+import static ch.threema.app.ThreemaApplication.WORKER_THREEMA_SAFE_UPLOAD;
+import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_EVERYONE;
+import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_NOBODY;
+import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_SOME;
+import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_OPEN_HOME_ACTIVITY;
+import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_WORK_FORCE_PASSWORD;
+import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_MAX_BACKUP_BYTES;
+import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_RETENTION_DAYS;
 
 public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServiceImpl");
@@ -526,6 +526,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			} else {
 				Date reUploadThreshold = new Date(System.currentTimeMillis() - (DateUtils.HOUR_IN_MILLIS * 23));
 				if (preferenceService.getThreemaSafeErrorCode() == ERROR_CODE_OK &&
+					preferenceService.getThreemaSafeUploadDate() != null &&
 					reUploadThreshold.before(preferenceService.getThreemaSafeUploadDate())) {
 					logger.info("Grace time not yet reached. NOT uploaded");
 					return;

@@ -3,7 +3,7 @@
     <string name="title_section2">Kişiler</string>
     <string name="title_section1">Sohbetler</string>
     <string name="title_compose_message">Sohbet başlat</string>
-    <string name="title_choose_recipient">Kişi seç</string>
+    <string name="title_choose_recipient">Alıcı seç</string>
     <string name="title_keyfingerprint">Parmak izi anahtarı</string>
     <string name="title_mythreemaid">Threema kimliğim</string>
     <string name="title_threemaid">Threema kimliği</string>
@@ -164,7 +164,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="support">Yardım</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">Aşağıdaki metin dizisi, Threema kimliğinizi geri yüklemek için seçilen parola ile birlikte kullanılabilir.</string>
-    <string name="backup_share_subject">için dışa aktarılan Threema kimliği</string>
+    <string name="backup_share_subject">Dışa aktarılan Threema kimliği</string>
     <string name="add_attachment">Yeni ek</string>
     <string name="invalid_passphrase">Geçersiz parola</string>
     <string name="master_key_locked">Ana anahtar kilitli</string>
@@ -326,7 +326,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="can_not_send_no_group_members">Boş bir gruba mesaj gönderemezsiniz</string>
     <string name="you_are_not_a_member_of_this_group">Bu grubun üyesi değilsiniz</string>
     <string name="can_not_delete_not_valid">Geçersiz bir nesne. Kaldırılamaz</string>
-    <string name="can_not_delete_contact_until_in_group">Kişi, hala bir grup görüşmesinin üyesi veya kurucusudur ve bu nedenle silinemez. Bu kişiyi içeren tüm grupları bırakın veya silin ve tekrar deneyin .</string>
+    <string name="can_not_delete_contact_until_in_group">Kişi, hala bir grup aramasının üyesi veya kurucusudur ve bu nedenle silinemez. Bu kişiyi içeren tüm grupları bırakın veya silin ve tekrar deneyin.</string>
     <string name="can_not_delete_contact">Kişi kaldırılamıyor</string>
     <string name="title_public_nickname">Takma isim</string>
     <string name="prefs_sum_excluded_sync_identities">Kişiler eşitlenirken burada listelenen kimlikler yoksayılacak.</string>
@@ -1131,8 +1131,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="max_selectable_media_exceeded">Bir seferde %d nesneden fazlası gönderilemez.</string>
     <string name="error_unable_loading_media_thumb">Hata. Medya küçük resmi yüklenemedi</string>
     <string name="select">Seç</string>
-    <string name="filter_list">Listeyi filtrele</string>
-    <string name="hint_filter_list">Filtre metni gir</string>
+    <string name="filter_list">Ara…</string>
+    <string name="hint_filter_list">Filtrele</string>
     <string name="add">Ekle</string>
     <string name="threema_message_from">%s tarafından mesaj</string>
     <string name="show_text">Metni göster</string>
@@ -1420,7 +1420,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_sum_group_calls_vibration">Bir grup araması başlatıldığında titreyip titremeyeceğini seçin</string>
     <string name="forward_security_mode_4dh">tamamlandı</string>
     <string name="forward_security_mode_2dh">tek taraflı</string>
-    <string name="forward_security_explanation">Mükemmel İletme Gizliliği (Perfect Forward Secrecy (PFS)), uzun süreli şifreleme anahtarının gizliliği ihlal edilmiş olsa bile kayıtlı bir iletişimi geriye dönük şifre çözme işleminden korur.\n\nHer iki taraftaki uygulama PFS\'i destekliyorsa seçenek etkinleştirilebilir.</string>
+    <string name="forward_security_explanation">Mükemmel İletme Gizliliği (Perfect Forward Secrecy) (PFS), uzun süreli şifreleme anahtarı ele geçirilmiş olsa bile kaydedilmiş bir iletişimi geriye dönük şifre çözme işleminden korur.\n\nHer iki taraftaki uygulama PFS\'yi destekliyorsa bu seçenek etkinleştirilebilir.</string>
+    <string name="group_call_inactivity_left">Hareketsizlik nedeniyle grup araması sonlandırıldı</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>
@@ -1462,8 +1463,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
         <item quantity="other">%d mesaj silindi</item>
     </plurals>
     <plurals name="notifications_for_x_hours">
-        <item quantity="one">%d saattir</item>
-        <item quantity="other">%d saattir</item>
+        <item quantity="one">%d saat</item>
+        <item quantity="other">%d saat</item>
     </plurals>
     <plurals name="some_contacts_not_deleted">
         <item quantity="one">%d Kişi hala bir grubun parçası olduğu için silinemedi.</item>

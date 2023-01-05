@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -64,6 +64,12 @@ public interface ConversationService {
 	 * return the number of conversations that have been archived
 	 */
 	int getArchivedCount();
+
+	/**
+	 * update the conversation cache entry for the given contact model
+	 * @param contactModel the contact model that is loaded again from the database
+	 */
+	void updateContactConversation(@NonNull ContactModel contactModel);
 
 	/**
 	 * refresh a conversation model with a modified message model

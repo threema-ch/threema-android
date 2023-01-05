@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="hamlet">ハムレット</string>
-    <string name="village">ビレッジ</string>
+    <string name="hamlet">集落</string>
+    <string name="village">村</string>
     <string name="town">街</string>
     <string name="isolated_dwelling">孤立した住居</string>
     <string name="island">島</string>
-    <string name="islet">アイレット</string>
+    <string name="islet">小島</string>
     <string name="suburb">郊外</string>
     <string name="city">都市</string>
-    <string name="city_block">シティブロック</string>
+    <string name="city_block">街区</string>
     <string name="neighbourhood">近隣地域</string>
     <string name="locality">地域性</string>
     <string name="state">州</string>

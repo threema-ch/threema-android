@@ -319,7 +319,7 @@
     <string name="updating_group">Aktualizowanie grupy</string>
     <string name="status_create_group">Grupa stworzona.</string>
     <string name="status_rename_group">Nazwa grupy zmieniona na «%1$s»</string>
-    <string name="status_group_new_photo">Zaktualizowano zdjęcie grupowe</string>
+    <string name="status_group_new_photo">Zaktualizowano obraz grupowy.</string>
     <string name="status_group_new_member">«%1$s» dołączył(a) do grupy.</string>
     <string name="status_group_member_left">«%1$s» opuścił(a) grupę.</string>
     <string name="status_group_member_kicked">Użytkownik %1$s został usunięty z grupy.</string>
@@ -1027,6 +1027,7 @@ anonimowo?</string>
     <string name="open_in_maps_app">Otwórz w aplikacji Mapy</string>
     <string name="delete">Usuń</string>
     <string name="continue_recording">Kontynuuj nagrywanie</string>
+    <string name="whatsnew_title">Nowość: Rozmowy Grupowe %1$s</string>
     <string name="whatsnew_headline"><![CDATA[<p>W aplikacji %1$s na Androida są teraz dostępne połączenia grupowe z szyfrowaniem od końca do końca.</p>
 <p>Aby zainicjować połączenie, otwórz czat grupowy i stuknij przycisk kamery na górze.</p>
 <p>Wszyscy członkowie grupy otrzymają powiadomienie i będą mogli zdecydować, czy chcą dołączyć do połączenia, czy też nie.</p>
@@ -1370,7 +1371,7 @@ anonimowo?</string>
     <string name="threema_push_start_webclient_sessions_manually">Usługa Threema Push jest aktywna. Sesje Threema Web oraz Desktop należy uruchomić ręcznie.</string>
     <string name="tooltip_multiple_recipients_title">Nowość: wielu odbiorców</string>
     <string name="tooltip_multiple_recipients_text">Przytrzymaj dłużej, aby wybrać wielu odbiorców tej samej wiadomości.</string>
-    <string name="synchronizing">Synchronizacja...</string>
+    <string name="synchronizing">Synchronizacja…</string>
     <string name="forward_security">Wysyłaj wiadomości z Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">nie</string>
@@ -1423,9 +1424,9 @@ anonimowo?</string>
     <string name="prefs_title_group_calls_enable">Włącz połączenia grupowe</string>
     <string name="group_no_members">Ta grupa nie zawiera innych członków</string>
     <string name="group_call">Poł. grupowe</string>
-    <string name="checking_compatibility">Sprawdzanie zgodności...</string>
+    <string name="checking_compatibility">Sprawdzanie zgodności…</string>
     <string name="group_call_mic_permission_rationale">Aby wykonywać połączenia grupowe, musisz dać aplikacji %s uprawnienie do mikrofonu.</string>
-    <string name="group_call_camera_permission_rationale">Aby inni uczestnicy mogli widzieć twoje zdjęcie, musisz dać aplikacji %s zezwolenie na dostęp do aparatu.</string>
+    <string name="group_call_camera_permission_rationale">Aby inni uczestnicy mogli widzieć twój obraz, musisz dać aplikacji %s zezwolenie na dostęp do aparatu.</string>
     <string name="settings">Ustawienia</string>
     <string name="leave">Opuść</string>
     <string name="fs_key_mismatch">niezgodność kluczy</string>
@@ -1437,6 +1438,7 @@ anonimowo?</string>
     <string name="forward_security_mode_4dh">całkowite</string>
     <string name="forward_security_mode_2dh">jednostronne</string>
     <string name="forward_security_explanation">Doskonałe utajnianie z wyprzedzeniem (Perfect Forward Secrecy – PFS) chroni rejestrowaną komunikację przed odszyfrowaniem po fakcie, nawet jeśli zostaną ujawnione długoterminowe klucze szyfrujące.\n\nOpcję tę można włączyć, jeśli aplikacja po obu stronach obsługuje PFS.</string>
+    <string name="group_call_inactivity_left">Opuszczono rozmowę grupową z powodu nieaktywności</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktów</item>

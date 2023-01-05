@@ -1432,6 +1432,7 @@ almacenado.</string>
     <string name="forward_security_mode_4dh">completado</string>
     <string name="forward_security_mode_2dh">unilateral</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protege una comunicación grabada del descifrado retroactivo incluso si la clave de cifrado a largo plazo se ve comprometida.\n\nLa opción se puede activar si la app es compatible con PFS por ambas partes.</string>
+    <string name="group_call_inactivity_left">Llamada grupal abandonada por inactividad</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>

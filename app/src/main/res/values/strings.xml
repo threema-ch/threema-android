@@ -1472,6 +1472,7 @@
     <string name="forward_security_mode_4dh">complete</string>
 	<string name="forward_security_mode_2dh">unilateral</string>
 	<string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protects a recorded communication from retroactive decryption even if the long-term encryption key is compromised.\n\nThe option can be enabled if the app on both sides supports PFS.</string>
+	<string name="group_call_inactivity_left">Group call left due to inactivity</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>

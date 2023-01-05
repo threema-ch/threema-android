@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -99,6 +99,9 @@ public abstract class AbstractAudioTranscoder {
 	/**
 	 * Trims the media start. Requires {@link AbstractAudioTranscoder#component} to be initialized.
 	 *
+	 * Searches the previous keyframe. Audio samples between trimStartTimeUs and the previous keyframe
+	 * are dropped when writing the audio samples to the muxer.
+	 *
 	 * May only be called after {@link State#INITIAL} and before {@link State#TRANSCODING}.
 	 */
 	public void trimMediaStartTo(long trimStartTimeUs) {
@@ -106,8 +109,9 @@ public abstract class AbstractAudioTranscoder {
 			throw new IllegalStateException(String.format("Trimming may not be done in state %s", this.getState().name()));
 		}
 		this.trimStartTimeUs = trimStartTimeUs;
-		// start sound as soon as possible after provided trimStartTime
-		this.component.getMediaExtractor().seekTo(trimStartTimeUs, MediaExtractor.SEEK_TO_NEXT_SYNC);
+		// Start sound as soon as possible before provided trimStartTime. Note that the audio before
+		// the exact trim start time is discarded.
+		this.component.getMediaExtractor().seekTo(trimStartTimeUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
 
 		logger.debug(
 			"Trimmed audio until {}us, the next sync after requested trim time {}us",

@@ -1466,9 +1466,10 @@
     <string name="group_calls_tooltip_text">Натисніть тут, щоб запросити всіх учасників групи до виклику. Кожен із них отримає сповіщення та зможе вибрати, приєднуватися йому чи ні.</string>
     <string name="prefs_title_calls">Безпечні виклики</string>
     <string name="prefs_sum_group_calls_vibration">Виберіть, чи вмикати вібрацію, коли починається груповий виклик</string>
-    <string name="forward_security_mode_4dh">завершено</string>
+    <string name="forward_security_mode_4dh">виконано</string>
     <string name="forward_security_mode_2dh">одностороння</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) захищає раніше записані розмови від дешифрування, навіть якщо скомпрометовано довгостроковий ключ шифрування.\n\nЦю функцію можна ввімкнути, якщо її підтримує додаток обох сторін.</string>
+    <string name="group_call_inactivity_left">Груповий виклик покинуто через неактивність</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакти</item>
         <item quantity="many">%d контактів</item>

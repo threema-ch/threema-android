@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -26,9 +26,14 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
+import ch.threema.base.utils.LoggingUtil
 import kotlinx.coroutines.*
+import org.webrtc.EglBase
+import org.webrtc.RendererCommon
 import org.webrtc.SurfaceViewRenderer
 import org.webrtc.VideoFrame
+
+private val logger = LoggingUtil.getThreemaLogger("ParticipantSurfaceViewRenderer")
 
 /**
  * A SurfaceViewRenderer that keeps track of the number of frames displayed.
@@ -56,6 +61,8 @@ class ParticipantSurfaceViewRenderer : SurfaceViewRenderer {
     private var avatarView: View? = null
     private val animationDuration = 1000L
 
+    private var initialized = false
+
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
@@ -64,6 +71,31 @@ class ParticipantSurfaceViewRenderer : SurfaceViewRenderer {
         super.onFrame(frame)
 
         frameCount++
+    }
+
+    /**
+     * Initialize this view for rendering video. If the view is already initialised nothing is done.
+     * Therefore it is fine to cal this method each time the video view is used to make sure the view is ready.
+     */
+    @UiThread
+    fun init(eglBaseContext: EglBase.Context) {
+        if (!initialized) {
+            logger.info(
+                "Initialise new video view. VideoViews initialised: {}, VideoViews released: {}",
+                videoViewsInitialized,
+                videoViewsReleased
+            )
+            init(eglBaseContext, null)
+            videoViewsInitialized++
+            setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_BALANCED)
+            setMirror(false)
+            initialized = true
+        }
+    }
+
+    override fun release() {
+        super.release()
+        videoViewsReleased++
     }
 
     /**
@@ -195,5 +227,10 @@ class ParticipantSurfaceViewRenderer : SurfaceViewRenderer {
         }
 
         state = VideoState.FROZEN
+    }
+
+    private companion object {
+        private var videoViewsInitialized = 0
+        private var videoViewsReleased = 0
     }
 }

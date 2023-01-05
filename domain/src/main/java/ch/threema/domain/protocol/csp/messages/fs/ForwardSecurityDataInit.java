@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -34,7 +34,7 @@ public class ForwardSecurityDataInit extends ForwardSecurityData {
 
 	private final @NonNull byte[] ephemeralPublicKey;
 
-	public ForwardSecurityDataInit(DHSessionId sessionId, byte[] ephemeralPublicKey) throws InvalidEphemeralPublicKeyException {
+	public ForwardSecurityDataInit(@NonNull DHSessionId sessionId, @NonNull byte[] ephemeralPublicKey) throws InvalidEphemeralPublicKeyException {
 		super(sessionId);
 		if (ephemeralPublicKey.length != NaCl.PUBLICKEYBYTES) {
 			throw new InvalidEphemeralPublicKeyException("Bad ephemeral public key length");

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -35,7 +35,7 @@ public abstract class ForwardSecurityData implements ProtobufDataInterface<Forwa
 
 	private final @NonNull DHSessionId sessionId;
 
-	protected ForwardSecurityData(DHSessionId sessionId) {
+	protected ForwardSecurityData(@NonNull DHSessionId sessionId) {
 		this.sessionId = sessionId;
 	}
 
@@ -57,7 +57,7 @@ public abstract class ForwardSecurityData implements ProtobufDataInterface<Forwa
 				case ACCEPT:
 					return new ForwardSecurityDataAccept(sessionId, protobufMessage.getAccept().getEphemeralPublicKey().toByteArray());
 				case REJECT:
-					return new ForwardSecurityDataReject(sessionId, new MessageId(protobufMessage.getReject().getRejectedMessageId()));
+					return new ForwardSecurityDataReject(sessionId, new MessageId(protobufMessage.getReject().getRejectedMessageId()), protobufMessage.getReject().getCause());
 				case TERMINATE:
 					return new ForwardSecurityDataTerminate(sessionId);
 				case MESSAGE:

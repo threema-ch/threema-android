@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -36,16 +37,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
+import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.ui.SelectorDialogItem;
 
 public class SelectorDialog extends ThreemaDialogFragment {
 	private SelectorDialogClickListener callback;
 	private SelectorDialogInlineClickListener inlineCallback;
 	private Activity activity;
-	private AlertDialog alertDialog;
 
 	private static final String BUNDLE_TITLE_EXTRA = "title";
 	private static final String BUNDLE_ITEMS_EXTRA = "items";
@@ -136,15 +136,18 @@ public class SelectorDialog extends ThreemaDialogFragment {
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
 		if (title != null) {
-			builder.setTitle(title);
+			EmojiTextView emojiTextView = new EmojiTextView(new ContextThemeWrapper(getContext(), R.style.Threema_AlertDialog_TitleTextStyle));
+			emojiTextView.setText(title);
+			int padding = getResources().getDimensionPixelSize(R.dimen.edittext_padding);
+			emojiTextView.setPadding(padding, padding, 0, 0);
+			builder.setCustomTitle(emojiTextView);
 		}
 
-
-		ListAdapter adapter = new ArrayAdapter<SelectorDialogItem> (
+		ListAdapter adapter = new ArrayAdapter<>(
 			activity,
 			R.layout.item_selector_dialog,
 			R.id.text1,
-			items){
+			items) {
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
 				//Use super class to create the View
@@ -190,9 +193,7 @@ public class SelectorDialog extends ThreemaDialogFragment {
 			});
 		}
 
-		alertDialog = builder.create();
-
-		return alertDialog;
+		return builder.create();
 	}
 
 	@Override

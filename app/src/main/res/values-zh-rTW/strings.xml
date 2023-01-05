@@ -417,7 +417,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="verification_level3_work_explain">透過掃描QR碼，您能親自驗證內部聯絡人的身份和公鑰。</string>
     <string name="verification_level3_explain">透過掃描QR碼，您能親自驗證聯絡人的身份和公鑰。</string>
     <string name="verification_level2_explain">聯絡人的電話號碼和/或電子郵件地址包括在您的通訊錄中。</string>
-    <string name="verification_level1_explain">未知聯絡人；此聯絡人沒有將電話號碼或電子郵件地址連結至其ID，或者您的通訊錄中沒有這些聯絡人的詳情。</string>
+    <string name="verification_level1_explain">未知聯絡人；此聯絡人沒有將電話號碼或電子郵件地址連結至其ID，或者您的通訊錄中沒有這些聯絡人的詳細資訊。</string>
     <string name="state_dialog_received">已收到</string>
     <string name="prefs_title_hide_screenshots">沒有縮圖和螢幕擷取畫面</string>
     <string name="prefs_summary_hide_screenshots">不要在應用切換器中顯示縮圖，
@@ -1386,17 +1386,17 @@ Threema 支援的所有表情符號。</string>
     <string name="tooltip_multiple_recipients_title">新增功能：一則訊息同時傳送至多個收件者</string>
     <string name="tooltip_multiple_recipients_text">長按可將一則訊息同時傳送到多個收件者。</string>
     <string name="synchronizing">同步中…</string>
-    <string name="forward_security">以完美前向保密傳送訊息</string>
-    <string name="forward_security_mode">完美前向保密</string>
+    <string name="forward_security">以完全正向保密傳送訊息</string>
+    <string name="forward_security_mode">完全正向保密</string>
     <string name="forward_security_mode_none">否</string>
-    <string name="clear_forward_security">清除完美前向保密工作階段</string>
-    <string name="forward_security_cleared">與此聯絡人的完美前向保密對話已被清除</string>
-    <string name="message_without_forward_security">您收到一則沒有完美前向保密的訊息，您可以驗證發件人是否主動停用完美前向保密。</string>
-    <string name="forward_security_established">此對話中的訊息現正受完美前向保密的保護。</string>
-    <string name="forward_security_established_rx">在此對話中收到的訊息現正受完美前向保密的保護。在聯絡人詳細資訊中啟用完美前向保密以保護已傳送的訊息。</string>
-    <string name="forward_security_reset">與此聯絡人的完美前向保密對話已被重設。如果聯絡人更換了裝置或重新安裝了此應用程式，就會重設對話。</string>
-    <string name="forward_security_reset_simple">與此聯絡人的完美前向保密對話已重設。</string>
-    <string name="forward_security_message_out_of_order">收到的消息亂序，無法解密。</string>
+    <string name="clear_forward_security">清除完全正向保密工作階段</string>
+    <string name="forward_security_cleared">與此聯絡人的完全正向保密對話已被清除</string>
+    <string name="message_without_forward_security">您收到一則沒有完全正向保密的訊息，您可以驗證寄件者是否主動停用完美前向保密。</string>
+    <string name="forward_security_established">此對話中的訊息現正受完全正向保密的保護。</string>
+    <string name="forward_security_established_rx">在此對話中收到的訊息現正受完全正向保密的保護，您可以在聯絡人詳細資訊中啟用完全正向保密來保護以後傳送的訊息。</string>
+    <string name="forward_security_reset">與此聯絡人的完全正向保密對話已被重設。如果聯絡人更換了裝置或重新安裝了此應用程式，就會重設對話。</string>
+    <string name="forward_security_reset_simple">與此聯絡人的完全正向保密對話已重設。</string>
+    <string name="forward_security_message_out_of_order">收到的訊息發生故障，無法解密。</string>
     <string name="self_updater_installation_failed">下載更新失敗。請手動從 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下載並安裝更新。</string>
     <string name="spam_first_contact">此對話來自一位未知聯絡人</string>
     <string name="spam_report">檢舉垃圾訊息</string>
@@ -1449,9 +1449,10 @@ Threema 支援的所有表情符號。</string>
     <string name="group_calls_tooltip_text">按一下這裡可邀請所有群組成員加入通話。所有群組成員都會收到通知，並可以決定是否要加入通話。</string>
     <string name="prefs_title_calls">加密通話</string>
     <string name="prefs_sum_group_calls_vibration">選擇是否在群組通話開始時震動</string>
-    <string name="forward_security_mode_4dh">雙向保密</string>
+    <string name="forward_security_mode_4dh">完整保密</string>
     <string name="forward_security_mode_2dh">單向保密</string>
-    <string name="forward_security_explanation">完全前向保密 (PFS) 可保護對話記錄的通訊，即使長期加密密鑰已洩露也不會被追溯解密。\n\n如果雙方的應用程式都支援完全前向保密，則可以啟用該選項。</string>
+    <string name="forward_security_explanation">完全正向保密（PFS）可以保護對話記錄不被追溯解密，即使長期加密密鑰已被盜用。\n\n如果雙方的應用程式都支援完全正向保密的話，就可以啟用此選項。</string>
+    <string name="group_call_inactivity_left">因為長時間未使用，群組通話自動退出</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

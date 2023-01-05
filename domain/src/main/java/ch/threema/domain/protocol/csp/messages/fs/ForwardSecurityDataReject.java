@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -34,15 +34,22 @@ import ch.threema.protobuf.csp.e2e.fs.ForwardSecurityEnvelope;
 public class ForwardSecurityDataReject extends ForwardSecurityData {
 
 	private final @NonNull MessageId rejectedMessageId;
+	private final @NonNull ForwardSecurityEnvelope.Reject.Cause cause;
 
-	public ForwardSecurityDataReject(DHSessionId sessionId, MessageId rejectedMessageId) {
+	public ForwardSecurityDataReject(@NonNull DHSessionId sessionId, @NonNull MessageId rejectedMessageId, @NonNull ForwardSecurityEnvelope.Reject.Cause cause) {
 		super(sessionId);
 		this.rejectedMessageId = rejectedMessageId;
+		this.cause = cause;
 	}
 
 	@NonNull
 	public MessageId getRejectedApiMessageId() {
 		return rejectedMessageId;
+	}
+
+	@NonNull
+	public ForwardSecurityEnvelope.Reject.Cause getCause() {
+		return cause;
 	}
 
 	@NonNull
@@ -52,6 +59,7 @@ public class ForwardSecurityDataReject extends ForwardSecurityData {
 			.setSessionId(ByteString.copyFrom(this.getSessionId().get()))
 			.setReject(ForwardSecurityEnvelope.Reject.newBuilder()
 				.setRejectedMessageId(this.rejectedMessageId.getMessageIdLong())
+				.setCause(this.cause)
 				.build())
 			.build();
 	}
@@ -60,13 +68,12 @@ public class ForwardSecurityDataReject extends ForwardSecurityData {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		if (!super.equals(o)) return false;
 		ForwardSecurityDataReject that = (ForwardSecurityDataReject) o;
-		return getRejectedApiMessageId().equals(that.getRejectedApiMessageId());
+		return rejectedMessageId.equals(that.rejectedMessageId) && getCause() == that.getCause();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), getRejectedApiMessageId());
+		return Objects.hash(rejectedMessageId, getCause());
 	}
 }

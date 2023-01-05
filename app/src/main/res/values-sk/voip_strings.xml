@@ -57,7 +57,7 @@
     <string name="prefs_voip_reject_incoming_calls_title">Odmietnuť mobilné hovory</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Odmietnuť prichádzajúce mobilné hovory, keď je aktívny hovor Threema.</string>
     <string name="voip_contact_not_found">Pre toto číslo nebol nájdený Threema kontakt.</string>
-    <string name="voip_another_pstn_call">Hovor nie je možné uskutočniť. Stále prebieha klasický telefónny hovor.</string>
+    <string name="voip_another_pstn_call">Nie je možné začať hovor. Stále prebieha bežný hovor.</string>
     <string name="voip_call_status_off_hours">Hovory mimo pracovnú dobu</string>
     <string name="voip_peer_video_disabled">Video hovory sú zakázané protistranou.</string>
     <string name="voip_reject_channel_name">Zmena stavu hovoru</string>
@@ -89,7 +89,8 @@
     <string name="voip_gc_call_ended">Skupinový hovor sa skončil</string>
     <string name="voip_gc_in_call">V skupinovom hovore</string>
     <string name="voip_gc_sfu_not_available">Server je nedostupný, skúste to neskôr</string>
-    <string name="voip_gc_call_error">Skupinový hovor sa nepodarilo spustiť</string>
+    <string name="voip_gc_call_error">Hovor bol ukončený z dôvodu chyby</string>
+    <string name="voip_gc_call_start_error">Skupinový hovor sa nepodarilo spustiť</string>
     <string name="voip_gc_call_full_generic">Dosiahlo sa maximum: K tomuto skupinovému hovoru sa nemôžu pripojiť žiadni ďalší účastníci.</string>
     <string name="voip_gc_call_full_n">Dosiahol sa maximálny počet účastníkov (%1$d), k tomuto skupinovému hovoru sa nemôžete pripojiť.</string>
     <plurals name="n_participants_in_call">

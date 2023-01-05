@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -134,11 +134,11 @@ public class VoipBluetoothManager {
 			if (profile != BluetoothProfile.HEADSET || bluetoothState == State.UNINITIALIZED) {
 				return;
 			}
-			logger.debug("BluetoothServiceListener.onServiceConnected: BT state=" + bluetoothState);
+			logger.debug("BluetoothServiceListener.onServiceConnected: BT state={}", bluetoothState);
 			// Android only supports one connected Bluetooth Headset at a time.
 			bluetoothHeadset = (BluetoothHeadset) proxy;
 			updateAudioDeviceState();
-			logger.debug("onServiceConnected done: BT state=" + bluetoothState);
+			logger.debug("onServiceConnected done: BT state={}", bluetoothState);
 		}
 
 		@Override
@@ -147,13 +147,13 @@ public class VoipBluetoothManager {
 			if (profile != BluetoothProfile.HEADSET || bluetoothState == State.UNINITIALIZED) {
 				return;
 			}
-			logger.debug("BluetoothServiceListener.onServiceDisconnected: BT state=" + bluetoothState);
+			logger.debug("BluetoothServiceListener.onServiceDisconnected: BT state={}", bluetoothState);
 			stopScoAudio();
 			bluetoothHeadset = null;
 			bluetoothDevice = null;
 			bluetoothState = State.HEADSET_UNAVAILABLE;
 			updateAudioDeviceState();
-			logger.debug("onServiceDisconnected done: BT state=" + bluetoothState);
+			logger.debug("onServiceDisconnected done: BT state={}", bluetoothState);
 		}
 	}
 
@@ -187,11 +187,8 @@ public class VoipBluetoothManager {
 		private void onConnectionStateChange(Intent intent) {
 			final int state =
 					intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, BluetoothHeadset.STATE_DISCONNECTED);
-			logger.debug("BluetoothHeadsetBroadcastReceiver.onReceive: "
-					+ "a=ACTION_CONNECTION_STATE_CHANGED, "
-					+ "s=" + headsetStateToString(state) + ", "
-					+ "sb=" + isInitialStickyBroadcast() + ", "
-					+ "BT state: " + bluetoothState);
+			logger.debug("BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_CONNECTION_STATE_CHANGED, s={}, sb={}, BT state: {}",
+				headsetStateToString(state), isInitialStickyBroadcast(), bluetoothState);
 			switch (state) {
 				case BluetoothHeadset.STATE_CONNECTED:
 					scoConnectionAttempts = 0;
@@ -217,11 +214,8 @@ public class VoipBluetoothManager {
 			final int state = intent.getIntExtra(
 				BluetoothHeadset.EXTRA_STATE, BluetoothHeadset.STATE_AUDIO_DISCONNECTED);
 
-			logger.debug("BluetoothHeadsetBroadcastReceiver.onReceive: "
-				+ "a=ACTION_AUDIO_STATE_CHANGED, "
-				+ "s=" + headsetStateToString(state) + ", "
-				+ "sb=" + isInitialStickyBroadcast() + ", "
-				+ "BT state: " + bluetoothState);
+			logger.debug("BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s={}, sb={}, BT state: {}",
+				headsetStateToString(state), isInitialStickyBroadcast(), bluetoothState);
 
 			// Switch BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s=A_DISCONNECTED, sb=false, BT state: HEADSET_AVAILABLE
 			// Btn BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s=A_DISCONNECTED, sb=false, BT state: SCO_CONNECTED
@@ -288,7 +282,7 @@ public class VoipBluetoothManager {
 	 * Construction.
 	 */
 	static VoipBluetoothManager create(Context context, VoipAudioManager audioManager) {
-		logger.debug("create" + AppRTCUtils.getThreadInfo());
+		logger.debug("create {}", AppRTCUtils.getThreadInfo());
 		return new VoipBluetoothManager(context, audioManager);
 	}
 
@@ -330,7 +324,7 @@ public class VoipBluetoothManager {
 		ThreadUtils.checkIsOnMainThread();
 		logger.debug("start");
 		if (!hasPermission(apprtcContext, android.Manifest.permission.BLUETOOTH) && !hasPermission(apprtcContext, Manifest.permission.BLUETOOTH_CONNECT)) {
-			logger.warn("Process (pid=" + Process.myPid() + ") lacks BLUETOOTH permission");
+			logger.warn("Process (pid={}) lacks BLUETOOTH permission", Process.myPid());
 			return;
 		}
 		if (this.bluetoothState != State.UNINITIALIZED) {
@@ -369,12 +363,12 @@ public class VoipBluetoothManager {
 		registerReceiver(bluetoothHeadsetReceiver, bluetoothHeadsetFilter);
 
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-			logger.debug("HEADSET profile state: "
-				+ headsetStateToString(bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET)));
+			logger.debug("HEADSET profile state: {}",
+				headsetStateToString(bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET)));
 		}
 		logger.debug("Bluetooth proxy for headset profile has started");
 		this.bluetoothState = State.HEADSET_UNAVAILABLE;
-		logger.debug("start done: BT state=" + bluetoothState);
+		logger.debug("start done: BT state={}", bluetoothState);
 	}
 
 	/**
@@ -387,7 +381,7 @@ public class VoipBluetoothManager {
 		} catch (IllegalArgumentException e) {
 			logger.error("Unable to unregister bluetooth headset receiver", e);
 		}
-		logger.debug("stop: BT state=" + bluetoothState);
+		logger.debug("stop: BT state={}", bluetoothState);
 		if (bluetoothAdapter != null) {
 			// Stop BT SCO connection with remote device if needed.
 			stopScoAudio();
@@ -403,7 +397,7 @@ public class VoipBluetoothManager {
 				bluetoothState = State.UNINITIALIZED;
 			}
 		}
-		logger.debug("stop done: BT state=" + bluetoothState);
+		logger.debug("stop done: BT state={}", bluetoothState);
 	}
 
 	/**
@@ -421,9 +415,8 @@ public class VoipBluetoothManager {
 	 */
 	public boolean startScoAudio() {
 		ThreadUtils.checkIsOnMainThread();
-		logger.debug("startSco: BT state=" + bluetoothState + ", "
-				+ "attempts: " + scoConnectionAttempts + ", "
-				+ "SCO is on: " + isScoOn());
+		logger.debug("startSco: BT state={}, attempts: {}, SCO is on: {}",
+			bluetoothState, scoConnectionAttempts, isScoOn());
 		if (scoConnectionAttempts >= MAX_SCO_CONNECTION_ATTEMPTS) {
 			logger.error("BT SCO connection fails - no more attempts");
 			return false;
@@ -445,7 +438,7 @@ public class VoipBluetoothManager {
 		}
 		this.scoConnectionAttempts++;
 		this.startTimer();
-		logger.debug("startScoAudio done: BT state=" + bluetoothState);
+		logger.debug("startScoAudio done: BT state={}", bluetoothState);
 		return true;
 	}
 
@@ -454,15 +447,14 @@ public class VoipBluetoothManager {
 	 */
 	public void stopScoAudio() {
 		ThreadUtils.checkIsOnMainThread();
-		logger.debug("stopScoAudio: BT state=" + bluetoothState + ", "
-				+ "SCO is on: " + isScoOn());
+		logger.debug("stopScoAudio: BT state={}, SCO is on: {}", bluetoothState, isScoOn());
 		if (bluetoothState != State.SCO_CONNECTING && bluetoothState != State.SCO_CONNECTED) {
 			return;
 		}
 		cancelTimer();
 		audioManager.stopBluetoothSco();
 		bluetoothState = State.SCO_DISCONNECTING;
-		logger.debug("stopScoAudio done: BT state=" + bluetoothState);
+		logger.debug("stopScoAudio done: BT state={}", bluetoothState);
 	}
 
 	/**
@@ -525,13 +517,12 @@ public class VoipBluetoothManager {
 				logger.error("Buggy BluetoothHeadset implementation", e);
 			}
 
-			logger.debug("Connected bluetooth headset: "
-				+ "name=" + bluetoothDevice.getName() + ", "
-				+ "state=" + state
-				+ ", SCO audio=" + bluetoothHeadset.isAudioConnected(bluetoothDevice));
+			logger.debug("Connected bluetooth headset: name={}, state={}, SCO audio={}",
+				bluetoothDevice.getName(), state, bluetoothHeadset.isAudioConnected(bluetoothDevice)
+			);
 		}
 
-		logger.debug("updateDevice done: BT state=" + bluetoothState);
+		logger.debug("updateDevice done: BT state={}", bluetoothState);
 	}
 
 	/**
@@ -570,21 +561,22 @@ public class VoipBluetoothManager {
 	@SuppressLint({"HardwareIds", "MissingPermission"})
 	protected void logBluetoothAdapterInfo(BluetoothAdapter localAdapter) {
 		try {
-			logger.debug("BluetoothAdapter: "
-				+ "enabled=" + localAdapter.isEnabled() + ", "
-				+ "state=" + adapterStateToString(localAdapter.getState()) + ", "
-				+ "name=" + localAdapter.getName() + ", "
-				+ "address=" + localAdapter.getAddress());
+			logger.debug("BluetoothAdapter: enabled={}, state={}, name={}, address={}",
+				localAdapter.isEnabled(),
+				adapterStateToString(localAdapter.getState()),
+				localAdapter.getName(),
+				localAdapter.getAddress()
+			);
 			// Log the set of BluetoothDevice objects that are bonded (paired) to the local adapter.
 			Set<BluetoothDevice> pairedDevices = localAdapter.getBondedDevices();
 			if (!pairedDevices.isEmpty()) {
 				logger.debug("paired devices:");
 				for (BluetoothDevice device : pairedDevices) {
-					logger.debug(" name=" + device.getName() + ", address=" + device.getAddress());
+					logger.debug(" name={}, address={}", device.getName(), device.getAddress());
 				}
 			}
-		} catch (SecurityException e) {
-			logger.info("Bluetooth adapter info logging failed: " + e.getMessage());
+		} catch (Exception e) {
+			logger.info("Bluetooth adapter info logging failed: {}", e.getMessage());
 		}
 	}
 
@@ -625,9 +617,9 @@ public class VoipBluetoothManager {
 		if (bluetoothState == State.UNINITIALIZED || bluetoothHeadset == null) {
 			return;
 		}
-		logger.debug("bluetoothTimeout: BT state=" + bluetoothState + ", "
-				+ "attempts: " + scoConnectionAttempts + ", "
-				+ "SCO is on: " + isScoOn());
+		logger.debug("bluetoothTimeout: BT state={}, attempts:{}, SCO is on={}",
+			bluetoothState, scoConnectionAttempts, isScoOn()
+		);
 		if (bluetoothState != State.SCO_CONNECTING) {
 			return;
 		}
@@ -637,10 +629,10 @@ public class VoipBluetoothManager {
 		if (devices.size() > 0) {
 			bluetoothDevice = devices.get(0);
 			if (bluetoothHeadset.isAudioConnected(bluetoothDevice)) {
-				logger.debug("SCO connected with " + bluetoothDevice.getName());
+				logger.debug("SCO connected with {}", bluetoothDevice.getName());
 				scoConnected = true;
 			} else {
-				logger.debug("SCO is not connected with " + bluetoothDevice.getName());
+				logger.debug("SCO is not connected with {}", bluetoothDevice.getName());
 			}
 		}
 		if (scoConnected) {
@@ -653,7 +645,7 @@ public class VoipBluetoothManager {
 			stopScoAudio();
 		}
 		updateAudioDeviceState();
-		logger.debug("bluetoothTimeout done: BT state=" + bluetoothState);
+		logger.debug("bluetoothTimeout done: BT state={}", bluetoothState);
 	}
 
 	/**

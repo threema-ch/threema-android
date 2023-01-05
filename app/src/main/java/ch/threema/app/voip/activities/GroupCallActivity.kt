@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -730,12 +730,16 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 	private fun handleFinishEvent(event: GroupCallViewModel.FinishEvent) {
 		logger.info("Finish group call activity: '{}'", event.reason)
 
+		// remove participants adapter to avoid creating new view holders after
+		// the call has ended
+		views.participants.adapter = null
+
 		when (event.reason) {
-			GroupCallViewModel.FinishEvent.Reason.ERROR,
+			GroupCallViewModel.FinishEvent.Reason.ERROR -> showToast(R.string.voip_gc_call_error)
 			GroupCallViewModel.FinishEvent.Reason.INVALID_DATA,
 			GroupCallViewModel.FinishEvent.Reason.TOKEN_INVALID,
 			GroupCallViewModel.FinishEvent.Reason.NO_SUCH_CALL,
-			GroupCallViewModel.FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION -> showToast(R.string.voip_gc_call_error)
+			GroupCallViewModel.FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION -> showToast(R.string.voip_gc_call_start_error)
 			GroupCallViewModel.FinishEvent.Reason.SFU_NOT_AVAILABLE -> showToast(R.string.voip_gc_sfu_not_available)
 			GroupCallViewModel.FinishEvent.Reason.FULL -> showCallFullToast(event.call)
 			GroupCallViewModel.FinishEvent.Reason.LEFT -> Unit

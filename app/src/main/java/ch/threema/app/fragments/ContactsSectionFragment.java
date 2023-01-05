@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -24,6 +24,7 @@ package ch.threema.app.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -45,9 +46,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,19 +74,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
-
-import com.google.android.material.chip.Chip;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
-
-import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
@@ -83,7 +85,6 @@ import ch.threema.app.asynctasks.DeleteContactAsyncTask;
 import ch.threema.app.asynctasks.EmptyChatAsyncTask;
 import ch.threema.app.dialogs.BottomSheetAbstractDialog;
 import ch.threema.app.dialogs.BottomSheetGridDialog;
-import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.TextWithCheckboxDialog;
 import ch.threema.app.emojis.EmojiTextView;
@@ -99,6 +100,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
@@ -130,6 +132,7 @@ import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
 import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
 import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
 import static ch.threema.app.ThreemaApplication.WORKER_WORK_SYNC;
+import static ch.threema.app.ThreemaApplication.getAppContext;
 
 public class ContactsSectionFragment
 		extends MainFragment
@@ -138,14 +141,11 @@ public class ContactsSectionFragment
 		ListView.OnItemClickListener,
 		ContactListAdapter.AvatarListener,
 		SelectorDialog.SelectorDialogClickListener,
-		GenericAlertDialog.DialogClickListener,
 		BottomSheetAbstractDialog.BottomSheetDialogCallback,
 		TextWithCheckboxDialog.TextWithCheckboxDialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSectionFragment");
 
 	private static final int PERMISSION_REQUEST_REFRESH_CONTACTS = 1;
-	private static final String DIALOG_TAG_REALLY_DELETE_CONTACTS = "rdc";
-	private static final String DIALOG_TAG_REALLY_DELETE_CONTACT = "rd";
 	private static final String DIALOG_TAG_SHARE_WITH = "wsw";
 	private static final String DIALOG_TAG_RECENTLY_ADDED_SELECTOR = "ras";
 
@@ -863,19 +863,18 @@ public class ContactsSectionFragment
 
 				@Override
 				public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
-					switch (item.getItemId()) {
-						case R.id.menu_contacts_remove:
-							deleteSelectedContacts();
-							return true;
-						case R.id.menu_contacts_share:
-							HashSet<ContactModel> contactModels = contactListAdapter.getCheckedItems();
-							if (contactModels.size() == 1) {
-								ShareUtil.shareContact(getActivity(), contactModels.iterator().next());
-							}
-							return true;
-						default:
-							return false;
+					int id = item.getItemId();
+					if (id == R.id.menu_contacts_remove) {
+						deleteContacts(contactListAdapter.getCheckedItems());
+						return true;
+					} else if (id == R.id.menu_contacts_share) {
+						HashSet<ContactModel> contactModels = contactListAdapter.getCheckedItems();
+						if (contactModels.size() == 1) {
+							ShareUtil.shareContact(getActivity(), contactModels.iterator().next());
+						}
+						return true;
 					}
+					return false;
 				}
 
 				@Override
@@ -1243,47 +1242,57 @@ public class ContactsSectionFragment
 		ListenerManager.preferenceListeners.remove(this.preferenceListener);
 	}
 
-	@SuppressLint("StringFormatInvalid")
-	private void deleteSelectedContacts() {
-		int contactsSelectedToDelete = contactListAdapter.getCheckedItemCount();
-		final String deleteContactTitle = getString(contactsSelectedToDelete > 1 ? R.string.delete_multiple_contact_action : R.string.delete_contact_action);
+	private boolean showExcludeFromContactSync(Set<ContactModel> contacts) {
+		if (preferenceService == null || !preferenceService.isSyncContacts()) {
+			return false;
+		}
 
-		GenericAlertDialog dialog = GenericAlertDialog.newInstance(deleteContactTitle,
-				String.format(ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.really_delete_contacts_message, contactsSelectedToDelete, contactsSelectedToDelete), contactListAdapter.getCheckedItemCount()),
-				R.string.ok,
-				R.string.cancel);
+		for (ContactModel contactModel : contacts) {
+			if (contactModel.getAndroidContactLookupKey() != null) {
+				return true;
+			}
+		}
 
-		dialog.setTargetFragment(this, 0);
-		dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_CONTACTS);
+		return false;
 	}
 
-	@Override
-	public void onYes(String tag, Object data) {
-		switch(tag) {
-			case DIALOG_TAG_REALLY_DELETE_CONTACTS:
-				reallyDeleteContacts(contactListAdapter.getCheckedItems());
-				break;
-			case DIALOG_TAG_REALLY_DELETE_CONTACT:
-				reallyDeleteContacts(new HashSet<>(Arrays.asList((ContactModel) data)));
-				break;
-			default:
-				break;
+	@SuppressLint("StringFormatInvalid")
+	private void deleteContacts(@NonNull Set<ContactModel> contacts) {
+		int contactsSelectedToDelete = contacts.size();
+		final String deleteContactTitle = getString(contactsSelectedToDelete > 1 ? R.string.delete_multiple_contact_action : R.string.delete_contact_action);
+
+		final View view = View.inflate(getAppContext(), R.layout.dialog_checkbox, null);
+		final CheckBox checkBox = view.findViewById(R.id.dialog_checkbox);
+		checkBox.setText(getString(R.string.exclude_contact));
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+		builder.setTitle(deleteContactTitle);
+		builder.setMessage(String.format(ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.really_delete_contacts_message, contactsSelectedToDelete, contactsSelectedToDelete), contactListAdapter.getCheckedItemCount()));
+		if (showExcludeFromContactSync(contacts)) {
+			builder.setView(view);
 		}
+		builder.setPositiveButton(R.string.ok, (dialog1, which) -> reallyDeleteContacts(contacts, checkBox.isChecked()));
+		builder.setNegativeButton(R.string.cancel, null);
+		builder.show();
 	}
 
 	@SuppressLint("StaticFieldLeak")
-	private void reallyDeleteContacts(HashSet<ContactModel> contactModels) {
-		new DeleteContactAsyncTask(getFragmentManager(), contactModels, contactService, new DeleteContactAsyncTask.DeleteContactsPostRunnable() {
+	private void reallyDeleteContacts(@NonNull Set<ContactModel> contactModels, boolean excludeFromSync) {
+		new DeleteContactAsyncTask(getParentFragmentManager(), contactModels, contactService, new DeleteContactAsyncTask.DeleteContactsPostRunnable() {
 			@Override
 			public void run() {
 				if (isAdded()) {
 					if (failed > 0) {
-						Toast.makeText(getActivity(), String.format(ConfigUtils.getSafeQuantityString(getContext(),  R.plurals.some_contacts_not_deleted, failed, failed)), Toast.LENGTH_LONG).show();
+						Toast.makeText(getActivity(), ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.some_contacts_not_deleted, failed, failed), Toast.LENGTH_LONG).show();
 					} else {
 						if (contactModels.size() > 1) {
 							Toast.makeText(getActivity(), R.string.contacts_deleted, Toast.LENGTH_LONG).show();
 						} else {
 							Toast.makeText(getActivity(), R.string.contact_deleted, Toast.LENGTH_LONG).show();
+						}
+
+						if (excludeFromSync) {
+							excludeContactsFromSync(contactModels);
 						}
 					}
 				}
@@ -1295,8 +1304,16 @@ public class ContactsSectionFragment
 		}).execute();
 	}
 
-	@Override
-	public void onNo(String tag, Object data) { }
+	private void excludeContactsFromSync(@NonNull Collection<ContactModel> contactModels) {
+		IdListService excludedService = serviceManager.getExcludedSyncIdentitiesService();
+		if (excludedService != null) {
+			for (ContactModel contactModel : contactModels) {
+				if (contactModel.getAndroidContactLookupKey() != null) {
+					excludedService.add(contactModel.getIdentity());
+				}
+			}
+		}
+	}
 
 	@Override
 	public void onSelected(String tag) {
@@ -1406,10 +1423,7 @@ public class ContactsSectionFragment
 				serviceManager.getBlackListService().toggle(getActivity(), contactModel);
 				break;
 			case SELECTOR_TAG_DELETE:
-				GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.delete_contact_action, R.string.really_delete_contact, R.string.delete, R.string.cancel);
-				dialog.setData(contactModel);
-				dialog.setTargetFragment(this, 0);
-				dialog.show(getParentFragmentManager(), DIALOG_TAG_REALLY_DELETE_CONTACT);
+				deleteContacts(Set.of(contactModel));
 				break;
 		}
 	}

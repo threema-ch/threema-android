@@ -1424,7 +1424,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_sum_group_calls_vibration">Selecteer of u een trilling wilt wanneer een groepsgesprek is gestart</string>
     <string name="forward_security_mode_4dh">voltooid</string>
     <string name="forward_security_mode_2dh">eenzijdig</string>
-    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beschermt opgenomen communicatie tegen ontsleuteling met terugwerkende kracht, zelfs wanneer de versleuteling voor lange termijn gecompromitteerd is.\n\nDe optie kan worden ingeschakeld als de app aan beide zijden PFS ondersteunt.</string>
+    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beschermt opgenomen communicatie tegen ontsleuteling met terugwerkende kracht, zelfs wanneer de lange termijn-coderingssleutel gecomprimeerd is.\n\nDe optie kan worden ingeschakeld als de app aan beide zijden PFS ondersteunt.</string>
+    <string name="group_call_inactivity_left">Groepsgesprek verlaten vanwege inactiviteit</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>

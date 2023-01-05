@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -374,6 +374,11 @@ public class ComposeMessageFragment extends Fragment implements
 
 	private ActivityResultLauncher<Intent> wallpaperLauncher;
 	private final ActivityResultLauncher<Intent> imageReplyLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+		if (result.getResultCode() == Activity.RESULT_CANCELED) {
+			logger.info("Canceled image reply");
+			return;
+		}
+
 		Intent resultIntent = result.getData();
 		if (resultIntent == null) {
 			logger.error("Result intent must not be null");
@@ -3634,6 +3639,15 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@UiThread
 	private void updateGroupCallMenuItem() {
+		if (groupModel == null) {
+			logger.warn("Group model is null");
+			return;
+		}
+		if (groupService == null) {
+			logger.warn("Group service is null");
+			return;
+		}
+
 		if (isGroupChat && callItem != null) {
 			if (GroupCallUtilKt.qualifiesForGroupCalls(groupService, groupModel)) {
 				GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
@@ -4182,8 +4196,18 @@ public class ComposeMessageFragment extends Fragment implements
 					if (decryptedFile != null) {
 						uri = Uri.fromFile(decryptedFile);
 					}
+					if (uri == null) {
+						logger.error("Uri is null");
+						return;
+					}
 
-					MediaItem mediaItem = new MediaItem(uri, MediaItem.TYPE_IMAGE);
+					Context context = getContext();
+					if (context == null) {
+						logger.error("Context is null");
+						return;
+					}
+
+					MediaItem mediaItem = MediaItem.getFromUri(uri, getContext(), false);
 
 					File outputFile;
 					try {
@@ -4193,11 +4217,6 @@ public class ComposeMessageFragment extends Fragment implements
 						return;
 					}
 
-					Context context = getContext();
-					if (context == null) {
-						logger.error("Context is null");
-						return;
-					}
 
 					Intent imageReplyIntent = ImagePaintActivity.getImageReplyIntent(context, mediaItem, outputFile, messageReceiver, groupModel);
 					IntentDataUtil.addMessageReceiverToIntent(imageReplyIntent, messageReceiver);
@@ -4675,6 +4694,13 @@ public class ComposeMessageFragment extends Fragment implements
 	public void onKeyboardShown() {
 		if (isEmojiPickerShown()) {
 			emojiPicker.onKeyboardShown();
+		}
+		if (isResumed() && !emojiPicker.isShown() && messageText != null && !messageText.hasFocus()) {
+			// In some cases when the activity is launched where the previous activity finished with
+			// an open keyboard, the messageText does not have focus even if the keyboard is shown
+			// Only request focus if the emoji picker is hidden, otherwise the keyboard is needed to
+			// search emojis.
+			messageText.requestFocus();
 		}
 	}
 

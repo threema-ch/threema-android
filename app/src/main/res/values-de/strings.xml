@@ -1526,6 +1526,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="forward_security_mode_4dh">vollständig</string>
 	<string name="forward_security_mode_2dh">einseitig</string>
 	<string name="forward_security_explanation">Perfect Forward Secrecy (PFS) schützt eine aufgezeichnete Kommunikation auch bei Kenntnis des Langzeitschlüssels vor nachträglicher Entschlüsselung.\n\nDie Option kann aktiviert werden, wenn die App auf beiden Seiten PFS unterstützt.</string>
+	<string name="group_call_inactivity_left">Gruppenanruf wegen Inaktivität verlassen</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>

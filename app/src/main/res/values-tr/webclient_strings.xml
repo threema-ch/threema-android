@@ -5,7 +5,7 @@
     <string name="webclient_sessions_really_delete">Bu masaüstü / web oturumunu gerçekten silmek istiyor musunuz?</string>
     <string name="webclient_last_usage">Son kullanım: %s</string>
     <string name="webclient_created_at">%1$s (%2$s) oluşturuldu</string>
-    <string name="webclient_active_since">%s beri aktif</string>
+    <string name="webclient_active_since">Şu tarihten beri aktif: %s</string>
     <string name="webclient_enable">Masaüstü uygulaması / web istemcisini etkinleştir</string>
     <string name="webclient_no_sessions_found">Bağlantı kurmak için masaüstü uygulamasını indirin (<b>https://threema.ch/download</b>) veya web istemcisini açın (<b>%s</b>) ve ekranda görüntülenen kare kodunu taramak için düğmeye basın.</string>
     <string name="webclient_session_rename">Oturumu yeniden isimlendir</string>
@@ -14,10 +14,10 @@
     <string name="webclient_session_stop">Oturumu durdur</string>
     <string name="webclient_persistent">kalıcı</string>
     <string name="webclient_disposable">tek kullanımlık</string>
-    <string name="webclient_unnamed_session">Adsız oturum</string>
-    <string name="webclient_session_remove">Oturumu kaldır</string>
+    <string name="webclient_unnamed_session">İsimsiz oturum</string>
+    <string name="webclient_session_remove">Oturumu sil</string>
     <string name="webclient_welcome_title">Bilgisayarınızdan sohbet edin!</string>
-    <string name="webclient_welcome_explain">Masaüstü uygulaması ve web istemcisi, tüm kişilerinize, medyanıza ve sohbetlerinize, hatta geçmiş konuşmalarınıza tam erişim sağlarken, bilgisayarınızdan veya dizüstü bilgisayarınızdan sohbet etmenize olanak tanır. \n\n<b>Telefon ve bilgisayar arasındaki tüm iletişim tamamen uçtan uca şifrelenir</b> ve hem telefon hem de bilgisayar aynı ağa bağlıysa doğrudan bağlantı kurar. \n\nLütfen unutmayın: Masaüstü uygulaması / web istemcisi, etkin durumdayken pilin biraz daha hızlı tükenmesine neden olabilir. İstediğiniz zaman etkinleştirebilir veya devre dışı bırakabilirsiniz.</string>
+    <string name="webclient_welcome_explain">Masaüstü uygulaması ve web istemcisi, tüm kişilerinize, medyanıza ve sohbetlerinize, hatta geçmiş konuşmalarınıza tam erişim sağlarken, bilgisayarınızdan veya dizüstü bilgisayarınızdan sohbet etmenize olanak tanır. \n\n<b>Telefon ve bilgisayar arasındaki tüm iletişim tamamen uçtan uca şifrelenir</b> ve hem telefon hem de bilgisayar aynı ağa bağlıysa doğrudan bağlantı kurar. \n\nLütfen unutmayın: Masaüstü uygulaması / web istemcisi etkin durumdayken, pilin biraz daha hızlı tükenmesine neden olabilir. İstediğiniz zaman etkinleştirebilir veya devre dışı bırakabilirsiniz.</string>
     <string name="webclient_launch">Etkinleştir</string>
     <string name="webclient_qr_scan_message">Lütfen bilgisayarda görüntülenen kare kodunu tarayın.</string>
     <string name="webclient_invalid_qr_code">Geçersiz kare kodu</string>
@@ -37,6 +37,6 @@
     <string name="webclient_prefs_debug_tool_summary">Masaüstü uygulamasına veya web istemcisine bağlantı kurmayla ilgili sorunları ayıklamak için bu aracı başlatın</string>
     <string name="webclient_diagnostics">Masaüstü / Web Tanılama</string>
     <string name="webclient_diagnostics_start">Başlat</string>
-    <string name="webclient_diagnostics_intro">Testi başlatmak için «Başlat» tıklayın.</string>
+    <string name="webclient_diagnostics_intro">Testi çalıştırmak için «Başlat» tıklayın.</string>
     <string name="webclient_diagnostics_done">Tamamlandı. Masaüstü uygulamasına veya web istemcisine bağlantı kurmayla ilgili sorunlar yaşıyorsanız, lütfen bu günlüğü Threema desteğine gönderin.</string>
 </resources>

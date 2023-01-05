@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -20,6 +20,8 @@
  */
 
 package ch.threema.app.services.messageplayer;
+
+import static android.media.AudioManager.STREAM_MUSIC;
 
 import android.Manifest;
 import android.content.Context;
@@ -56,12 +58,10 @@ import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
-import static android.media.AudioManager.STREAM_MUSIC;
-
 public class AudioMessagePlayer extends MessagePlayer implements AudioManager.OnAudioFocusChangeListener, SensorListener {
 	private final Logger logger = LoggingUtil.getThreemaLogger("AudioMessagePlayer");
 
-	private static final int SEEKBAR_UPDATE_FREQUENCY = 250;
+	private static final int SEEKBAR_UPDATE_FREQUENCY = 100;
 	private MediaPlayerStateWrapper mediaPlayer;
 	private File decryptedFile = null;
 	private int duration = 0;

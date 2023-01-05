@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,7 +22,9 @@
 package ch.threema.app.workers
 
 import android.content.Context
+import android.content.SharedPreferences.Editor
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
 import androidx.work.*
@@ -226,49 +228,23 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         if (sharedPreferences != null) {
             val editor = sharedPreferences.edit()
             if (editor != null) {
-                var preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__block_unknown))
-                if (preset != null) {
-                    editor.putBoolean(context.getString(R.string.preferences__block_unknown), preset)
-                }
-                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_screenshots))
-                if (preset != null) {
-                    editor.putBoolean(context.getString(R.string.preferences__hide_screenshots), preset)
-                }
-                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_save_to_gallery))
-                if (preset != null) {
-                    editor.putBoolean(context.getString(R.string.preferences__save_media), !preset)
-                }
-                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_message_preview))
-                if (preset != null) {
-                    editor.putBoolean(context.getString(R.string.preferences__notification_preview), !preset)
-                }
-                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_send_profile_picture))
-                if (preset != null) {
-                    editor.putInt(context.getString(R.string.preferences__profile_pic_release), if (preset) PreferenceService.PROFILEPIC_RELEASE_NOBODY else PreferenceService.PROFILEPIC_RELEASE_EVERYONE)
-                }
-                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_calls))
-                if (preset != null) {
-                    editor.putBoolean(context.getString(R.string.preferences__voip_enable), !preset)
-                }
-                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_video_calls))
-                if (preset != null) {
-                    editor.putBoolean(context.getString(R.string.preferences__voip_video_enable), !preset)
-                }
-                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_group_calls))
-                if (preset != null) {
-                    editor.putBoolean(context.getString(R.string.preferences__group_calls_enable), !preset)
-                }
-                preset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__hide_inactive_ids))
-                if (preset != null) {
-                    editor.putBoolean(context.getString(R.string.preferences__show_inactive_contacts), !preset)
-                }
-                editor.apply()
-                val sPreset = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__nickname))
-                if (sPreset != null && userService != null) {
-                    if (!TestUtil.compare(userService.publicNickname, sPreset)) {
-                        userService.publicNickname = sPreset
+                applyBooleanRestriction(editor, R.string.restriction__block_unknown, R.string.preferences__block_unknown) { it }
+                applyBooleanRestriction(editor, R.string.restriction__disable_screenshots, R.string.preferences__hide_screenshots) { it }
+                applyBooleanRestriction(editor, R.string.restriction__disable_save_to_gallery, R.string.preferences__save_media) { !it }
+                applyBooleanRestriction(editor, R.string.restriction__disable_message_preview, R.string.preferences__notification_preview) { !it }
+                applyBooleanRestrictionMapToInt(editor, R.string.restriction__disable_send_profile_picture, R.string.preferences__profile_pic_release) {
+                    if (it) {
+                        PreferenceService.PROFILEPIC_RELEASE_NOBODY
+                    } else {
+                        PreferenceService.PROFILEPIC_RELEASE_EVERYONE
                     }
                 }
+                applyBooleanRestriction(editor, R.string.restriction__disable_calls, R.string.preferences__voip_enable) { !it }
+                applyBooleanRestriction(editor, R.string.restriction__disable_video_calls, R.string.preferences__voip_video_enable) { !it }
+                applyBooleanRestriction(editor, R.string.restriction__disable_group_calls, R.string.preferences__group_calls_enable) { !it }
+                applyBooleanRestriction(editor, R.string.restriction__hide_inactive_ids, R.string.preferences__show_inactive_contacts) { !it }
+                editor.apply()
+                applyNicknameRestriction()
             }
         }
     }
@@ -287,5 +263,25 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 .build()
 
         return Futures.immediateFuture(ForegroundInfo(ThreemaApplication.WORK_SYNC_NOTIFICATION_ID, notification))
+    }
+
+    private fun applyBooleanRestriction(editor: Editor, @StringRes restrictionKeyRes: Int, @StringRes settingKeyRes: Int, mapper: (Boolean) -> Boolean) {
+        AppRestrictionUtil.getBooleanRestriction(context.getString(restrictionKeyRes))?.let {
+            editor.putBoolean(context.getString(settingKeyRes), mapper(it))
+        }
+    }
+
+    private fun applyBooleanRestrictionMapToInt(editor: Editor, @StringRes restrictionKeyRes: Int, @StringRes settingKeyRes: Int, mapper: (Boolean) -> Int) {
+        AppRestrictionUtil.getBooleanRestriction(context.getString(restrictionKeyRes))?.let {
+            editor.putInt(context.getString(settingKeyRes), mapper(it))
+        }
+    }
+
+    private fun applyNicknameRestriction() {
+        AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__nickname))?.let {
+            if (userService != null && !TestUtil.compare(userService.publicNickname, it)) {
+                userService.publicNickname = it
+            }
+        }
     }
 }

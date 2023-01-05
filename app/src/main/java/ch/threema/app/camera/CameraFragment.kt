@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -54,6 +54,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.asFlow
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
@@ -66,6 +67,11 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.base.utils.LoggingUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -819,8 +825,6 @@ class CameraFragment : Fragment() {
         val durationSeconds = floor(((ThreemaApplication.MAX_BLOB_SIZE - 1000000).toFloat() / bytesPerSecond).toDouble()).toLong() // we assume a MP4 overhead of 1 MB
         logger.debug("Calculated video duration: " + LocaleUtil.formatTimerText(durationSeconds * DateUtils.SECOND_IN_MILLIS, true))
 
-        timerView?.start(durationSeconds * DateUtils.SECOND_IN_MILLIS) { _: Long -> stopVideoRecording() }
-
         if (hasFlash() && imageCapture?.flashMode == ImageCapture.FLASH_MODE_ON) {
             camera?.cameraControl?.enableTorch(true)
         }
@@ -829,7 +833,19 @@ class CameraFragment : Fragment() {
         // Create output options object which contains file + metadata
         val outputOptions = VideoCapture.OutputFileOptions.Builder(File(cameraCallback?.videoFilePath!!)).build()
 
-        videoCapture?.startRecording(outputOptions, RuntimeUtil.MainThreadExecutor(), onVideoSavedCallback)
+        CoroutineScope(Dispatchers.Default).launch {
+            // Wait until camera is open
+            camera?.cameraInfo?.cameraState?.asFlow()?.takeWhile { it.type != CameraState.Type.OPEN }?.collect {}
+
+            // Add some delay so that the camera can adjust the brightness
+            delay(400)
+
+            // Start the timer and the recording
+            RuntimeUtil.runOnUiThread {
+                timerView?.start(durationSeconds * DateUtils.SECOND_IN_MILLIS) { _: Long -> stopVideoRecording() }
+            }
+            videoCapture?.startRecording(outputOptions, RuntimeUtil.MainThreadExecutor(), onVideoSavedCallback)
+        }
     }
 
     @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError", "RestrictedApi")

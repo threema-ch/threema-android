@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2022 Threema GmbH
+ * Copyright (c) 2016-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -999,9 +999,20 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		scrollView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
 			@Override
 			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-				scrollView.removeOnLayoutChangeListener(this);
-				imageFrame.setMinimumHeight(bottom - top);
-				loadImage();
+				int softKeyboardHeight = 0;
+				if (isSoftKeyboardOpen()) {
+					softKeyboardHeight = loadStoredSoftKeyboardHeight();
+				}
+
+				// If soft keyboard is open then add its height to the image frame
+				imageFrame.setMinimumHeight(bottom - top + softKeyboardHeight);
+
+				// If the image frame is larger than it's parent (scroll view), we need to wait for another relayout.
+				// Otherwise we can remove this listener and load the image
+				if (imageFrame.getMinimumHeight() <= scrollView.getHeight()) {
+					scrollView.removeOnLayoutChangeListener(this);
+					loadImage();
+				}
 			}
 		});
 		scrollView.requestLayout();

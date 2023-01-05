@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -39,8 +39,6 @@ import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.base.utils.LoggingUtil
 import kotlinx.coroutines.*
 import org.webrtc.EglBase
-import org.webrtc.RendererCommon
-import java.lang.IllegalStateException
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallParticipantsAdapter")
 
@@ -104,14 +102,9 @@ class GroupCallParticipantsAdapter(
 		private val microphoneMuted: ImageView = itemView.findViewById(R.id.participant_microphone_muted)
 		private var subscribeCameraJob: Job? = null
 
+		private val eglBaseContext = eglBase.eglBaseContext
+
 		init {
-			// TODO(ANDR-2065): Remove logging of video views initialization and release
-			logger.info("Initialise new video view. VideoViews initialised: {}, VideoViews released: {}", videoViewsInitialized, videoViewsReleased)
-			videoView.init(eglBase.eglBaseContext,null)
-			// TODO(ANDR-2065): Remove logging of video views initialization and release
-			videoViewsInitialized++
-			videoView.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_BALANCED)
-			videoView.setMirror(false)
 			videoView.setNumFramesNeeded(ENABLE_FRAMES_THRESHOLD, DISABLE_FRAMES_THRESHOLD)
 			videoView.setAvatarView(avatar)
 		}
@@ -142,11 +135,12 @@ class GroupCallParticipantsAdapter(
 		@UiThread
 		private fun subscribeCamera(participant: Participant, view: View) {
 			try {
+				videoView.init(eglBaseContext)
 				logger.debug("Subscribe camera with resolution {}x{}", view.width, view.height)
 				detachSinkFn = participant.subscribeCamera(videoView, view.width, view.height)
 				updateMirroring()
 				videoView.enableVideo()
-			} catch (e: IllegalStateException) {
+			} catch (e: RuntimeException) {
 				logger.error("Error subscribing camera", e)
 			}
 		}
@@ -214,8 +208,6 @@ class GroupCallParticipantsAdapter(
 		viewHolders.forEach {
 			it.cancelCameraSubscription()
 			it.videoView.release()
-			// TODO(ANDR-2065): Remove logging of video views initialization and release
-			videoViewsReleased++
 		}
 		frozenStateUpdates.cancel("releaseVideoViews")
 	}
@@ -354,9 +346,9 @@ class GroupCallParticipantsAdapter(
 
 		private const val CAMERA_SUBSCRIPTION_DELAY_MILLIS = 800L
 
-		// TODO(ANDR-2065): Remove logging of video views initialization and release
-		private var videoViewsInitialized = 0
-		private var videoViewsReleased = 0
+		private const val ENABLE_FRAMES_THRESHOLD = 15
+		private const val DISABLE_FRAMES_THRESHOLD = 5
+		private const val UPDATE_FROZEN_INTERVAL_MS: Long = 5000
 
 		/**
 		 * A stable height range is - depending on orientation - the range of participants in a call
@@ -374,10 +366,6 @@ class GroupCallParticipantsAdapter(
 			participants in 2..4 || !isPortrait -> 2
 			else -> 3
 		}
-
-		private const val ENABLE_FRAMES_THRESHOLD = 15
-		private const val DISABLE_FRAMES_THRESHOLD = 5
-		private const val UPDATE_FROZEN_INTERVAL_MS: Long = 5000
 	}
 }
 

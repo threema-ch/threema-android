@@ -23,7 +23,7 @@
     <string name="voip_status_ringing">Я званю</string>
     <string name="voip_mic_enable">Уключыць мікрафон</string>
     <string name="voip_mic_disable">Адключыць мікрафон</string>
-    <string name="voip_checking_compatibility">Праверка магчымасці прыёму званкоў Threema кантактам...</string>
+    <string name="voip_checking_compatibility">Праверка магчымасці прыёму званкоў Threema кантактам…</string>
     <string name="voip_incompatible">Гэты кантакт пакуль не можа прымаць званкі Threema.</string>
     <string name="voip_call_status_unavailable">Адрасат званка недаступны</string>
     <string name="voip_call_status_rejected">Званок адхілены</string>

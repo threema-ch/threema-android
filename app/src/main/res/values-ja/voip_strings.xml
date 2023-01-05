@@ -55,11 +55,12 @@
     <string name="voip_connection_failed">接続を確立できませんでした</string>
     <string name="voip_connection_lost">接続切れ</string>
     <string name="prefs_voip_reject_incoming_calls_title">モバイル通話を拒否</string>
-    <string name="prefs_voip_reject_incoming_calls_summary">Threema 通話を使用中の間はモバイル通話を拒否します。</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Threema通話の使用中はモバイル通話の着信を拒否します。</string>
     <string name="voip_contact_not_found">番号のThreemaの連絡先は見つかりませんでした。</string>
     <string name="voip_another_pstn_call">通話を開始することができません。通常の電話はまだ有効です。</string>
     <string name="voip_call_status_off_hours">営業時間外の電話</string>
     <string name="voip_peer_video_disabled">ビデオ通話が相手側で無効になっています。</string>
+    <string name="voip_reject_channel_name">通話状態の変更</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC診断</string>
     <string name="voip_prefs_webrtc_debug_summary">音声通話接続の設定に関する問題をデバッグするために、このツールを起動する</string>
@@ -69,4 +70,33 @@
     <string name="voip_webrtc_debug_done">完了しました。通話接続の構築に問題がある場合は、この出力をThreemaのサポートに送ってください。</string>
     <string name="voip_webrtc_debug_copied">クリップボードにコピーしました。</string>
     <string name="voip_webrtc_debug_copy_clipboard">クリップボードにコピー</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">すべてのグループメンバーに通知済み</string>
+    <string name="voip_gc_notification_channel_description">グループ通話</string>
+    <string name="voip_gc_notification_title">グループ通話</string>
+    <string name="voip_gc_notification_call_started">%1$sが%2$sでグループ通話を開始しました</string>
+    <string name="voip_gc_notification_call_started_generic">%1$sがグループ通話を開始しました</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">あなたがグループ通話を開始しました</string>
+    <string name="voip_gc_dismiss_call">無視</string>
+    <string name="voip_gc_join_call">参加</string>
+    <string name="voip_gc_ongoing_call">継続中のグループ通話</string>
+    <string name="voip_gc_waiting_for_participants">参加者待ち</string>
+    <string name="voip_gc_participant_avatar_description">参加者のプロフィール画像</string>
+    <string name="voip_gc_participant_mute_status_description">参加者のミュート状態</string>
+    <string name="voip_gc_notification_new_call_public">新しいグループ通話が開始されました</string>
+    <string name="voip_gc_open_call">開く</string>
+    <string name="voip_gc_call_started">グループ通話を開始しました</string>
+    <string name="voip_gc_call_ended">グループ通話を終了しました</string>
+    <string name="voip_gc_in_call">グループ通話中</string>
+    <string name="voip_gc_sfu_not_available">サーバーが利用できません。後でもう一度試してください</string>
+    <string name="voip_gc_call_error">エラーにより通話が停止しました</string>
+    <string name="voip_gc_call_start_error">グループ通話を開始できませんでした</string>
+    <string name="voip_gc_call_full_generic">上限に到達: これ以上このグループ通話に参加できません。</string>
+    <string name="voip_gc_call_full_n">上限の%1$d人に到達しました。このグループ通話には参加できません。</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="other">%d 人の参加者</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="other">お知らせ: %d メンバーがグループ通話に参加できません。</item>
+    </plurals>
 </resources>

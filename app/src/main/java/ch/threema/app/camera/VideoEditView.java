@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -86,6 +86,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	private static final int MOVING_NONE = 0;
 	private static final int MOVING_LEFT = 1;
 	private static final int MOVING_RIGHT = 2;
+	private static final int MOVING_POSITION = 3;
 	private static final String THUMBNAIL_THREAD_NAME = "TimelineThumbs";
 	private static final int MARKER_MOVE_MESSAGE_QUEUE_ID = 771294;
 	private static final int MARKER_MOVE_UPDATE_FREQUENCY_MS = 200;
@@ -97,7 +98,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	private int targetHeight, calculatedWidth;
 	private Paint borderPaint, arrowPaint, dashPaint, progressPaint, dimPaint;
 	private int arrowWidth, arrowHeight;
-	private int offsetLeft = 0, offsetRight = 0, touchTargetWidth;
+	private int offsetLeft = 0, offsetRight = 0, movedPosition = 0, touchTargetWidth;
 	private long videoCurrentPosition = 0L, videoFileSize = 0L, clippedStartTimeMs, clippedEndTimeMs;
 	private MediaItem videoItem;
 	private int isMoving = MOVING_NONE;
@@ -212,13 +213,11 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	 * @param mediaItem the media item of the video that is displayed
 	 */
 	public void setVideo(@NonNull MediaItem mediaItem) {
-		logger.debug("setVideo");
 		this.videoItem = mediaItem;
 		if (videoPlayer != null) {
 			releasePlayer();
 		}
 		if (isAttachedToWindow()) {
-			logger.debug("showing player from setVideo");
 			initVideoView();
 			displayVideo();
 		} else {
@@ -231,8 +230,14 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	 */
 	public void releasePlayer() {
 		if (videoPlayer != null) {
+			videoPlayer.stop();
 			videoPlayer.release();
 			videoPlayer = null;
+		}
+		// Make video view transparent when it is not used anymore. This allows us to re-enable it
+		// without flickering when the view is reused or reopened.
+		if (videoView != null) {
+			videoView.setAlpha(0.0f);
 		}
 	}
 
@@ -254,6 +259,10 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		}
 	}
 
+	public void updateSendAsFileState() {
+		updateVideoTimelineVisibility();
+	}
+
 	/**
 	 * Set a timeline drag listener. This can be used to detect when the user is dragging the timeline.
 	 *
@@ -272,6 +281,11 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			public void onPlaybackStateChanged(int playbackState) {
 				Player.Listener.super.onPlaybackStateChanged(playbackState);
 				updateProgressBar();
+
+				// Set alpha value to 1 (animated) as soon as video is ready
+				if (playbackState == Player.STATE_READY && videoView != null) {
+					videoView.animate().alpha(1.0f).setDuration(200).start();
+				}
 			}
 
 			@Override
@@ -377,7 +391,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 				canvas.drawRect(new Rect(right, top, this.timelineGridLayout.getRight(), bottom), this.dimPaint);
 			}
 
-			if (videoItem.getDurationMs() != 0 && videoCurrentPosition > videoItem.getStartTimeMs() && videoCurrentPosition < videoItem.getEndTimeMs()) {
+			if (videoItem.getDurationMs() != 0 && videoCurrentPosition > videoItem.getStartTimeMs() && videoCurrentPosition < videoItem.getEndTimeMs() && !(isMoving == MOVING_LEFT || isMoving == MOVING_RIGHT)) {
 				int offset = (int) (this.timelineGridLayout.getWidth() * videoCurrentPosition / videoItem.getDurationMs()) + this.timelineGridLayout.getLeft();
 
 				path = new Path();
@@ -421,26 +435,26 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 						timelineDragListener.onTimelineDragStart();
 					}
 					if (x >= (left - touchTargetWidth) && x <= (left + touchTargetWidth)) {
-						logger.debug("start moving left: {}", x);
 						isMoving = MOVING_LEFT;
 						return true;
 					} else if (x >= (right - touchTargetWidth) && x <= (right + touchTargetWidth)) {
-						logger.debug("start moving right: {}", x);
 						isMoving = MOVING_RIGHT;
+						return true;
+					} else {
+						isMoving = MOVING_POSITION;
+						updateMovedPosition(x, right);
 						return true;
 					}
 				}
 				isMoving = MOVING_NONE;
 				break;
 			case MotionEvent.ACTION_MOVE:
-				logger.debug("moving {}", x);
 				if (isMoving != MOVING_NONE) {
 					int oldOffsetLeft = offsetLeft;
 					int oldOffsetRight = offsetRight;
 
 					switch (isMoving) {
 						case MOVING_LEFT:
-							logger.debug("moving left to: {}", x);
 							offsetLeft = x - this.timelineGridLayout.getLeft();
 
 							if (offsetLeft < 0) {
@@ -462,7 +476,6 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 							}
 							break;
 						case MOVING_RIGHT:
-							logger.debug("moving right to: {}", x);
 							offsetRight = this.timelineGridLayout.getRight() - x;
 
 							if (offsetRight < 0) {
@@ -482,6 +495,9 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 									invalidate();
 								}
 							}
+							break;
+						case MOVING_POSITION:
+							updateMovedPosition(x, right);
 							break;
 					}
 					return true;
@@ -503,9 +519,31 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 					preparePlayer();
 
 					return true;
+				} else if (isMoving == MOVING_POSITION) {
+					isMoving = MOVING_NONE;
+					videoPlayer.seekTo(getVideoPositionFromTimelinePosition(movedPosition));
 				}
 		}
 		return false;
+	}
+
+	private void updateMovedPosition(int x, int right) {
+		int oldMovedPosition = movedPosition;
+
+		movedPosition = x - offsetLeft - timelineGridLayout.getLeft();
+		if (movedPosition < 0) {
+			movedPosition = 0;
+		} else if (movedPosition > right) {
+			movedPosition = right;
+		}
+
+		if (oldMovedPosition != movedPosition) {
+			if (!markerMoveHandler.hasMessages(MARKER_MOVE_MESSAGE_QUEUE_ID)) {
+				videoPlayer.seekTo(getVideoPositionFromTimelinePosition(movedPosition));
+				markerMoveHandler.sendMessageDelayed(markerMoveHandler.obtainMessage(MARKER_MOVE_MESSAGE_QUEUE_ID), MARKER_MOVE_UPDATE_FREQUENCY_MS);
+				invalidate();
+			}
+		}
 	}
 
 	@SuppressLint("StaticFieldLeak")
@@ -574,10 +612,10 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 				targetHeight,
 				this), THUMBNAIL_THREAD_NAME);
 
+			this.numThumbnailsShown = numColumns;
+
 			if (isAttachedToWindow() && context != null) {
 				thumbnailThread.start();
-				videoSourceMediaItem = com.google.android.exoplayer2.MediaItem.fromUri(videoItem.getUri());
-				preparePlayer();
 			}
 		}
 	}
@@ -608,12 +646,15 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 
 	private void preparePlayer() {
 		if (videoPlayer != null && videoSourceMediaItem != null) {
+			// Make video view transparent until it is ready. This prevents flickering while being loaded.
+			if (videoView != null) {
+				videoView.setAlpha(0.0f);
+			}
+
 			long startPosition = videoItem.getStartTimeMs() * 1000;
 			long endPosition = (videoItem.getEndTimeMs() == videoItem.getDurationMs() || videoItem.getEndTimeMs() == 0 || videoItem.getEndTimeMs() == MediaItem.TIME_UNDEFINED) ?
 				TIME_END_OF_SOURCE :
 				videoItem.getEndTimeMs() * 1000;
-
-			logger.debug("startPosition: " + startPosition + " endPosition: " + endPosition);
 
 			videoPlayer.setMediaItem(videoSourceMediaItem);
 			ClippingMediaSource clippingSource = new ClippingMediaSource(mediaSourceFactory.createMediaSource(videoSourceMediaItem),
@@ -722,10 +763,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 			}
 		}
 
-		if (videoPlayer != null) {
-			videoPlayer.stop();
-			videoPlayer.release();
-		}
+		releasePlayer();
 
 		this.context = null;
 	}
@@ -737,7 +775,9 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 				if (isAttachedToWindow()) {
 					ImageView imageView = findViewWithTag(column);
 					if (imageView != null) {
+						imageView.setAlpha(0.0f);
 						imageView.setImageBitmap(thumbnail);
+						imageView.animate().alpha(1.0f).setDuration(200).start();
 					}
 				}
 			});

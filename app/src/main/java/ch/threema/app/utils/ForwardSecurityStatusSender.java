@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,13 +21,17 @@
 
 package ch.threema.app.utils;
 
+import java.util.Collections;
+
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityStatusListener;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
@@ -36,11 +40,13 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 	private final boolean debug;
 	private final ContactService contactService;
 	private final MessageService messageService;
+	private final APIConnector apiConnector;
 
-	public ForwardSecurityStatusSender(ContactService contactService, MessageService messageService) {
+	public ForwardSecurityStatusSender(ContactService contactService, MessageService messageService, APIConnector apiConnector) {
 		this.debug = ConfigUtils.isTestBuild();
 		this.contactService = contactService;
 		this.messageService = messageService;
+		this.apiConnector = apiConnector;
 	}
 
 	@Override
@@ -74,6 +80,9 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 			postStatusMessageDebug("Reject received for DH session (ID " + sessionId + "), message ID " + rejectedMessageId, contact);
 		}
 
+		// Refresh feature mask now, in case contact downgraded to a build without PFS
+		updateFeatureMask(contact);
+
 		postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET);
 	}
 
@@ -96,6 +105,11 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 		if (debug) {
 			postStatusMessageDebug("DH session terminated (ID " + sessionId + ")", contact);
 		}
+
+		// Refresh feature mask now, in case contact downgraded to a build without PFS
+		updateFeatureMask(contact);
+
+		postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET);
 	}
 
 	@Override
@@ -114,6 +128,13 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 		}
 
 		postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER);
+	}
+
+	@Override
+	public void messageDecryptionFailed(DHSessionId sessionId, Contact contact, MessageId failedMessageId) {
+		if (debug) {
+			postStatusMessageDebug("Message decryption failed (ID " + sessionId + "), message ID " + failedMessageId, contact);
+		}
 	}
 
 	@Override
@@ -153,5 +174,15 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 			ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
 			messageService.createForwardSecurityStatus(receiver, type, quantity, null);
 		}
+	}
+
+	private void updateFeatureMask(Contact contact) {
+		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
+		UpdateFeatureLevelRoutine.removeTimeCache(contactModel);
+		new UpdateFeatureLevelRoutine(
+			contactService,
+			apiConnector,
+			Collections.singletonList(contactModel)
+		).run();
 	}
 }

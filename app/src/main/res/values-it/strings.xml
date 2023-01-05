@@ -1030,6 +1030,10 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="delete">Elimina</string>
     <string name="continue_recording">Continua registrazione</string>
     <string name="whatsnew_title">Novità: Chiamate di gruppo %1$s</string>
+    <string name="whatsnew_headline"><![CDATA[<p>Ora è possibile effettuare chiamate end-to-end su %1$s per Android.</p>
+<p>Per avviare una chiamata, apri la chat di gruppo e tocca l\'icona della fotocamera in alto.</p>
+<p>I membri del gruppo ricevono una notifica e possono decidere se partecipare o no.</p>
+<p><b>Avviso:</b> La versione iOS sarà disponibile più avanti.</p>]]></string>
     <string name="tap_to_start">Tocca qui per iniziare %s adesso.</string>
     <string name="two_years">2 anni</string>
     <string name="invalid_backup_path">Percorso backup sbagliato</string>
@@ -1435,6 +1439,8 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="prefs_sum_group_calls_vibration">Vibrazione all\'avvio di una chiamata di gruppo</string>
     <string name="forward_security_mode_4dh">completata</string>
     <string name="forward_security_mode_2dh">unilaterale</string>
+    <string name="forward_security_explanation">La Perfect Forward Secrecy (PFS) protegge le comunicazioni registrate contro qualsiasi decodifica retroattiva, anche se la chiave di codifica a lungo termine è nota.\n\nL\'opzione può essere attivata se l\'app di entrambe le parti supporta la PFS.</string>
+    <string name="group_call_inactivity_left">Abbandona chiamata di gruppo per inattività</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contatto</item>
         <item quantity="other">%d contatti</item>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -117,8 +117,6 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
     }
 
     override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-
         if (!isAttachedToWindow) {
             return
         }
@@ -152,6 +150,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
                 restore()
             }
         }
+        super.onDraw(canvas)
     }
 
     private fun createEmptyBitmap() : Bitmap {

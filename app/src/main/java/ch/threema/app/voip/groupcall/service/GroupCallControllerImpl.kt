@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -128,6 +128,15 @@ internal class GroupCallControllerImpl (
             context.sendBroadcast(stateUpdate)
         }
 
+    private var foreverAloneTimeoutFired: Boolean = false
+
+    private val groupCallLeaveTimer: GroupCallLeaveTimer = GroupCallLeaveTimer(participants) {
+        foreverAloneTimeoutFired = true
+        leave()
+    }
+
+    override fun hasForeverAloneTimerFired(): Boolean = foreverAloneTimeoutFired
+
     @WorkerThread
     override fun confirmCall() {
         GroupCallThreadUtil.assertDispatcherThread()
@@ -156,6 +165,7 @@ internal class GroupCallControllerImpl (
             logger.warn("Attempt to leave call that has already been left")
         } else {
             callLeftSignal.complete(Unit)
+            groupCallLeaveTimer.disable()
             onLeave.run()
         }
     }
@@ -222,6 +232,7 @@ internal class GroupCallControllerImpl (
             is Failed -> {
                 val completed = callLeftSignal.completeExceptionally(state.reason)
                 logger.debug("Completed exceptionally: {}", completed)
+                groupCallLeaveTimer.disable()
                 onLeave.run()
             }
             else -> logger.debug("Unhandled state update: {}", state)

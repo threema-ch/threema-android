@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -308,7 +308,7 @@ public class ForwardSecurityMessageProcessor {
 			logger.warn("No DH session found for message in session ID {} from {}", message.getSessionId(), contact.getIdentity());
 
 			// Send reject message
-			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId());
+			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), ForwardSecurityEnvelope.Reject.Cause.UNKNOWN_SESSION);
 			sendMessageToContact(contact, reject);
 
 			for (ForwardSecurityStatusListener listener : statusListeners) {
@@ -335,7 +335,7 @@ public class ForwardSecurityMessageProcessor {
 		if (ratchet == null) {
 			// This can happen if the Accept message from our peer has been lost. In that case
 			// they will think they are in 4DH mode, but we are still in 2DH.
-			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId());
+			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), ForwardSecurityEnvelope.Reject.Cause.STATE_MISMATCH);
 			sendMessageToContact(contact, reject);
 			for (ForwardSecurityStatusListener listener : statusListeners) {
 				listener.sessionBadDhState(message.getSessionId(), contact);
@@ -365,7 +365,12 @@ public class ForwardSecurityMessageProcessor {
 		byte[] nonce = new byte[NaCl.NONCEBYTES];
 		byte[] plaintext = NaCl.symmetricDecryptData(ciphertext, ratchet.getCurrentEncryptionKey(), nonce);
 		if (plaintext == null) {
-			throw new DecryptionFailedException("Symmetric decryption failed");
+			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), ForwardSecurityEnvelope.Reject.Cause.STATE_MISMATCH);
+			sendMessageToContact(contact, reject);
+			for (ForwardSecurityStatusListener listener : statusListeners) {
+				listener.messageDecryptionFailed(message.getSessionId(), contact, envelopeMessage.getMessageId());
+			}
+			return null;
 		}
 
 		logger.debug("Decrypted {} message ID {} from {} in session {}", mode, envelopeMessage.getMessageId(), contact.getIdentity(), session.getId());
@@ -428,12 +433,6 @@ public class ForwardSecurityMessageProcessor {
 
 	public static class BadDHStateException extends ThreemaException {
 		public BadDHStateException(final String msg) {
-			super(msg);
-		}
-	}
-
-	public static class DecryptionFailedException extends ThreemaException {
-		public DecryptionFailedException(final String msg) {
 			super(msg);
 		}
 	}

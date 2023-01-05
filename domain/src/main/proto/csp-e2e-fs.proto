@@ -272,11 +272,27 @@ message ForwardSecurityEnvelope {
   // Sent when receiving a `Message` that cannot be decrypted (e.g. because
   // the recipient has lost the session information).
   //
-  // The peer should discard the FS session and start a new one.
+  // The peer should discard the FS session and start a new one, if possible.
   message Reject {
     // Message ID of the message that could not be decrypted and that should be
-    // sent again in a new session (8 bytes)
+    // sent again in a new session or without a session.
     fixed64 rejected_message_id = 1;
+
+    // Cause for the reject.
+    enum Cause {
+      // General state mismatch. Explicitly includes the following cases:
+      //
+      // - A `Message` could not be decrypted.
+      // - The DH type of a `Message` does not match the expected DH type.
+      STATE_MISMATCH = 0;
+      // The Session ID a `Message` was delivered with is not associated to a
+      // known session
+      UNKNOWN_SESSION = 1;
+      // Signals that forward security has been explicitly disabled in response
+      // to an `Init`, `Accept` or `Message`.
+      DISABLED = 2;
+    }
+    Cause cause = 2;
   }
 
   // Signals that the sender will not send any further `Message`s in this

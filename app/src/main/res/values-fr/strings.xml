@@ -271,7 +271,7 @@
     <string name="prefs_sum_pin_grace">Délai jusqu\'à l\'activation du verrouillage par code NIP</string>
     <string name="click_here_to_change_pin">Modifier le code NIP</string>
     <string name="set_pin_menu_title">Définir un nouveau code NIP</string>
-    <string name="set_pin_summary_intro">Protégez votre vie privée en définissant un code NIP numérique. Threema se verrouillera automatiquement en cas de non-utilisation durant un délai spécifié par l\'utilisateur (chiffres uniquement).</string>
+    <string name="set_pin_summary_intro">Protégez votre vie privée en définissant un code PIN (chiffres uniquement). Ce code peut être utilisé pour verrouiller l’accès à l’interface utilisateur de l’application après un certain temps ou pour protéger les conversations privées.</string>
     <string name="set_pin_again_summary">Saisissez de nouveau le code NIP</string>
     <string name="set_pin_hint">Code NIP</string>
     <string name="title_addgroup">Nouveau groupe</string>
@@ -387,7 +387,7 @@
     <string name="is_typing">est en train de saisir…</string>
     <string name="push_not_available_title">Push indisponible</string>
     <string name="push_not_available_text1">La messagerie Push ne peut pas être utilisée sur votre appareil parce que les services Google Play ne sont pas installés ou que ce n\'est pas la version actuelle.</string>
-    <string name="push_not_available_text2">%s tentera d\'ouvrir une connexion persistante au serveur en arrière-plan. Cela pourrait ne pas fonctionner de manière fiable si les mécanismes d\'optimisation de la batterie de votre appareil interfèrent avec la connexion en arrière-plan.</string>
+    <string name="push_not_available_text2">%s tentera d’ouvrir une connexion persistante au serveur en arrière-plan. Cela pourrait ne pas fonctionner de manière fiable si les mécanismes d’optimisation de la batterie de votre appareil interfèrent avec la connexion en arrière-plan.</string>
     <string name="backup_in_progress">Sauvegarde en cours</string>
     <string name="backup_or_restore_success_body">Sauvegarde des données réussie</string>
     <string name="backup_or_restore_error">Threema Backup</string>
@@ -1023,7 +1023,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="backup_data_no_permission">Impossible d\'écrire dans ce répertoire. Veuillez en choisir un autre.</string>
     <string name="prefs_sum_show_unread_badge">Afficher un badge indiquant le nombre de messages non lus à côté de l\'icône des messages</string>
     <string name="prefs_title_show_unread_badge">Badge de messages non lus</string>
-    <string name="pinning_not_trusted">Échec du pinning du certificat. Veuillez vérifier si le certificat «Entrust Root Certification Authority - G2» est installé et activé dans l\'espace de stockage des identifiants de votre appareil.</string>
+    <string name="pinning_not_trusted">Échec du pinning du certificat. Veuillez vérifier si le certificat « Entrust Root Certification Authority - G2 » est installé et activé dans l’espace de stockage des identifiants de votre appareil.</string>
     <string name="pinning_failed">Échec du pinning du certificat. Attaque du type Man-in-the-middle possible. Si vous avez installé un bloqueur de publicité, un filtre de contenu ou une application de pare-feu comme « AdGuard », veuillez le désactiver pour Threema.</string>
     <string name="open_myid_popup">Ouvrir la fenêtre popup d\'accès rapide</string>
     <string name="logo">Logo/Défiler vers le haut</string>
@@ -1047,7 +1047,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="mime_type">Type MIME</string>
     <string name="password_does_not_comply">Le mot de passe ne répond pas aux directives définies par l\'administrateur.</string>
     <string name="audio_mute_due_to_focus_loss">L\'audio a été coupé temporairement à cause d\'une perte d\'exclusivité</string>
-    <string name="restore_data_backup_explain">Pour restaurer une sauvegarde de données, supprimez d\'abord votre ID Threema sur l\'écran \"Mon profil\".\n\nLorsque l\'application se relance, choisissez « Restaurer depuis la sauvegarde », « Autres options de restauration », « Sauvegarde de données » puis sélectionnez le fichier de sauvegarde de données que vous souhaitez restaurer.</string>
+    <string name="restore_data_backup_explain">Pour restaurer une sauvegarde de données, supprimez d’abord votre ID Threema sur l’écran « Mon profil ».\n\nLorsque l’application se relance, choisissez « Restaurer depuis la sauvegarde », « Autres options de restauration », « Sauvegarde de données » puis sélectionnez le fichier de sauvegarde de données que vous souhaitez restaurer.</string>
     <string name="audio_focus_loss_complete">Appel interrompu à cause d\'une perte complète de l\'exclusivité audio.</string>
     <string name="tap_for_picture_hold_for_video">Touchez pour une image, maintenez pour une vidéo</string>
     <string name="sending_media">Envoi des médias</string>
@@ -1165,7 +1165,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="transcoder_unsupported_audio_format">Impossible de transcoder l\'audio à cause de l\'absence de prise en charge par le système.</string>
     <string name="transcoder_unknown_audio_error">Erreur inconnue lors du transcodage de l\'audio.</string>
     <string name="video_size_explain">Les vidéos de très grande taille pourraient être compressées indépendamment du paramètre.</string>
-    <string name="status_create_notes">*Vous êtes seul ici* \nUtilisez ce chat comme un carnet de notes sécurisé pour textes, médias ou documents.</string>
+    <string name="status_create_notes">*Vous êtes le seul membre de ce groupe*\nUtilisez ce chat comme un carnet de notes sécurisé pour textes, médias ou documents.</string>
     <string name="status_create_notes_off">*Vous n’êtes plus seul dans ce chat* \nLes nouveaux messages seront envoyés à tous les membres du groupe.</string>
     <string name="note_group_howto">Astuce : si vous n’ajoutez aucun membre à ce groupe, les messages envoyés à ce groupe resteront locaux. C’est idéal pour enregistrer des notes, médias et documents ou pour les transférer vers un ordinateur.</string>
     <string name="mark_unread">Marque comme non lu</string>
@@ -1185,7 +1185,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="reject">Refuser</string>
     <string name="group_request_already_sent"><![CDATA[Vous avez déjà envoyé une demande d\'adhésion au groupe <b>%s</b> à travers ce lien. Cliquez sur la demande pour l\'envoyer de nouveau.]]></string>
     <string name="group_link_none">Encore aucun lien généré</string>
-    <string name="group_request_confirm_send"><![CDATA[Vous êtes sur le point d\'envoyer une demande d\'adhésion au groupe <b>%1$s</b> à l\'administrateur <b>%2$s</b>. Si ce lien n\'a pas été désactivé, vous serez automatiquement ajouté au groupe dès que l\'appareil de l\'administrateur aura reçu votre demande.]]></string>
+    <string name="group_request_confirm_send"><![CDATA[Vous êtes sur le point d’envoyer une demande d’adhésion au groupe <b>%1$s</b> à l’administrateur <b>%2$s</b>. Si ce lien n’a pas été désactivé, vous serez automatiquement ajouté au groupe dès que l\'appareil de l’administrateur aura reçu votre demande.]]></string>
     <string name="really_delete_group_request_title_singular">Supprimer la demande de groupe</string>
     <string name="really_delete_group_request_title_plural">Supprimer les demandes de groupe</string>
     <string name="sent_to">Envoyé(e) à : %s</string>
@@ -1195,7 +1195,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="group_response_full">Votre demande d\'adhésion au groupe %s a été refusée, car ce groupe est au complet</string>
     <string name="group_response_rejected">Votre demande d\'adhésion au groupe %s a été refusée</string>
     <string name="group_link_expiration_none">Non restreint(e)</string>
-    <string name="group_request_hint">Bonjour ! C\'est moi…</string>
+    <string name="group_request_hint">Bonjour ! C’est moi…</string>
     <string name="group_request_send_title">Envoyer une demande d\'adhésion au groupe</string>
     <string name="group_request_message_empty">Le message de demande d\'adhésion au groupe doit être renseigné</string>
     <string name="group_requests_all_title">Toutes les demandes d\'adhésion au groupe</string>
@@ -1301,11 +1301,11 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="not_voted_user_list">Ces participants n\'ont pas voté : %s</string>
     <string name="contact_update">Mise à jour des états des contacts</string>
     <string name="invalid_onprem_id">Cet ID n\'existe pas (ou plus) ou il n\'est pas compatible avec votre ID.</string>
-    <string name="enable_unknown_sources">Impossible d\'installer. Veuillez vous assurer que le paramètre « Installer les applications de sources inconnues » est activé pour %s.</string>
+    <string name="enable_unknown_sources">Impossible d’installer. Veuillez vous assurer que le paramètre « Installer les applications de sources inconnues » est activé pour %s.</string>
     <string name="threema_push">Threema Push</string>
     <string name="threema_push_notification_text">Touchez pour en savoir plus</string>
     <string name="threema_push_notification_info_text_1">Threema Push est actif en arrière-plan, vous informant en cas de messages ou d\'appels entrants.</string>
-    <string name="threema_push_notification_info_text_2">Les applications ne peuvent pas fonctionner en arrière-plan sans vous montrer une notification persistante. En vous montrant cette notification, nous veillons à ce que Threema Push reste actif même si vous n\'utilisez pas l\'application de manière active.</string>
+    <string name="threema_push_notification_info_text_2">Les applications ne peuvent pas fonctionner en arrière-plan sans vous montrer une notification persistante. En vous montrant cette notification, nous veillons à ce que Threema Push reste actif même si vous n\'utilisez pas l’application de manière active.</string>
     <string name="threema_push_notification_info_text_3">Si vous rencontrez des problèmes tels que des notifications retardées ou absentes, veuillez ajuster vos paramètres système pour veiller à ce que l\'application puisse rester active en arrière-plan sans restrictions et que tous les économiseurs de batterie soient désactivés.</string>
     <string name="threema_push_service_description">Notification persistante affichée si Threema Push est actif</string>
     <string name="threema_push_activated">Threema Push activé.</string>
@@ -1352,7 +1352,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="contact_picture_content_description">Photo du contact</string>
     <string name="prefs_title_use_system_ringtone">Utiliser la sonnerie système</string>
     <string name="organization_type">Organisation</string>
-    <string name="permission_bluetooth_connect_required">Activez l\'autorisation « Appareils à proximité » pour localiser les casaques Bluetooth connectés</string>
+    <string name="permission_bluetooth_connect_required">Activez l’autorisation « Appareils à proximité » pour localiser les casaques Bluetooth connectés</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push est actif. Les sessions Threema Web et Desktop doivent donc être lancées manuellement.</string>
     <string name="tooltip_multiple_recipients_title">Nouveauté : plusieurs destinataires</string>
     <string name="tooltip_multiple_recipients_text">Faites un appui prolongé pour sélectionner plusieurs destinataires auxquels envoyer le même message.</string>
@@ -1399,10 +1399,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="read_phone_state_short_message">Pour vérifier la présence d\'appels entrants, accordez à Threema l\'autorisation d\'accès à l\'état du téléphone.</string>
     <string name="prefs_title_read_phone_state">Accorder l\'autorisation d\'accès à l\'état du téléphone</string>
     <string name="prefs_title_hibernation">Paramètres des applications non utililisées</string>
-    <string name="prefs_summary_hibernation_api_32">Pour empêcher que Threema soit mis en pause par le système après une longue période d\'inactivité, veuillez désactiver le paramètre système « Retirer les autorisations et libérer l\'espace ».</string>
-    <string name="prefs_summary_hibernation_api">Pour empêcher que Threema soit mis en pause par le système après une longue période d\'inactivité, veuillez désactiver le paramètre système « Mettre en pause l\'activité des application si inutilisées ».</string>
+    <string name="prefs_summary_hibernation_api_32">Pour empêcher que Threema soit mis en pause par le système après une longue période d\'inactivité, veuillez désactiver le paramètre système « Retirer les autorisations et libérer l’espace ».</string>
+    <string name="prefs_summary_hibernation_api">Pour empêcher que Threema soit mis en pause par le système après une longue période d’inactivité, veuillez désactiver le paramètre système « Mettre en pause l’activité des application si inutilisées ».</string>
     <string name="unable_to_fetch_configuration">Impossible de récupérer les données à partir du serveur de configuration. Réessayez plus tard.</string>
-    <string name="rogue_device_warning">Le serveur a détecté une connexion provenant d\'un autre appareil doté du même identifiant Threema.\n\nSi vous n\'avez pas utilisé votre identifiant Threema sur un autre appareil ou avec une version moins récente de l\'application entre-temps, veuillez contacter l\'assistance et envoyer le fichier journal si possible.</string>
+    <string name="rogue_device_warning">Le serveur a détecté une connexion provenant d’un autre appareil doté du même identifiant Threema.\n\nSi vous n\'avez pas utilisé votre identifiant Threema sur un autre appareil ou avec une version moins récente de l’application entre-temps, veuillez contacter l’assistance et envoyer le fichier journal si possible.</string>
     <string name="fetch2_failure">La synchronisation avec le serveur de provisionnement a échoué.</string>
     <string name="no_members_support_group_calls">Il n\'y a plus d\'autres membres dans ce groupe capables de répondre aux appels de groupe</string>
     <string name="group_calls">Appels de groupe</string>
@@ -1411,7 +1411,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="group_call">Appel de groupe</string>
     <string name="checking_compatibility">Vérification de la compatibilité…</string>
     <string name="group_call_mic_permission_rationale">Pour passer des appels de groupe, vous devez autoriser %s à accéder au microphone sous « Autorisations ».</string>
-    <string name="group_call_camera_permission_rationale">Pour que les autres participants puissent voir votre image, vous devez autoriser %s à accéder à l\'appareil photo sous « autorisations ».</string>
+    <string name="group_call_camera_permission_rationale">Pour que les autres participants puissent voir votre image, vous devez autoriser %s à accéder à l’appareil photo sous « Autorisations ».</string>
     <string name="settings">Paramètres</string>
     <string name="leave">Quitter</string>
     <string name="fs_key_mismatch">différence de clé</string>
@@ -1423,6 +1423,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="forward_security_mode_4dh">terminé</string>
     <string name="forward_security_mode_2dh">unilatéral</string>
     <string name="forward_security_explanation">La Perfect Forward Secrecy (PFS) protège les communications enregistrées contre tout déchiffrement rétroactif, même si la clé de chiffrement à long terme est découverte.\n\nL\'option peut être activée si l\'application des deux côtés prend en charge la PFS.</string>
+    <string name="group_call_inactivity_left">Appel de groupe arrêté pour cause d\'inactivité</string>
     <plurals name="contacts_counter_label" tools:ignore="MissingQuantity">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

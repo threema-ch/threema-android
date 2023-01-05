@@ -10,7 +10,7 @@
     <string name="title_adduser">Afegir un contacte nou</string>
     <string name="title_enter_id">Entreu la ID</string>
     <string name="title_invite_friend">Convideu un amic</string>
-    <string name="invite_via">Convideu un amic a través de...</string>
+    <string name="invite_via">Convideu un amic a través de…</string>
     <string name="invite_email_body">Hola,\n\nJo utilitzo %1$s, el servei de missatgeria instantània segur que protegeix la privacitat dels usuaris.\n\nLa meva ID de Threema: https://threema.id/%2$s\n\nComuniquem-nos a través de %1$s!\n\nSalut,\n</string>
     <string name="invite_sms_body">Ei! Comencem a utilitzar %1$s per comunicar-nos d\'una forma segura i compatible amb la privacitat! La meva ID de Threema: https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema. El servei de missatgeria segura que protegeix la vostra privacitat</string>
@@ -94,7 +94,7 @@ quan arribi el primer missatge.</string>
     <string name="color_white">Blanca</string>
     <string name="next">Següent</string>
     <string name="finish">Acabar</string>
-    <string name="please_wait">Espereu...</string>
+    <string name="please_wait">Espereu…</string>
     <string name="wizard_first_create_id">Creant la vostra ID de Threema</string>
     <string name="wizard1_sync_contacts">Sincronitzant contactes</string>
     <string name="wizard2_email_hint">Entreu la vostra adreça de correu electrònic</string>
@@ -117,7 +117,7 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="linked_email">Correu electrònic</string>
     <string name="linked_mobile">Número de mòbil</string>
     <string name="public_nickname">Sobrenom</string>
-    <string name="share_via">Compartir per...</string>
+    <string name="share_via">Compartir per…</string>
     <string name="share_subject">%s conversa</string>
     <string name="message_delete_undo">Desfer</string>
     <string name="mobile_already_linked">La vostra ID de Threema ja està enllaçada amb aquest número de mòbil</string>
@@ -286,7 +286,7 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="prefs_group_notifications">Xat de grup</string>
     <string name="add_group_members_list">Membres del grup</string>
     <string name="group_select_at_least_two">Necessiteu seleccionar almenys un membre per continuar</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">No hauríeu de seleccionar més de %1$d membres de grup</string>
+    <string name="group_select_max">No hauríeu de seleccionar més de %1$d membres de grup</string>
     <string name="search">Cercar</string>
     <string name="hint_search_keyword">Paraula clau de cerca</string>
     <string name="add_group_owner">Creador de grups</string>
@@ -392,7 +392,7 @@ de contacte</string>
     <string name="distribution_list">Llista de distribució</string>
     <string name="title_tab_distribution_list">Llistes de distribució</string>
     <string name="no_matching_distribution_lists">No hi ha llistes de distribució coincidents</string>
-    <string name="is_typing">està escrivint...</string>
+    <string name="is_typing">està escrivint…</string>
     <string name="push_not_available_title">No s\'ha trobat un servei de push</string>
     <string name="push_not_available_text1">No hem pogut trobar un servei de push al vostre dispositiu perquè els serveis de Google Play no estan instal·lats o no estan actualitzats.</string>
     <string name="backup_in_progress">Còpia en procés</string>
@@ -421,7 +421,7 @@ de contacte</string>
     <string name="media_gallery_videos">Vídeos</string>
     <string name="group_membership_title">Membre d\'aquells grups</string>
     <string name="num_items_sected">%s seleccionat</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Realment voleu eliminar %d missatges multimèdia?</string>
+    <string name="really_delete_media">Realment voleu eliminar %d missatges multimèdia?</string>
     <string name="check_updates">Comprovar actualitzacions</string>
     <string name="masterkey_lock_explain">Threema guarda la contrasenya a la memòria. Si necessiteu tornar a entrar la contrasenya sovint, assegureu-vos que les aplicacions mata-processos i d\'estalvi de bateria que podrien tancar Threema abans d\'hora, estan desactivades.</string>
     <string name="identity_already_exists">Aquesta ID ja pertany a la vostra llista de contactes</string>
@@ -467,7 +467,7 @@ de contacte</string>
     <string name="invalid_cannot_send">No podeu enviar missatges a un contacte no vàlid</string>
     <string name="ballot_answer_count_error">Entreu almenys dues respostes per a l\'enquesta.</string>
     <string name="ballot_one_contact_not_supported">Advertiment: %1$s no podrà participar a la vostra enquesta.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Advertiment: %1$d contactes no podran participar a la vostra enquesta.</string>
+    <string name="ballot_x_contact_not_supported">Advertiment: %1$d contactes no podran participar a la vostra enquesta.</string>
     <string name="contact_state_inactive">Inactiva</string>
     <string name="contact_state_invalid">No vàlida</string>
     <string name="back">Tornar</string>
@@ -500,7 +500,7 @@ de contacte</string>
     <string name="send_media">Enviar multimèdia</string>
     <string name="rotate">Girar</string>
     <string name="remove">Eliminar</string>
-    <string name="password_too_short">Mínim %d caràcters.</string>
+    <string name="password_too_short" tools:ignore="PluralsCandidate">Mínim %d caràcters.</string>
     <string name="mark_read">Marcar com a llegit</string>
     <string name="attach_document">Fitxer</string>
     <string name="parent_directory">Pare</string>
@@ -509,7 +509,7 @@ de contacte</string>
     <string name="no_activity_for_mime_type">No s\'ha trobat cap aplicació que obri el fitxer.</string>
     <string name="open_from">Obrir des de</string>
     <string name="file_one_contact_not_supported">%1$s no pot rebre fitxers.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Atenció: %1$d contactes no poden rebre el vostre fitxer.</string>
+    <string name="file_x_contact_not_supported">Atenció: %1$d contactes no poden rebre el vostre fitxer.</string>
     <string name="mime_android_apk">Paquet Android</string>
     <string name="mime_audio">Fitxer d\'àudio</string>
     <string name="mime_certificate">Certificat digital</string>
@@ -713,7 +713,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="restore_disable_energy_saving">Connecteu el vostre dispositiu al carregador i desactiveu totes les opcions d\'estalvi d\'energia per evitar que el dispositiu interrompi el procés de còpia o restauració.</string>
     <string name="draft">Esborrany</string>
     <string name="prefs_bigger_single_emojis">Emojis sols més grans</string>
-    <string name="wizard1_sync_work">Sincronitzant dades de Threema Work...</string>
+    <string name="wizard1_sync_work">Sincronitzant dades de Threema Work…</string>
     <string name="notification_hidden_text">Continguts amagats</string>
     <string name="really_reset_ringtones">Voleu restablir la configuració del so de notificació a la predeterminada?</string>
     <string name="reset_ringtones_confirm">S\'ha restablert la configuració del so de notificació.</string>
@@ -774,7 +774,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="menu_send_profilpic_off">Eliminar com a destinatari de la foto de perfil</string>
     <string name="menu_send_profilpic_now">Enviar la foto de perfil ara</string>
     <string name="profile_picture_sent">Foto de perfil enviada</string>
-    <string name="sending_messages">Enviant...</string>
+    <string name="sending_messages">Enviant…</string>
     <string name="backup_data_media_confirm">Desant fitxers multimèdia grans a una còpia de seguretat local en ZIP podria superar la capacitat de la CPU i de la memòria del vostre dispositiu i podria trigar molt. Threema no enviarà i rebrà missatges mentre la còpia de seguretat estigui en curs. Continuar de totes maneres?</string>
     <string name="backup_data_cancelled">Còpia cancel·lada</string>
     <string name="service_manager_not_available">No es pot iniciar Threema. Apagueu el vostre dispositiu i torneu a provar-ho.</string>
@@ -798,7 +798,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="strikethrough">Ratllat</string>
     <string name="italic">Cursiva</string>
     <string name="bold">Negreta</string>
-    <string name="shortcut_choice_title">Crear un accés directe per a...</string>
+    <string name="shortcut_choice_title">Crear un accés directe per a…</string>
     <string name="prefs_title_device_info">Informació del dispositiu</string>
     <string name="notifications_disabled_title">Notificacions desactivades</string>
     <string name="notifications_disabled_text">Les notificacions per a Threema s\'han desactivat en la configuració del sistema. No se us notificarà sobre nous missatges.</string>
@@ -1047,7 +1047,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="media_files">Fitxers</string>
     <string name="auto_download_limit_explain">Els vídeos i fitxers majors de %s sempre es baixaran sota demanda</string>
     <string name="quoted_message_deleted">El missatge citat ja no està disponible</string>
-    <string name="searching">Cercant...</string>
+    <string name="searching">Cercant…</string>
     <string name="prefs_work_life_balance">No molestar</string>
     <string name="prefs_title_working_days">Dies feiners</string>
     <string name="prefs_working_days_sum">Escolliu els dies feiners</string>
@@ -1104,7 +1104,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_sum_disable_smart_replies">Evitar les Respostes Intel·ligents a les notificacions d\'Android</string>
     <string name="prefs_title_disable_smart_replies">Desactivar Respostes Intel·ligents</string>
     <string name="url_warning_body_alt">El nom d\'amfitrió de l\'enllaç que esteu a punt d\'obrir és sospitós.\n\nAixò pot deure\'s a un intent d\'engany fent-vos obrir un lloc simulant que n\'és un altre.\n\nVoleu continuar de totes maneres?</string>
-    <string name="read_on">Llegir més...</string>
+    <string name="read_on">Llegir més…</string>
     <string name="forward_text">Reenviar el text</string>
     <string name="an_error_occurred_during_send">Hi ha hagut un error enviant un o més missatges.</string>
     <string name="state_processing">processant</string>
@@ -1183,7 +1183,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_response_full">La vostra petició de grup per a %s s\'ha rebutjat perquè el grup està complet</string>
     <string name="group_response_rejected">La vostra petició de grup per a %s s\'ha rebutjat</string>
     <string name="group_link_expiration_none">Sense restriccions</string>
-    <string name="group_request_hint">Ei! Sóc jo...</string>
+    <string name="group_request_hint">Ei! Sóc jo…</string>
     <string name="group_request_send_title">Enviar Petició d\'Accés a Grup</string>
     <string name="group_request_message_empty">El missatge de la petició de grup no pot ser buit</string>
     <string name="group_requests_all_title">Totes les peticions de grup</string>
@@ -1210,7 +1210,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="open_group_requests_show">Mostrar peticions d\'accés</string>
     <string name="open_group_requests_hide">Amagar peticions d\'accés</string>
     <string name="group_request_link_already_deleted">Enllaç de grup mentre s\'elimina</string>
-    <string name="incoming_group_request_no_message">Enviat a través d\'un enllaç obert... cap missatge</string>
+    <string name="incoming_group_request_no_message">Enviat a través d\'un enllaç obert… cap missatge</string>
     <string name="group_request_received_through">A través de l\'enllaç: %s</string>
     <string name="reaccept">Reacceptar</string>
     <string name="group_link_edit_expiration_date">Editar data de caducitat</string>
@@ -1230,7 +1230,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="forgot_your_password"><![CDATA[<a href=%s>Heu oblidat la contrasenya?</a>]]></string>
     <string name="download_failed">Error en la descàrrega. Codi d\'error: %d</string>
     <string name="edit_answer">Editar la resposta</string>
-    <string name="share_media">Compartir amb una altra aplicació...</string>
+    <string name="share_media">Compartir amb una altra aplicació…</string>
     <string name="group_link_administered">Administrada</string>
     <string name="group_link_open">Oberta</string>
     <string name="group_link_share_message">Uniu-vos al meu grup Threema a través del següent enllaç!: %s</string>
@@ -1275,7 +1275,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_request_already_sent_title">Petició ja enviada</string>
     <string name="qr_scanner_id_hint">Escanegeu el codi QR d\'un contacte per verificar la seva identitat. Per mostrar el codi, demaneu al contacte que toqui la foto de perfil a la cantonada de dalt a l\'esquerra de la pantalla d\'inici de Threema.</string>
     <string name="enable_storage_access_for_media">Activar l\'accés a l\'emmagatzematge per veure fotos i vídeos del vostre dispositiu</string>
-    <string name="take_me_there">Porteu-m\'hi...</string>
+    <string name="take_me_there">Porteu-m\'hi…</string>
     <string name="notification_channel_group_join_request">Canal de notificacions per peticions de grup rebudes</string>
     <string name="reset_default_group_link_title">Restablir info d\'enllaç predeterminada</string>
     <string name="reset_default_group_link_desc">L\'enllaç compartit anteriorment deixarà de ser vàlid i les peticions a través de l\'enllaç antic seran rebutjades automàticament amb una resposta de caducades.</string>

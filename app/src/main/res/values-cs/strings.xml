@@ -368,8 +368,7 @@
     <string name="prefs_title_fullscreen_ime">Celoobrazovková klávesnice</string>
     <string name="prefs_sum_fullscreen_ime_on">Pokud bude zařízení v poloze na šířku, klávesnice zakryje celou plochu</string>
     <string name="prefs_sum_fullscreen_ime_off">Pokud zbývá místo, zobrazí se náhled konverzace nad klávesnicí</string>
-    <string name="add_acount_from_within_threema">"Spravujte své Threema ID přímo v aplikaci Threema.
-"</string>
+    <string name="add_acount_from_within_threema">Spravujte své Threema ID přímo v aplikaci Threema.</string>
     <string name="save_image">Uložit obrázek</string>
     <string name="share_image">Sdílet obrázek</string>
     <string name="view_in_gallery">Zobrazit v Galerii</string>
@@ -418,8 +417,8 @@
     <string name="group_description">Popis skupiny</string>
     <string name="change_group_description">Změnit popis skupiny</string>
     <string name="add_group_description">Přidat popis skupiny</string>
-    <string name="read_more">Přečíst více</string>
-    <string name="read_less">Přečíst méně</string>
+    <string name="read_more">přečíst více</string>
+    <string name="read_less">přečíst méně</string>
     <string name="changed_group_desc_date">Naposledy zm\u011bn\u011bno:</string>
     <string name="num_items_sected">Vybráno položek: %s</string>
     <string name="really_delete_media">Skutečně si přejete odstranit následující počet mediálních zpráv: %d?</string>
@@ -1426,6 +1425,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="forward_security_mode_4dh">kompletní</string>
     <string name="forward_security_mode_2dh">unilaterální</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) chrání zaznamenanou komunikaci před zpětným dešifrováním i když je dlouhodobý šifrovací klíč kompromitován.\n\nTato možnost může být povolena v případě, když aplikace na obou stranách podporuje PFS.</string>
+    <string name="group_call_inactivity_left">Skupinový hovor byl opuštěn z důvodu neaktivity</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>

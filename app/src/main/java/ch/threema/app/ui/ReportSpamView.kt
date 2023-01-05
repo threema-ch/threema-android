@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -24,7 +24,6 @@ package ch.threema.app.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -82,10 +81,10 @@ class ReportSpamView : ConstraintLayout, DefaultLifecycleObserver {
     override fun onFinishInflate() {
         super.onFinishInflate()
         val reportChip: Chip = findViewById(R.id.chip_report_spam)
-        reportChip.setOnClickListener { v: View? ->
+        reportChip.setOnClickListener {
             val dialog = TextWithCheckboxDialog.newInstance(context.getString(R.string.spam_report_dialog_title, NameUtil.getDisplayNameOrNickname(contactModel, true)), R.string.spam_report_dialog_explain,
                     R.string.spam_report_dialog_block_checkbox, R.string.spam_report_short, R.string.cancel)
-            dialog.setCallback { tag: String?, data: Any?, checked: Boolean -> listener!!.onReportSpamClicked(contactModel!!, checked) }
+            dialog.setCallback { _: String?, _: Any?, checked: Boolean -> listener!!.onReportSpamClicked(contactModel!!, checked) }
             dialog.show(activity.supportFragmentManager, "")
         }
     }

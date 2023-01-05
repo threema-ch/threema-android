@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2022 Threema GmbH
+ * Copyright (c) 2016-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -44,6 +44,7 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDialog;
+import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.adapters.BottomSheetGridAdapter;
 import ch.threema.app.adapters.BottomSheetListAdapter;
@@ -69,19 +70,17 @@ public abstract class BottomSheetAbstractDialog extends BottomSheetDialogFragmen
 		super.onCreate(savedInstanceState);
 
 		if (callback == null) {
-			try {
-				callback = (BottomSheetDialogCallback) getTargetFragment();
-			} catch (ClassCastException e) {
-				// called from an activity rather than a fragment
-				if ((activity instanceof BottomSheetDialogCallback)) {
-					callback = (BottomSheetDialogCallback) activity;
-				}
+			Fragment targetFragment = getTargetFragment();
+			if (targetFragment instanceof  BottomSheetDialogCallback) {
+				callback = (BottomSheetDialogCallback) targetFragment;
+			} else if (activity instanceof BottomSheetDialogCallback) {
+				callback = (BottomSheetDialogCallback) activity;
 			}
 		}
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
+	public void onAttach(@NonNull Activity activity) {
 		super.onAttach(activity);
 
 		this.activity = activity;

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -55,7 +55,7 @@ internal class SfuConnectionImpl (private val apiConnector: APIConnector, privat
     @AnyThread
     override suspend fun obtainSfuToken(forceRefresh: Boolean): SfuToken {
         return withContext(Dispatchers.IO) {
-            logger.debug("Obtain sfu token force={}, cached={}", forceRefresh, cachedSfuToken)
+            logger.debug("Obtain sfu token forceRefresh={}, cached={}", forceRefresh, cachedSfuToken)
             cachedSfuToken.let { cachedToken ->
                 if (forceRefresh || cachedToken == null || isTokenExpired(cachedToken)) {
                     fetchAndCacheToken()

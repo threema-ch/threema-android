@@ -1015,6 +1015,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="open_in_maps_app">Abrir no Maps</string>
     <string name="delete">Excluir</string>
     <string name="continue_recording">Continuar gravação</string>
+    <string name="whatsnew_title">Novo: Chamadas de grupo do %1$s</string>
     <string name="whatsnew_headline"><![CDATA[
 		<p>Agora, chamadas de grupo criptografas de ponta a ponta estão disponíveis no %1$s para Android.</p>
 		<p>Para iniciar uma chamada, abra uma conversa de grupo e toque no botão de câmera na parte superior.</p>
@@ -1427,6 +1428,7 @@ ficará órfã. Os outros membros ainda poderão conversar, mas não serão mais
     <string name="forward_security_mode_4dh">concluída</string>
     <string name="forward_security_mode_2dh">unilateral</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS), ou \"sigilo encaminhado perfeito\", protege uma comunicação gravada de uma decodificação retroativa, mesmo se a chave criptográfica de longo prazo for comprometida.\n\nA opção pode ser ativada se o app em ambas as pontas for compatível com PFS.</string>
+    <string name="group_call_inactivity_left">Chamada de grupo abandonada devido à inatividade</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>

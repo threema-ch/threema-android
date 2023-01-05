@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -33,10 +33,10 @@ import android.os.Binder
 import android.os.Build
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import ch.threema.app.BuildConfig
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.notifications.NotificationBuilderWrapper
@@ -46,6 +46,7 @@ import ch.threema.app.services.NotificationService
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.stores.IdentityStore
 import ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
+import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallException
@@ -339,6 +340,11 @@ class GroupCallService : Service() {
 
     private fun leaveCall() {
         logger.info("Call has been left. Stop service.")
+        if (groupCallController?.hasForeverAloneTimerFired() == true) {
+            RuntimeUtil.runOnUiThread(Runnable {
+                Toast.makeText(applicationContext, getString(R.string.group_call_inactivity_left), Toast.LENGTH_LONG).show()
+            })
+        }
         stopService()
     }
 

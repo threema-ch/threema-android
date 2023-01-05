@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -323,6 +323,26 @@ public class ConversationServiceImpl implements ConversationService {
 			return parser.refresh(modifiedMessageModel);
 		}
 		return null;
+	}
+
+	@Override
+	public synchronized void updateContactConversation(@NonNull ContactModel contactModel) {
+		synchronized (conversationCache) {
+			for (int i = 0; i < conversationCache.size(); i++) {
+				ConversationModel conversationModel = conversationCache.get(i);
+				if (conversationModel.isContactConversation() && contactModel.getIdentity().equals(conversationModel.getContact().getIdentity())) {
+					ContactConversationModelParser conversationModelParser = new ContactConversationModelParser();
+					List<ConversationResult> result = conversationModelParser.select(contactModel.getIdentity());
+					if (result.isEmpty() || result.get(0) == null) {
+						logger.warn("No result for updating identity {}", contactModel.getIdentity());
+						return;
+					}
+					ConversationModel updatedModel = conversationModelParser.parseResult(result.get(0), null, false);
+					conversationCache.set(i, updatedModel);
+					break;
+				}
+			}
+		}
 	}
 
 	@Override

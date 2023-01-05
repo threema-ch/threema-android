@@ -13,7 +13,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "5.0.2.1"
+def app_version = "5.0.3"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -92,7 +92,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 781
+        versionCode 784
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -704,7 +704,7 @@ dependencies {
     }
 
     implementation 'org.saltyrtc:chunked-dc:1.0.1'
-    implementation 'ch.threema:webrtc-android:0.108.0-group-call-2'
+    implementation 'ch.threema:webrtc-android:108.0.0'
     implementation('org.saltyrtc:saltyrtc-task-webrtc:0.18.1') {
         exclude module: 'saltyrtc-client'
     }

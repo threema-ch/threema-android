@@ -89,7 +89,8 @@
     <string name="voip_gc_call_ended">Groepsgesprek is beëindigd</string>
     <string name="voip_gc_in_call">In groepsgesprek</string>
     <string name="voip_gc_sfu_not_available">Server niet beschikbaar, probeer het later opnieuw</string>
-    <string name="voip_gc_call_error">Groepsgesprek is niet gestart</string>
+    <string name="voip_gc_call_error">Gesprek afgebroken vanwege een fout</string>
+    <string name="voip_gc_call_start_error">Groepsgesprek is niet gestart</string>
     <string name="voip_gc_call_full_generic">Maximum bereikt: niet mogelijk om extra deelnemers toe te voegen aan dit groepsgesprek.</string>
     <string name="voip_gc_call_full_n">Maximum van %1$d deelnemers is bereikt, u kunt niet deelnemen aan dit groepsgesprek.</string>
     <plurals name="n_participants_in_call">

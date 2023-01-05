@@ -1163,8 +1163,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="transcoder_unsupported_audio_format">Zvuk nie je možné prekódovať kvôli chýbajúcej podpore tohto formátu v systéme.</string>
     <string name="transcoder_unknown_audio_error">Počas prekódovania zvuku nastala neznáma chyba.</string>
     <string name="video_size_explain">Veľmi veľké videá môžu byť skomprimované bez ohľadu na toto nastavenie.</string>
-    <string name="status_create_notes">*Ste jediný člen v tejto skupine*
-Túto konverzáciu môžete využiť ako bezpečný zápisník pre textové poznámky, média alebo dokumenty.</string>
+    <string name="status_create_notes">*Ste jediný člen v tejto skupine*\nTúto konverzáciu môžete využiť ako bezpečný zápisník pre textové poznámky, média alebo dokumenty.</string>
     <string name="status_create_notes_off">*V tejto konverzácii uz nie ste jediný*\nNové správy budú poslané všetkým členom skupiny.</string>
     <string name="note_group_howto">Tip: Ak do tejto skupiny nepridáte žiadnych členov, správy do nej odoslané zostanú uložené iba na vašom zariadení. Takáto možnosť môže príjsť vhod na bezpečné ukladanie poznámok, mediálnych súborov či dokumentov, alebo neskôr k ich prenosu do počítača.</string>
     <string name="mark_unread">Označiť ako neprečítané</string>
@@ -1194,7 +1193,7 @@ Túto konverzáciu môžete využiť ako bezpečný zápisník pre textové pozn
     <string name="group_response_full">Vaša žiadosť o prijatie do %s bola zamietnutá, pretože je skupina plná</string>
     <string name="group_response_rejected">Vaša žiadosť o prijatie do %s bola zamietnutá</string>
     <string name="group_link_expiration_none">Neobmedzené</string>
-    <string name="group_request_hint">Ahoj! To som ja...</string>
+    <string name="group_request_hint">Ahoj! To som ja…</string>
     <string name="group_request_send_title">Odoslať žiadosť o vstup do skupiny</string>
     <string name="group_request_message_empty">Text žiadosti o vstup nemôže byť prázdny</string>
     <string name="group_requests_all_title">Všetky žiadosti skupiny</string>
@@ -1422,6 +1421,7 @@ Túto konverzáciu môžete využiť ako bezpečný zápisník pre textové pozn
     <string name="forward_security_mode_4dh">kompletné</string>
     <string name="forward_security_mode_2dh">jednostranné</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) chráni zaznamenanú komunikáciu pred spätným dešifrovaním, aj keď je ohrozený dlhodobý šifrovací kľúč.\n\nToto je možné povoliť, ak aplikácia na oboch stranách podporuje PFS.</string>
+    <string name="group_call_inactivity_left">Skupinový hovor prerušený z dôvodu nečinnosti</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">kontakty</item>
         <item quantity="many">kontakty</item>

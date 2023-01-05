@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -76,6 +76,7 @@ import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
@@ -909,6 +910,23 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
 			//only save contact stuff if the name has changed!
 			this.contactService.setName(this.contact, firstName, lastName);
+
+			// Reset conversation cache because at this point the MessageSectionFragment is destroyed
+			// and it cannot react to the listeners.
+			if (serviceManager == null) {
+				logger.warn("Service manager is null; could not reset conversation cache");
+				return;
+			}
+			try {
+				ConversationService conversationService = serviceManager.getConversationService();
+				if (conversationService == null) {
+					logger.warn("Conversation service is null; could not reset conversation cache");
+					return;
+				}
+				conversationService.updateContactConversation(this.contact);
+			} catch (ThreemaException e) {
+				logger.error("Could not get conversation service to reset conversation cache", e);
+			}
 		}
 	}
 

@@ -97,7 +97,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_gravity="center"
-		android:layout_margin="16sp"
+		android:padding="20dp"
 		android:contentDescription="@string/delete"
 		app:srcCompat="@drawable/ic_delete_outline"
 		app:tint="@android:color/white" />

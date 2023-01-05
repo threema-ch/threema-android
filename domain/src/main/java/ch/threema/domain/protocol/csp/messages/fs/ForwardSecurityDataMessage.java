@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -34,10 +34,10 @@ public class ForwardSecurityDataMessage extends ForwardSecurityData {
 
 	private final @NonNull
 	ForwardSecurityEnvelope.Message.DHType type;
-	private final @NonNull long counter;
+	private final long counter;
 	private final @NonNull byte[] message;
 
-	public ForwardSecurityDataMessage(DHSessionId sessionId, ForwardSecurityEnvelope.Message.DHType type, long counter, byte[] message) {
+	public ForwardSecurityDataMessage(@NonNull DHSessionId sessionId, @NonNull ForwardSecurityEnvelope.Message.DHType type, long counter, @NonNull byte[] message) {
 		super(sessionId);
 		this.type = type;
 		this.counter = counter;

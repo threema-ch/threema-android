@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -59,17 +59,10 @@ public class MarkupTextWatcher implements TextWatcher {
 	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 		beforeMarkup = false;
 		if (count >= after && count > 0) {
-			// text will be deleted or replaced
-			if (markupCharPattern.matcher(TextUtils.substring(s, start, start + count)).matches()) {
-				beforeMarkup = true;
-			} else {
-				if (after == 0 && count == getCharCount(s, start) && start > 0) {
-					// simply deleting a single character (count == getCharCount()), do not replace anything (after == 0) - check if previous character is relevant for markup
-					if (markupCharPattern.matcher(TextUtils.substring(s, start - 1, start)).matches()) {
-						beforeMarkup = true;
-					}
-				}
-			}
+			// Text will be deleted or replaced: check also the adjacent characters for markup characters
+			int from = Math.max(0, start - 1);
+			int until = Math.min(s.length(), start + count + 1);
+			beforeMarkup = markupCharPattern.matcher(TextUtils.substring(s, from, until)).matches();
 		}
 	}
 
@@ -77,17 +70,10 @@ public class MarkupTextWatcher implements TextWatcher {
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 		afterMarkup = false;
 		if (count >= before && count > 0) {
-			// text has been added or replaced
-			if (markupCharPattern.matcher(TextUtils.substring(s, start, start + count)).matches()) {
-				afterMarkup = true;
-			} else {
-				if (before == 0 && count == getCharCount(s, start) && start > 0) {
-					// simply adding a single character (count == getCharCount()), do not replace anything (before == 0) - check if previous character is relevant for markup
-					if (markupCharPattern.matcher(TextUtils.substring(s, start - 1, start)).matches()) {
-						afterMarkup = true;
-					}
-				}
-			}
+			// Text has been added or replaced: check also the adjacent characters for markup characters
+			int from = Math.max(0, start - 1);
+			int until = Math.min(s.length(), start + count + 1);
+			afterMarkup = markupCharPattern.matcher(TextUtils.substring(s, from, until)).matches();
 		}
 	}
 
@@ -111,19 +97,5 @@ public class MarkupTextWatcher implements TextWatcher {
 			// Also update the mention markup for strikethrough changes
 			EmojiMarkupUtil.getInstance().addMentionMarkup(context, s);
 		}
-	}
-
-	/**
-	 * Get number of characters at this position if it's a valid codepoint, otherwise 1 (some emojis might consist of more than one character)
-	 * @param s input CharSequence
-	 * @param start index of codepoint to check
-	 * @return number of characters at this codepoint
-	 */
-	private int getCharCount(CharSequence s, int start) {
-		final int codePoint = Character.codePointAt(s, start);
-		if (Character.isValidCodePoint(codePoint)) {
-			return Character.charCount(codePoint);
-		}
-		return 1;
 	}
 }

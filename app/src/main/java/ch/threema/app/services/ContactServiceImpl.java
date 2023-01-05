@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -73,6 +73,7 @@ import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.ContactTypingListener;
 import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
@@ -107,6 +108,9 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
 import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
 import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
+import ch.threema.domain.stores.DHSessionStoreException;
+import ch.threema.domain.stores.DHSessionStoreInterface;
+import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
@@ -760,6 +764,20 @@ public class ContactServiceImpl implements ContactService {
 
 		if (removeLink) {
 			AndroidContactUtil.getInstance().deleteThreemaRawContact(model);
+		}
+
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			try {
+				DHSessionStoreInterface dhSessionStore = serviceManager.getDHSessionStore();
+				dhSessionStore.deleteAllDHSessions(userService.getIdentity(), model.getIdentity());
+			} catch (MasterKeyLockedException e) {
+				logger.error("Could not get DH session store", e);
+			} catch (DHSessionStoreException e) {
+				logger.error("Could not delete all DH sessions");
+			}
+		} else {
+			logger.warn("Could not delete DH sessions because the service manager is null");
 		}
 
 		return true;

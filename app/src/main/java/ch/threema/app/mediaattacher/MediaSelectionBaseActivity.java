@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -130,8 +130,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected static final int PERMISSION_REQUEST_ATTACH_FILE = 5;
 	protected static final int PERMISSION_REQUEST_ATTACH_STORAGE = 7;
 
-	protected static final int REQUEST_CODE_ATTACH_FROM_GALLERY = 2454;
-
 	protected CoordinatorLayout rootView, gridContainer, pagerContainer;
 	protected AppBarLayout appBarLayout;
 	protected MaterialToolbar toolbar;
@@ -145,7 +143,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected TextView dateTextView, menuTitle, previewFilenameTextView, previewDateTextView;
 	protected DisplayMetrics displayMetrics;
 	protected MenuItem selectFromGalleryItem;
-	protected MenuItem selectFile;
 	protected PopupMenu bucketFilterMenu;
 	protected ViewPager2 previewPager;
 	private CheckableView checkBox;
@@ -169,7 +166,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior, previewBottomSheetBehavior;
 
-	private final ActivityResultLauncher<Intent> fileChooseLauncher = getFileSelectedResultLauncher();
+	private final ActivityResultLauncher<Intent> fileAttachedResultLauncher = getFileAttachedResultLauncher();
 
 	// Locks
 	private final Object filterMenuLock = new Object();
@@ -237,7 +234,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 		this.toolbar.setOnMenuItemClickListener(item -> {
 			if (item.getItemId() == R.id.menu_select_from_gallery) {
-				attachImageFromGallery();
+				attachFilesFromGallery();
 				return true;
 			}
 			return false;
@@ -385,7 +382,12 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		});
 	}
 
-	protected abstract ActivityResultLauncher<Intent> getFileSelectedResultLauncher();
+	/**
+	 * Get the result launcher to handle the selected files. Note that this file result launcher is
+	 * not used to send media explicitly as files. Therefore media should be sent with the correct
+	 * settings.
+	 */
+	protected abstract ActivityResultLauncher<Intent> getFileAttachedResultLauncher();
 
 	protected void setDropdownMenu() {
 		this.bucketFilterMenu = new PopupMenuWrapper(this, menuTitle);
@@ -990,12 +992,11 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		}
 	}
 
-	protected void attachImageFromGallery() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			FileUtil.selectFile(this, fileChooseLauncher, new String[]{MimeUtil.MIME_TYPE_ANY}, true, MAX_BLOB_SIZE, null);
-		} else if (ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_ATTACH_FROM_GALLERY)) {
-			FileUtil.selectFromGallery(this, null, REQUEST_CODE_ATTACH_FROM_GALLERY, true);
-		}
+	/**
+	 * Attach any files from gallery.
+	 */
+	protected void attachFilesFromGallery() {
+		FileUtil.selectFile(this, fileAttachedResultLauncher, new String[]{MimeUtil.MIME_TYPE_ANY}, true, MAX_BLOB_SIZE, null);
 	}
 
 	protected void expandBottomSheet() {

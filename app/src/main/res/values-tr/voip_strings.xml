@@ -89,7 +89,8 @@
     <string name="voip_gc_call_ended">Grup araması sona erdi</string>
     <string name="voip_gc_in_call">grup aramasında</string>
     <string name="voip_gc_sfu_not_available">Sunucu kullanılamıyor, daha sonra tekrar deneyin</string>
-    <string name="voip_gc_call_error">Grup araması başlatılamadı</string>
+    <string name="voip_gc_call_error">Arama bir hata nedeniyle durduruldu</string>
+    <string name="voip_gc_call_start_error">Grup araması başlatılamadı</string>
     <string name="voip_gc_call_full_generic">Maksimuma sayıya ulaşıldı: Bu grup aramasına başka katılımcı katılamaz.</string>
     <string name="voip_gc_call_full_n">Maksimum %1$d katılımcıya ulaşıldı, bu grup aramasına katılamazsınız.</string>
     <plurals name="n_participants_in_call">

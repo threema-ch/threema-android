@@ -89,7 +89,8 @@
     <string name="voip_gc_call_ended">L\'appel de groupe est terminé</string>
     <string name="voip_gc_in_call">Dans un appel de groupe</string>
     <string name="voip_gc_sfu_not_available">Serveur indisponible, réessayez plus tard</string>
-    <string name="voip_gc_call_error">Impossible de lancer l\'appel de groupe</string>
+    <string name="voip_gc_call_error">Appel arrêté à cause d\'une erreur</string>
+    <string name="voip_gc_call_start_error">Impossible de lancer l\'appel de groupe</string>
     <string name="voip_gc_call_full_generic">Maximum atteint : plus aucun participant ne peut rejoindre cet appel de groupe.</string>
     <string name="voip_gc_call_full_n">Maximum de %1$d participants atteint, vous ne pouvez pas rejoindre cet appel de groupe.</string>
     <plurals name="n_participants_in_call" tools:ignore="MissingQuantity">

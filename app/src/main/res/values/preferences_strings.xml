@@ -188,7 +188,6 @@
 	<string name="preferences__enable_read_phone_state_permission_request" translatable="false">pref_read_phone_state_permission_request</string>
 	<string name="preferences__grant_read_phone_state_permission" translatable="false">pref_read_phone_state</string>
 	<string name="preferences__hibernation_mode" translatable="false">pref_hibernation_mode</string>
-	<string name="preferences__last_ephemeral_key_hashes" translatable="false">last_ephemeral_key_hashes</string>
 	<string name="preferences__group_calls_enable" translatable="false">pref_group_calls_enable</string>
 	<string name="preferences__tooltip_gc_camera" translatable="false">pref_tooltip_gc_camera</string>
 	<string name="preferences__group_call_send_init" translatable="false">pref_gc_send_init</string>
@@ -196,4 +195,5 @@
 	<string name="preferences__group_calls_ringtone" translatable="false">pref_gc_ringtone</string>
 	<string name="preferences__group_calls_vibration" translatable="false">pref_gc_vibration</string>
     <string name="preferences__group_calls_use_system_ringtone" translatable="false">pref_gc_use_system_ringtone</string>
+	<string name="preferences__device_cookie" translatable="false">device_cookie</string>
 </resources>

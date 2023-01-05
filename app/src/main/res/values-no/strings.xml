@@ -319,7 +319,7 @@ når den første meldingen mottas.</string>
     <string name="updating_group">Oppdaterer gruppe</string>
     <string name="status_create_group">Gruppe opprettet.</string>
     <string name="status_rename_group">Gruppenavn endret til \"%1$s\"</string>
-    <string name="status_group_new_photo">Gruppe oppdatert.</string>
+    <string name="status_group_new_photo">Gruppebilde oppdatert.</string>
     <string name="status_group_new_member">\"%1$s\" ble lagt til gruppen.</string>
     <string name="status_group_member_left">\"%1$s\" forlot gruppen.</string>
     <string name="status_group_member_kicked">\"%1$s\" har blitt fjernet fra gruppen.</string>
@@ -1009,6 +1009,12 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="delete">Slett</string>
     <string name="continue_recording">Fortsett opptak</string>
     <string name="whatsnew_title">Nytt: %1$s Gruppesamtaler</string>
+    <string name="whatsnew_headline"><![CDATA[
+  <p>Ende-til-ende krypterte gruppesamtaler er nå tilgjengelig i %1$s for Android.</p>
+  <p>For å starte en gruppesamtale, åpne en gruppe og trykk på kameraknappen i toppen.</p>
+  <p>Alle gruppemedlemmer får da et varsel og kan velge om de vil bli med i samtalen eller ikke.</p>
+  <p><b>Vennligst merk:</b> for iOS, gruppesamtaler vil bli lansert på et senere tidspunkt.</p>
+  ]]></string>
     <string name="tap_to_start">Trykk her for å starte %s nå.</string>
     <string name="two_years">2 år</string>
     <string name="invalid_backup_path">Ugyldig kopiplassering</string>
@@ -1071,7 +1077,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="call_with">Ring %s</string>
     <string name="picture_in_picture_disabled_in_setting">Bilde-i-bilde-modus er deaktivert for %s. Vennligst aktiver det i systeminnstillingene.</string>
     <string name="delete_everything">Slett alt</string>
-    <string name="prefs_title_voip_video_enable">Tillat videoanrop</string>
+    <string name="prefs_title_voip_video_enable">Tillat video</string>
     <string name="video_calls">Videoanrop</string>
     <string name="prefs_videocall_profile">Foretrukket bildekvalitet</string>
     <string name="videocall_profile_auto">Balansert (anbefalt)</string>
@@ -1157,7 +1163,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="transcoder_unsupported_audio_format">Lyden kunne ikke bli transkodet på grunn av manglende støtte på enheten.</string>
     <string name="transcoder_unknown_audio_error">Ukjent lydtranskoding feil har oppstått.</string>
     <string name="video_size_explain">Store videofiler kan bli komprimert uavhengig av denne innstillingen.</string>
-    <string name="status_create_notes">*Du er her alene*\nBruk denne samtalen som en sikker notatbok for tekst, media eller dokumenter.</string>
+    <string name="status_create_notes">*Du er den eneste medlemmen i denne gruppen*\nBruk denne samtalen som en sikker notatbok for tekst, media eller dokumenter.</string>
     <string name="status_create_notes_off">*Du er ikke lenger alene i denne samtalen*\nNye meldinger vil bli sendt til alle gruppemedlemmer.</string>
     <string name="note_group_howto">Tips: Om du ikke legger til andre medlemmer i gruppen, så vil meldinger forbli lokale. Det er ideelt for å lagre notater, media og dokumenter på en sikker måte, eller å overføre til en annen enhet (via Threema Web).</string>
     <string name="mark_unread">Merk som ulest</string>
@@ -1350,14 +1356,15 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="tooltip_multiple_recipients_text">Langt trykk for å velge flere mottakere å sende den samme meldingen til.</string>
     <string name="synchronizing">Synkroniserer...</string>
     <string name="forward_security">Send meldinger med Perfect Forward Secrecy</string>
-    <string name="forward_security_mode">Videresend Sikkerhet</string>
+    <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">Ingen</string>
-    <string name="clear_forward_security">Fjern Videresending Sikkerhet-økter</string>
-    <string name="forward_security_cleared">Videresend Sikkerhet-økt med denne kontakten har blitt fjernet</string>
-    <string name="message_without_forward_security">En melding uten Videresend Sikkerhet er mottatt. Verifiser at avsender har skrudd av Videresend Sikkerhet med vilje.</string>
-    <string name="forward_security_established">Meldinger i denne samtalen er nå beskyttet av Videresend Sikkerhet.</string>
-    <string name="forward_security_established_rx">Meldinger mottatt i denne samtalen blir nå beskyttet av Videresend Sikkerhet. Skru på Videresend Sikkerhet i kontaktdetaljer for å beskytte sendte medlinger også.</string>
-    <string name="forward_security_reset">Videresend Sikkerhet-økten med denne kontakten har blitt resatt. Dette kan skje om kontakten har byttet enhet eller reinstallert appen.</string>
+    <string name="clear_forward_security">Fjern Perfect Forward Secrecy-økter</string>
+    <string name="forward_security_cleared">Perfect Forward Secrecy-økt med denne kontakten har blitt fjernet</string>
+    <string name="message_without_forward_security">En melding uten Perfect Forward Secrecy er mottatt. Verifiser at avsender har skrudd av Perfect Forward Secrecy med vilje.</string>
+    <string name="forward_security_established">Meldinger i denne samtalen er nå beskyttet av Perfect Forward Secrecy.</string>
+    <string name="forward_security_established_rx">Meldinger mottatt i denne samtalen blir nå beskyttet av Perfect Forward Secrecy. Skru på Perfect Forward Secrecy i kontaktdetaljer for å beskytte sendte medlinger også.</string>
+    <string name="forward_security_reset">Perfect Forward Secrecy-økten med denne kontakten har blitt resatt. Dette kan skje om kontakten har byttet enhet eller reinstallert appen.</string>
+    <string name="forward_security_reset_simple">Økten med Perfect Forward Secrecy som du har med denne kontakten har blitt resatt.</string>
     <string name="forward_security_message_out_of_order">En melding ble mottatt ute av rekkefølge og kunne derfor ikke bli dekryptert.</string>
     <string name="self_updater_installation_failed">Det skjedde en feil under nedlasting av oppdateringen. Vennligst last ned oppdateringen fra <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuelt.</string>
     <string name="spam_first_contact">Denne samtalen er fra en ukjent kontakt</string>
@@ -1375,6 +1382,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="directory_explain_text">Søk i firmaets oppføringsliste etter ansatte som ikke er lagt til i din kontaktliste.</string>
     <string name="cannot_display_location">Denne posisjonen kan ikke vises.</string>
     <string name="draw_reply">Tegn et svar</string>
+    <string name="drawing">Tegning</string>
+    <string name="background_color">Bakgrunnsfarge</string>
     <string name="send_video_muted">Fjern lyd fra video</string>
     <string name="send_without_audio">Fjern lyd</string>
     <string name="edit_filename">Endre filnavn</string>
@@ -1391,6 +1400,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_summary_hibernation_api_32">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Fjern tillatelser og frigjør plass\".</string>
     <string name="prefs_summary_hibernation_api">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Sett en app i dvale om den er ubrukt\"</string>
     <string name="unable_to_fetch_configuration">Ute av stand til å hente data fra konfigurasjonsserver. Prøv igjen senere.</string>
+    <string name="rogue_device_warning">Serveren har oppdaget en tilkobling med den samme Threema IDen, men fra en annen enhet.\n\nOm du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre versjon av Threema, vennligst kontakt brukerstøtte og send en loggfil om det er mulig.</string>
+    <string name="fetch2_failure">Synkronisering med server mislyktes.</string>
     <string name="no_members_support_group_calls">Det er ingen andre medlemmer i denne gruppen som er i stand til å svare på gruppesamtale</string>
     <string name="group_calls">Gruppesamtaler</string>
     <string name="prefs_title_group_calls_enable">Aktiver gruppesamtaler</string>
@@ -1401,6 +1412,16 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_call_camera_permission_rationale">For at andre deltakere skal kunne se bildet ditt, så må du tillate %s å få tilgang til kamera under \"Tillatelser\".</string>
     <string name="settings">Innstillinger</string>
     <string name="leave">Forlat</string>
+    <string name="fs_key_mismatch">Nøkler er ikke lik</string>
+    <string name="tap_to_resend">Trykk for å resende</string>
+    <string name="group_calls_tooltip_title">Nytt: Gruppesamtaler</string>
+    <string name="group_calls_tooltip_text">Trykk her for å invitere alle gruppemedlemmer til et anrop. Alle medlemmer vil motta et varsel og kan velge om de vil bli med eller ikke.</string>
+    <string name="prefs_title_calls">Sikre anrop</string>
+    <string name="prefs_sum_group_calls_vibration">Velg om mobilen skal vibrere når en gruppesamtale har startet</string>
+    <string name="forward_security_mode_4dh">Sikret</string>
+    <string name="forward_security_mode_2dh">En-veis</string>
+    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beskytter kommunikasjonen fra å kunne bli dekryptert i fremtiden, selv om den langsiktige krypteringsnøkkelen er kompromittert.\n\nDette kan skrus på om appen på begge sider av kommunikasjonen støtter PFS.</string>
+    <string name="group_call_inactivity_left">Gruppesamtale avsluttet på grunn av inaktivitet</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1425,13 +1446,67 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
         <item quantity="one">%d ny melding</item>
         <item quantity="other">%d nye meldinger</item>
     </plurals>
+    <plurals name="file_saved">
+        <item quantity="one">%d fil lagret vellykket</item>
+        <item quantity="other">%d filer lagret vellykket</item>
+    </plurals>
+    <plurals name="ballot_really_delete">
+        <item quantity="one">Fjern avstemning</item>
+        <item quantity="other">Fjern avstemninger</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="one">Vil du virkelig slette %1$d avstemning? Du kan ikke hente frem stemmene igjen.</item>
+        <item quantity="other">Vil du virkelig slette %1$d avstemninger? Du kan ikke hente frem stemmene igjen.</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="one">%d melding slettet</item>
+        <item quantity="other">%d meldinger slettet</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="one">I %d time</item>
+        <item quantity="other">I %d timer</item>
+    </plurals>
     <plurals name="some_contacts_not_deleted">
         <item quantity="one">%d kontakt kunne ikke bli slettet fordi den er fortsatt en del av en gruppe.</item>
         <item quantity="other">%d kontakter kunne ikke bli slettet fordi de er fortsatt en del av en gruppe.</item>
     </plurals>
+    <plurals name="message_archived">
+        <item quantity="one">%d samtale arkivert</item>
+        <item quantity="other">%d samtaler arkivert</item>
+    </plurals>
     <plurals name="new_messages_in_chats">
-        <item quantity="one">%1$d ny melding i %2$d samtaler</item>
-        <item quantity="other">%1$d nye meldinger i %2$d samtaler</item>
+        <item quantity="one">%1$d ny melding i %2$d samtale</item>
+        <item quantity="other">%1$d nye meldinger i %2$d samtale</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="one">%d økt kjører</item>
+        <item quantity="other">%d økter kjører</item>
+    </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="one">Vil du virkelig slette %d gruppeforespørsel?
+Merk at forespørselen ikke trekkes tilbake og du kan
+fortsatt bli akseptert eller forespurt dersom forespørselen ennå ikke er besvart.</item>
+        <item quantity="other">Er du sikker på at du vil slette %d gruppeforespørsler?
+Merk at forespørslene ikke trekkes tilbake og du kan
+heller ikke bli akseptert eller forespurt dersom forespørslene ennå ikke er besvart.</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="one">Vil du virkelig slette %d gruppeforespørsel?
+Du kan ikke svare på forespørselen etter at den er slettet.</item>
+        <item quantity="other">Vil du virkelig slette %d gruppeforespørsler?
+Du kan ikke svare på forespørselene etter at de er slettet.</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="one">Vil du virkelig slette %d gruppelink?
+Andre brukere kan ikke sende forespørsler gjennom den lenger.
+Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</item>
+        <item quantity="other">Vil du virkelig slette %d gruppelinker?
+Andre brukere kan ikke sende forespørsler gjennom den lenger.
+Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="one">%d samtale slettet.</item>
+        <item quantity="other">%d samtaler slettet.</item>
     </plurals>
     <plurals name="forward_security_messages_skipped">
         <item quantity="one">En melding har blitt tapt siden den forrige meldingen.</item>

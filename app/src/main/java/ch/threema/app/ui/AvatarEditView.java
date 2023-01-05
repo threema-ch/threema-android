@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -70,6 +70,8 @@ import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -106,6 +108,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private ImageView avatarImage, avatarEditOverlay;
 	private WeakReference<AvatarEditListener> listenerRef = new WeakReference<>(null);
 	private boolean hires, isEditable, isMyProfilePicture;
+	private final Executor executor = Executors.newSingleThreadExecutor();
 
 	// the hosting fragment
 	private WeakReference<Fragment> fragmentRef = new WeakReference<>(null);
@@ -202,11 +205,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		try {
 			if (contactModel != null) {
 				// Get the custom avatar (or null if no custom avatar available)
-				Bitmap bitmap = contactService.getAvatar(contactModel, new AvatarOptions.Builder()
-					.setHighRes(true)
-					.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
-					.toOptions()
-				);
+				Bitmap bitmap = getCustomContactAvatar(contactModel);
 				boolean isCustomAvatar = true;
 				if (bitmap == null) {
 					// Get default avatar as no custom avatar is available
@@ -232,11 +231,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 				}
 			} else {
 				// Display a group avatar
-				Bitmap bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
-					.setHighRes(true)
-					.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
-					.toOptions()
-				);
+				Bitmap bitmap = getCustomGroupAvatar(groupModel);
 				if (bitmap != null) {
 					// A custom avatar is set and the bitmap may need to be darkened
 					avatarImage.setImageBitmap(bitmap);
@@ -260,6 +255,101 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		avatarImage.setClickable(editable);
 		avatarImage.setFocusable(editable);
 		avatarEditOverlay.setVisibility(editable ? View.VISIBLE : View.GONE);
+	}
+
+	/**
+	 * Get the custom contact avatar. The size is automatically scaled down to the maximum possible
+	 * size if it was too large. Due to a bug in compression some avatars may be too large and then
+	 * the application crashes when displaying them in full size.
+	 *
+	 * Updates the avatar if it needs to be resized (only if it is my profile picture).
+	 *
+	 * If there is no custom avatar set for the contact, null is returned.
+	 */
+	@Nullable
+	private Bitmap getCustomContactAvatar(@NonNull ContactModel contactModel) {
+		Bitmap customAvatar = contactService.getAvatar(contactModel, new AvatarOptions.Builder()
+			.setHighRes(true)
+			.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
+			.toOptions()
+		);
+
+		Bitmap scaledAvatar = scaleToSize(customAvatar);
+		if (scaledAvatar != null && scaledAvatar != customAvatar && isLocallySavedAvatar(contactModel)) {
+			try {
+				logger.info("Updating resized contact avatar");
+				contactService.setAvatar(contactModel, BitmapUtil.bitmapToByteArray(scaledAvatar, Bitmap.CompressFormat.PNG, 100));
+			} catch (Exception e) {
+				logger.error("Could not update avatar", e);
+			}
+		}
+
+		return scaledAvatar;
+	}
+
+	/**
+	 * Returns true if the locally saved avatar is displayed. The locally saved avatar is displayed
+	 * if it is my profile picture or there is a locally saved avatar available and the profile
+	 * pictures are hidden ('getProfilePicReceive-preference') or there is no profile picture.
+	 */
+	private boolean isLocallySavedAvatar(@NonNull ContactModel contactModel) {
+		boolean showProfilePictures = preferenceService.getProfilePicReceive();
+		boolean hasProfilePicture = fileService.hasContactPhotoFile(contactModel);
+		boolean hasLocallySavedAvatar = fileService.hasContactAvatarFile(contactModel);
+
+		return isMyProfilePicture || (hasLocallySavedAvatar && (!showProfilePictures || !hasProfilePicture));
+	}
+
+	/**
+	 * Get the custom contact avatar. The size is automatically scaled down to the maximum possible
+	 * size if it was too large. Due to a bug in compression some avatars may be too large and then
+	 * the application crashes when displaying them in full size.
+	 *
+	 * Updates the group picture so that everyone gets the scaled picture (only group owner).
+	 *
+	 * If there is no custom avatar set for the group, null is returned.
+	 */
+	@Nullable
+	private Bitmap getCustomGroupAvatar(@NonNull GroupModel groupModel) {
+		Bitmap customAvatar = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
+			.setHighRes(true)
+			.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
+			.toOptions());
+
+		Bitmap scaledAvatar = scaleToSize(customAvatar);
+		if (scaledAvatar != customAvatar && groupService.isGroupOwner(groupModel)) {
+			executor.execute(() -> {
+				try {
+					logger.info("Updating resized group avatar");
+					groupService.updateGroup(groupModel, null, null, groupService.getGroupIdentities(groupModel), scaledAvatar, false);
+				} catch (Exception e) {
+					logger.error("Could not update group picture", e);
+				}
+			});
+		}
+
+		return scaledAvatar;
+	}
+
+	/**
+	 * Returns an image that is scaled to a width of {@link ch.threema.app.dialogs.ContactEditDialog#CONTACT_AVATAR_WIDTH_PX}
+	 * pixels and a height of {@link ch.threema.app.dialogs.ContactEditDialog#CONTACT_AVATAR_HEIGHT_PX}.
+	 * If the bitmap is null, null is returned.
+	 * If the bitmap is smaller than the maximum allowed size, the same bitmap object is returned.
+	 */
+	@Nullable
+	private Bitmap scaleToSize(@Nullable Bitmap bitmap) {
+		if (bitmap == null) {
+			return null;
+		}
+
+		if (bitmap.getWidth() > CONTACT_AVATAR_WIDTH_PX || bitmap.getHeight() > CONTACT_AVATAR_HEIGHT_PX) {
+			logger.warn("Avatar bitmap is too large: {}x{}", bitmap.getWidth(), bitmap.getHeight());
+
+			return Bitmap.createScaledBitmap(bitmap, CONTACT_AVATAR_WIDTH_PX, CONTACT_AVATAR_HEIGHT_PX, true);
+		}
+
+		return bitmap;
 	}
 
 	@Nullable

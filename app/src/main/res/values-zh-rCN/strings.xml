@@ -668,7 +668,7 @@ Threema 支持的所有表情符号。</string>
 我们建议仅提供您的名字或化名作为昵称。
 如果您未设置昵称，在默认情况下，我们将使用您的 Threema ID。 "</string>
     <string name="not_linked">未链接</string>
-    <string name="linked">已连接</string>
+    <string name="linked">已链接</string>
     <string name="pending_sms_verification_notice">您的手机号码尚未验证。</string>
     <string name="no_sms_received">没有收到短信？</string>
     <string name="really_cancel_verify">您是否真的要中止手机号码验证？</string>
@@ -700,7 +700,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="disabled_by_policy">某些设置已被设备策略禁用</string>
     <string name="select_all">全选</string>
     <string name="deleting_messages">正在删除消息</string>
-    <string name="media_gallery_files">档案</string>
+    <string name="media_gallery_files">文件</string>
     <string name="prefs_gif_autoplay">自动播放GIF动画</string>
     <string name="media_gallery_audio">语音消息</string>
     <string name="action_clone_group">克隆群组</string>
@@ -1200,8 +1200,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="transcoder_unsupported_audio_format">由于缺少系统支持，音频无法转码。</string>
     <string name="transcoder_unknown_audio_error">发生未知的音频转码错误。</string>
     <string name="video_size_explain">就算设置为未压缩，体积非常大的视频都有可能被压缩。</string>
-    <string name="status_create_notes">*在此会话中只有您一个人能访问*
-将此会话作为保存文本、媒体和文件的安全笔记本。</string>
+    <string name="status_create_notes">*在此会话中只有您一个人能访问*\n将此会话作为保存文本、媒体和文件的安全笔记本。</string>
     <string name="status_create_notes_off">*在此会话中不再只有您一个人能访问*\n新消息将被发送到所有群组成员。</string>
     <string name="note_group_howto">提示：如果您不添加任何群组成员，发送到这个群组的信息将保留在本地。这样能方便您安全地存储笔记、媒体和文件，或将文件转移到桌面。</string>
     <string name="mark_unread">标记为未读</string>
@@ -1393,17 +1392,17 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="tooltip_multiple_recipients_title">新功能：一条消息同时发送到多个收件人</string>
     <string name="tooltip_multiple_recipients_text">长按可将一条消息同时发送到多个收件人。</string>
     <string name="synchronizing">同步中…</string>
-    <string name="forward_security">以完美前向保密发送消息</string>
-    <string name="forward_security_mode">完美前向保密</string>
+    <string name="forward_security">以完全正向保密发送消息</string>
+    <string name="forward_security_mode">完全正向保密</string>
     <string name="forward_security_mode_none">否</string>
-    <string name="clear_forward_security">清除完美前向保密会话</string>
-    <string name="forward_security_cleared">与此联系人的完美前向保密会话已被清除</string>
-    <string name="message_without_forward_security">您收到一条没有完美前向保密的消息，您可以验证发件人是否主动禁用完美前向保密。</string>
-    <string name="forward_security_established">此会话中的消息现正受完美前向保密的保护。</string>
-    <string name="forward_security_established_rx">在此会话中收到的消息现正受完美前向保密的保护。在联系人详细信息中启用完美前向保密以保护已发送的消息。</string>
-    <string name="forward_security_reset">与此联系人的完美前向保密会话已被重置。如果联系人更换了设备或重新安装了此应用程序，就会重置会话。</string>
-    <string name="forward_security_reset_simple">与此联系人的完美前向保密会话已重置。</string>
-    <string name="forward_security_message_out_of_order">收到的消息乱序，无法解密。</string>
+    <string name="clear_forward_security">清除完全正向保密会话</string>
+    <string name="forward_security_cleared">与此联系人的完全正向保密会话已被清除</string>
+    <string name="message_without_forward_security">您收到一条没有完全正向保密的消息，您可以验证发件人是否主动禁用完美前向保密。</string>
+    <string name="forward_security_established">此会话中的消息现正受完全正向保密的保护。</string>
+    <string name="forward_security_established_rx">在此会话中收到的消息现正受完全正向保密的保护，您可以在联系人详细信息中启用完全正向保密来保护以后发送的消息。</string>
+    <string name="forward_security_reset">与此联系人的完全正向保密会话已被重置。如果联系人更换了设备或重新安装了此应用程序，就会重置会话。</string>
+    <string name="forward_security_reset_simple">与此联系人的完全正向保密会话已重置。</string>
+    <string name="forward_security_message_out_of_order">收到的消息发生故障，无法解密。</string>
     <string name="self_updater_installation_failed">下载更新失败。请手动从 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下载并安装更新。</string>
     <string name="spam_first_contact">此会话来自一个未知联系人</string>
     <string name="spam_report">举报垃圾消息</string>
@@ -1456,9 +1455,10 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_calls_tooltip_text">点击这里可邀请所有群组成员加入通话。所有群组成员都会收到通知，并可以决定是否要加入通话。</string>
     <string name="prefs_title_calls">加密通话</string>
     <string name="prefs_sum_group_calls_vibration">选择是否在群组通话开始时进行振动</string>
-    <string name="forward_security_mode_4dh">双向保密</string>
+    <string name="forward_security_mode_4dh">完整保密</string>
     <string name="forward_security_mode_2dh">单向保密</string>
-    <string name="forward_security_explanation">完全前向保密 (PFS) 可保护会话记录的通信，即使长期加密密钥已泄露也不会被追溯解密。\n\n如果双方的应用程序都支持完全前向保密，则可以启用该选项。</string>
+    <string name="forward_security_explanation">完全正向保密（PFS）可以保护会话记录不被追溯解密，即使长期加密密钥已被盗用。\n\n如果双方的应用程序都支持完全正向保密的话，就可以启用此选项。</string>
+    <string name="group_call_inactivity_left">因为长时间不活动，群组通话自动退出</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

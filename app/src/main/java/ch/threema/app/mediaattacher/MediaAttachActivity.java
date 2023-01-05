@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -433,7 +433,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				}
 				break;
 			case R.id.attach_gallery:
-				attachImageFromGallery();
+				attachFilesFromGallery();
 				break;
 			case R.id.attach_system_camera:
 				if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA)) {
@@ -466,7 +466,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 						finish();
 						startActivity(getIntent());
 					} else {
-						attachImageFromGallery();
+						attachFilesFromGallery();
 					}
 					break;
 				case PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA:
@@ -508,11 +508,11 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	}
 
 	@Override
-	protected ActivityResultLauncher<Intent> getFileSelectedResultLauncher() {
+	protected ActivityResultLauncher<Intent> getFileAttachedResultLauncher() {
 		return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
 			result -> {
 				if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-					onEdit(FileUtil.getUrisFromResult(result.getData(), getContentResolver()), true);
+					onEdit(FileUtil.getUrisFromResult(result.getData(), getContentResolver()), false);
 				}
 			});
 	}
@@ -535,9 +535,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					break;
 				case CONTACT_PICKER_INTENT:
 					editContact(intent.getData());
-					break;
-				case REQUEST_CODE_ATTACH_FROM_GALLERY:
-					onEdit(FileUtil.getUrisFromResult(intent, getContentResolver()));
 					break;
 				case ThreemaActivity.ACTIVITY_ID_CREATE_BALLOT:
 					finish();

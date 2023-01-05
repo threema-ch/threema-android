@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -135,7 +135,8 @@ public class ProtocolDefines {
 	public static final int PLTYPE_PUSH_ALLOWED_IDENTITIES = 0x21;
 	public static final int PLTYPE_VOIP_PUSH_NOTIFICATION_TOKEN = 0x24;
 	public static final int PLTYPE_QUEUE_SEND_COMPLETE = 0xd0;
-	public static final int PLTYPE_LAST_EPHEMERAL_KEY_HASH = 0xd1;
+	public static final int PLTYPE_DEVICE_COOKIE_CHANGE_INDICATION = 0xd2;
+	public static final int PLTYPE_CLEAR_DEVICE_COOKIE_CHANGE_INDICATION = 0xd3;
 	public static final int PLTYPE_ERROR = 0xe0;
 	public static final int PLTYPE_ALERT = 0xe1;
 

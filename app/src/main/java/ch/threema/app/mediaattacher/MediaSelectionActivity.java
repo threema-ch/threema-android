@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -236,27 +236,12 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 	}
 
 	@Override
-	protected ActivityResultLauncher<Intent> getFileSelectedResultLauncher() {
+	protected ActivityResultLauncher<Intent> getFileAttachedResultLauncher() {
 		return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
 			result -> {
 				if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
 					selectItemsAndClose(FileUtil.getUrisFromResult(result.getData(), getContentResolver()));
 				}
 			});
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
-
-		if (resultCode == Activity.RESULT_OK) {
-			switch (requestCode) {
-				case REQUEST_CODE_ATTACH_FROM_GALLERY:
-					selectItemsAndClose(FileUtil.getUrisFromResult(intent, getContentResolver()));
-					break;
-				default:
-					break;
-			}
-		}
 	}
 }

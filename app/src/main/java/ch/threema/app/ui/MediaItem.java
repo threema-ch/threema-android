@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -117,6 +117,12 @@ public class MediaItem implements Parcelable {
 		}
 
 		MediaItem mediaItem = new MediaItem(uri, mimeType, null);
+
+		// Set exif orientation
+		BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(context, uri);
+		mediaItem.setExifRotation((int) exifOrientation.getRotation());
+		mediaItem.setExifFlip(exifOrientation.getFlip());
+
 		mediaItem.setOriginalUri(originalUri);
 		mediaItem.setFilename(FileUtil.getFilenameFromUri(context.getContentResolver(), mediaItem));
 		if (asFile) {

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -39,5 +39,6 @@ public interface ForwardSecurityStatusListener {
 	void sessionTerminated(DHSessionId sessionId, Contact contact);
 	void messagesSkipped(DHSessionId sessionId, Contact contact, int numSkipped);
 	void messageOutOfOrder(DHSessionId sessionId, Contact contact);
+	void messageDecryptionFailed(DHSessionId sessionId, Contact contact, MessageId failedMessageId);
 	void first4DhMessageReceived(DHSessionId sessionId, Contact contact);
 }

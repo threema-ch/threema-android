@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,10 +25,13 @@ import android.content.ContentValues;
 
 import net.sqlcipher.Cursor;
 
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.app.services.MessageService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
@@ -38,6 +41,8 @@ import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class DistributionListMessageModelFactory extends AbstractMessageModelFactory {
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DistributionListMessageModelFactory");
+
 	public DistributionListMessageModelFactory(DatabaseServiceNew databaseService) {
 		super(databaseService, DistributionListMessageModel.TABLE);
 	}
@@ -92,7 +97,12 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 			super.convert(c, new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
 				@Override
 				public boolean next(CursorHelper cursorHelper) {
-					c.setDistributionListId(cursorHelper.getInt(DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID));
+					Long distributionListId = cursorHelper.getLong(DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID);
+					if (distributionListId != null) {
+						c.setDistributionListId(distributionListId);
+					} else {
+						logger.warn("Distribution list id is null");
+					}
 					return false;
 				}
 			}));

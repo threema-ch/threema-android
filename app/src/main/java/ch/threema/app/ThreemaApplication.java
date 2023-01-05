@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -87,6 +87,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
@@ -135,12 +137,12 @@ import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.ConversationNotificationUtil;
+import ch.threema.app.utils.DeviceCookieManagerImpl;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LinuxSecureRandom;
 import ch.threema.app.utils.LoggingUEH;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.PushUtil;
-import ch.threema.app.utils.RogueDeviceMonitorImpl;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.StateBitmapUtil;
@@ -276,6 +278,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String WORKER_THREEMA_SAFE_UPLOAD = "SafeUpload";
 	public static final String WORKER_PERIODIC_THREEMA_SAFE_UPLOAD = "PeriodicSafeUpload";
 	public static final String WORKER_CONNECTIVITY_CHANGE = "ConnectivityChange";
+
+	public static final Lock onAndroidContactChangeLock = new ReentrantLock();
 
 	private static final String EXIT_REASON_LOGGING_TIMESTAMP = "exit_reason_timestamp";
 
@@ -1004,7 +1008,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			connection.setServerAddressProvider(serviceManager.getServerAddressProviderService().getServerAddressProvider());
 
-			connection.setRogueDeviceMonitor(new RogueDeviceMonitorImpl(serviceManager));
+			connection.setDeviceCookieManager(new DeviceCookieManagerImpl(serviceManager));
 
 			// get application restrictions
 			if (ConfigUtils.isWorkBuild()) {
@@ -1829,6 +1833,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 				if (!selfChange && serviceManager != null && !isRunning) {
 					this.isRunning = true;
+					onAndroidContactChangeLock.lock();
 
 					boolean cont;
 					//check if a sync is in progress.. wait!
@@ -1856,6 +1861,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						}
 					}
 					this.isRunning = false;
+					onAndroidContactChangeLock.unlock();
 				}
 			}
 		};
