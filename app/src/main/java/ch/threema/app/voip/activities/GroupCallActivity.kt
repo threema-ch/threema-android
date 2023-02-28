@@ -69,6 +69,7 @@ import ch.threema.app.ui.TooltipPopup
 import ch.threema.app.utils.*
 import ch.threema.app.voip.CallAudioSelectorButton
 import ch.threema.app.voip.groupcall.GroupCallDescription
+import ch.threema.app.voip.groupcall.GroupCallIntention
 import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.app.voip.viewmodel.GroupCallViewModel
@@ -90,6 +91,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 	companion object {
 		private const val EXTRA_GROUP_ID = "EXTRA_GROUP_ID"
 		private const val EXTRA_MICROPHONE_ACTIVE = "EXTRA_MICROPHONE_ACTIVE"
+		private const val EXTRA_INTENTION = "EXTRA_INTENTION"
 
 		private const val DURATION_ANIMATE_NAVIGATION_MILLIS = 300L
 		private const val DURATION_ANIMATE_GRADIENT_VISIBILITY_MILLIS = 200L
@@ -103,15 +105,27 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 		private const val KEEP_ALIVE_DELAY = 20000L
 
 		@JvmStatic
-		fun getStartOrJoinCallIntent(context: Context, groupId: Int): Intent {
-			return getGroupCallIntent(context, groupId)
-				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+		fun getStartCallIntent(context: Context, groupId: Int): Intent {
+			return getStartOrJoinCallIntent(context, groupId)
+				.putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN_OR_CREATE)
 		}
 
 		@JvmStatic
-		fun getStartOrJoinCallIntent(context: Context, groupId: Int, microphoneActive: Boolean = true): Intent {
-			return getStartOrJoinCallIntent(context, groupId)
+		fun getJoinCallIntent(context: Context, groupId: Int, microphoneActive: Boolean = true): Intent {
+			return getJoinCallIntent(context, groupId)
 				.putExtra(EXTRA_MICROPHONE_ACTIVE, microphoneActive)
+		}
+
+		@JvmStatic
+		fun getJoinCallIntent(context: Context, groupId: Int): Intent {
+			return getStartOrJoinCallIntent(context, groupId)
+				.putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN)
+		}
+
+		@JvmStatic
+		private fun getStartOrJoinCallIntent(context: Context, groupId: Int): Intent {
+			return getGroupCallIntent(context, groupId)
+				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 		}
 
 		private fun getGroupCallIntent(context: Context, groupId: Int): Intent {
@@ -151,6 +165,8 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 	private val autoRemoveInfoAndControlsRunnable = Runnable {
 		hideInfoAndControls()
 	}
+
+	private var intention = GroupCallIntention.JOIN
 
 	private val viewModel: GroupCallViewModel by viewModels()
 
@@ -349,6 +365,8 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 	private fun handleIntent(intent: Intent) {
 		logger.debug("handleIntent")
 
+		intention = getIntention(intent)
+
 		val groupId = LocalGroupId(intent.getIntExtra(EXTRA_GROUP_ID, -1))
 		viewModel.setGroupId(groupId)
 		viewModel.cancelNotification()
@@ -363,6 +381,15 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 				finish()
 			}
 		}
+	}
+
+	private fun getIntention(intent: Intent): GroupCallIntention {
+		return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			intent.getSerializableExtra(EXTRA_INTENTION, GroupCallIntention::class.java)
+		} else {
+			@Suppress("DEPRECATION")
+			intent.getSerializableExtra(EXTRA_INTENTION) as? GroupCallIntention
+		} ?: GroupCallIntention.JOIN
 	}
 
 	private fun checkPhoneStateAndJoinCall() {
@@ -392,7 +419,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 					// continue without bluetooth support
 				}
 				withContext(Dispatchers.Main) {
-					viewModel.joinCall()
+					viewModel.joinCall(intention)
 				}
 			} else {
 				logger.info("Microphone permission denied")
@@ -653,7 +680,6 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 		viewModel.getEglBaseAndParticipants().observe(this) { (eglBase, participants) ->
 			participantsAdapter.isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 			participantsLayoutManager.spanCount = getParticipantsLayoutManagerSpanCount(participants.size)
-			// TODO(ANDR-1956): It is actually not necessary to set eglBase each time, but it must be set, before any viewholders are created
 			participantsAdapter.eglBase = eglBase
 			participantsAdapter.setParticipants(participants)
 		}
@@ -738,8 +764,8 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 			GroupCallViewModel.FinishEvent.Reason.ERROR -> showToast(R.string.voip_gc_call_error)
 			GroupCallViewModel.FinishEvent.Reason.INVALID_DATA,
 			GroupCallViewModel.FinishEvent.Reason.TOKEN_INVALID,
-			GroupCallViewModel.FinishEvent.Reason.NO_SUCH_CALL,
 			GroupCallViewModel.FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION -> showToast(R.string.voip_gc_call_start_error)
+			GroupCallViewModel.FinishEvent.Reason.NO_SUCH_CALL -> showToast(R.string.voip_gc_call_already_ended)
 			GroupCallViewModel.FinishEvent.Reason.SFU_NOT_AVAILABLE -> showToast(R.string.voip_gc_sfu_not_available)
 			GroupCallViewModel.FinishEvent.Reason.FULL -> showCallFullToast(event.call)
 			GroupCallViewModel.FinishEvent.Reason.LEFT -> Unit

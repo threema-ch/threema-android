@@ -48,6 +48,10 @@ public class GroupBallotVoteMessage extends AbstractGroupMessage
 
 	private final List<BallotVote> ballotVotes = new ArrayList<>();
 
+	@Override
+	public boolean allowUserProfileDistribution() {
+		return true;
+	}
 
 	@Override
 	public void setBallotId(BallotId ballotId) {

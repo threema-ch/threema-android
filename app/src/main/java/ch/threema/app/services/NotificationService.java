@@ -355,7 +355,7 @@ public interface NotificationService {
 	 */
 	void showNotEnoughDiskSpace(long availableSpace, long requiredSpace);
 
-	void showUnsentMessageNotification(@NonNull ArrayList<AbstractMessageModel> failedMessages);
+	void showUnsentMessageNotification(@NonNull List<AbstractMessageModel> failedMessages);
 
 	void showSafeBackupFailed(int numDays);
 

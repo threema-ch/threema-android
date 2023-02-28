@@ -33,6 +33,7 @@
     <string name="webclient_cannot_start">Не вдалося почати сеанс</string>
     <string name="webclient_constrained_by_mdm">Сервер не схвалено адміністратором.</string>
     <string name="webclient_clear_all_sessions">Видалити всі сеанси</string>
+    <string name="webclient_clear_all_sessions_confirm">Справді завершити й видалити всі сеанси?</string>
     <string name="webclient_prefs_debug_tool_summary">Скористайтеся цим інструментом, щоб виявити проблеми з підключенням до веб-клієнта або додатка для ПК</string>
     <string name="webclient_diagnostics">Діагностика веб-клієнта або додатка для ПК</string>
     <string name="webclient_diagnostics_start">Почати</string>

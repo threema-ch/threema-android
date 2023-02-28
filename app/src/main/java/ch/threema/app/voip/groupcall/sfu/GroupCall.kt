@@ -27,6 +27,7 @@ import ch.threema.app.voip.groupcall.sfu.connection.GroupCallConnectionState
 import ch.threema.app.voip.groupcall.sfu.webrtc.RemoteCtx
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.Flow
 import org.webrtc.EglBase
 
 internal interface GroupCall {
@@ -38,6 +39,15 @@ internal interface GroupCall {
     val callId: CallId
     val callLeftSignal: Deferred<Unit>
     val connectedSignal: CompletableDeferred<Pair<ULong, Set<ParticipantId>>>
+
+    /**
+     * In some cases the [GroupCallController] can decide that a participant should be treated as if
+     * it had left the call. This can for example be the case, when someone has been kicked from a group
+     * during a call.
+     *
+     * In such cases the corresponding [Participant]'s [ParticipantId] is emitted by this flow.
+     */
+    val dislodgedParticipants: Flow<ParticipantId>
 
     var description: GroupCallDescription
     var parameters: GroupCallParameters

@@ -191,7 +191,7 @@ public class ForwardSecurityMessageProcessor {
 		envelope.setMessageFlags(flags);
 		envelope.setPushFromName(innerMessage.getPushFromName());
 		envelope.setForwardSecurityMode(forwardSecurityMode);
-		envelope.setAllowSendingProfile(innerMessage.allowSendingProfile());
+		envelope.setAllowSendingProfile(innerMessage.allowUserProfileDistribution());
 
 		return envelope;
 	}
@@ -354,7 +354,7 @@ public class ForwardSecurityMessageProcessor {
 			}
 		} catch (KDFRatchet.RatchetRotationException e) {
 			for (ForwardSecurityStatusListener listener : statusListeners) {
-				listener.messageOutOfOrder(message.getSessionId(), contact);
+				listener.messageOutOfOrder(message.getSessionId(), contact, envelopeMessage.getMessageId());
 			}
 			throw new BadMessageException("Out of order FS message, cannot decrypt", true);
 		}

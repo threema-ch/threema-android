@@ -51,6 +51,15 @@ public class DeliveryReceiptMessage extends AbstractMessage {
 		return ProtocolDefines.MSGTYPE_DELIVERY_RECEIPT;
 	}
 
+	private boolean isReaction() {
+		return DeliveryReceiptUtils.isReaction(this.receiptType);
+	}
+
+	@Override
+	public boolean allowUserProfileDistribution() {
+		return this.isReaction();
+	}
+
 	@Override
 	public byte[] getBody() {
 

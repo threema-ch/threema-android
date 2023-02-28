@@ -74,25 +74,46 @@ interface GroupCallManager {
     fun removeGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
 
     /**
-     * Join a GroupCall. This may be a call that has to be created yet or a call
-     * that has been started by someone else.
+     * Join a GroupCall that is currently running.
      *
-     * If there is no existing call for this group, a new call will be created (with the current user
-     * as creator) according to the group call protocol.
+     * If there is no call considered running for this group no new call will be started.
      *
      * If the call for this group is already joined the method should return the corresponding
      * GroupCallController without executing any further connection steps.
      *
-     * When joining the call a connection to the SFU is established and the call created if it does not exist.
+     * When joining a group call a connection to the sfu will be established.
+     *
+     * Note: There can only be ONE call (be it 1:1 or be it GroupCall) at any time! If there is another
+     * ongoing call the other call must be ended.
+     *
+     * @param group The group in which the call should be joined
+     *
+     * @return The [GroupCallController] of the joined call or `null` if no call is running in this group
+     */
+    @WorkerThread
+    suspend fun joinCall(group: GroupModel): GroupCallController?
+
+    /**
+     * Join a GroupCall. This may be a call that has to be created yet or a call
+     * that has been started by someone else.
+     *
+     * If the call for this group is already joined the method should return the corresponding
+     * GroupCallController without executing any further connection steps.
+     *
+     * When joining or creating a group call a connection to the sfu will be established.
      *
      * If the current user is the creator of the call a GroupCallStart message will be sent to other group
      * members upon call creation on the sfu.
      *
      * Note: There can only be ONE call (be it 1:1 or be it GroupCall) at any time! If there is another
      * ongoing call the other call must be ended.
+     *
+     * @param group The group in which the call should be joined/started
+     *
+     * @return The [GroupCallController] of the joined or created call
      */
     @WorkerThread
-    suspend fun joinCall(group: GroupModel): GroupCallController
+    suspend fun createCall(group: GroupModel): GroupCallController
 
     /**
      * This aborts the current call. Since the call might not be ended gracefully (normally the call service
@@ -143,4 +164,7 @@ interface GroupCallManager {
      */
     @AnyThread
     fun sendGroupCallStartToNewMembers(groupModel: GroupModel, newMembers: List<String>)
+
+    @AnyThread
+    fun updateAllowedCallParticipants(groupModel: GroupModel)
 }

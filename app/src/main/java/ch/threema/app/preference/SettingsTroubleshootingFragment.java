@@ -447,7 +447,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_calls));
 			}
 
-			if (value != null) {
+			if (value != null && value) {
 				PreferenceCategory preferenceCategory = findPreference("pref_key_voip");
 				if (preferenceCategory != null) {
 					preferenceScreen.removePreference(preferenceCategory);
@@ -478,7 +478,11 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 	private void updateReadPhoneStatePermissionPref() {
 		Context context = getContext();
 
-		Preference phonePref = getPref(R.string.preferences__grant_read_phone_state_permission);
+		Preference phonePref = getPrefOrNull(R.string.preferences__grant_read_phone_state_permission);
+		if (phonePref == null) {
+			// This preference is not available if th_disable_calls is set to true
+			return;
+		}
 		if (context != null && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
 			phonePref.setEnabled(false);
 		} else {
@@ -762,7 +766,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 					messageService.sendText(caption +
 						"\n-- \n" +
-						ConfigUtils.getDeviceInfo(getActivity(), false) + "\n" +
+						ConfigUtils.getSupportDeviceInfo(getActivity()) + "\n" +
 						getVersionString() + "\n" +
 						userService.getIdentity(), receiver);
 

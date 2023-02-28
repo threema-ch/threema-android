@@ -64,6 +64,7 @@ public class MimeUtil {
 	public static final String MIME_TYPE_VIDEO_MP4 = "video/mp4";
 	public static final String MIME_TYPE_VIDEO_AVC = "video/avc";
 	public static final String MIME_TYPE_AUDIO_AAC = "audio/aac";
+	public static final String MIME_TYPE_AUDIO_M4A = "audio/x-m4a"; // mime type used by ios voice messages
 	public static final String MIME_TYPE_AUDIO_MIDI = "audio/midi";
 	public static final String MIME_TYPE_AUDIO_XMIDI = "audio/x-midi";
 	public static final String MIME_TYPE_AUDIO_FLAC = "audio/flac";
@@ -467,7 +468,7 @@ public class MimeUtil {
 			}
 		} else if (MimeUtil.isVideoFile(mimeType)) {
 			return TYPE_VIDEO;
-		} else if (MimeUtil.isAudioFile(mimeType) && mimeType.startsWith(MimeUtil.MIME_TYPE_AUDIO_AAC)) {
+		} else if (MimeUtil.isAudioFile(mimeType) && (mimeType.startsWith(MimeUtil.MIME_TYPE_AUDIO_AAC) || mimeType.startsWith(MimeUtil.MIME_TYPE_AUDIO_M4A))) {
 			return TYPE_VOICEMESSAGE;
 		}
 		return TYPE_FILE;

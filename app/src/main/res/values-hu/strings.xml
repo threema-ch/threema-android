@@ -921,7 +921,7 @@
     <string name="number_of_days">%d nap</string>
     <string name="backup_other_restore_options">Egyéb helyreállítási lehetőségek</string>
     <string name="safe_size">A mentés mérete</string>
-    <string name="safe_version_mismatch">A biztonsági mentés verziója magasabb az alkalmazás által támogatottnál. Kérjük, frissítse az alkalmazást.</string>
+    <string name="backup_version_mismatch">A biztonsági mentés verziója magasabb az alkalmazás által támogatottnál. Kérjük, frissítse az alkalmazást.</string>
     <string name="safe_restore_failed">A visszaállítás sikertelen</string>
     <string name="safe_failed_notification">A Threema Safe %d napja nem tud biztonsági mentést készíteni. Kérjük, kattintson ide az ellenőrzéshez.</string>
     <string name="safe_restore">Threema Safe visszaállítása</string>

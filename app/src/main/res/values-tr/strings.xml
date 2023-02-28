@@ -3,7 +3,7 @@
     <string name="title_section2">Kişiler</string>
     <string name="title_section1">Sohbetler</string>
     <string name="title_compose_message">Sohbet başlat</string>
-    <string name="title_choose_recipient">Alıcı seç</string>
+    <string name="title_choose_recipient">Alıcı Seç</string>
     <string name="title_keyfingerprint">Parmak izi anahtarı</string>
     <string name="title_mythreemaid">Threema kimliğim</string>
     <string name="title_threemaid">Threema kimliği</string>
@@ -498,6 +498,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="really_remove_wallpapers">Tüm duvar kağıtlarını gerçekten kaldırmak istiyor musunuz?</string>
     <string name="wallpapers_removed">Duvar kağıtları kaldırıldı</string>
     <string name="invalid_backup">Geçersiz yedekleme verisi. Geri yüklenemiyor.</string>
+    <string name="invalid_zip_restore_failed">Geri yükleme başarısız oldu. Geçersiz yedekleme dosyası: %1$s</string>
     <string name="revocation_explain">Buraya girdiğiniz şifre, kaybetmeniz veya çalınması durumunda kimliğinizi https://myid.threema.ch/revoke adresinden iptal etmenizi sağlar.</string>
     <string name="no_unread_messages">Okunmamış mesaj yok veya PIN kilidi etkinleştirildi</string>
     <string name="send_media">Medya gönder</string>
@@ -909,7 +910,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="number_of_days">%d gün</string>
     <string name="backup_other_restore_options">Diğer geri yükleme seçenekleri</string>
     <string name="safe_size">Yedek boyutu</string>
-    <string name="safe_version_mismatch">Bu yedeklemenin sürümü, desteklenen sürümden daha yüksek. Lütfen uygulamayı en son sürüme güncelleyin.</string>
+    <string name="backup_version_mismatch">Bu yedeklemenin sürümü, desteklenen sürümden daha yüksek. Lütfen uygulamayı en son sürüme güncelleyin.</string>
     <string name="safe_restore_failed">Geri yükleme başarısız</string>
     <string name="safe_failed_notification">Threema Safe yedeği arka arkaya %d gün boyunca başarısız oldu. Kontrol etmek için buraya dokunun.</string>
     <string name="safe_restore">Threema Safe\'i geri yükle</string>
@@ -1013,8 +1014,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
 <p>Bir arama başlatmak için bir grup sohbeti açın ve üst kısımdaki kamera düğmesine dokunun.</p>
 <p>Tüm grup üyeleri bir bildirim alacak ve aramaya katılmak isteyip istemeyeceklerine karar verebilecekler.</p>
 <p><b>Lütfen dikkat:</b> iOS için grup araması özelliği daha sonra kullanıma sunulacaktır.</p>]]></string>
-    <string name="whatsnew2_title">(boş bir cümle)</string>
-    <string name="whatsnew2_body">(boş bir cümle)</string>
     <string name="tap_to_start">%s şimdi başlatmak için buraya dokunun.</string>
     <string name="two_years">2 yıl</string>
     <string name="invalid_backup_path">Geçersiz yedekleme dizini</string>
@@ -1066,7 +1065,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="work_life_dnd_active">Mesai saatleri dışı aktif</string>
     <string name="pencil">Kalem</string>
     <string name="warning">Uyarı</string>
-    <string name="password_remember_warning">Buraya ne girdiğinizi unutmayın! %s sunucularda herhangi bir parola kaydetmediğinden, PIN kodunuzu ya da parolanızı unutursanız size yardımcı olamayız.</string>
+    <string name="password_remember_warning">Buraya ne yazdığınızı unutmayın! %s sunucularda herhangi bir parola kaydetmediğinden, PIN kodunuzu veya parolanızı unutursanız size yardımcı olamayız.</string>
     <string name="safe_backup_tap_to_restart">Uygulamayı şimdi yeniden başlatmak için gösterilen sistem bildirimine dokunun. Bildirimi göremiyorsanız, lütfen telefonunuzun bildirim çubuğunu aşağı kaydırın.</string>
     <string name="send_to_support">Threema desteğine gönder</string>
     <string name="menu_legal">Yasal</string>
@@ -1422,6 +1421,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="forward_security_mode_2dh">tek taraflı</string>
     <string name="forward_security_explanation">Mükemmel İletme Gizliliği (Perfect Forward Secrecy) (PFS), uzun süreli şifreleme anahtarı ele geçirilmiş olsa bile kaydedilmiş bir iletişimi geriye dönük şifre çözme işleminden korur.\n\nHer iki taraftaki uygulama PFS\'yi destekliyorsa bu seçenek etkinleştirilebilir.</string>
     <string name="group_call_inactivity_left">Hareketsizlik nedeniyle grup araması sonlandırıldı</string>
+    <string name="missing_permission_external_storage">Dosya kopyalanamıyor. Aşağıdaki adımları deneyin:\n1. Ayarlar uygulamasını açın.\n2. \"Uygulamalar\"a gidin ve \"Özel uygulama erişimi\"ni seçin.\n3. “Tüm dosyalara erişim” seçeneğine dokunun.\n4. Sağ üst köşedeki üç noktaya dokunun ve \"Sistemi göster\"i seçin.\n5. \"Harici Depolama\" üzerine dokunun ve \"Tüm dosyaları yönetmek için erişime izin ver\" seçeneğinin verildiğinden emin olun.\n6. Yedeği tekrar geri yüklemeyi deneyin.</string>
+    <string name="forward_security_downgraded_status_message">Bu kişi, Mükemmel İletme Gizliliği (PFS) desteklemeyen bir uygulama sürümü kullanmaya başladı. Artık mesajlar PFS olmadan gönderilecek.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>

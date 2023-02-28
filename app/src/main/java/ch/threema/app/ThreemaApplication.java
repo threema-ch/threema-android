@@ -1765,9 +1765,12 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 								}
 
 								if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE) {
-									//on private voting, only show default update msg!
-									message = serviceManager
-												.getContext().getString(R.string.status_ballot_voting_changed, ballotModel.getName());
+									// Only show status message for first vote from a voter on private voting
+									if (isFirstVote) {
+										//on private voting, only show default update msg!
+										message = serviceManager
+											.getContext().getString(R.string.status_ballot_voting_changed, ballotModel.getName());
+									}
 								} else {
 
 									if (receiver != null) {
@@ -1792,7 +1795,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 								}
 
 								//now check if every participant has voted
-								if(ballotService.getPendingParticipants(ballotModel.getId()).size() == 0) {
+								if (isFirstVote && ballotService.getPendingParticipants(ballotModel.getId()).size() == 0) {
 									String ballotAllVotesMessage = serviceManager
 													.getContext().getString(R.string.status_ballot_all_votes,
 															ballotModel.getName());

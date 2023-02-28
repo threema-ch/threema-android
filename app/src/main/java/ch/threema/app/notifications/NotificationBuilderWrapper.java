@@ -370,6 +370,13 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 		}
 
 		try {
+			logger.info("Audio Attributes Usage: {} -> {}", existingNotificationChannel.getAudioAttributes().getUsage(), newNotificationChannel.getAudioAttributes().getUsage());
+			if (existingNotificationChannel.getAudioAttributes().getUsage() != newNotificationChannel.getAudioAttributes().getUsage()) {
+				return false;
+			}
+		} catch (Exception e) { /* */ }
+
+		try {
 			logger.info("Vibrate: {} -> {}", existingNotificationChannel.shouldVibrate(), newNotificationChannel.shouldVibrate());
 		} catch (Exception e) { /* */ }
 
@@ -427,7 +434,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 	 */
 	@TargetApi(Build.VERSION_CODES.O)
 	private static NotificationChannel createNotificationChannel(String hash, NotificationChannelSettings notificationChannelSettings) {
-		AudioAttributes audioAttributes = SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT);
+		AudioAttributes audioAttributes = SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_NOTIFICATION);
 
 		@SuppressLint("WrongConstant") NotificationChannel newNotificationChannel = new NotificationChannel(
 				hash, hash.substring(0, 16),
@@ -463,6 +470,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 		return newNotificationChannel;
 	}
 
+	@NonNull
 	@Override
 	public Notification build() {
 		if (notificationSchema != null && !ConfigUtils.supportsNotificationChannels()) {

@@ -92,6 +92,7 @@
 	<string name="voip_gc_sfu_not_available">Server not available, try again later</string>
 	<string name="voip_gc_call_error">Call stopped due to an error</string>
 	<string name="voip_gc_call_start_error">Could not start group call</string>
+	<string name="voip_gc_call_already_ended">Group call has already ended</string>
 	<string name="voip_gc_call_full_generic">Maximum reached: No more participants can join this group call.</string>
 	<string name="voip_gc_call_full_n">Maximum of %1$d participants reached, you cannot join this group call.</string>
     <plurals name="n_participants_in_call">

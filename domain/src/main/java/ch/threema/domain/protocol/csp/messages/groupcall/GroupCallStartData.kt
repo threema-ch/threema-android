@@ -28,15 +28,15 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.InvalidProtocolBufferException
 
 class GroupCallStartData(
-    // TODO(ANDR-1956): Validate protocol version
     val protocolVersion: UInt,
     val gck: ByteArray,
     val sfuBaseUrl: String
 ) : ProtobufDataInterface<GroupCallStart> {
     companion object {
+        const val GCK_LENGTH = 32
+
         @JvmStatic
         fun fromProtobuf(rawProtobufMessage: ByteArray): GroupCallStartData {
-            // TODO(ANDR-1956): exception handling for invalid message content. e.g. invalid length of gck
             try {
                 val protobufMessage = GroupCallStart.parseFrom(rawProtobufMessage)
                 return GroupCallStartData(
@@ -46,7 +46,15 @@ class GroupCallStartData(
                 )
             } catch (e: InvalidProtocolBufferException) {
                 throw BadMessageException("Invalid group call start protobuf data")
+            } catch (e: IllegalArgumentException) {
+                throw BadMessageException("Could not create group call start data", e)
             }
+        }
+    }
+
+    init {
+    	if (gck.size != GCK_LENGTH) {
+            throw IllegalArgumentException("Invalid length of gck")
         }
     }
 

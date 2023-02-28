@@ -27,8 +27,6 @@ import org.webrtc.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-// TODO(ANDR-1956): replace completable futures with suspend..
-
 abstract class AudioContext(
     track: AudioTrack,
 ) {

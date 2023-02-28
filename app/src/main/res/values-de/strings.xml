@@ -569,6 +569,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="really_remove_wallpapers">Möchten Sie wirklich alle Hintergrundbilder entfernen?</string>
 	<string name="wallpapers_removed">Hintergrundbilder entfernt</string>
 	<string name="invalid_backup">Die Backup-Daten sind ungültig. Wiederherstellen nicht möglich.</string>
+	<string name="invalid_zip_restore_failed">Wiederherstellen fehlgeschlagen. Ungültige Backup-Datei: %1$s</string>
 	<string name="revocation_key_title">ID-Widerruf</string>
 	<string name="revocation_key_not_set">Kein Widerrufspasswort gesetzt</string>
 	<string name="revocation_key_set_at">Passwort gesetzt %1$s</string>
@@ -1021,7 +1022,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="number_of_days">%d Tage</string>
 	<string name="backup_other_restore_options">Weitere Wiederherst.-Optionen</string>
 	<string name="safe_size">Backup-Grösse</string>
-	<string name="safe_version_mismatch">Die Version des Backups ist höher als von der App unterstützt. Bitte aktualisieren Sie die App.</string>
+	<string name="backup_version_mismatch">Die Version des Backups ist höher als von der App unterstützt. Bitte aktualisieren Sie die App.</string>
 	<string name="safe_restore_failed">Wiederherstellen fehlgeschlagen</string>
 	<string name="safe_failed_notification">Threema Safe konnte seit %d Tagen kein Backup erstellen. Bitte tippen Sie hier zum Überprüfen.</string>
 	<string name="safe_connection_error">Verbindungsfehler</string>
@@ -1560,8 +1561,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 		<item quantity="other">%d Nachrichten gelöscht</item>
 	</plurals>
 	<plurals name="really_delete_contacts_message">
-		<item quantity="one">Möchtest du wirklich %1$d Kontakt und alle dazugehörigen Chats löschen?</item>
-		<item quantity="other">Möchtest du wirklich %1$d Kontakte und alle dazugehörigen Chats löschen?</item>
+		<item quantity="one">Möchten Sie wirklich %1$d Kontakt und alle dazugehörigen Chats löschen?</item>
+		<item quantity="other">Möchten Sie wirklich %1$d Kontakte und alle dazugehörigen Chats löschen?</item>
 	</plurals>
 	<plurals name="media_files_deleted">
 		<item quantity="one">%d Mediendatei gelöscht</item>
@@ -1639,4 +1640,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="send_contact">Kontakt senden</string>
 	<string name="edit_send_contact_detail_icon">Kontaktdetail-Typ</string>
 	<string name="contact_picture_content_description">Kontaktbild</string>
+	<string name="missing_permission_external_storage">Fehler beim Kopieren der Datei. Versuchen Sie folgende Schritte:\n1. Öffnen Sie auf Ihrem Telefon die App «Einstellungen».\n2. Navigieren Sie zu «Apps».\n3. Tippen Sie auf «Zugriff auf alle Dateien».\n4. Tippen Sie auf die drei Punkte oben und wählen Sie «System Apps anzeigen».\n5. Tippen Sie auf «Externer Speicher» und stellen Sie sicher, dass «Zugriff zum Verwalten aller Dateien zulassen» aktiviert ist.\n6. Versuchen Sie erneut, das Daten-Backup wiederherzustellen.</string>
+	<string name="forward_security_downgraded_status_message">Dieser Kontakt verwendet jetzt eine App-Version, die Perfect Forward Secrecy nicht unterstützt. Nachrichten werden von nun an ohne PFS gesendet.</string>
 </resources>

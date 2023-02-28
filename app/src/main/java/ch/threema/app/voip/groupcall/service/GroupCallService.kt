@@ -253,7 +253,7 @@ class GroupCallService : Service() {
         return PendingIntent.getActivity(
             applicationContext,
             REQUEST_CODE_JOIN_CALL,
-            GroupCallActivity.getStartOrJoinCallIntent(applicationContext, groupId.id),
+            GroupCallActivity.getJoinCallIntent(applicationContext, groupId.id),
             flags or PENDING_INTENT_FLAG_IMMUTABLE
         )
 
@@ -348,8 +348,6 @@ class GroupCallService : Service() {
         stopService()
     }
 
-    // TODO(ANDR-1956): Maybe add a stop service signal that will be listened to by the service and can be triggered
-    //  if for any reason / exception the service has/should be stopped
     private fun stopService() {
         logger.info("Stop service")
         // TODO(ANDR-1964): When a call is left, this is called twice: one time from leaveCall() and one time from onUnbind()

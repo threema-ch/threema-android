@@ -274,12 +274,18 @@ public class NameUtil {
 	}
 
 	/**
-	 * Return the name used for quotes and mentions.
+	 * Return the name used for quotes and mentions. If the contact is not known or an error occurs
+	 * while getting the quote name, the identity is returned if not null. Otherwise an empty string
+	 * is returned.
 	 */
 	@NonNull
 	public static String getQuoteName(@Nullable String identity, ContactService contactService, UserService userService) {
 		if (contactService == null || userService == null || identity == null) {
-			return "";
+			if (identity != null) {
+				return identity;
+			} else {
+				return "";
+			}
 		}
 
 		if (ContactService.ALL_USERS_PLACEHOLDER_ID.equals(identity)) {
@@ -287,7 +293,12 @@ public class NameUtil {
 		}
 
 		final ContactModel contactModel = contactService.getByIdentity(identity);
-		return getQuoteName(contactModel, userService);
+		String quoteName = getQuoteName(contactModel, userService);
+		if (quoteName.isBlank()) {
+			return identity;
+		} else {
+			return quoteName;
+		}
 	}
 
 	public static void showNicknameInView(TextView nickNameTextView, ContactModel contactModel, String filterString, FilterableListAdapter adapter) {

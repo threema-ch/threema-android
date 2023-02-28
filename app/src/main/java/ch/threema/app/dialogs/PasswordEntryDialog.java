@@ -35,7 +35,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -44,6 +43,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
@@ -73,7 +73,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 	                                              @StringRes int positive, @StringRes int negative,
 	                                              int minLength, int maxLength,
 	                                              int confirmHint, int inputType, int checkboxText,
-	                                              ForgotHintType showForgotPwHint ) {
+	                                              ForgotHintType showForgotPwHint) {
 		PasswordEntryDialog dialog = new PasswordEntryDialog();
 		Bundle args = new Bundle();
 		args.putInt("title", title);
@@ -149,12 +149,13 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
+	public void onAttach(@NonNull Activity activity) {
 		super.onAttach(activity);
 
 		this.activity = activity;
 	}
 
+	@NonNull
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 		if (savedInstanceState != null && alertDialog != null) {
@@ -168,7 +169,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 		int negative = getArguments().getInt("negative");
 		int inputType = getArguments().getInt("inputType", 0);
 		minLength = getArguments().getInt("minLength", 0);
-		 maxLength = getArguments().getInt("maxLength", 0);
+		maxLength = getArguments().getInt("maxLength", 0);
 		final int confirmHint = getArguments().getInt("confirmHint", 0);
 		final int checkboxText = getArguments().getInt("checkboxText", 0);
 		final int checkboxConfirmText = getArguments().getInt("checkboxConfirmText", 0);
@@ -187,9 +188,6 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 		final TextInputLayout editText1Layout = dialogView.findViewById(R.id.password1layout);
 		final TextInputLayout editText2Layout = dialogView.findViewById(R.id.password2layout);
 		checkBox = dialogView.findViewById(R.id.check_box);
-
-//		editText1.setCustomSelectionActionModeCallback(deadEndCallback);
-//		editText2.setCustomSelectionActionModeCallback(deadEndCallback);
 
 		editText1.addTextChangedListener(new PasswordWatcher(editText1, editText2));
 		editText2.addTextChangedListener(new PasswordWatcher(editText1, editText2));
@@ -228,15 +226,12 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 			checkBox.setText(checkboxText);
 
 			if (checkboxConfirmText != 0) {
-				checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						if (isChecked) {
-							DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_CONFIRM_CHECKBOX, true);
-							GenericAlertDialog genericAlertDialog = GenericAlertDialog.newInstance(title, checkboxConfirmText, R.string.ok, R.string.cancel);
-							genericAlertDialog.setTargetFragment(PasswordEntryDialog.this, 0);
-							genericAlertDialog.show(getFragmentManager(), DIALOG_TAG_CONFIRM_CHECKBOX);
-						}
+				checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+					if (isChecked) {
+						DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_CONFIRM_CHECKBOX, true);
+						GenericAlertDialog genericAlertDialog = GenericAlertDialog.newInstance(title, checkboxConfirmText, R.string.ok, R.string.cancel);
+						genericAlertDialog.setTargetFragment(this, 0);
+						genericAlertDialog.show(getFragmentManager(), DIALOG_TAG_CONFIRM_CHECKBOX);
 					}
 				});
 			}
@@ -280,22 +275,17 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 
 		builder.setView(dialogView);
 
-		builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						if (checkboxText != 0) {
-							callback.onYes(tag, editText1.getText().toString(), checkBox.isChecked(), object);
-						} else {
-							callback.onYes(tag, editText1.getText().toString(), false, object);
-						}
-					}
-				}
-		);
-		builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								callback.onNo(tag);
-							}
-						}
-				);
+		builder.setPositiveButton(getString(positive), (dialog, whichButton) -> {
+			if (checkboxText != 0) {
+				callback.onYes(tag, editText1.getText().toString(), checkBox.isChecked(), object);
+			} else {
+				callback.onYes(tag, editText1.getText().toString(), false, object);
+			}
+		});
+		builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo(tag));
+
+		builder.setBackgroundInsetTop(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
+		builder.setBackgroundInsetBottom(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
 
 		alertDialog = builder.create();
 		alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -303,12 +293,13 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 	}
 
 	@Override
-	public void onCancel(DialogInterface dialogInterface) {
+	public void onCancel(@NonNull DialogInterface dialogInterface) {
 		callback.onNo(this.getTag());
 	}
 
 	public class PasswordWatcher implements TextWatcher {
-		private EditText password1, password2;
+		private final EditText password1;
+		private final EditText password2;
 
 		public PasswordWatcher(final EditText password1, final EditText password2) {
 			this.password1 = password1;

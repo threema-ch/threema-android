@@ -35,6 +35,7 @@ public abstract class Tags {
 	public static final String MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX = "message_thumbnail_";
 	public static final String GROUP_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX = "group_message_thumbnail_";
 	public static final String CONTACT_AVATAR_FILE_PREFIX = "contact_avatar_";
+	public static final String CONTACT_AVATAR_FILE_SUFFIX_ME = "me";
 	public static final String CONTACT_PROFILE_PIC_FILE_PREFIX = "contact_profile_pic_";
 
 	public static final String DISTRIBUTION_LIST_MESSAGE_MEDIA_FILE_PREFIX = "distribution_list_message_media_";
@@ -61,6 +62,7 @@ public abstract class Tags {
 	public static final String TAG_CONTACT_HIDDEN = "hidden";
 	public static final String TAG_CONTACT_ARCHIVED = "archived";
 	public static final String TAG_CONTACT_FORWARD_SECURITY = "forward_security";
+	public static final String TAG_CONTACT_IDENTITY_ID = "identity_id"; // a unique ID representing the identity of a contact
 
 	public static final String TAG_GROUP_ID = "id";
 	public static final String TAG_GROUP_CREATOR = "creator";
@@ -71,6 +73,7 @@ public abstract class Tags {
 	public static final String TAG_GROUP_ARCHIVED = "archived";
 	public static final String TAG_GROUP_DESC = "groupDesc";
 	public static final String TAG_GROUP_DESC_TIMESTAMP = "groupDescTimestamp";
+	public static final String TAG_GROUP_UID = "group_uid";
 
 	public static final String TAG_MESSAGE_UID = "uid";
 	public static final String TAG_MESSAGE_IDENTITY = "identity";

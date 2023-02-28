@@ -49,6 +49,11 @@ public class BallotVoteMessage extends AbstractMessage
 	private final List<BallotVote> ballotVotes = new ArrayList<>();
 
 	@Override
+	public boolean allowUserProfileDistribution() {
+		return true;
+	}
+
+	@Override
 	public void setBallotId(BallotId ballotId) {
 		this.ballotId = ballotId;
 	}

@@ -200,7 +200,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 					.setFileSize(modelFileData.getFileSize())
 					.setFileName(modelFileData.getFileName())
 					.setRenderingType(modelFileData.getRenderingType())
-					.setDescription(modelFileData.getCaption())
+					.setCaption(modelFileData.getCaption())
 					.setCorrelationId(messageModel.getCorrelationId())
 					.setMetaData(modelFileData.getMetaData());
 

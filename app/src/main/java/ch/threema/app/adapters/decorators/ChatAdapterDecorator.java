@@ -33,6 +33,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
@@ -44,6 +45,7 @@ import java.util.Map;
 
 import ch.threema.app.R;
 import ch.threema.app.cache.ThumbnailCache;
+import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DownloadService;
@@ -56,6 +58,7 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.StateBitmapUtil;
@@ -537,6 +540,24 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 				holder.tapToResend.setVisibility(View.GONE);
 				holder.dateView.setVisibility(View.VISIBLE);
 			}
+		}
+	}
+
+	protected void configureBodyText(@NonNull ComposeMessageHolder holder, @Nullable String caption) {
+		if (!TestUtil.empty(caption)) {
+			holder.bodyTextView.setText(formatTextString(caption, filterString));
+
+			LinkifyUtil.getInstance().linkify(
+				(ComposeMessageFragment) helper.getFragment(),
+				holder.bodyTextView,
+				getMessageModel(),
+				true,
+				actionModeStatus.getActionModeEnabled(),
+				onClickElement);
+
+			showHide(holder.bodyTextView, true);
+		} else {
+			showHide(holder.bodyTextView, false);
 		}
 	}
 }

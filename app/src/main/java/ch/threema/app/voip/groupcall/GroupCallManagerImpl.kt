@@ -23,7 +23,6 @@ package ch.threema.app.voip.groupcall
 
 import android.content.Context
 import androidx.annotation.AnyThread
-import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import ch.threema.app.BuildConfig
@@ -44,6 +43,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
+import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData.Companion.GCK_LENGTH
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
 import ch.threema.storage.DatabaseServiceNew
 import ch.threema.storage.models.ContactModel
@@ -71,14 +71,19 @@ class GroupCallManagerImpl(
 	private val notificationService: NotificationService,
 	private val sfuConnection: SfuConnection
 ) : GroupCallManager {
+	private companion object {
+		private const val ARTIFICIAL_GC_CREATE_WAIT_PERIOD_MILLIS: Long = 2000L
+	}
+
 	private val callObservers: MutableMap<LocalGroupId, MutableSet<GroupCallObserver>> = mutableMapOf()
 	private val callRefreshTimers: MutableMap<LocalGroupId, Job> = Collections.synchronizedMap(mutableMapOf())
 
 	// TODO(ANDR-1957): Unsure if this is guarded properly for use outside of the GC thread. There
 	//  is synchronization but it's not used consistently.
-	private val peekFailedCounters: PeekFailedCounter = PeekFailedCounter()
 	private val runningCalls: MutableMap<CallId, GroupCallDescription>
 	private val chosenCalls: MutableMap<LocalGroupId, GroupCallDescription> = mutableMapOf()
+
+	private val peekFailedCounters: PeekFailedCounter = PeekFailedCounter()
 
 	private var serviceConnection = GroupCallServiceConnection()
 
@@ -112,12 +117,12 @@ class GroupCallManagerImpl(
 		return serviceConnection.getCallAudioManager()
 	}
 
-	@UiThread
+	@AnyThread
 	override fun addGroupCallObserver(group: GroupModel, observer: GroupCallObserver) {
 		addGroupCallObserver(group.localGroupId, observer)
 	}
 
-	@UiThread
+	@AnyThread
 	override fun addGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver) {
 		synchronized(callObservers) {
 			if (groupId !in callObservers) {
@@ -129,12 +134,12 @@ class GroupCallManagerImpl(
 		}
 	}
 
-	@UiThread
+	@AnyThread
 	override fun removeGroupCallObserver(group: GroupModel, observer: GroupCallObserver) {
 		removeGroupCallObserver(group.localGroupId, observer)
 	}
 
-	@UiThread
+	@AnyThread
 	override fun removeGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver) {
 		synchronized(callObservers) {
 			callObservers[groupId]?.remove(observer)
@@ -142,37 +147,51 @@ class GroupCallManagerImpl(
 	}
 
 	@WorkerThread
-	override suspend fun joinCall(group: GroupModel): GroupCallController {
+	override suspend fun joinCall(group: GroupModel): GroupCallController? {
 		GroupCallThreadUtil.assertDispatcherThread()
 
 		val groupId = group.localGroupId
-		logger.debug("Join call for group {}", groupId)
+
+		logger.debug("Try joining call for group {}", groupId)
 
 		val controller = getGroupCallControllerForJoinedCall(groupId)
 		return if (controller != null) {
+			logger.info("Call already joined")
 			controller
 		} else {
-			val chosenCall = getChosenCall(groupId)
-			if (chosenCall == null) {
-				// there is no group call considered running for this group. Start it!
-				logger.debug("Create new group call")
-				createCall(group)
-			} else {
-				// join `callId` and return controls
-				logger.debug("Join existing group call")
-				joinCall(chosenCall).also {
-					// wait until the call is 'CONNECTED'
-					it.connectedSignal.await()
-					// always confirm the call when joining and not creating a call
-					it.confirmCall()
-					// If two participants almost simultaneously start a group call, only one group
-					// call will be created. The other participant will join the chosen call while
-					// aborting the creation of its own group call. This can lead to a race where
-					// the group call start notification is shown even though the join process has
-					// already started. For this case, we cancel the notification here.
-					notificationService.cancelGroupCallNotification(groupId.id)
-				}
+			getChosenCall(groupId)?.let {
+				logger.info("Join existing call with id {}", it.callId)
+				joinAndConfirmCall(it, groupId)
 			}
+		}
+	}
+
+	override suspend fun createCall(group: GroupModel): GroupCallController {
+		GroupCallThreadUtil.assertDispatcherThread()
+
+		return joinCall(group) ?: run {
+			// there is no group call considered running for this group. Start it!
+			logger.info("Create new group call")
+			createNewCall(group)
+		}
+	}
+
+	@WorkerThread
+	private suspend fun joinAndConfirmCall(call: GroupCallDescription, groupId: LocalGroupId): GroupCallController {
+		logger.info("Join existing group call")
+		GroupCallThreadUtil.assertDispatcherThread()
+
+		return joinCall(call).also {
+			// wait until the call is 'CONNECTED'
+			it.connectedSignal.await()
+			// always confirm the call when joining and not creating a call
+			it.confirmCall()
+			// If two participants almost simultaneously start a group call, only one group
+			// call will be created. The other participant will join the chosen call while
+			// aborting the creation of its own group call. This can lead to a race where
+			// the group call start notification is shown even though the join process has
+			// already started. For this case, we cancel the notification here.
+			notificationService.cancelGroupCallNotification(groupId.id)
 		}
 	}
 
@@ -229,15 +248,39 @@ class GroupCallManagerImpl(
 		}
 		CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
 			val groupCallDescription = getChosenCall(groupModel.localGroupId) ?: return@launch
-			val sfuToken = obtainToken()
-			if (sfuToken == null) {
-				logger.warn("Could not send group call start to new members")
-			} else {
-				sendGroupCallStartMessage(groupModel, GroupCallStartData(
+			val startData = try {
+				GroupCallStartData(
 					ProtocolDefines.GC_PROTOCOL_VERSION.toUInt(),
 					groupCallDescription.gck,
-					sfuToken.sfuBaseUrl
-				), groupCallDescription.getStartedAtDate(), newMembers.toTypedArray())
+					groupCallDescription.sfuBaseUrl
+				)
+			} catch (e: IllegalArgumentException) {
+				logger.warn("Could not create call start data", e)
+				null
+			}
+			if (startData == null) {
+				logger.warn("Could not send group call start to new members")
+			} else {
+				sendGroupCallStartMessage(groupModel, startData, groupCallDescription.getStartedAtDate(), newMembers.toTypedArray())
+			}
+		}
+	}
+
+	override fun updateAllowedCallParticipants(groupModel: GroupModel) {
+		logger.debug("Update allowed call participants")
+		CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+			getGroupCallControllerForJoinedCall(groupModel.localGroupId)?.let {
+				val members = groupService.getGroupIdentities(groupModel).toSet()
+				it.purgeCallParticipants(members)
+			}
+			if (!groupService.isGroupMember(groupModel)) {
+				val groupId = groupModel.localGroupId
+				val callIds = getRunningCalls(groupId)
+					.map { it.callId }
+					.toSet()
+				removeRunningCalls(callIds)
+				chosenCalls.remove(groupId)
+				purgeCallRefreshTimers(groupId)
 			}
 		}
 	}
@@ -294,7 +337,7 @@ class GroupCallManagerImpl(
 
 	@WorkerThread
 	@Throws(GroupCallException::class)
-	private suspend fun createCall(group: GroupModel): GroupCallController {
+	private suspend fun createNewCall(group: GroupModel): GroupCallController {
 		GroupCallThreadUtil.assertDispatcherThread()
 
 		val callStartData = createGroupCallStartData()
@@ -317,19 +360,18 @@ class GroupCallManagerImpl(
 		val (startedAt, participantIds) = callController.connectedSignal.await()
 		callDescription.startedAt = startedAt
 
-		// Make function cancellable. This enables cancelling call creation before GroupCallStart
-		// is sent to other group members.
-		// This is useful when someone accidentally pressed the call button and immediately hangs up
-		// in the GroupCallActivity.
-		yield()
-
-		val chosenCall = getCurrentChosenCall(group)
+		// Wait some time for another chosen call.
+		// This delay is actually meant to allow a butter fingered user to cancel a call again
+		// if it has been started by mistake.
+		// If a call in this group is started by another group member in the meantime, this call
+		// will be joined immediately instead.
+		val chosenCall = waitForChosenCall(group, ARTIFICIAL_GC_CREATE_WAIT_PERIOD_MILLIS)
 
 		if (chosenCall != null && chosenCall.callId != callId) {
 			callController.leave()
 			callController.callDisposedSignal.await()
 			logger.warn("There is already another chosen call for group ${group.localGroupId}")
-			return joinCall(group)
+			return joinAndConfirmCall(chosenCall, groupId)
 		}
 
 		logger.debug("Got {} participants", participantIds.size)
@@ -357,6 +399,43 @@ class GroupCallManagerImpl(
 		)
 
 		return callController
+	}
+
+	/**
+	 * Wait for at most [waitPeriodMillis] for another chosen call in this [group].
+	 * If after this wait period no chosen call is available for this group, `null` will be returned.
+	 * If another chosen call is created for this group it is returned immediately upon creation,
+	 * even if the wait period has not yet expired.
+	 */
+	private suspend fun waitForChosenCall(group: GroupModel, waitPeriodMillis: Long): GroupCallDescription? {
+		val signal = CompletableDeferred<GroupCallDescription>()
+
+		val groupCallObserver = object : GroupCallObserver {
+			override fun onGroupCallUpdate(call: GroupCallDescription?) {
+				if (call != null) {
+					signal.complete(call)
+				}
+			}
+
+			override fun onGroupCallStart(groupModel: GroupModel) {
+				// noop
+			}
+		}
+
+		return try {
+			logger.debug("Start artificial wait period before sending group call start message")
+			addGroupCallObserver(group, groupCallObserver)
+			withTimeout(waitPeriodMillis) {
+				signal.await().also {
+					logger.debug("Another chosen call has been started for this group. Stop waiting for chosen call.")
+				}
+			}
+		} catch (e: TimeoutCancellationException) {
+			logger.debug("Artificial wait period has expired without another chosen call")
+			null
+		} finally {
+			removeGroupCallObserver(group, groupCallObserver)
+		}
 	}
 
 	/**
@@ -396,7 +475,12 @@ class GroupCallManagerImpl(
 
 		val group = groupService.getGroup(message)
 		val groupId = group.localGroupId
-		logger.debug("Process group call start for group {}: {}", groupId, message.data)
+		logger.info("Process group call start for group {}: {}", groupId, message.data)
+
+		if (ProtocolDefines.GC_PROTOCOL_VERSION != message.data.protocolVersion.toInt()) {
+			logger.warn("Invalid protocol version {} received. Abort handling of group call start", message.data.protocolVersion)
+			return
+		}
 
 		if (isInvalidSfuBaseUrl(message.data.sfuBaseUrl)) {
 			logger.warn("Invalid sfu base url: {}", message.data.sfuBaseUrl)
@@ -431,29 +515,46 @@ class GroupCallManagerImpl(
 					message.date)
 		}
 
+		notifyGroupCallStart(group, callerContactModel)
+	}
+
+	private suspend fun notifyGroupCallStart(group: GroupModel, callerContactModel: ContactModel?) {
+		val groupId = group.localGroupId
+
 		val chosenCall = runGroupCallRefreshSteps(groupId)
 
-		if (chosenCall != null) {
-			if (ConfigUtils.isGroupCallsEnabled() && !consolidateJoinedCall(chosenCall, groupId)) {
-				if (callerContactModel != null) {
-					// Only needed if the call is not yet joined
-					if (!isJoinedCall(chosenCall)) {
-						logger.debug("Show group call notification")
-						notificationService.addGroupCallNotification(group, callerContactModel)
-						synchronized(callObservers) {
-							callObservers[groupId]?.forEach { it.onGroupCallStart(group, call) }
-						}
-					} else {
-						logger.debug("Call already joined")
-					}
-				} else {
-					logger.debug("Caller could not be determined")
-				}
-			} else if (!ConfigUtils.isGroupCallsEnabled()) {
-				logger.info("Group call is running but disabled. Not showing notification.")
-			}
-		} else {
-			logger.info("Group call seems not to be running any more. Not showing notification.")
+		if (chosenCall == null) {
+			logger.info("Group call seems not to be running any more. Not showing notifications.")
+			return
+		}
+
+		// Only check this _after_ running the group call refresh steps.
+		// During the refresh steps the 'ended'-status will be created if the call has already been
+		// ended
+		if (!ConfigUtils.isGroupCallsEnabled()) {
+			logger.info("Group call is running but disabled. Not showing notifications.")
+			return
+		}
+
+		if (callerContactModel == null) {
+			logger.warn("Caller could not be determined. Not showing notifications.")
+			return
+		}
+
+		if (isJoinedCall(chosenCall)) {
+			logger.info("Call already joined. Not showing notifications.")
+			return
+		}
+
+		logger.debug("Show group call notification")
+		notificationService.addGroupCallNotification(group, callerContactModel)
+
+		notifyGroupCallStartObservers(group)
+	}
+
+	private fun notifyGroupCallStartObservers(group: GroupModel) {
+		synchronized(callObservers) {
+			callObservers[group.localGroupId]?.forEach { it.onGroupCallStart(group) }
 		}
 	}
 
@@ -505,12 +606,13 @@ class GroupCallManagerImpl(
 			leaveCall(joinedCall)
 
 			groupService.getById(groupId.id)?.let {
-				val newGroupController = joinCall(it)
-				newGroupController.microphoneActive = microphoneActive
+				joinCall(it)?.let {
+					it.microphoneActive = microphoneActive
+				}
 			}
 
 			context.startActivity(
-				GroupCallActivity.getStartOrJoinCallIntent(
+				GroupCallActivity.getJoinCallIntent(
 					context,
 					groupId.id,
 					microphoneActive,
@@ -566,7 +668,7 @@ class GroupCallManagerImpl(
 	@WorkerThread
 	private fun createGck(): ByteArray {
 		val random = SecureRandom()
-		val gck = ByteArray(ProtocolDefines.GC_GCK_LENGTH)
+		val gck = ByteArray(GCK_LENGTH)
 		random.nextBytes(gck)
 		return gck
 	}
@@ -589,6 +691,7 @@ class GroupCallManagerImpl(
 	private fun sendGroupCallStartMessage(group: GroupModel, data: GroupCallStartData, startedAt: Date, sendTo: Array<String>?) {
 		GroupCallThreadUtil.assertDispatcherThread()
 
+		logger.debug("Send group call start message")
 		val identities = (sendTo ?: groupService.getGroupIdentities(group))
 			.filter { identity -> contactService.getByIdentity(identity)?.let { ThreemaFeature.canGroupCalls(it.featureMask) } ?: false }
 			.toTypedArray()
@@ -927,15 +1030,21 @@ class GroupCallManagerImpl(
 	}
 
 	@WorkerThread
-	private fun removeRunningCall(callId: CallId): GroupCallDescription? {
+	private fun removeRunningCall(callId: CallId) {
+		removeRunningCalls(setOf(callId))
+	}
+
+	@WorkerThread
+	private fun removeRunningCalls(callIds: Set<CallId>) {
 		GroupCallThreadUtil.assertDispatcherThread()
 
 		return synchronized(runningCalls) {
-			val removedCall = runningCalls.remove(callId).also {
-				logger.debug("call removed: {}, id={}", it != null, callId)
+			callIds.forEach { callId ->
+				val removedCall = runningCalls.remove(callId).also {
+					logger.debug("call removed: {}, id={}", it != null, callId)
+				}
+				removedCall?.let { removePersistedRunningCall(it) }
 			}
-			removedCall?.let { removePersistedRunningCall(it) }
-			removedCall
 		}
 	}
 

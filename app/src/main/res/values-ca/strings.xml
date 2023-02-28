@@ -910,7 +910,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="number_of_days">%d dies</string>
     <string name="backup_other_restore_options">Altres opcions de restauració</string>
     <string name="safe_size">Mida de la còpia</string>
-    <string name="safe_version_mismatch">La versió d\'aquesta còpia és major que la versió suportada. Actualitzeu a la darrera versió de l\'aplicació.</string>
+    <string name="backup_version_mismatch">La versió d\'aquesta còpia és major que la versió suportada. Actualitzeu a la darrera versió de l\'aplicació.</string>
     <string name="safe_restore_failed">Restauració fallida</string>
     <string name="safe_failed_notification">La còpia de Threema Safe ha fallat durant %d dies consecutius. Toqueu per comprovar.</string>
     <string name="safe_restore">Restaurar Threema Safe</string>

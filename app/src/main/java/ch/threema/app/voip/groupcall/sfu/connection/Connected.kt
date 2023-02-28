@@ -37,6 +37,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import com.google.protobuf.InvalidProtocolBufferException
 import java8.util.function.Function
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.webrtc.DataChannel
@@ -84,6 +85,9 @@ class Connected internal constructor(
 
         logger.trace("Set data channel observer")
         setP2sDataChannelObserver()
+
+        logger.trace("Set dislodged participants observer")
+        setDislodgedParticipantsObserver()
 
         // Update the call
         logger.trace("Update call initiated")
@@ -149,6 +153,39 @@ class Connected internal constructor(
                 }
             }
         })
+    }
+
+    @WorkerThread
+    private fun setDislodgedParticipantsObserver() {
+        CoroutineScope(Dispatchers.Default).launch {
+            val observerJob = launch {
+                call.dislodgedParticipants
+                    .cancellable()
+                    .collect {
+                        withContext(GroupCallThreadUtil.DISPATCHER) {
+                            removeDislodgedParticipant(it)
+                        }
+                    }
+            }
+            launch {
+                try {
+                    call.callLeftSignal.await()
+                } catch (e: Exception) {
+                    // noop
+                }
+                logger.debug("Cancel dislodged participants observer job")
+                observerJob.cancel()
+            }
+        }
+    }
+
+    @WorkerThread
+    private suspend fun removeDislodgedParticipant(participantId: ParticipantId) {
+        logger.debug("Remove dislodged participant {}", participantId)
+        GroupCallThreadUtil.assertDispatcherThread()
+
+        unsubscribeMicrophone(participantId)
+        removeParticipantFromCall(participantId)
     }
 
     @WorkerThread
@@ -252,10 +289,7 @@ class Connected internal constructor(
     private suspend fun handleLeaveMessage(message: S2PMessage.SfuParticipantLeft) {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        logger.info("Scheduling to remove participant '{}' from call", message.participantId)
-        updateCallMutex.withLock {
-            removeParticipantFromCall(message.participantId)
-        }
+        removeParticipantFromCall(message.participantId)
     }
 
     @WorkerThread
@@ -317,6 +351,13 @@ class Connected internal constructor(
     }
 
     @WorkerThread
+    private fun unsubscribeMicrophone(participantId: ParticipantId) {
+        GroupCallThreadUtil.assertDispatcherThread()
+
+        call.context.sendMessageToSfu { P2SMessage.UnsubscribeParticipantMicrophone(participantId) }
+    }
+
+    @WorkerThread
     private fun sendCurrentCaptureStates(contexts: P2PContexts) {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -359,18 +400,20 @@ class Connected internal constructor(
         runPostHandshakeStepsOnHandshakeComplete(handshake)
     }
 
-    /** May only be called with `updateCallMutex` held! */
     @WorkerThread
     private suspend fun removeParticipantFromCall(participantId: ParticipantId) {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        logger.info("Removing participant '{}' from call", participantId)
-        call.context.removeParticipant(participantId)?.let {
-            call.updateParticipants(GroupCall.ParticipantsUpdate.removeParticipant(it))
-            ctx.updateCall(call, remove = mutableSetOf(it.id), add = mutableSetOf())
-            increaseEpoch()
+        logger.info("Scheduling to remove participant '{}' from call", participantId)
+        updateCallMutex.withLock {
+            logger.info("Removing participant '{}' from call", participantId)
+            call.context.removeParticipant(participantId)?.let {
+                call.updateParticipants(GroupCall.ParticipantsUpdate.removeParticipant(it))
+                ctx.updateCall(call, remove = mutableSetOf(it.id), add = mutableSetOf())
+                increaseEpoch()
+            }
+            refreshCallStateUpdateInterval()
         }
-        refreshCallStateUpdateInterval()
     }
 
     /** May only be called with `updateCallMutex` held! */

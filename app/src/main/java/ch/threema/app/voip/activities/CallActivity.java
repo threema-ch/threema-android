@@ -66,18 +66,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getkeepsafe.taptargetview.TapTarget;
-import com.getkeepsafe.taptargetview.TapTargetView;
-
-import org.slf4j.Logger;
-import org.webrtc.RendererCommon;
-import org.webrtc.SurfaceViewRenderer;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.concurrent.ExecutionException;
-
 import androidx.annotation.AnyThread;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -98,6 +86,19 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.transition.ChangeBounds;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
+
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
+
+import org.slf4j.Logger;
+import org.webrtc.RendererCommon;
+import org.webrtc.SurfaceViewRenderer;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.concurrent.ExecutionException;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -150,6 +151,7 @@ import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+import static ch.threema.app.utils.ShortcutUtil.EXTRA_CALLED_FROM_SHORTCUT;
 import static ch.threema.app.voip.services.VideoContext.CAMERA_FRONT;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
 import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_INCOMING;
@@ -168,7 +170,6 @@ public class CallActivity extends ThreemaActivity implements
 	private static final Logger logger = LoggingUtil.getThreemaLogger("CallActivity");
 	private static final String LIFETIME_SERVICE_TAG = "CallActivity";
 	private static final String SENSOR_TAG_CALL = "voipcall";
-	public static final String EXTRA_CALL_FROM_SHORTCUT = "shortcut";
 	public static final String EXTRA_ACCEPT_INCOMING_CALL = "ACCEPT_INCOMING_CALL";
 	private static final String DIALOG_TAG_OK = "ok";
 
@@ -267,7 +268,7 @@ public class CallActivity extends ThreemaActivity implements
 	public static final String ACTION_DISABLE_VIDEO = BuildConfig.APPLICATION_ID + ".VIDEO_DISABLE";
 
 	private boolean callDebugInfoEnabled = false;
-	private boolean sensorEnabled = false;
+	private boolean sensorEnabled = true;
 	private boolean toggleVideoTooltipShown = false, audioSelectorTooltipShown = false;
 	private byte activityMode;
 	private boolean navigationShown = true;
@@ -935,7 +936,7 @@ public class CallActivity extends ThreemaActivity implements
 		}
 
 		// Determine activity mode
-		if (intent.getBooleanExtra(EXTRA_CALL_FROM_SHORTCUT, false)) {
+		if (intent.getBooleanExtra(EXTRA_CALLED_FROM_SHORTCUT, false)) {
 			if (!callState.isIdle()) {
 				logger.error("Ongoing call - ignore shortcut");
 				return false;

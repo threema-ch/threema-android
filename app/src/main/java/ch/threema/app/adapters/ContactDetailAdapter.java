@@ -222,7 +222,11 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 			this.groupService.loadAvatarIntoImage(groupModel, itemHolder.avatarView, AvatarOptions.PRESET_DEFAULT_FALLBACK);
 
-			itemHolder.nameView.setText(groupModel.getName());
+			String groupName = groupModel.getName();
+			if (groupName == null) {
+				groupName = groupService.getMembersString(groupModel);
+			}
+			itemHolder.nameView.setText(groupName);
 
 			if (groupService.isGroupOwner(groupModel)) {
 				itemHolder.statusView.setImageResource(R.drawable.ic_group_outline);

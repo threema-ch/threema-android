@@ -37,7 +37,6 @@ import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class DistributionListMessageModelFactory extends AbstractMessageModelFactory {

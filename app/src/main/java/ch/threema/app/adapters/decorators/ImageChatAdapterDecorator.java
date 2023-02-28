@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.activities.ThreemaActivity;
-import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.DebouncedOnClickListener;
@@ -43,7 +42,6 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -91,7 +89,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 			setControllerState(holder, getMessageModel().getImageData());
 		});
 
-		configureBodyText(holder);
+		configureBodyText(holder, getMessageModel().getCaption());
 
 		configureMessagePlayer(holder, imageMessagePlayer);
 	}
@@ -124,24 +122,6 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 						});
 					}
 				});
-	}
-
-	private void configureBodyText(@NonNull ComposeMessageHolder holder) {
-		if (!TestUtil.empty(getMessageModel().getCaption())) {
-			holder.bodyTextView.setText(formatTextString(getMessageModel().getCaption(), filterString));
-
-			LinkifyUtil.getInstance().linkify(
-				(ComposeMessageFragment) helper.getFragment(),
-				holder.bodyTextView,
-				getMessageModel(),
-				true,
-				actionModeStatus.getActionModeEnabled(),
-				onClickElement);
-
-			showHide(holder.bodyTextView, true);
-		} else {
-			showHide(holder.bodyTextView, false);
-		}
 	}
 
 	private void setControllerClickListener(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer imageMessagePlayer) {

@@ -1240,7 +1240,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private void parseInfo(JSONObject info) throws ThreemaException, JSONException {
 		int version = info.getInt(TAG_SAFE_INFO_VERSION);
 		if (version > PROTOCOL_VERSION) {
-			throw new ThreemaException(context.getResources().getString(R.string.safe_version_mismatch));
+			throw new ThreemaException(context.getResources().getString(R.string.backup_version_mismatch));
 		}
 	}
 

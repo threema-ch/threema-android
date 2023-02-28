@@ -27,6 +27,7 @@ import android.view.View;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDialog;
@@ -46,9 +47,25 @@ public class TextWithCheckboxDialog extends ThreemaDialogFragment {
 	private final static String CHECKBOX_LABEL_KEY = "checkboxLabel";
 	private final static String POSITIVE_KEY = "positive";
 	private final static String NEGATIVE_KEY = "negative";
+	private static final String ARG_ICON = "icon";
+
 
 	public interface TextWithCheckboxDialogClickListener {
 		void onYes(String tag, Object data, boolean checked);
+	}
+
+	public static TextWithCheckboxDialog newInstance(String title, @DrawableRes int icon, @NonNull String message, @StringRes int checkboxLabel, @StringRes int positive, @StringRes int negative) {
+		TextWithCheckboxDialog dialog = new TextWithCheckboxDialog();
+		Bundle args = new Bundle();
+		args.putString(TITLE_KEY, title);
+		args.putString(MESSAGE_KEY, message);
+		args.putInt(CHECKBOX_LABEL_KEY, checkboxLabel);
+		args.putInt(POSITIVE_KEY, positive);
+		args.putInt(NEGATIVE_KEY, negative);
+		args.putInt(ARG_ICON, icon);
+
+		dialog.setArguments(args);
+		return dialog;
 	}
 
 	public static TextWithCheckboxDialog newInstance(String title, @StringRes int messageRes, @StringRes int checkboxLabel, @StringRes int positive, @StringRes int negative) {
@@ -121,6 +138,7 @@ public class TextWithCheckboxDialog extends ThreemaDialogFragment {
 		@StringRes int checkboxLabel = getArguments().getInt(CHECKBOX_LABEL_KEY);
 		@StringRes int positive = getArguments().getInt(POSITIVE_KEY);
 		@StringRes int negative = getArguments().getInt(NEGATIVE_KEY);
+		@DrawableRes int icon = getArguments().getInt(ARG_ICON, 0);
 
 		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_text_with_checkbox, null);
 		final AppCompatCheckBox checkbox = dialogView.findViewById(R.id.checkbox);
@@ -133,13 +151,19 @@ public class TextWithCheckboxDialog extends ThreemaDialogFragment {
 			.setNegativeButton(negative, null)
 			.setPositiveButton(positive, (dialog, which) -> callback.onYes(tag, object, checkbox.isChecked()));
 
+		if (icon != 0) {
+			builder.setIcon(icon);
+		}
+
 		if (messageRes != 0) {
-			checkbox.setTextSize(14);
 			builder.setMessage(messageRes);
+		} else if (message != null) {
+			builder.setMessage(message);
 		}
 
 		checkbox.setChecked(false);
 		if (checkboxLabel != 0) {
+			checkbox.setTextSize(14);
 			checkbox.setText(checkboxLabel);
 		} else {
 			checkbox.setVisibility(View.GONE);

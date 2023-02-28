@@ -199,7 +199,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		this.addToLog("Starting Call Diagnostics...");
 		this.addToLog("----------------");
 		this.addToLog("Device info: " + ConfigUtils.getDeviceInfo(this, false));
-		this.addToLog("App version: " + ConfigUtils.getFullAppVersion(this));
+		this.addToLog("App version: " + ConfigUtils.getAppVersion(this));
 		this.addToLog("App language: " + LocaleUtil.getAppLanguage());
 		this.addToLog("----------------");
 
@@ -445,8 +445,8 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 						"\n---\n" +
 						caption +
 						"\n---\n" +
-						ConfigUtils.getDeviceInfo(WebRTCDebugActivity.this, false) + "\n" +
-						"Threema " + ConfigUtils.getFullAppVersion(WebRTCDebugActivity.this) + "\n" +
+						ConfigUtils.getSupportDeviceInfo(WebRTCDebugActivity.this) + "\n" +
+						"Threema " + ConfigUtils.getAppVersion(WebRTCDebugActivity.this) + "\n" +
 						getMyIdentity(), messageReceiver);
 
 					return true;

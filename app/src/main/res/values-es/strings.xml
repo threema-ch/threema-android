@@ -502,6 +502,7 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="really_remove_wallpapers">¿Está seguro de que quiere quitar todos los fondos de pantalla?</string>
     <string name="wallpapers_removed">Se han quitado los fondos de pantalla</string>
     <string name="invalid_backup">Copia de seguridad no válida. No se puede restaurar.</string>
+    <string name="invalid_zip_restore_failed">La restauración ha fallado. La copia de seguridad no es válida: %1$s</string>
     <string name="revocation_explain">La contraseña introducida aquí le permitirá revocar el ID desde https://myid.threema.ch/revoke en caso de que lo pierda o se lo roben.</string>
     <string name="no_unread_messages">No hay mensajes sin leer, o está activado el bloqueo con PIN</string>
     <string name="send_media">Enviar medios</string>
@@ -921,7 +922,7 @@ almacenado.</string>
     <string name="number_of_days">%d días</string>
     <string name="backup_other_restore_options">Otras opciones de restablecimiento</string>
     <string name="safe_size">Tamaño de copia de seguridad</string>
-    <string name="safe_version_mismatch">La versión de esta copia de seguridad es superior a la versión compatible. Actualiza a la versión más reciente de esta aplicación.</string>
+    <string name="backup_version_mismatch">La versión de esta copia de seguridad es superior a la versión compatible. Actualiza a la versión más reciente de esta aplicación.</string>
     <string name="safe_restore_failed">Error al restablecer</string>
     <string name="safe_failed_notification">La copia de seguridad de Threema Safe no se ha completado durante %d días seguidos. Toca aquí para comprobarlo.</string>
     <string name="safe_restore">Restablecer Threema Safe</string>
@@ -1020,6 +1021,7 @@ almacenado.</string>
     <string name="open_in_maps_app">Abrir en Maps</string>
     <string name="delete">Borrar</string>
     <string name="continue_recording">Continuar grabando</string>
+    <string name="whatsnew_title">Novedad: %1$s llamadas grupales</string>
     <string name="whatsnew_headline"><![CDATA[
 <p>Las llamadas grupales cifradas de extremo a extremo ya están disponibles en %1$s para Android.</p>
 <p>Para iniciar una llamada, abre un chat grupal y toca el botón de la cámara de la parte superior.</p>
@@ -1433,6 +1435,8 @@ almacenado.</string>
     <string name="forward_security_mode_2dh">unilateral</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protege una comunicación grabada del descifrado retroactivo incluso si la clave de cifrado a largo plazo se ve comprometida.\n\nLa opción se puede activar si la app es compatible con PFS por ambas partes.</string>
     <string name="group_call_inactivity_left">Llamada grupal abandonada por inactividad</string>
+    <string name="missing_permission_external_storage">No se ha podido copiar el archivo. Prueba lo siguiente:\n1. Abre los ajustes.\n2. Ve a \"Aplicaciones\" y selecciona \"Acceso especial a la app\".\n3. Toca en \"Acceso a todos los archivos\".\n4. Toca en los tres puntos de la parte superior derecha y selecciona \"Mostrar sistema\".\n5. Toca en \"Almacenamiento externo\" y verifica que la opción de \"Permitir acceso para gestionar todos los archivos\" está activada.\n6. Vuelve a intentar restaurar la copia de seguridad.</string>
+    <string name="forward_security_downgraded_status_message">Este contacto ha empezado a usar una versión de la app que no admite la función de Perfect Forward Secrecy. Los mensajes se enviarán sin PFS a partir de ahora.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>

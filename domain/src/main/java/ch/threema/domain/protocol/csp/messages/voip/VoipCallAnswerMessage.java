@@ -63,4 +63,15 @@ public class VoipCallAnswerMessage extends VoipMessage {
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_VOIP_CALL_ANSWER;
 	}
+
+	@Override
+	public boolean allowUserProfileDistribution() {
+		// True only if we're accepting the call
+		final VoipCallAnswerData answerData = this.callAnswerData;
+		if (answerData == null) {
+			return false;
+		}
+		final Byte action = answerData.getAction();
+		return action != null && action == VoipCallAnswerData.Action.ACCEPT;
+	}
 }

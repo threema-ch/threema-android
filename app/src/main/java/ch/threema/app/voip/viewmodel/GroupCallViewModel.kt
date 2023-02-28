@@ -25,6 +25,7 @@ import android.app.Application
 import android.graphics.Bitmap
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.*
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
@@ -141,7 +142,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 	}
 
 	@AnyThread
-	override fun onGroupCallStart(groupModel: GroupModel, call: GroupCallDescription?) {
+	override fun onGroupCallStart(groupModel: GroupModel) {
 		logger.trace("Group call start")
 	}
 
@@ -183,25 +184,19 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 	}
 
 	@UiThread
-	fun joinCall() {
+	fun joinCall(intention: GroupCallIntention) {
 		groupId.value?.let {
 			groupService.getById(it.id)?.let {
 				joinJob = CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
 					try {
-						if (!groupCallManager.hasJoinedCall(it.localGroupId)) {
-							if (groupCallManager.hasJoinedCall()) {
-								val groupCallController = groupCallManager.getCurrentGroupCallController()
-								groupCallManager.abortCurrentCall()
-								groupCallController?.callDisposedSignal?.await()
-							}
-							connectingState.postValue(ConnectingState.INITIATED)
-						}
-						callController = groupCallManager.joinCall(it)
-						connectingState.postValue(ConnectingState.COMPLETED)
-						audioManager = groupCallManager.getAudioManager()
-						callRunning.postValue(true)
-						withContext(Dispatchers.Main) {
-							initialiseValues()
+						ensureNoCallsInOtherGroup(it)
+
+						val controller = joinOrCreateCall(it, intention)
+
+						if (controller == null) {
+							finishEvents.postValue(FinishEvent(FinishEvent.Reason.NO_SUCH_CALL))
+						} else {
+							completeJoining(controller)
 						}
 					} catch (e: CancellationException) {
 						logger.warn("Join call has been cancelled")
@@ -214,6 +209,35 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 					}
 				}
 			}
+		}
+	}
+
+	@WorkerThread
+	private suspend fun ensureNoCallsInOtherGroup(groupModel: GroupModel) {
+		if (!groupCallManager.hasJoinedCall(groupModel.localGroupId)) {
+			if (groupCallManager.hasJoinedCall()) {
+				val groupCallController = groupCallManager.getCurrentGroupCallController()
+				groupCallManager.abortCurrentCall()
+				groupCallController?.callDisposedSignal?.await()
+			}
+			connectingState.postValue(ConnectingState.INITIATED)
+		}
+	}
+
+	@WorkerThread
+	private suspend fun joinOrCreateCall(groupModel: GroupModel, intention: GroupCallIntention) = when (intention) {
+		GroupCallIntention.JOIN -> groupCallManager.joinCall(groupModel)
+		GroupCallIntention.JOIN_OR_CREATE -> groupCallManager.createCall(groupModel)
+	}
+
+	@WorkerThread
+	private suspend fun completeJoining(controller: GroupCallController) {
+		callController = controller
+		connectingState.postValue(ConnectingState.COMPLETED)
+		audioManager = groupCallManager.getAudioManager()
+		callRunning.postValue(true)
+		withContext(Dispatchers.Main) {
+			initialiseValues()
 		}
 	}
 

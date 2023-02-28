@@ -351,6 +351,19 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	}
 
+	/**
+	 * Notify the user about the unsent message that are kept in {@link #unsentMessages} and also
+	 * the message passed as argument. The passed message is not kept in the unsent messages and
+	 * therefore is shown only once in a notification.
+	 *
+	 * @param msg the unsent message that should be shown in the notification
+	 */
+	private void notifyUnsentMessages(@NonNull AbstractMessageModel msg) {
+		List<AbstractMessageModel> allUnsentMessages = new ArrayList<>(unsentMessages);
+		allUnsentMessages.add(msg);
+		notificationService.showUnsentMessageNotification(allUnsentMessages);
+	}
+
 	private final SMSVerificationListener smsVerificationListener = new SMSVerificationListener() {
 		@Override
 		public void onVerified() {
@@ -429,8 +442,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 					switch (modifiedMessageModel.getState()) {
 						case SENDFAILED:
-						case FS_KEY_MISMATCH:
 							updateUnsentMessagesList(modifiedMessageModel, true);
+							break;
+						case FS_KEY_MISMATCH:
+							// Only notify and don't keep in unsentMessages to prevent that the
+							// notification is shown every time a message is sent
+							notifyUnsentMessages(modifiedMessageModel);
 							break;
 						default:
 							updateUnsentMessagesList(modifiedMessageModel, false);

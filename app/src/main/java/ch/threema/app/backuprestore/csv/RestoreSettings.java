@@ -38,9 +38,10 @@ public class RestoreSettings {
 	 * 16: added read and delivered date
 	 * 17: group message states (ack / dec) and group descriptions
 	 * 18: contact forward security flag
+	 * 19: add random contact id
 	 */
-	public static final int CURRENT_VERSION = 18;
-	private int version = 1;
+	public static final int CURRENT_VERSION = 19;
+	private int version;
 
 	public RestoreSettings(int version) {
 		this.version = version;
@@ -50,6 +51,10 @@ public class RestoreSettings {
 		this(1);
 	}
 
+	public boolean isUnsupportedVersion() {
+		return version > CURRENT_VERSION;
+	}
+
 	public int getVersion() {
 		return this.version;
 	}
@@ -57,15 +62,15 @@ public class RestoreSettings {
 		for(String[] row: strings) {
 			if(row.length == 2) {
 				if(row[0].equals(Tags.TAG_INFO_VERSION)) {
-					this.version = Integer.valueOf(row[1]);
+					this.version = Integer.parseInt(row[1]);
 				}
 			}
 		}
 	}
 
 	public List<String[]> toList() {
-		List<String[]> l = new ArrayList<String[]>();
+		List<String[]> l = new ArrayList<>();
 		l.add(new String[]{Tags.TAG_INFO_VERSION, String.valueOf(this.version)});
 		return l;
 	}
-};
+}

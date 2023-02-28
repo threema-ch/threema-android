@@ -518,6 +518,7 @@
     <string name="really_remove_wallpapers">Справді видалити всі фони?</string>
     <string name="wallpapers_removed">Фони видалено</string>
     <string name="invalid_backup">Недійсна резервна копія. Неможливо відновити.</string>
+    <string name="invalid_zip_restore_failed">Помилка відновлення. Недійсний файл резервної копії: %1$s</string>
     <string name="revocation_explain">Пароль, який ви вводите тут, дає змогу відкликати ваш ID на сторінці
 		https://myid.threema.ch/revoke у випадку його втрати або крадіжки</string>
     <string name="no_unread_messages">Немає непрочитаних повідомлень або активовано блокування PIN-кодом</string>
@@ -806,7 +807,7 @@
     <string name="voice_message_record">Записати голосове повідомлення</string>
     <string name="open_navdrawer">Відкрити панель навігації</string>
     <string name="profile_picture">Фото профілю</string>
-    <string name="profile_picture_release">Ваше фото профілю можуть бачити:</string>
+    <string name="profile_picture_release">Хто бачитиме ваше фото профілю?</string>
     <string name="picrelease_nobody">Ніхто</string>
     <string name="picrelease_selected">Вибрані контакти</string>
     <string name="picrelease_everyone">Усі, кому ви пишете</string>
@@ -955,7 +956,7 @@
     <string name="number_of_days">%d дн.</string>
     <string name="backup_other_restore_options">Інші варіанти відновлення</string>
     <string name="safe_size">Розмір рез. копії</string>
-    <string name="safe_version_mismatch">Версія цієї резервної копії новіша за підтримувану. Будь ласка, оновіть додаток до останньої версії.</string>
+    <string name="backup_version_mismatch">Версія цієї резервної копії новіша за підтримувану. Будь ласка, оновіть додаток до останньої версії.</string>
     <string name="safe_restore_failed">Помилка відновлення</string>
     <string name="safe_failed_notification">Резервну копію Threema Safe не вдається створити %d дн. поспіль. Торкніться тут, щоб дізнатися більше.</string>
     <string name="safe_restore">Відновити Threema Safe</string>
@@ -1061,8 +1062,6 @@
 		<p>Усі учасники групи отримають сповіщення та зможуть приєднатися до виклику, якщо забажають.</p>
 		<p><b>Примітка.</b> Для iOS функцію групових викликів буде додано пізніше.</p>
 		]]></string>
-    <string name="whatsnew2_title">(порожня фраза)</string>
-    <string name="whatsnew2_body">(порожня фраза)</string>
     <string name="tap_to_start">Торкніться тут, щоб запустити %s.</string>
     <string name="two_years">2 роки</string>
     <string name="invalid_backup_path">Недійсний шлях до рез. копії</string>
@@ -1470,6 +1469,8 @@
     <string name="forward_security_mode_2dh">одностороння</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) захищає раніше записані розмови від дешифрування, навіть якщо скомпрометовано довгостроковий ключ шифрування.\n\nЦю функцію можна ввімкнути, якщо її підтримує додаток обох сторін.</string>
     <string name="group_call_inactivity_left">Груповий виклик покинуто через неактивність</string>
+    <string name="missing_permission_external_storage">Не вдалося скопіювати файл. Спробуйте виконати такі кроки:\n1. Відкрийте додаток \"Налаштування\".\n2. Перейдіть до розділу \"Додатки\" й виберіть \"Спеціальний доступ для додатка\".\n3. Натисніть \"Доступ до всіх файлів\".\n4. Натисніть три крапки праворуч угорі й виберіть \"Показати системні\".\n5. Натисніть \"Зовнішня пам\'ять\" і переконайтеся, що вибрано варіант \"Надати доступ до керування всіма файлами\".\n6. Спробуйте відновити резервну копію ще раз.</string>
+    <string name="forward_security_downgraded_status_message">Цей контакт почав використовувати версію додатка, яка не підтримує Perfect Forward Secrecy. Відтепер повідомлення надсилатимуться без використання цієї функції.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакти</item>
         <item quantity="many">%d контактів</item>

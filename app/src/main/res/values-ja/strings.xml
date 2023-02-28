@@ -920,7 +920,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="number_of_days">%d 日</string>
     <string name="backup_other_restore_options">他の復元方法</string>
     <string name="safe_size">バックアップのサイズ</string>
-    <string name="safe_version_mismatch">このバックアップのバージョンは、サポートされているバージョンよりも高いです。最新のバージョンにアップデートしてください。</string>
+    <string name="backup_version_mismatch">このバックアップのバージョンは、サポートされているバージョンよりも高いです。最新のバージョンにアップデートしてください。</string>
     <string name="safe_restore_failed">復元失敗</string>
     <string name="safe_failed_notification">Threema Safeのバックアップが %d 日間連続して失敗しました。ここをタップして確認してください。</string>
     <string name="safe_restore">Threema Safeから復元</string>

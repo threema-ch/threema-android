@@ -24,7 +24,6 @@ package ch.threema.app.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -46,7 +45,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -85,8 +83,10 @@ import ch.threema.app.asynctasks.DeleteContactAsyncTask;
 import ch.threema.app.asynctasks.EmptyChatAsyncTask;
 import ch.threema.app.dialogs.BottomSheetAbstractDialog;
 import ch.threema.app.dialogs.BottomSheetGridDialog;
+import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.TextWithCheckboxDialog;
+import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.listeners.ContactListener;
@@ -132,7 +132,6 @@ import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
 import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
 import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
 import static ch.threema.app.ThreemaApplication.WORKER_WORK_SYNC;
-import static ch.threema.app.ThreemaApplication.getAppContext;
 
 public class ContactsSectionFragment
 		extends MainFragment
@@ -142,12 +141,15 @@ public class ContactsSectionFragment
 		ContactListAdapter.AvatarListener,
 		SelectorDialog.SelectorDialogClickListener,
 		BottomSheetAbstractDialog.BottomSheetDialogCallback,
-		TextWithCheckboxDialog.TextWithCheckboxDialogClickListener {
+		TextWithCheckboxDialog.TextWithCheckboxDialogClickListener,
+		GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSectionFragment");
 
 	private static final int PERMISSION_REQUEST_REFRESH_CONTACTS = 1;
 	private static final String DIALOG_TAG_SHARE_WITH = "wsw";
 	private static final String DIALOG_TAG_RECENTLY_ADDED_SELECTOR = "ras";
+	private static final String DIALOG_TAG_REALLY_DELETE_CONTACTS = "rdc";
+	private static final String DIALOG_TAG_REPORT_SPAM = "spam";
 
 	private static final String RUN_ON_ACTIVE_SHOW_LOADING = "show_loading";
 	private static final String RUN_ON_ACTIVE_HIDE_LOADING = "hide_loading";
@@ -1260,20 +1262,27 @@ public class ContactsSectionFragment
 	private void deleteContacts(@NonNull Set<ContactModel> contacts) {
 		int contactsSelectedToDelete = contacts.size();
 		final String deleteContactTitle = getString(contactsSelectedToDelete > 1 ? R.string.delete_multiple_contact_action : R.string.delete_contact_action);
+		final String message = String.format(ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.really_delete_contacts_message, contactsSelectedToDelete, contactsSelectedToDelete), contactListAdapter.getCheckedItemCount());
 
-		final View view = View.inflate(getAppContext(), R.layout.dialog_checkbox, null);
-		final CheckBox checkBox = view.findViewById(R.id.dialog_checkbox);
-		checkBox.setText(getString(R.string.exclude_contact));
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-		builder.setTitle(deleteContactTitle);
-		builder.setMessage(String.format(ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.really_delete_contacts_message, contactsSelectedToDelete, contactsSelectedToDelete), contactListAdapter.getCheckedItemCount()));
+		ThreemaDialogFragment dialog;
 		if (showExcludeFromContactSync(contacts)) {
-			builder.setView(view);
+			dialog = TextWithCheckboxDialog.newInstance(
+				deleteContactTitle,
+				0,
+				message,
+				R.string.exclude_contact,
+				R.string.ok,
+				R.string.cancel);
+		} else {
+			dialog = GenericAlertDialog.newInstance(
+				deleteContactTitle,
+				message,
+				R.string.ok,
+				R.string.cancel);
 		}
-		builder.setPositiveButton(R.string.ok, (dialog1, which) -> reallyDeleteContacts(contacts, checkBox.isChecked()));
-		builder.setNegativeButton(R.string.cancel, null);
-		builder.show();
+		dialog.setTargetFragment(this, 0);
+		dialog.setData(contacts);
+		dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_CONTACTS);
 	}
 
 	@SuppressLint("StaticFieldLeak")
@@ -1417,7 +1426,7 @@ public class ContactsSectionFragment
 					R.string.spam_report_dialog_block_checkbox, R.string.spam_report_short, R.string.cancel);
 				sdialog.setData(contactModel);
 				sdialog.setTargetFragment(this, 0);
-				sdialog.show(getParentFragmentManager(), "");
+				sdialog.show(getParentFragmentManager(), DIALOG_TAG_REPORT_SPAM);
 				break;
 			case SELECTOR_TAG_BLOCK:
 				serviceManager.getBlackListService().toggle(getActivity(), contactModel);
@@ -1435,44 +1444,69 @@ public class ContactsSectionFragment
 	public void onNo(String tag) {}
 
 	/* callback from TextWithCheckboxDialog */
-
 	@Override
 	public void onYes(String tag, Object data, boolean checked) {
-		ContactModel contactModel = (ContactModel) data;
+		switch(tag) {
+			case DIALOG_TAG_REALLY_DELETE_CONTACTS:
+				reallyDeleteContacts((Set<ContactModel>) data, checked);
+				break;
+			case DIALOG_TAG_REPORT_SPAM:
+				ContactModel contactModel = (ContactModel) data;
 
-		contactService.reportSpam(contactModel,
-			unused -> {
-				if (isAdded()) {
-					Toast.makeText(getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();
-				}
+				contactService.reportSpam(contactModel,
+					unused -> {
+						if (isAdded()) {
+							Toast.makeText(getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();
+						}
 
-				if (checked) {
-					ThreemaApplication.requireServiceManager().getBlackListService().add(contactModel.getIdentity());
-					ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(contactModel.getIdentity());
+						if (checked) {
+							ThreemaApplication.requireServiceManager().getBlackListService().add(contactModel.getIdentity());
+							ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(contactModel.getIdentity());
 
-					try {
-						new EmptyChatAsyncTask(
-							contactService.createReceiver(contactModel),
-							ThreemaApplication.requireServiceManager().getMessageService(),
-							ThreemaApplication.requireServiceManager().getConversationService(),
-							null,
-							true,
-							() -> {
-								ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
-								ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
-							}).execute();
-					} catch (Exception e) {
-						logger.error("Unable to empty chat", e);
+							try {
+								new EmptyChatAsyncTask(
+									contactService.createReceiver(contactModel),
+									ThreemaApplication.requireServiceManager().getMessageService(),
+									ThreemaApplication.requireServiceManager().getConversationService(),
+									null,
+									true,
+									() -> {
+										ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
+										ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
+									}).execute();
+							} catch (Exception e) {
+								logger.error("Unable to empty chat", e);
+							}
+						} else {
+							ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
+						}
+					},
+					message -> {
+						if (isAdded()) {
+							Toast.makeText(getContext(), requireContext().getString(R.string.spam_error_reporting, message), Toast.LENGTH_LONG).show();
+						}
 					}
-				} else {
-					ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
-				}
-			},
-			message -> {
-				if (isAdded()) {
-					Toast.makeText(getContext(), requireContext().getString(R.string.spam_error_reporting, message), Toast.LENGTH_LONG).show();
-				}
-			}
-		);
+				);
+				break;
+			default:
+				break;
+		}
 	}
+
+	/**
+	 * Callbacks from GenericAlertDialog
+	 */
+	@Override
+	public void onYes(String tag, Object data) {
+		switch(tag) {
+			case DIALOG_TAG_REALLY_DELETE_CONTACTS:
+				reallyDeleteContacts((Set<ContactModel>) data, false);
+				break;
+			default:
+				break;
+		}
+	}
+
+	@Override
+	public void onNo(String tag, Object data) {	}
 }

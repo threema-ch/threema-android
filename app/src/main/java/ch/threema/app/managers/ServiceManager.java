@@ -1077,7 +1077,11 @@ public class ServiceManager {
 
 	public @NonNull SfuConnection getSfuConnection() {
 		if (sfuConnection == null) {
-			sfuConnection = new SfuConnectionImpl(getAPIConnector(), getIdentityStore());
+			sfuConnection = new SfuConnectionImpl(
+				getAPIConnector(),
+				getIdentityStore(),
+				ThreemaApplication.getAppVersion()
+			);
 		}
 		return sfuConnection;
 	}

@@ -112,7 +112,18 @@ class GroupCallParticipantsAdapter(
 		private var detachSinkFn: DetachSinkFn? = null
 
 		@UiThread
-		internal fun subscribeCamera() {
+		internal fun updateCameraSubscription() {
+			participant?.let {
+				if (isAttachedToWindow && it.cameraActive) {
+					subscribeCamera()
+				} else {
+					unsubscribeCamera()
+				}
+			}
+		}
+
+		@UiThread
+		private fun subscribeCamera() {
 			cancelCameraSubscription()
 			logger.trace("Subscribe camera for participant={}", participant?.id)
 			participant?.let { participant ->
@@ -167,7 +178,7 @@ class GroupCallParticipantsAdapter(
 
 		@UiThread
 		fun updateCaptureState() {
-			logger.trace("UpdateCaptureState")
+			logger.trace("UpdateCaptureState for {}", participant)
 			participant?.let {
 				itemView.post {
 					microphoneMuted.visibility = if (it.microphoneActive) {
@@ -177,11 +188,7 @@ class GroupCallParticipantsAdapter(
 					}
 				}
 
-				if (isAttachedToWindow && it.cameraActive) {
-					subscribeCamera()
-				} else {
-					unsubscribeCamera()
-				}
+				updateCameraSubscription()
 			}
 		}
 
@@ -248,7 +255,7 @@ class GroupCallParticipantsAdapter(
 			logger.trace("Layout changed; update view holder heights.")
 			activeViewHolders.values.forEach {
 				it.itemView.layoutParams.height = getViewHeight(it.parent)
-				it.subscribeCamera()
+				it.updateCameraSubscription()
 			}
 		}
 	}

@@ -38,6 +38,7 @@ import ch.threema.app.receivers.SendTextToContactBroadcastReceiver;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 
+import static ch.threema.app.preference.SettingsTroubleshootingFragment.THREEMA_SUPPORT_IDENTITY;
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
@@ -94,12 +95,12 @@ public class BackgroundErrorNotification {
 			supportChannelText.append("Hello Threema Support!\n\nAn error occurred in ").append(scope).append(":");
 			supportChannelText.append(separator).append(text).append(separator);
 			if (exception != null) {
-				supportChannelText.append(exception.toString()).append(separator);
+				supportChannelText.append(exception).append(separator);
 			}
 			supportChannelText.append("My phone model: ")
-				.append(ConfigUtils.getDeviceInfo(appContext, false));
+				.append(ConfigUtils.getSupportDeviceInfo(appContext));
 			supportChannelText.append("\nMy app version: ")
-				.append(ConfigUtils.getFullAppVersion(appContext));
+				.append(ConfigUtils.getAppVersion(appContext));
 			supportChannelText.append("\nMy app language: ")
 				.append(LocaleUtil.getAppLanguage());
 
@@ -108,7 +109,7 @@ public class BackgroundErrorNotification {
 			replyIntent.putExtra(EXTRA_TEXT_TO_SEND, supportChannelText.toString());
 			replyIntent.putExtra(EXTRA_NOTIFICATION_ID, NotificationIDs.BACKGROUND_ERROR);
 
-			replyIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, "*SUPPORT");
+			replyIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, THREEMA_SUPPORT_IDENTITY);
 
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				appContext,

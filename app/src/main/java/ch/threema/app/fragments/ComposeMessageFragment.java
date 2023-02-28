@@ -694,31 +694,39 @@ public class ComposeMessageFragment extends Fragment implements
 		@Override
 		public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
 			updateToolBarTitleInUIThread();
-
-			if (!groupService.isGroupMember(group)) {
-				// Remove ongoing group call notice if not a member of the group anymore
-				RuntimeUtil.runOnUiThread(() -> {
-					updateOngoingGroupCallState(null);
-					removeGroupCallObserver();
-				});
-			}
 		}
 
 		@Override
 		public void onMemberKicked(GroupModel group, String identity, int previousMemberCount) {
 			updateToolBarTitleInUIThread();
+
+			if (userService.isMe(identity)) {
+				updateGroupCallObserverRegistration();
+			}
 		}
 
 
 		@Override
 		public void onUpdate(GroupModel groupModel) {
 			updateToolBarTitleInUIThread();
+
+			updateGroupCallObserverRegistration();
 		}
 
 		@Override
 		public void onLeave(GroupModel groupModel) {
 			if (isGroupChat && groupId != null && groupId == groupModel.getId()) {
 				RuntimeUtil.runOnUiThread(() -> finishActivity());
+			}
+		}
+
+		private void updateGroupCallObserverRegistration() {
+			if (groupService.isGroupMember(groupModel)) {
+				registerGroupCallObserver();
+			} else {
+				// Remove ongoing group call notice if not a member of the group anymore
+				RuntimeUtil.runOnUiThread(() -> updateOngoingGroupCallState(null));
+				removeGroupCallObserver();
 			}
 		}
 	};
@@ -824,14 +832,11 @@ public class ComposeMessageFragment extends Fragment implements
 
 	private final QRCodeScanListener qrCodeScanListener = new QRCodeScanListener() {
 		@Override
-		public void onScanCompleted(String scanResult) {
+		public void onScanCompleted(final String scanResult) {
 			if (scanResult != null && scanResult.length() > 0) {
-				RuntimeUtil.runOnUiThread(() -> {
-					if (messageText != null) {
-						messageText.setText(scanResult);
-						messageText.setSelection(messageText.length());
-					}
-				});
+				if (messageReceiver != null) {
+					ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), scanResult, null);
+				}
 			}
 		}
 	};
@@ -1082,21 +1087,24 @@ public class ComposeMessageFragment extends Fragment implements
 		return this.fragmentView;
 	}
 
+	@UiThread
 	private void initOngoingCallState() {
 		ongoingCallNoticeView = fragmentView.findViewById(R.id.ongoing_call_notice);
-		if (ongoingCallNoticeView != null && groupModel != null && groupService.isGroupMember(groupModel)) {
-			ongoingCallNoticeView.setButtonAction(() -> {
-				if (groupModel != null) {
-					GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
-					if (call != null) {
-						startActivity(GroupCallActivity.getStartOrJoinCallIntent(requireActivity(), groupModel.getId()));
-					}
-				}
-			});
+		if (ongoingCallNoticeView != null) {
+			ongoingCallNoticeView.setButtonAction(this::joinOngoingGroupCall);
 			ongoingCallNoticeView.setContainerAction(null);
-			registerGroupCallObserver();
-		} else if (ongoingCallNoticeView != null) {
-			updateOngoingGroupCallState(null);
+
+			if (groupModel != null && groupService.isGroupMember(groupModel)) {
+				registerGroupCallObserver();
+			} else {
+				updateOngoingGroupCallState(null);
+			}
+		}
+	}
+
+	private void joinOngoingGroupCall() {
+		if (groupModel != null) {
+			startActivity(GroupCallActivity.getJoinCallIntent(requireActivity(), groupModel.getId()));
 		}
 	}
 
@@ -1118,7 +1126,7 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 
 				@Override
-				public void onGroupCallStart(@NonNull GroupModel groupModel, @Nullable GroupCallDescription call) {
+				public void onGroupCallStart(@NonNull GroupModel groupModel) {
 					// noop
 				}
 			};
@@ -1266,7 +1274,9 @@ public class ComposeMessageFragment extends Fragment implements
 
 			// update menus
 			updateMuteMenu();
-			updateGroupCallMenuItem();
+			if (isGroupChat) {
+				updateGroupCallMenuItem();
+			}
 
 			// start media players again
 			this.messagePlayerService.resumeAll(getActivity(), this.messageReceiver, SOURCE_LIFECYCLE);
@@ -2122,7 +2132,7 @@ public class ComposeMessageFragment extends Fragment implements
 		this.openBallotNoticeView.setVisibilityListener(this);
 
 		// restore draft before setting predefined text
-		restoreMessageDraft();
+		restoreMessageDraft(false);
 
 		String defaultText = intent.getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
 		if (!TestUtil.empty(defaultText)) {
@@ -3854,8 +3864,11 @@ public class ComposeMessageFragment extends Fragment implements
 				this.messagePlayerService.resumeAll(getActivity(), messageReceiver, SOURCE_AUDIORECORDER);
 			}
 		}
-		if (requestCode == ThreemaActivity.ACTIVITY_ID_ATTACH_MEDIA && resultCode == Activity.RESULT_OK) {
-			this.lastMediaFilter = IntentDataUtil.getLastMediaFilterFromIntent(intent);
+		if (requestCode == ThreemaActivity.ACTIVITY_ID_ATTACH_MEDIA) {
+			restoreMessageDraft(true);
+			if (resultCode == Activity.RESULT_OK) {
+				this.lastMediaFilter = IntentDataUtil.getLastMediaFilterFromIntent(intent);
+			}
 		}
 	}
 
@@ -4464,34 +4477,36 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	protected void instantiate() {
-		ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
-		this.preferenceService = serviceManager.getPreferenceService();
-		try {
-			this.userService = serviceManager.getUserService();
-			this.contactService = serviceManager.getContactService();
-			this.groupService = serviceManager.getGroupService();
-			this.groupCallManager = serviceManager.getGroupCallManager();
-			this.messageService = serviceManager.getMessageService();
-			this.fileService = serviceManager.getFileService();
-			this.notificationService = serviceManager.getNotificationService();
-			this.distributionListService = serviceManager.getDistributionListService();
-			this.messagePlayerService = serviceManager.getMessagePlayerService();
-			this.blackListIdentityService = serviceManager.getBlackListService();
-			this.ballotService = serviceManager.getBallotService();
-			this.databaseServiceNew = serviceManager.getDatabaseServiceNew();
-			this.conversationService = serviceManager.getConversationService();
-			this.deviceService =serviceManager.getDeviceService();
-			this.wallpaperService = serviceManager.getWallpaperService();
-			this.wallpaperLauncher = wallpaperService.getWallpaperActivityResultLauncher(this, this::setBackgroundWallpaper, () -> this.messageReceiver);
-			this.mutedChatsListService = serviceManager.getMutedChatsListService();
-			this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
-			this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
-			this.ringtoneService = serviceManager.getRingtoneService();
-			this.voipStateService = serviceManager.getVoipStateService();
-			this.downloadService = serviceManager.getDownloadService();
-			this.licenseService = serviceManager.getLicenseService();
-		} catch (Exception e) {
-			LogUtil.exception(e, activity);
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			this.preferenceService = serviceManager.getPreferenceService();
+			try {
+				this.userService = serviceManager.getUserService();
+				this.contactService = serviceManager.getContactService();
+				this.groupService = serviceManager.getGroupService();
+				this.groupCallManager = serviceManager.getGroupCallManager();
+				this.messageService = serviceManager.getMessageService();
+				this.fileService = serviceManager.getFileService();
+				this.notificationService = serviceManager.getNotificationService();
+				this.distributionListService = serviceManager.getDistributionListService();
+				this.messagePlayerService = serviceManager.getMessagePlayerService();
+				this.blackListIdentityService = serviceManager.getBlackListService();
+				this.ballotService = serviceManager.getBallotService();
+				this.databaseServiceNew = serviceManager.getDatabaseServiceNew();
+				this.conversationService = serviceManager.getConversationService();
+				this.deviceService =serviceManager.getDeviceService();
+				this.wallpaperService = serviceManager.getWallpaperService();
+				this.wallpaperLauncher = wallpaperService.getWallpaperActivityResultLauncher(this, this::setBackgroundWallpaper, () -> this.messageReceiver);
+				this.mutedChatsListService = serviceManager.getMutedChatsListService();
+				this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
+				this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
+				this.ringtoneService = serviceManager.getRingtoneService();
+				this.voipStateService = serviceManager.getVoipStateService();
+				this.downloadService = serviceManager.getDownloadService();
+				this.licenseService = serviceManager.getLicenseService();
+			} catch (Exception e) {
+				LogUtil.exception(e, activity);
+			}
 		}
 	}
 
@@ -4638,8 +4653,8 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
-	private void restoreMessageDraft() {
-		if (this.messageReceiver != null && this.messageText != null && TestUtil.empty(this.messageText.getText())) {
+	private void restoreMessageDraft(boolean force) {
+		if (this.messageReceiver != null && this.messageText != null && (force || TestUtil.empty(this.messageText.getText()))) {
 			String messageDraft = ThreemaApplication.getMessageDraft(this.messageReceiver.getUniqueIdString());
 
 			if (!TextUtils.isEmpty(messageDraft)) {
@@ -4695,11 +4710,11 @@ public class ComposeMessageFragment extends Fragment implements
 		if (isEmojiPickerShown()) {
 			emojiPicker.onKeyboardShown();
 		}
-		if (isResumed() && !emojiPicker.isShown() && messageText != null && !messageText.hasFocus()) {
+		if (isResumed() && !emojiPicker.isShown() && searchActionMode == null && messageText != null && !messageText.hasFocus()) {
 			// In some cases when the activity is launched where the previous activity finished with
 			// an open keyboard, the messageText does not have focus even if the keyboard is shown
-			// Only request focus if the emoji picker is hidden, otherwise the keyboard is needed to
-			// search emojis.
+			// Only request focus if the emoji picker is hidden and the search bar is not shown,
+			// otherwise the keyboard is needed to search emojis or the chat.
 			messageText.requestFocus();
 		}
 	}

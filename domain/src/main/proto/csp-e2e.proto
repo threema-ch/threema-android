@@ -42,6 +42,8 @@ message MessageMetadata {
 //
 // **Delivery receipts:** Automatic: No. Manual: No.
 //
+// **User profile distribution:** Yes.
+//
 // **Reflect:** Incoming: Yes. Outgoing: Yes.
 //
 // When creating this message to start a call within the group:
@@ -55,7 +57,10 @@ message MessageMetadata {
 //       Server API.
 // 4. Join the call matching the Call ID of the created message and wait until
 //    the SFU sent the initial `Hello` message via the associated data channel.
-//    Let `hello` be that message. This is an asynchronous process.
+//    Let `hello` be that message. An implementation may add an artificial wait
+//    period to enforce a minimum 2s execution time of this step to prevent a
+//    butter-fingered user from accidentally starting a group call. This is an
+//    asynchronous process.
 //
 //    If this step has been cancelled by the _Group Call Refresh Steps_
 //    determining another `chosen-call` in the meantime, cancel the call we have
@@ -114,6 +119,8 @@ message GroupCallStart {
 //
 // **Delivery receipts:** Automatic: No. Manual: No.
 //
+// **User profile distribution:** Yes.
+//
 // **Reflect:** Incoming: Yes. Outgoing: Yes.
 //
 // When receiving this message:
@@ -164,6 +171,8 @@ message GroupJoinRequest {
 // **Flags:** None.
 //
 // **Delivery receipts:** Automatic: No. Manual: No.
+//
+// **User profile distribution:** Yes.
 //
 // **Reflect:** Incoming: Yes. Outgoing: Yes.
 //

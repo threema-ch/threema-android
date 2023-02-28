@@ -643,15 +643,22 @@ public class MessageServiceImpl implements MessageService {
 				 * message causing him to re-send the profile pic at his earliest convenience, i.e. accompanying a regular message
 				 * */
 				for (ContactModel contactModel : restoredContacts) {
+					final String identity = contactModel.getIdentity();
+					final boolean isEchoecho = ThreemaApplication.ECHO_USER_IDENTITY.equals(identity);
+					final boolean isGatewayId = ContactUtil.isChannelContact(identity);
+					if (isEchoecho || isGatewayId) {
+						// Don't send profile picture requests to ECHOECHO or to gateway IDs
+						continue;
+					}
 					ContactRequestPhotoMessage msg = new ContactRequestPhotoMessage();
-					msg.setToIdentity(contactModel.getIdentity());
+					msg.setToIdentity(identity);
 
 					logger.info("Enqueue request profile picture message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
 					MessageBox messageBox = null;
 					try {
 						messageBox = messageQueue.enqueue(msg);
 					} catch (ThreemaException e) {
-						logger.error("Exception", e);
+						logger.error("Failed to enqueue profile picture request message", e);
 					}
 
 					if (messageBox != null) {
@@ -1517,7 +1524,7 @@ public class MessageServiceImpl implements MessageService {
 				ContactMessageReceiver receiver = contactService.createReceiver(senderContact);
 
 				if (message.getForwardSecurityMode() == null || message.getForwardSecurityMode() == ForwardSecurityMode.NONE) {
-					// Check if this contact has sent FS messages before. Warn the user is this is the case.
+					// Check if this contact has sent FS messages before. Warn the user if this is the case.
 					if (fsmp.hasContactUsedForwardSecurity(senderContact)) {
 						if (senderContact.getForwardSecurityState() == ContactModel.FS_ON) {
 							contactService.setForwardSecurityState(senderContact, ContactModel.FS_OFF);
@@ -2014,7 +2021,7 @@ public class MessageServiceImpl implements MessageService {
 				fileData.getFileSize(),
 				FileUtil.sanitizeFileName(fileData.getFileName()),
 				fileData.getRenderingType(),
-				fileData.getDescription(),
+				fileData.getCaption(),
 				false,
 				fileData.getMetaData());
 
@@ -3899,8 +3906,11 @@ public class MessageServiceImpl implements MessageService {
 			}
 
 			try {
-				final byte[] contentData = generateContentData(mediaItem, resolvedReceivers, messageModels, fileDataModel);
-				final byte[] thumbnailData = generateThumbnailData(mediaItem, fileDataModel);
+				final Map<String, Object> metaData = new HashMap<>();
+				final byte[] contentData = generateContentData(mediaItem, resolvedReceivers, messageModels, fileDataModel, metaData);
+				final byte[] thumbnailData = generateThumbnailData(mediaItem, fileDataModel, metaData);
+				fileDataModel.setMetaData(metaData);
+
 				if (thumbnailData != null) {
 					writeThumbnails(messageModels, resolvedReceivers, thumbnailData);
 				} else {
@@ -3970,10 +3980,13 @@ public class MessageServiceImpl implements MessageService {
 	 * @return content data as a byte array or null if content data could not be generated
 	 */
 	@WorkerThread
-	private @Nullable byte[] generateContentData(@NonNull MediaItem mediaItem,
-	                                             @NonNull MessageReceiver[] resolvedReceivers,
-	                                             @NonNull Map<MessageReceiver, AbstractMessageModel> messageModels,
-	                                             @NonNull FileDataModel fileDataModel) throws ThreemaException {
+	private @Nullable byte[] generateContentData(
+		@NonNull MediaItem mediaItem,
+		@NonNull MessageReceiver[] resolvedReceivers,
+		@NonNull Map<MessageReceiver, AbstractMessageModel> messageModels,
+		@NonNull FileDataModel fileDataModel,
+		@NonNull Map <String, Object> metaData
+	) throws ThreemaException {
 		switch (mediaItem.getType()) {
 			case TYPE_VIDEO:
 				// fallthrough
@@ -3995,9 +4008,7 @@ public class MessageServiceImpl implements MessageService {
 					boolean hasNoTransparency = MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mediaItem.getMimeType());
 					bitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), maxSize, false);
 					if (bitmap != null) {
-						bitmap = BitmapUtil.rotateBitmap(bitmap,
-							mediaItem.getExifRotation(),
-							mediaItem.getExifFlip());
+						bitmap = adjustBitmapOrientation(bitmap, mediaItem, metaData);
 
 						final byte[] imageByteArray;
 						if (hasNoTransparency) {
@@ -4040,10 +4051,7 @@ public class MessageServiceImpl implements MessageService {
 					if (inputStream != null && inputStream.available() > 0) {
 						bitmap = BitmapFactory.decodeStream(new BufferedInputStream(inputStream), null, null);
 						if (bitmap != null) {
-							bitmap = BitmapUtil.rotateBitmap(
-								bitmap,
-								mediaItem.getExifRotation(),
-								mediaItem.getExifFlip());
+							bitmap = adjustBitmapOrientation(bitmap, mediaItem, metaData);
 
 							final byte[] imageByteArray = BitmapUtil.getJpegByteArray(bitmap, mediaItem.getRotation(), mediaItem.getFlip());
 							if (imageByteArray != null) {
@@ -4074,14 +4082,44 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	/**
+	 * Rotate/flip bitmap according to exif information and add final dimensions to the file message's meta data also keeping in
+	 * account local orientation (if any)
+	 * @param bitmap The Bitmap
+	 * @param mediaItem The MediaItem instance that contains orientation info about this particular item
+	 * @param metaData A map with meta data that is going to be added to a file message
+	 *
+	 * @return A new bitmap with adjusted orientation
+	 */
+	@NonNull
+	private Bitmap adjustBitmapOrientation(
+		@NonNull Bitmap bitmap,
+		@NonNull MediaItem mediaItem,
+		@NonNull Map<String, Object> metaData
+	) {
+		bitmap = BitmapUtil.rotateBitmap(
+			bitmap,
+			mediaItem.getExifRotation(),
+			mediaItem.getExifFlip());
+
+		boolean isRotated = mediaItem.getRotation() == 90 || mediaItem.getRotation() == 270;
+		metaData.put(FileDataModel.METADATA_KEY_WIDTH, isRotated ? bitmap.getHeight() : bitmap.getWidth());
+		metaData.put(FileDataModel.METADATA_KEY_HEIGHT, isRotated ? bitmap.getWidth() : bitmap.getHeight());
+
+		return bitmap;
+	}
+
+	/**
 	 * Generate thumbnail data for this MediaItem
 	 *
 	 * @return byte array of the thumbnail bitmap, null if thumbnail could not be generated
 	 */
 	@WorkerThread
-	private @Nullable byte[] generateThumbnailData(@NonNull MediaItem mediaItem, @NonNull FileDataModel fileDataModel) {
+	private @Nullable byte[] generateThumbnailData(
+		@NonNull MediaItem mediaItem,
+		@NonNull FileDataModel fileDataModel,
+		@NonNull Map <String, Object> metaData
+	) {
 		Bitmap thumbnailBitmap = null;
-		final Map<String, Object> metaData = new HashMap<>();
 
 		int mediaType = mediaItem.getType();
 
@@ -4157,8 +4195,6 @@ public class MessageServiceImpl implements MessageService {
 			default:
 				break;
 		}
-
-		fileDataModel.setMetaData(metaData);
 
 		final byte[] thumbnailData;
 		if (thumbnailBitmap != null) {
@@ -4377,7 +4413,10 @@ public class MessageServiceImpl implements MessageService {
 			messageModel.setState(MessageState.PENDING); // shows a progress bar
 			messageModel.setFileData(fileDataModel);
 			messageModel.setCorrelationId(correlationId);
-			messageModel.setCaption(mediaItem.getTrimmedCaption());
+			String trimmedCaption = mediaItem.getTrimmedCaption();
+			if (trimmedCaption != null && !trimmedCaption.isBlank()) {
+				messageModel.setCaption(trimmedCaption);
+			}
 			messageModel.setSaved(true);
 
 			messageReceiver.saveLocalModel(messageModel);
@@ -4474,12 +4513,17 @@ public class MessageServiceImpl implements MessageService {
 			filename = FileUtil.getDefaultFilename(mimeType);
 		}
 
+		String caption = mediaItem.getTrimmedCaption();
+		if (caption != null && caption.isBlank()) {
+			caption = null;
+		}
+
 		return new FileDataModel(mimeType,
 			null,
 			0,
 			filename,
 			renderingType,
-			mediaItem.getTrimmedCaption(),
+			caption,
 			true,
 			null);
 	}

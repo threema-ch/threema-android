@@ -1495,20 +1495,23 @@ public class APIConnector {
 	 * @return result of license check (success status, error message if success = false)
 	 * @throws Exception on network error
 	 */
-	public boolean updateWorkInfo(String username,
-								  String password,
-								  IdentityStoreInterface identityStore,
-								  String firstName,
-								  String lastName,
-								  String csi,
-								  String category) throws Exception {
+	public boolean updateWorkInfo(
+		String username,
+		String password,
+		IdentityStoreInterface identityStore,
+		@Nullable String firstName,
+		@Nullable String lastName,
+		@Nullable String csi,
+		@Nullable String category,
+		@Nullable String mdmSource
+	) throws Exception {
 		String url = getServerUrl() + "identity/update_work_info";
 		JSONObject request = new JSONObject();
 		request.put("licenseUsername", username);
 		request.put("licensePassword", password);
 		request.put("identity", identityStore.getIdentity());
 		request.put("publicNickname", identityStore.getPublicNickname());
-		request.put("version", version.getFullVersion());
+		request.put("version", getUpdateWorkInfoVersion(mdmSource));
 		if (firstName != null) {
 			request.put("firstName", firstName);
 		}
@@ -1538,6 +1541,26 @@ public class APIConnector {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Get the full app version.
+	 *
+	 * If provided also append the mdm source to the version.
+	 * This might seem to not be the appropriate location for this information
+	 * but has been specified in ANDR-2213 and https://confluence.threema.ch/display/EN/Update+Work+Info.
+	 *
+	 * @param mdmSource The source(s) of the active mdm parameters
+	 * @return The version string
+	 */
+	@NonNull
+	private String getUpdateWorkInfoVersion(@Nullable String mdmSource) {
+		StringBuilder updateWorkInfoVersion = new StringBuilder(version.getFullVersion());
+		if (mdmSource != null) {
+			updateWorkInfoVersion.append(";");
+			updateWorkInfoVersion.append(mdmSource);
+		}
+		return updateWorkInfoVersion.toString();
 	}
 
 	public int getMatchCheckInterval() {

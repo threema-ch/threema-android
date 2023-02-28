@@ -70,6 +70,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -117,6 +118,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
+import static ch.threema.app.ThreemaApplication.getMessageDraft;
 import static ch.threema.app.adapters.SendMediaPreviewAdapter.VIEW_TYPE_NORMAL;
 import static ch.threema.app.services.PreferenceService.ImageScale_SEND_AS_FILE;
 import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
@@ -965,6 +967,23 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		}
 
 		messageService.sendMediaAsync(mediaAdapterManager.getItems(), messageReceivers, null);
+
+		if (messageReceivers.size() == 1) {
+			String messageDraft = getMessageDraft(messageReceivers.get(0).getUniqueIdString());
+			if (!TestUtil.empty(messageDraft)) {
+				for (MediaItem mediaItem : mediaAdapterManager.getItems()) {
+					try {
+						double similarity = new JaroWinklerSimilarity().apply(mediaItem.getCaption(), messageDraft);
+						if (similarity > 0.8D) {
+							ThreemaApplication.putMessageDraft(messageReceivers.get(0).getUniqueIdString(), null, null);
+							break;
+						}
+					} catch (IllegalArgumentException ignore) {
+						// one argument is probably null
+					}
+				}
+			}
+		}
 
 		// return last media filter to chat via intermediate hop through MediaAttachActivity
 		if (lastMediaFilter != null) {

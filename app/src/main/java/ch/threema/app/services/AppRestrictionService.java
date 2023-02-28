@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import java.util.Iterator;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.license.UserCredentials;
@@ -90,10 +92,32 @@ public class AppRestrictionService {
 	}
 
 	/**
+	 * Get the source of active mdm parameters in text representation.
+	 *
+	 * If at least one Threema-MDM parameter and at least one external MDM parameter is active, "me" is returned.
+	 * If at least one Threema-MDM parameter is active, append "m" is returned.
+	 * If at least one external MDM parameter is active, append "e" is returned.
+	 *
+	 * (See https://confluence.threema.ch/display/EN/Update+Work+Info)
+	 *
+	 * @return the source(s) of active mdm parameters as text, null if no mdm parameters are active
+	 */
+	public @Nullable String getMdmSource() {
+		StringBuilder mdmSource = new StringBuilder();
+		if (hasThreemaMDMRestrictions()) {
+			mdmSource.append("m");
+		}
+		if (hasExternalMDMRestrictions()) {
+			mdmSource.append("e");
+		}
+		return mdmSource.length() > 0 ? mdmSource.toString() : null;
+	}
+
+	/**
 	 * Determine if this app is under control of Threema MDM and has at least one parameter set
 	 * @return true if Threema MDM is active
 	 */
-	public boolean hasThreemaMDMRestrictions() {
+	private boolean hasThreemaMDMRestrictions() {
 		return this.workMDMSettings != null && this.workMDMSettings.parameters != null && this.workMDMSettings.parameters.size() > 0;
 	}
 
@@ -101,7 +125,7 @@ public class AppRestrictionService {
 	 * Determine if this app is under control of an external MDM/EMM with a local DPC and at least one parameter set
 	 * @return true if an external MDM is active
 	 */
-	public boolean hasExternalMDMRestrictions() {
+	private boolean hasExternalMDMRestrictions() {
 		return this.hasExternalMDMRestrictions;
 	}
 
@@ -235,6 +259,7 @@ public class AppRestrictionService {
 	private static volatile AppRestrictionService instance;
 	private static final Object lock = new Object();
 
+	@NonNull
 	public static AppRestrictionService getInstance() {
 		if (instance == null) {
 			synchronized (lock) {

@@ -45,7 +45,7 @@ public class FileMessage extends AbstractMessage
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 

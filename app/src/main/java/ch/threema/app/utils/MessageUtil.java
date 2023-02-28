@@ -741,6 +741,14 @@ public class MessageUtil {
 									null,
 									null
 								);
+							case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE:
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_24,
+									context.getString(R.string.forward_security_downgraded_status_message),
+									context.getString(R.string.forward_security_downgraded_status_message),
+									null,
+									null
+								);
 							default:
 								return new MessageViewElement(
 									R.drawable.ic_baseline_key_24,

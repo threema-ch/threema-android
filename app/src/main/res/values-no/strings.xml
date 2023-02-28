@@ -499,6 +499,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="really_remove_wallpapers">Vil du virkelig fjerne alle bakgrunner?</string>
     <string name="wallpapers_removed">Bakgrunner fjernet</string>
     <string name="invalid_backup">Ugyldig sikkerhetskopi-data. Kan ikke gjenopprette.</string>
+    <string name="invalid_zip_restore_failed">Gjenoppretting feilet. Ugyldig gjenopprettingsfil: %1$s</string>
     <string name="revocation_explain">Passordet du skriver inn her gjør at du kan trekke tilbake din ID hos https://myid.threema.ch/revoke i tilfelle du mister det eller det blir stjålet.</string>
     <string name="no_unread_messages">Ingen uleste meldinger eller PIN-lås aktivert.</string>
     <string name="send_media">Send media</string>
@@ -909,7 +910,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="number_of_days">%d dager</string>
     <string name="backup_other_restore_options">Andre alternativer for gjenoppr.</string>
     <string name="safe_size">Kopistørrelse</string>
-    <string name="safe_version_mismatch">Versjonen av sikkerhetskopien er høyere enn den støttede versjonen. Vennligst oppdater til den siste versjonen av applikasjonen.</string>
+    <string name="backup_version_mismatch">Versjonen av sikkerhetskopien er høyere enn den støttede versjonen. Vennligst oppdater til den siste versjonen av applikasjonen.</string>
     <string name="safe_restore_failed">Gjenoppret. mislyktes</string>
     <string name="safe_failed_notification">Threema Safe sikkerhetskopi mislyktes i %d påfølgende dager. Trykk her for å sjekke.</string>
     <string name="safe_restore">Gjenopprett Threema Safe</string>
@@ -1422,6 +1423,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="forward_security_mode_2dh">En-veis</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beskytter kommunikasjonen fra å kunne bli dekryptert i fremtiden, selv om den langsiktige krypteringsnøkkelen er kompromittert.\n\nDette kan skrus på om appen på begge sider av kommunikasjonen støtter PFS.</string>
     <string name="group_call_inactivity_left">Gruppesamtale avsluttet på grunn av inaktivitet</string>
+    <string name="missing_permission_external_storage">Ikke mulig å kopiere filen. Prøv følgende: \n1. Åpne innstillinger på enheten.\n2. Gå til \"Apper\" og velg \"Spesiell tilgang\" på menyen med tre prikker eller en nedtrekksmeny.\n3. Trykk på \"Lagring\" eller \"Tilgang til filer\".\n4. Trykk på de tre prikkene oppe i høyre hjørne og velg \"Vis systemet\". \n5. Trykk på \"Ekstern lagring\" og sørg for at \"Tilgang til alle filer\" er gitt.\n6. Prøv igjen å gjenopprette sikkerhetskopien.</string>
+    <string name="forward_security_downgraded_status_message">Denne kontakten har begynt å bruke en app-versjon som ikke støtter \"Perfect Forward Secrecy\". Meldinger blir sendt uten PFS fra nå av.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>

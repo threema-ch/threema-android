@@ -515,6 +515,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="really_remove_wallpapers">您确定要删除所有壁纸吗？</string>
     <string name="wallpapers_removed">壁纸已删除</string>
     <string name="invalid_backup">无效的备份数据。无法恢复。</string>
+    <string name="invalid_zip_restore_failed">恢复失败，这是无效的备份数据：%1$s</string>
     <string name="revocation_explain">您在这里输入的密码，可让您通过 https://myid.threema.ch/revoke 吊销您的ID，以防丢失或被盗</string>
     <string name="no_unread_messages">没有未读消息或 PIN 锁已激活</string>
     <string name="send_media">发送媒体</string>
@@ -946,7 +947,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="number_of_days">%d天</string>
     <string name="backup_other_restore_options">其他恢复选项</string>
     <string name="safe_size">备份大小</string>
-    <string name="safe_version_mismatch">此备份的版本高于支持的版本。请更新到最新版本的应用。</string>
+    <string name="backup_version_mismatch">此备份的版本高于支持的版本。请更新到最新版本的应用。</string>
     <string name="safe_restore_failed">恢复失败</string>
     <string name="safe_failed_notification">Threema Safe 备份连续%d天失败。点击这里检查。</string>
     <string name="safe_restore">恢复 Threema Safe</string>
@@ -1050,8 +1051,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
 <p>如要发起群组通话，首先打开任意一个群组会话，然后点击顶部的相机图标即可。</p>
 <p>所有群组成员都会收到通知，并可以决定是否加入通话。</p>
 <p><b>请注意：</b>iOS 的群组通话功能将在稍后发布。</p>]]></string>
-    <string name="whatsnew2_title">(an empty phrase)</string>
-    <string name="whatsnew2_body">(an empty phrase)</string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">无效的备份路径</string>
@@ -1103,7 +1102,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="work_life_dnd_active">非工作时间在线</string>
     <string name="pencil">铅笔</string>
     <string name="warning">警告</string>
-    <string name="password_remember_warning">请记住您在这里输入的内容！由于 %s 不会在服务器上保存任何密码，因此如果您忘记了 PIN 码或密码，我们无法帮助您。</string>
+    <string name="password_remember_warning">请您记住在这里输入的内容！由于 %s 不会在服务器上保存任何密码，如果您忘记了 PIN 码或密码，我们无法帮助您找回密码。</string>
     <string name="safe_backup_tap_to_restart">点击系统通知以重启应用程序。如果看不到通知，请向下滑动打开手机的通知栏。</string>
     <string name="send_to_support">发送给 Threema 支持</string>
     <string name="menu_legal">法律</string>
@@ -1459,6 +1458,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="forward_security_mode_2dh">单向保密</string>
     <string name="forward_security_explanation">完全正向保密（PFS）可以保护会话记录不被追溯解密，即使长期加密密钥已被盗用。\n\n如果双方的应用程序都支持完全正向保密的话，就可以启用此选项。</string>
     <string name="group_call_inactivity_left">因为长时间不活动，群组通话自动退出</string>
+    <string name="missing_permission_external_storage">无法复制文件，请尝试以下步骤以解決问题：\n1. 打开系统设置。\n2. 前往 “应用程序”，然后点击右上角的三个点，选择 “特殊访问” 权限。\n3. 点击 “所有文件访问”。\n4. 点击右上角的三个点，选择“显示系统应用程序”。\n5. 点击 “外部存储” 并确保授予 “允许访问所有文件” 权限。\n6. 再次尝试恢复备份。</string>
+    <string name="forward_security_downgraded_status_message">此联系人所使用的应用版本并不支持 “完全正向保密” 功能。从现在起，消息将在没有 “完全正向保密” 的情况下发送。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

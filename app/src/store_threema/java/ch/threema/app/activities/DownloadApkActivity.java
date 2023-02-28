@@ -47,11 +47,12 @@ import android.widget.Toast;
 
 import org.slf4j.Logger;
 
+import java.io.File;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -136,8 +137,15 @@ public class DownloadApkActivity extends ThreemaActivity implements GenericAlert
 						return;
 					} else {
 						try {
+							// Get the destination file because the apk cannot be installed when we
+							// just have a content uri (provided by DownloadManager). Clear the map
+							// afterwards as the file location is not used anymore.
+							File destinationFile = DownloadUtil.publicExternalDestination.get(referenceId);
+							DownloadUtil.publicExternalDestination.clear();
+
+							// Install the apk from the destination file
 							Intent installIntent = new Intent(Intent.ACTION_VIEW);
-							installIntent.setDataAndType(uri, "application/vnd.android.package-archive");
+							installIntent.setDataAndType(Uri.fromFile(destinationFile), "application/vnd.android.package-archive");
 							installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 							context.startActivity(installIntent);
 						} catch (Exception e) {

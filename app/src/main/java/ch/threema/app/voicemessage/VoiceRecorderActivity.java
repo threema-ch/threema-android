@@ -21,12 +21,15 @@
 
 package ch.threema.app.voicemessage;
 
+import static android.Manifest.permission.BLUETOOTH_CONNECT;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothHeadset;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -47,6 +50,7 @@ import android.widget.Toast;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
@@ -84,11 +88,12 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	public static final int MAX_VOICE_MESSAGE_LENGTH_MILLIS = (int) DateUtils.HOUR_IN_MILLIS;
 	private static final String SENSOR_TAG_VOICE_RECORDER = "voice";
 
-	public static final int DEFAULT_SAMPLING_RATE_HZ = 22050;
+	public static final int DEFAULT_SAMPLING_RATE_HZ = 44100;
 	public static final int BLUETOOTH_SAMPLING_RATE_HZ = 8000;
 
 	public static final String VOICEMESSAGE_FILE_EXTENSION = ".aac";
 	private static final int DISCARD_CONFIRMATION_THRESHOLD_SECONDS = 10;
+	private static final int PERMISSION_REQUEST_BLUETOOTH_CONNECT = 45454;
 
 	private enum MediaState {
 		STATE_NONE,
@@ -171,8 +176,18 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-		Intent intent = getIntent();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			if (!ConfigUtils.requestBluetoothConnectPermissions(this, null, PERMISSION_REQUEST_BLUETOOTH_CONNECT,
+				ActivityCompat.shouldShowRequestPermissionRationale(this, BLUETOOTH_CONNECT))) {
+				return;
+			}
+		}
 
+		postPermissionOnCreate();
+	}
+
+	private void postPermissionOnCreate() {
+		Intent intent = getIntent();
 		if (intent != null) {
 			messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(this, intent);
 			if (messageReceiver == null) {
@@ -262,31 +277,31 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 			}
 
 			audioStateChangedReceiver = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				scoAudioState = intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, -1);
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					scoAudioState = intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, -1);
 
-				String stateString = "";
-				switch (scoAudioState) {
-					case AudioManager.SCO_AUDIO_STATE_CONNECTED:
-						stateString = "connected";
-						break;
-					case AudioManager.SCO_AUDIO_STATE_DISCONNECTED:
-						stateString = "disconnected";
-						break;
-					case AudioManager.SCO_AUDIO_STATE_CONNECTING:
-						stateString = "connecting";
-						break;
-					case AudioManager.SCO_AUDIO_STATE_ERROR:
-						stateString = "error";
-						break;
-					default:
-						break;
+					String stateString = "";
+					switch (scoAudioState) {
+						case AudioManager.SCO_AUDIO_STATE_CONNECTED:
+							stateString = "connected";
+							break;
+						case AudioManager.SCO_AUDIO_STATE_DISCONNECTED:
+							stateString = "disconnected";
+							break;
+						case AudioManager.SCO_AUDIO_STATE_CONNECTING:
+							stateString = "connecting";
+							break;
+						case AudioManager.SCO_AUDIO_STATE_ERROR:
+							stateString = "error";
+							break;
+						default:
+							break;
+					}
+
+					logger.debug("Audio SCO state: " + stateString);
+					updateBluetoothButton();
 				}
-
-				logger.debug("Audio SCO state: " + stateString);
-				updateBluetoothButton();
-			}
 			};
 			registerReceiver(audioStateChangedReceiver, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED));
 
@@ -332,13 +347,19 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 		pauseMedia();
 	}
 
+	@SuppressWarnings("MissingPermission")
 	private boolean isBluetoothEnabled() {
 		if (audioManager == null) {
 			return false;
 		}
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+			ActivityCompat.checkSelfPermission(this, BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+			return false;
+		}
+
 		BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		boolean result = bluetoothAdapter != null && bluetoothAdapter.isEnabled() && bluetoothAdapter.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothHeadset.STATE_CONNECTED;
+		boolean result = bluetoothAdapter != null && bluetoothAdapter.isEnabled() && bluetoothAdapter.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothAdapter.STATE_CONNECTED;
 
 		logger.debug("isBluetoothEnabled = {}",result);
 
@@ -968,5 +989,14 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	@Override
 	public void onSensorChanged(String key, boolean value) {
 		logger.debug("onSensorChanged: " + value);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		if (requestCode == PERMISSION_REQUEST_BLUETOOTH_CONNECT) {
+			postPermissionOnCreate();
+		}
 	}
 }

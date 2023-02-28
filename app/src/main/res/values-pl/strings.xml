@@ -501,6 +501,7 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="really_remove_wallpapers">Czy na pewno chcesz usunąć wszystkie tapety?</string>
     <string name="wallpapers_removed">Tapety usunięte</string>
     <string name="invalid_backup">Nieprawidłowe dane kopii zapasowej. Nie można jej przywrócić.</string>
+    <string name="invalid_zip_restore_failed">Przywracanie niepomyślne. Niewłaściwy plik kopii zapasowej: %1$s</string>
     <string name="revocation_explain">Wprowadzone tutaj hasło pozwala Ci unieważnić identyfikator pod adresem https://myid.threema.ch/revoke, na przykład gdy go zgubisz lub gdy zostanie ukradziony.</string>
     <string name="no_unread_messages">Brak nieprzeczytanych wiadomości lub blokady PIN</string>
     <string name="send_media">Wyślij media</string>
@@ -928,7 +929,7 @@ anonimowo?</string>
     <string name="number_of_days">%d dni</string>
     <string name="backup_other_restore_options">Inne opcje przywracania</string>
     <string name="safe_size">Rozmiar kopii zapasowej</string>
-    <string name="safe_version_mismatch">Wersja tej kopii zapasowej jest wyższa od obsługiwanej wersji. Zaktualizuj aplikację do najnowszej wersji.</string>
+    <string name="backup_version_mismatch">Wersja tej kopii zapasowej jest wyższa od obsługiwanej wersji. Zaktualizuj aplikację do najnowszej wersji.</string>
     <string name="safe_restore_failed">Przywracanie nieudane</string>
     <string name="safe_failed_notification">Przywracanie kopii zapasowej Threema Safe nie udało się przez %d dni. Dotknij tutaj, aby to sprawdzić.</string>
     <string name="safe_restore">Przywróć Threema Safe</string>
@@ -1439,6 +1440,8 @@ anonimowo?</string>
     <string name="forward_security_mode_2dh">jednostronne</string>
     <string name="forward_security_explanation">Doskonałe utajnianie z wyprzedzeniem (Perfect Forward Secrecy – PFS) chroni rejestrowaną komunikację przed odszyfrowaniem po fakcie, nawet jeśli zostaną ujawnione długoterminowe klucze szyfrujące.\n\nOpcję tę można włączyć, jeśli aplikacja po obu stronach obsługuje PFS.</string>
     <string name="group_call_inactivity_left">Opuszczono rozmowę grupową z powodu nieaktywności</string>
+    <string name="missing_permission_external_storage">Nie udało się skopiować pliku. Spróbuj następujących kroków:\n1. Otwórz aplikację Ustawienia.\n2. Przejdź do \"Aplikacje\" i wybierz \"Dostęp specjalny\".\n3. Dotknij \"Dostęp do wszystkich plików\".\n4. Dotknij trzech kropek w prawym górnym rogu i wybierz \"Pokaż aplikacje systemowe\".\n5. Dotknij \"Pamięć zewnętrzna\" i upewnij się, że \"Zezwól na dostęp do zarządzania wszystkimi plikami\" jest przyznane.\n6. Spróbuj ponownie przywrócić kopię zapasową.</string>
+    <string name="forward_security_downgraded_status_message">Ten kontakt zaczął używać wersji aplikacji, która nie obsługuje Perfekcyjnego Utajniania z Wyprzedzeniem. Od teraz wiadomości będą wysyłane bez PUW.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktów</item>

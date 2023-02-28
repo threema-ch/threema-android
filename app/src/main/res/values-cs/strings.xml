@@ -499,6 +499,7 @@ http://www.7-zip.org nebo https://itunes.apple.com/us/app/the-unarchiver/id42542
     <string name="really_remove_wallpapers">Skutečně si přejete odstranit všechny tapety?</string>
     <string name="wallpapers_removed">Tapety byly odstraněny</string>
     <string name="invalid_backup">Neplatná data zálohy. Nelze je obnovit.</string>
+    <string name="invalid_zip_restore_failed">Obnova selhala. Neplatný soubor se zálohou: %1$s</string>
     <string name="revocation_explain">V případě nutnosti zrušit/odvolat vaše Threema ID (například v případě ztráty nebo odcizení) použijte tento odkaz, kde zadáte ID a zde vytvořené heslo.
 https://myid.threema.ch/revoke</string>
     <string name="no_unread_messages">Žádné nepřečtené zprávy nebo je aktivován zámek PIN</string>
@@ -913,7 +914,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="number_of_days">počet dnů: %d</string>
     <string name="backup_other_restore_options">Další možnosti obnovení</string>
     <string name="safe_size">Velikost zálohy</string>
-    <string name="safe_version_mismatch">Verze této zálohy je vyšší než verze podporovaná. Aktualizujte prosím aplikaci Threema na nejnovější verzi.</string>
+    <string name="backup_version_mismatch">Verze této zálohy je vyšší než verze podporovaná. Aktualizujte prosím aplikaci Threema na nejnovější verzi.</string>
     <string name="safe_restore_failed">Obnova selhala</string>
     <string name="safe_failed_notification">Záloha Threema Safe se nezdařila %d dní po sobě. Klepněte sem pro další informace.</string>
     <string name="safe_restore">Obnovení Threema Safe</string>
@@ -1426,6 +1427,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="forward_security_mode_2dh">unilaterální</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) chrání zaznamenanou komunikaci před zpětným dešifrováním i když je dlouhodobý šifrovací klíč kompromitován.\n\nTato možnost může být povolena v případě, když aplikace na obou stranách podporuje PFS.</string>
     <string name="group_call_inactivity_left">Skupinový hovor byl opuštěn z důvodu neaktivity</string>
+    <string name="forward_security_downgraded_status_message">Tento kontakt začal používat verzi aplikace, která nepodporuje Perfect Forward Secrecy. Zprávy budou od nynějška odesílány bez PFS.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>

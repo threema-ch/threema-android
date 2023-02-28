@@ -105,4 +105,14 @@ interface GroupCallController {
 
     @WorkerThread
     fun declineCall()
+
+    /**
+     * Remove all participants (including self) from the call that are no members of the call's group.
+     *
+     * If the local participant is no longer a member of the group, the call must be left.
+     *
+     * @param groupMembers A set containing all group member's identities
+     */
+    @WorkerThread
+    fun purgeCallParticipants(groupMembers: Set<String>)
 }

@@ -1,3 +1,7 @@
+import com.android.tools.profgen.ArtProfileKt
+import com.android.tools.profgen.ArtProfileSerializer
+import com.android.tools.profgen.DexFile
+
 plugins {
     id 'org.sonarqube'
 }
@@ -13,7 +17,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "5.0.3.1"
+def app_version = "5.0.4"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -92,7 +96,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 785
+        versionCode 790
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -143,7 +147,8 @@ android {
             uriScheme: "threema",
             contactActionUrl: "threema.id",
             groupLinkActionUrl: "threema.group",
-            actionUrl: "go.threema.ch"
+            actionUrl: "go.threema.ch",
+            callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.call",
         ]
 
         ndk {
@@ -204,6 +209,7 @@ android {
             manifestPlaceholders = [
                 uriScheme: "threemawork",
                 actionUrl: "work.threema.ch",
+                callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.work.call",
             ]
         }
         sandbox {
@@ -287,6 +293,7 @@ android {
             manifestPlaceholders = [
                 uriScheme: "threemaonprem",
                 actionUrl: "onprem.threema.ch",
+                callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.onprem.call",
             ]
         }
 
@@ -321,6 +328,7 @@ android {
             manifestPlaceholders = [
                 uriScheme: "threemared",
                 actionUrl: "red.threema.ch",
+                callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.red.call",
             ]
         }
         hms {
@@ -348,6 +356,7 @@ android {
             manifestPlaceholders = [
                 uriScheme: "threemawork",
                 actionUrl: "work.threema.ch",
+                callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.work.call",
             ]
         }
         libre {
@@ -451,7 +460,7 @@ android {
             manifest.srcFile 'src/store_google/AndroidManifest.xml'
         }
         sandbox_work {
-            java.srcDirs = ['src/store_google_work/java', 'src/google_services_based/java']
+            java.srcDir 'src/google_services_based/java'
             res.srcDir 'src/store_google_work/res'
             manifest.srcFile 'src/store_google_work/AndroidManifest.xml'
         }
@@ -593,6 +602,33 @@ android {
         noCompress 'png'
     }
 
+    // Fix non-producible `baseline.profm` in release builds due to unstable ordering.
+    // See https://issuetracker.google.com/issues/231837768
+    project.afterEvaluate {
+        applicationVariants.all { variant ->
+            if (variant.name.endsWith("Release")) {
+                tasks["compile${variant.name.capitalize()}ArtProfile"].doLast {
+                    outputs.files.each { file ->
+                        if (file.toString().endsWith(".profm")) {
+                            println("Sorting ${file} ...")
+                            def version = ArtProfileSerializer.valueOf("METADATA_0_0_2")
+                            def profile = ArtProfileKt.ArtProfile(file)
+                            def keys = new ArrayList(profile.profileData.keySet())
+                            def sortedData = new LinkedHashMap()
+                            Collections.sort keys, new DexFile.Companion()
+                            keys.each { key -> sortedData[key] = profile.profileData[key] }
+                            new FileOutputStream(file).with {
+                                write(version.magicBytes$profgen)
+                                write(version.versionBytes$profgen)
+                                version.write$profgen(it, sortedData, "")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     lint {
         // if true, stop the gradle build if errors are found
         abortOnError true
@@ -644,10 +680,11 @@ dependencies {
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
     implementation 'net.sf.opencsv:opencsv:2.3'
-    implementation 'net.lingala.zip4j:zip4j:2.11.2'
+    implementation 'net.lingala.zip4j:zip4j:2.11.4'
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.13.3'
     // commons-io >2.6 requires android 8
     implementation 'commons-io:commons-io:2.6'
+    implementation 'org.apache.commons:commons-text:1.9'
     implementation "org.slf4j:slf4j-api:$slf4j_version"
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.25'
     implementation 'com.github.CanHub:Android-Image-Cropper:4.3.0'
@@ -686,8 +723,8 @@ dependencies {
     kapt 'androidx.room:room-compiler:2.4.3'
 
     implementation 'com.google.android.material:material:1.7.0'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.1'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.2'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.2'
     implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on API < 24
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57' // make sure to update this in domain's build.gradle as well
 
@@ -801,7 +838,7 @@ dependencies {
     redImplementation(name: 'libgsaverification-client', ext: 'aar')
 
     // Maplibre (may have transitive dependencies on Google location services)
-    def maplibreDependency = 'org.maplibre.gl:android-sdk:9.5.2'
+    def maplibreDependency = 'org.maplibre.gl:android-sdk:9.6.0'
     noneImplementation maplibreDependency
     store_googleImplementation maplibreDependency
     store_google_workImplementation maplibreDependency

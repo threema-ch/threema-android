@@ -46,7 +46,6 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.emojis.EmojiMarkupUtil;
-import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
@@ -223,13 +222,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		public ConversationModel getConversationModel() { return conversationModel; }
 
 		@Override
-		public void onGroupCallStart(@NonNull GroupModel groupModel, @Nullable GroupCallDescription call) {
-			ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
-				@Override
-				public void handle(ConversationListener listener) {
-					listener.onModified(conversationModel, null);
-				}
-			});
+		public void onGroupCallStart(@NonNull GroupModel groupModel) {
+			ListenerManager.conversationListeners.handle(listener -> listener.onModified(conversationModel, null));
 		}
 	}
 

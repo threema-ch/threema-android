@@ -507,7 +507,7 @@ public class NotificationServiceImpl implements NotificationService {
 		return PendingIntent.getActivity(
 			context,
 			GC_PENDING_INTENT_BASE + groupId,
-			GroupCallActivity.getStartOrJoinCallIntent(context, groupId),
+			GroupCallActivity.getJoinCallIntent(context, groupId),
 			flags
 		);
 	}
@@ -1766,7 +1766,7 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public void showUnsentMessageNotification(@NonNull ArrayList<AbstractMessageModel> failedMessages) {
+	public void showUnsentMessageNotification(@NonNull List<AbstractMessageModel> failedMessages) {
 		int num = failedMessages.size();
 		boolean isFSKeyMismatch = StreamSupport.stream(failedMessages)
 			.anyMatch(m -> m.getState() == MessageState.FS_KEY_MISMATCH);

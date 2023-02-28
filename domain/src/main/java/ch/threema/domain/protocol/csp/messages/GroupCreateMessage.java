@@ -48,6 +48,11 @@ public class GroupCreateMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean allowUserProfileDistribution() {
+		return true;
+	}
+
+	@Override
 	public byte[] getBody() {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

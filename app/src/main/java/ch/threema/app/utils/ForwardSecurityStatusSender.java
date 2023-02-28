@@ -21,22 +21,30 @@
 
 package ch.threema.app.utils;
 
-import java.util.Collections;
+import org.slf4j.Logger;
 
+import java.util.Collections;
+import java.util.List;
+
+import androidx.annotation.NonNull;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityStatusListener;
+import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 
 public class ForwardSecurityStatusSender implements ForwardSecurityStatusListener {
+	private final static Logger logger = LoggingUtil.getThreemaLogger("ForwardSecurityStatusSender");
 	private final boolean debug;
 	private final ContactService contactService;
 	private final MessageService messageService;
@@ -122,12 +130,22 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 	}
 
 	@Override
-	public void messageOutOfOrder(DHSessionId sessionId, Contact contact) {
+	public void messageOutOfOrder(DHSessionId sessionId, Contact contact, MessageId messageId) {
 		if (debug) {
 			postStatusMessageDebug("Message out of order (ID " + sessionId + ")", contact);
 		}
 
-		postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER);
+		if (contact != null && messageId != null && hasLastMessageId(contact, messageId)) {
+			// If the latest message of a contact is processed again, it cannot be decrypted again due to FS. It is very
+			// likely that the message has been processed but could not be acknowledged on the server. Therefore we do
+			// not show a warning if the message is already displayed in the chat.
+			logger.warn("The latest message with id '{}' was processed twice. Ignoring the second message.", messageId);
+			if (debug) {
+				postStatusMessageDebug(String.format("The latest message with id '%s' was processed twice.", messageId), contact);
+			}
+		} else {
+			postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER);
+		}
 	}
 
 	@Override
@@ -185,4 +203,57 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 			Collections.singletonList(contactModel)
 		).run();
 	}
+
+	private boolean hasLastMessageId(@NonNull Contact contact, @NonNull MessageId messageId) {
+		ContactMessageReceiver r = contactService.createReceiver(contactService.getByIdentity(contact.getIdentity()));
+
+		List<AbstractMessageModel> messageModels = this.messageService.getMessagesForReceiver(r, new MessageService.MessageFilter() {
+			@Override
+			public long getPageSize() {
+				return 1;
+			}
+
+			@Override
+			public Integer getPageReferenceId() {
+				return null;
+			}
+
+			@Override
+			public boolean withStatusMessages() {
+				return false;
+			}
+
+			@Override
+			public boolean withUnsaved() {
+				return false;
+			}
+
+			@Override
+			public boolean onlyUnread() {
+				return false;
+			}
+
+			@Override
+			public boolean onlyDownloaded() {
+				return false;
+			}
+
+			@Override
+			public MessageType[] types() {
+				return null;
+			}
+
+			@Override
+			public int[] contentTypes() {
+				return null;
+			}
+		});
+
+		if (messageModels != null && !messageModels.isEmpty()) {
+			return messageId.toString().equals(messageModels.get(0).getApiMessageId());
+		}
+
+		return false;
+	}
+
 }

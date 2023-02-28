@@ -51,6 +51,15 @@ public class GroupDeliveryReceiptMessage extends AbstractGroupMessage {
 		return ProtocolDefines.MSGTYPE_GROUP_DELIVERY_RECEIPT;
 	}
 
+	private boolean isReaction() {
+		return DeliveryReceiptUtils.isReaction(this.receiptType);
+	}
+
+	@Override
+	public boolean allowUserProfileDistribution() {
+		return this.isReaction();
+	}
+
 	@Override
 	public byte[] getBody() {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();

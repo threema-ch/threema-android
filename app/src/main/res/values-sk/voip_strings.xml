@@ -91,6 +91,7 @@
     <string name="voip_gc_sfu_not_available">Server je nedostupný, skúste to neskôr</string>
     <string name="voip_gc_call_error">Hovor bol ukončený z dôvodu chyby</string>
     <string name="voip_gc_call_start_error">Skupinový hovor sa nepodarilo spustiť</string>
+    <string name="voip_gc_call_already_ended">Skupinový hovor sa už skončil</string>
     <string name="voip_gc_call_full_generic">Dosiahlo sa maximum: K tomuto skupinovému hovoru sa nemôžu pripojiť žiadni ďalší účastníci.</string>
     <string name="voip_gc_call_full_n">Dosiahol sa maximálny počet účastníkov (%1$d), k tomuto skupinovému hovoru sa nemôžete pripojiť.</string>
     <plurals name="n_participants_in_call">

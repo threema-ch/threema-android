@@ -16,8 +16,8 @@
     <string name="webclient_disposable">descartável</string>
     <string name="webclient_unnamed_session">Sessão sem nome</string>
     <string name="webclient_session_remove">Remover sessão</string>
-    <string name="webclient_welcome_title">Converse de seu PC!</string>
-    <string name="webclient_welcome_explain">O aplicativo para desktop e o cliente web possibilitam que você envie mensagens do seu PC ou notebook enquanto fornece acesso completo a todos os seus contatos, mídia e conversas, inclusive conversas antigas.\n\n<b>Toda a comunicação entre telefone e PC é integralmente criptografada de ponta a ponta</b> e usa uma conexão direta caso seu celular e PC estejam na mesma rede.\n\nObservação: o aplicativo para desktop/cliente web pode causar uso adicional da bateria enquanto estiver ativo. Você pode ativar ou desativa-lo a qualquer momento.</string>
+    <string name="webclient_welcome_title">Converse no seu computador!</string>
+    <string name="webclient_welcome_explain">O aplicativo para desktop e o cliente web permitem que você converse a partir do seu PC ou notebook, com acesso completo a todos os seus contatos, mídia e conversas, inclusive conversas antigas.\n\n<b>Toda a comunicação entre o telefone e o computador é integralmente criptografada de ponta a ponta</b> e usa uma conexão direta caso seu celular e PC estejam na mesma rede.\n\nObservação: o aplicativo para desktop / cliente web pode causar uso adicional da bateria enquanto estiver ativo. Você pode ativar ou desativar o app a qualquer momento.</string>
     <string name="webclient_launch">Abra o aplicativo para desktop/cliente web agora</string>
     <string name="webclient_qr_scan_message">Escaneie o código QR exibido no PC.</string>
     <string name="webclient_invalid_qr_code">Código QR inválido</string>

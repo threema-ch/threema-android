@@ -49,7 +49,11 @@ private const val SFU_PEEK_PATH_SEGMENT = "peek"
 private const val SFU_JOIN_PATH_SEGMENT = "join"
 
 @WorkerThread
-internal class SfuConnectionImpl (private val apiConnector: APIConnector, private val identityStore: IdentityStoreInterface) : SfuConnection {
+internal class SfuConnectionImpl (
+    private val apiConnector: APIConnector,
+    private val identityStore: IdentityStoreInterface,
+    private val version: Version
+) : SfuConnection {
     private var cachedSfuToken: SfuToken? = null
 
     @AnyThread
@@ -173,7 +177,7 @@ internal class SfuConnectionImpl (private val apiConnector: APIConnector, privat
     }
 
     private fun getUserAgent(): String {
-        return "${ProtocolStrings.USER_AGENT}/${Version().version}"
+        return "${ProtocolStrings.USER_AGENT}/${version.version}"
     }
 
     @WorkerThread

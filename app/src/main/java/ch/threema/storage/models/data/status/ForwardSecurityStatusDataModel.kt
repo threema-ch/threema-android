@@ -34,7 +34,8 @@ class ForwardSecurityStatusDataModel : StatusDataModelInterface {
         ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED,
         ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX,
         ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED,
-        ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER
+        ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER,
+        ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE,
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class ForwardSecurityStatusType {
@@ -46,6 +47,7 @@ class ForwardSecurityStatusDataModel : StatusDataModelInterface {
 			const val FORWARD_SECURITY_ESTABLISHED_RX = 4
 			const val FORWARD_SECURITY_MESSAGES_SKIPPED = 5
             const val FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER = 6
+            const val FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE = 7
         }
     }
 

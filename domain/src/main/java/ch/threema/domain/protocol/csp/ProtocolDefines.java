@@ -161,7 +161,6 @@ public class ProtocolDefines {
 	/* Group Calls */
 	// TODO(ANDR-1974) Move gc-constants to other location
 	public static final int GC_PROTOCOL_VERSION = 1;
-	public static final int GC_GCK_LENGTH = 32;
 	public static final int GC_CALL_ID_LENGTH = 32;
 	public static final int GC_PCMK_LENGTH = 32;
 	public static final int GC_PEEK_TIMEOUT_MILLIS = 5000;

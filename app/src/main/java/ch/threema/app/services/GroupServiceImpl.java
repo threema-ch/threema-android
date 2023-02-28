@@ -282,6 +282,7 @@ public class GroupServiceImpl implements GroupService {
 				listener.onMemberKicked(groupModel, userService.getIdentity(), identities.length);
 			}
 		});
+		updateAllowedCallParticipants(groupModel);
 
 		return true;
 	}
@@ -548,6 +549,7 @@ public class GroupServiceImpl implements GroupService {
 							listener.onGroupStateChanged(model, groupState, getGroupState(model));
 						}
 					});
+					updateAllowedCallParticipants(model);
 				}
 
 				return true;
@@ -639,8 +641,7 @@ public class GroupServiceImpl implements GroupService {
 				// ignore this groupCreate message
 				result.success = true;
 				result.groupModel = null;
-			}
-			else {
+			} else {
 				// i was kicked out of group
 				// remove all members
 				this.databaseServiceNew.getGroupMemberModelFactory().deleteByGroupId(
@@ -662,6 +663,7 @@ public class GroupServiceImpl implements GroupService {
 						listener.onMemberKicked(groupModel, userService.getIdentity(), previousMemberCount);
 					}
 				});
+				updateAllowedCallParticipants(groupModel);
 			}
 
 			ListenerManager.groupListeners.handle(listener -> listener.onGroupStateChanged(result.groupModel, groupState, getGroupState(result.groupModel)));
@@ -751,6 +753,7 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		ListenerManager.groupListeners.handle(listener -> listener.onGroupStateChanged(result.groupModel, groupState, getGroupState(result.groupModel)));
+		updateAllowedCallParticipants(result.groupModel);
 
 		return result;
 	}
@@ -1127,6 +1130,7 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		ListenerManager.groupListeners.handle(listener -> listener.onGroupStateChanged(groupModel, groupState, getGroupState(groupModel)));
+		updateAllowedCallParticipants(groupModel);
 
 		return groupModel;
 	}
@@ -1145,6 +1149,19 @@ public class GroupServiceImpl implements GroupService {
 			groupCallManager.sendGroupCallStartToNewMembers(groupModel, newMemberIdentities);
 		} catch (ThreemaException e) {
 			logger.error("Could not get group call manager. Aborting potential group call start send", e);
+		}
+	}
+
+	private void updateAllowedCallParticipants(@NonNull GroupModel groupModel) {
+		try {
+			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+			if (serviceManager == null) {
+				logger.error("Service manager is null. Abort updating allowed call participants");
+				return;
+			}
+			serviceManager.getGroupCallManager().updateAllowedCallParticipants(groupModel);
+		} catch (ThreemaException e) {
+			logger.error("Could not get group call manager. Abort updating allowed call participants");
 		}
 	}
 
@@ -1286,12 +1303,14 @@ public class GroupServiceImpl implements GroupService {
 		final GroupModel groupModel = this.getGroup(msg);
 
 		if (groupModel != null) {
-			this.fileService.removeGroupAvatar(groupModel);
+			if (this.fileService.hasGroupAvatarFile(groupModel)) {
+				this.fileService.removeGroupAvatar(groupModel);
 
-			//reset the avatar cache entry
-			this.avatarCacheService.reset(groupModel);
+				//reset the avatar cache entry
+				this.avatarCacheService.reset(groupModel);
 
-			ListenerManager.groupListeners.handle(listener -> listener.onUpdatePhoto(groupModel));
+				ListenerManager.groupListeners.handle(listener -> listener.onUpdatePhoto(groupModel));
+			}
 
 			return true;
 		}
@@ -1551,6 +1570,12 @@ public class GroupServiceImpl implements GroupService {
 					logger.error("Exception", e);
 					return false;
 				}
+			} else {
+				this.groupMessagingService.sendMessage(groupModel, memberIdentities, messageId -> {
+					GroupDeletePhotoMessage msg = new GroupDeletePhotoMessage();
+					msg.setMessageId(messageId);
+					return msg;
+				});
 			}
 
 

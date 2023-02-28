@@ -289,7 +289,7 @@ public class MessageCoder {
 			String nickname = message.getPushFromName() == null ? identityStore.getPublicNickname() : message.getPushFromName();
 
 			/* Only include if a nickname is present and the current message type allows sending profile information */
-			if (nickname != null && nickname.length() > 0 && message.allowSendingProfile()) {
+			if (nickname != null && nickname.length() > 0 && message.allowUserProfileDistribution()) {
 				byte[] padding = new byte[Math.max(0, 16 - nickname.getBytes().length)];
 				metadataBuilder.setPadding(ByteString.copyFrom(padding))
 					.setNickname(nickname);
@@ -317,7 +317,7 @@ public class MessageCoder {
 				flags |= ProtocolDefines.MESSAGE_FLAG_SHORT_LIVED;
 			boxmsg.setFlags(flags);
 
-			if (message.allowSendingProfile() && boxmsg.getToIdentity() != null && boxmsg.getToIdentity().startsWith("*")) {
+			if (message.allowUserProfileDistribution() && boxmsg.getToIdentity() != null && boxmsg.getToIdentity().startsWith("*")) {
 				boxmsg.setPushFromName(nickname);
 			}
 			boxmsg.setMetadataBox(metadataBox);
@@ -488,7 +488,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_CREATE: {
-				if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.IDENTITY_LEN) ||
+				if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN) ||
 					((realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN) % ProtocolDefines.IDENTITY_LEN) != 0) {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for group create message");
 				}

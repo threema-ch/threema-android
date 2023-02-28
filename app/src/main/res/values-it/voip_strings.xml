@@ -91,6 +91,7 @@
     <string name="voip_gc_sfu_not_available">Impossibile connettersi al server</string>
     <string name="voip_gc_call_error">Impossibile avviare la chiamata di gruppo</string>
     <string name="voip_gc_call_start_error">Impossibile avviare chiamata di gruppo</string>
+    <string name="voip_gc_call_already_ended">La chiamata di gruppo è già stata terminata</string>
     <string name="voip_gc_call_full_generic">Impossibile partecipare: è stato raggiunto il numero massimo di partecipanti.</string>
     <string name="voip_gc_call_full_n">Impossibile partecipare: è stato raggiunto il numero massimo di partecipanti (%1$d).</string>
     <plurals name="n_participants_in_call">

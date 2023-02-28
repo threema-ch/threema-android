@@ -56,7 +56,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import ch.threema.app.BuildConfig;
@@ -65,6 +68,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.backuprestore.BackupRestoreDataConfig;
+import ch.threema.app.backuprestore.RandomUtil;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.managers.ServiceManager;
@@ -154,6 +158,8 @@ public class BackupService extends Service {
 
 	private static DocumentFile backupFile = null;
 	private BackupRestoreDataConfig config = null;
+	private final HashMap<Integer, String> groupUidMap = new HashMap<>();
+	private final Iterator<Integer> randomIterator = RandomUtil.getDistinctRandomIterator();
 
 	public static boolean isRunning() {
 		return isRunning;
@@ -205,7 +211,7 @@ public class BackupService extends Service {
 					return START_NOT_STICKY;
 				}
 
-				String filename = "threema-backup_" + userService.getIdentity() + "_" + now.getTime() + "_1";
+				String filename = "threema-backup_" + now.getTime() + "_1";
 
 				if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(backupUri.getScheme())) {
 					zipFile = DocumentFile.fromFile(new File(backupUri.getPath(), INCOMPLETE_BACKUP_FILENAME_PREFIX + filename + ".zip"));
@@ -504,7 +510,7 @@ public class BackupService extends Service {
 				ZipUtil.addZipStream(
 					zipOutputStream,
 					this.fileService.getContactAvatarStream(contactService.getMe()),
-					Tags.CONTACT_AVATAR_FILE_PREFIX + contactService.getMe().getIdentity(),
+					Tags.CONTACT_AVATAR_FILE_PREFIX + Tags.CONTACT_AVATAR_FILE_SUFFIX_ME,
 					false
 				);
 			} catch (IOException e) {
@@ -523,7 +529,8 @@ public class BackupService extends Service {
 			Tags.TAG_CONTACT_NICK_NAME,
 			Tags.TAG_CONTACT_HIDDEN,
 			Tags.TAG_CONTACT_ARCHIVED,
-			Tags.TAG_CONTACT_FORWARD_SECURITY
+			Tags.TAG_CONTACT_FORWARD_SECURITY,
+			Tags.TAG_CONTACT_IDENTITY_ID
 		};
 		final String[] messageCsvHeader = {
 			Tags.TAG_MESSAGE_API_MESSAGE_ID,
@@ -549,11 +556,12 @@ public class BackupService extends Service {
 		// Iterate over all contacts. Then backup every contact with the corresponding messages.
 		try (final ByteArrayOutputStream contactBuffer = new ByteArrayOutputStream()) {
 			try (final CSVWriter contactCsv = new CSVWriter(new OutputStreamWriter(contactBuffer), contactCsvHeader)) {
-
 				for (final ContactModel contactModel : contactService.find(null)) {
 					if (!this.next("backup contact " + contactModel.getIdentity())) {
 						return false;
 					}
+
+					String identityId = getFormattedUniqueId();
 
 					// Write contact
 					contactCsv.createRow()
@@ -568,6 +576,7 @@ public class BackupService extends Service {
 						.write(Tags.TAG_CONTACT_HIDDEN, contactModel.isHidden())
 						.write(Tags.TAG_CONTACT_ARCHIVED, contactModel.isArchived())
 						.write(Tags.TAG_CONTACT_FORWARD_SECURITY, contactModel.isForwardSecurityEnabled())
+						.write(Tags.TAG_CONTACT_IDENTITY_ID, identityId)
 						.write();
 
 					// Back up contact profile pictures
@@ -577,7 +586,7 @@ public class BackupService extends Service {
 								ZipUtil.addZipStream(
 									zipOutputStream,
 									this.fileService.getContactAvatarStream(contactModel),
-									Tags.CONTACT_AVATAR_FILE_PREFIX + contactModel.getIdentity(),
+									Tags.CONTACT_AVATAR_FILE_PREFIX + identityId,
 									false
 								);
 							}
@@ -590,7 +599,7 @@ public class BackupService extends Service {
 							ZipUtil.addZipStream(
 								zipOutputStream,
 								this.fileService.getContactPhotoStream(contactModel),
-								Tags.CONTACT_PROFILE_PIC_FILE_PREFIX + contactModel.getIdentity(),
+								Tags.CONTACT_PROFILE_PIC_FILE_PREFIX + identityId,
 								false
 							);
 						} catch (IOException e) {
@@ -650,7 +659,7 @@ public class BackupService extends Service {
 						ZipUtil.addZipStream(
 							zipOutputStream,
 							new ByteArrayInputStream(messageBuffer.toByteArray()),
-							Tags.MESSAGE_FILE_PREFIX + contactModel.getIdentity() + Tags.CSV_FILE_POSTFIX,
+							Tags.MESSAGE_FILE_PREFIX + identityId + Tags.CSV_FILE_POSTFIX,
 							true
 						);
 					}
@@ -684,7 +693,8 @@ public class BackupService extends Service {
 			Tags.TAG_GROUP_DELETED,
 			Tags.TAG_GROUP_ARCHIVED,
 			Tags.TAG_GROUP_DESC,
-			Tags.TAG_GROUP_DESC_TIMESTAMP
+			Tags.TAG_GROUP_DESC_TIMESTAMP,
+			Tags.TAG_GROUP_UID,
 		};
 		final String[] groupMessageCsvHeader = {
 			Tags.TAG_MESSAGE_API_MESSAGE_ID,
@@ -738,9 +748,9 @@ public class BackupService extends Service {
 		// Iterate over all groups
 		try (final ByteArrayOutputStream groupBuffer = new ByteArrayOutputStream()) {
 			try (final CSVWriter groupCsv = new CSVWriter(new OutputStreamWriter(groupBuffer), groupCsvHeader)) {
-
 				for (final GroupModel groupModel : this.groupService.getAll(groupFilter)) {
-					String groupUid = BackupUtils.buildGroupUid(groupModel);
+					String groupUid = getFormattedUniqueId();
+					groupUidMap.put(groupModel.getId(), groupUid);
 
 					if (!this.next("backup group " + groupModel.getApiGroupId())) {
 						return false;
@@ -756,6 +766,7 @@ public class BackupService extends Service {
 						.write(Tags.TAG_GROUP_ARCHIVED, groupModel.isArchived())
 						.write(Tags.TAG_GROUP_DESC, groupModel.getGroupDesc())
 						.write(Tags.TAG_GROUP_DESC_TIMESTAMP, groupModel.getGroupDescTimestamp())
+						.write(Tags.TAG_GROUP_UID, groupUid)
 						.write();
 
 					//check if the group have a photo
@@ -936,7 +947,7 @@ public class BackupService extends Service {
 							}
 
 							ref = "GroupBallotModel";
-							refId = BackupUtils.buildGroupUid(groupModel);
+							refId = groupUidMap.get(groupModel.getId());
 						} else if (link instanceof IdentityBallotModel) {
 							ref = "IdentityBallotModel";
 							refId = ((IdentityBallotModel) link).getIdentity();
@@ -1432,6 +1443,15 @@ public class BackupService extends Service {
 		stopForeground(true);
 		isRunning = false;
 		stopSelf();
+	}
+
+	/**
+	 * Return a string representation of the next value in randomIterator
+	 * @return a 10 character string
+	 */
+	@NonNull
+	private String getFormattedUniqueId() {
+		return String.format(Locale.US, "%010d", randomIterator.next());
 	}
 }
 

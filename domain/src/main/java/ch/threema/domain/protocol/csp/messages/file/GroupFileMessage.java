@@ -47,7 +47,7 @@ public class GroupFileMessage extends AbstractGroupMessage
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 

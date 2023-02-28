@@ -88,6 +88,7 @@
 	<string name="voip_gc_sfu_not_available">Server kann nicht erreicht werden</string>
 	<string name="voip_gc_call_error">Gruppenanruf wurde aufgrund eines Fehlers beendet</string>
 	<string name="voip_gc_call_start_error">Gruppenanruf konnte nicht gestartet werden</string>
+	<string name="voip_gc_call_already_ended">Gruppenanruf wurde bereits beendet</string>
 	<string name="voip_gc_call_full_generic">Keine Teilnahme möglich: Die maximale Teilnehmerzahl ist erreicht.</string>
 	<string name="voip_gc_call_full_n">Keine Teilnahme möglich: Die maximale Teilnehmerzahl (%1$d) ist erreicht.</string>
     <plurals name="n_participants_in_call">

@@ -38,7 +38,7 @@ public interface ForwardSecurityStatusListener {
 	void sessionBadDhState(DHSessionId sessionId, Contact contact);
 	void sessionTerminated(DHSessionId sessionId, Contact contact);
 	void messagesSkipped(DHSessionId sessionId, Contact contact, int numSkipped);
-	void messageOutOfOrder(DHSessionId sessionId, Contact contact);
+	void messageOutOfOrder(DHSessionId sessionId, Contact contact, MessageId messageId);
 	void messageDecryptionFailed(DHSessionId sessionId, Contact contact, MessageId failedMessageId);
 	void first4DhMessageReceived(DHSessionId sessionId, Contact contact);
 }

@@ -29,6 +29,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.AppRestrictionService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
@@ -105,7 +106,8 @@ public class UpdateWorkInfoRoutine implements Runnable {
 						mdmFirstName,
 						mdmLastName,
 						mdmCSI,
-						mdmCategory
+						mdmCategory,
+						AppRestrictionService.getInstance().getMdmSource()
 				)) {
 					logger.debug("work info successfully updated");
 				}

@@ -910,7 +910,7 @@
     <string name="number_of_days">%d дзён.</string>
     <string name="backup_other_restore_options">Іншыя варыянты аднаўлення</string>
     <string name="safe_size">Памер рэз. копіі</string>
-    <string name="safe_version_mismatch">Версія рэзервовай копіі вышэй за падтрымліваемую. Выканайце абнаўленне да апошняй версіі праграмы.</string>
+    <string name="backup_version_mismatch">Версія рэзервовай копіі вышэй за падтрымліваемую. Выканайце абнаўленне да апошняй версіі праграмы.</string>
     <string name="safe_restore_failed">Не ўдалося аднавіць</string>
     <string name="safe_failed_notification">Немагчыма стварыць рэзервовую копію Threema Safe %d дзён.  запар. Націсніце тут для праверкі.</string>
     <string name="safe_restore">Аднавіць Threema Safe</string>

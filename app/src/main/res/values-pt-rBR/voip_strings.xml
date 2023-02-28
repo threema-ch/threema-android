@@ -91,6 +91,7 @@
     <string name="voip_gc_sfu_not_available">Servidor indisponível, tente novamente mais tarde</string>
     <string name="voip_gc_call_error">Chamada interrompida devido a um erro</string>
     <string name="voip_gc_call_start_error">Problema ao iniciar a chamada de grupo</string>
+    <string name="voip_gc_call_already_ended">A chama de grupo terminou</string>
     <string name="voip_gc_call_full_generic">Máximo atingido: Não é possível adicionar mais participantes a esta chamada de grupo.</string>
     <string name="voip_gc_call_full_n">Máximo de %1$d participantes atingido, você não pode participar desta chamada de grupo.</string>
     <plurals name="n_participants_in_call">

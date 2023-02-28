@@ -36,7 +36,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.io.File;
 
 import ch.threema.app.R;
-import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.messageplayer.FileMessagePlayer;
 import ch.threema.app.services.messageplayer.MessagePlayer;
@@ -46,7 +45,6 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.ImageViewUtil;
-import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -95,7 +93,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 		}, holder.messageBlockView);
 
 		configureFileMessagePlayer(holder, position);
-		configureBodyText(holder);
+		configureBodyText(holder, fileData.getCaption());
 		configureTertiaryText(holder);
 		configureSecondaryText(holder);
 		configureSizeText(holder);
@@ -145,24 +143,6 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 			} else {
 				holder.tertiaryTextView.setText(R.string.no_filename);
 			}
-		}
-	}
-
-	private void configureBodyText(@NonNull ComposeMessageHolder holder) {
-		if (!TestUtil.empty(fileData.getCaption())) {
-			holder.bodyTextView.setText(formatTextString(fileData.getCaption(), filterString));
-
-			LinkifyUtil.getInstance().linkify(
-				(ComposeMessageFragment) helper.getFragment(),
-				holder.bodyTextView,
-				getMessageModel(),
-				true,
-				actionModeStatus.getActionModeEnabled(),
-				onClickElement);
-
-			showHide(holder.bodyTextView, true);
-		} else {
-			showHide(holder.bodyTextView, false);
 		}
 	}
 

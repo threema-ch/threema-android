@@ -121,7 +121,7 @@ public abstract class AbstractMessage {
 	 * Return whether the user's profile information (nickname, picture etc.) is allowed to
 	 * be sent along with this message. This should be set to true for user-initiated messages only.
 	 */
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return false;
 	}
 

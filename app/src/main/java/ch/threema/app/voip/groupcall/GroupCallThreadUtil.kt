@@ -27,6 +27,7 @@ import kotlinx.coroutines.*
 import java.lang.Runnable
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
+import kotlin.coroutines.CoroutineContext
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallThreadUtil")
 
@@ -48,15 +49,21 @@ class TrulySingleThreadExecutorThreadFactory(
 }
 
 class GroupCallThreadUtil {
+    interface ExceptionHandler {
+        fun handle(t: Throwable)
+    }
+
     companion object {
-        val DISPATCHER: ExecutorCoroutineDispatcher
+        var exceptionHandler: ExceptionHandler? = null
+        val DISPATCHER: CoroutineContext
         lateinit var THREAD: Thread
 
         init {
             val factory = TrulySingleThreadExecutorThreadFactory("GroupCallWorker") {
                 THREAD = it
             }
-            DISPATCHER = Executors.newSingleThreadExecutor(factory).asCoroutineDispatcher()
+            val handler = CoroutineExceptionHandler { _, exception -> exceptionHandler?.handle(exception) ?: throw exception }
+            DISPATCHER = Executors.newSingleThreadExecutor(factory).asCoroutineDispatcher().plus(handler)
         }
 
         fun assertDispatcherThread() {

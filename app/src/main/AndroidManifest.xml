@@ -258,7 +258,9 @@
 					android:host="compose"
 					android:scheme="${uriScheme}"/>
 			</intent-filter>
-			<intent-filter android:label="@string/app_name">
+			<intent-filter
+				android:label="@string/app_name"
+				android:autoVerify="true">
 				<action android:name="android.intent.action.VIEW"/>
 				<action android:name="android.intent.action.SENDTO"/>
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -325,7 +327,9 @@
 					android:host="add"
 					android:scheme="${uriScheme}"/>
 			</intent-filter>
-			<intent-filter android:label="@string/app_name">
+			<intent-filter
+				android:label="@string/app_name"
+				android:autoVerify="true">
 				<action android:name="android.intent.action.VIEW"/>
 
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -370,7 +374,10 @@
 			android:theme="@style/Theme.Threema.Wizard"
 			android:windowSoftInputMode="adjustPan"
 			android:exported="true">
-			<intent-filter android:priority="1000">
+			<intent-filter
+				android:label="@string/app_name"
+				android:priority="1000"
+				android:autoVerify="true">
 				<action android:name="android.intent.action.VIEW"/>
 
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -606,7 +613,7 @@
 				<!-- Handle calls from phonebook -->
 				<action android:name="android.intent.action.VIEW"/>
 				<category android:name="android.intent.category.DEFAULT"/>
-				<data android:mimeType="vnd.android.cursor.item/vnd.ch.threema.app.call"/>
+				<data android:mimeType="${callMimeType}"/>
 			</intent-filter>
 		</activity>
 		<activity
@@ -755,7 +762,9 @@
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:theme="@style/Theme.Threema.Transparent.Background"
 			android:exported="true">
-			<intent-filter android:autoVerify="true">
+			<intent-filter
+				android:label="@string/app_name"
+				android:autoVerify="true">
 				<action android:name="android.intent.action.VIEW"/>
 
 				<category android:name="android.intent.category.DEFAULT"/>

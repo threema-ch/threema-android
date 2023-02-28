@@ -58,7 +58,7 @@ public class BoxAudioMessage extends AbstractMessage {
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 

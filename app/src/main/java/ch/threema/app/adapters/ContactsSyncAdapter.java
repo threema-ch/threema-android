@@ -47,18 +47,9 @@ import ch.threema.storage.models.ContactModel;
 
 public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSyncAdapter");
-	private Context context;
 
 	public ContactsSyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
-
-		this.context = context;
-	}
-
-	public ContactsSyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs) {
-		super(context, autoInitialize, allowParallelSyncs);
-
-		this.context = context;
 	}
 
 	@Override

@@ -54,6 +54,7 @@
 	<dimen name="dialog_margin_below_title">16dip</dimen>
 	<dimen name="dialog_margin_top">5dp</dimen>
 	<dimen name="dialog_corner_radius">8dp</dimen>
+	<dimen name="dialog_inset_top_bottom">8dp</dimen>
 
 	<!-- wizard step pager display -->
     <dimen name="step_pager_tab_width">4dp</dimen>

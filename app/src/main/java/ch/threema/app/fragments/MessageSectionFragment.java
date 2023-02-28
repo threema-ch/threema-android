@@ -1114,7 +1114,7 @@ public class MessageSectionFragment extends MainFragment
 	public void onJoinGroupCallClick(ConversationModel conversationModel) {
 		GroupModel group = conversationModel.getGroup();
 		if (group != null) {
-			startActivity(GroupCallActivity.getStartOrJoinCallIntent(requireActivity(), group.getId()));
+			startActivity(GroupCallActivity.getJoinCallIntent(requireActivity(), group.getId()));
 		}
 	}
 

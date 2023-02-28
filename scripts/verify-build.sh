@@ -163,9 +163,8 @@ log_major "Unpacking local APK"
 unzip -q -d "$targetdir/local/" "$local_apk"
 
 # Remove meta information (containing things like the signature)
-# Note: Removing baseline.profm due to https://issuetracker.google.com/issues/231837768
 log_major "Removing meta information, containing things like the app signature:"
-for path in META-INF/ resources.arsc assets/dexopt/baseline.profm; do
+for path in META-INF/ resources.arsc; do
     for target in local published; do
         log_minor "rm -r $target/$path"
         rm -r "${targetdir:?}/${target:?}/${path:?}"

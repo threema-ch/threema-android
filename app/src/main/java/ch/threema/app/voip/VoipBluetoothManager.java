@@ -376,10 +376,9 @@ public class VoipBluetoothManager {
 	 */
 	public void stop() {
 		ThreadUtils.checkIsOnMainThread();
-		try {
+		if (bluetoothState != State.UNINITIALIZED) {
+			// Only unregister receiver if it has been registered (to reduce unnecessary stack traces in the log)
 			unregisterReceiver(bluetoothHeadsetReceiver);
-		} catch (IllegalArgumentException e) {
-			logger.error("Unable to unregister bluetooth headset receiver", e);
 		}
 		logger.debug("stop: BT state={}", bluetoothState);
 		if (bluetoothAdapter != null) {

@@ -34,5 +34,5 @@ interface GroupCallObserver {
     fun onGroupCallUpdate(call: GroupCallDescription?)
 
     @AnyThread
-    fun onGroupCallStart(groupModel: GroupModel, call: GroupCallDescription?)
+    fun onGroupCallStart(groupModel: GroupModel)
 }

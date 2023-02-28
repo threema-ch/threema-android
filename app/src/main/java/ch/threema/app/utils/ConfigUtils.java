@@ -459,9 +459,9 @@ public class ConfigUtils {
 	}
 
 	/**
-	 * Get user-facing application version string without alpha/beta version suffix
-	 * @param context
-	 * @return version string
+	 * Get user-facing application version string including alpha/beta version suffix
+	 *
+	 * @return application version string
 	 */
 	public static String getAppVersion(@NonNull Context context) {
 		try {
@@ -491,17 +491,6 @@ public class ConfigUtils {
 	}
 
 	/**
-	 * Get full user-facing application version string including alpha/beta version suffix
-	 * Deprecated! use getAppVersion()
-	 * @param context
-	 * @return version string
-	 */
-	@Deprecated
-	public static String getFullAppVersion(@NonNull Context context) {
-		return getAppVersion(context);
-	}
-
-	/**
 	 * Get build number of this app build
 	 * @param context
 	 * @return build number
@@ -527,27 +516,29 @@ public class ConfigUtils {
 		final StringBuilder info = new StringBuilder();
 		if (includeAppVersion) {
 			info.append(getAppVersion(context)).append("/");
-			if (ConfigUtils.isWorkRestricted()) {
-				AppRestrictionService appRestrictionService = AppRestrictionService.getInstance();
-				if (appRestrictionService != null) {
-					final StringBuilder mdmBuilder = new StringBuilder();
-					if (appRestrictionService.hasThreemaMDMRestrictions()) {
-						mdmBuilder.append("m");
-					}
-					if (appRestrictionService.hasExternalMDMRestrictions()) {
-						mdmBuilder.append("e");
-					}
-
-					if (mdmBuilder.length() > 0) {
-						info.append(mdmBuilder).append("/");
-					}
-				}
-			}
 		}
 		info.append(Build.MANUFACTURER).append(";")
 			.append(Build.MODEL).append("/")
 			.append(Build.VERSION.RELEASE).append("/")
 			.append(BuildFlavor.getName());
+		return info.toString();
+	}
+
+	/**
+	 * Return information about the device including the manufacturer and the model.
+	 * The version is NOT included.
+	 * If mdm parameters are active on this device they are also appended according to ANDR-2213.
+	 *
+	 * @return The device info meant to be sent with support requests
+	 */
+	public static @NonNull String getSupportDeviceInfo(Context context) {
+		final StringBuilder info = new StringBuilder(getDeviceInfo(context, false));
+		if (isWorkRestricted()) {
+			String mdmSource = AppRestrictionService.getInstance().getMdmSource();
+			if (mdmSource != null) {
+				info.append("/").append(mdmSource);
+			}
+		}
 		return info.toString();
 	}
 

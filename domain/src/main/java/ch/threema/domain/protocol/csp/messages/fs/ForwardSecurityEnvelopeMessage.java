@@ -33,7 +33,7 @@ public class ForwardSecurityEnvelopeMessage extends AbstractProtobufMessage<Forw
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return allowSendingProfile;
 	}
 

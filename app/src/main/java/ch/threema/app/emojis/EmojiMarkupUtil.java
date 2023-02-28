@@ -241,7 +241,7 @@ public class EmojiMarkupUtil {
 	/**
 	 * Replace mentions by text instead of spans (used where spans cannot be displayed, i.e. in notifications)
 	 * @param inputText
-	 * @return ChatSequence where all mentions have been replaced by contact names
+	 * @return ChatSequence where all mentions have been replaced by contact names or ids
 	 */
 	private CharSequence applyTextMentionMarkup(CharSequence inputText) {
 		String match, identity;
@@ -254,6 +254,9 @@ public class EmojiMarkupUtil {
 			String quoteName = NameUtil.getQuoteName(identity, getContactService(), getUserService());
 
 			if (TestUtil.empty(quoteName)) {
+				// Note that the quote name is only empty if there went something wrong while
+				// accessing the contact. If the contact is unknown, the quote name consists of its
+				// threema id.
 				outputText = TextUtils.replace(outputText, new String[]{match}, new CharSequence[]{""});
 			} else {
 				outputText = TextUtils.replace(outputText, new String[]{match}, new CharSequence[]{MENTION_INDICATOR +

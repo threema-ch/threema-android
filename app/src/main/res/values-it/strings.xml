@@ -930,7 +930,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="number_of_days">%d giorni</string>
     <string name="backup_other_restore_options">Altre opzioni di archiviazione</string>
     <string name="safe_size">Dimensioni backup</string>
-    <string name="safe_version_mismatch">La versione di questo backup è più recente della versione supportata. Aggiorna l\'app all\'ultima versione.</string>
+    <string name="backup_version_mismatch">La versione di questo backup è più recente della versione supportata. Aggiorna l\'app all\'ultima versione.</string>
     <string name="safe_restore_failed">Ripristino non riuscito</string>
     <string name="safe_failed_notification">Il backup Threema Safe è fallito per %d giorni consecutivi. Tocca qui per controllare.</string>
     <string name="safe_restore">Ripristina Threema Safe</string>
@@ -1085,7 +1085,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="work_life_dnd_active">Attivo straordinari</string>
     <string name="pencil">Matita</string>
     <string name="warning">Attenzione!</string>
-    <string name="password_remember_warning">Ricordati di cosa entri qui! Poiché %s non memorizza le password sui server, non possiamo aiutarvi se dimenticate il vostro PIN o la vostra password.</string>
+    <string name="password_remember_warning">Ricordati cosa inserisci qui! Poiché %s non memorizza le password sui server, non possiamo aiutarti se dimentichi il PIN o la password.</string>
     <string name="safe_backup_tap_to_restart">Toccare la notifica per riavviare l\'applicazione.</string>
     <string name="send_to_support">Invia all\'assistenza Threema</string>
     <string name="menu_legal">Informazioni legali</string>
@@ -1441,6 +1441,8 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="forward_security_mode_2dh">unilaterale</string>
     <string name="forward_security_explanation">La Perfect Forward Secrecy (PFS) protegge le comunicazioni registrate contro qualsiasi decodifica retroattiva, anche se la chiave di codifica a lungo termine è nota.\n\nL\'opzione può essere attivata se l\'app di entrambe le parti supporta la PFS.</string>
     <string name="group_call_inactivity_left">Abbandona chiamata di gruppo per inattività</string>
+    <string name="missing_permission_external_storage">Errore durante la copia del file. Prova a seguire questi passi:\n1. Apri sul telefono l\'app «Impostazioni».\n2. Vai su «App».\n3. Tocca su «Accedere a tutti i file».\n4. Tocca sui tre punti in alto e seleziona «Visualizza app di sistema».\n5. Tocca su «Memoria esterna» e verifica che sia attivo «Autorizza accesso per gestire tutti i file».\n6. Riprova a ripristinare il backup dei dati.</string>
+    <string name="forward_security_downgraded_status_message">Questo contatto usa una versione dell\'app che non supporta la Perfect Forward Secrecy. D\'ora in poi i messaggi saranno inviati senza PFS.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contatto</item>
         <item quantity="other">%d contatti</item>
@@ -1460,6 +1462,54 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <plurals name="message_copied">
         <item quantity="one">Messaggio copiato</item>
         <item quantity="other">Messaggi copiati</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="one">%d nuovo messaggio</item>
+        <item quantity="other">%d nuovi messaggi</item>
+    </plurals>
+    <plurals name="file_saved">
+        <item quantity="one">%d file salvato con successo.</item>
+        <item quantity="other">%d file salvati con successo</item>
+    </plurals>
+    <plurals name="ballot_really_delete">
+        <item quantity="one">Cancella sondaggio</item>
+        <item quantity="other">Cancella sondaggi</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="one">Vuoi davvero cancellare %1$d sondaggio? I voti non potranno essere recuperati.</item>
+        <item quantity="other">Vuoi davvero cancellare %1$d sondaggi? I voti non potranno essere recuperati.</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="one">%d messaggio cancellato</item>
+        <item quantity="other">%d messaggi cancellati</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="one">Per %d ora</item>
+        <item quantity="other">Per %d ore</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="one">Impossibile cancellare %d contatto, poiché è ancora presente in un gruppo.</item>
+        <item quantity="other">Impossibile cancellare %d contatti, poiché sono ancora presenti in un gruppo.</item>
+    </plurals>
+    <plurals name="message_archived">
+        <item quantity="one">%d chat archiviata</item>
+        <item quantity="other">%d chat archiviate</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="one">%d sessione in corso</item>
+        <item quantity="other">%d sessioni in corso</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="one">Vuoi davvero cancellare %d richiesta di adesione? Una volta cancellata non potrai più rispondere alla richiesta.</item>
+        <item quantity="other">Vuoi davvero cancellare %d richieste di adesione? Una volta cancellate non potrai più rispondere alle richieste.</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="one">Voi davvero cancellare %d link di gruppo? Le persone non potranno più inviare richieste. Le richieste ricevute di recente potranno ancora essere accettate o rifiutate.</item>
+        <item quantity="other">Voi davvero cancellare %d link di gruppo? Le persone non potranno più inviare richieste. Le richieste ricevute di recente potranno ancora essere accettate o rifiutate.</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="one">%d chat cancellata.</item>
+        <item quantity="other">%d chat cancellate.</item>
     </plurals>
     <plurals name="forward_security_messages_skipped">
         <item quantity="one">Dall\'ultimo messaggio un messaggio è andato perso.</item>

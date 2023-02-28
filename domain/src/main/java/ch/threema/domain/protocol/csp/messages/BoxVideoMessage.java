@@ -67,7 +67,7 @@ public class BoxVideoMessage extends AbstractMessage {
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 

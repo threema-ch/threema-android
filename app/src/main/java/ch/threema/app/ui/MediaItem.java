@@ -55,7 +55,7 @@ public class MediaItem implements Parcelable {
 	@MediaType private int type;
 	private Uri originalUri; // Uri of original media item before creating a local copy
 	private Uri uri;
-	private int rotation;
+	private int rotation; // Rotation in Degrees
 	private int exifRotation;
 	private long durationMs;
 	private String caption;

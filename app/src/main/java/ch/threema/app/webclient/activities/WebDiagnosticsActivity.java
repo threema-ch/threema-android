@@ -324,8 +324,8 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 						"\n---\n" +
 						caption +
 						"\n---\n" +
-						ConfigUtils.getDeviceInfo(WebDiagnosticsActivity.this, false) + "\n" +
-						"Threema " + ConfigUtils.getFullAppVersion(WebDiagnosticsActivity.this) + "\n" +
+						ConfigUtils.getSupportDeviceInfo(WebDiagnosticsActivity.this) + "\n" +
+						"Threema " + ConfigUtils.getAppVersion(WebDiagnosticsActivity.this) + "\n" +
 						getMyIdentity(), messageReceiver);
 					Toast.makeText(getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
 					finish();

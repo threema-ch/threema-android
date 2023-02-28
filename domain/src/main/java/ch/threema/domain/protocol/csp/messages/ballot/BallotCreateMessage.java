@@ -52,7 +52,7 @@ public class BallotCreateMessage extends AbstractMessage
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 

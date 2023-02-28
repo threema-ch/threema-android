@@ -91,6 +91,7 @@
     <string name="voip_gc_sfu_not_available">服务器现时无法使用，请稍后再试。</string>
     <string name="voip_gc_call_error">因为发生错误，群组通话被中止</string>
     <string name="voip_gc_call_start_error">无法发起群组通话</string>
+    <string name="voip_gc_call_already_ended">群组通话已经结束</string>
     <string name="voip_gc_call_full_generic">已达到人数上限：其他参与者无法加入此群组通话。</string>
     <string name="voip_gc_call_full_n">已达到 %1$d 个参与者的上限，您无法加入此群组通话。</string>
     <plurals name="n_participants_in_call">

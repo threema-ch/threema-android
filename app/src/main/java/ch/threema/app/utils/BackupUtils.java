@@ -39,10 +39,12 @@ public class BackupUtils {
 		return apiId + "-" + creator;
 	}
 
+	@Deprecated
 	public static String buildGroupUid(String apiId, String creator) {
 		return apiId + "-" + creator;
 	}
 
+	@Deprecated
 	public static String buildGroupUid(GroupModel groupModel) {
 		return buildGroupUid(groupModel.getApiGroupId().toString(), groupModel.getCreatorIdentity());
 	}

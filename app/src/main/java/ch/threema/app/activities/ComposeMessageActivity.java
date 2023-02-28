@@ -231,6 +231,10 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 						getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
 						composeMessageFragment.onNewIntent(this.currentIntent);
 					}
+				} else {
+					if (!ConfigUtils.isTabletLayout()) {
+						finish();
+					}
 				}
 				break;
 			case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:

@@ -84,6 +84,23 @@ sealed class P2SMessage {
         }
     }
 
+    data class UnsubscribeParticipantMicrophone(val participantId: ParticipantId) : P2SMessage() {
+        override val type = "UnsubscribeParticipantMicrophone"
+
+        override fun wrap(envelope: ParticipantToSfu.Envelope.Builder): ParticipantToSfu.Envelope.Builder {
+            val unsubscribe = ParticipantToSfu.ParticipantMicrophone.Unsubscribe
+                .newBuilder()
+                .build()
+
+            val participantMicrophone = ParticipantToSfu.ParticipantMicrophone.newBuilder()
+                .setParticipantId(participantId.id.toInt())
+                .setUnsubscribe(unsubscribe)
+                .build()
+
+            return envelope.setRequestParticipantMicrophone(participantMicrophone)
+        }
+    }
+
     data class SubscribeParticipantCamera(val participantId: ParticipantId, val width: Int, val height: Int, val fps: Int) : P2SMessage() {
         override val type = "SubscribeParticipantCamera"
 

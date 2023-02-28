@@ -182,7 +182,7 @@
 // (and the _SFU Token_ for authentication). When a participant joins the call,
 // the following protocol flows happen in parallel.
 //
-// ### SFU to Particpant Flow
+// ### SFU to Participant Flow
 //
 // Upon successful joining via `SfuHttpRequest.Join`, the SFU waits for the
 // client to establish a WebRTC connection and then announces all participants
@@ -193,6 +193,10 @@
 //
 // At any time, participants may subscribe and unsubscribe receiving microphone,
 // camera and screen data from other participants.
+//
+// If the user is alone in a call for more than 3 minute, the call should be
+// left to save resources. The SFU will automatically drop such calls after 5
+// minutes but this results in non-ideal UX.
 //
 // ### Participant to Participant Flow
 //

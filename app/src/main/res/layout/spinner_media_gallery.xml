@@ -13,11 +13,11 @@
 			android:layout_gravity="center_vertical"
 			android:background="?attr/selectableItemBackgroundBorderless">
 
-	<TextView
+	<ch.threema.app.emojis.EmojiTextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="left"
-			android:text="Title"
+			android:text="@string/media_gallery"
 			android:textColor="?android:textColorPrimary"
 			android:id="@+id/title"
 			android:textSize="18sp"
@@ -29,7 +29,6 @@
 			android:layout_height="wrap_content"
 			android:layout_below="@id/title"
 			android:layout_alignLeft="@id/title"
-			android:text="Subtitle"
 			android:textColor="?attr/textColorSecondary"
 			android:id="@+id/subtitle_text"
 			android:textSize="12sp"

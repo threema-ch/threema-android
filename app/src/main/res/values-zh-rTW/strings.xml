@@ -515,6 +515,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="really_remove_wallpapers">您確定要移除所有背景圖片嗎？</string>
     <string name="wallpapers_removed">背景圖片已移除</string>
     <string name="invalid_backup">無效的備份資料。無法還原。</string>
+    <string name="invalid_zip_restore_failed">還原失敗，這是無效的備份資料：%1$s</string>
     <string name="revocation_explain">您在這裡輸入的密碼，可讓您透過 https://myid.threema.ch/revoke 撤銷您的ID，以防丟失或被盜</string>
     <string name="no_unread_messages">沒有未讀訊息或 PIN 鎖被啟動</string>
     <string name="send_media">傳送媒體</string>
@@ -940,7 +941,7 @@ Threema 支援的所有表情符號。</string>
     <string name="number_of_days">%d天</string>
     <string name="backup_other_restore_options">其他還原選項</string>
     <string name="safe_size">備份大小</string>
-    <string name="safe_version_mismatch">此備份的版本高於支援的版本。請更新至最新版本的應用程式。</string>
+    <string name="backup_version_mismatch">此備份的版本高於支援的版本。請更新至最新版本的應用程式。</string>
     <string name="safe_restore_failed">還原失敗</string>
     <string name="safe_failed_notification">Threema Safe 備份連續%d天失敗。點擊這裡檢視。</string>
     <string name="safe_restore">還原 Threema Safe</string>
@@ -1044,8 +1045,6 @@ Threema 支援的所有表情符號。</string>
 <p>如要發起群組通話，首先開啟任意一個群組對話，然後按一下最頂的相機圖示即可。</p>
 <p>所有群組成員都會收到通知，並可以決定是否加入通話。</p>
 <p><b>請注意：</b>iOS 的群組通話功能將於稍後發佈。</p>]]></string>
-    <string name="whatsnew2_title">(an empty phrase)</string>
-    <string name="whatsnew2_body">(an empty phrase)</string>
     <string name="tap_to_start">點擊這裡立即開啟 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">無效的備份路徑</string>
@@ -1097,7 +1096,7 @@ Threema 支援的所有表情符號。</string>
     <string name="work_life_dnd_active">非工作時間在線</string>
     <string name="pencil">鉛筆</string>
     <string name="warning">警告</string>
-    <string name="password_remember_warning">請記住您在這裡輸入的內容！由於 %s 不會在伺服器上儲存任何密碼，因此如果您忘記了 PIN 碼或密碼，我們無法協助您。</string>
+    <string name="password_remember_warning">請您記住在這裡輸入的內容！由於 %s 不會在伺服器上儲存任何密碼，如果您忘記了 PIN 碼或密碼，我們無法協助您找回密碼。</string>
     <string name="safe_backup_tap_to_restart">點擊系統通知以重新啟動應用程式。如果看不到通知，請向下滑動開啟電話的通知欄。</string>
     <string name="send_to_support">傳送給 Threema 支援</string>
     <string name="menu_legal">法律</string>
@@ -1453,6 +1452,8 @@ Threema 支援的所有表情符號。</string>
     <string name="forward_security_mode_2dh">單向保密</string>
     <string name="forward_security_explanation">完全正向保密（PFS）可以保護對話記錄不被追溯解密，即使長期加密密鑰已被盜用。\n\n如果雙方的應用程式都支援完全正向保密的話，就可以啟用此選項。</string>
     <string name="group_call_inactivity_left">因為長時間未使用，群組通話自動退出</string>
+    <string name="missing_permission_external_storage">無法複製檔案，請嘗試以下步驟以解決問題：\n1. 開啟系統設定。\n2. 前往「應用程式」，然後按一下右上角的三個點，選擇「特殊存取」權限。\n3. 按一下「所有檔案存取」。\n4. 按一下右上角的三個點，選擇「顯示系統應用程式」。\n5. 按一下「外部儲存」並確保授予「允許存取所有檔案」權限。\n6. 再次嘗試還原備份。</string>
+    <string name="forward_security_downgraded_status_message">此聯絡人所使用的應用程式版本並不支援「完全正向保密」功能。從現在起，訊息將在沒有「完全正向保密」的情況下傳送。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

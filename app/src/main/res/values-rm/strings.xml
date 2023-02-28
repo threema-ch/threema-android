@@ -895,7 +895,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="number_of_days">%d dis</string>
     <string name="backup_other_restore_options">Ulteriuras opziuns</string>
     <string name="safe_size">Grondezza dal backup</string>
-    <string name="safe_version_mismatch">L\'app na sustegna betg questa versiun da backup. P.pl. actualisar l\'app.</string>
+    <string name="backup_version_mismatch">L\'app na sustegna betg questa versiun da backup. P.pl. actualisar l\'app.</string>
     <string name="safe_restore_failed">Betg reussì da restaurar</string>
     <string name="safe_failed_notification">ThreemaSAFE n\'ha dapi %d dis betg pli pudì far in backup. P.pl. tippar qua per controllar.</string>
     <string name="safe_restore">Restaurar ThreemaSAFE</string>

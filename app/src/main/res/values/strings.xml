@@ -519,6 +519,7 @@
 	<string name="really_remove_wallpapers">Do you really want to remove all wallpapers?</string>
 	<string name="wallpapers_removed">Wallpapers removed</string>
 	<string name="invalid_backup">Invalid backup data. Cannot restore.</string>
+	<string name="invalid_zip_restore_failed">Restore failed. Invalid backup file: %1$s</string>
 	<string name="revocation_explain">The password you enter here allows you to revoke your ID at
 		https://myid.threema.ch/revoke in case you lose it or it gets stolen</string>
 	<string name="no_unread_messages">No unread messages or PIN lock activated</string>
@@ -956,7 +957,7 @@
 	<string name="number_of_days">%d days</string>
 	<string name="backup_other_restore_options">Other restore options</string>
 	<string name="safe_size">Backup size</string>
-	<string name="safe_version_mismatch">The version of this backup is higher than the supported version. Please update to the latest version of this app.</string>
+	<string name="backup_version_mismatch">The version of this backup is higher than the supported version. Please update to the latest version of this app.</string>
 	<string name="safe_restore_failed">Restore failed</string>
 	<string name="safe_failed_notification">Threema Safe backup failed for %d consecutive days. Tap here to check.</string>
 	<string name="safe_restore">Restore Threema Safe</string>
@@ -1117,7 +1118,7 @@
 	<string name="work_life_dnd_active">Off-hours active</string>
 	<string name="pencil">Pencil</string>
 	<string name="warning">Warning</string>
-	<string name="password_remember_warning">Remember what you enter here! Since %s does not save any passwords on severs, we cannot help you out, if you forget your PIN or password.</string>
+	<string name="password_remember_warning">Remember what you enter here! Since %s does not save any passwords on servers, we cannot help you out, if you forget your PIN or password.</string>
 	<string name="safe_backup_tap_to_restart">Tap on the system notification shown to restart the app now. If you cannot see the notification, please swipe down your phone’s notification bar.</string>
 	<string name="send_to_support">Send to Threema Support</string>
 	<string name="menu_legal">Legal</string>
@@ -1473,6 +1474,8 @@
 	<string name="forward_security_mode_2dh">unilateral</string>
 	<string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protects a recorded communication from retroactive decryption even if the long-term encryption key is compromised.\n\nThe option can be enabled if the app on both sides supports PFS.</string>
 	<string name="group_call_inactivity_left">Group call left due to inactivity</string>
+	<string name="missing_permission_external_storage">Unable to copy the file. Try the following steps:\n1. Open the settings app.\n2. Go to “Apps” and choose “Special app access”.\n3. Tap on “All files access“.\n4. Tap on the three dots in the top right corner and choose “Show system“.\n5. Tap on “External Storage“ and ensure “Allow access to manage all files“ is granted.\n6. Try again restoring the backup.</string>
+	<string name="forward_security_downgraded_status_message">This contact has started using an app version that does not support Perfect Forward Secrecy. Messages will be sent without PFS from now on.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>

@@ -500,6 +500,7 @@
     <string name="really_remove_wallpapers">Вы действительно хотите удалить все обои?</string>
     <string name="wallpapers_removed">Обои удалены</string>
     <string name="invalid_backup">Неверные данные резервной копии. Не удалось восстановить.</string>
+    <string name="invalid_zip_restore_failed">Не восстановлено. Недействительный файл резервной копии: %1$s</string>
     <string name="revocation_explain">Пароль, который вы введете здесь, позволяет аннулировать ваш ID на https://myid.threema.ch/revoke в случае, если вы потеряли свой телефон или он был украден</string>
     <string name="no_unread_messages">Нет непрочитанных сообщений или активирована блокировка PIN-кодом</string>
     <string name="send_media">Отправка мультимедиа</string>
@@ -912,7 +913,7 @@
     <string name="number_of_days">%d дн.</string>
     <string name="backup_other_restore_options">Другие варианты восстановления</string>
     <string name="safe_size">Размер рез. копии</string>
-    <string name="safe_version_mismatch">Версия резервной копии выше поддерживаемой. Выполните обновление до последней версии приложения.</string>
+    <string name="backup_version_mismatch">Версия резервной копии выше поддерживаемой. Выполните обновление до последней версии приложения.</string>
     <string name="safe_restore_failed">Не удалось восстановить</string>
     <string name="safe_failed_notification">Не удалось создать резервную копию Threema Safe %d дн. подряд. Нажмите здесь для проверки.</string>
     <string name="safe_restore">Восстановить Threema Safe</string>
@@ -1011,6 +1012,7 @@
     <string name="open_in_maps_app">Открыть в прил. «Карты»</string>
     <string name="delete">Удалить</string>
     <string name="continue_recording">Продолжить запись</string>
+    <string name="whatsnew_title">Новинка: групповые звонки %1$s</string>
     <string name="whatsnew_headline"><![CDATA[
 		<p>Групповые звонки со сквозным шифрованием теперь доступны в %1$s для Android.</p>
 		<p>Чтобы начать звонок, откройте групповой чат и коснитесь значка камеры вверху.</p>
@@ -1424,6 +1426,8 @@
     <string name="forward_security_mode_2dh">одностороннее</string>
     <string name="forward_security_explanation">Протокол Perfect Forward Secrecy (PFS) защищает записанный обмен данными от ретроактивной зашифровки, даже если безопасность ключа долгосрочной расшифровки нарушена.\n\nЭтот параметр можно активировать, если приложение с обеих сторон поддерживает PFS.</string>
     <string name="group_call_inactivity_left">Групповой звонок окончен из-за отсутствия активности</string>
+    <string name="missing_permission_external_storage">Не удалось скопировать файл. Попробуйте выполнить следующие шаги:\n1. Откройте приложение «Настройки».\n2. Перейдите на вкладку «Приложения» и выберите «Специальный доступ к приложению».\n3. Нажмите «Доступ ко всем файлам».\n4. Нажмите на три точки в правом верхнем углу и выберите «Показать систему».\n5. Нажмите «Внешнее хранилище» и установите «Разрешить доступ для управления всеми файлами».\n6. Еще раз попробуйте восстановить резервную копию.</string>
+    <string name="forward_security_downgraded_status_message">Этот контакт начал использовать версию приложения, не поддерживающую протокол Perfect Forward Secrecy (PFS). В будущем сообщения будут отправляться без использования PFS.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>

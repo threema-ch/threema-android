@@ -43,7 +43,7 @@ import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public interface PreferenceService {
 
-	@Retention(RetentionPolicy.SOURCE)
+    @Retention(RetentionPolicy.SOURCE)
 	@IntDef({ImageScale_DEFAULT, ImageScale_SMALL, ImageScale_MEDIUM, ImageScale_LARGE, ImageScale_XLARGE, ImageScale_ORIGINAL, ImageScale_SEND_AS_FILE})
 	@interface ImageScale {}
 	int ImageScale_DEFAULT = -1;
@@ -283,6 +283,10 @@ public interface PreferenceService {
 	long getLockoutDeadline();
 
 	long getLockoutTimeout();
+
+	void setLockoutAttempts(int numWrongConfirmAttempts);
+
+	int getLockoutAttempts();
 
 	void setWizardRunning(boolean running);
 

@@ -500,6 +500,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="really_remove_wallpapers">Voulez-vous vraiment retirer tous les papiers peints ?</string>
     <string name="wallpapers_removed">Papiers peints retirés</string>
     <string name="invalid_backup">Données de sauvegarde invalides. Impossible de restaurer.</string>
+    <string name="invalid_zip_restore_failed">Restauration échouée. Fichier de sauvegarde non valide : %1$s</string>
     <string name="revocation_explain">Le mot de passe que vous saisissez ici vous permet de révoquer votre ID sur https://myid.threema.ch/revoke dans le cas où vous le perdez ou vous le faites voler.</string>
     <string name="no_unread_messages">Aucun message non lu ou verrouillage par NIP activé</string>
     <string name="send_media">Envoyer des médias</string>
@@ -912,7 +913,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="number_of_days">%d jours</string>
     <string name="backup_other_restore_options">Autres options de restauration</string>
     <string name="safe_size">Taille de la sauvegarde</string>
-    <string name="safe_version_mismatch">La version de cette sauvegarde est plus récente que la version prise en charge. Veuillez passer à la dernière version de l\'application.</string>
+    <string name="backup_version_mismatch">La version de cette sauvegarde est plus récente que la version prise en charge. Veuillez passer à la dernière version de l\'application.</string>
     <string name="safe_restore_failed">Échec de restauration</string>
     <string name="safe_failed_notification">La sauvegarde Threema Safe a échoué pendant %d jours consécutifs. Touchez ici pour vérifier.</string>
     <string name="safe_restore">Restaurer Threema Safe</string>
@@ -1424,6 +1425,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="forward_security_mode_2dh">unilatéral</string>
     <string name="forward_security_explanation">La Perfect Forward Secrecy (PFS) protège les communications enregistrées contre tout déchiffrement rétroactif, même si la clé de chiffrement à long terme est découverte.\n\nL\'option peut être activée si l\'application des deux côtés prend en charge la PFS.</string>
     <string name="group_call_inactivity_left">Appel de groupe arrêté pour cause d\'inactivité</string>
+    <string name="missing_permission_external_storage">Impossible de copier le fichier. Essayez les étapes suivantes :\n1. Ouvrez l\'application Paramètres.\n2. Sous « Applications », choisissez « Accès spécial aux applications ».\n3. Touchez « Accès tous fichiers ».\n4. Touchez les trois points dans le coin supérieur droit et sélectionnez « Afficher le système ».\n5. Touchez « Stockage externe » et assurez-vous que « Autoriser l\'accès pour gérer tous les fichiers » est activé.\n6. Essayez à nouveau de restaurer la sauvegarde.</string>
+    <string name="forward_security_downgraded_status_message">Ce contact a commencé à utiliser une version de l\'application ne prenant pas en charge la confidentialité persistante. À partir de maintenant, les messages seront envoyés sans confidentialité persistante.</string>
     <plurals name="contacts_counter_label" tools:ignore="MissingQuantity">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

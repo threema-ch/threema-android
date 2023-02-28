@@ -92,6 +92,7 @@
     <string name="voip_gc_sfu_not_available">Serwer niedostępny, spróbuj ponownie później</string>
     <string name="voip_gc_call_error">Nie można rozpocząć poł. grupowego</string>
     <string name="voip_gc_call_start_error">Rozpoczęcie rozmowy grupowej nieudane</string>
+    <string name="voip_gc_call_already_ended">Połączenie grupowe już zostało zakończone</string>
     <string name="voip_gc_call_full_generic">Osiągnięto maksimum: inni uczestnicy nie mogą dołączyć do tego połączenia grupowego.</string>
     <string name="voip_gc_call_full_n">Osiągnięto maks. %1$d uczestników, nie możesz dołączyć do tego połączenia grupowego.</string>
     <plurals name="n_participants_in_call">

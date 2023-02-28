@@ -93,6 +93,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.ThreemaApplication.getMessageDraft;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
@@ -579,6 +580,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	public void onEdit(final List<Uri> uriList, boolean asFiles) {
 		ArrayList<MediaItem> mediaItems = MediaItem.getFromUris(uriList, this, asFiles);
 		if (mediaItems.size() > 0) {
+			if (getMessageDraft(messageReceiver.getUniqueIdString()) != null) {
+				mediaItems.get(0).setCaption(getMessageDraft(messageReceiver.getUniqueIdString()));
+			}
+
 			Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
 			intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
 			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());

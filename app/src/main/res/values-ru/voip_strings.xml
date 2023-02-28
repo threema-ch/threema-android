@@ -91,6 +91,7 @@
     <string name="voip_gc_sfu_not_available">Сервер недоступен, повторите попытку позже</string>
     <string name="voip_gc_call_error">Звонок прерван по причине ошибки</string>
     <string name="voip_gc_call_start_error">Не удалось начать групповой звонок</string>
+    <string name="voip_gc_call_already_ended">Групповой звонок уже завершен</string>
     <string name="voip_gc_call_full_generic">Достигнут максимум: новые участники больше не могут присоединиться к групповому звонку.</string>
     <string name="voip_gc_call_full_n">Достигнут максимум (не более %1$d участников), вы не можете присоединиться к этому групповому звонку.</string>
     <plurals name="n_participants_in_call">

@@ -33,6 +33,7 @@
     <string name="webclient_cannot_start">Kan ikke starte økt</string>
     <string name="webclient_constrained_by_mdm">Server er ikke godkjent av administrator.</string>
     <string name="webclient_clear_all_sessions">Fjern alle økter</string>
+    <string name="webclient_clear_all_sessions_confirm">Er du sikker på at du vil stoppe, og fjerne alle økter?</string>
     <string name="webclient_prefs_debug_tool_summary">Start dette verktøyet for feilsøking av problem med å etablere en tilkobling til skrivebordsapp eller webklient</string>
     <string name="webclient_diagnostics">Skrivebord/Web feilsøking</string>
     <string name="webclient_diagnostics_start">Start</string>

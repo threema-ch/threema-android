@@ -31,4 +31,6 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) : AbstractProtobufG
     override fun flagSendPush() = true
 
     override fun flagNoDeliveryReceipts() = true
+
+    override fun allowUserProfileDistribution() = true
 }

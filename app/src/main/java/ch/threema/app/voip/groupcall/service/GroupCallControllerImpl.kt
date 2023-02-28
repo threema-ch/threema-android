@@ -89,6 +89,8 @@ internal class GroupCallControllerImpl (
 
     override val connectedSignal: CompletableDeferred<Pair<ULong, Set<ParticipantId>>> = CompletableDeferred()
 
+    override val dislodgedParticipants = MutableSharedFlow<ParticipantId>()
+
     private lateinit var _eglBase: EglBase
     override val eglBase: EglBase
         get() = if (this::_eglBase.isInitialized) {
@@ -188,6 +190,26 @@ internal class GroupCallControllerImpl (
     }
 
     @WorkerThread
+    override fun purgeCallParticipants(groupMembers: Set<String>) {
+        logger.info("Purge call participants")
+        GroupCallThreadUtil.assertDispatcherThread()
+
+        if (localParticipant.identity !in groupMembers) {
+            logger.info("Not in group anymore. Leave call.")
+            leave()
+        } else {
+            CoroutineScope(Dispatchers.Default).launch {
+                remoteParticipants
+                    .filter { it.identity !in groupMembers }
+                    .forEach {
+                        logger.info("Dislodge participant {}", it.id)
+                        dislodgedParticipants.emit(it.id)
+                    }
+            }
+        }
+    }
+
+    @WorkerThread
     override fun updateParticipants(update: GroupCall.ParticipantsUpdate) {
         GroupCallThreadUtil.assertDispatcherThread()
 
@@ -252,7 +274,12 @@ internal class GroupCallControllerImpl (
     @WorkerThread
     suspend fun join(context: Context, sfuBaseUrl: String, sfuConnection: SfuConnection, onError: () -> Unit) {
         GroupCallThreadUtil.assertDispatcherThread()
-
+        GroupCallThreadUtil.exceptionHandler = object : GroupCallThreadUtil.ExceptionHandler {
+            override fun handle(t: Throwable) {
+                GroupCallThreadUtil.exceptionHandler = null
+                this@GroupCallControllerImpl.callLeftSignal.completeExceptionally(t)
+            }
+        }
         try {
             descriptionSetSignal.await()
             Joining(

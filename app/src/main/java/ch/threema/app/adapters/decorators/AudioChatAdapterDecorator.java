@@ -25,7 +25,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.os.PowerManager;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -39,14 +38,12 @@ import java.io.File;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.AudioProgressBarView;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
@@ -371,22 +368,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 			holder.contentView.getLayoutParams().width = ConfigUtils.getPreferredAudioMessageWidth(getContext(), false);
 		}
 
-		// format caption
-		if (!TextUtils.isEmpty(caption)) {
-			holder.bodyTextView.setText(formatTextString(caption, filterString));
-
-			LinkifyUtil.getInstance().linkify(
-				(ComposeMessageFragment) helper.getFragment(),
-				holder.bodyTextView,
-				getMessageModel(),
-				true,
-				actionModeStatus.getActionModeEnabled(),
-				onClickElement);
-
-			showHide(holder.bodyTextView, true);
-		} else {
-			showHide(holder.bodyTextView, false);
-		}
+		configureBodyText(holder, caption);
 	}
 
 	@UiThread

@@ -54,6 +54,7 @@
 	<string name="preferences__exportlog" translatable="false">pref_key_exportlog</string>
 	<string name="preferences__lockout_deadline" translatable="false">pref_key_lock_deadline</string>
 	<string name="preferences__lockout_timeout" translatable="false">pref_key_lock_timeout</string>
+	<string name="preferences__lockout_attempts" translatable="false">pref_key_lock_attempts</string>
 	<string name="preferences__wizard_running" translatable="false">pref_wizard_running</string>
 	<string name="preferences__push_token" translatable="false">pref_push_token</string>
 	<string name="preferences__gif_autoplay" translatable="false">pref_gif_autoplay</string>

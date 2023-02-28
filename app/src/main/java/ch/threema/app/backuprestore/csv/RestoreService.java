@@ -21,10 +21,6 @@
 
 package ch.threema.app.backuprestore.csv;
 
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
-
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -119,6 +115,10 @@ import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.BallotDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+
 public class RestoreService extends Service {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("RestoreService");
 
@@ -143,6 +143,9 @@ public class RestoreService extends Service {
 	private static final String EXTRA_ID_CANCEL = "cnc";
 
 	private final RestoreResultImpl restoreResult = new RestoreResultImpl();
+	private final HashMap<String, String> identityIdMap = new HashMap<>();
+	private final HashMap<String, Integer> groupUidMap = new HashMap<>();
+
 	private long currentProgressStep = 0;
 	private long progressSteps = 0;
 	private int latestPercentStep = -1;
@@ -313,7 +316,7 @@ public class RestoreService extends Service {
 	}
 
 	// ---------------------------------------------------------------------------
-	private class RestoreResultImpl implements BackupRestoreDataService.RestoreResult {
+	private static class RestoreResultImpl implements BackupRestoreDataService.RestoreResult {
 		private long contactSuccess = 0;
 		private long contactFailed = 0;
 		private long messageSuccess = 0;
@@ -367,7 +370,6 @@ public class RestoreService extends Service {
 	}
 
 	private RestoreSettings restoreSettings;
-	private final HashMap<String, Integer> groupIdMap = new HashMap<>();
 	private final HashMap<String, Integer> ballotIdMap = new HashMap<>();
 	private final HashMap<Integer, Integer> ballotOldIdMap = new HashMap<>();
 	private final HashMap<String, Integer> ballotChoiceIdMap = new HashMap<>();
@@ -411,7 +413,8 @@ public class RestoreService extends Service {
 					this.initProgress(stepSizeTotal);
 				}
 
-				this.groupIdMap.clear();
+				this.identityIdMap.clear();
+				this.groupUidMap.clear();
 				this.ballotIdMap.clear();
 				this.ballotOldIdMap.clear();
 				this.ballotChoiceIdMap.clear();
@@ -441,22 +444,13 @@ public class RestoreService extends Service {
 					fileService.clearDirectory(fileService.getAppDataPath(), false);
 				}
 
-				/* make map of file headers for quick access */
-				@SuppressWarnings({"unchecked"})
 				List<FileHeader> fileHeaders = zipFile.getFileHeaders();
 
 				// The restore settings file contains the data backup format version
-				this.restoreSettings = new RestoreSettings();
-				FileHeader settingsHeader = Functional.select(
-					fileHeaders,
-					type -> TestUtil.compare(type.getFileName(), Tags.SETTINGS_FILE_NAME)
-				);
-				if (settingsHeader != null) {
-					try (InputStream inputStream = zipFile.getInputStream(settingsHeader);
-					     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-					     CSVReader csvReader = new CSVReader(inputStreamReader)) {
-						restoreSettings.parse(csvReader.readAll());
-					}
+				this.restoreSettings = getRestoreSettings(fileHeaders);
+
+				if (restoreSettings.isUnsupportedVersion()) {
+					throw new ThreemaException(getString(R.string.backup_version_mismatch));
 				}
 
 				// Restore the identity
@@ -525,7 +519,7 @@ public class RestoreService extends Service {
 				}
 
 				if (!writeToDb) {
-					stepSizeTotal += (messageCount * STEP_SIZE_MESSAGES)  + (mediaCount * STEP_SIZE_MEDIA);
+					stepSizeTotal += (messageCount * STEP_SIZE_MESSAGES)  + ((long) mediaCount * STEP_SIZE_MEDIA);
 				}
 			}
 
@@ -541,6 +535,9 @@ public class RestoreService extends Service {
 		} catch (RestoreCanceledException e) {
 			logger.error("Restore cancelled", e);
 			message = getString(R.string.restore_data_cancelled);
+		} catch(IOException e) {
+			logger.error("Exception while restoring backup", e);
+			message = getString(R.string.invalid_zip_restore_failed, e.getMessage());
 		} catch (Exception e) {
 			// wrong password? no connection? throw
 			logger.error("Exception while restoring backup", e);
@@ -550,6 +547,24 @@ public class RestoreService extends Service {
 		onFinished(message);
 
 		return false;
+	}
+
+	@NonNull
+	private RestoreSettings getRestoreSettings(List<FileHeader> fileHeaders) throws ThreemaException, IOException {
+		FileHeader settingsHeader = Functional.select(fileHeaders, type -> TestUtil.compare(type.getFileName(), Tags.SETTINGS_FILE_NAME));
+		if (settingsHeader == null) {
+			logger.error("Settings file header is missing");
+			throw new ThreemaException(getString(R.string.invalid_backup));
+		}
+		try (
+			InputStream is = zipFile.getInputStream(settingsHeader);
+			InputStreamReader inputStreamReader = new InputStreamReader(is);
+			CSVReader csvReader = new CSVReader(inputStreamReader)
+		) {
+			RestoreSettings settings = new RestoreSettings();
+			settings.parse(csvReader.readAll());
+			return settings;
+		}
 	}
 
 	/**
@@ -673,19 +688,19 @@ public class RestoreService extends Service {
 			}
 
 			final String groupUid = fileName.substring(Tags.GROUP_AVATAR_PREFIX.length());
-			if(groupIdMap.containsKey(groupUid)) {
-				GroupModel m = databaseServiceNew.getGroupModelFactory().getById(
-						groupIdMap.get(groupUid)
-				);
-
-				if (m != null) {
-					try (InputStream inputStream = zipFile.getInputStream(fileHeader)) {
-						this.fileService.writeGroupAvatar(m, IOUtils.toByteArray(inputStream));
-					} catch (Exception e) {
-						//ignore, just the avatar :)
-						success = false;
+			if (!TestUtil.empty(groupUid)) {
+				Integer groupId = groupUidMap.get(groupUid);
+				if (groupId != null) {
+					GroupModel m = databaseServiceNew.getGroupModelFactory().getById(groupId);
+					if (m != null) {
+						try (InputStream inputStream = zipFile.getInputStream(fileHeader)) {
+							this.fileService.writeGroupAvatar(m, IOUtils.toByteArray(inputStream));
+						} catch (Exception e) {
+							//ignore, just the avatar :)
+							success = false;
+						}
+						//
 					}
-					//
 				}
 			}
 		}
@@ -699,19 +714,19 @@ public class RestoreService extends Service {
 	private int restoreMessageMediaFiles(List<FileHeader> fileHeaders) throws RestoreCanceledException {
 		int count = 0;
 
-		count += this.restoreMessageMediaFiles(fileHeaders, Tags.MESSAGE_MEDIA_FILE_PREFIX, Tags.MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX, new GetMessageModel() {
-			@Override
-			public AbstractMessageModel get(String uid) {
-				return databaseServiceNew.getMessageModelFactory().getByUid(uid);
-			}
-		});
+		count += this.restoreMessageMediaFiles(
+			fileHeaders,
+			Tags.MESSAGE_MEDIA_FILE_PREFIX,
+			Tags.MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
+			uid -> databaseServiceNew.getMessageModelFactory().getByUid(uid)
+		);
 
-		count += this.restoreMessageMediaFiles(fileHeaders, Tags.GROUP_MESSAGE_MEDIA_FILE_PREFIX, Tags.GROUP_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX, new GetMessageModel() {
-			@Override
-			public AbstractMessageModel get(String uid) {
-				return databaseServiceNew.getGroupMessageModelFactory().getByUid(uid);
-			}
-		});
+		count += this.restoreMessageMediaFiles(
+			fileHeaders,
+			Tags.GROUP_MESSAGE_MEDIA_FILE_PREFIX,
+			Tags.GROUP_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
+			uid -> databaseServiceNew.getGroupMessageModelFactory().getByUid(uid)
+		);
 
 		return count;
 	}
@@ -724,7 +739,7 @@ public class RestoreService extends Service {
 		int count = 0;
 
 		//process all thumbnails
-		Map<String, FileHeader> thumbnailFileHeaders = new HashMap<String, FileHeader>();
+		Map<String, FileHeader> thumbnailFileHeaders = new HashMap<>();
 
 		for (FileHeader fileHeader : fileHeaders) {
 			String fileName = fileHeader.getFileName();
@@ -800,23 +815,20 @@ public class RestoreService extends Service {
 	}
 
 	private boolean restoreContactFile(@NonNull FileHeader fileHeader) throws IOException, RestoreCanceledException {
-		return this.processCsvFile(fileHeader, new ProcessCsvFile() {
-			@Override
-			public void row(CSVRow row) {
-				try {
-					ContactModel contactModel = createContactModel(row, restoreSettings);
-					if (writeToDb) {
-						//set the default color
-						ContactModelFactory contactModelFactory = databaseServiceNew.getContactModelFactory();
-						contactModelFactory.createOrUpdate(contactModel);
-						restoreResult.incContactSuccess();
-					}
-				} catch (Exception x) {
-					logger.error("Could not restore contact", x);
-					if (writeToDb) {
-						//process next
-						restoreResult.incContactFailed();
-					}
+		return this.processCsvFile(fileHeader, row -> {
+			try {
+				ContactModel contactModel = createContactModel(row, restoreSettings);
+				if (writeToDb) {
+					//set the default color
+					ContactModelFactory contactModelFactory = databaseServiceNew.getContactModelFactory();
+					contactModelFactory.createOrUpdate(contactModel);
+					restoreResult.incContactSuccess();
+				}
+			} catch (Exception x) {
+				logger.error("Could not restore contact", x);
+				if (writeToDb) {
+					//process next
+					restoreResult.incContactFailed();
 				}
 			}
 		});
@@ -830,11 +842,18 @@ public class RestoreService extends Service {
 		}
 
 		// Look up contact model for this avatar
-		String identity = filename.substring(Tags.CONTACT_AVATAR_FILE_PREFIX.length());
-		if (TestUtil.empty(identity)) {
+		String identityId = filename.substring(Tags.CONTACT_AVATAR_FILE_PREFIX.length());
+		if (TestUtil.empty(identityId)) {
 			return false;
 		}
-		ContactModel contactModel = contactService.getByIdentity(identity);
+
+		ContactModel contactModel;
+		if (Tags.CONTACT_AVATAR_FILE_SUFFIX_ME.equals(identityId)) {
+			contactModel = contactService.getMe();
+		} else {
+			contactModel = contactService.getByIdentity(identityIdMap.get(identityId));
+		}
+
 		if (contactModel == null) {
 			return false;
 		}
@@ -863,11 +882,11 @@ public class RestoreService extends Service {
 		}
 
 		// Look up contact model for this avatar
-		String identity = filename.substring(Tags.CONTACT_PROFILE_PIC_FILE_PREFIX.length());
-		if (TestUtil.empty(identity)) {
+		String identityId = filename.substring(Tags.CONTACT_PROFILE_PIC_FILE_PREFIX.length());
+		if (TestUtil.empty(identityId)) {
 			return false;
 		}
-		ContactModel contactModel = contactService.getByIdentity(identity);
+		ContactModel contactModel = contactService.getByIdentity(identityIdMap.get(identityId));
 		if (contactModel == null) {
 			return false;
 		}
@@ -884,73 +903,73 @@ public class RestoreService extends Service {
 	}
 
 	private boolean restoreGroupFile(@NonNull FileHeader fileHeader) throws IOException, RestoreCanceledException {
-		return this.processCsvFile(fileHeader, new ProcessCsvFile() {
-			@Override
-			public void row(CSVRow row) {
-				try {
-					GroupModel groupModel = createGroupModel(row, restoreSettings);
+		return this.processCsvFile(fileHeader, row -> {
+			try {
+				GroupModel groupModel = createGroupModel(row, restoreSettings);
 
-					if (writeToDb) {
-						databaseServiceNew.getGroupModelFactory().create(
-								groupModel
-						);
-						groupIdMap.put(BackupUtils.buildGroupUid(groupModel), groupModel.getId());
-						restoreResult.incContactSuccess();
+				if (writeToDb) {
+					databaseServiceNew.getGroupModelFactory().create(
+							groupModel
+					);
+
+					if (restoreSettings.getVersion() >= 19) {
+						groupUidMap.put(row.getString(Tags.TAG_GROUP_UID), groupModel.getId());
+					} else {
+						groupUidMap.put(BackupUtils.buildGroupUid(groupModel), groupModel.getId());
 					}
 
-					List<GroupMemberModel> groupMemberModels = createGroupMembers(row, groupModel.getId());
-					if (writeToDb) {
-						for (GroupMemberModel groupMemberModel : groupMemberModels) {
-							databaseServiceNew.getGroupMemberModelFactory().create(groupMemberModel);
+					restoreResult.incContactSuccess();
+				}
+
+				List<GroupMemberModel> groupMemberModels = createGroupMembers(row, groupModel.getId());
+				if (writeToDb) {
+					for (GroupMemberModel groupMemberModel : groupMemberModels) {
+						databaseServiceNew.getGroupMemberModelFactory().create(groupMemberModel);
+					}
+
+					if (!groupModel.isDeleted()) {
+						if (groupService.isGroupOwner(groupModel)) {
+							groupService.sendSync(groupModel);
+						} else {
+							groupService.requestSync(groupModel.getCreatorIdentity(), new GroupId(Utils.hexStringToByteArray(groupModel.getApiGroupId().toString())));
 						}
-
-						if (!groupModel.isDeleted()) {
-							if (groupService.isGroupOwner(groupModel)) {
-								groupService.sendSync(groupModel);
-							} else {
-								groupService.requestSync(groupModel.getCreatorIdentity(), new GroupId(Utils.hexStringToByteArray(groupModel.getApiGroupId().toString())));
-							}
-						}
 					}
-				} catch (Exception x) {
-					logger.error("Could not restore group", x);
-					if (writeToDb) {
-						//process next
-						restoreResult.incContactFailed();
-					}
+				}
+			} catch (Exception x) {
+				logger.error("Could not restore group", x);
+				if (writeToDb) {
+					//process next
+					restoreResult.incContactFailed();
 				}
 			}
 		});
 	}
 
 	private boolean restoreDistributionListFile(@NonNull FileHeader fileHeader) throws IOException, RestoreCanceledException {
-		return this.processCsvFile(fileHeader, new ProcessCsvFile() {
-			@Override
-			public void row(CSVRow row) {
-				try {
-					DistributionListModel distributionListModel = createDistributionListModel(row);
+		return this.processCsvFile(fileHeader, row -> {
+			try {
+				DistributionListModel distributionListModel = createDistributionListModel(row);
 
-					if (writeToDb) {
-						databaseServiceNew.getDistributionListModelFactory().create(
-								distributionListModel);
-						distributionListIdMap.put(BackupUtils.buildDistributionListUid(distributionListModel), distributionListModel.getId());
-						restoreResult.incContactSuccess();
-					}
+				if (writeToDb) {
+					databaseServiceNew.getDistributionListModelFactory().create(
+							distributionListModel);
+					distributionListIdMap.put(BackupUtils.buildDistributionListUid(distributionListModel), distributionListModel.getId());
+					restoreResult.incContactSuccess();
+				}
 
-					List<DistributionListMemberModel> distributionListMemberModels = createDistributionListMembers(row, distributionListModel.getId());
-					if (writeToDb) {
-						for (DistributionListMemberModel distributionListMemberModel : distributionListMemberModels) {
-							databaseServiceNew.getDistributionListMemberModelFactory().create(
-									distributionListMemberModel
-							);
-						}
+				List<DistributionListMemberModel> distributionListMemberModels = createDistributionListMembers(row, distributionListModel.getId());
+				if (writeToDb) {
+					for (DistributionListMemberModel distributionListMemberModel : distributionListMemberModels) {
+						databaseServiceNew.getDistributionListMemberModelFactory().create(
+								distributionListMemberModel
+						);
 					}
-				} catch (Exception x) {
-					logger.error("Could not restore distribution list", x);
-					if (writeToDb) {
-						//process next
-						restoreResult.incContactFailed();
-					}
+				}
+			} catch (Exception x) {
+				logger.error("Could not restore distribution list", x);
+				if (writeToDb) {
+					//process next
+					restoreResult.incContactFailed();
 				}
 			}
 		});
@@ -961,85 +980,76 @@ public class RestoreService extends Service {
 		@NonNull final FileHeader ballotChoice,
 		@NonNull FileHeader ballotVote
 	) throws IOException, RestoreCanceledException {
-		this.processCsvFile(ballotMain, new ProcessCsvFile() {
-			@Override
-			public void row(CSVRow row) {
-				try {
-					BallotModel ballotModel = createBallotModel(row);
+		this.processCsvFile(ballotMain, row -> {
+			try {
+				BallotModel ballotModel = createBallotModel(row);
 
-					if (writeToDb) {
-						databaseServiceNew.getBallotModelFactory().create(
-								ballotModel
+				if (writeToDb) {
+					databaseServiceNew.getBallotModelFactory().create(
+							ballotModel
+					);
+
+					ballotIdMap.put(BackupUtils.buildBallotUid(ballotModel), ballotModel.getId());
+					ballotOldIdMap.put(row.getInteger(Tags.TAG_BALLOT_ID), ballotModel.getId());
+				}
+
+				LinkBallotModel ballotLinkModel = createLinkBallotModel(row, ballotModel.getId());
+
+				if (writeToDb) {
+					if(ballotLinkModel == null) {
+						//link failed
+						logger.error("link failed");
+					}
+					if(ballotLinkModel instanceof GroupBallotModel) {
+						databaseServiceNew.getGroupBallotModelFactory().create(
+								(GroupBallotModel)ballotLinkModel
+								);
+					}
+					else if(ballotLinkModel instanceof IdentityBallotModel) {
+						databaseServiceNew.getIdentityBallotModelFactory().create(
+								(IdentityBallotModel)ballotLinkModel
 						);
-
-						ballotIdMap.put(BackupUtils.buildBallotUid(ballotModel), ballotModel.getId());
-						ballotOldIdMap.put(row.getInteger(Tags.TAG_BALLOT_ID), ballotModel.getId());
 					}
-
-					LinkBallotModel ballotLinkModel = createLinkBallotModel(row, ballotModel.getId());
-
-					if (writeToDb) {
-						if(ballotLinkModel == null) {
-							//link failed
-							logger.error("link failed");
-						}
-						if(ballotLinkModel instanceof GroupBallotModel) {
-							databaseServiceNew.getGroupBallotModelFactory().create(
-									(GroupBallotModel)ballotLinkModel
-									);
-						}
-						else if(ballotLinkModel instanceof IdentityBallotModel) {
-							databaseServiceNew.getIdentityBallotModelFactory().create(
-									(IdentityBallotModel)ballotLinkModel
-							);
-						}
-						else {
-							logger.error("not handled link");
-						}
+					else {
+						logger.error("not handled link");
 					}
+				}
 
-				} catch (Exception x) {
-					logger.error("Could not restore ballot", x);
-					if (writeToDb) {
-						//process next
-						restoreResult.incContactFailed();
-					}
+			} catch (Exception x) {
+				logger.error("Could not restore ballot", x);
+				if (writeToDb) {
+					//process next
+					restoreResult.incContactFailed();
 				}
 			}
 		});
 
-		this.processCsvFile(ballotChoice, new ProcessCsvFile() {
-			@Override
-			public void row(CSVRow row) {
-				try {
-					BallotChoiceModel ballotChoiceModel = createBallotChoiceModel(row);
-					if (ballotChoiceModel != null && writeToDb) {
-						databaseServiceNew.getBallotChoiceModelFactory().create(
-								ballotChoiceModel
-						);
-						ballotChoiceIdMap.put(BackupUtils.buildBallotChoiceUid(ballotChoiceModel), ballotChoiceModel.getId());
-					}
-				} catch (Exception x) {
-					logger.error("Exception", x);
-					//continue!
+		this.processCsvFile(ballotChoice, row -> {
+			try {
+				BallotChoiceModel ballotChoiceModel = createBallotChoiceModel(row);
+				if (ballotChoiceModel != null && writeToDb) {
+					databaseServiceNew.getBallotChoiceModelFactory().create(
+							ballotChoiceModel
+					);
+					ballotChoiceIdMap.put(BackupUtils.buildBallotChoiceUid(ballotChoiceModel), ballotChoiceModel.getId());
 				}
+			} catch (Exception x) {
+				logger.error("Exception", x);
+				//continue!
 			}
 		});
 
-		this.processCsvFile(ballotVote, new ProcessCsvFile() {
-			@Override
-			public void row(CSVRow row) {
-				try {
-					BallotVoteModel ballotVoteModel = createBallotVoteModel(row);
-					if (ballotVoteModel != null && writeToDb) {
-						databaseServiceNew.getBallotVoteModelFactory().create(
-								ballotVoteModel
-						);
-					}
-				} catch (Exception x) {
-					logger.error("Exception", x);
-					//continue!
+		this.processCsvFile(ballotVote, row -> {
+			try {
+				BallotVoteModel ballotVoteModel = createBallotVoteModel(row);
+				if (ballotVoteModel != null && writeToDb) {
+					databaseServiceNew.getBallotVoteModelFactory().create(
+							ballotVoteModel
+					);
 				}
+			} catch (Exception x) {
+				logger.error("Exception", x);
+				//continue!
 			}
 		});
 	}
@@ -1122,14 +1132,14 @@ public class RestoreService extends Service {
 		String identity = null;
 
 		if(reference.endsWith("GroupBallotModel")) {
-			groupId = this.groupIdMap.get(referenceId);
+			groupId = this.groupUidMap.get(referenceId);
 		}
 		else if(reference.endsWith("IdentityBallotModel")) {
 			identity = referenceId;
 		}
 		else {
 			//first try to get the reference as group
-			groupId = this.groupIdMap.get(referenceId);
+			groupId = this.groupUidMap.get(referenceId);
 			if(groupId == null) {
 				if(referenceId != null && referenceId.length() == ProtocolDefines.IDENTITY_LEN) {
 					identity = referenceId;
@@ -1211,10 +1221,12 @@ public class RestoreService extends Service {
 			throw new ThreemaException(null);
 		}
 
-		final String identity = fileName.substring(Tags.MESSAGE_FILE_PREFIX.length(), fileName.indexOf(Tags.CSV_FILE_POSTFIX));
-		if (TestUtil.empty(identity)) {
+		final String identityId = fileName.substring(Tags.MESSAGE_FILE_PREFIX.length(), fileName.indexOf(Tags.CSV_FILE_POSTFIX));
+		if (TestUtil.empty(identityId)) {
 			throw new ThreemaException(null);
 		}
+
+		String identity = identityIdMap.get(identityId);
 
 		if (!this.processCsvFile(fileHeader, row -> {
 			try {
@@ -1251,14 +1263,9 @@ public class RestoreService extends Service {
 		if(fileName == null) {
 			throw new ThreemaException(null);
 		}
-		String[] pieces = fileName.substring(Tags.GROUP_MESSAGE_FILE_PREFIX.length(), fileName.indexOf(Tags.CSV_FILE_POSTFIX)).split("-");
-		if(pieces.length != 2) {
-			throw new ThreemaException(null);
-		}
-		final String apiId = pieces[0];
-		final String identity = pieces[1];
 
-		if (TestUtil.empty(apiId, identity)) {
+		final String groupUid = fileName.substring(Tags.GROUP_MESSAGE_FILE_PREFIX.length(), fileName.indexOf(Tags.CSV_FILE_POSTFIX));
+		if (TestUtil.empty(groupUid)) {
 			throw new ThreemaException(null);
 		}
 
@@ -1269,14 +1276,8 @@ public class RestoreService extends Service {
 
 				if (writeToDb) {
 					updateProgress(STEP_SIZE_MESSAGES);
-
-					Integer groupId = null;
-
-					if(groupIdMap.containsKey(BackupUtils.buildGroupUid(apiId, identity))) {
-						groupId = groupIdMap.get(BackupUtils.buildGroupUid(apiId, identity));
-					}
-
-					if(groupId != null) {
+					Integer groupId = groupUidMap.get(groupUid);
+					if (groupId != null) {
 						groupMessageModel.setGroupId(groupId);
 						databaseServiceNew.getGroupMessageModelFactory().create(
 								groupMessageModel
@@ -1363,7 +1364,7 @@ public class RestoreService extends Service {
 	}
 
 	private List<GroupMemberModel> createGroupMembers(CSVRow row, int groupId) throws ThreemaException {
-		List<GroupMemberModel> res = new ArrayList<GroupMemberModel>();
+		List<GroupMemberModel> res = new ArrayList<>();
 		for(String identity: row.getStrings(Tags.TAG_GROUP_MEMBERS)) {
 			if(!TestUtil.empty(identity)) {
 				GroupMemberModel m = new GroupMemberModel();
@@ -1377,7 +1378,7 @@ public class RestoreService extends Service {
 	}
 
 	private List<DistributionListMemberModel> createDistributionListMembers(CSVRow row, long distributionListId) throws ThreemaException {
-		List<DistributionListMemberModel> res = new ArrayList<DistributionListMemberModel>();
+		List<DistributionListMemberModel> res = new ArrayList<>();
 		for(String identity: row.getStrings(Tags.TAG_DISTRIBUTION_MEMBERS)) {
 			if(!TestUtil.empty(identity)) {
 				DistributionListMemberModel m = new DistributionListMemberModel();
@@ -1419,6 +1420,11 @@ public class RestoreService extends Service {
 		}
 		if(restoreSettings.getVersion() >= 18) {
 			contactModel.setForwardSecurityEnabled(row.getBoolean(Tags.TAG_CONTACT_FORWARD_SECURITY));
+		}
+		if (restoreSettings.getVersion() >= 19) {
+			identityIdMap.put(row.getString(Tags.TAG_CONTACT_IDENTITY_ID), contactModel.getIdentity());
+		} else {
+			identityIdMap.put(contactModel.getIdentity(), contactModel.getIdentity());
 		}
 		contactModel.setIsRestored(true);
 
@@ -1502,11 +1508,9 @@ public class RestoreService extends Service {
 		if(messageModel.getType() == MessageType.BALLOT) {
 			//try to update to new ballot id
 			BallotDataModel ballotData = messageModel.getBallotData();
-			if(ballotData != null) {
-				if(this.ballotOldIdMap.containsKey(ballotData.getBallotId())) {
-					BallotDataModel newBallotData = new BallotDataModel(ballotData.getType(), this.ballotOldIdMap.get(ballotData.getBallotId()));
-					messageModel.setBallotData(newBallotData);
-				}
+			if(this.ballotOldIdMap.containsKey(ballotData.getBallotId())) {
+				BallotDataModel newBallotData = new BallotDataModel(ballotData.getType(), this.ballotOldIdMap.get(ballotData.getBallotId()));
+				messageModel.setBallotData(newBallotData);
 			}
 		}
 		if(restoreSettings.getVersion() >= 2) {
@@ -1693,13 +1697,10 @@ public class RestoreService extends Service {
 			}
 			showRestoreErrorNotification(message);
 
-			new DeleteIdentityAsyncTask(null, new Runnable() {
-				@Override
-				public void run() {
-					isRunning = false;
+			new DeleteIdentityAsyncTask(null, () -> {
+				isRunning = false;
 
-					System.exit(0);
-				}
+				System.exit(0);
 			}).execute();
 		}
 	}

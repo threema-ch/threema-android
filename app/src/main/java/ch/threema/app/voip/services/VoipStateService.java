@@ -21,25 +21,6 @@
 
 package ch.threema.app.voip.services;
 
-import static androidx.media.AudioAttributesCompat.USAGE_NOTIFICATION_RINGTONE;
-import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
-import static ch.threema.app.ThreemaApplication.getAppContext;
-import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_INCOMING_CALL;
-import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_SILENT;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CALL;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
-import static ch.threema.app.voip.activities.CallActivity.EXTRA_ACCEPT_INCOMING_CALL;
-import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CALL_ID;
-import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CONTACT_IDENTITY;
-import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_REJECT_REASON;
-import static ch.threema.app.voip.services.VoipCallService.ACTION_ICE_CANDIDATES;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANCEL_WEAR;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANDIDATES;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -82,9 +63,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.Set;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -126,6 +107,24 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipMessage;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
+
+import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
+import static ch.threema.app.ThreemaApplication.getAppContext;
+import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_INCOMING_CALL;
+import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_SILENT;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CALL;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.app.voip.activities.CallActivity.EXTRA_ACCEPT_INCOMING_CALL;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CALL_ID;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CONTACT_IDENTITY;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_REJECT_REASON;
+import static ch.threema.app.voip.services.VoipCallService.ACTION_ICE_CANDIDATES;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANCEL_WEAR;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANDIDATES;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
 
 /**
  * The service keeping track of VoIP call state.
@@ -1604,7 +1603,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				if (Build.VERSION.SDK_INT <= 21) {
 					ringtonePlayer.setAudioStreamType(AudioManager.STREAM_RING);
 				} else {
-					ringtonePlayer.setAudioAttributes(SoundUtil.getAudioAttributesForUsage(USAGE_NOTIFICATION_RINGTONE));
+					ringtonePlayer.setAudioAttributes(SoundUtil.getAudioAttributesForCallNotification());
 				}
 
 				try {

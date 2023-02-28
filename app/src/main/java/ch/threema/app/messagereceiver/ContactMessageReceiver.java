@@ -219,7 +219,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 				.setFileSize(modelFileData.getFileSize())
 				.setFileName(modelFileData.getFileName())
 				.setRenderingType(modelFileData.getRenderingType())
-				.setDescription(modelFileData.getCaption())
+				.setCaption(modelFileData.getCaption())
 				.setCorrelationId(messageModel.getCorrelationId())
 				.setMetaData(modelFileData.getMetaData());
 

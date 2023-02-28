@@ -137,12 +137,7 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 			setDefaultBackground(holder);
 		}
 
-		if (!TestUtil.empty(fileData.getCaption())) {
-			holder.bodyTextView.setText(formatTextString(fileData.getCaption(), filterString));
-			showHide(holder.bodyTextView, true);
-		} else {
-			showHide(holder.bodyTextView, false);
-		}
+		configureBodyText(holder, fileData.getCaption());
 
 		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, fileData, fileSize));
 

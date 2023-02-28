@@ -65,7 +65,7 @@ public class VoipCallOfferMessage extends VoipMessage {
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 }

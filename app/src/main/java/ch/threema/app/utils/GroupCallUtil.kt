@@ -34,7 +34,7 @@ import ch.threema.app.routines.UpdateFeatureLevelRoutine
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.UserService
-import ch.threema.app.voip.activities.GroupCallActivity.Companion.getStartOrJoinCallIntent
+import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.protocol.api.APIConnector
@@ -142,7 +142,7 @@ private fun launchActivity(context: Context, groupModel: GroupModel, otherMember
             Toast.LENGTH_LONG
         ).show()
     }
-    ContextCompat.startActivity(context, getStartOrJoinCallIntent(context, groupModel.id), null)
+    ContextCompat.startActivity(context, GroupCallActivity.getStartCallIntent(context, groupModel.id), null)
 }
 
 fun qualifiesForGroupCalls(groupService: GroupService, groupModel: GroupModel): Boolean {

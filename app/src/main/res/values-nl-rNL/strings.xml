@@ -502,6 +502,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="really_remove_wallpapers">Wilt u echt alle achtergronden verwijderen?</string>
     <string name="wallpapers_removed">Achtergronden verwijderd</string>
     <string name="invalid_backup">Ongeldige back-upgegevens. Kan niet herstellen.</string>
+    <string name="invalid_zip_restore_failed">Herstellen is mislukt. Ongeldig back-upbestand: %1$s</string>
     <string name="revocation_explain">Met het wachtwoord dat u hier invoert, kunt u uw ID intrekken via
 		https://myid.threema.ch/revoke als u het ooit kwijtraakt of wordt gestolen</string>
     <string name="no_unread_messages">Geen ongelezen berichten of PIN-slot geactiveerd</string>
@@ -914,7 +915,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="number_of_days">%d dagen</string>
     <string name="backup_other_restore_options">Andere herstelopties</string>
     <string name="safe_size">Formaat back-up</string>
-    <string name="safe_version_mismatch">De versie van deze back-up is hoger dan de ondersteunde versie. Werk de app bij naar de laatste versie.</string>
+    <string name="backup_version_mismatch">De versie van deze back-up is hoger dan de ondersteunde versie. Werk de app bij naar de laatste versie.</string>
     <string name="safe_restore_failed">Herstel mislukt</string>
     <string name="safe_failed_notification">Back-up van Threema Safe is al %d dagen op rij mislukt. Tik hier om te controleren.</string>
     <string name="safe_restore">Threema Safe herstellen</string>
@@ -1426,6 +1427,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="forward_security_mode_2dh">eenzijdig</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beschermt opgenomen communicatie tegen ontsleuteling met terugwerkende kracht, zelfs wanneer de lange termijn-coderingssleutel gecomprimeerd is.\n\nDe optie kan worden ingeschakeld als de app aan beide zijden PFS ondersteunt.</string>
     <string name="group_call_inactivity_left">Groepsgesprek verlaten vanwege inactiviteit</string>
+    <string name="missing_permission_external_storage">Het bestand kon niet worden gekopieerd. Probeer de volgende stappen:\n1. Open de Instellingen-app.\n2. Ga naar \'Apps\' en kies \'Speciale apptoegang\'.\n3. Tik op \'Toegang tot alle bestanden\'.\n4. Tik op de drie stippen rechts bovenaan en kies \'Systeem tonen\'.\n5. Tik op \'Externe opslag\' en zorg dat \'Toegang voor het beheren van alle bestanden toestaan\' verleend is.\n6. Probeer de back-up opnieuw te herstellen.</string>
+    <string name="forward_security_downgraded_status_message">Deze contactpersoon is een appversie gaan gebruiken die Perfect Forward Secrecy niet ondersteunt. Berichten worden voortaan gestuurd zonder PFS.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>

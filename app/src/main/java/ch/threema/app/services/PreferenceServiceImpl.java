@@ -774,6 +774,17 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__lockout_timeout));
 	}
 
+    @Override
+    public void setLockoutAttempts(int numWrongConfirmAttempts) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__lockout_attempts), numWrongConfirmAttempts);
+
+	}
+
+	@Override
+	public int getLockoutAttempts() {
+		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__lockout_attempts));
+	}
+
 	@Override
 	public void setWizardRunning(boolean running) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__wizard_running), running);
