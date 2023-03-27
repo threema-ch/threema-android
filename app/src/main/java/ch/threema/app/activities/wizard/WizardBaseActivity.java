@@ -689,7 +689,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 			case DIALOG_TAG_SYNC_CONTACTS_ENABLE:
 				isSyncContacts = false;
 				this.serviceManager.getPreferenceService().setSyncContacts(false);
-				syncContactsAndFinish();
+				linkPhone();
 				break;
 		}
 	}

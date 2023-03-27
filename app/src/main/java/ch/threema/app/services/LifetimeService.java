@@ -118,12 +118,5 @@ public interface LifetimeService {
 	 */
 	void unpause();
 
-	/**
-	 * Return whether the lifetime service is currently paused.
-	 */
-	boolean isPaused();
-
 	void addListener(LifetimeServiceListener listener);
-	void removeListener(LifetimeServiceListener listener);
-	void clearListeners();
 }

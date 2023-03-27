@@ -105,7 +105,7 @@ public class LifetimeServiceImpl implements LifetimeService {
 
 		// Store connection slot
 		this.connectionSlots.put(sourceTag, new ConnectionSlot(unpauseable));
-		logger.info("acquireConnection: tag={}, new slotCount={}", sourceTag, this.connectionSlots.size());
+		logger.info("acquireConnection: tag={}, new #slots={}", sourceTag, this.connectionSlots.size());
 
 		// Establish connection
 		this.ensureConnection();
@@ -115,7 +115,7 @@ public class LifetimeServiceImpl implements LifetimeService {
 	public synchronized void releaseConnection(@NonNull String sourceTag) {
 		// Ensure that there are any connections registered
 		if (this.connectionSlots.isEmpty()) {
-			logger.warn("releaseConnection: slotCount is already 0! (source = {})", sourceTag);
+			logger.warn("releaseConnection: #slots is already 0! (source = {})", sourceTag);
 			return;
 		}
 
@@ -125,7 +125,7 @@ public class LifetimeServiceImpl implements LifetimeService {
 			logger.error("releaseConnection: tag {} was not present in connectionSlots", sourceTag);
 		}
 
-		logger.info("releaseConnection: tag={}, slotCount={}", sourceTag, this.connectionSlots.size());
+		logger.info("releaseConnection: tag={}, #slots={}", sourceTag, this.connectionSlots.size());
 
 		this.cleanupConnection();
 	}
@@ -134,7 +134,7 @@ public class LifetimeServiceImpl implements LifetimeService {
 	public synchronized void releaseConnectionLinger(@NonNull String sourceTag, long timeoutMs) {
 		// Ensure that there are any connections registered
 		if (this.connectionSlots.isEmpty()) {
-			logger.warn("releaseConnectionLinger: slotCount is already 0! (source={})", sourceTag);
+			logger.warn("releaseConnectionLinger: #slots is already 0! (source={})", sourceTag);
 			return;
 		}
 
@@ -144,7 +144,7 @@ public class LifetimeServiceImpl implements LifetimeService {
 			logger.error("releaseConnectionLinger: tag {} was not present in connectionSlots", sourceTag);
 		}
 
-		logger.info("releaseConnectionLinger: tag={}, slotCount={}, linger={}s",
+		logger.info("releaseConnectionLinger: tag={}, #slots={}, linger={}s",
 			sourceTag, this.connectionSlots.size(), timeoutMs / 1000);
 
 		long newLingerUntil = SystemClock.elapsedRealtime() + timeoutMs;
@@ -217,22 +217,8 @@ public class LifetimeServiceImpl implements LifetimeService {
 	}
 
 	@Override
-	public synchronized boolean isPaused() {
-		return this.paused;
-	}
-
-	@Override
 	public synchronized void pause() {
 		logger.info("Pausing connection");
-
-		// Check for unpauseable connection slots
-		long unpauseableConnectionCount = StreamSupport.stream(this.connectionSlots.values())
-			.filter(slot -> slot.unpauseable)
-			.count();
-		if (unpauseableConnectionCount > 0) {
-			logger.info("Cannot pause, there are {} unpauseable connections", unpauseableConnectionCount);
-			return;
-		}
 
 		// Pause connection
 		this.paused = true;
@@ -261,27 +247,24 @@ public class LifetimeServiceImpl implements LifetimeService {
 		}
 	}
 
-	@Override
-	public void removeListener(LifetimeServiceListener listener) {
-		synchronized (this.listeners) {
-			this.listeners.remove(listener);
-		}
-
-	}
-
-	@Override
-	public void clearListeners() {
-		synchronized (this.listeners) {
-			this.listeners.clear();
-		}
-	}
-
 	/**
 	 * If the connection slots are empty or if the state is paused, disconnect.
 	 */
 	private synchronized void cleanupConnection() {
 		boolean interrupted = false;
-		if (this.connectionSlots.isEmpty() || this.paused) {
+		long unpausableSlots = StreamSupport.stream(this.connectionSlots.values())
+				.filter(slot -> slot.unpauseable)
+				.count();
+
+		// We can only disconnect if
+		//
+		// - there are no unpausable slots, and
+		// - a pause was either requested or there are no slots at all.
+		//
+		// Note: This is required to circumvent a bug where a broadcast never unpauses the
+		// connection, see ANDR-2337. All vital components need to acquire an unpausable
+		// connection.
+		if (unpausableSlots == 0 && (this.connectionSlots.isEmpty() || this.paused)) {
 			long curTime = SystemClock.elapsedRealtime();
 
 			if (!this.active) {
@@ -313,7 +296,7 @@ public class LifetimeServiceImpl implements LifetimeService {
 				}
 
 				this.active = false;
-				logger.info("cleanupConnection: Connection closed");
+				logger.info("cleanupConnection: Connection closed, #slots={}", this.connectionSlots.size());
 
 				/* check if any messages remain in the queue */
 				try {
@@ -328,7 +311,7 @@ public class LifetimeServiceImpl implements LifetimeService {
 				}
 			}
 		} else {
-			logger.info("cleanupConnection: slotCount={} - not cleaning up", this.connectionSlots.size());
+			logger.info("cleanupConnection: Not cleaning up #slots={}, #unpausable-slots={}", this.connectionSlots.size(), unpausableSlots);
 		}
 
 		if (interrupted) {

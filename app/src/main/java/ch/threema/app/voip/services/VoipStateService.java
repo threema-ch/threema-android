@@ -372,7 +372,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 		// Make sure connection is open
 		if (!this.connectionAcquired) {
-			this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
+			this.lifetimeService.acquireUnpauseableConnection(LIFETIME_SERVICE_TAG);
 			this.connectionAcquired = true;
 		}
 

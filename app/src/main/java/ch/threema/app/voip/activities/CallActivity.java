@@ -791,7 +791,7 @@ public class CallActivity extends ThreemaActivity implements
 		}
 
 		// Acquire a Threema server connection
-		this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
+		this.lifetimeService.acquireUnpauseableConnection(LIFETIME_SERVICE_TAG);
 
 		// Register broadcast receiver
 		IntentFilter filter = new IntentFilter();
