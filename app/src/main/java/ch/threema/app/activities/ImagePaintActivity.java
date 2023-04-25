@@ -32,6 +32,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -74,6 +75,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
@@ -177,7 +179,8 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 	@ColorInt private int penColor, backgroundColor;
 
-	private MenuItem undoItem, paletteItem, paintItem, pencilItem, blurFacesItem;
+	private MenuItem undoItem, drawParentItem, paintItem, pencilItem, blurFacesItem;
+	private Drawable brushIcon, pencilIcon;
 	private PaintSelectionPopup paintSelectionPopup;
 	private final ArrayList<MotionEntity> undoHistory = new ArrayList<>();
 	private boolean saveSemaphore = false;
@@ -345,6 +348,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 		TextEntity textEntity = new TextEntity(textLayer, motionView.getWidth(),
 				motionView.getHeight());
+		textEntity.setColor(penColor);
 		motionView.addEntityAndPosition(textEntity);
 	}
 
@@ -394,6 +398,9 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		this.imageView = findViewById(R.id.preview_image);
 		this.motionView = findViewById(R.id.motion_view);
 
+		this.brushIcon = AppCompatResources.getDrawable(this, R.drawable.ic_brush);
+		this.pencilIcon = AppCompatResources.getDrawable(this, R.drawable.ic_pencil_outline);
+
 		this.penColor = getResources().getColor(R.color.material_red);
 		this.backgroundColor = Color.WHITE;
 		if (savedInstanceState != null) {
@@ -442,8 +449,8 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			}
 
 			@Override
-			public void onLongClick(MotionEntity entity, int x, int y) {
-				paintSelectionPopup.show((int) motionView.getX() + x, (int) motionView.getY() + y, !entity.hasFixedPositionAndSize());
+			public void onLongClick(@NonNull MotionEntity entity, int x, int y) {
+				paintSelectionPopup.show((int) motionView.getX() + x, (int) motionView.getY() + y, entity);
 			}
 
 			@Override
@@ -472,20 +479,23 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		this.paintSelectionPopup = new PaintSelectionPopup(this, this.motionView);
 		this.paintSelectionPopup.setListener(new PaintSelectionPopup.PaintSelectPopupListener() {
 			@Override
-			public void onItemSelected(int tag) {
-				switch (tag) {
-					case PaintSelectionPopup.TAG_REMOVE:
-						deleteEntity();
-						break;
-					case PaintSelectionPopup.TAG_FLIP:
-						flipEntity();
-						break;
-					case PaintSelectionPopup.TAG_TO_FRONT:
-						bringToFrontEntity();
-						break;
-					default:
-						break;
-				}
+			public void onRemoveClicked() {
+				deleteEntity();
+			}
+
+			@Override
+			public void onFlipClicked() {
+				flipEntity();
+			}
+
+			@Override
+			public void onBringToFrontClicked() {
+				bringToFrontEntity();
+			}
+
+			@Override
+			public void onColorClicked() {
+				colorEntity();
 			}
 
 			@Override
@@ -812,7 +822,13 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 
-		ConfigUtils.themeMenuItem(paletteItem, Color.WHITE);
+		if (this.strokeMode == STROKE_MODE_PENCIL) {
+			drawParentItem.setIcon(pencilIcon);
+		} else {
+			drawParentItem.setIcon(brushIcon);
+		}
+
+		ConfigUtils.themeMenuItem(drawParentItem, Color.WHITE);
 		ConfigUtils.themeMenuItem(paintItem, Color.WHITE);
 		ConfigUtils.themeMenuItem(pencilItem, Color.WHITE);
 
@@ -821,8 +837,12 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			if (paintView.getActive()) {
 				if (this.strokeMode == STROKE_MODE_PENCIL) {
 					ConfigUtils.themeMenuItem(pencilItem, this.penColor);
+					drawParentItem.setIcon(pencilIcon);
+					ConfigUtils.themeMenuItem(drawParentItem, this.penColor);
 				} else {
 					ConfigUtils.themeMenuItem(paintItem, this.penColor);
+					drawParentItem.setIcon(brushIcon);
+					ConfigUtils.themeMenuItem(drawParentItem, this.penColor);
 				}
 			}
 		}
@@ -838,7 +858,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		getMenuInflater().inflate(R.menu.activity_image_paint, menu);
 
 		undoItem = menu.findItem(R.id.item_undo);
-		paletteItem = menu.findItem(R.id.item_palette);
+		drawParentItem = menu.findItem(R.id.item_draw_parent);
 		paintItem = menu.findItem(R.id.item_draw);
 		pencilItem = menu.findItem(R.id.item_pencil);
 		blurFacesItem = menu.findItem(R.id.item_face);
@@ -954,6 +974,15 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		invalidateOptionsMenu();
 	}
 
+	private void colorEntity() {
+		final MotionEntity selectedEntity = motionView.getSelectedEntity();
+		if (selectedEntity == null) {
+			logger.warn("Cannot change entity color when no entity is selected");
+			return;
+		}
+		chooseColor(selectedEntity::setColor, selectedEntity.getColor());
+	}
+
 	private void undo() {
 		if (undoHistory.size() > 0) {
 			MotionEntity entity = undoHistory.get(undoHistory.size() - 1);
@@ -1025,20 +1054,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		chooseColor(color -> {
 			paintView.setColor(color);
 			penColor = color;
-
-			ConfigUtils.themeMenuItem(paletteItem, penColor);
-			if (motionView.getSelectedEntity() != null) {
-				if (motionView.getSelectedEntity() instanceof TextEntity) {
-					TextEntity textEntity = (TextEntity) motionView.getSelectedEntity();
-					textEntity.getLayer().getFont().setColor(penColor);
-					textEntity.updateEntity();
-					motionView.invalidate();
-				} else {
-					// ignore color selection for stickers
-				}
-			} else {
-				setDrawMode(true);
-			}
+			setDrawMode(true);
 		}, penColor);
 	}
 

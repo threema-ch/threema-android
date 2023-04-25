@@ -206,6 +206,7 @@ public class ServiceManager {
 	private ThreemaSafeService threemaSafeService;
 	private RingtoneService ringtoneService;
 	private BackupChatService backupChatService;
+	@NonNull
 	private final DatabaseServiceNew databaseServiceNew;
 	private SensorService sensorService;
 	private VoipStateService voipStateService;
@@ -224,7 +225,7 @@ public class ServiceManager {
 	private EmojiService emojiService;
 
 	public ServiceManager(ThreemaConnection connection,
-						  DatabaseServiceNew databaseServiceNew,
+						  @NonNull DatabaseServiceNew databaseServiceNew,
 						  IdentityStore identityStore,
 						  PreferenceStoreInterface preferenceStore,
 						  MasterKey masterKey,
@@ -994,6 +995,7 @@ public class ServiceManager {
 		return this.voipStateService;
 	}
 
+	@NonNull
 	public DatabaseServiceNew getDatabaseServiceNew() {
 		return this.databaseServiceNew;
 	}

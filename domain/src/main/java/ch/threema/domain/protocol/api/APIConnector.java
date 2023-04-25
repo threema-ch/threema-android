@@ -299,7 +299,7 @@ public class APIConnector {
 		logger.debug("Fetch identity private phase 1: response from server: {}", p1Result);
 
 		if (p1Result.has("success") && !p1Result.getBoolean("success")) {
-			throw new ThreemaException(p1Result.getString("error"));
+			throw new FetchIdentityException(p1Result.getString("error"));
 		}
 
 		makeTokenResponse(p1Result, request, identityStore);
@@ -310,7 +310,7 @@ public class APIConnector {
 		logger.debug("Fetch identity private: response from server: {}", p2Result);
 
 		if (!p2Result.getBoolean("success")) {
-			throw new ThreemaException(p2Result.getString("error"));
+			throw new FetchIdentityException(p2Result.getString("error"));
 		}
 
 		FetchIdentityPrivateResult result = new FetchIdentityPrivateResult();

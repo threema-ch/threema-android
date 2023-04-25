@@ -112,12 +112,12 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * Update group properties and members.
 	 * This method triggers protocol messages to all group members that are affected by the change.
 	 *
-	 * @param groupModel Group that should be modified
-	 * @param name New name of group, {@code null} if unchanged.
-	 * @param groupDesc New group description for the group, {@code null} if unchanged.
+	 * @param groupModel            Group that should be modified
+	 * @param name                  New name of group, {@code null} if unchanged.
+	 * @param groupDesc             New group description for the group, {@code null} if unchanged.
 	 * @param groupMemberIdentities Identities of all group members.
-	 * @param photo New group photo, {@code null} if unchanged.
-	 * @param removePhoto Whether to remove the group photo.
+	 * @param photo                 New group photo, {@code null} if unchanged.
+	 * @param removePhoto           Whether to remove the group photo.
 	 * @return Updated groupModel
 	 */
 	@NonNull
@@ -132,7 +132,16 @@ public interface GroupService extends AvatarService<GroupModel> {
 
 	boolean renameGroup(GroupRenameMessage renameMessage) throws ThreemaException;
 
-	boolean renameGroup(GroupModel group, String newName) throws ThreemaException;
+	/**
+	 * Rename the group. This renames the group regardless whether the new name is the same or not.
+	 * If the user is the owner of the group, a rename message is sent to every member of the group.
+	 * Note that this method does not trigger the group listeners.
+	 *
+	 * @param group   the group model that may be updated
+	 * @param newName the new name of the group
+	 * @throws ThreemaException if sending the group rename message fails
+	 */
+	void renameGroup(GroupModel group, String newName) throws ThreemaException;
 
 	/**
 	 * @return return true if a new member added, false a existing group member updated or null if a error occurred

@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -348,5 +349,9 @@ public class MediaPlayerStateWrapper {
 			logger.error("Unable to get current playback speed", e);
 			return 1f;
 		}
+	}
+
+	public void setOnSeekCompleteListener(@Nullable MediaPlayer.OnSeekCompleteListener listener) {
+		mediaPlayer.setOnSeekCompleteListener(listener);
 	}
 }

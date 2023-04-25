@@ -23,6 +23,7 @@ package ch.threema.app.voip.groupcall.service
 
 import android.Manifest
 import android.app.Notification
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
@@ -59,6 +60,7 @@ import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.GroupModel
 import kotlinx.coroutines.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallService")
 
@@ -108,6 +110,8 @@ class GroupCallService : Service() {
         }
     }
 
+    private val serviceRunning = AtomicBoolean(false)
+
     private val binder = GroupCallServiceBinder()
 
     private var groupCallController: GroupCallControllerImpl? = null
@@ -145,17 +149,13 @@ class GroupCallService : Service() {
         return binder
     }
 
-    override fun onUnbind(intent: Intent?): Boolean {
-        stopService()
-        return false
-    }
-
     override fun onCreate() {
         super.onCreate()
         initDependencies()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        serviceRunning.set(true)
         try {
             handleIntent(intent)
             if (isLeaveCallIntent) {
@@ -221,7 +221,16 @@ class GroupCallService : Service() {
         })
     }
 
-    private fun getForegroundNotification(): Notification {
+    private fun updateNotification(startedAt: Long) {
+        val notification = getForegroundNotification(startedAt)
+        getSystemService(NOTIFICATION_SERVICE).let {
+            if (it is NotificationManager && serviceRunning.get()) {
+                it.notify(NOTIFICATION_ID, notification)
+            }
+        }
+    }
+
+    private fun getForegroundNotification(startedAt: Long = System.currentTimeMillis()): Notification {
         val group = groupService.getById(groupId.id)
         val builder = NotificationBuilderWrapper(
             this, NotificationService.NOTIFICATION_CHANNEL_IN_CALL, null)
@@ -234,10 +243,7 @@ class GroupCallService : Service() {
             .setOngoing(true)
             .setUsesChronometer(true)
             .setShowWhen(true)
-            // TODO(ANDR-1950): Maybe? It will display the time when the call has been started locally
-            //  and not the time the group call has actually been started. This information is not (yet)
-            //  available at this point
-            .setWhen(System.currentTimeMillis())
+            .setWhen(startedAt)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(getJoinCallPendingIntent(PendingIntent.FLAG_UPDATE_CURRENT))
             .addAction(
@@ -301,7 +307,9 @@ class GroupCallService : Service() {
                     groupService
                 )
                 CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
-                    it.join(applicationContext, sfuBaseUrl, sfuConnection) { stopService() }
+                    launch { it.join(applicationContext, sfuBaseUrl, sfuConnection) { stopService() } }
+                    val startedAt = it.descriptionSignal.await().startedAt.toLong()
+                    updateNotification(startedAt)
                 }
                 controllerDeferred.complete(it)
                 initAudioManager()
@@ -350,8 +358,13 @@ class GroupCallService : Service() {
 
     private fun stopService() {
         logger.info("Stop service")
-        // TODO(ANDR-1964): When a call is left, this is called twice: one time from leaveCall() and one time from onUnbind()
-        //  it should only be called once, maybe `leaveCall()` can be omitted?
+        serviceRunning.set(false)
+        stopSelf()
+    }
+
+    override fun onDestroy() {
+        logger.info("Destroy GroupCallService")
+        super.onDestroy()
         val exception = ThreemaException("GroupCallService has been stopped")
         // If controllerDeferred and callEnded are not yet completed, they are completed exceptionally.
         // If they already _are_ completed, nothing will happen when calling `completeExceptionally`
@@ -363,7 +376,6 @@ class GroupCallService : Service() {
         audioManager = null
         getJoinCallPendingIntent(PendingIntent.FLAG_NO_CREATE)?.cancel()
         getLeaveCallPendingIntent(PendingIntent.FLAG_NO_CREATE)?.cancel()
-        stopSelf()
     }
 
     inner class GroupCallServiceBinder : Binder() {

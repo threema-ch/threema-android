@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/list_item"
 	android:layout_width="match_parent"
 	android:layout_height="@dimen/messagelist_item_height"
@@ -65,7 +66,6 @@
 				android:layout_toRightOf="@+id/mute_status"
 				android:ellipsize="end"
 				android:singleLine="true"
-				android:text="Title"
 				android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
 
 			<ImageView
@@ -138,7 +138,6 @@
 					android:layout_marginTop="2sp"
 					android:layout_toLeftOf="@id/delivery"
 					android:singleLine="true"
-					android:text="Date"
 					android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine" />
 
 				<ch.threema.app.emojis.EmojiTextView
@@ -148,7 +147,6 @@
 					android:layout_alignBaseline="@id/date"
 					android:layout_alignWithParentIfMissing="true"
 					android:singleLine="true"
-					android:text="Member: "
 					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
 
 				<ImageView
@@ -175,7 +173,6 @@
 					android:layout_toRightOf="@id/attachment"
 					android:ellipsize="none"
 					android:singleLine="true"
-					android:text="Subject"
 					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
 
 			</RelativeLayout>
@@ -187,12 +184,12 @@
 				android:layout_below="@id/from"
 				android:visibility="gone">
 
-				<TextView
-					android:id="@+id/ongoing_call_text"
+				<Chronometer
+					android:id="@+id/group_call_duration"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_alignWithParentIfMissing="true"
-					android:text="@string/voip_gc_ongoing_call"
+					android:layout_alignBaseline="@+id/ongoing_call_text"
 					android:maxLines="1"
 					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall" />
 
@@ -200,18 +197,22 @@
 					android:id="@+id/ongoing_call_divider"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_alignBaseline="@id/ongoing_call_text"
-					android:layout_toRightOf="@id/ongoing_call_text"
+					android:layout_alignBaseline="@+id/ongoing_call_text"
+					android:layout_toRightOf="@id/group_call_duration"
+					android:layout_marginLeft="2dp"
+					android:layout_marginRight="2dp"
 					android:maxLines="1"
-					android:text=" - "
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall" />
+					android:text="|"
+					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall"
+					tools:ignore="HardcodedText" />
 
-				<Chronometer
-					android:id="@+id/group_call_duration"
+				<TextView
+					android:id="@+id/ongoing_call_text"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_alignBaseline="@id/ongoing_call_text"
+					android:text="@string/voip_gc_ongoing_call"
 					android:layout_toRightOf="@id/ongoing_call_divider"
+					android:ellipsize="end"
 					android:maxLines="1"
 					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall" />
 

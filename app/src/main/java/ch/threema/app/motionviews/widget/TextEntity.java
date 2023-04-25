@@ -177,8 +177,21 @@ public class TextEntity extends MotionEntity {
 	}
 
 	@Override
-	public boolean hasFixedPositionAndSize() {
-		return false;
+	public boolean canMove() {
+		return true;
+	}
+
+	@Override
+	public boolean canChangeColor() {
+		return true;
+	}
+
+	@Override
+	public void setColor(int color) {
+		super.setColor(color);
+
+		getLayer().getFont().setColor(color);
+		updateEntity();
 	}
 
 	@Override

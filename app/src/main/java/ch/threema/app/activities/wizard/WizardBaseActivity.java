@@ -339,36 +339,28 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	 * Perform an early synchronous fetch2. In case of failure due to rate-limiting, do not allow user to continue
 	 */
 	private void performWorkSync() {
-		final String workerTag = "WorkSyncWorker";
-
 		GenericProgressDialog.newInstance(R.string.work_data_sync_desc,
 			R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC);
 
-		OneTimeWorkRequest workRequest = WorkSyncWorker.Companion.buildOneTimeWorkRequest(false, true, workerTag);
-		WorkManager workManager = WorkManager.getInstance(ThreemaApplication.getAppContext());
-		workManager.getWorkInfosByTagLiveData(workerTag).observe(this, workInfos -> {
-			if (workInfos != null) {
-				for (WorkInfo workInfo : workInfos) {
-					if (workInfo.getState().isFinished()) {
-						DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
-					}
-
-					if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-						setupConfig();
-					} else if (workInfo.getState() == WorkInfo.State.FAILED) {
-						RuntimeUtil.runOnUiThread(() -> Toast.makeText(WizardBaseActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
-						logger.info("Unable to post work request for fetch2");
-						try {
-							userService.removeIdentity();
-						} catch (Exception e) {
-							logger.error("Unable to remove identity", e);
-						}
-						finishAndRemoveTask();
-					}
+		WorkSyncWorker.Companion.performOneTimeWorkSync(
+			this,
+			() -> {
+				// On success
+				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
+				setupConfig();
+			},
+			() -> {
+				// On fail
+				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
+				RuntimeUtil.runOnUiThread(() -> Toast.makeText(WizardBaseActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
+				logger.info("Unable to post work request for fetch2");
+				try {
+					userService.removeIdentity();
+				} catch (Exception e) {
+					logger.error("Unable to remove identity", e);
 				}
-			}
-		});
-		workManager.enqueueUniqueWork(WORKER_WORK_SYNC, ExistingWorkPolicy.REPLACE, workRequest);
+				finishAndRemoveTask();
+			});
 	}
 
 	private void splitMobile(String phoneNumber) {

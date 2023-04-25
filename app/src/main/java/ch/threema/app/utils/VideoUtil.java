@@ -92,13 +92,12 @@ public class VideoUtil {
 	}
 
 	public static ExoPlayer getExoPlayer(@NonNull Context context) {
+		DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);
+		renderersFactory.setEnableDecoderFallback(true);
 		if (ConfigUtils.hasAsyncMediaCodecBug()) {
 			// Workaround for https://github.com/google/ExoPlayer/issues/10021
-			DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);
 			renderersFactory.forceDisableMediaCodecAsynchronousQueueing();
-			return new ExoPlayer.Builder(context, renderersFactory).build();
-		} else {
-			return new ExoPlayer.Builder(context).build();
 		}
+		return new ExoPlayer.Builder(context, renderersFactory).build();
 	}
 }

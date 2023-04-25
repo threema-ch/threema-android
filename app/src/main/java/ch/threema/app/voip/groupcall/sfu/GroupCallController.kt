@@ -25,6 +25,7 @@ import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.voip.groupcall.GroupCallDescription
+import ch.threema.app.voip.groupcall.sfu.connection.GroupCallConnectionState
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import org.webrtc.EglBase
@@ -73,6 +74,7 @@ interface GroupCallController {
     val eglBase: EglBase
 
     var description: GroupCallDescription
+    val descriptionSignal: Deferred<GroupCallDescription>
 
     var microphoneActive: Boolean
 

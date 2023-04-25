@@ -819,7 +819,7 @@ public class GroupServiceImpl implements GroupService {
 			return groupCreateMessage;
 		});
 
-		if(groupModel.getName() != null && groupModel.getName().length() > 0) {
+		if (!TextUtils.isEmpty(groupModel.getName())) {
 			this.renameGroup(groupModel, groupModel.getName());
 		}
 
@@ -1111,7 +1111,14 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		if (name != null) {
+			// Rename the group (for all members) if the group name has changed. This includes the
+			// new members of the group.
 			this.renameGroup(groupModel, name);
+			ListenerManager.groupListeners.handle(listener -> listener.onRename(groupModel));
+		} else if (!newMembers.isEmpty()) {
+			// Send rename message to all new group members, so that they receive the group name,
+			// even if the group name did not change.
+			this.sendGroupRenameToIdentitiesIfOwner(groupModel, newMembers.toArray(new String[0]));
 		}
 
 		if (groupDesc != null) {
@@ -1169,10 +1176,12 @@ public class GroupServiceImpl implements GroupService {
 	public boolean renameGroup(GroupRenameMessage renameMessage) throws ThreemaException {
 		final GroupModel groupModel = this.getGroup(renameMessage);
 
-		if(groupModel != null) {
+		if (groupModel != null) {
+			final String oldGroupName = groupModel.getName() != null ? groupModel.getName() : "";
+			final String newGroupName = renameMessage.getGroupName() != null ? renameMessage.getGroupName() : "";
 			//only rename, if the name is different
-			if(!TestUtil.compare(groupModel.getName(), renameMessage.getGroupName())) {
-				this.renameGroup(groupModel, renameMessage.getGroupName());
+			if (!oldGroupName.equals(newGroupName)) {
+				this.renameGroup(groupModel, newGroupName);
 				ListenerManager.groupListeners.handle(listener -> listener.onRename(groupModel));
 			}
 			return true;
@@ -1182,26 +1191,29 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public boolean renameGroup(final GroupModel group, final String newName) throws ThreemaException {
-		boolean localeRenamed = !TestUtil.compare(group.getName(), newName);
+	public void renameGroup(final GroupModel group, final String newName) throws ThreemaException {
+		// Update and save the group model
 		group.setName(newName);
 		this.save(group);
 
-		if(this.isGroupOwner(group)) {
-			//send rename event!
-			this.groupMessagingService.sendMessage(group, this.getGroupIdentities(group), messageId -> {
-				final GroupRenameMessage rename = new GroupRenameMessage();
-				rename.setMessageId(messageId);
-				rename.setGroupName(newName);
-				return rename;
-			});
+		// Send rename message to group members if group owner
+		sendGroupRenameToIdentitiesIfOwner(group, getGroupIdentities(group));
+	}
 
-			if(localeRenamed) {
-				ListenerManager.groupListeners.handle(listener -> listener.onRename(group));
-			}
+	private void sendGroupRenameToIdentitiesIfOwner(@NonNull GroupModel groupModel, @NonNull String[] identities) throws ThreemaException {
+		if (!this.isGroupOwner(groupModel)) {
+			// Don't send the group rename if the user is not the owner
+			return;
 		}
 
-		return false;
+		final String groupName = groupModel.getName() != null ? groupModel.getName() : "";
+
+		this.groupMessagingService.sendMessage(groupModel, identities, messageId -> {
+			final GroupRenameMessage rename = new GroupRenameMessage();
+			rename.setMessageId(messageId);
+			rename.setGroupName(groupName);
+			return rename;
+		});
 	}
 
 	// on Update new group desc
@@ -1531,9 +1543,10 @@ public class GroupServiceImpl implements GroupService {
 			});
 
 			this.groupMessagingService.sendMessage(groupModel, memberIdentities, messageId -> {
+				final String groupName = groupModel.getName() != null ? groupModel.getName() : "";
 				final GroupRenameMessage groupRenameMessage = new GroupRenameMessage();
 				groupRenameMessage.setMessageId(messageId);
-				groupRenameMessage.setGroupName(groupModel.getName());
+				groupRenameMessage.setGroupName(groupName);
 				return groupRenameMessage;
 			});
 

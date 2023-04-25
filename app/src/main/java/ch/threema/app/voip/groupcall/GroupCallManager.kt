@@ -22,7 +22,6 @@
 package ch.threema.app.voip.groupcall
 
 import androidx.annotation.AnyThread
-import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.sfu.GroupCallController
@@ -63,15 +62,28 @@ interface GroupCallManager {
      *
      * @param groupId The [LocalGroupId] for the group to observe the call state
      */
-    @UiThread
+    @AnyThread
     fun addGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver)
-    @UiThread
+    @AnyThread
     fun addGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
 
-    @UiThread
+    @AnyThread
     fun removeGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver)
-    @UiThread
+    @AnyThread
     fun removeGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
+
+    /**
+     * The same as [addGroupCallObserver] with the difference that the observer is notified of updates
+     * of group calls in any group.
+     *
+     * Immediately upon registration the observer is notified with the [GroupCallDescription] of the running
+     * call if any or `null` otherwise.
+     */
+    @AnyThread
+    fun addGeneralGroupCallObserver(observer: GroupCallObserver)
+
+    @AnyThread
+    fun removeGeneralGroupCallObserver(observer: GroupCallObserver)
 
     /**
      * Join a GroupCall that is currently running.

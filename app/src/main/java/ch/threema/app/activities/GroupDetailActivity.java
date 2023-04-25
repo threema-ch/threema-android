@@ -31,6 +31,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -169,7 +170,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private String myIdentity;
 	private int operationMode;
 	private int groupId;
-	private boolean hasChanges = false;
+	private boolean hasMemberChanges = false;
 
 	private final ResumePauseHandler.RunIfActive runIfActiveUpdate = new ResumePauseHandler.RunIfActive() {
 		@Override
@@ -470,11 +471,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	}
 
 	private void setTitle() {
-		if (TestUtil.empty(groupDetailViewModel.getGroupName())) {
-			this.groupNameEditText.setText(groupService.getMembersString(this.groupModel));
-		} else {
-			this.groupNameEditText.setText(groupDetailViewModel.getGroupName());
-		}
+		this.groupNameEditText.setText(groupDetailViewModel.getGroupName());
 	}
 
 	private void launchContactDetail(View view, String identity) {
@@ -499,7 +496,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private void removeMemberFromGroup(final ContactModel contactModel) {
 		if (contactModel != null) {
 			this.groupDetailViewModel.removeGroupContact(contactModel);
-			this.hasChanges = true;
+			this.hasMemberChanges = true;
 		}
 	}
 
@@ -535,7 +532,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 		if (groupModel != null) {
 			GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
-			groupCallMenu.setVisible(GroupCallUtilKt.qualifiesForGroupCalls(groupService, groupModel) && !hasChanges && call == null);
+			groupCallMenu.setVisible(GroupCallUtilKt.qualifiesForGroupCalls(groupService, groupModel) && !hasChanges() && call == null);
 			leaveGroupMenu.setVisible(true);
 			deleteGroupMenu.setVisible(true);
 			if (groupService.isGroupOwner(this.groupModel)) {
@@ -749,12 +746,17 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 					return null;
 				}
 
+				@NonNull String newGroupName = groupDetailViewModel.getGroupName() != null ?
+					groupDetailViewModel.getGroupName() : "";
+				@NonNull String oldGroupName = groupModel.getName() != null ?
+					groupModel.getName() : "";
+
 				try {
 					Bitmap avatar = groupDetailViewModel.getAvatarFile() != null ? BitmapFactory.decodeFile(groupDetailViewModel.getAvatarFile().getPath()) : null;
 
 					model = groupService.updateGroup(
 						groupModel,
-						groupDetailViewModel.getGroupName(),
+						oldGroupName.equals(newGroupName) ? null : newGroupName,
 						groupDetailViewModel.getGroupDesc(),
 						groupDetailViewModel.getGroupIdentities(),
 						avatar,
@@ -788,7 +790,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				// some users were added
 				groupDetailViewModel.addGroupContacts(IntentDataUtil.getContactIdentities(data));
 				sortGroupMembers();
-				this.hasChanges = true;
+				this.hasMemberChanges = true;
 			}
 			else if (this.groupService.isGroupOwner(this.groupModel) && requestCode == ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS) {
 				// make sure we reset the default link switch if the default link was deleted
@@ -923,7 +925,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 	@Override
 	public void onBackPressed() {
-		if (this.operationMode == MODE_EDIT && this.hasChanges) {
+		if (this.operationMode == MODE_EDIT && hasChanges()) {
 			GenericAlertDialog.newInstance(
 					R.string.save_changes,
 					R.string.save_group_changes,
@@ -945,6 +947,19 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			default:
 				break;
 		}
+	}
+
+	private boolean hasChanges() {
+		return hasMemberChanges || hasGroupNameChanges();
+	}
+
+	private boolean hasGroupNameChanges() {
+		Editable groupNameEditable = groupNameEditText.getText();
+		String editedGroupNameText = groupNameEditable != null ? groupNameEditable.toString() : "";
+
+		String currentGroupName = groupModel.getName() != null ? groupModel.getName() : "";
+
+		return !editedGroupNameText.equals(currentGroupName);
 	}
 
 	private void updateFloatingActionButton() {

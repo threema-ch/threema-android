@@ -150,7 +150,7 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
 									ListenerManager.serverMessageListeners.handle(new ListenerManager.HandleListener<ServerMessageListener>() {
 										@Override
 										public void handle(ServerMessageListener listener) {
-											listener.onError(new ServerMessageModel(alertMessage, ServerMessageModel.Type.ERROR));
+											listener.onError(new ServerMessageModel(alertMessage, ServerMessageModel.TYPE_ERROR));
 										}
 									});
 									break;
@@ -164,7 +164,7 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
 									ListenerManager.serverMessageListeners.handle(new ListenerManager.HandleListener<ServerMessageListener>() {
 										@Override
 										public void handle(ServerMessageListener listener) {
-											listener.onError(new ServerMessageModel(alertMessage, ServerMessageModel.Type.ALERT));
+											listener.onError(new ServerMessageModel(alertMessage, ServerMessageModel.TYPE_ALERT));
 										}
 									});
 									break;

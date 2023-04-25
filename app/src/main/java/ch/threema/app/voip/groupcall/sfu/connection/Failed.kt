@@ -34,7 +34,7 @@ class Failed internal constructor(call: GroupCall, val reason: Throwable) : Grou
         GroupCallThreadUtil.assertDispatcherThread()
 
         // Make sure the [connectedSignal] is completed in case someone is waiting for it
-        call.connectedSignal.completeExceptionally(reason)
+        call.completableConnectedSignal.completeExceptionally(reason)
 
         logger.error("Call failed, tearing down\n{}", reason.stackTraceToString())
         call.teardown()

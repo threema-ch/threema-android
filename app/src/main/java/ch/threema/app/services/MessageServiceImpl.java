@@ -2981,11 +2981,13 @@ public class MessageServiceImpl implements MessageService {
 		}
 	}
 
+	@Override
 	public void saveIncomingServerMessage(final ServerMessageModel msg) {
-		//do not save the server message model for this moment!
-		//show as alert
+		// Store server message into database
+		databaseServiceNew.getServerMessageModelFactory().storeServerMessageModel(msg);
+		// Show as alert
 		ListenerManager.serverMessageListeners.handle(listener -> {
-			if (msg.getType() == ServerMessageModel.Type.ALERT) {
+			if (msg.getType() == ServerMessageModel.TYPE_ALERT) {
 				listener.onAlert(msg);
 			} else {
 				listener.onError(msg);

@@ -32,6 +32,7 @@ import ch.threema.app.services.NotificationService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.connection.DeviceCookieManager;
+import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ServerMessageModel;
 
 public class DeviceCookieManagerImpl implements DeviceCookieManager {
@@ -81,10 +82,13 @@ public class DeviceCookieManagerImpl implements DeviceCookieManager {
 			return;
 		}
 
-		logger.info("Device cookie change indiciation received, showing warning message");
+		logger.info("Device cookie change indication received, showing warning message");
 		NotificationService n = serviceManager.getNotificationService();
 		if (n != null) {
-			n.showServerMessage(new ServerMessageModel(ThreemaApplication.getAppContext().getString(R.string.rogue_device_warning), ServerMessageModel.Type.ALERT));
+			ServerMessageModel serverMessageModel = new ServerMessageModel(ThreemaApplication.getAppContext().getString(R.string.rogue_device_warning), ServerMessageModel.TYPE_ALERT);
+			DatabaseServiceNew databaseService = serviceManager.getDatabaseServiceNew();
+			databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
+			n.showServerMessage(serverMessageModel);
 		}
 	}
 

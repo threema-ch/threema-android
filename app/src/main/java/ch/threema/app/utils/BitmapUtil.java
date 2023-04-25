@@ -35,6 +35,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.NetworkOnMainThreadException;
 import android.provider.MediaStore;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
@@ -466,12 +467,14 @@ public class BitmapUtil {
 						orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
 					}
 				} catch (IOException | NegativeArraySizeException e) {
-					logger.debug("Error checking exif");
+					logger.error("Error checking exif", e);
 				} catch (SecurityException e) {
-					logger.debug("Error checking exif: Permission denied");
+					logger.error("Error checking exif: Permission denied", e);
+				} catch (NetworkOnMainThreadException e) {
+					logger.error("Error checking exif: Cannot get it from network", e);
 				}
 			} catch (IllegalStateException e) {
-				logger.debug("Error opening input stream");
+				logger.error("Error opening input stream", e);
 			}
 
 			if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {

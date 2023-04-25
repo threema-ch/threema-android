@@ -449,6 +449,24 @@ public interface PreferenceService {
 	void setThreemaSafeErrorCode(int code);
 	int getThreemaSafeErrorCode();
 
+	/**
+	 * Set the earliest date where the threema safe backup failed. Only set this if there are
+	 * changes for the backup available. Don't update the date when there is already a date set as
+	 * this is the first occurrence of a failed backup. Override this date with null, when a safe
+	 * backup has been created successfully.
+	 *
+	 * @param date the date when the safe backup first failed
+	 */
+	void setThreemaSafeErrorDate(@Nullable Date date);
+
+	/**
+	 * Get the first date where the safe backup failed. If this is null, then the last safe backup
+	 * was successful.
+	 * @return the date of the first failed safe backup
+	 */
+	@Nullable
+	Date getThreemaSafeErrorDate();
+
 	void setThreemaSafeServerMaxUploadSize(long maxBackupBytes);
 	long getThreemaSafeServerMaxUploadSize();
 
@@ -539,4 +557,5 @@ public interface PreferenceService {
 	void incrementMultipleRecipientsTooltipCount();
 
 	boolean isGroupCallSendInitEnabled();
+	boolean skipGroupCallCreateDelay();
 }

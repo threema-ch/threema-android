@@ -123,6 +123,7 @@
 	<string name="preferences__threema_safe_server_password" translatable="false">pref_threema_safe_server_password</string>
 	<string name="preferences__threema_safe_backup_date" translatable="false">pref_threema_safe_backup_date</string>
 	<string name="preferences__threema_safe_error_code" translatable="false">pref_threema_safe_error_code</string>
+	<string name="preferences__threema_safe_create_error_date" translatable="false">pref_threema_safe_error_date</string>
 	<string name="preferences__threema_safe_enabled" translatable="false">pref_threema_safe_enabled</string>
 	<string name="preferences__background_data" translatable="false">pref_background_data</string>
 	<string name="preferences__threema_safe_server_retention" translatable="false">pref_safe_server_retention</string>
@@ -192,6 +193,7 @@
 	<string name="preferences__group_calls_enable" translatable="false">pref_group_calls_enable</string>
 	<string name="preferences__tooltip_gc_camera" translatable="false">pref_tooltip_gc_camera</string>
 	<string name="preferences__group_call_send_init" translatable="false">pref_gc_send_init</string>
+	<string name="preferences__group_call_skip_delay" translatable="false">pref_gc_skip_delay</string>
 	<string name="preferences__group_calls_tooltip_shown" translatable="false">pref_gc_tooltip_shown</string>
 	<string name="preferences__group_calls_ringtone" translatable="false">pref_gc_ringtone</string>
 	<string name="preferences__group_calls_vibration" translatable="false">pref_gc_vibration</string>

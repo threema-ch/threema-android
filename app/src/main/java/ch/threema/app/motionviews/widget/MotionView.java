@@ -225,7 +225,7 @@ public class MotionView extends FrameLayout {
 	}
 
 	private void handleTranslate(PointF delta) {
-		if (selectedEntity != null && !selectedEntity.hasFixedPositionAndSize()) {
+		if (selectedEntity != null && selectedEntity.canMove()) {
 			float newCenterX = selectedEntity.absoluteCenterX() + delta.x;
 			float newCenterY = selectedEntity.absoluteCenterY() + delta.y;
 			// limit entity center to screen bounds
@@ -416,7 +416,7 @@ public class MotionView extends FrameLayout {
 	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			if (selectedEntity != null && !selectedEntity.hasFixedPositionAndSize()) {
+			if (selectedEntity != null && selectedEntity.canMove()) {
 				float scaleFactorDiff = detector.getScaleFactor();
 				selectedEntity.getLayer().postScale(scaleFactorDiff - 1.0F);
 				updateUI();
@@ -428,7 +428,7 @@ public class MotionView extends FrameLayout {
 	private class RotateListener extends RotateGestureDetector.SimpleOnRotateGestureListener {
 		@Override
 		public boolean onRotate(RotateGestureDetector detector) {
-			if (selectedEntity != null && !selectedEntity.hasFixedPositionAndSize()) {
+			if (selectedEntity != null && selectedEntity.canMove()) {
 				selectedEntity.getLayer().postRotate(-detector.getRotationDegreesDelta());
 				updateUI();
 			}

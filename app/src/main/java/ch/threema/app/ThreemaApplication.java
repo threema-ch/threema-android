@@ -1249,8 +1249,12 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					try {
 						MessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
 						serviceManager.getConversationService().refresh(groupModel);
+						String groupName = groupModel.getName();
+						if (groupName == null) {
+							groupName = "";
+						}
 						serviceManager.getMessageService().createStatusMessage(
-							serviceManager.getContext().getString(R.string.status_rename_group, groupModel.getName()),
+							serviceManager.getContext().getString(R.string.status_rename_group, groupName),
 							messageReceiver);
 						ShortcutUtil.updatePinnedShortcut(messageReceiver);
 					} catch (ThreemaException e) {

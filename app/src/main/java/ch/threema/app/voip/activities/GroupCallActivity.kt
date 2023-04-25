@@ -45,6 +45,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.transition.addListener
 import androidx.core.view.*
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
@@ -75,10 +76,8 @@ import ch.threema.app.voip.util.VoipUtil
 import ch.threema.app.voip.viewmodel.GroupCallViewModel
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.GroupModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import java.lang.Runnable
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -222,7 +221,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 
 		views = Views()
 
-		viewModel.getFinishEvents().observe(this, this::handleFinishEvent)
+		observeFinishEvent()
 		viewModel.title.observe(this, this::setTitle)
 		viewModel.subTitle.observe(this, this::setSubTitle)
 		viewModel.statusMessage.observe(this, this::setStatusMessage)
@@ -750,6 +749,16 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 		} else {
 			views.title.setOnClickListener(null)
 			views.title.isClickable = false
+		}
+	}
+
+	private fun observeFinishEvent() {
+		lifecycleScope.launch {
+			try {
+				handleFinishEvent(viewModel.finishEvent.await())
+			} catch (e: CancellationException) {
+				logger.info("Waiting for finish event cancelled")
+			}
 		}
 	}
 

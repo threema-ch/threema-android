@@ -503,13 +503,13 @@ public class MessageProcessor implements MessageProcessorInterface {
 
 	@Override
 	public void processServerAlert(String s) {
-		ServerMessageModel msg = new ServerMessageModel(s, ServerMessageModel.Type.ALERT);
+		ServerMessageModel msg = new ServerMessageModel(s, ServerMessageModel.TYPE_ALERT);
 		this.messageService.saveIncomingServerMessage(msg);
 	}
 
 	@Override
 	public void processServerError(String s, boolean b) {
-		ServerMessageModel msg = new ServerMessageModel(s, ServerMessageModel.Type.ERROR);
+		ServerMessageModel msg = new ServerMessageModel(s, ServerMessageModel.TYPE_ERROR);
 		this.messageService.saveIncomingServerMessage(msg);
 	}
 

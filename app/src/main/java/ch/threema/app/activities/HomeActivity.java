@@ -27,6 +27,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
@@ -64,7 +65,6 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -72,7 +72,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -123,7 +122,7 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.ui.IdentityPopup;
-import ch.threema.app.ui.OngoingCallNoticeModes;
+import ch.threema.app.ui.OngoingCallNoticeMode;
 import ch.threema.app.ui.OngoingCallNoticeView;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
@@ -135,7 +134,10 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.voip.activities.CallActivity;
+import ch.threema.app.voip.groupcall.GroupCallDescription;
+import ch.threema.app.voip.groupcall.GroupCallManager;
+import ch.threema.app.voip.groupcall.GroupCallObserver;
+import ch.threema.app.voip.groupcall.sfu.GroupCallController;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.webclient.activities.SessionsActivity;
 import ch.threema.base.utils.LoggingUtil;
@@ -144,15 +146,12 @@ import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.ConnectionStateListener;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.localcrypto.MasterKey;
+import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 
 import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_UNREAD;
-import static ch.threema.app.voip.services.VoipCallService.ACTION_HANGUP;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_START_TIME;
 
 public class HomeActivity extends ThreemaAppCompatActivity implements
 	SMSVerificationDialog.SMSVerificationDialogCallback,
@@ -192,7 +191,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private Toolbar toolbar;
 	private View connectionIndicator;
 	private LinearLayout noticeLayout;
-	OngoingCallNoticeView ongoingCallNoticeLayout;
+	OngoingCallNoticeView ongoingCallNotice;
 
 	private ServiceManager serviceManager;
 	private NotificationService notificationService;
@@ -201,6 +200,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private LockAppService lockAppService;
 	private PreferenceService preferenceService;
 	private ConversationService conversationService;
+	private GroupCallManager groupCallManager;
 
 	private final ArrayList<AbstractMessageModel> unsentMessages = new ArrayList<>();
 
@@ -208,29 +208,23 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private final BroadcastReceiver currentCheckAppReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, final Intent intent) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					if (intent.getAction().equals(IntentDataUtil.ACTION_LICENSE_NOT_ALLOWED)) {
-						if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.SERIAL ||
-							BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK ||
-							BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.HMS_WORK ||
-							BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.ONPREM) {
-							//show enter serial stuff
-							startActivityForResult(new Intent(HomeActivity.this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
-						} else {
-							showErrorTextAndExit(IntentDataUtil.getMessage(intent));
-						}
-					} else if (intent.getAction().equals(IntentDataUtil.ACTION_UPDATE_AVAILABLE) && !ConfigUtils.isWorkBuild() && userService != null && userService.hasIdentity()) {
-						new Handler().postDelayed(new Runnable() {
-							@Override
-							public void run() {
-								Intent dialogIntent = new Intent(intent);
-								dialogIntent.setClass(HomeActivity.this, DownloadApkActivity.class);
-								startActivity(dialogIntent);
-							}
-						}, DateUtils.SECOND_IN_MILLIS * 5);
+			RuntimeUtil.runOnUiThread(() -> {
+				if (intent.getAction().equals(IntentDataUtil.ACTION_LICENSE_NOT_ALLOWED)) {
+					if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.SERIAL ||
+						BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK ||
+						BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.HMS_WORK ||
+						BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.ONPREM) {
+						//show enter serial stuff
+						startActivityForResult(new Intent(HomeActivity.this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
+					} else {
+						showErrorTextAndExit(IntentDataUtil.getMessage(intent));
 					}
+				} else if (intent.getAction().equals(IntentDataUtil.ACTION_UPDATE_AVAILABLE) && !ConfigUtils.isWorkBuild() && userService != null && userService.hasIdentity()) {
+					new Handler().postDelayed(() -> {
+						Intent dialogIntent = new Intent(intent);
+						dialogIntent.setClass(HomeActivity.this, DownloadApkActivity.class);
+						startActivity(dialogIntent);
+					}, DateUtils.SECOND_IN_MILLIS * 5);
 				}
 			});
 		}
@@ -318,12 +312,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	}
 
-	private final ConnectionStateListener connectionStateListener = new ConnectionStateListener() {
-		@Override
-		public void updateConnectionState(final ConnectionState connectionState, InetSocketAddress address) {
-			updateConnectionIndicator(connectionState);
-		}
-	};
+	private final ConnectionStateListener connectionStateListener = (connectionState, address) -> updateConnectionIndicator(connectionState);
 
 	private void updateUnsentMessagesList(AbstractMessageModel modifiedMessageModel, boolean add) {
 		int numCurrentUnsent = unsentMessages.size();
@@ -367,24 +356,18 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private final SMSVerificationListener smsVerificationListener = new SMSVerificationListener() {
 		@Override
 		public void onVerified() {
-		 	RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					if (noticeLayout != null) {
-						AnimationUtil.collapse(noticeLayout);
-					}
+			RuntimeUtil.runOnUiThread(() -> {
+				if (noticeLayout != null) {
+					AnimationUtil.collapse(noticeLayout);
 				}
 			});
 		}
 
 		@Override
 		public void onVerificationStarted() {
-		 	RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					if (noticeLayout != null) {
-						AnimationUtil.expand(noticeLayout);
-					}
+			RuntimeUtil.runOnUiThread(() -> {
+				if (noticeLayout != null) {
+					AnimationUtil.expand(noticeLayout);
 				}
 			});
 		}
@@ -394,10 +377,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		if (preferenceService.getShowUnreadBadge()) {
 			RuntimeUtil.runOnUiThread(() -> {
 				try {
-					new UpdateBottomNavigationBadgeTask(HomeActivity.this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+					new UpdateBottomNavigationBadgeTask(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 				} catch (RejectedExecutionException e) {
 					try {
-						new UpdateBottomNavigationBadgeTask(HomeActivity.this).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+						new UpdateBottomNavigationBadgeTask(this).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
 					} catch (RejectedExecutionException ignored) {
 					}
 				}
@@ -438,7 +421,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			for (AbstractMessageModel modifiedMessageModel : modifiedMessageModels) {
 
 				if (!modifiedMessageModel.isStatusMessage()
-						&& modifiedMessageModel.isOutbox()) {
+					&& modifiedMessageModel.isOutbox()) {
 
 					switch (modifiedMessageModel.getState()) {
 						case SENDFAILED:
@@ -475,17 +458,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	};
 
-	private final AppIconListener appIconListener = new AppIconListener() {
-		@Override
-		public void onChanged() {
-		 	RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					updateAppLogo();
-				}
-			});
-		}
-	};
+	private final AppIconListener appIconListener = () -> RuntimeUtil.runOnUiThread(this::updateAppLogo);
 
 	private final ProfileListener profileListener = new ProfileListener() {
 		@Override
@@ -505,22 +478,16 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private final VoipCallListener voipCallListener = new VoipCallListener() {
 		@Override
 		public void onStart(String contact, long elpasedTimeMs) {
-			RuntimeUtil.runOnUiThread(() -> {
-				if (ongoingCallNoticeLayout != null) {
-					ongoingCallNoticeLayout.show(VoipCallService.getStartTime(), OngoingCallNoticeModes.MODE_VOIP, 0);
-				}
-			});
+			updateOngoingCallNotice();
 		}
 
 		@Override
 		public void onEnd() {
-			RuntimeUtil.runOnUiThread(() -> {
-				if (ongoingCallNoticeLayout != null) {
-					ongoingCallNoticeLayout.hide();
-				}
-			});
+			hideOngoingVoipCallNotice();
 		}
 	};
+
+	private final GroupCallObserver groupCallObserver = call -> updateOngoingCallNotice();
 
 	private final ContactCountListener contactCountListener = new ContactCountListener() {
 		@Override
@@ -630,6 +597,24 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		// Check if there are any server messages to display
+		if (serviceManager != null) {
+			DatabaseServiceNew databaseService = serviceManager.getDatabaseServiceNew();
+			try {
+				if (databaseService.getServerMessageModelFactory().count() > 0) {
+					Intent intent = new Intent(this, ServerMessageActivity.class);
+					startActivity(intent);
+				}
+			} catch (SQLiteException e) {
+				logger.error("Could not get server message model count", e);
+			}
+		}
+	}
+
 	@UiThread
 	private void showMainContent() {
 		if (mainContent != null) {
@@ -704,9 +689,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		IdentityPopup identityPopup = new IdentityPopup(this);
 		identityPopup.show(this, toolbar, location, () -> {
 			// show profile fragment
-			bottomNavigationView.post(() -> {
-				bottomNavigationView.findViewById(R.id.my_profile).performClick();
-			});
+			bottomNavigationView.post(() -> bottomNavigationView.findViewById(R.id.my_profile).performClick());
 		});
 	}
 
@@ -715,8 +698,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		toolbar.getLocationInWindow(location);
 
 		location[0] += toolbar.getContentInsetLeft() +
-				((getResources().getDimensionPixelSize(R.dimen.navigation_icon_padding) +
-						getResources().getDimensionPixelSize(R.dimen.navigation_icon_size)) / 2);
+			((getResources().getDimensionPixelSize(R.dimen.navigation_icon_padding) +
+				getResources().getDimensionPixelSize(R.dimen.navigation_icon_size)) / 2);
 		location[1] += toolbar.getHeight() / 2;
 
 		return location;
@@ -744,9 +727,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		this.checkLicense();
 	}
 
-	private boolean checkLicense() {
+	private void checkLicense() {
 		if (this.isLicenseCheckStarted) {
-			return true;
+			return;
 		}
 
 		if (serviceManager != null) {
@@ -754,19 +737,19 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 			if (deviceService != null && deviceService.isOnline()) {
 				//start check directly
-				CheckLicenseRoutine check = null;
+				CheckLicenseRoutine check;
 				try {
 					check = new CheckLicenseRoutine(
-							this,
-							serviceManager.getAPIConnector(),
-							serviceManager.getUserService(),
-							deviceService,
-							serviceManager.getLicenseService(),
-							serviceManager.getIdentityStore()
+						this,
+						serviceManager.getAPIConnector(),
+						serviceManager.getUserService(),
+						deviceService,
+						serviceManager.getLicenseService(),
+						serviceManager.getIdentityStore()
 					);
 				} catch (FileSystemNotPresentException e) {
 					logger.error("Exception", e);
-					return false;
+					return;
 				}
 
 				new Thread(check).start();
@@ -779,7 +762,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						logger.error("Exception", e);
 					}
 				}
-				return true;
 			} else {
 				if (this.checkLicenseBroadcastReceiver == null) {
 					this.checkLicenseBroadcastReceiver = new BroadcastReceiver() {
@@ -790,15 +772,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						}
 					};
 					this.registerReceiver(
-							this.checkLicenseBroadcastReceiver,
-							new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+						this.checkLicenseBroadcastReceiver,
+						new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
 					);
 				}
 
 			}
 		}
-
-		return false;
 	}
 
 	@Override
@@ -825,6 +805,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		ListenerManager.appIconListeners.remove(this.appIconListener);
 		ListenerManager.profileListeners.remove(this.profileListener);
 		ListenerManager.voipCallListeners.remove(this.voipCallListener);
+		if (groupCallManager != null) {
+			groupCallManager.removeGeneralGroupCallObserver(groupCallObserver);
+		}
 		ListenerManager.conversationListeners.remove(this.conversationListener);
 		ListenerManager.contactCountListener.remove(this.contactCountListener);
 
@@ -908,6 +891,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			try {
 				this.conversationService = serviceManager.getConversationService();
 				this.contactService = serviceManager.getContactService();
+				this.groupCallManager = serviceManager.getGroupCallManager();
 			} catch (Exception e) {
 				//
 			}
@@ -928,18 +912,21 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			ListenerManager.appIconListeners.add(this.appIconListener);
 			ListenerManager.profileListeners.add(this.profileListener);
 			ListenerManager.voipCallListeners.add(this.voipCallListener);
+			if (groupCallManager != null) {
+				groupCallManager.addGeneralGroupCallObserver(groupCallObserver);
+			}
 			ListenerManager.conversationListeners.add(this.conversationListener);
 			ListenerManager.contactCountListener.add(this.contactCountListener);
 
 			UpdateSystemService updateSystemService = serviceManager.getUpdateSystemService();
 			if (updateSystemService.hasUpdates()) {
-					//runASync updates FIRST!!
-					this.runUpdates(updateSystemService);
-				} else {
-					this.initMainActivity(savedInstanceState);
-				}
+				//runASync updates FIRST!!
+				this.runUpdates(updateSystemService);
+			} else {
+				this.initMainActivity(savedInstanceState);
+			}
 		} else {
-		 	RuntimeUtil.runOnUiThread(() -> showErrorTextAndExit(getString(R.string.service_manager_not_available)));
+			RuntimeUtil.runOnUiThread(() -> showErrorTextAndExit(getString(R.string.service_manager_not_available)));
 		}
 	}
 
@@ -1043,33 +1030,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		this.noticeLayout = findViewById(R.id.notice_layout);
 		findViewById(R.id.notice_button_enter_code).setOnClickListener(v -> SMSVerificationDialog.newInstance(userService.getLinkedMobile(true)).show(getSupportFragmentManager(), DIALOG_TAG_VERIFY_CODE));
 		findViewById(R.id.notice_button_cancel).setOnClickListener(v -> GenericAlertDialog.newInstance(R.string.verify_title, R.string.really_cancel_verify, R.string.yes, R.string.no)
-				.show(getSupportFragmentManager(), DIALOG_TAG_CANCEL_VERIFY));
+			.show(getSupportFragmentManager(), DIALOG_TAG_CANCEL_VERIFY));
 		this.noticeLayout.setVisibility(
-				userService.getMobileLinkingState() == UserService.LinkingState_PENDING ?
-						View.VISIBLE : View.GONE);
+			userService.getMobileLinkingState() == UserService.LinkingState_PENDING ?
+				View.VISIBLE : View.GONE);
 
-		this.ongoingCallNoticeLayout = findViewById(R.id.ongoing_call_notice);
-		if (ongoingCallNoticeLayout != null) {
-			ongoingCallNoticeLayout.setContainerAction(() -> {
-				if (VoipCallService.isRunning()) {
-					final Intent openIntent = new Intent(HomeActivity.this, CallActivity.class);
-					openIntent.putExtra(EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL);
-					openIntent.putExtra(EXTRA_CONTACT_IDENTITY, VoipCallService.getOtherPartysIdentity());
-					openIntent.putExtra(EXTRA_START_TIME, VoipCallService.getStartTime());
-					startActivity(openIntent);
-				}
-			});
-			ongoingCallNoticeLayout.setButtonAction(() -> {
-				final Intent hangupIntent = new Intent(HomeActivity.this, VoipCallService.class);
-				hangupIntent.setAction(ACTION_HANGUP);
-				startService(hangupIntent);
-			});
-			if (VoipCallService.isRunning()) {
-				ongoingCallNoticeLayout.show(VoipCallService.getStartTime(), OngoingCallNoticeModes.MODE_VOIP, 0);
-			} else {
-				ongoingCallNoticeLayout.hide();
-			}
-		}
+		initOngoingCallNotice();
 
 		/*
 		 * setup fragments
@@ -1185,9 +1151,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			}
 			return false;
 		});
-		this.bottomNavigationView.post(() -> {
-			bottomNavigationView.setSelectedItemId(initialItemId);
-		});
+		this.bottomNavigationView.post(() -> bottomNavigationView.setSelectedItemId(initialItemId));
 
 		updateBottomNavigation();
 
@@ -1208,7 +1172,63 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	private void initOngoingCallNotice() {
+		this.ongoingCallNotice = findViewById(R.id.ongoing_call_notice);
+		updateOngoingCallNotice();
+	}
 
+	private void updateOngoingCallNotice() {
+		logger.debug("Update ongoing call notice");
+
+		GroupCallController groupCallController = groupCallManager != null
+			? groupCallManager.getCurrentGroupCallController()
+			: null;
+
+		boolean hasRunningOOCall = VoipCallService.isRunning();
+		boolean hasRunningGroupCall = groupCallController != null;
+
+		if (hasRunningOOCall && hasRunningGroupCall) {
+			logger.warn("Invalid state: joined 1:1 AND group call, not showing call notice");
+			hideOngoingCallNotice();
+		} else if (hasRunningOOCall) {
+			showOngoingVoipCallNotice();
+		} else if (hasRunningGroupCall) {
+			showOngoingGroupCallNotice(groupCallController.getDescription());
+		} else {
+			logger.debug("No ongoing calls, hide notice");
+			hideOngoingCallNotice();
+		}
+	}
+
+	/**
+	 * Hides the ongoing call notice not matter what type of called was displayed before
+	 */
+	private void hideOngoingCallNotice() {
+		if (ongoingCallNotice != null) {
+			ongoingCallNotice.hide();
+		}
+	}
+
+	private void hideOngoingVoipCallNotice() {
+		if (ongoingCallNotice != null) {
+			ongoingCallNotice.hideVoip();
+		}
+	}
+
+	@AnyThread
+	private void showOngoingVoipCallNotice() {
+		if (ongoingCallNotice != null) {
+			ongoingCallNotice.showVoip();
+		}
+	}
+
+	@AnyThread
+	private void showOngoingGroupCallNotice(@NonNull GroupCallDescription call) {
+		if (!ConfigUtils.isGroupCallsEnabled()) {
+			return;
+		}
+		if (ongoingCallNotice != null && groupCallManager != null && groupCallManager.isJoinedCall(call)) {
+			ongoingCallNotice.showGroupCall(call, OngoingCallNoticeMode.MODE_GROUP_CALL_JOINED);
+		}
 	}
 
 	/**
@@ -1300,31 +1320,31 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				intent = new Intent(this, OutgoingGroupRequestActivity.class);
 				break;
 			case R.id.my_backups:
-				intent = new Intent(HomeActivity.this, BackupAdminActivity.class);
+				intent = new Intent(this, BackupAdminActivity.class);
 				break;
 			case R.id.webclient:
-				intent = new Intent(HomeActivity.this, SessionsActivity.class);
+				intent = new Intent(this, SessionsActivity.class);
 				break;
 			case R.id.scanner:
-				intent = new Intent(HomeActivity.this, BaseQrScannerActivity.class);
+				intent = new Intent(this, BaseQrScannerActivity.class);
 				break;
 			case R.id.help:
-				intent = new Intent(HomeActivity.this, SupportActivity.class);
+				intent = new Intent(this, SupportActivity.class);
 				break;
 			case R.id.settings:
-				AnimationUtil.startActivityForResult(this, null, new Intent(HomeActivity.this, SettingsActivity.class), ThreemaActivity.ACTIVITY_ID_SETTINGS);
+				AnimationUtil.startActivityForResult(this, null, new Intent(this, SettingsActivity.class), ThreemaActivity.ACTIVITY_ID_SETTINGS);
 				break;
 			case R.id.directory:
-				intent = new Intent(HomeActivity.this, DirectoryActivity.class);
+				intent = new Intent(this, DirectoryActivity.class);
 				break;
 			case R.id.threema_channel:
 				confirmThreemaChannel();
 				break;
 			case R.id.archived:
-				intent = new Intent(HomeActivity.this, ArchiveActivity.class);
+				intent = new Intent(this, ArchiveActivity.class);
 				break;
 			case R.id.globalsearch:
-				intent = new Intent(HomeActivity.this, GlobalSearchActivity.class);
+				intent = new Intent(this, GlobalSearchActivity.class);
 			default:
 				break;
 		}
@@ -1336,7 +1356,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		return super.onOptionsItemSelected(item);
 	}
 
-	private int initActionBar() {
+	private void initActionBar() {
 		toolbar = findViewById(R.id.main_toolbar);
 		setSupportActionBar(toolbar);
 		actionBar = getSupportActionBar();
@@ -1349,27 +1369,22 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		toolbarLogoMain.setColorFilter(ConfigUtils.getColorFromAttribute(this, android.R.attr.textColorSecondary),
 			PorterDuff.Mode.SRC_IN);
 		toolbarLogoMain.setContentDescription(getString(R.string.logo));
-		toolbarLogoMain.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (currentFragmentTag != null) {
-					Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
-					if (currentFragment != null && currentFragment.isAdded() && !currentFragment.isHidden()) {
-						if (currentFragment instanceof ContactsSectionFragment) {
-							((ContactsSectionFragment) currentFragment).onLogoClicked();
-						} else if (currentFragment instanceof MessageSectionFragment) {
-							((MessageSectionFragment) currentFragment).onLogoClicked();
-						} else if (currentFragment instanceof MyIDFragment) {
-							((MyIDFragment) currentFragment).onLogoClicked();
-						}
+		toolbarLogoMain.setOnClickListener(v -> {
+			if (currentFragmentTag != null) {
+				Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
+				if (currentFragment != null && currentFragment.isAdded() && !currentFragment.isHidden()) {
+					if (currentFragment instanceof ContactsSectionFragment) {
+						((ContactsSectionFragment) currentFragment).onLogoClicked();
+					} else if (currentFragment instanceof MessageSectionFragment) {
+						((MessageSectionFragment) currentFragment).onLogoClicked();
+					} else if (currentFragment instanceof MyIDFragment) {
+						((MyIDFragment) currentFragment).onLogoClicked();
 					}
 				}
 			}
 		});
 
 		updateDrawerImage();
-
-		return toolbar.getMinimumHeight();
 	}
 
 	@Override
@@ -1381,7 +1396,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			MenuItem lockMenuItem = menu.findItem(R.id.menu_lock);
 			if (lockMenuItem != null) {
 				lockMenuItem.setVisible(
-						lockAppService.isLockingEnabled()
+					lockAppService.isLockingEnabled()
 				);
 			}
 
@@ -1412,7 +1427,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				webDisabled = AppRestrictionUtil.isWebDisabled(this);
 			} else {
 				addDisabled = this.contactService != null &&
-						this.contactService.getByIdentity(THREEMA_CHANNEL_IDENTITY) != null;
+					this.contactService.getByIdentity(THREEMA_CHANNEL_IDENTITY) != null;
 			}
 
 			if (ConfigUtils.isWorkBuild()) {
@@ -1537,10 +1552,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				reallyCancelVerify();
 				break;
 			case DIALOG_TAG_MASTERKEY_LOCKED:
-				startActivityForResult(new Intent(HomeActivity.this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
+				startActivityForResult(new Intent(this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
 				break;
 			case DIALOG_TAG_SERIAL_LOCKED:
-				startActivityForResult(new Intent(HomeActivity.this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
+				startActivityForResult(new Intent(this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
 				finish();
 				break;
 			case DIALOG_TAG_FINISH_UP:
@@ -1562,8 +1577,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	public void onNo(String tag, Object data) {
 		switch (tag) {
 			case DIALOG_TAG_MASTERKEY_LOCKED:
-				finish();
-				break;
 			case DIALOG_TAG_SERIAL_LOCKED:
 				finish();
 				break;
@@ -1590,17 +1603,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 
 		if (serviceManager != null) {
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						FileService fileService = serviceManager.getFileService();
-						if (fileService != null) {
-							fileService.cleanTempDirs();
-						}
-					} catch (FileSystemNotPresentException e) {
-						logger.error("Exception", e);
+			new Thread(() -> {
+				try {
+					FileService fileService = serviceManager.getFileService();
+					if (fileService != null) {
+						fileService.cleanTempDirs();
 					}
+				} catch (FileSystemNotPresentException e) {
+					logger.error("Exception", e);
 				}
 			}).start();
 
@@ -1625,8 +1635,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		super.onUserInteraction();
 	}
 
-	protected void onActivityResult(int requestCode, int resultCode,
-									Intent data) {
+	@Override
+	protected void onActivityResult(
+		int requestCode, int resultCode,
+		Intent data) {
 
 		// http://www.androiddesignpatterns.com/2013/08/fragment-transaction-commit-state-loss.html
 		super.onActivityResult(requestCode, resultCode, data);
@@ -1649,7 +1661,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					GenericAlertDialog.newInstance(R.string.master_key_locked,
 							R.string.master_key_locked_want_exit,
 							R.string.try_again, R.string.cancel)
-							.show(getSupportFragmentManager(), DIALOG_TAG_MASTERKEY_LOCKED);
+						.show(getSupportFragmentManager(), DIALOG_TAG_MASTERKEY_LOCKED);
 				} else {
 					//hide after unlock
 					if (IntentDataUtil.hideAfterUnlock(this.getIntent())) {
@@ -1672,7 +1684,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						GenericAlertDialog.newInstance(R.string.enter_serial_title,
 								R.string.serial_required_want_exit,
 								R.string.try_again, R.string.cancel)
-								.show(getSupportFragmentManager(), DIALOG_TAG_SERIAL_LOCKED);
+							.show(getSupportFragmentManager(), DIALOG_TAG_SERIAL_LOCKED);
 					} else {
 						this.startMainActivity(null);
 					}
@@ -1688,13 +1700,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					startActivity(i);
 				}
 				break;
-			case ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL:
-			case ThreemaActivity.ACTIVITY_ID_GROUP_DETAIL:
-			case ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE:
-				break;
 			case REQUEST_CODE_WHATSNEW:
 				showMainContent();
 				break;
+			case ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL:
+			case ThreemaActivity.ACTIVITY_ID_GROUP_DETAIL:
+			case ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE:
 			default:
 				break;
 		}
@@ -1708,7 +1719,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		File customAppIcon = null;
 		try {
 			customAppIcon = serviceManager.getFileService()
-					.getAppLogo(ConfigUtils.getAppTheme(this));
+				.getAppLogo(ConfigUtils.getAppTheme(this));
 		} catch (FileSystemNotPresentException e) {
 			logger.error("Exception", e);
 		}
@@ -1760,25 +1771,22 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					launchThreemaChannelChat();
 
 					if (exception == null) {
-						new Thread(new Runnable() {
-							@Override
-							public void run() {
-								try {
-									MessageReceiver receiver = contactService.createReceiver(newContactModel);
-									if (!getResources().getConfiguration().locale.getLanguage().startsWith("de")) {
-										Thread.sleep(1000);
-										messageService.sendText("en", receiver);
-										Thread.sleep(500);
-									}
+						new Thread(() -> {
+							try {
+								MessageReceiver receiver = contactService.createReceiver(newContactModel);
+								if (!getResources().getConfiguration().locale.getLanguage().startsWith("de")) {
 									Thread.sleep(1000);
-									messageService.sendText(THREEMA_CHANNEL_START_NEWS_COMMAND, receiver);
-									Thread.sleep(1500);
-									messageService.sendText(ConfigUtils.isWorkBuild() ? THREEMA_CHANNEL_WORK_COMMAND : THREEMA_CHANNEL_START_ANDROID_COMMAND, receiver);
-									Thread.sleep(1500);
-									messageService.sendText(THREEMA_CHANNEL_INFO_COMMAND, receiver);
-								} catch (Exception e) {
-									//
+									messageService.sendText("en", receiver);
+									Thread.sleep(500);
 								}
+								Thread.sleep(1000);
+								messageService.sendText(THREEMA_CHANNEL_START_NEWS_COMMAND, receiver);
+								Thread.sleep(1500);
+								messageService.sendText(ConfigUtils.isWorkBuild() ? THREEMA_CHANNEL_WORK_COMMAND : THREEMA_CHANNEL_START_ANDROID_COMMAND, receiver);
+								Thread.sleep(1500);
+								messageService.sendText(THREEMA_CHANNEL_INFO_COMMAND, receiver);
+							} catch (Exception e) {
+								//
 							}
 						}).start();
 					}

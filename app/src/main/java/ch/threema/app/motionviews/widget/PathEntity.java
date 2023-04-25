@@ -37,7 +37,12 @@ public class PathEntity extends MotionEntity {
 	protected void drawContent(@NonNull Canvas canvas, @Nullable Paint drawingPaint) {}
 
 	@Override
-	public boolean hasFixedPositionAndSize() {
+	public boolean canMove() {
+		return false;
+	}
+
+	@Override
+	public boolean canChangeColor() {
 		return false;
 	}
 

@@ -67,6 +67,7 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ch.threema.app.R;
@@ -264,7 +265,17 @@ public class MessageSectionFragment extends MainFragment
 		public void onNew(final ConversationModel conversationModel) {
 			logger.debug("on new conversation");
 			if (messageListAdapter != null && recyclerView != null) {
-				updateList(0, null, null);
+				List<ConversationModel> changedPositions = Collections.singletonList(conversationModel);
+
+				// If the first item of the recycler view is visible, then scroll up
+				Integer scrollToPosition = null;
+				RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+				if (layoutManager instanceof LinearLayoutManager
+					&& ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition() == 0) {
+					// By passing a large integer we simulate a "moving up" change that triggers scrolling up
+					scrollToPosition = Integer.MAX_VALUE;
+				}
+				updateList(scrollToPosition, changedPositions, null);
 			}
 		}
 
@@ -1579,22 +1590,12 @@ public class MessageSectionFragment extends MainFragment
 							// make sure footer is refreshed
 							messageListAdapter.refreshFooter();
 
-							if (recyclerView != null) {
-								if (scrollToPosition != null) {
-									if (changedPositions != null && changedPositions.size() == 1) {
-										ConversationModel changedModel = changedPositions.get(0);
+							if (recyclerView != null && scrollToPosition != null) {
+								if (changedPositions != null && changedPositions.size() == 1) {
+									ConversationModel changedModel = changedPositions.get(0);
 
-										if (changedModel != null) {
-											final List<ConversationModel> copyOfModels = new ArrayList<>(conversationModels);
-											for (ConversationModel model : copyOfModels) {
-												if (model.equals(changedModel)) {
-													if (scrollToPosition > changedModel.getPosition()) {
-														recyclerView.scrollToPosition(changedModel.getPosition());
-													}
-													break;
-												}
-											}
-										}
+									if (changedModel != null && scrollToPosition > changedModel.getPosition() && conversationModels.contains(changedModel)) {
+										recyclerView.scrollToPosition(changedModel.getPosition());
 									}
 								}
 							}

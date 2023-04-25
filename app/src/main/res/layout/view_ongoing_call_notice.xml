@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:tools="http://schemas.android.com/tools"
+	xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<RelativeLayout
 		android:id="@+id/button_layout"
@@ -38,24 +39,40 @@
 				android:ellipsize="end"
 				android:maxLines="1"/>
 
-			<TextView
-				android:id="@+id/participants_count"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentLeft="true"
-				android:layout_below="@+id/call_text"
-				android:layout_marginRight="8dp"
-				android:maxLines="1"
-				android:textColor="?attr/textColorSecondary"
-				android:textSize="12sp" />
 
 			<Chronometer
 				android:id="@+id/call_duration"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_toRightOf="@+id/participants_count"
+				android:layout_alignParentLeft="true"
+				android:layout_below="@+id/call_text"
+				android:maxLines="1"
+				android:textColor="?attr/textColorSecondary"
+				android:textSize="12sp" />
+
+			<TextView
+				android:id="@+id/ongoing_call_divider"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_toRightOf="@id/call_duration"
 				android:layout_alignWithParentIfMissing="true"
 				android:layout_below="@+id/call_text"
+				android:layout_marginLeft="2dp"
+				android:layout_marginRight="2dp"
+				android:text="|"
+				android:maxLines="1"
+				android:textColor="?attr/textColorSecondary"
+				android:textSize="12sp"
+				android:visibility="gone"
+				tools:ignore="HardcodedText" />
+
+			<TextView
+				android:id="@+id/participants_count"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/call_text"
+				android:layout_toRightOf="@+id/ongoing_call_divider"
+				android:layout_alignWithParentIfMissing="true"
 				android:maxLines="1"
 				android:textColor="?attr/textColorSecondary"
 				android:textSize="12sp" />

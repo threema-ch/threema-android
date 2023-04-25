@@ -432,14 +432,9 @@ public class ConfigUtils {
 		if (newStyle != -1) {
 			emojiStyle = newStyle;
 		} else {
-			if (BuildFlavor.isLibre()) {
-				emojiStyle = EMOJI_ANDROID;
-				return;
-			}
-			emojiStyle = Integer.valueOf(
-				PreferenceManager.getDefaultSharedPreferences(context).
-					getString(context.getString(R.string.preferences__emoji_style),
-						"0"));
+			emojiStyle = Integer.parseInt(
+				PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.preferences__emoji_style), "0")
+			);
 		}
 	}
 

@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -250,5 +251,17 @@ public class Utils {
 			.put(c)
 			.put(d)
 			.array();
+	}
+
+	/**
+	 * Get a timestamp for a date that is guaranteed to be non-negative.
+	 * If the provided date is `null` or has a negative timestamp, zero will be returned.
+	 *
+	 * @param date The date to get the timestamp from
+	 * @return If the date is `null` or has a negative timestamp 0, the timestamp otherwise
+	 */
+	public static long getUnsignedTimestamp(@Nullable Date date) {
+		Long time = date == null ? null : date.getTime();
+		return time == null || time < 0 ? 0 : time;
 	}
 }

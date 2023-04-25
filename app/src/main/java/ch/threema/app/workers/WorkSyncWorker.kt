@@ -25,6 +25,7 @@ import android.content.Context
 import android.content.SharedPreferences.Editor
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
 import androidx.work.*
@@ -98,6 +99,39 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 .addTag(schedulePeriodMs.toString())
                 .apply { setInputData(data) }
                 .build()
+        }
+
+        /**
+         * Start a one time work sync request.
+         *
+         * @param onSuccess is run when the work sync request was successful
+         * @param onFail    is run when the work sync request was unsuccessful
+         */
+        fun performOneTimeWorkSync(
+            activity: AppCompatActivity,
+            onSuccess: Runnable,
+            onFail: Runnable
+        ) {
+            val workerTag = "OneTimeWorkSyncWorker"
+            val workRequest = buildOneTimeWorkRequest(
+                refreshRestrictionsOnly = false,
+                forceUpdate = true,
+                tag = workerTag
+            )
+            val workManager = WorkManager.getInstance(ThreemaApplication.getAppContext())
+            workManager.getWorkInfoByIdLiveData(workRequest.id)
+                .observe(activity) { workInfo: WorkInfo ->
+                    if (workInfo.state == WorkInfo.State.SUCCEEDED) {
+                        onSuccess.run()
+                    } else if (workInfo.state == WorkInfo.State.FAILED) {
+                        onFail.run()
+                    }
+                }
+            workManager.enqueueUniqueWork(
+                ThreemaApplication.WORKER_WORK_SYNC,
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
         }
     }
 

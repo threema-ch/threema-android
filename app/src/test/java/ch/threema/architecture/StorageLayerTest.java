@@ -36,9 +36,7 @@ import ch.threema.storage.models.data.MessageDataInterface;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_STORAGE;
-import static ch.threema.architecture.ArchitectureDefinitions.getLayeredArchitecture;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = PACKAGE_STORAGE, importOptions = { ArchitectureTestUtils.DoNotIncludeAndroidTests.class })
@@ -49,7 +47,8 @@ public class StorageLayerTest {
 			.and().areNotAnonymousClasses()
 			.and().areNotInnerClasses()
 			.and().areNotNestedClasses()
-			.should().haveSimpleNameEndingWith("Factory");
+			.should().haveSimpleNameEndingWith("Factory")
+			.orShould().haveSimpleNameEndingWith("FactoryKt");
 
 	@ArchTest
 	public static final ArchRule factoriesExtendModelFactory =
@@ -57,6 +56,7 @@ public class StorageLayerTest {
 			.and().areNotAnonymousClasses()
 			.and().areNotInnerClasses()
 			.and().areNotNestedClasses()
+			.and().haveSimpleNameEndingWith("Factory") // This excludes kotlin classes as they cannot be checked to be assignable to a java class
 			.should().beAssignableTo(ModelFactory.class);
 
 	@ArchTest

@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.exceptions.DatabaseMigrationLockedException;
 import ch.threema.app.services.UpdateSystemService;
@@ -108,6 +109,7 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion78;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion79;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion8;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion80;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion81;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion9;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -134,6 +136,7 @@ import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
 import ch.threema.storage.factories.MessageModelFactory;
 import ch.threema.storage.factories.ModelFactory;
 import ch.threema.storage.factories.OutgoingGroupJoinRequestModelFactory;
+import ch.threema.storage.factories.ServerMessageModelFactory;
 import ch.threema.storage.factories.WebClientSessionModelFactory;
 
 public class DatabaseServiceNew extends SQLiteOpenHelper {
@@ -142,7 +145,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "threema.db";
 	public static final String DATABASE_NAME_V4 = "threema4.db";
 	public static final String DATABASE_BACKUP_EXT = ".backup";
-	private static final int DATABASE_VERSION = SystemUpdateToVersion80.VERSION;
+	private static final int DATABASE_VERSION = SystemUpdateToVersion81.VERSION;
 
 	private final Context context;
 	private final String key;
@@ -169,6 +172,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	private OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
 	private IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory;
 	private GroupCallModelFactory groupCallModelFactory;
+	private ServerMessageModelFactory serverMessageModelFactory;
 
 	public DatabaseServiceNew(final Context context,
 	                          final String databaseKey,
@@ -269,7 +273,8 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 			this.getGroupInviteModelFactory(),
 			this.getIncomingGroupJoinRequestModelFactory(),
 			this.getOutgoingGroupJoinRequestModelFactory(),
-			this.getGroupCallModelFactory()
+			this.getGroupCallModelFactory(),
+			this.getServerMessageModelFactory(),
 		}) {
 			String[] createTableStatement = f.getStatements();
 			if(createTableStatement != null) {
@@ -282,6 +287,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		}
 	}
 
+	@NonNull
 	public ContactModelFactory getContactModelFactory() {
 		if(this.contactModelFactory == null) {
 			this.contactModelFactory = new ContactModelFactory(this);
@@ -289,6 +295,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.contactModelFactory;
 	}
 
+	@NonNull
 	public MessageModelFactory getMessageModelFactory() {
 		if(this.messageModelFactory == null) {
 			this.messageModelFactory = new MessageModelFactory(this);
@@ -296,6 +303,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.messageModelFactory;
 	}
 
+	@NonNull
 	public GroupModelFactory getGroupModelFactory() {
 		if(this.groupModelFactory == null) {
 			this.groupModelFactory = new GroupModelFactory(this);
@@ -303,6 +311,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.groupModelFactory;
 	}
 
+	@NonNull
 	public GroupMemberModelFactory getGroupMemberModelFactory() {
 		if(this.groupMemberModelFactory == null) {
 			this.groupMemberModelFactory = new GroupMemberModelFactory(this);
@@ -310,6 +319,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.groupMemberModelFactory;
 	}
 
+	@NonNull
 	public GroupMessageModelFactory getGroupMessageModelFactory() {
 		if(this.groupMessageModelFactory == null) {
 			this.groupMessageModelFactory = new GroupMessageModelFactory(this);
@@ -317,6 +327,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.groupMessageModelFactory;
 	}
 
+	@NonNull
 	public DistributionListModelFactory getDistributionListModelFactory() {
 		if(this.distributionListModelFactory == null) {
 			this.distributionListModelFactory = new DistributionListModelFactory(this);
@@ -324,6 +335,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.distributionListModelFactory;
 	}
 
+	@NonNull
 	public DistributionListMemberModelFactory getDistributionListMemberModelFactory() {
 		if(this.distributionListMemberModelFactory == null) {
 			this.distributionListMemberModelFactory = new DistributionListMemberModelFactory(this);
@@ -331,6 +343,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.distributionListMemberModelFactory;
 	}
 
+	@NonNull
 	public DistributionListMessageModelFactory getDistributionListMessageModelFactory() {
 		if(this.distributionListMessageModelFactory == null) {
 			this.distributionListMessageModelFactory = new DistributionListMessageModelFactory(this);
@@ -338,6 +351,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.distributionListMessageModelFactory;
 	}
 
+	@NonNull
 	public GroupRequestSyncLogModelFactory getGroupRequestSyncLogModelFactory() {
 		if(this.groupRequestSyncLogModelFactory == null) {
 			this.groupRequestSyncLogModelFactory = new GroupRequestSyncLogModelFactory(this);
@@ -345,6 +359,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.groupRequestSyncLogModelFactory;
 	}
 
+	@NonNull
 	public BallotModelFactory getBallotModelFactory() {
 		if(this.ballotModelFactory == null) {
 			this.ballotModelFactory = new BallotModelFactory(this);
@@ -352,6 +367,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.ballotModelFactory;
 	}
 
+	@NonNull
 	public BallotChoiceModelFactory getBallotChoiceModelFactory() {
 		if (this.ballotChoiceModelFactory == null) {
 			this.ballotChoiceModelFactory = new BallotChoiceModelFactory(this);
@@ -359,7 +375,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.ballotChoiceModelFactory;
 	}
 
-
+	@NonNull
 	public BallotVoteModelFactory getBallotVoteModelFactory() {
 		if(this.ballotVoteModelFactory == null) {
 			this.ballotVoteModelFactory = new BallotVoteModelFactory(this);
@@ -367,7 +383,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.ballotVoteModelFactory;
 	}
 
-
+	@NonNull
 	public IdentityBallotModelFactory getIdentityBallotModelFactory() {
 		if(this.identityBallotModelFactory == null) {
 			this.identityBallotModelFactory = new IdentityBallotModelFactory(this);
@@ -375,6 +391,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.identityBallotModelFactory;
 	}
 
+	@NonNull
 	public GroupBallotModelFactory getGroupBallotModelFactory() {
 		if(this.groupBallotModelFactory == null) {
 			this.groupBallotModelFactory = new GroupBallotModelFactory(this);
@@ -382,6 +399,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.groupBallotModelFactory;
 	}
 
+	@NonNull
 	public GroupMessagePendingMessageIdModelFactory getGroupMessagePendingMessageIdModelFactory() {
 		if(this.groupMessagePendingMessageIdModelFactory == null) {
 			this.groupMessagePendingMessageIdModelFactory = new GroupMessagePendingMessageIdModelFactory(this);
@@ -389,6 +407,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.groupMessagePendingMessageIdModelFactory;
 	}
 
+	@NonNull
 	public WebClientSessionModelFactory getWebClientSessionModelFactory() {
 		if(this.webClientSessionModelFactory == null) {
 			this.webClientSessionModelFactory = new WebClientSessionModelFactory(this);
@@ -396,6 +415,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.webClientSessionModelFactory;
 	}
 
+	@NonNull
 	public ConversationTagFactory getConversationTagFactory() {
 		if(this.conversationTagFactory == null) {
 			this.conversationTagFactory = new ConversationTagFactory(this);
@@ -403,6 +423,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.conversationTagFactory;
 	}
 
+	@NonNull
 	public GroupInviteModelFactory getGroupInviteModelFactory() {
 		if(this.groupInviteModelFactory == null) {
 			this.groupInviteModelFactory = new GroupInviteModelFactory(this);
@@ -410,6 +431,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.groupInviteModelFactory;
 	}
 
+	@NonNull
 	public IncomingGroupJoinRequestModelFactory getIncomingGroupJoinRequestModelFactory() {
 		if (this.incomingGroupJoinRequestModelFactory == null) {
 			this.incomingGroupJoinRequestModelFactory = new IncomingGroupJoinRequestModelFactory(this);
@@ -417,6 +439,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.incomingGroupJoinRequestModelFactory;
 	}
 
+	@NonNull
 	public OutgoingGroupJoinRequestModelFactory getOutgoingGroupJoinRequestModelFactory() {
 		if (this.outgoingGroupJoinRequestModelFactory == null) {
 			this.outgoingGroupJoinRequestModelFactory = new OutgoingGroupJoinRequestModelFactory(this);
@@ -424,11 +447,20 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		return this.outgoingGroupJoinRequestModelFactory;
 	}
 
+	@NonNull
 	public GroupCallModelFactory getGroupCallModelFactory() {
 		if (this.groupCallModelFactory == null) {
 			this.groupCallModelFactory = new GroupCallModelFactory(this);
 		}
 		return this.groupCallModelFactory;
+	}
+
+	@NonNull
+	public ServerMessageModelFactory getServerMessageModelFactory() {
+		if (this.serverMessageModelFactory == null) {
+			this.serverMessageModelFactory = new ServerMessageModelFactory(this);
+		}
+		return this.serverMessageModelFactory;
 	}
 
 	// Note: Enable this to allow database downgrades.
@@ -667,6 +699,9 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		}
 		if (oldVersion < SystemUpdateToVersion80.VERSION) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion80(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion81.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion81(sqLiteDatabase));
 		}
 	}
 

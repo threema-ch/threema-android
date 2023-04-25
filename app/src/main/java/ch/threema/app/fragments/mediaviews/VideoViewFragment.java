@@ -236,6 +236,8 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 		} else {
 			abandonFocus();
 		}
+
+		keepScreenOn(isPlaying);
 	}
 
 	@Override
@@ -254,8 +256,6 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 			this.videoPlayer.seekTo(0);
 			this.videoViewRef.get().showController();
 		}
-
-		keepScreenOn(playbackState != Player.STATE_IDLE);
 	}
 
 	@Override

@@ -68,7 +68,12 @@ public class ImageEntity extends MotionEntity {
     }
 
 	@Override
-	public boolean hasFixedPositionAndSize() {
+	public boolean canMove() {
+		return true;
+	}
+
+	@Override
+	public boolean canChangeColor() {
 		return false;
 	}
 

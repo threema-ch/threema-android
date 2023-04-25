@@ -472,20 +472,16 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	}
 
 	@Override
-	public void createBackup(boolean force) throws ThreemaException {
+	public void createBackup(boolean force) throws ThreemaSafeUploadException {
 		logger.info("Starting Threema Safe backup");
 
 		if (!preferenceService.getThreemaSafeEnabled()) {
-			throw new ThreemaException("Disabled");
-		}
-
-		if (getThreemaSafeEncryptionKey() == null) {
-			throw new ThreemaException("No key");
+			throw new ThreemaSafeUploadException("Disabled", false);
 		}
 
 		ThreemaSafeServerInfo serverInfo = preferenceService.getThreemaSafeServerInfo();
 		if (serverInfo == null) {
-			throw new ThreemaException("No server info");
+			throw new ThreemaSafeUploadException("No server info", true);
 		}
 
 		// test server to update configuration
@@ -494,13 +490,13 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			serverTestResponse = testServer(serverInfo);
 		} catch (ThreemaException e) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_SERVER_FAIL);
-			throw new ThreemaException("Server test failed. " + e.getMessage());
+			throw new ThreemaSafeUploadException("Server test failed. " + e.getMessage(), true);
 		}
 
 		String json = getJson();
 		if (json == null) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_JSON_FAIL);
-			throw new ThreemaException("Json failed");
+			throw new ThreemaSafeUploadException("Json failed", true);
 		}
 
 		// get a hash of the json to determine if there are any changes
@@ -511,7 +507,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			hashString = StringConversionUtil.byteArrayToString(messageDigest.digest());
 		} catch (NoSuchAlgorithmException e) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_HASH_FAIL);
-			throw new ThreemaException("Hash calculation failed");
+			throw new ThreemaSafeUploadException("Hash calculation failed", true);
 		}
 
 		if (!force) {
@@ -528,8 +524,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 				if (preferenceService.getThreemaSafeErrorCode() == ERROR_CODE_OK &&
 					preferenceService.getThreemaSafeUploadDate() != null &&
 					reUploadThreshold.before(preferenceService.getThreemaSafeUploadDate())) {
-					logger.info("Grace time not yet reached. NOT uploaded");
-					return;
+					throw new ThreemaSafeUploadException("Grace time not yet reached. NOT uploaded", false);
 				}
 			}
 		}
@@ -537,7 +532,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		byte[] gzippedPlaintext = gZipCompress(json.getBytes());
 		if (gzippedPlaintext == null || gzippedPlaintext.length <= 0) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_GZIP_FAIL);
-			throw new ThreemaException("Compression failed");
+			throw new ThreemaSafeUploadException("Compression failed", true);
+		}
+
+		if (getThreemaSafeEncryptionKey() == null) {
+			throw new ThreemaSafeUploadException("No key", true);
 		}
 
 		SecureRandom random = new SecureRandom();
@@ -566,20 +565,15 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		} catch (UploadSizeExceedException e) {
 			logger.error("Exception", e);
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_SIZE_EXCEEDED);
-			throw new ThreemaException(e.getMessage());
+			throw new ThreemaSafeUploadException(e.getMessage(), true);
 		} catch (Exception e) {
 			logger.error("Exception", e);
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_UPLOAD_FAIL);
-			throw new ThreemaException("Upload failed");
+			throw new ThreemaSafeUploadException("Upload failed", true);
 		}
 
 		if (force) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(context, R.string.threema_safe_upload_successful, Toast.LENGTH_LONG).show();
-				}
-			});
+			RuntimeUtil.runOnUiThread(() -> Toast.makeText(context, R.string.threema_safe_upload_successful, Toast.LENGTH_LONG).show());
 		}
 
 		logger.info(context.getString(R.string.threema_safe_upload_successful));
@@ -1244,22 +1238,15 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
-	/**
-	 * Search a Threema ID by phone number and/or email address.
-	 * @param phone
-	 * @param email
-	 * @return ArrayList of matching Threema IDs, null if none was found
-	 */
 	@Override
 	@Nullable
 	public ArrayList<String> searchID(String phone, String email) {
 		if (phone != null  || email != null) {
-			Map<String, Object> phoneMap = new HashMap<String, Object>() {{
-				put(phone, null);
-			}};
-			Map<String, Object> emailMap = new HashMap<String, Object>() {{
-				put(email, null);
-			}};
+			Map<String, Object> phoneMap = new HashMap<>();
+			phoneMap.put(phone, null);
+
+			Map<String, Object> emailMap = new HashMap<>();
+			emailMap.put(email, null);
 
 			try {
 				Map<String, APIConnector.MatchIdentityResult> results = apiConnector.matchIdentities(emailMap, phoneMap, localeService.getCountryIsoCode(), true, identityStore, null);
@@ -1422,7 +1409,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			contact.put(TAG_SAFE_CONTACT_PUBLIC_KEY, Base64.encodeBytes(contactModel.getPublicKey()));
 		}
 		if (contactModel.getDateCreated() != null) {
-			contact.put(TAG_SAFE_CONTACT_CREATED_AT, contactModel.getDateCreated().getTime());
+			contact.put(TAG_SAFE_CONTACT_CREATED_AT, Utils.getUnsignedTimestamp(contactModel.getDateCreated()));
 		} else {
 			contact.put(TAG_SAFE_CONTACT_CREATED_AT, 0);
 		}
@@ -1470,7 +1457,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			group.put(TAG_SAFE_GROUP_NAME, groupModel.getName());
 		}
 		if (groupModel.getCreatedAt() != null) {
-			group.put(TAG_SAFE_GROUP_CREATED_AT, groupModel.getCreatedAt().getTime());
+			group.put(TAG_SAFE_GROUP_CREATED_AT, Utils.getUnsignedTimestamp(groupModel.getCreatedAt()));
 		} else {
 			group.put(TAG_SAFE_GROUP_CREATED_AT, 0);
 		}
@@ -1642,7 +1629,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_ID, Utils.byteArrayToHexString(Utils.longToByteArray(distributionListModel.getId())));
 		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_NAME, distributionListModel.getName());
 		if (distributionListModel.getCreatedAt() != null) {
-			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, distributionListModel.getCreatedAt().getTime());
+			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, Utils.getUnsignedTimestamp(distributionListModel.getCreatedAt()));
 		} else {
 			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, 0);
 		}
@@ -1689,7 +1676,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		JSONObject info = new JSONObject();
 
 		info.put(TAG_SAFE_INFO_VERSION, PROTOCOL_VERSION);
-		info.put(TAG_SAFE_INFO_DEVICE, ConfigUtils.getAppVersion(context) + "A/" + Locale.getDefault().toString());
+		info.put(TAG_SAFE_INFO_DEVICE, ConfigUtils.getAppVersion(context) + "A/" + Locale.getDefault());
 
 		return info;
 	}
@@ -1879,11 +1866,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		return null;
 	}
 
-	public class UploadSizeExceedException extends Exception {
+	public static class UploadSizeExceedException extends Exception {
 		UploadSizeExceedException(String e) {
 			super(e);
 		}
 	}
-
-
 }

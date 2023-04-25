@@ -1703,7 +1703,6 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public void showServerMessage(ServerMessageModel m) {
 		Intent intent = new Intent(context, ServerMessageActivity.class);
-		IntentDataUtil.append(m, intent);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PENDING_INTENT_FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
 		NotificationCompat.Builder builder =

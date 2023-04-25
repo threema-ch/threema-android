@@ -62,7 +62,6 @@ import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.ServerMessageModel;
 import ch.threema.storage.models.WebClientSessionModel;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
@@ -89,8 +88,6 @@ public class IntentDataUtil {
 	private static final String INTENT_DATA_GROUP_LIST = "groupl";
 	private static final String INTENT_DATA_DIST_LIST = "distl";
 
-	private static final String INTENT_DATA_SERVER_MESSAGE_TEXT = "server_message_text";
-	private static final String INTENT_DATA_SERVER_MESSAGE_TYPE = "server_message_type";
 	private static final String INTENT_DATA_MESSAGE = "message";
 	private static final String INTENT_DATA_URL = "url";
 	private static final String INTENT_DATA_CONTACTS = "contacts";
@@ -153,11 +150,6 @@ public class IntentDataUtil {
 		}
 	}
 
-	public static void append(ServerMessageModel serverMessageModel, Intent intent) {
-		intent.putExtra(INTENT_DATA_SERVER_MESSAGE_TEXT, serverMessageModel.getMessage());
-		intent.putExtra(INTENT_DATA_SERVER_MESSAGE_TYPE, serverMessageModel.getType().toString());
-	}
-
 	public static void append(AbstractMessageModel abstractMessageModel, Intent intent) {
 		intent.putExtra(INTENT_DATA_ABSTRACT_MESSAGE_ID, abstractMessageModel.getId());
 		intent.putExtra(INTENT_DATA_ABSTRACT_MESSAGE_TYPE, abstractMessageModel.getClass().toString());
@@ -215,15 +207,6 @@ public class IntentDataUtil {
 		location.setAccuracy(intent.getFloatExtra(INTENT_DATA_LOCATION_ACCURACY, 0));
 
 		return location;
-	}
-
-	public static ServerMessageModel getServerMessageModel(Intent intent) {
-		return new ServerMessageModel(
-				intent.getStringExtra(INTENT_DATA_SERVER_MESSAGE_TEXT),
-				ServerMessageModel.Type.ALERT.toString().equals(intent.getStringExtra(INTENT_DATA_SERVER_MESSAGE_TYPE)) ?
-						ServerMessageModel.Type.ALERT :
-						ServerMessageModel.Type.ERROR
-		);
 	}
 
 	public static Intent createActionIntentLicenseNotAllowed(String message) {

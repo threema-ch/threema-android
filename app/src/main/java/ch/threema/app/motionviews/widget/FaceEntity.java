@@ -80,8 +80,13 @@ public abstract class FaceEntity extends MotionEntity {
 	}
 
 	@Override
-	public boolean hasFixedPositionAndSize() {
-		return true;
+	public boolean canMove() {
+		return false;
+	}
+
+	@Override
+	public boolean canChangeColor() {
+		return false;
 	}
 
 	@Override

@@ -77,13 +77,17 @@ class MediaAdapterManager(private val mediaAdapterListener: MediaAdapterListener
         items.removeAt(index)
         if (isNotifyListener(notify)) {
             mediaAdapterListener.onItemCountChanged(size())
-            if (size() == 0) {
-                mediaAdapterListener.onAllItemsRemoved()
-                return
-            }
         }
 
         notifyItemRemoved(index, notify)
+
+        // Notify listener that all items have been removed. Note that this must be called after
+        // informing the adapters that an item has been removed.
+        if (size() == 0) {
+            mediaAdapterListener.onAllItemsRemoved()
+            return
+        }
+
         if (currentPosition >= items.size) {
             currentPosition = items.size - 1
         }

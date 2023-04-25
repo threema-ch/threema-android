@@ -1,82 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal"
+	android:background="@android:color/transparent"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<FrameLayout
-		android:id="@+id/remove_layout"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:clickable="true"
-		android:focusable="false"
-		android:background="@drawable/listitem_background_selector_noripple"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:paddingTop="8dp"
-		android:paddingBottom="8dp">
-
-	<TextView
-		android:id="@+id/remove"
+	<androidx.cardview.widget.CardView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_gravity="center_vertical"
-		android:clickable="false"
-		android:text="@string/remove"
-		android:textAllCaps="true"
-		android:textSize="14sp"
-		android:textStyle="bold"/>
+		android:layout_marginBottom="@dimen/emoji_popup_cardview_margin_bottom"
+		android:layout_marginTop="@dimen/emoji_popup_cardview_margin_top"
+		android:layout_marginLeft="@dimen/emoji_popup_cardview_margin_horizontal"
+		android:layout_marginRight="@dimen/emoji_popup_cardview_margin_horizontal"
+		app:cardCornerRadius="6dp"
+		app:cardElevation="4dp">
 
-	</FrameLayout>
-
-	<FrameLayout
-		android:id="@+id/flip_layout"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:clickable="true"
-		android:focusable="false"
-		android:background="@drawable/listitem_background_selector_noripple"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:paddingTop="8dp"
-		android:paddingBottom="8dp">
-
-	<TextView
-		android:id="@+id/flip"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center_vertical"
-		android:clickable="false"
-		android:text="@string/flip"
-		android:textAllCaps="true"
-		android:textSize="14sp"
-		android:textStyle="bold"/>
-
-	</FrameLayout>
-
-	<FrameLayout
-		android:id="@+id/tofront_layout"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:clickable="true"
-		android:focusable="false"
-		android:background="@drawable/listitem_background_selector_noripple"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:paddingTop="8dp"
-		android:paddingBottom="8dp">
-
-		<TextView
-			android:id="@+id/tofront"
+		<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical"
-			android:clickable="false"
-			android:text="@string/to_front"
-			android:textAllCaps="true"
-			android:textSize="14sp"
-			android:textStyle="bold"/>
+			android:layout_margin="8dp"
+			android:orientation="horizontal">
 
-	</FrameLayout>
+			<ImageView
+				android:id="@+id/remove_paint"
+				android:layout_width="@dimen/ackdec_emoji_size"
+				android:layout_height="@dimen/ackdec_emoji_size"
+				android:padding="@dimen/ackdec_popup_content_margin"
+				android:src="@drawable/ic_delete"
+				android:contentDescription="@string/delete"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:clickable="true"
+				android:focusable="true"
+				app:tint="?attr/textColorSecondary" />
 
-</LinearLayout>
+			<View
+				android:id="@+id/flip_separator"
+				android:layout_width="1dp"
+				android:layout_height="match_parent"
+				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
+				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
+				android:background="?divider_color"
+				/>
+
+			<ImageView
+				android:id="@+id/flip_paint"
+				android:layout_width="@dimen/ackdec_emoji_size"
+				android:layout_height="@dimen/ackdec_emoji_size"
+				android:padding="@dimen/ackdec_popup_content_margin"
+				android:src="@drawable/ic_flip_outline"
+				android:contentDescription="@string/flip"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:clickable="true"
+				android:focusable="true"
+				app:tint="?attr/textColorSecondary" />
+
+			<View
+				android:id="@+id/bring_to_front_separator"
+				android:layout_width="1dp"
+				android:layout_height="match_parent"
+				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
+				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
+				android:background="?divider_color"
+				/>
+
+			<ImageView
+				android:id="@+id/bring_to_front_paint"
+				android:layout_width="@dimen/ackdec_emoji_size"
+				android:layout_height="@dimen/ackdec_emoji_size"
+				android:padding="@dimen/ackdec_popup_content_margin"
+				android:src="@drawable/ic_bring_to_front"
+				android:contentDescription="@string/to_front"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:clickable="true"
+				android:focusable="true"
+				app:tint="?attr/textColorSecondary" />
+
+			<View
+				android:id="@+id/color_separator"
+				android:layout_width="1dp"
+				android:layout_height="match_parent"
+				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
+				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
+				android:background="?divider_color"
+				/>
+
+			<ImageView
+				android:id="@+id/color_paint"
+				android:layout_width="@dimen/ackdec_emoji_size"
+				android:layout_height="@dimen/ackdec_emoji_size"
+				android:padding="@dimen/ackdec_popup_content_margin"
+				android:src="@drawable/ic_color_lens_24px"
+				android:contentDescription="@string/palette"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:clickable="true"
+				android:focusable="true"
+				app:tint="?attr/textColorSecondary" />
+
+		</LinearLayout>
+
+	</androidx.cardview.widget.CardView>
+
+</FrameLayout>

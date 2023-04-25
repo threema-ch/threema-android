@@ -60,6 +60,7 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -156,16 +157,18 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 		});
 
 		Button deleteAllButton = findViewById(R.id.delete_everything_button);
-		deleteAllButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				GenericAlertDialog.newInstance(
-					R.string.delete_id_title,
-					R.string.delete_id_message,
-					R.string.delete_everything,
-					R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_DELETE_ID);
-			}
-		});
+
+		if (ConfigUtils.isWorkBuild() && AppRestrictionUtil.isReadonlyProfile(this)) {
+			// In readonly profile the user should not be able to delete its ID
+			deleteAllButton.setVisibility(View.GONE);
+		} else {
+			deleteAllButton.setOnClickListener(v -> GenericAlertDialog.newInstance(
+				R.string.delete_id_title,
+				R.string.delete_id_message,
+				R.string.delete_everything,
+				R.string.cancel
+			).show(getSupportFragmentManager(), DIALOG_TAG_DELETE_ID));
+		}
 
 		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.storagemanager_timeout, android.R.layout.simple_spinner_dropdown_item);
 		timeSpinner.setAdapter(adapter);

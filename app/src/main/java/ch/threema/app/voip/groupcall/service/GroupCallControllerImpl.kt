@@ -77,6 +77,15 @@ internal class GroupCallControllerImpl (
             }
             it
         }
+    override val descriptionSignal: Deferred<GroupCallDescription> by lazy {
+        CompletableDeferred<GroupCallDescription>().also {
+            CoroutineScope(Dispatchers.Default).launch {
+                descriptionSetSignal.await()
+                it.complete(description)
+            }
+        }
+    }
+
 
     override lateinit var parameters: GroupCallParameters
 
@@ -87,7 +96,8 @@ internal class GroupCallControllerImpl (
     override val callLeftSignal: CompletableDeferred<Unit> = CompletableDeferred()
     override val callDisposedSignal: CompletableDeferred<Unit> = CompletableDeferred()
 
-    override val connectedSignal: CompletableDeferred<Pair<ULong, Set<ParticipantId>>> = CompletableDeferred()
+    override val completableConnectedSignal: CompletableDeferred<Pair<ULong, Set<ParticipantId>>> = CompletableDeferred()
+    override val connectedSignal: Deferred<Pair<ULong, Set<ParticipantId>>> = completableConnectedSignal
 
     override val dislodgedParticipants = MutableSharedFlow<ParticipantId>()
 

@@ -30,19 +30,22 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
+import ch.threema.app.motionviews.widget.MotionEntity;
 import ch.threema.app.utils.AnimationUtil;
 
-public class PaintSelectionPopup extends PopupWindow implements View.OnClickListener {
+public class PaintSelectionPopup extends PopupWindow {
 
-	public static final int TAG_REMOVE = 1;
-	public static final int TAG_FLIP = 2;
-	public static final int TAG_TO_FRONT = 3;
-	private FrameLayout removeView, flipView, tofrontView;
-	private View parentView;
+	private final View removeView;
+	private final View flipSeparator;
+	private final View flipView;
+	private final View bringToFrontSeparator;
+	private final View bringToFrontView;
+	private final View colorSeparator;
+	private final View colorView;
+	private final View parentView;
 	private PaintSelectPopupListener paintSelectPopupListener;
-
-	private final int[] location = new int[2];
 
 	public PaintSelectionPopup(Context context, View parentView) {
 		super(context);
@@ -50,12 +53,17 @@ public class PaintSelectionPopup extends PopupWindow implements View.OnClickList
 		this.parentView = parentView;
 
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		LinearLayout topLayout = (LinearLayout) layoutInflater.inflate(R.layout.popup_paint_selection, null, true);
+		FrameLayout topLayout = (FrameLayout) layoutInflater.inflate(R.layout.popup_paint_selection, null, true);
 
-		this.removeView = topLayout.findViewById(R.id.remove_layout);
-		this.flipView = topLayout.findViewById(R.id.flip_layout);
-		this.tofrontView = topLayout.findViewById(R.id.tofront_layout);
+		this.removeView = topLayout.findViewById(R.id.remove_paint);
+		this.flipSeparator = topLayout.findViewById(R.id.flip_separator);
+		this.flipView = topLayout.findViewById(R.id.flip_paint);
+		this.bringToFrontSeparator = topLayout.findViewById(R.id.bring_to_front_separator);
+		this.bringToFrontView = topLayout.findViewById(R.id.bring_to_front_paint);
+		this.colorSeparator = topLayout.findViewById(R.id.color_separator);
+		this.colorView = topLayout.findViewById(R.id.color_paint);
 
+		setBackgroundDrawable(null);
 		setContentView(topLayout);
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
 		setWidth(LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -66,21 +74,21 @@ public class PaintSelectionPopup extends PopupWindow implements View.OnClickList
 		setElevation(10);
 	}
 
-	public void show(int x, int y, boolean allowReordering) {
-		this.removeView.setOnClickListener(this);
-		this.removeView.setTag(TAG_REMOVE);
+	public void show(int x, int y, @NonNull MotionEntity entity) {
+		initRemoveView();
 
-		if (allowReordering) {
-			this.flipView.setVisibility(View.VISIBLE);
-			this.flipView.setOnClickListener(this);
-			this.flipView.setTag(TAG_FLIP);
-
-			this.tofrontView.setVisibility(View.VISIBLE);
-			this.tofrontView.setOnClickListener(this);
-			this.tofrontView.setTag(TAG_TO_FRONT);
+		if (entity.canMove()) {
+			initFlipView();
+			initBringToFrontView();
 		} else {
-			this.flipView.setVisibility(View.GONE);
-			this.tofrontView.setVisibility(View.GONE);
+			hideFlipView();
+			hideBringToFrontView();
+		}
+
+		if (entity.canChangeColor()) {
+			initColorView();
+		} else {
+			hideColorView();
 		}
 
 		if (this.paintSelectPopupListener != null) {
@@ -95,8 +103,74 @@ public class PaintSelectionPopup extends PopupWindow implements View.OnClickList
 				getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
 				AnimationUtil.popupAnimateIn(getContentView());
+
+				int animationDelay = 10;
+				final int animationDelayStep = 100;
+
+				if (removeView.getVisibility() == View.VISIBLE) {
+					AnimationUtil.bubbleAnimate(removeView, animationDelay += animationDelayStep);
+				}
+				if (flipView.getVisibility() == View.VISIBLE) {
+					AnimationUtil.bubbleAnimate(flipView, animationDelay += animationDelayStep);
+				}
+				if (bringToFrontView.getVisibility() == View.VISIBLE) {
+					AnimationUtil.bubbleAnimate(bringToFrontView, animationDelay += animationDelayStep);
+				}
+				if (colorView.getVisibility() == View.VISIBLE) {
+					AnimationUtil.bubbleAnimate(colorView, animationDelay + animationDelayStep);
+				}
 			}
 		});
+	}
+
+	private void initRemoveView() {
+		this.removeView.setVisibility(View.VISIBLE);
+		this.removeView.setOnClickListener(v -> {
+			paintSelectPopupListener.onRemoveClicked();
+			dismiss();
+		});
+	}
+
+	private void initFlipView() {
+		this.flipView.setVisibility(View.VISIBLE);
+		this.flipSeparator.setVisibility(View.VISIBLE);
+		this.flipView.setOnClickListener(v -> {
+			paintSelectPopupListener.onFlipClicked();
+			dismiss();
+		});
+	}
+
+	private void hideFlipView() {
+		this.flipSeparator.setVisibility(View.GONE);
+		this.flipView.setVisibility(View.GONE);
+	}
+
+	private void initBringToFrontView() {
+		this.bringToFrontView.setVisibility(View.VISIBLE);
+		this.bringToFrontSeparator.setVisibility(View.VISIBLE);
+		this.bringToFrontView.setOnClickListener(v -> {
+			paintSelectPopupListener.onBringToFrontClicked();
+			dismiss();
+		});
+	}
+
+	private void hideBringToFrontView() {
+		this.bringToFrontSeparator.setVisibility(View.GONE);
+		this.bringToFrontView.setVisibility(View.GONE);
+	}
+
+	private void initColorView() {
+		this.colorView.setVisibility(View.VISIBLE);
+		this.colorSeparator.setVisibility(View.VISIBLE);
+		this.colorView.setOnClickListener(v -> {
+			paintSelectPopupListener.onColorClicked();
+			dismiss();
+		});
+	}
+
+	private void hideColorView() {
+		this.colorSeparator.setVisibility(View.GONE);
+		this.colorView.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -105,29 +179,18 @@ public class PaintSelectionPopup extends PopupWindow implements View.OnClickList
 			this.paintSelectPopupListener.onClose();
 		}
 
-		AnimationUtil.popupAnimateOut(getContentView(), new Runnable() {
-			@Override
-			public void run() {
-				PaintSelectionPopup.super.dismiss();
-			}
-		});
-
+		AnimationUtil.popupAnimateOut(getContentView(), PaintSelectionPopup.super::dismiss);
 	}
 
 	public void setListener(PaintSelectPopupListener listener) {
 		this.paintSelectPopupListener = listener;
 	}
 
-	@Override
-	public void onClick(View v) {
-		if (paintSelectPopupListener != null) {
-			paintSelectPopupListener.onItemSelected((int) v.getTag());
-			dismiss();
-		}
-	}
-
 	public interface PaintSelectPopupListener {
-		void onItemSelected(int tag);
+		void onRemoveClicked();
+		void onFlipClicked();
+		void onBringToFrontClicked();
+		void onColorClicked();
 		void onOpen();
 		void onClose();
 	}

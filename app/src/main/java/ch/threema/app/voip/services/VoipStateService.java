@@ -25,7 +25,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -114,6 +113,7 @@ import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PA
 import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_SILENT;
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CALL;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 import static ch.threema.app.voip.activities.CallActivity.EXTRA_ACCEPT_INCOMING_CALL;
 import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CALL_ID;
 import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CONTACT_IDENTITY;
@@ -187,6 +187,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 	// Pending intents
 	private @Nullable PendingIntent acceptIntent;
+	private final @Nullable PendingIntent mediaButtonPendingIntent;
 
 	// Connection status
 	private boolean connectionAcquired = false;
@@ -224,6 +225,10 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		this.notificationManagerCompat = NotificationManagerCompat.from(appContext);
 		this.notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		this.audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
+
+		Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+		mediaButtonIntent.setClass(appContext, VoipMediaButtonReceiver.class);
+		this.mediaButtonPendingIntent = PendingIntent.getBroadcast(appContext, 0, mediaButtonIntent, PENDING_INTENT_FLAG_MUTABLE);
 	}
 
 	//region Logging
@@ -324,12 +329,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 		// Ensure bluetooth media button receiver is registered when a call starts
 		if (newState.isRinging() || newState.isInitializing()) {
-			audioManager.registerMediaButtonEventReceiver(new ComponentName(appContext, VoipMediaButtonReceiver.class));
+			audioManager.registerMediaButtonEventReceiver(mediaButtonPendingIntent);
 		}
 
 		// Ensure bluetooth media button receiver is deregistered when a call ends
 		if (newState.isDisconnecting() || newState.isIdle()) {
-			audioManager.unregisterMediaButtonEventReceiver(new ComponentName(appContext, VoipMediaButtonReceiver.class));
+			audioManager.unregisterMediaButtonEventReceiver(mediaButtonPendingIntent);
 		}
 
 		long callId = oldState.getCallId();

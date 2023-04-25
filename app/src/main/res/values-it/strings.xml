@@ -520,6 +520,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="really_remove_wallpapers">Vuoi davvero rimuovere tutte le immagini di sfondo?</string>
     <string name="wallpapers_removed">Immagini di sfondo rimosse</string>
     <string name="invalid_backup">I dati del backup Android non sono validi. Impossibile procedere al ripristino.</string>
+    <string name="invalid_zip_restore_failed">Ripristino non riuscito. File di backup non valido: %1$s</string>
     <string name="revocation_explain">La password qui inserita ti permetterà di revocare il tuo ID all\'indirizzo https://myid.threema.ch/revoke in caso di smarrimento o furto della password stessa</string>
     <string name="no_unread_messages">Non sono presenti messaggi non letti o il blocco PIN è attivo</string>
     <string name="send_media">Invia media</string>

@@ -37,15 +37,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -60,6 +64,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import ch.threema.app.R;
@@ -85,11 +90,12 @@ import ch.threema.storage.models.ballot.BallotModel;
 /**
  * A view that shows all open ballots (polls) for a chat in a ChipGroup and allows users to vote or close the ballot
  */
-public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLifecycleObserver, Chip.OnClickListener {
+public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLifecycleObserver {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("OpenBallotNoticeView");
 	private static final int MAX_BALLOTS_SHOWN = 20;
 	private static final int MAX_BALLOT_TITLE_LENGTH = 25;
 	private ChipGroup chipGroup;
+	private final List<BallotChipHolder> shownBallots = new LinkedList<>();
 	private BallotService ballotService;
 	private UserService userService;
 	private PreferenceService preferenceService;
@@ -106,7 +112,11 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 
 		@Override
 		public void onVoteChanged(BallotModel ballotModel, String votingIdentity, boolean isFirstVote) {
-			RuntimeUtil.runOnUiThread(() -> updateBallotDisplay());
+			// There is no need to update the chips if the vote has been changed. However, update
+			// the view when a first vote has been received as this may change the vote counter.
+			if (isFirstVote) {
+				RuntimeUtil.runOnUiThread(() -> updateBallotDisplay());
+			}
 		}
 
 		@Override
@@ -268,129 +278,48 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 
 			@Override
 			protected void onPostExecute(List<BallotModel> ballotModels) {
-				chipGroup.removeAllViews();
-				numOpenBallots = ballotModels.size();
-				if (numOpenBallots <= 0) {
+				// Hide this view if there are no open ballots (anymore)
+				if (ballotModels.isEmpty()) {
 					hide(false);
-				} else {
-					int i = 0;
+					return;
+				}
 
-					Chip firstChip = new Chip(getContext());
-					ChipDrawable firstChipDrawable = ChipDrawable.createFromAttributes(getContext(),
-						null,
-						0,
-						R.style.Chip_ChatNotice_Overview_Intro);
-					firstChip.setChipDrawable(firstChipDrawable);
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-						firstChip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
+				// If there aren't any chips, then add the first chip that explains that this view
+				// shows open ballots
+				if (shownBallots.isEmpty()) {
+					chipGroup.addView(createFirstChip());
+				}
+
+				int numBallotsShown = 0;
+				for (int i = 0; i < ballotModels.size(); i++) {
+					if (shownBallots.size() > i) {
+						// Update the available chips if possible
+						shownBallots.get(i).updateBallotModel(ballotModels.get(i));
 					} else {
-						firstChip.setTextSize(14);
+						// Add new chips if there are not enough chips present
+						shownBallots.add(new BallotChipHolder(ballotModels.get(i)));
 					}
-					firstChip.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.text_color_openNotice));
-					firstChip.setChipBackgroundColor(ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.background_openNotice)));
-					firstChip.setText(R.string.ballot_open);
-					firstChip.setClickable(false);
-					chipGroup.addView(firstChip);
-
-					int j = 0;
-					for (BallotModel ballot: ballotModels) {
-						// show only the latest MAX_BALLOTS_SHOWN open ballots
-						if (i++ >= MAX_BALLOTS_SHOWN) {
-							break;
-						}
-
-						int voters = ballotService.getVotedParticipants(ballot.getId()).size();
-						int participants = ballotService.getParticipants(ballot.getId()).length;
-						if (participants == 0) {
-							continue;
-						}
-
-						String name = ballot.getName();
-
-						if (TestUtil.empty(name)) {
-							name = getContext().getString(R.string.ballot_placeholder);
-						} else {
-							if (name.length() > MAX_BALLOT_TITLE_LENGTH) {
-								name = name.substring(0, MAX_BALLOT_TITLE_LENGTH);
-								name += "…";
-							}
-						}
-
-						Chip chip = new Chip(getContext());
-						ChipDrawable chipDrawable = ChipDrawable.createFromAttributes(getContext(),
-							null,
-							0,
-							R.style.Chip_ChatNotice_Overview);
-						chip.setChipDrawable(chipDrawable);
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-							chip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
-						} else {
-							chip.setTextSize(14);
-						}
-						chip.setOnClickListener((View v) -> {
-							OpenBallotNoticeView.this.onChipClick(v, voters == participants);
-						});
-
-						new AsyncTask<Void, Void, Bitmap>() {
-							@Override
-							protected Bitmap doInBackground(Void... params) {
-								Bitmap bitmap = contactService.getAvatar(contactService.getByIdentity(ballot.getCreatorIdentity()), false);
-								if (bitmap != null) {
-									return BitmapUtil.replaceTransparency(bitmap, Color.WHITE);
-								}
-								return null;
-							}
-
-							@Override
-							protected void onPostExecute(Bitmap avatar) {
-								if (avatar != null) {
-									chip.setChipIcon(AvatarConverterUtil.convertToRound(getResources(), avatar));
-								} else {
-									chip.setChipIconResource(R.drawable.ic_vote_outline);
-								}
-							}
-						}.execute();
-
-						chip.setTag(ballot);
-						chip.setTextEndPadding(getResources().getDimensionPixelSize(R.dimen.chip_end_padding_text_only));
-
-						ColorStateList foregroundColor, backgroundColor;
-						boolean isMine = BallotUtil.isMine(ballot, userService);
-
-						if (isMine) {
-							chip.setText(name + " (" + voters + "/" + participants + ")");
-						} else {
-							chip.setText(name);
-						}
-
-						if (isMine && voters == participants) {
-							// all votes are in
-							if (ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK) {
-								foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorSecondary));
-								backgroundColor = ColorStateList.valueOf(getResources().getColor(R.color.material_red));
-							} else {
-								foregroundColor = ColorStateList.valueOf(getResources().getColor(R.color.material_red));
-								backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
-							}
-						} else {
-							if (ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK) {
-								foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorPrimary));
-								backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
-							} else {
-								foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
-								backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
-							}
-						}
-
-						chip.setTextColor(foregroundColor);
-						chip.setChipBackgroundColor(backgroundColor);
-
-						chipGroup.addView(chip);
-						j++;
+					// Count the shown chips. Note that chips with invalid ballots are not shown,
+					// but remain in this list in case an update makes them valid.
+					if (shownBallots.get(i).isShown()) {
+						numBallotsShown++;
 					}
-					if (j > 0) {
-						show(false);
+					// Don't add more than limit
+					if (numBallotsShown >= MAX_BALLOTS_SHOWN) {
+						break;
 					}
+				}
+
+				// Remove the last ballot models
+				for (int i = shownBallots.size() - 1; i >= ballotModels.size(); i--) {
+					BallotChipHolder removedHolder = shownBallots.remove(i);
+					removedHolder.remove();
+				}
+
+				OpenBallotNoticeView.this.numOpenBallots = numBallotsShown;
+
+				if (numBallotsShown > 0) {
+					show(false);
 				}
 			}
 		}.execute();
@@ -401,7 +330,8 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		updateBallotDisplay();
 	}
 
-	public void setVisibilityListener(VisibilityListener listener) {
+	public void update() {
+		updateBallotDisplay();
 	}
 
 	@Override
@@ -423,27 +353,28 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		ListenerManager.ballotListeners.remove(this.ballotListener);
 	}
 
-	@Override
-	public void onClick(View v) {
-		BallotModel model = (BallotModel) v.getTag();
-
-		if (BallotUtil.canClose(model, identity)) {
-			int voters = ballotService.getVotedParticipants(model.getId()).size();
-			int participants = ballotService.getParticipants(model.getId()).length;
-
-			if (participants > 0 && voters == participants) {
-				onChipClick(v, true);
-				return;
-			}
+	@NonNull
+	private Chip createFirstChip() {
+		Chip firstChip = new Chip(getContext());
+		ChipDrawable firstChipDrawable = ChipDrawable.createFromAttributes(getContext(),
+			null,
+			0,
+			R.style.Chip_ChatNotice_Overview_Intro);
+		firstChip.setChipDrawable(firstChipDrawable);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			firstChip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
+		} else {
+			firstChip.setTextSize(14);
 		}
-
-		vote(model);
+		firstChip.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.text_color_openNotice));
+		firstChip.setChipBackgroundColor(ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.background_openNotice)));
+		firstChip.setText(R.string.ballot_open);
+		firstChip.setClickable(false);
+		return firstChip;
 	}
 
 	@SuppressLint("RestrictedApi")
-	public void onChipClick(View v, boolean isVoteComplete) {
-		BallotModel ballotModel = (BallotModel) v.getTag();
-
+	public void onChipClick(@NonNull View v, @Nullable BallotModel ballotModel, boolean isVoteComplete) {
 		if (ballotModel != null) {
 			MenuBuilder menuBuilder = new MenuBuilder(getContext());
 			new MenuInflater(getContext()).inflate(R.menu.chip_open_ballots, menuBuilder);
@@ -475,26 +406,24 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 
 			menuBuilder.setCallback(new MenuBuilder.Callback() {
 				@Override
-				public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-					switch (item.getItemId()) {
-						case R.id.menu_ballot_vote:
-							vote(ballotModel);
-							break;
-						case R.id.menu_ballot_results:
-							BallotUtil.openMatrixActivity(getContext(), ballotModel, identity);
-							break;
-						case R.id.menu_ballot_close:
-							close(ballotModel);
-							break;
-						case R.id.menu_ballot_delete:
-							delete(ballotModel);
-							break;
+				public boolean onMenuItemSelected(@NonNull MenuBuilder menu, @NonNull MenuItem item) {
+					int id = item.getItemId();
+					if (id == R.id.menu_ballot_vote) {
+						vote(ballotModel);
+					} else if (id == R.id.menu_ballot_results) {
+						BallotUtil.openMatrixActivity(getContext(), ballotModel, identity);
+					} else if (id == R.id.menu_ballot_close) {
+						close(ballotModel);
+					} else if (id == R.id.menu_ballot_delete) {
+						delete(ballotModel);
 					}
 					return true;
 				}
 
 				@Override
-				public void onMenuModeChange(MenuBuilder menu) {}
+				public void onMenuModeChange(@NonNull MenuBuilder menu) {
+					// nothing to do
+				}
 			});
 
 			if (!BallotUtil.canViewMatrix(ballotModel, identity)) {
@@ -502,7 +431,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 			}
 
 			if (!BallotUtil.canClose(ballotModel, identity)) {
-				menuBuilder.removeItem(R.id.menu_ballot_close);;
+				menuBuilder.removeItem(R.id.menu_ballot_close);
 			}
 
 			Context wrapper = new ContextThemeWrapper(getContext(), ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK ? R.style.AppBaseTheme_Dark : R.style.AppBaseTheme);
@@ -558,7 +487,183 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		return (AppCompatActivity) getContext();
 	}
 
-	public interface VisibilityListener {
-		void onDismissed();
+	private class BallotChipHolder {
+		@NonNull
+		private BallotModel ballot;
+		private final Chip chip;
+		private boolean isShown = true;
+		private int displayedVotes = -1;
+		private int displayedParticipants = -1;
+
+		private final Animation animation = new RotateAnimation(
+			-3f,
+			3,
+			Animation.RELATIVE_TO_SELF,
+			0.5f,
+			Animation.RELATIVE_TO_SELF,
+			0.5f
+		);
+
+		private BallotChipHolder(@NonNull BallotModel ballotModel) {
+			this.ballot = ballotModel;
+			this.chip = createChip();
+
+			chipGroup.addView(this.chip);
+
+			animation.setDuration(50);
+			animation.setRepeatCount(4);
+			animation.setRepeatMode(Animation.REVERSE);
+
+			show();
+		}
+
+		private void updateBallotModel(@NonNull BallotModel ballotModel) {
+			boolean isAnotherBallot = ballot.getId() != ballotModel.getId();
+			this.ballot = ballotModel;
+			if (isAnotherBallot) {
+				show();
+			} else {
+				updateName();
+				setColor(BallotUtil.isMine(ballot, userService), displayedVotes, displayedParticipants);
+			}
+		}
+
+		@NonNull
+		private Chip createChip() {
+			Chip ballotChip = new Chip(getContext());
+
+			ChipDrawable chipDrawable = ChipDrawable.createFromAttributes(getContext(),
+				null,
+				0,
+				R.style.Chip_ChatNotice_Overview);
+			ballotChip.setChipDrawable(chipDrawable);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				ballotChip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
+			} else {
+				ballotChip.setTextSize(14);
+			}
+
+			ballotChip.setTextEndPadding(getResources().getDimensionPixelSize(R.dimen.chip_end_padding_text_only));
+
+			return ballotChip;
+		}
+
+		private void show() {
+			chip.setVisibility(View.VISIBLE);
+
+			int votes = ballotService.getVotedParticipants(ballot.getId()).size();
+			int participants = ballotService.getParticipants(ballot.getId()).length;
+			if (participants == 0) {
+				displayedVotes = -1;
+				displayedParticipants = -1;
+				chip.setVisibility(View.GONE);
+				isShown = false;
+				return;
+			}
+
+			displayedVotes = votes;
+			displayedParticipants = participants;
+
+			chip.setOnClickListener((View v) -> OpenBallotNoticeView.this.onChipClick(v, ballot,votes == participants));
+
+			boolean isMine = BallotUtil.isMine(ballot, userService);
+
+			chip.setText(getText(isMine, votes, participants));
+
+			setAvatar();
+
+			setColor(isMine, votes, participants);
+		}
+
+		private void updateName() {
+			int votes = ballotService.getVotedParticipants(ballot.getId()).size();
+			int participants = ballotService.getParticipants(ballot.getId()).length;
+			chip.setText(getText(BallotUtil.isMine(ballot, userService), votes, participants));
+			if (votes > displayedVotes && participants == displayedParticipants) {
+				// Animate view when the number of votes increased
+				chip.setAnimation(animation);
+			}
+			displayedVotes = votes;
+			displayedParticipants = participants;
+		}
+
+		private void remove() {
+			chipGroup.removeView(chip);
+		}
+
+		private boolean isShown() {
+			return isShown;
+		}
+
+		@SuppressLint("DefaultLocale")
+		@NonNull
+		private String getText(boolean isMine, int votes, int participants) {
+			String name = ballot.getName();
+
+			if (TestUtil.empty(name)) {
+				name = getContext().getString(R.string.ballot_placeholder);
+			} else {
+				if (name.length() > MAX_BALLOT_TITLE_LENGTH) {
+					name = name.substring(0, MAX_BALLOT_TITLE_LENGTH);
+					name += "…";
+				}
+			}
+			if (isMine) {
+				return String.format("%s (%d/%d)", name, votes, participants);
+			} else {
+				return name;
+			}
+		}
+
+		private void setAvatar() {
+			new AsyncTask<Void, Void, Bitmap>() {
+				@Override
+				protected Bitmap doInBackground(Void... params) {
+					Bitmap bitmap = contactService.getAvatar(contactService.getByIdentity(ballot.getCreatorIdentity()), false);
+					if (bitmap != null) {
+						return BitmapUtil.replaceTransparency(bitmap, Color.WHITE);
+					}
+					return null;
+				}
+
+				@Deprecated
+				@Override
+				protected void onPostExecute(Bitmap avatar) {
+					if (avatar != null) {
+						chip.setChipIcon(AvatarConverterUtil.convertToRound(getResources(), avatar));
+					} else {
+						chip.setChipIconResource(R.drawable.ic_vote_outline);
+					}
+				}
+			}.execute();
+		}
+
+		private void setColor(boolean isMine, int voters, int participants) {
+			ColorStateList foregroundColor, backgroundColor;
+
+			if (isMine && voters == participants) {
+				// all votes are in
+				if (ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK) {
+					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorSecondary));
+					backgroundColor = ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.material_red));
+				} else {
+					foregroundColor = ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.material_red));
+					backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
+				}
+			} else {
+				if (ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK) {
+					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorPrimary));
+					backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
+				} else {
+					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
+					backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
+				}
+			}
+
+			chip.setTextColor(foregroundColor);
+			chip.setChipBackgroundColor(backgroundColor);
+		}
 	}
+
 }

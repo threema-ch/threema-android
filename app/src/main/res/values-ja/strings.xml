@@ -483,7 +483,7 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="wearable_reply">返信</string>
     <string name="wearable_reply_label">%s に返信</string>
     <string name="message_acknowledged">«賛成» 送信</string>
-    <string name="push_disable_text">続行すると、システムのプッシュサービスの代わりに、「Threemaプッシュ」が使用されます。これはデジタルフットプリントを減らすのに役に立ちますが、アプリをバックグラウンドで実行できるようにデバイスを設定する必要があります。デバイスの設定で対応するオプションが見つからない場合、デバイスの製造元のサポートと連絡を取り、設定のサポートを受けてください。</string>
+    <string name="push_disable_text">続行すると、システムのプッシュサービスの代わりに、「Threemaプッシュ」が使用されます。これはデジタルフットプリントを減らすのに役に立ちますが、アプリをバックグラウンドで実行できるように端末を設定する必要があります。端末の設定で対応するオプションが見つからない場合、端末の製造元のサポートと連絡を取り、設定のサポートを受けてください。</string>
     <string name="ballot_intermediate_results_show">途中経過を表示</string>
     <string name="converting_video">動画を処理中</string>
     <string name="video_size_small">高 (省データ)</string>
@@ -1477,6 +1477,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <plurals name="some_contacts_not_deleted">
         <item quantity="other">%d 件の連絡先は、まだグループに属しているため、削除できませんでした。</item>
     </plurals>
+    <plurals name="message_archived">
+        <item quantity="other">%d 件のトークを受け取りました</item>
+    </plurals>
     <plurals name="webclient_running_sessions">
         <item quantity="other">%d セッションを実行中</item>
     </plurals>
@@ -1488,6 +1491,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
         <item quantity="other">本当に %d 件のグループリンクを削除しますか？
 今後、このリンクを介した参加申請は送信できなくなります。
 ただし、以前に受信した参加申請は、引き続き承認／拒否できます。</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="other">%d 件のトークを削除しました</item>
     </plurals>
     <plurals name="num_archived_chats">
         <item quantity="other">%d 件のアーカイブされたトーク</item>

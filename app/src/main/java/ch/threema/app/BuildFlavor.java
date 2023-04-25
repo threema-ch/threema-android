@@ -63,12 +63,7 @@ public class BuildFlavor {
 	 */
 	@SuppressWarnings("ConstantConditions")
 	public static boolean maySelfUpdate() {
-		switch (BuildConfig.FLAVOR) {
-			case FLAVOR_STORE_THREEMA:
-				return true;
-			default:
-				return false;
-		}
+		return FLAVOR_STORE_THREEMA.equals(BuildConfig.FLAVOR);
 	}
 
 	/**
@@ -76,12 +71,7 @@ public class BuildFlavor {
 	 */
 	@SuppressWarnings("ConstantConditions")
 	public static boolean forceThreemaPush() {
-		switch (BuildConfig.FLAVOR) {
-			case FLAVOR_LIBRE:
-				return true;
-			default:
-				return false;
-		}
+		return FLAVOR_LIBRE.equals(BuildConfig.FLAVOR);
 	}
 
 	/**
@@ -90,12 +80,7 @@ public class BuildFlavor {
 	 */
 	@SuppressWarnings("ConstantConditions")
 	public static boolean isLibre() {
-		switch (BuildConfig.FLAVOR) {
-			case FLAVOR_LIBRE:
-				return true;
-			default:
-				return false;
-		}
+		return FLAVOR_LIBRE.equals(BuildConfig.FLAVOR);
 	}
 
 	@SuppressWarnings("ConstantConditions")

@@ -33,6 +33,10 @@
 			android:key="@string/preferences__group_call_send_init"
 			android:title="Send group call init"
 			android:summary="If enabled, a text message containing encoded call info will be sent in the group when a call is started." />
+		<CheckBoxPreference
+			android:key="@string/preferences__group_call_skip_delay"
+			android:title="Skip group call start delay"
+			android:summary="If enabled the artificial delay for group call creation will be skiped and the call created immediately" />
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:key="pref_key_various"

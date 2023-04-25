@@ -83,7 +83,6 @@ internal class ConnectionCtx(
 
             val peerConnectionCtx = createPeerConnection(
                 certificate,
-                !call.parameters.ipv6Enabled,
                 factory
             )
 
@@ -114,11 +113,10 @@ internal class ConnectionCtx(
         @WorkerThread
         private fun createPeerConnection(
             certificate: RtcCertificatePem,
-            disableIpv6: Boolean,
             factory: FactoryCtx
         ): PeerConnectionCtx {
             // Configuration for the peer connection
-            val configuration = getPeerConnectionConfiguration(certificate, disableIpv6)
+            val configuration = getPeerConnectionConfiguration(certificate)
 
             val observer = WrappedPeerConnectionObserver()
             val dependencies = PeerConnectionDependencies.builder(observer)
@@ -133,7 +131,7 @@ internal class ConnectionCtx(
         }
 
         @WorkerThread
-        private fun getPeerConnectionConfiguration(certificate: RtcCertificatePem, disableIpv6: Boolean): PeerConnection.RTCConfiguration {
+        private fun getPeerConnectionConfiguration(certificate: RtcCertificatePem): PeerConnection.RTCConfiguration {
             // Order taken from RTCConfiguration constructor. Docs for each parameter can be
             // found here:
             // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/api/peer_connection_interface.h;bpv=1;bpt=1;l=311?q=turnPortPrunePolicy&ss=chromium%2Fchromium%2Fsrc&gsn=RTCConfigurationType&gs=kythe%3A%2F%2Fchromium.googlesource.com%2Fchromium%2Fsrc%3Flang%3Dc%252B%252B%3Fpath%3Dsrc%2Fthird_party%2Fwebrtc%2Fapi%2Fpeer_connection_interface.h%23EnglTqBUUO_2RhVLtcib-vrLxQfj1_fRrBgF1-1K3tE
@@ -151,7 +149,6 @@ internal class ConnectionCtx(
                 it.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
                 it.turnPortPrunePolicy = PeerConnection.PortPrunePolicy.PRUNE_BASED_ON_PRIORITY
                 it.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
-                it.disableIpv6 = disableIpv6
                 it.cryptoOptions = CryptoOptions.builder()
                     .setEnableGcmCryptoSuites(true)
                     .setEnableAes128Sha1_32CryptoCipher(false)

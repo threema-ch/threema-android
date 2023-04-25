@@ -45,6 +45,11 @@ class Connecting internal constructor(
     private val certificate: RtcCertificatePem,
     private val joinResponse: JoinResponseBody
 ) : GroupCallConnectionState(StateName.CONNECTING, call) {
+    private companion object {
+        // If there are fewer than this amount of remote participants in a call when joining
+        // the microphone will not be muted upon join.
+        private const val MUTE_MICROPHONE_PARTICIPANT_THRESHOLD = 4
+    }
 
     @WorkerThread
     override fun getStateProviders() = listOf(
@@ -75,9 +80,6 @@ class Connecting internal constructor(
             me,
             ctx.localAudioVideoContext
         )
-        // set initial video/audio states
-        participant.cameraActive = false
-        participant.microphoneActive = true
 
         call.context = GroupCallContext(
             ctx, participant
@@ -95,7 +97,13 @@ class Connecting internal constructor(
 
         logger.trace("Waiting for connected signal")
         return withTimeout(TIMEOUT_CONNECTED_SIGNAL_MILLIS) {
-            call.connectedSignal.complete(joinResponse.startedAt to connectedSignal.await())
+            val participantIds = connectedSignal.await()
+
+            // set initial video/audio states
+            participant.cameraActive = false
+            participant.microphoneActive = participantIds.size < MUTE_MICROPHONE_PARTICIPANT_THRESHOLD
+
+            call.completableConnectedSignal.complete(joinResponse.startedAt to participantIds)
             logger.trace("Waiting for call confirmation")
             call.callConfirmedSignal.await()
             Connected(call, participant)

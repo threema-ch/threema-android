@@ -22,7 +22,6 @@
 package ch.threema.app.voip.groupcall.sfu
 
 import androidx.annotation.WorkerThread
-import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.app.voip.groupcall.sfu.connection.GroupCallConnectionState
 import ch.threema.app.voip.groupcall.sfu.webrtc.RemoteCtx
 import kotlinx.coroutines.CompletableDeferred
@@ -30,15 +29,14 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import org.webrtc.EglBase
 
-internal interface GroupCall {
+internal interface GroupCall : GroupCallController {
     /**
      * A signal that indicates whether a call is valid and can move on to the CONNECTED state after
      * connecting.
      */
     val callConfirmedSignal: Deferred<Unit>
-    val callId: CallId
-    val callLeftSignal: Deferred<Unit>
-    val connectedSignal: CompletableDeferred<Pair<ULong, Set<ParticipantId>>>
+
+    val completableConnectedSignal: CompletableDeferred<Pair<ULong, Set<ParticipantId>>>
 
     /**
      * In some cases the [GroupCallController] can decide that a participant should be treated as if
@@ -49,7 +47,6 @@ internal interface GroupCall {
      */
     val dislodgedParticipants: Flow<ParticipantId>
 
-    var description: GroupCallDescription
     var parameters: GroupCallParameters
     var dependencies: GroupCallDependencies
 

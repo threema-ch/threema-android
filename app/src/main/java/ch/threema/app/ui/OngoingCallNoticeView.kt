@@ -22,6 +22,7 @@
 package ch.threema.app.ui
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.util.AttributeSet
@@ -31,26 +32,35 @@ import android.widget.Chronometer
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.DefaultLifecycleObserver
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.voip.activities.CallActivity
+import ch.threema.app.voip.activities.GroupCallActivity
+import ch.threema.app.voip.groupcall.GroupCallDescription
+import ch.threema.app.voip.groupcall.LocalGroupId
+import ch.threema.app.voip.services.VoipCallService
 import com.google.android.material.chip.Chip
 
-object OngoingCallNoticeModes {
-	const val MODE_VOIP = 0
-	const val MODE_GROUP_CALL_RUNNING = 1
-	const val MODE_GROUP_CALL_JOINED = 2
+enum class OngoingCallNoticeMode {
+	MODE_VOIP,
+	MODE_GROUP_CALL_RUNNING,
+	MODE_GROUP_CALL_JOINED
 }
 
 class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
+	private var operationMode: OngoingCallNoticeMode? = null
+	private var groupId: LocalGroupId? = null
 	private lateinit var actionButton: Chip
 	private lateinit var callContainer: RelativeLayout
 	private lateinit var chronometer: Chronometer
 	private lateinit var callText: TextView
 	private lateinit var participantsText: TextView
+	private lateinit var callDurationDivider: TextView
 
 	constructor(context: Context) : super(context) {
 		init()
@@ -64,14 +74,46 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 		init()
 	}
 
-	@UiThread
+	@AnyThread
+	fun showVoip() {
+		post {
+			setupVoipActions()
+			show(VoipCallService.getStartTime(), OngoingCallNoticeMode.MODE_VOIP)
+		}
+	}
+
+	/**
+	 * Hide the notice only if the current [OngoingCallNoticeMode] is [OngoingCallNoticeMode.MODE_VOIP].
+	 */
+	@AnyThread
+	fun hideVoip() {
+		if (operationMode == OngoingCallNoticeMode.MODE_VOIP) {
+			hide()
+		}
+	}
+
+	@AnyThread
+	fun showGroupCall(call: GroupCallDescription, mode: OngoingCallNoticeMode) {
+		post {
+			val participantsCount = call.callState?.participants?.size ?: 0
+			setupGroupCallActions(call)
+			show(call.getRunningSince(), mode, participantsCount)
+		}
+	}
+
+	/**
+	 * Hides the notice no matter what the current [OngoingCallNoticeMode] is.
+	 */
+	@AnyThread
 	fun hide() {
-		chronometer.stop()
-		visibility = View.GONE
+		post {
+			chronometer.stop()
+			visibility = View.GONE
+		}
 	}
 
 	@UiThread
-	fun show(startTime: Long?, mode: Int, participantCount: Int) {
+	private fun show(startTime: Long?, mode: OngoingCallNoticeMode, participantCount: Int = 0) {
 		setOperationMode(mode, participantCount)
 		startTime?.let {
 			chronometer.base = it
@@ -80,22 +122,15 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 		visibility = View.VISIBLE
 	}
 
-	fun setContainerAction(action: Runnable?) {
-		setViewAction(callContainer, action)
-	}
-
-	fun setButtonAction(action: Runnable?) {
-		setViewAction(actionButton, action)
-	}
-
-	fun setOperationMode(mode: Int, participantCount: Int) {
+	private fun setOperationMode(mode: OngoingCallNoticeMode, participantCount: Int) {
+		operationMode = mode
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			actionButton.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice)
 		}
 
 		when (mode) {
-			OngoingCallNoticeModes.MODE_VOIP -> {
+			OngoingCallNoticeMode.MODE_VOIP -> {
 				callContainer.isClickable = true
 				callContainer.isFocusable = true
 				actionButton.text = context.getString(R.string.voip_hangup)
@@ -105,8 +140,9 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 				actionButton.chipIconTint = getDangerousTextColor()
 				callText.setText(R.string.call_ongoing)
 				participantsText.visibility = GONE
+				callDurationDivider.visibility = GONE
 			}
-			OngoingCallNoticeModes.MODE_GROUP_CALL_JOINED -> {
+			OngoingCallNoticeMode.MODE_GROUP_CALL_JOINED -> {
 				callContainer.isClickable = false
 				callContainer.isFocusable = false
 				actionButton.text = context.getString(R.string.voip_gc_open_call)
@@ -117,7 +153,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 				callText.setText(R.string.voip_gc_in_call)
 				setParticipantsText(participantCount)
 			}
-			OngoingCallNoticeModes.MODE_GROUP_CALL_RUNNING -> {
+			OngoingCallNoticeMode.MODE_GROUP_CALL_RUNNING -> {
 				callContainer.isClickable = false
 				callContainer.isFocusable = false
 				actionButton.text = context.getString(R.string.voip_gc_join_call)
@@ -127,9 +163,6 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 				actionButton.chipIconTint = getTextColorGroupCall()
 				callText.setText(R.string.voip_gc_ongoing_call)
 				setParticipantsText(participantCount)
-			}
-			else -> {
-				// should never happen
 			}
 		}
 	}
@@ -141,6 +174,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 		callText = findViewById(R.id.call_text)
 		chronometer = findViewById(R.id.call_duration)
 		participantsText = findViewById(R.id.participants_count)
+		callDurationDivider = findViewById(R.id.ongoing_call_divider)
 	}
 
 	private fun init() {
@@ -157,17 +191,8 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 		return backgroundColor.withAlpha(0x1a)
 	}
 
-	private fun getDefaultBackgroundColor(): ColorStateList {
-		val backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(context, R.attr.colorAccent))
-		return backgroundColor.withAlpha(0x1a)
-	}
-
 	private fun getTextColorGroupCall(): ColorStateList {
 		return ColorStateList.valueOf(resources.getColor(R.color.group_call_accent))
-	}
-
-	private fun getTextColor(): ColorStateList {
-		return ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(context, R.attr.colorAccent))
 	}
 
 	private fun getDangerousTextColor(): ColorStateList {
@@ -179,11 +204,57 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 		return backgroundColor.withAlpha(0x1a)
 	}
 
+	private fun voipContainerAction() {
+		if (VoipCallService.isRunning()) {
+			val openIntent = Intent(context, CallActivity::class.java)
+			openIntent.putExtra(VoipCallService.EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL)
+			openIntent.putExtra(
+				VoipCallService.EXTRA_CONTACT_IDENTITY,
+				VoipCallService.getOtherPartysIdentity()
+			)
+			openIntent.putExtra(VoipCallService.EXTRA_START_TIME, VoipCallService.getStartTime())
+			context.startActivity(openIntent)
+		}
+	}
+
+	private fun voipButtonAction() {
+		val hangupIntent = Intent(context, VoipCallService::class.java)
+		hangupIntent.action = VoipCallService.ACTION_HANGUP
+		context.startService(hangupIntent)
+	}
+
+	private fun groupCallButtonAction(call: GroupCallDescription) {
+		context.startActivity(GroupCallActivity.getJoinCallIntent(context, call.getGroupIdInt()))
+	}
+
 	private fun setViewAction(view: View?, action: Runnable?) {
 		if (action == null) {
 			view?.setOnClickListener(null)
 		} else {
 			view?.setOnClickListener { action.run() }
+		}
+	}
+
+	private fun setContainerAction(action: Runnable?) {
+		setViewAction(callContainer, action)
+	}
+
+	private fun setButtonAction(action: Runnable?) {
+		setViewAction(actionButton, action)
+	}
+
+	private fun setupVoipActions() {
+		groupId = null
+		setContainerAction(this::voipContainerAction)
+		setButtonAction(this::voipButtonAction)
+	}
+
+	private fun setupGroupCallActions(call: GroupCallDescription) {
+		if (groupId != call.groupId) {
+			groupId = call.groupId
+			setContainerAction(null)
+			val action = call.let { { groupCallButtonAction(it) } }
+			setButtonAction(action)
 		}
 	}
 
@@ -196,8 +267,10 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 				participantCount
 			)
 			participantsText.visibility = VISIBLE
+			callDurationDivider.visibility = VISIBLE
 		} else {
 			participantsText.visibility = GONE
+			callDurationDivider.visibility = GONE
 		}
 	}
 }

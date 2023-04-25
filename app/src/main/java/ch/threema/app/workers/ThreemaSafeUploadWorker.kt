@@ -30,7 +30,6 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.threemasafe.ThreemaSafeService
-import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -83,7 +82,13 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
 
         try {
             threemaSafeService.createBackup(forceUpdate)
-        } catch (e: ThreemaException) {
+            // When the backup has been successfully uploaded or does not need to be uploaded, then
+            // we ignore previous errors.
+            preferenceService.threemaSafeErrorDate = null
+        } catch (e: ThreemaSafeService.ThreemaSafeUploadException) {
+            if (preferenceService.threemaSafeErrorDate == null && e.isUploadNeeded) {
+                preferenceService.threemaSafeErrorDate = Date()
+            }
             showWarningNotification()
             logger.error("Threema Safe upload failed", e)
             success = false
@@ -101,11 +106,12 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
     }
 
     private fun showWarningNotification() {
-        val backupDate = preferenceService!!.threemaSafeBackupDate
+        val errorDate = preferenceService!!.threemaSafeErrorDate
         val aWeekAgo = Date(System.currentTimeMillis() - DateUtils.WEEK_IN_MILLIS)
-        if (backupDate != null && backupDate.before(aWeekAgo)) {
+        if (errorDate != null && errorDate.before(aWeekAgo)) {
+            val lastBackupDate = preferenceService.threemaSafeBackupDate
             val notificationService = serviceManager!!.notificationService
-            notificationService?.showSafeBackupFailed(((System.currentTimeMillis() - backupDate.time) / DateUtils.DAY_IN_MILLIS).toInt())
+            notificationService?.showSafeBackupFailed(((System.currentTimeMillis() - lastBackupDate.time) / DateUtils.DAY_IN_MILLIS).toInt())
         }
     }
 }

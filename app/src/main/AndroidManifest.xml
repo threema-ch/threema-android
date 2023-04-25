@@ -168,7 +168,7 @@
 		android:theme="@style/AppBaseTheme"
 		android:usesCleartextTraffic="false"
 		android:networkSecurityConfig="@xml/network_security_config"
-		android:manageSpaceActivity=".activities.StorageManagementActivity"
+		android:manageSpaceActivity="ch.threema.app.activities.StorageManagementActivity"
 		android:allowAudioPlaybackCapture="false"
 		android:appCategory="social"
 		android:hasFragileUserData="true"

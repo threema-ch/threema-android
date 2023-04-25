@@ -33,6 +33,7 @@
     <string name="webclient_cannot_start">Не ўдаецца запусціць сесію</string>
     <string name="webclient_constrained_by_mdm">Сэрвер не зацверджаны адміністратарам.</string>
     <string name="webclient_clear_all_sessions">Ачысціць усе сесіі</string>
+    <string name="webclient_clear_all_sessions_confirm">Вы ўпэўнены, што хочаце спыніць і выдаліць усе сеансы?</string>
     <string name="webclient_prefs_debug_tool_summary">Запусціце гэты сродак для адладкі непаладак з настройкай злучэння з праграмай для ПК або вэб-кліентам</string>
     <string name="webclient_diagnostics">Дыягностыка праграмы для ПК/вэб-кл.</string>
     <string name="webclient_diagnostics_start">Пуск</string>

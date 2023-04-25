@@ -203,7 +203,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 	/**
 	 * called, after the media player was prepared
 	 */
-	private void prepared(MediaPlayerStateWrapper mp, boolean resume) {
+	private void prepared(MediaPlayerStateWrapper mp, final boolean resume) {
 		logger.debug("prepared");
 
 		//do not play if state is changed! (not playing)
@@ -230,11 +230,18 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 		}
 		logger.debug("duration = {}", duration);
 
-		if (this.position != 0) {
+		if (this.position >= 0) {
+			this.mediaPlayer.setOnSeekCompleteListener(mp1 -> onSeekCompleted(resume));
 			this.mediaPlayer.seekTo(this.position);
+		} else {
+			onSeekCompleted(resume);
 		}
+	}
 
+	private void onSeekCompleted(final boolean resume) {
 		logger.debug("play from position {}", this.position);
+
+		this.mediaPlayer.setOnSeekCompleteListener(null);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			float audioPlaybackSpeed = preferenceService.getAudioPlaybackSpeed();
@@ -277,7 +284,10 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 						Thread.sleep(SEEKBAR_UPDATE_FREQUENCY);
 
 						if (mediaPlayer != null && getState() == State_PLAYING && isPlaying()) {
-							position = mediaPlayer.getCurrentPosition();
+							int newposition = mediaPlayer.getCurrentPosition();
+							if (newposition > position) {
+								position = newposition;
+							}
 							AudioMessagePlayer.this.updatePlayState();
 							cont = !Thread.interrupted();
 						}

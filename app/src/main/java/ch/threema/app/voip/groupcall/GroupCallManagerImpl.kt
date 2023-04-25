@@ -25,7 +25,6 @@ import android.content.Context
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
-import ch.threema.app.BuildConfig
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.*
 import ch.threema.app.utils.ConfigUtils
@@ -50,6 +49,7 @@ import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.data.status.GroupCallStatusDataModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -75,6 +75,19 @@ class GroupCallManagerImpl(
 		private const val ARTIFICIAL_GC_CREATE_WAIT_PERIOD_MILLIS: Long = 2000L
 	}
 
+	private val groupCallStartQueue: MutableSharedFlow<GroupCallStartMessage> = MutableSharedFlow<GroupCallStartMessage>(
+		// Reasonably high buffer capacity because messages might be dropped otherwise.
+		// Normally this should only be relevant when someone was offline for some time
+		// and lots of group calls have been carried out in the meantime.
+		extraBufferCapacity = 256,
+		onBufferOverflow = BufferOverflow.DROP_OLDEST
+	).apply {
+		CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+			collect { processGroupCallStart(it) }
+		}
+	}
+
+	private val generalCallObservers: MutableSet<GroupCallObserver> = Collections.synchronizedSet(mutableSetOf())
 	private val callObservers: MutableMap<LocalGroupId, MutableSet<GroupCallObserver>> = mutableMapOf()
 	private val callRefreshTimers: MutableMap<LocalGroupId, Job> = Collections.synchronizedMap(mutableMapOf())
 
@@ -146,6 +159,15 @@ class GroupCallManagerImpl(
 		}
 	}
 
+	override fun addGeneralGroupCallObserver(observer: GroupCallObserver) {
+		generalCallObservers.add(observer)
+		observer.onGroupCallUpdate(serviceConnection.getCurrentGroupCallController()?.description)
+	}
+
+	override fun removeGeneralGroupCallObserver(observer: GroupCallObserver) {
+		generalCallObservers.remove(observer)
+	}
+
 	@WorkerThread
 	override suspend fun joinCall(group: GroupModel): GroupCallController? {
 		GroupCallThreadUtil.assertDispatcherThread()
@@ -163,7 +185,7 @@ class GroupCallManagerImpl(
 				logger.info("Join existing call with id {}", it.callId)
 				joinAndConfirmCall(it, groupId)
 			}
-		}
+		}?.also { notifyJoinedAndLeftCall(it) }
 	}
 
 	override suspend fun createCall(group: GroupModel): GroupCallController {
@@ -173,6 +195,19 @@ class GroupCallManagerImpl(
 			// there is no group call considered running for this group. Start it!
 			logger.info("Create new group call")
 			createNewCall(group)
+		}.also { notifyJoinedAndLeftCall(it) }
+	}
+
+	private fun notifyJoinedAndLeftCall(call: GroupCallController) {
+		notifyCallObservers(call.description.groupId, call.description)
+		notifyGeneralCallObservers(call.description)
+		CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+			try {
+				call.callLeftSignal.await()
+			} catch (e: Exception) {
+				// noop
+			}
+			notifyGeneralCallObservers(null)
 		}
 	}
 
@@ -365,7 +400,11 @@ class GroupCallManagerImpl(
 		// if it has been started by mistake.
 		// If a call in this group is started by another group member in the meantime, this call
 		// will be joined immediately instead.
-		val chosenCall = waitForChosenCall(group, ARTIFICIAL_GC_CREATE_WAIT_PERIOD_MILLIS)
+		val waitPeriodMillis = when(preferenceService.skipGroupCallCreateDelay()) {
+			true -> 0
+			else -> ARTIFICIAL_GC_CREATE_WAIT_PERIOD_MILLIS
+		}
+		val chosenCall = waitForChosenCall(group, waitPeriodMillis)
 
 		if (chosenCall != null && chosenCall.callId != callId) {
 			callController.leave()
@@ -416,10 +455,6 @@ class GroupCallManagerImpl(
 					signal.complete(call)
 				}
 			}
-
-			override fun onGroupCallStart(groupModel: GroupModel) {
-				// noop
-			}
 		}
 
 		return try {
@@ -463,9 +498,11 @@ class GroupCallManagerImpl(
 
 	@WorkerThread
 	private fun handleGroupCallStart(message: GroupCallStartMessage): Boolean {
-		CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
-			processGroupCallStart(message)
-		}
+		groupCallStartQueue.tryEmit(message)
+		// Always mark messages as processed.
+		// If there where loads of sent GroupCallStartMessages while the device was offline
+		// this might lead to "dropped" messages and therefore missing group call states in the
+		// chat. As this affects only older messages this should not be a problem.
 		return true
 	}
 
@@ -548,14 +585,6 @@ class GroupCallManagerImpl(
 
 		logger.debug("Show group call notification")
 		notificationService.addGroupCallNotification(group, callerContactModel)
-
-		notifyGroupCallStartObservers(group)
-	}
-
-	private fun notifyGroupCallStartObservers(group: GroupModel) {
-		synchronized(callObservers) {
-			callObservers[group.localGroupId]?.forEach { it.onGroupCallStart(group) }
-		}
 	}
 
 	/**
@@ -708,7 +737,7 @@ class GroupCallManagerImpl(
 
 	@WorkerThread
 	private fun sendCallInitAsText(callId: CallId, group: GroupModel, callStartData: GroupCallStartData) {
-		if (BuildConfig.DEBUG && preferenceService.isGroupCallSendInitEnabled) {
+		if (preferenceService.isGroupCallSendInitEnabled) {
 			val groupJson = JSONObject()
 			groupJson.put("creator", group.creatorIdentity)
 			groupJson.put("id", Base64.encodeBytes(group.apiGroupId.groupId))
@@ -741,6 +770,19 @@ class GroupCallManagerImpl(
 		}
 	}
 
+	private fun notifyCallObservers(groupId: LocalGroupId, call: GroupCallDescription?) {
+		synchronized(callObservers) {
+			callObservers[groupId]?.forEach { it.onGroupCallUpdate(call) }
+		}
+		notifyGeneralCallObservers(call)
+	}
+
+	private fun notifyGeneralCallObservers(call: GroupCallDescription?) {
+		synchronized(generalCallObservers) {
+			generalCallObservers.forEach { it.onGroupCallUpdate(call) }
+		}
+	}
+
 	/**
 	 * Run the group call refresh steps and return the chosen call if present.
 	 */
@@ -754,9 +796,7 @@ class GroupCallManagerImpl(
 		// Step 6: abort the steps (update the UI)
 		if (chosenCall == null) {
 			chosenCalls.remove(groupId)
-			synchronized(callObservers) {
-				callObservers[groupId]?.forEach { it.onGroupCallUpdate(null) }
-			}
+			notifyCallObservers(groupId, null)
 			return null
 		}
 
@@ -846,9 +886,7 @@ class GroupCallManagerImpl(
 		} else {
 			chosenCalls[groupId] = call
 		}
-		synchronized(callObservers) {
-			callObservers[groupId]?.forEach { it.onGroupCallUpdate(call) }
-		}
+		notifyCallObservers(groupId, call)
 		val groupModel = groupService.getById(groupId.id)
 		if (call == null && groupModel != null) {
 			messageService.createGroupCallStatus(

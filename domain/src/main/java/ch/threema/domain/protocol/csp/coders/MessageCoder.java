@@ -337,8 +337,11 @@ public class MessageCoder {
 		int type = data[0] & 0xFF;
 		AbstractMessage msg = null;
 
-		// Set this flag to true for message types that should add the contact as hidden contact
+		// Set this flag to false for message types that should not trigger a contact creation
 		boolean addContact = contact == null;
+		// Set this flag to true for message types that should result in a new hidden contact. Note
+		// that for some message types this is desired to reduce server load as the public key does
+		// not need to be fetched for hidden contacts.
 		boolean addHidden = false;
 
 		switch (type) {
@@ -902,6 +905,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_CONTACT_SET_PHOTO: {
+				addHidden = true;
 				if (realDataLength != (1 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for contact set photo message");
 				}
@@ -925,6 +929,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_CONTACT_DELETE_PHOTO: {
+				addHidden = true;
 				if (realDataLength != 1) {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for contact delete photo message");
 				}
@@ -934,6 +939,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_CONTACT_REQUEST_PHOTO: {
+				addContact = false;
 				if (realDataLength != 1) {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for contact request photo message");
 				}

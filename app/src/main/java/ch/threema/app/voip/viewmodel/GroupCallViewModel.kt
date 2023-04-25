@@ -89,8 +89,8 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 	private val callRunning = MutableLiveData(false)
 	fun isCallRunning(): LiveData<Boolean> = Transformations.distinctUntilChanged(callRunning)
 
-	private val finishEvents = MutableLiveData<FinishEvent>()
-	fun getFinishEvents(): LiveData<FinishEvent> = finishEvents
+	private val completableFinishEvent = CompletableDeferred<FinishEvent>()
+	val finishEvent: Deferred<FinishEvent> = completableFinishEvent
 
 	private val eglBaseAndParticipants = MutableLiveData<Pair<EglBase, Set<Participant>>>()
 	fun getEglBaseAndParticipants(): LiveData<Pair<EglBase, Set<Participant>>> = eglBaseAndParticipants
@@ -141,11 +141,6 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 		startTime.postValue(call?.getRunningSince())
 	}
 
-	@AnyThread
-	override fun onGroupCallStart(groupModel: GroupModel) {
-		logger.trace("Group call start")
-	}
-
 	@UiThread
 	fun setGroupId(groupId: LocalGroupId) {
 		val previousGroupId = this.groupId.value
@@ -179,7 +174,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 			joinJob?.cancel()
 			logger.info("Join call aborted")
 		}
-		finishEvents.postValue(getFinishEvent(FinishEvent.Reason.LEFT))
+		completableFinishEvent.complete(getFinishEvent(FinishEvent.Reason.LEFT))
 		callRunning.postValue(false)
 	}
 
@@ -194,7 +189,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 						val controller = joinOrCreateCall(it, intention)
 
 						if (controller == null) {
-							finishEvents.postValue(FinishEvent(FinishEvent.Reason.NO_SUCH_CALL))
+							completableFinishEvent.complete(FinishEvent(FinishEvent.Reason.NO_SUCH_CALL))
 						} else {
 							completeJoining(controller)
 						}
@@ -204,7 +199,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 						groupCallManager.abortCurrentCall()
 					} catch (e: Exception) {
 						logger.error("Error while joining call", e)
-						finishEvents.postValue(mapExceptionToFinishEvent(e))
+						completableFinishEvent.complete(mapExceptionToFinishEvent(e))
 						callRunning.postValue(false)
 					}
 				}
@@ -307,12 +302,12 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 	@UiThread
 	private fun observeCallLeftSignal() {
 		viewModelScope.launch {
-			finishEvents.value = try {
+			completableFinishEvent.complete(try {
 				callController.callLeftSignal.await()
 				getFinishEvent(FinishEvent.Reason.LEFT)
 			} catch (e: Exception) {
 				mapExceptionToFinishEvent(e)
-			}
+			})
 			callRunning.value = false
 		}
 	}

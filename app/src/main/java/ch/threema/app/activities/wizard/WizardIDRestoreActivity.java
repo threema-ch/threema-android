@@ -42,6 +42,7 @@ import android.widget.EditText;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -52,6 +53,7 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.api.FetchIdentityException;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 
 public class WizardIDRestoreActivity extends WizardBackgroundActivity {
@@ -79,25 +81,31 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 		backupIdText.setImeOptions(EditorInfo.IME_ACTION_SEND);
 		backupIdText.setRawInputType(InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS);
 		backupIdText.addTextChangedListener(new TextWatcher() {
+			@Override
 			public void afterTextChanged(Editable s) {
 				idOK = s.length() > 0 && s.toString().trim().length() == BACKUP_STRING_LENGTH;
 				updateMenu();
 			}
 
+			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
+			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 		});
 
 		passwordEditText = findViewById(R.id.restore_password);
 		passwordEditText.addTextChangedListener(new TextWatcher() {
+			@Override
 			public void afterTextChanged(Editable s) {
 				passwordOK = s.length() >= ThreemaApplication.MIN_PW_LENGTH_ID_EXPORT_LEGACY;
 				updateMenu();
 			}
 
+			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
+			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 		});
 
@@ -124,11 +132,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 	private void updateMenu() {
 		if (nextButton == null) return;
 
-		if (idOK && passwordOK) {
-			nextButton.setEnabled(true);
-		} else {
-			nextButton.setEnabled(false);
-		}
+		nextButton.setEnabled(idOK && passwordOK);
 	}
 
 	public void onCancel(View view) {
@@ -144,7 +148,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 		EditTextUtil.hideSoftKeyboard(backupIdText);
 		EditTextUtil.hideSoftKeyboard(passwordEditText);
 
-		new AsyncTask<Void, Void, Boolean>() {
+		new AsyncTask<Void, Void, RestoreResult>() {
 			String password, backupString;
 
 			@Override
@@ -155,33 +159,37 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 			}
 
 			@Override
-			protected Boolean doInBackground(Void... params) {
+			protected RestoreResult doInBackground(Void... params) {
 				try {
 					ThreemaConnection connection = serviceManager.getConnection();
 					if (connection.isRunning()) {
 						connection.stop();
 					}
-					return serviceManager.getUserService().restoreIdentity(backupString, password);
+					if (serviceManager.getUserService().restoreIdentity(backupString, password)) {
+						return RestoreResult.success();
+					}
 				} catch (InterruptedException e) {
 					logger.error("Interrupted", e);
 					Thread.currentThread().interrupt();
+				} catch(FetchIdentityException e) {
+					return RestoreResult.failure(e.getMessage());
 				} catch (Exception e) {
 					logger.error("Exception", e);
 				}
-				return false;
+				return RestoreResult.failure(getString(R.string.wrong_backupid_or_password_or_no_internet_connection));
 			}
 
 			@Override
-			protected void onPostExecute(Boolean result) {
+			protected void onPostExecute(RestoreResult result) {
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_RESTORE_PROGRESS, true);
 
-				if (result) {
+				if (result.isSuccess()) {
 					// ID successfully restored from ID backup - cancel reminder
 					serviceManager.getPreferenceService().incrementIDBackupCount();
 					setResult(RESULT_OK);
 					finish();
 				} else {
-					getSupportFragmentManager().beginTransaction().add(SimpleStringAlertDialog.newInstance(R.string.error, getString(R.string.wrong_backupid_or_password_or_no_internet_connection)), "er").commitAllowingStateLoss();
+					getSupportFragmentManager().beginTransaction().add(SimpleStringAlertDialog.newInstance(R.string.error, result.getErrorMessage()), "er").commitAllowingStateLoss();
 				}
 			}
 		}.execute();
@@ -220,6 +228,31 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 				break;
 			default:
 				break;
+		}
+	}
+
+	private static class RestoreResult {
+		private final @Nullable String errorMessage;
+
+		public static RestoreResult success() {
+			return new RestoreResult(null);
+		}
+
+		public static RestoreResult failure(@Nullable String errorMessage) {
+			return new RestoreResult(errorMessage);
+		}
+
+		private RestoreResult(@Nullable String errorMessage) {
+			this.errorMessage = errorMessage;
+		}
+
+		public boolean isSuccess() {
+			return errorMessage == null;
+		}
+
+		@Nullable
+		public String getErrorMessage() {
+			return errorMessage;
 		}
 	}
 }

@@ -24,6 +24,7 @@ package ch.threema.app.adapters;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,6 @@ import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
@@ -133,6 +133,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		private final Chip joinGroupCallButton;
 		private final TextView ongoingCallDivider, ongoingCallText;
 		private final Chronometer groupCallDuration;
+		private boolean isChronometerRunning = false;
 
 		MessageListViewHolder(final View itemView, final GroupCallManager groupCallManager) {
 			super(itemView);
@@ -190,9 +191,12 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 		@AnyThread
 		private void startGroupCallDuration(long base) {
-			RuntimeUtil.runOnUiThread(() -> {
-				groupCallDuration.setBase(base);
-				groupCallDuration.start();
+			groupCallDuration.post(() -> {
+				if (base != groupCallDuration.getBase() || !isChronometerRunning) {
+					groupCallDuration.setBase(base);
+					groupCallDuration.start();
+					isChronometerRunning = true;
+				}
 				groupCallDuration.setVisibility(View.VISIBLE);
 				ongoingCallDivider.setVisibility(View.VISIBLE);
 			});
@@ -200,8 +204,11 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 		@AnyThread
 		private void stopGroupCallDuration() {
-			RuntimeUtil.runOnUiThread(() -> {
-				groupCallDuration.stop();
+			groupCallDuration.post(() -> {
+				if (isChronometerRunning) {
+					groupCallDuration.stop();
+					isChronometerRunning = false;
+				}
 				groupCallDuration.setVisibility(View.GONE);
 				ongoingCallDivider.setVisibility(View.GONE);
 			});
@@ -220,11 +227,6 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		}
 
 		public ConversationModel getConversationModel() { return conversationModel; }
-
-		@Override
-		public void onGroupCallStart(@NonNull GroupModel groupModel) {
-			ListenerManager.conversationListeners.handle(listener -> listener.onModified(conversationModel, null));
-		}
 	}
 
 	public static class FooterViewHolder extends RecyclerView.ViewHolder {
@@ -309,6 +311,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			MessageListViewHolder messageListViewHolder = (MessageListViewHolder) holder;
 			GroupModel group = messageListViewHolder.conversationModel.getGroup();
 			groupCallManager.removeGroupCallObserver(group, messageListViewHolder);
+			messageListViewHolder.stopGroupCallDuration();
 		}
 	}
 
@@ -469,11 +472,10 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 						if (viewElement.icon != null) {
 							holder.attachmentView.setVisibility(View.VISIBLE);
 							holder.attachmentView.setImageResource(viewElement.icon);
-							if (viewElement.placeholder != null) {
-								holder.attachmentView.setContentDescription(viewElement.placeholder);
-							} else {
-								holder.attachmentView.setContentDescription("");
-							}
+							String description = viewElement.placeholder != null
+								? viewElement.placeholder
+								: "";
+							holder.attachmentView.setContentDescription(description);
 
 							// Configure attachment
 							// Configure color of the attachment view
@@ -637,7 +639,10 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 				holder.joinGroupCallButton.setChipBackgroundColor(groupCallTextColor.withAlpha(0x1a));
 				holder.ongoingCallText.setText(isJoined ? R.string.voip_gc_in_call : R.string.voip_gc_ongoing_call);
 				holder.ongoingGroupCallContainer.setVisibility(View.VISIBLE);
-
+				holder.groupCallDuration.postDelayed(() -> {
+					Long runningSince = call.getRunningSince();
+					holder.startGroupCallDuration(runningSince != null ? runningSince : SystemClock.elapsedRealtime());
+				}, 100L);
 				holder.unreadCountView.setVisibility(View.GONE);
 				holder.pinIcon.setVisibility(View.GONE);
 				holder.typingContainer.setVisibility(View.GONE);

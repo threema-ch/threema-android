@@ -498,6 +498,7 @@
     <string name="really_remove_wallpapers">Вы сапраўды хочаце выдаліць усе шпалеры?</string>
     <string name="wallpapers_removed">Шпалеры выдалены</string>
     <string name="invalid_backup">Няправільныя даныя рэз. копіі. Не ўдалося аднавіць.</string>
+    <string name="invalid_zip_restore_failed">Аднавіць не атрымалася.Несапраўдны файл рэзервовай копіі: %1$s</string>
     <string name="revocation_explain">Пароль, які вы ўвядзеце тут, дазваляе ануляваць ваш ID на https://myid.threema.ch/revoke у выпадку, калі вы страцілі свой тэлефон ці ён быў скрадзены</string>
     <string name="no_unread_messages">Няма непрачыт. паведамленняў або актывавана блакіроўка PIN</string>
     <string name="send_media">Адпр. мультымед</string>
@@ -1010,6 +1011,11 @@
     <string name="open_in_maps_app">Адк-ць у праграме \"Мапы\"</string>
     <string name="delete">Выдаліць</string>
     <string name="continue_recording">Працягнуць запіс</string>
+    <string name="whatsnew_title">Навінка: супольныя званкі %1$s</string>
+    <string name="whatsnew_headline"><![CDATA[<p>Супольныя званкі са скразным шыфраваннем цяпер даступныя ў %1$s для Android.</p>
+ <p>Каб пачаць званок, адкрыйце супольны чат і краніце значок камеры ўверсе.</p>
+ <p>Усе ўдзельнікі суполкі атрымаюць апавяшчэнне і змогуць самі вырашыць, ці жадаюць яны далучыцца да званка.</p>
+ <p><b>Звярніце ўвагу:</b> для iOS-дадатку функцыя супольнага званка будзе рэалізавана пазней.</p>]]></string>
     <string name="tap_to_start">Націсьніце тут, каб запусціць %s.</string>
     <string name="two_years">2 года</string>
     <string name="invalid_backup_path">Нядзейнічае.шлях да рэз.копіі</string>
@@ -1061,7 +1067,7 @@
     <string name="work_life_dnd_active">Цяпер непрацоўны час</string>
     <string name="pencil">Аловак</string>
     <string name="warning">Увага!</string>
-    <string name="password_remember_warning">Запомніце, што вы ўводзіце тут! Паколькі %s не захоўвае паролі на сэрверах, мы не зможам дапамагчы вам, калі вы забудзецеся свой PIN-код або парольную фразу.</string>
+    <string name="password_remember_warning">Запомніце, што вы тут уводзіце!  Паколькі %s не захоўвае ніякіх пароляў на серверах, мы не можам дапамагчы вам, калі вы забудзеце PIN-код або пароль.</string>
     <string name="safe_backup_tap_to_restart">Націсніце на апавяшчэнне, каб перазапусціць праграму зараз.</string>
     <string name="send_to_support">Адправіць у службу падтрымкі Threema</string>
     <string name="menu_legal">Юрыд. інф.</string>
@@ -1416,6 +1422,9 @@
     <string name="forward_security_mode_4dh">Поўны</string>
     <string name="forward_security_mode_2dh">Аднабаковы</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) абараняе запісанае паведамленне ад дэшыфравання заднім лікам, нават калі доўгатэрміновы ключ шыфравання скампраметаваны.\n\nОпцыю можна ўключыць, калі праграма з абодвух бакоў падтрымлівае PFS.</string>
+    <string name="group_call_inactivity_left">Суполкавы выклік пакінуты з-за бяздзейнасці</string>
+    <string name="missing_permission_external_storage">Немагчыма скапіяваць файл. Паспрабуйце наступныя крокі:\n 1. Адкрыйце праграму налад.\n 2. Перайдзіце ў раздзел «Праграмы» і абярыце «Доступ да спецыяльных праграм».\n 3. Націсніце на «Доступ да ўсіх файлаў».\n 4. Націсніце на тры кропкі ў правым верхнім куце і абярыце «Паказаць сістэму».\n 5. Націсніце на «Знешняе сховішча» і пераканайцеся, што «Дазволены доступ для кіравання ўсімі файламі».\n 6. Паспрабуйце яшчэ раз аднавіць рэзервовую копію.</string>
+    <string name="forward_security_downgraded_status_message">Гэты кантакт пачаў выкарыстоўваць версію праграмы, якая не падтрымлівае Perfect Forward Secrecy.  З гэтага часу паведамленні будуць адпраўляцца без PFS.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d кантактаў</item>
         <item quantity="many">%d кантакты</item>
@@ -1445,6 +1454,96 @@
         <item quantity="other">Паведамленні скапіяваны</item>
         <item quantity="few">Зыходная мова не ўтрымлівае гэтай формы множнага ліку</item>
         <item quantity="many">Зыходная мова не ўтрымлівае гэтай формы множнага ліку</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="few">%d новых паведамленняў</item>
+        <item quantity="many">%d новых паведамленняў</item>
+        <item quantity="one">%d новае паведамленне</item>
+        <item quantity="other">%d новых паведамленняў</item>
+    </plurals>
+    <plurals name="file_saved">
+        <item quantity="few">%d файлы паспяхова захаваны.</item>
+        <item quantity="many">%d файлы паспяхова захаваны.</item>
+        <item quantity="one">%d файл паспяхова захаваны.</item>
+        <item quantity="other">%d файлы паспяхова захаваны.</item>
+    </plurals>
+    <plurals name="ballot_really_delete">
+        <item quantity="few">Выдаліць апытанні</item>
+        <item quantity="many">Выдаліць апытанні</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Выдаліць апытанне</item>
+        <item quantity="other">Выдаліць апытанні</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="few">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
+        <item quantity="many">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %1$d апытанне? Вы не зможаце аднавіць галасы.</item>
+        <item quantity="other">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="few">%d паведамленні выдалены</item>
+        <item quantity="many">%d паведамленні выдалены</item>
+        <item quantity="one">%d паведамленне выдалена</item>
+        <item quantity="other">%d паведамленні выдалены</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="few">На працягу %d гадзін</item>
+        <item quantity="many">На працягу %d гадзін</item>
+        <item quantity="one">На %d гадзіну</item>
+        <item quantity="other">На працягу %d гадзін</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="few">Немагчыма выдаліць %d кантакты, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
+        <item quantity="many">Немагчыма выдаліць %d кантакты, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
+        <item quantity="one">%d кантакт не можа быць выдалены, таму што ён усё яшчэ ўваходзіць у суполку.</item>
+        <item quantity="other">Немагчыма выдаліць %d кантакты, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
+    </plurals>
+    <plurals name="message_archived">
+        <item quantity="few">%d чатаў заархівавана</item>
+        <item quantity="many">%d чатаў заархівавана</item>
+        <item quantity="one">%d чат заархіваваны</item>
+        <item quantity="other">%d чатаў заархівавана</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="few">%d сеансаў працуе</item>
+        <item quantity="many">%d сеансаў працуе</item>
+        <item quantity="one">%d сеанс працуе</item>
+        <item quantity="other">%d сеансаў працуе</item>
+    </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="few">Мала</item>
+        <item quantity="many">Многа</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Адзін</item>
+        <item quantity="other">Іншае</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="few">Вы сапраўды хочаце выдаліць %d супольныя запыты?
+ Вы не можаце адказваць на запыты пасля выдалення.</item>
+        <item quantity="many">Вы сапраўды хочаце выдаліць %d супольныя запыты?
+ Вы не можаце адказваць на запыты пасля выдалення.</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %d супольны запыт?
+ Вы не можаце адказваць на запыты пасля выдалення.</item>
+        <item quantity="other">Вы сапраўды хочаце выдаліць %d супольныя запыты?
+ Вы не можаце адказваць на запыты пасля выдалення.</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="few">Вы сапраўды жадаеце выдаліць %d спасылкі на суполку?
+ Людзі больш не змогуць праз яго адпраўляць запыты.
+ Раней атрыманыя запыты ўсё яшчэ могуць быць прыняты або адхілены.</item>
+        <item quantity="many">Вы сапраўды жадаеце выдаліць %d спасылкі на суполку?
+ Людзі больш не змогуць праз яго адпраўляць запыты.
+ Раней атрыманыя запыты ўсё яшчэ могуць быць прыняты або адхілены.</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %d спасылку на суполку?
+ Людзі больш не змогуць праз яго адпраўляць запыты.
+ Раней атрыманыя запыты ўсё яшчэ могуць быць прыняты або адхілены.</item>
+        <item quantity="other">Вы сапраўды жадаеце выдаліць %d спасылкі на суполку?
+ Людзі больш не змогуць праз яго адпраўляць запыты.
+ Раней атрыманыя запыты ўсё яшчэ могуць быць прыняты або адхілены.</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="few">%d чатаў выдалена.</item>
+        <item quantity="many">%d чаты выдалены.</item>
+        <item quantity="one">%d чат выдалены.</item>
+        <item quantity="other">%d чатаў выдалена.</item>
     </plurals>
     <plurals name="forward_security_messages_skipped">
         <item quantity="few">%d паведамленняў было страчана пасля апошняга паведамлення.</item>

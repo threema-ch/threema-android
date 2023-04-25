@@ -195,7 +195,7 @@ import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.ListViewSwipeListener;
 import ch.threema.app.ui.LockableScrollView;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.app.ui.OngoingCallNoticeModes;
+import ch.threema.app.ui.OngoingCallNoticeMode;
 import ch.threema.app.ui.OngoingCallNoticeView;
 import ch.threema.app.ui.OpenBallotNoticeView;
 import ch.threema.app.ui.QRCodePopup;
@@ -232,12 +232,12 @@ import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ToolbarUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
-import ch.threema.app.voip.activities.GroupCallActivity;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.groupcall.GroupCallObserver;
 import ch.threema.app.voip.listeners.VoipCallEventListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
+import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -279,7 +279,6 @@ public class ComposeMessageFragment extends Fragment implements
 	ChatAdapterDecorator.ActionModeStatus,
 	SelectorDialog.SelectorDialogClickListener,
 	EmojiPicker.EmojiPickerListener,
-	OpenBallotNoticeView.VisibilityListener,
 	ReportSpamView.OnReportButtonClickListener,
 	ThreemaToolbarActivity.OnSoftKeyboardChangedListener,
 	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
@@ -462,7 +461,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private ProgressBar searchProgress;
 	private ImageView searchNextButton, searchPreviousButton;
 
-	private OngoingCallNoticeView ongoingCallNoticeView;
+	private OngoingCallNoticeView ongoingCallNotice;
 	private GroupCallObserver groupCallObserver;
 
 	@SuppressLint("SimpleDateFormat")
@@ -555,24 +554,29 @@ public class ComposeMessageFragment extends Fragment implements
 		public void onFinished(long callId, @NonNull String peerIdentity, boolean outgoing, int duration) {
 			logger.debug("VoipCallEventListener onFinished");
 			updateVoipCallMenuItem(true);
+			hideOngoingVoipCallNotice();
 		}
 
 		@Override
 		public void onRejected(long callId, String peerIdentity, boolean outgoing, byte reason) {
 			logger.debug("VoipCallEventListener onRejected");
 			updateVoipCallMenuItem(true);
+			hideOngoingVoipCallNotice();
 		}
 
 		@Override
 		public void onMissed(long callId, String peerIdentity, boolean accepted, @Nullable Date date) {
 			logger.debug("VoipCallEventListener onMissed");
 			updateVoipCallMenuItem(true);
+			hideOngoingVoipCallNotice();
 		}
 
 		@Override
 		public void onAborted(long callId, String peerIdentity) {
 			logger.debug("VoipCallEventListener onAborted");
-			updateVoipCallMenuItem(true); }
+			updateVoipCallMenuItem(true);
+			hideOngoingVoipCallNotice();
+		}
 	};
 
 	private final MessageListener messageListener = new MessageListener() {
@@ -725,7 +729,7 @@ public class ComposeMessageFragment extends Fragment implements
 				registerGroupCallObserver();
 			} else {
 				// Remove ongoing group call notice if not a member of the group anymore
-				RuntimeUtil.runOnUiThread(() -> updateOngoingGroupCallState(null));
+				updateOngoingCallNotice();
 				removeGroupCallObserver();
 			}
 		}
@@ -1087,65 +1091,89 @@ public class ComposeMessageFragment extends Fragment implements
 		return this.fragmentView;
 	}
 
-	@UiThread
+	@AnyThread
 	private void initOngoingCallState() {
-		ongoingCallNoticeView = fragmentView.findViewById(R.id.ongoing_call_notice);
-		if (ongoingCallNoticeView != null) {
-			ongoingCallNoticeView.setButtonAction(this::joinOngoingGroupCall);
-			ongoingCallNoticeView.setContainerAction(null);
-
+		ongoingCallNotice = fragmentView.findViewById(R.id.ongoing_call_notice);
+		if (ongoingCallNotice != null) {
 			if (groupModel != null && groupService.isGroupMember(groupModel)) {
 				registerGroupCallObserver();
 			} else {
-				updateOngoingGroupCallState(null);
+				updateOngoingCallNotice();
 			}
 		}
 	}
 
-	private void joinOngoingGroupCall() {
-		if (groupModel != null) {
-			startActivity(GroupCallActivity.getJoinCallIntent(requireActivity(), groupModel.getId()));
+	@AnyThread
+	private void updateOngoingCallNotice() {
+		boolean hasRunningOOCall = VoipCallService.isRunning()
+			&& contactModel != null
+			&& contactModel.getIdentity() != null
+			&& contactModel.getIdentity().equals(VoipCallService.getOtherPartysIdentity());
+
+		GroupCallDescription chosenCall = getChosenCall();
+		boolean hasRunningGroupCall = chosenCall != null;
+		boolean hasJoinedGroupCall = hasRunningGroupCall
+			&& groupCallManager.isJoinedCall(chosenCall);
+
+		if (hasRunningOOCall && hasJoinedGroupCall) {
+			logger.warn("Invalid state: joined 1:1 AND group call, not showing call notice");
+			updateVoipCallMenuItem(true);
+			hideOngoingCallNotice();
+		} else if (hasRunningOOCall) {
+			showOngoingVoipCallNotice();
+		} else if (hasRunningGroupCall) {
+			OngoingCallNoticeMode mode = hasJoinedGroupCall
+				? OngoingCallNoticeMode.MODE_GROUP_CALL_JOINED
+				: OngoingCallNoticeMode.MODE_GROUP_CALL_RUNNING;
+			showOngoingGroupCallNotice(mode, chosenCall);
+		} else {
+			updateVoipCallMenuItem(true);
+			hideOngoingCallNotice();
 		}
 	}
 
-	private void unsetOngoingCallState() {
-		if (ongoingCallNoticeView != null) {
-			ongoingCallNoticeView.setButtonAction(null);
-			ongoingCallNoticeView.setContainerAction(null);
-		}
-		removeGroupCallObserver();
+	@Nullable
+	private GroupCallDescription getChosenCall() {
+		return ConfigUtils.isGroupCallsEnabled() && groupModel != null && groupCallManager != null
+			? groupCallManager.getCurrentChosenCall(groupModel)
+			: null;
 	}
 
+	@AnyThread
+	private void showOngoingVoipCallNotice() {
+		if (ongoingCallNotice != null) {
+			ongoingCallNotice.showVoip();
+		}
+	}
+
+	@AnyThread
+	private void hideOngoingVoipCallNotice() {
+		if (ongoingCallNotice != null) {
+			ongoingCallNotice.hideVoip();
+		}
+	}
+
+	@AnyThread
+	private void hideOngoingCallNotice() {
+		if (ongoingCallNotice != null) {
+			ongoingCallNotice.hide();
+		}
+	}
+
+	@AnyThread
 	private void registerGroupCallObserver() {
 		removeGroupCallObserver();
 		if (groupModel != null && groupCallManager != null) {
-			groupCallObserver = new GroupCallObserver() {
-				@Override
-				public void onGroupCallUpdate(@Nullable GroupCallDescription call) {
-					RuntimeUtil.runOnUiThread(() -> ComposeMessageFragment.this.updateOngoingGroupCallState(call));
-				}
-
-				@Override
-				public void onGroupCallStart(@NonNull GroupModel groupModel) {
-					// noop
-				}
-			};
+			groupCallObserver = call -> updateOngoingCallNotice();
 			groupCallManager.addGroupCallObserver(groupModel, groupCallObserver);
 		}
 	}
 
-	@UiThread
-	private void updateOngoingGroupCallState(@Nullable GroupCallDescription call) {
-		if (call != null && ConfigUtils.isGroupCallsEnabled()) {
-			int participantsCount = call.getCallState() != null ?
-				call.getCallState().getParticipants().size() :
-				0;
-
-			ongoingCallNoticeView.show(call.getRunningSince(), groupCallManager.isJoinedCall(call) ? OngoingCallNoticeModes.MODE_GROUP_CALL_JOINED : OngoingCallNoticeModes.MODE_GROUP_CALL_RUNNING, participantsCount);
+	@AnyThread
+	private void showOngoingGroupCallNotice(OngoingCallNoticeMode mode, @NonNull GroupCallDescription call) {
+		if (ongoingCallNotice != null) {
+			ongoingCallNotice.showGroupCall(call, mode);
 			updateVoipCallMenuItem(false);
-		} else {
-			ongoingCallNoticeView.hide();
-			updateVoipCallMenuItem(true);
 		}
 	}
 
@@ -1311,12 +1339,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.openGroupRequestNoticeView.updateGroupRequests();
 			}
 
-			if (groupModel != null && groupCallManager != null && groupService.isGroupMember(groupModel)) {
-				GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
-				if (call != null) {
-					updateOngoingGroupCallState(call);
-				}
-			}
+			updateOngoingCallNotice();
 		}
 	}
 
@@ -1378,7 +1401,7 @@ public class ComposeMessageFragment extends Fragment implements
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		unsetOngoingCallState();
+		removeGroupCallObserver();
 	}
 
 	@Override
@@ -2129,7 +2152,6 @@ public class ComposeMessageFragment extends Fragment implements
 		this.messageText.setText("");
 		this.messageText.setMessageReceiver(this.messageReceiver);
 		this.openBallotNoticeView.setMessageReceiver(this.messageReceiver);
-		this.openBallotNoticeView.setVisibilityListener(this);
 
 		// restore draft before setting predefined text
 		restoreMessageDraft(false);
@@ -2320,6 +2342,11 @@ public class ComposeMessageFragment extends Fragment implements
 	private boolean addMessageToList(AbstractMessageModel message) {
 		if (message == null || this.messageReceiver == null || this.composeMessageAdapter == null) {
 			return false;
+		}
+
+		if (message.getType() == MessageType.BALLOT && !message.isOutbox()) {
+			// If we receive a new ballot message
+			openBallotNoticeView.update();
 		}
 
 		//check if the message already added
@@ -3730,7 +3757,7 @@ public class ComposeMessageFragment extends Fragment implements
 						intent = new Intent(activity, ContactNotificationsActivity.class);
 						intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, this.identity);
 					}
-					if (ToolbarUtil.getMenuItemCenterPosition(((ThreemaToolbarActivity)activity).getToolbar(), R.id.menu_muted, location)) {
+					if (ToolbarUtil.getMenuItemCenterPosition(activity.getToolbar(), R.id.menu_muted, location)) {
 						intent.putExtra((ThreemaApplication.INTENT_DATA_ANIM_CENTER), location);
 					}
 					activity.startActivity(intent);
@@ -3819,14 +3846,11 @@ public class ComposeMessageFragment extends Fragment implements
 					currentPageReferenceId = 0;
 					onRefresh();
 
-					ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
-						@Override
-						public void handle(ConversationListener listener) {
-							if (!isGroupChat) {
-								conversationService.reset();
-							}
-							listener.onModifiedAll();
+					ListenerManager.conversationListeners.handle(listener -> {
+						if (!isGroupChat) {
+							conversationService.reset();
 						}
+						listener.onModifiedAll();
 					});
 				}
 		}).execute();
@@ -3903,7 +3927,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	public class ComposeMessageAction implements ActionMode.Callback {
 		private final int position;
-		private MenuItem quoteItem, discardItem, forwardItem, saveItem, copyItem, qrItem, shareItem, showText;
+		private MenuItem quoteItem, forwardItem, saveItem, copyItem, qrItem, shareItem, showText;
 
 		ComposeMessageAction(int position) {
 			this.position = position;
@@ -3911,137 +3935,91 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		private void updateActionMenu() {
-			// workaround for support library bug, see https://code.google.com/p/android/issues/detail?id=81192
-			MenuItemCompat.setShowAsAction(quoteItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
-			MenuItemCompat.setShowAsAction(discardItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
-			MenuItemCompat.setShowAsAction(saveItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
-			MenuItemCompat.setShowAsAction(copyItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
-			MenuItemCompat.setShowAsAction(forwardItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
-			MenuItemCompat.setShowAsAction(qrItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
-			MenuItemCompat.setShowAsAction(shareItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+			boolean isQuotable = selectedMessages.size() == 1;
+			boolean showAsQRCode = selectedMessages.size() == 1;
+			boolean showAsText = selectedMessages.size() == 1;
+			boolean isForwardable = selectedMessages.size() <= MAX_FORWARDABLE_ITEMS;
+			boolean isSaveable = !AppRestrictionUtil.isShareMediaDisabled(getContext());
+			boolean isCopyable = true;
+			boolean isShareable = !AppRestrictionUtil.isShareMediaDisabled(getContext());
+			boolean hasDefaultRendering = false;
 
-			quoteItem.setVisible(false);
-			qrItem.setVisible(false);
-			copyItem.setVisible(false);
-			saveItem.setVisible(false);
-			shareItem.setVisible(false);
-			showText.setVisible(false);
-
-			if (selectedMessages.size() > 1) {
-				boolean isForwardable = selectedMessages.size() <= MAX_FORWARDABLE_ITEMS;
-				boolean isMedia = true;
-				boolean isTextOnly = true;
-				boolean isShareable = true;
-
-				for (AbstractMessageModel message: selectedMessages) {
-					if (isForwardable
-							&& (
-									// if the media is not downloaded
-									!message.isAvailable()
-									// or the message is status message (unread or status)
-									|| message.isStatusMessage()
-									// or a ballot
-									|| message.getType() == MessageType.BALLOT
-									// or a voip status
-									|| message.getType() == MessageType.VOIP_STATUS
-									|| message.getType() == MessageType.GROUP_CALL_STATUS
-					)) {
-						isForwardable = false;
-					}
-					if (isMedia && !message.isAvailable() ||
-									(message.getType() != MessageType.IMAGE &&
-									message.getType() != MessageType.VOICEMESSAGE &&
-									message.getType() != MessageType.VIDEO &&
-									message.getType() != MessageType.FILE)) {
-						isMedia = false;
-					}
-					if (isTextOnly && message.getType() != MessageType.TEXT) {
-						isTextOnly = false;
-					}
-					if (isShareable) {
-						if (message.getType() != MessageType.IMAGE && message.getType() != MessageType.VIDEO && message.getType() != MessageType.FILE) {
-							isShareable = false;
-						}
-					}
-				}
-				forwardItem.setVisible(isForwardable);
-				saveItem.setVisible(isMedia);
-				copyItem.setVisible(isTextOnly);
-				shareItem.setVisible(isShareable);
-			} else if (selectedMessages.size() == 1) {
-				AbstractMessageModel selectedMessage = selectedMessages.get(0);
-
-				if (selectedMessage.isStatusMessage()) {
-					forwardItem.setVisible(false);
-					copyItem.setVisible(true);
-				} else {
-					boolean isValidReceiver = messageReceiver.validateSendingPermission(null);
-
-					quoteItem.setVisible(isValidReceiver && QuoteUtil.isQuoteable(selectedMessage));
-
-					switch (selectedMessage.getType()) {
-						case IMAGE:
-							saveItem.setVisible(true);
-							forwardItem.setVisible(true);
-							shareItem.setVisible(true);
-							if (!TestUtil.empty(selectedMessage.getCaption())) {
-								copyItem.setVisible(true);
-							}
-							break;
-						case VIDEO:
-							saveItem.setVisible(selectedMessage.isAvailable());
-							forwardItem.setVisible(selectedMessage.isAvailable());
-							shareItem.setVisible(selectedMessage.isAvailable());
-							break;
-						case VOICEMESSAGE:
-							saveItem.setVisible(selectedMessage.isAvailable());
-							forwardItem.setVisible(selectedMessage.isAvailable());
-							break;
-						case FILE:
-							if (selectedMessage.getFileData().getRenderingType() == FileData.RENDERING_DEFAULT) {
-								MenuItemCompat.setShowAsAction(saveItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
-								MenuItemCompat.setShowAsAction(forwardItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
-							}
-							saveItem.setVisible(selectedMessage.isAvailable());
-							shareItem.setVisible(selectedMessage.isAvailable());
-							forwardItem.setVisible(selectedMessage.isAvailable());
-							if (!TestUtil.empty(selectedMessage.getCaption())) {
-								copyItem.setVisible(true);
-							}
-							break;
-						case BALLOT:
-							saveItem.setVisible(false);
-							forwardItem.setVisible(false);
-							break;
-						case TEXT:
-							saveItem.setVisible(false);
-							forwardItem.setVisible(true);
-							copyItem.setVisible(true);
-							qrItem.setVisible(true);
-							shareItem.setVisible(true);
-							showText.setVisible(true);
-							break;
-						case VOIP_STATUS:
-						case GROUP_CALL_STATUS:
-							saveItem.setVisible(false);
-							forwardItem.setVisible(false);
-							copyItem.setVisible(false);
-							qrItem.setVisible(false);
-							shareItem.setVisible(false);
-							break;
-						case LOCATION:
-							shareItem.setVisible(true);
-							break;
-						default:
-							break;
-					}
-				}
+			for (AbstractMessageModel message: selectedMessages) {
+				isQuotable = isQuotable && isQuotable(message);
+				showAsQRCode = showAsQRCode && canShowAsQRCode(message);
+				showAsText = showAsText && canShowAsText(message);
+				isForwardable = isForwardable && isForwardable(message);
+				isSaveable = isSaveable && isSaveable(message);
+				isCopyable = isCopyable && isCopyable(message);
+				isShareable = isShareable && isShareable(message);
+				hasDefaultRendering = hasDefaultRendering || isDefaultRendering(message);
 			}
 
-			if (AppRestrictionUtil.isShareMediaDisabled(getContext())) {
-				shareItem.setVisible(false);
-				saveItem.setVisible(false);
+			quoteItem.setVisible(isQuotable);
+			qrItem.setVisible(showAsQRCode);
+			showText.setVisible(showAsText);
+			forwardItem.setVisible(isForwardable);
+			saveItem.setVisible(isSaveable);
+			copyItem.setVisible(isCopyable);
+			shareItem.setVisible(isShareable);
+
+			if (hasDefaultRendering) {
+				saveItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+				forwardItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+			} else {
+				saveItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+				forwardItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			}
+		}
+
+		private boolean isQuotable(@NonNull AbstractMessageModel message) {
+			boolean isValidReceiver = messageReceiver.validateSendingPermission(null);
+			return isValidReceiver && QuoteUtil.isQuoteable(message);
+		}
+
+		private boolean canShowAsQRCode(@NonNull AbstractMessageModel message) {
+			return message.getType() == MessageType.TEXT    // if the message is a text message
+				&& !message.isStatusMessage();              // and it is not a status message
+		}
+
+		private boolean canShowAsText(@NonNull AbstractMessageModel message) {
+			return message.getType() == MessageType.TEXT    // if the message is a text message
+				&& !message.isStatusMessage();              // and it is not a status message
+		}
+
+		private boolean isForwardable(@NonNull AbstractMessageModel message) {
+			return message.isAvailable() 	                            // if the media is downloaded
+				&& !message.isStatusMessage()                           // and the message is not status message (unread or status)
+				&& message.getType() != MessageType.BALLOT              // and not a ballot
+				&& message.getType() != MessageType.VOIP_STATUS 		// and not a voip status
+				&& message.getType() != MessageType.GROUP_CALL_STATUS; 	// and not a group call status
+		}
+
+		private boolean isSaveable(@NonNull AbstractMessageModel message) {
+			return message.isAvailable()                            // if the message is available
+				&& (message.getType() == MessageType.IMAGE          // and it is an image
+				|| message.getType() == MessageType.VOICEMESSAGE    // or voice message
+				|| message.getType() == MessageType.VIDEO           // or video
+				|| message.getType() == MessageType.FILE);          // or file
+		}
+
+		private boolean isShareable(@NonNull AbstractMessageModel message) {
+			return message.isAvailable()                    // if the message is available
+				&& (message.getType() == MessageType.IMAGE  // and message is an image
+				|| message.getType() == MessageType.VIDEO   // or video
+				|| message.getType() == MessageType.FILE);  // or voice message
+		}
+
+		private boolean isCopyable(@NonNull AbstractMessageModel message) {
+			boolean isText = message.getType() == MessageType.TEXT && !message.isStatusMessage();
+			boolean isFileWithCaption = message.getType() == MessageType.FILE
+				&& !TextUtils.isEmpty(message.getCaption());
+			return isText || isFileWithCaption; // is text (not status) or a file with non-empty caption
+		}
+
+		private boolean isDefaultRendering(@NonNull AbstractMessageModel message) {
+			return message.getType() == MessageType.FILE                                    // if it is a file
+				&& message.getFileData().getRenderingType() == FileData.RENDERING_DEFAULT;  // and default rendering is set
 		}
 
 		@Override
@@ -4061,7 +4039,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 			ConfigUtils.addIconsToOverflowMenu(null, menu);
 
-			discardItem = menu.findItem(R.id.menu_message_discard);
 			forwardItem = menu.findItem(R.id.menu_message_forward);
 			saveItem = menu.findItem(R.id.menu_message_save);
 			copyItem = menu.findItem(R.id.menu_message_copy);
@@ -4685,11 +4662,6 @@ public class ComposeMessageFragment extends Fragment implements
 				ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
 			}
 		}
-	}
-
-	@Override
-	public void onDismissed() {
-		updateMenus();
 	}
 
 	@Override
