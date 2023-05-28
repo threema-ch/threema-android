@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,12 +23,19 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+
 import net.sqlcipher.Cursor;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import ch.threema.app.services.MessageService;
+import ch.threema.app.utils.JsonUtil;
 import ch.threema.domain.models.MessageId;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
@@ -57,11 +64,21 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 	public GroupMessageModel getByApiMessageIdAndIdentity(MessageId apiMessageId, String identity) {
 		return getFirst(
 				GroupMessageModel.COLUMN_API_MESSAGE_ID + "=?" +
-						"AND " + GroupMessageModel.COLUMN_IDENTITY + "=?",
+						" AND " + GroupMessageModel.COLUMN_IDENTITY + "=?",
 				new String[]{
 						apiMessageId.toString(),
 						identity
 				});
+	}
+
+	public GroupMessageModel getByApiMessageIdAndGroupId(@NonNull MessageId apiMessageId, int groupId) {
+		return getFirst(
+			GroupMessageModel.COLUMN_API_MESSAGE_ID + "=?" +
+				" AND " + GroupMessageModel.COLUMN_GROUP_ID + "=?",
+			new String[]{
+				apiMessageId.toString(),
+				String.valueOf(groupId),
+			});
 	}
 
 	public GroupMessageModel getByApiMessageIdAndIsOutbox(MessageId apiMessageId, boolean isOutbox) {
@@ -181,6 +198,16 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 				@Override
 				public boolean next(CursorHelper cursorHelper) {
 					c.setGroupId(cursorHelper.getInt(GroupMessageModel.COLUMN_GROUP_ID));
+					String messageStates = cursorHelper.getString(GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES);
+					if (messageStates != null) {
+						try {
+							Map<String, Object> messageStatesMap = JsonUtil.convertObject(messageStates);
+							c.setGroupMessageStates(messageStatesMap);
+						} catch (JSONException ignored) {
+							// map may not be available or empty
+							c.setGroupMessageStates(null);
+						}
+					}
 					return false;
 				}
 			}));
@@ -280,6 +307,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 	public boolean create(GroupMessageModel groupMessageModel) {
 		ContentValues contentValues = this.buildContentValues(groupMessageModel);
 		contentValues.put(GroupMessageModel.COLUMN_GROUP_ID, groupMessageModel.getGroupId());
+		addGroupMessageStates(contentValues, groupMessageModel);
 		long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
 		if (newId > 0) {
 			groupMessageModel.setId((int) newId);
@@ -290,11 +318,12 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 
 	public boolean update(GroupMessageModel groupMessageModel) {
 		ContentValues contentValues = this.buildContentValues(groupMessageModel);
+		addGroupMessageStates(contentValues, groupMessageModel);
 		this.databaseService.getWritableDatabase().update(this.getTableName(),
 				contentValues,
 				GroupMessageModel.COLUMN_ID + "=?",
 				new String[]{
-						String.valueOf(groupMessageModel.getId())
+						String.valueOf(groupMessageModel.getId()),
 				});
 		return true;
 	}
@@ -381,6 +410,15 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 		return null;
 	}
 
+	private void addGroupMessageStates(@NonNull ContentValues contentValues, @NonNull GroupMessageModel groupMessageModel) {
+		String groupMessageStates = null;
+		if (groupMessageModel.getGroupMessageStates() != null) {
+			groupMessageStates = new JSONObject(groupMessageModel.getGroupMessageStates()).toString();
+		}
+
+		contentValues.put(GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES, groupMessageStates);
+	}
+
 	@Override
 	public String[] getStatements() {
 		return new String[] {
@@ -414,7 +452,9 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 						"`" + GroupMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE +"` TINYINT ," +
 						"`" + GroupMessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
 						"`" + GroupMessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
-						"`" + GroupMessageModel.COLUMN_READ_AT +"` DATETIME );",
+						"`" + GroupMessageModel.COLUMN_READ_AT +"` DATETIME ," +
+						"`" + GroupMessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 ," +
+						"`" + GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES +"` VARCHAR);",
 
 				//indices
 				"CREATE INDEX `m_group_message_outbox_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_OUTBOX + "` );",

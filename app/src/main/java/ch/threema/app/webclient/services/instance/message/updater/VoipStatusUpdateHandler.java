@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,18 +22,18 @@
 package ch.threema.app.webclient.services.instance.message.updater;
 
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringDef;
-
 import org.msgpack.core.MessagePackException;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Date;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
-
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.voip.listeners.VoipCallEventListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
@@ -122,22 +122,22 @@ public class VoipStatusUpdateHandler extends MessageUpdater {
 		}
 
 		@Override
-		public void onFinished(@NonNull String peerIdentity, boolean outgoing, int duration) {
+		public void onFinished(long callId, @NonNull String peerIdentity, boolean outgoing, int duration) {
 			this.update(VoipStatus.convertOnFinished(peerIdentity, outgoing, duration), TYPE_FINISHED);
 		}
 
 		@Override
-		public void onRejected(String peerIdentity, boolean outgoing, byte reason) {
+		public void onRejected(long callId, String peerIdentity, boolean outgoing, byte reason) {
 			this.update(VoipStatus.convertOnRejected(peerIdentity, outgoing, reason), TYPE_REJECTED);
 		}
 
 		@Override
-		public void onMissed(String peerIdentity, boolean accepted) {
+		public void onMissed(long callId, String peerIdentity, boolean accepted, @Nullable Date date) {
 			this.update(VoipStatus.convertOnMissed(peerIdentity), TYPE_MISSED);
 		}
 
 		@Override
-		public void onAborted(String peerIdentity) {
+		public void onAborted(long callId, String peerIdentity) {
 			this.update(VoipStatus.convertOnAborted(peerIdentity), TYPE_ABORTED);
 		}
 

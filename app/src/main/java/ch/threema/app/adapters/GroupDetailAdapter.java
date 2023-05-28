@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,9 +23,11 @@ package ch.threema.app.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -48,9 +50,11 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.ui.AvatarView;
+import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.SectionHeaderView;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -60,19 +64,27 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 import java8.util.Optional;
 
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.EXPANDED;
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
+
 public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+	public enum GroupDescState {NONE, COLLAPSED, EXPANDED}
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDetailAdapter");
 
 	private static final int TYPE_HEADER = 0;
 	private static final int TYPE_ITEM = 1;
 
-	private Context context;
+	private boolean isGroupAdmin = false;
+
+	private final Context context;
 	private ContactService contactService;
 	private GroupInviteService groupInviteService;
-	private GroupModel groupModel;
+	private final GroupModel groupModel;
 	private GroupInviteModel defaultGroupInviteModel;
 	private List<ContactModel> contactModels; // Cached copy of group members
 	private OnGroupDetailsClickListener onClickListener;
+	private final GroupDetailViewModel groupDetailViewModel;
 	HeaderHolder headerHolder;
 	private boolean warningShown = false;
 
@@ -103,6 +115,11 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		private final TextView linkString;
 		private final AppCompatImageButton linkResetButton;
 		private final AppCompatImageButton linkShareButton;
+		public final ImageView changeGroupDescButton;
+		public final SectionHeaderView groupDescTitle;
+		private final TextView expandButton;
+		public final TextView groupDescText;
+		public final SectionHeaderView groupDescChangedDate;
 
 		public HeaderHolder(View view) {
 			super(view);
@@ -120,12 +137,44 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 			this.linkString = itemView.findViewById(R.id.group_link_string);
 			this.linkResetButton = itemView.findViewById(R.id.reset_button);
 			this.linkShareButton = itemView.findViewById(R.id.share_button);
+			this.changeGroupDescButton = itemView.findViewById(R.id.change_group_desc_btn);
+			this.groupDescTitle = itemView.findViewById(R.id.group_desc_title);
+			this.groupDescText = itemView.findViewById(R.id.group_desc_text);
+			this.groupDescText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+				@Override
+				public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+					if (groupDetailViewModel.getGroupDescState() == NONE || !checkIfTextFitsInCollapsedView()) {
+						expandButton.setVisibility(View.VISIBLE);
+					} else {
+						expandButton.setVisibility(View.GONE);
+					}
+				}
+			});
+
+			this.expandButton = itemView.findViewById(R.id.expand_group_desc_text);
+			this.groupDescChangedDate = itemView.findViewById(R.id.group_desc_changed_date);
 		}
+
+
+		private boolean checkIfTextFitsInCollapsedView() {
+			Layout layout = headerHolder.groupDescText.getLayout();
+			if (layout != null) {
+				int lines = layout.getLineCount();
+				if (lines > 0) {
+					int ellipsisCount = layout.getEllipsisCount(lines - 1);
+					return ellipsisCount == 0 && lines <= 3;
+				}
+			}
+			return true;
+		}
+
+
 	}
 
-	public GroupDetailAdapter(Context context, GroupModel groupModel) {
+	public GroupDetailAdapter(Context context, GroupModel groupModel, GroupDetailViewModel groupDetailViewModel) {
 		this.context = context;
 		this.groupModel = groupModel;
+		this.groupDetailViewModel = groupDetailViewModel;
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
 		try {
@@ -141,24 +190,24 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		notifyDataSetChanged();
 	}
 
+	@NonNull
 	@Override
-	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		if (viewType == TYPE_ITEM) {
 			View v = LayoutInflater.from(parent.getContext())
-					.inflate(R.layout.item_group_detail, parent, false);
+				.inflate(R.layout.item_group_detail, parent, false);
 
 			return new ItemHolder(v);
 		} else if (viewType == TYPE_HEADER) {
 			View v = LayoutInflater.from(parent.getContext())
-					.inflate(R.layout.header_group_detail, parent, false);
-
+				.inflate(R.layout.header_group_detail, parent, false);
 			return new HeaderHolder(v);
 		}
 		throw new RuntimeException("no matching item type");
 	}
 
 	@Override
-	public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
 		if (holder instanceof ItemHolder) {
 			ItemHolder itemHolder = (ItemHolder) holder;
 			final ContactModel contactModel = getItem(position);
@@ -185,6 +234,16 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 			});
 
 			ContactModel ownerContactModel = contactService.getByIdentity(groupModel.getCreatorIdentity());
+
+			// check if the ID is the owner of the group
+			isGroupAdmin = groupModel.getCreatorIdentity().equals(contactService.getMe().getIdentity());
+
+			if (ConfigUtils.supportGroupDescription()) {
+				initGroupDescriptionSection();
+			} else {
+				disableGroupDescription();
+			}
+
 			if (ownerContactModel != null) {
 				Bitmap bitmap = contactService.getAvatar(ownerContactModel, false);
 
@@ -200,7 +259,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 				}
 			} else {
 				// creator is no longer around / has been revoked
-				headerHolder.ownerAvatarView.setImageBitmap(contactService.getDefaultAvatar(null, false));
+				headerHolder.ownerAvatarView.setImageBitmap(contactService.getDefaultAvatar(null, false, false));
 				headerHolder.ownerThreemaId.setText(groupModel.getCreatorIdentity());
 				headerHolder.ownerName.setText(R.string.invalid_threema_id);
 			}
@@ -225,8 +284,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		setGroupLinkViewsEnabled(enableGroupLinkSwitch);
 		if (defaultGroupInviteModel != null) {
 			encodeAndDisplayDefaultLink();
-		}
-		else {
+		} else {
 			headerHolder.linkString.setText(R.string.group_link_none);
 			headerHolder.linkResetButton.setVisibility(View.INVISIBLE);
 			headerHolder.linkShareButton.setVisibility(View.INVISIBLE);
@@ -243,8 +301,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 				} catch (GroupInviteToken.InvalidGroupInviteTokenException | IOException | GroupInviteModel.MissingRequiredArgumentsException e) {
 					logger.error("Exception, failed to create or get default group link", e);
 				}
-			}
-			else {
+			} else {
 				groupInviteService.deleteDefaultLink(groupModel);
 				GroupDetailAdapter.this.defaultGroupInviteModel = null;
 			}
@@ -268,6 +325,30 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		headerHolder.groupLinkTitle.setText(context.getString(R.string.default_group_link) +
 			" (" + groupInviteService.getCustomLinksCount(groupModel.getApiGroupId()) + " " + context.getString(R.string.custom) + ")" );
 	}
+
+
+	private void initGroupDescriptionSection() {
+		updateGroupDescriptionLayout();
+
+		headerHolder.expandButton.setOnClickListener(view -> {
+			switch (groupDetailViewModel.getGroupDescState()) {
+				case NONE:
+					onClickListener.onGroupDescriptionEditClick();
+					break;
+				case EXPANDED:
+					groupDetailViewModel.setGroupDescState(COLLAPSED);
+					showCollapsedGroupDescription();
+					break;
+				case COLLAPSED:
+					groupDetailViewModel.setGroupDescState(EXPANDED);
+					showExpandedGroupDescription();
+					break;
+			}
+		});
+
+		headerHolder.changeGroupDescButton.setOnClickListener(s -> onClickListener.onGroupDescriptionEditClick());
+	}
+
 
 	private void encodeAndDisplayDefaultLink() {
 		headerHolder.linkString.setText(
@@ -322,10 +403,101 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		onClickListener = listener;
 	}
 
+	/**
+	 * Updates the layout based on the group description data of the view model
+	 */
+	public void updateGroupDescriptionLayout() {
+		switch (groupDetailViewModel.getGroupDescState()) {
+			case NONE:
+				showNoGroupDescription();
+				break;
+			case COLLAPSED:
+				showCollapsedGroupDescription();
+				showGroupDescTimestamp();
+				break;
+			case EXPANDED:
+				showExpandedGroupDescription();
+				showGroupDescTimestamp();
+				break;
+		}
+	}
+
+	/**
+	 * Display the group desc timestamp
+	 */
+	private void showGroupDescTimestamp() {
+		headerHolder.groupDescChangedDate.setText(context.getString(R.string.changed_group_desc_date)
+			+ LocaleUtil.formatTimeStampString(context, groupDetailViewModel.getGroupDescTimestamp().getTime(), false));
+		headerHolder.groupDescChangedDate.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * Shows the collapsed group description
+	 */
+	private void showCollapsedGroupDescription() {
+		showGroupDescription();
+		headerHolder.groupDescText.setMaxLines(3);
+		headerHolder.expandButton.setText(R.string.read_more);
+	}
+
+	/**
+	 * Shows the expanded group description
+	 */
+	private void showExpandedGroupDescription() {
+		showGroupDescription();
+		headerHolder.expandButton.setText(R.string.read_less);
+		headerHolder.groupDescText.setMaxLines(Integer.MAX_VALUE);
+	}
+
+	/**
+	 * Make the group description elements visible and hide
+	 */
+	private void showGroupDescription() {
+		headerHolder.groupDescTitle.setVisibility(View.VISIBLE);
+		headerHolder.expandButton.setVisibility(View.VISIBLE);
+		headerHolder.groupDescText.setVisibility(View.VISIBLE);
+		headerHolder.groupDescText.setText(groupDetailViewModel.getGroupDesc());
+		LinkifyUtil.getInstance().linkifyText(headerHolder.groupDescText, true);
+		if (isGroupAdmin) {
+			headerHolder.changeGroupDescButton.setVisibility(View.VISIBLE);
+		} else {
+			headerHolder.changeGroupDescButton.setVisibility(View.GONE);
+		}
+	}
+
+	/**
+	 * Hide the group description ui elements and shows a button to add a group description
+	 */
+	private void showNoGroupDescription() {
+		groupDetailViewModel.setGroupDescState(NONE);
+		headerHolder.groupDescTitle.setVisibility(View.GONE);
+		headerHolder.groupDescText.setVisibility(View.GONE);
+		headerHolder.groupDescChangedDate.setVisibility(View.GONE);
+		headerHolder.changeGroupDescButton.setVisibility(View.GONE);
+		headerHolder.expandButton.setText(R.string.add_group_description);
+		if (isGroupAdmin) {
+			headerHolder.expandButton.setVisibility(View.VISIBLE);
+		} else {
+			headerHolder.expandButton.setVisibility(View.GONE);
+		}
+	}
+
+	/**
+	 * Hides all the group description related ui elements
+	 */
+	private void disableGroupDescription() {
+		headerHolder.groupDescTitle.setVisibility(View.GONE);
+		headerHolder.groupDescText.setVisibility(View.GONE);
+		headerHolder.groupDescChangedDate.setVisibility(View.GONE);
+		headerHolder.changeGroupDescButton.setVisibility(View.GONE);
+		headerHolder.expandButton.setVisibility(View.GONE);
+	}
+
 	public interface OnGroupDetailsClickListener {
 		void onGroupOwnerClick(View v, String identity);
 		void onGroupMemberClick(View v, @NonNull ContactModel contactModel);
 		void onResetLinkClick();
 		void onShareLinkClick();
+		void onGroupDescriptionEditClick();
 	}
 }

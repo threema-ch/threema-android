@@ -10,7 +10,7 @@
     <string name="title_adduser">Afegir un contacte nou</string>
     <string name="title_enter_id">Entreu la ID</string>
     <string name="title_invite_friend">Convideu un amic</string>
-    <string name="invite_via">Convideu un amic a través de...</string>
+    <string name="invite_via">Convideu un amic a través de…</string>
     <string name="invite_email_body">Hola,\n\nJo utilitzo %1$s, el servei de missatgeria instantània segur que protegeix la privacitat dels usuaris.\n\nLa meva ID de Threema: https://threema.id/%2$s\n\nComuniquem-nos a través de %1$s!\n\nSalut,\n</string>
     <string name="invite_sms_body">Ei! Comencem a utilitzar %1$s per comunicar-nos d\'una forma segura i compatible amb la privacitat! La meva ID de Threema: https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema. El servei de missatgeria segura que protegeix la vostra privacitat</string>
@@ -94,7 +94,7 @@ quan arribi el primer missatge.</string>
     <string name="color_white">Blanca</string>
     <string name="next">Següent</string>
     <string name="finish">Acabar</string>
-    <string name="please_wait">Espereu...</string>
+    <string name="please_wait">Espereu…</string>
     <string name="wizard_first_create_id">Creant la vostra ID de Threema</string>
     <string name="wizard1_sync_contacts">Sincronitzant contactes</string>
     <string name="wizard2_email_hint">Entreu la vostra adreça de correu electrònic</string>
@@ -117,18 +117,17 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="linked_email">Correu electrònic</string>
     <string name="linked_mobile">Número de mòbil</string>
     <string name="public_nickname">Sobrenom</string>
-    <string name="share_via">Compartir per...</string>
+    <string name="share_via">Compartir per…</string>
     <string name="share_subject">%s conversa</string>
     <string name="message_delete_undo">Desfer</string>
-    <string name="message_deleted">Missatge(s) esborrat(s)</string>
-    <string name="mobile_already_linked">La vostra ID de Threema ja està enllaçada amb aquest número de mòbil</string>
-    <string name="email_already_linked">La vostra ID de Threema ja està enllaçada amb aquesta adreça de correu electrònic</string>
+    <string name="mobile_already_linked">La vostra ID de LeOS-Messenger ja està enllaçada amb aquest número de mòbil</string>
+    <string name="email_already_linked">La vostra ID de LeOS-Messenger ja està enllaçada amb aquesta adreça de correu electrònic</string>
     <string name="whoaaa">Notícia</string>
     <string name="really_delete_message_title">Eliminar missatge</string>
     <string name="really_delete_thread">Eliminar xat</string>
     <string name="really_delete_contact">Realment voleu eliminar aquest contacte i tots els missatges associats?</string>
     <string name="image_placeholder">Imatge</string>
-    <string name="invalid_threema_id">ID de Threema no vàlid</string>
+    <string name="invalid_threema_id">ID de LeOS-Messenger no vàlid</string>
     <string name="contact_already_exists">El contacte ja existeix</string>
     <string name="close">Tancar</string>
     <string name="creating_contact">Afegint un contacte nou</string>
@@ -164,7 +163,7 @@ correu electrònic o escanejar el codi QR utilitzant un altre dispositiu.</strin
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">La següent cadena de text es pot utilitzar conjuntament amb la contrasenya escollida per
 restaurar la vostra ID de Threema.</string>
-    <string name="backup_share_subject">Exportació d\'ID de Threema per</string>
+    <string name="backup_share_subject">Exportació d\'ID de LeOS-Messenger per</string>
     <string name="add_attachment">Nou Adjunt</string>
     <string name="invalid_passphrase">Contrasenya no vàlida</string>
     <string name="master_key_locked">La clau mestra està bloquejada</string>
@@ -227,8 +226,8 @@ de continuar.</string>
     <string name="masterkey_is_unlocked">La clau mestra està desbloquejada</string>
     <string name="file_too_large">El fitxer és més gran que el màxim de %1$d MB</string>
     <string name="deleting_thread">Esborrant el xat</string>
-    <string name="enter_serial_body">Entreu la vostra clau de llicència de la botiga per obtenr la vostra clau:
-https://shop.threema.ch/retrieve_keys</string>
+    <string name="enter_serial_body"><![CDATA[Entreu la vostra clau de llicència de la botiga per obtenr la vostra clau:
+https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Desbloquejar Threema</string>
     <string name="serial_required_want_exit">La clau de llicència no és vàlida. Voleu intentar-ho de nou o tancar Threema?</string>
     <string name="checking_serial">Comprovant la llicència</string>
@@ -261,8 +260,6 @@ mestra està bloquejada</string>
     <string name="prefs_masterkey_notification_newmsg_on">Els missatges nous disparen una notificació genèrica quan la clau
 mestra està bloquejada</string>
     <string name="chat_history_attached">S\'ha adjuntat el registre de la conversa.</string>
-    <string name="new_message">1 nou missatge</string>
-    <string name="new_messages">nous missatges</string>
     <string name="backup_data_title">Còpia de les dades</string>
     <string name="backup_data_password_msg">Les vostres dades es guardaran en un fitxer ZIP en la vostra memòria interna USB i podran ser restaurades en qualsevols dispositiu Android. Entreu una contrasenya per protegir
 les dades de la vostra còpia de seguretat.</string>
@@ -289,7 +286,7 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="prefs_group_notifications">Xat de grup</string>
     <string name="add_group_members_list">Membres del grup</string>
     <string name="group_select_at_least_two">Necessiteu seleccionar almenys un membre per continuar</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">No hauríeu de seleccionar més de %1$d membres de grup</string>
+    <string name="group_select_max">No hauríeu de seleccionar més de %1$d membres de grup</string>
     <string name="search">Cercar</string>
     <string name="hint_search_keyword">Paraula clau de cerca</string>
     <string name="add_group_owner">Creador de grups</string>
@@ -346,7 +343,7 @@ intentar.</string>
     <string name="prefs_sum_black_list">Els missatges de les ID llistades aquí s\'ignoraran.</string>
     <string name="verified">Verificat</string>
     <string name="want_to_add_to_exclude_list">Aquest contacte està enllaçat amb una entrada de la llibreta d\'adreces del vostre telèfon.
-Si l\'elimineu de Threema tornarà a aparèixer després d\'una sincronització de contactes.\nVoleu excloure\'l de la sincronització?</string>
+Si l\'elimineu de LeOS-Messenger tornarà a aparèixer després d\'una sincronització de contactes.\nVoleu excloure\'l de la sincronització?</string>
     <string name="no">No</string>
     <string name="yes">Sí</string>
     <string name="deleting_contact">Eliminant contacte</string>
@@ -360,15 +357,14 @@ Si l\'elimineu de Threema tornarà a aparèixer després d\'una sincronització 
     <string name="prefs_sum_default_contact_picture_colored_on">Mostrar contenidors multicolor si no hi ha foto
 de contacte</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Utilitzar contenidors grisos si no hi ha foto de contacte</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Mostrar totes les ID de Threema a la llista de contactes</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Amagar IDs de Threema inactives/revocades</string>
+    <string name="prefs_sum_show_inactive_contacts_on">Mostrar totes les ID de LeOS-Messenger a la llista de contactes</string>
+    <string name="prefs_sum_show_inactive_contacts_off">Amagar IDs de LeOS-Messenger inactives/revocades</string>
     <string name="contact_sorting_first_name">Nom - Cognoms</string>
     <string name="contact_sorting_last_name">Cognoms - Nom</string>
     <string name="contact_format_first_name_last_name">Nom Cognoms</string>
     <string name="contact_format_last_name_first_name">Cognoms Nom</string>
     <string name="block_contact">Bloquejar contacte</string>
     <string name="unblock_contact">Desbloquejar contacte</string>
-    <string name="unread_messages">%d missatges sense llegir</string>
     <string name="one_unread_message">1 missatge sense llegir</string>
     <string name="really_unlink_contact_title">Desenllaçar contacte</string>
     <string name="really_unlink_contact">Realment voleu desenllaçar aquest contacte?</string>
@@ -380,11 +376,10 @@ de contacte</string>
     <string name="prefs_title_fullscreen_ime">Teclat a pantalla completa</string>
     <string name="prefs_sum_fullscreen_ime_on">El teclat cobreix l\'aplicació si el dispositiu està en mode apaïsat</string>
     <string name="prefs_sum_fullscreen_ime_off">Mostra una previsualització del xat sobre el teclat si hi ha espai suficient</string>
-    <string name="add_acount_from_within_threema">Gestioneu la vostra ID de Threema des de Threema.</string>
+    <string name="add_acount_from_within_threema">Gestioneu la vostra ID de LeOS-Messenger des de Threema.</string>
     <string name="save_image">Desar Imatge</string>
     <string name="share_image">Compartir Imatge</string>
     <string name="view_in_gallery">Veure a la Galeria</string>
-    <string name="file_saved">%d fitxer(s) desat(s) correctament.</string>
     <string name="token_register_failed">Error actualitzant el testimoni push, torneu a intentar-ho més tard.</string>
     <string name="internet_connection_required">No hi ha connexió a Internet</string>
     <string name="prefs_sum_save_media">Desar les imatges i vídeos rebuts, així com les fotos de la càmera enviats sense xifrar</string>
@@ -397,7 +392,7 @@ de contacte</string>
     <string name="distribution_list">Llista de distribució</string>
     <string name="title_tab_distribution_list">Llistes de distribució</string>
     <string name="no_matching_distribution_lists">No hi ha llistes de distribució coincidents</string>
-    <string name="is_typing">està escrivint...</string>
+    <string name="is_typing">està escrivint…</string>
     <string name="push_not_available_title">No s\'ha trobat un servei de push</string>
     <string name="push_not_available_text1">No hem pogut trobar un servei de push al vostre dispositiu perquè els serveis de Google Play no estan instal·lats o no estan actualitzats.</string>
     <string name="backup_in_progress">Còpia en procés</string>
@@ -426,9 +421,9 @@ de contacte</string>
     <string name="media_gallery_videos">Vídeos</string>
     <string name="group_membership_title">Membre d\'aquells grups</string>
     <string name="num_items_sected">%s seleccionat</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Realment voleu eliminar %d missatges multimèdia?</string>
+    <string name="really_delete_media">Realment voleu eliminar %d missatges multimèdia?</string>
     <string name="check_updates">Comprovar actualitzacions</string>
-    <string name="masterkey_lock_explain">Threema guarda la contrasenya a la memòria. Si necessiteu tornar a entrar la contrasenya sovint, assegureu-vos que les aplicacions mata-processos i d\'estalvi de bateria que podrien tancar Threema abans d\'hora, estan desactivades.</string>
+    <string name="masterkey_lock_explain">LeOS-Messenger guarda la contrasenya a la memòria. Si necessiteu tornar a entrar la contrasenya sovint, assegureu-vos que les aplicacions mata-processos i d\'estalvi de bateria que podrien tancar LeOS-Messenger abans d\'hora, estan desactivades.</string>
     <string name="identity_already_exists">Aquesta ID ja pertany a la vostra llista de contactes</string>
     <string name="share_contact">Compartir contacte</string>
     <string name="add_shortcut">Afegir accés directe</string>
@@ -441,7 +436,6 @@ de contacte</string>
     <string name="sending_images">Enviant imatges</string>
     <string name="share_conversation_body">Es necessita una eina ZIP moderna amb suport AES per descomprimir el fitxer, p. ex. http://www.7-zip.org or https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">El xat s\'enviarà com a fitxer zip xifrat. Escolliu una contrasenya:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d missatges nous en %2$d xats</string>
     <string name="ballot_create">Crear una enquesta</string>
     <string name="ballot_choice_add">Afegir una opció</string>
     <string name="ballot_state_closed">Tancada</string>
@@ -459,8 +453,6 @@ de contacte</string>
     <string name="ballot_overview">Totes les enquestes</string>
     <string name="ballot_copy">Copiar enquesta</string>
     <string name="ballot_remove">Eliminar enquesta</string>
-    <string name="ballot_really_delete">Eliminar enquesta/es</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Voleu eliminar %1$d enquesta/es? No podreu recuperar els vots.</string>
     <string name="ballot_not_exist">L\'enquesta no existeix</string>
     <string name="ballot_tap_to_vote">Toqueu per votar</string>
     <string name="ballot_tap_to_view_results">Enquesta tancada. Toqueu per veure els resultats</string>
@@ -475,14 +467,14 @@ de contacte</string>
     <string name="invalid_cannot_send">No podeu enviar missatges a un contacte no vàlid</string>
     <string name="ballot_answer_count_error">Entreu almenys dues respostes per a l\'enquesta.</string>
     <string name="ballot_one_contact_not_supported">Advertiment: %1$s no podrà participar a la vostra enquesta.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Advertiment: %1$d contactes no podran participar a la vostra enquesta.</string>
+    <string name="ballot_x_contact_not_supported">Advertiment: %1$d contactes no podran participar a la vostra enquesta.</string>
     <string name="contact_state_inactive">Inactiva</string>
     <string name="contact_state_invalid">No vàlida</string>
     <string name="back">Tornar</string>
     <string name="wearable_reply">Respondre</string>
     <string name="wearable_reply_label">Respondre a %s</string>
     <string name="message_acknowledged">«Acord» enviat</string>
-    <string name="push_disable_text">Si continueu, es desactivaran els missatges push i Threema comprovarà si hi ha missatges nous cada 15 minuts.</string>
+    <string name="push_disable_text">Si continueu, es desactivaran els missatges push i LeOS-Messenger comprovarà si hi ha missatges nous cada 15 minuts.</string>
     <string name="ballot_intermediate_results_show">Mostrar resultats intermedis</string>
     <string name="converting_video">Processant el vídeo</string>
     <string name="video_size_small">Alta (menys dades)</string>
@@ -494,7 +486,7 @@ de contacte</string>
     <string name="kick_user_from_group">Expulsar %1$s del grup</string>
     <string name="show_as_qrcode">Mostrar com a codi QR</string>
     <string name="qr_code">Codi QR</string>
-    <string name="really_leave_id_export">Si encara no ho heu fet, deseu la cadena de text de l\'exportació de la vostra ID o el corresponent codi QR en un lloc segur o imprimiu-lo. La vostra ID de Threema no es pot restaurar sense una còpia de seguretat.</string>
+    <string name="really_leave_id_export">Si encara no ho heu fet, deseu la cadena de text de l\'exportació de la vostra ID o el corresponent codi QR en un lloc segur o imprimiu-lo. La vostra ID de LeOS-Messenger no es pot restaurar sense una còpia de seguretat.</string>
     <string name="revocation_key_title">Revocació d\'ID</string>
     <string name="revocation_key_not_set">No s\'ha definit la contrasenya de revocació</string>
     <string name="revocation_key_set_at">Contrasenya definida %1$s</string>
@@ -508,7 +500,6 @@ de contacte</string>
     <string name="send_media">Enviar multimèdia</string>
     <string name="rotate">Girar</string>
     <string name="remove">Eliminar</string>
-    <string name="image_already_added">Aquesta imatge ja s\'ha afegit.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">Mínim %d caràcters.</string>
     <string name="mark_read">Marcar com a llegit</string>
     <string name="attach_document">Fitxer</string>
@@ -516,10 +507,9 @@ de contacte</string>
     <string name="file_placeholder">Fitxer</string>
     <string name="internal_storage">Emmagatzematge intern</string>
     <string name="no_activity_for_mime_type">No s\'ha trobat cap aplicació que obri el fitxer.</string>
-    <string name="message_copied">Missatge copiat</string>
     <string name="open_from">Obrir des de</string>
     <string name="file_one_contact_not_supported">%1$s no pot rebre fitxers.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Atenció: %1$d contactes no poden rebre el vostre fitxer.</string>
+    <string name="file_x_contact_not_supported">Atenció: %1$d contactes no poden rebre el vostre fitxer.</string>
     <string name="mime_android_apk">Paquet Android</string>
     <string name="mime_audio">Fitxer d\'àudio</string>
     <string name="mime_certificate">Certificat digital</string>
@@ -558,7 +548,6 @@ de contacte</string>
     <string name="storage_explain">Si us quedeu sense espai, podeu eliminar els fitxers multimèdia xifrats més antics per fer espai. Les miniatures es guardaran. Tingueu en compte que no es tracta d\'un procés automàtic. A menys que cliqueu un dels botons de sota, res no s\'eliminarà.</string>
     <string name="delete_data">Eliminar les dades ara</string>
     <string name="delete_date_confirm_message">Si continueu, els fitxers s\'eliminaran i només les miniatures es conservaran.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">%d fitxers multimèdia eliminats</string>
     <string name="storage_management">Gestió de l\'emmagatzematge</string>
     <string name="media">Multimèdia</string>
     <string name="prefs_storage_mgmt_title">Netejar multimèdia, fitxers i missatges</string>
@@ -571,7 +560,7 @@ de contacte</string>
     <string name="invalid_data">Dades no vàlides. No es pot enviar.</string>
     <string name="prefs_emoji_style">Estil d\'emoji</string>
     <string name="prefs_android_emojis">Emojis del sistema</string>
-    <string name="prefs_default_emojis">Emojis de Threema (predeterminat)</string>
+    <string name="prefs_default_emojis">Emojis de LeOS-Messenger (predeterminat)</string>
     <string name="android_emojis_warning">Nota: El joc de caràcters del sistema podria no ser capaç de mostrar tots els emojis suportats per Threema.</string>
     <string name="crop">Escapçar</string>
     <string name="scan_id_mismatch_title">ID no coincident</string>
@@ -587,16 +576,14 @@ de contacte</string>
     <string name="fontsize_large">Gran</string>
     <string name="fontsize_xlarge">Extra Gran</string>
     <string name="no_app_for_location">No s\'ha trobat cap aplicació de mapes en aquest dispositiu</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%d xats eliminats</string>
     <string name="prefs_sendlog">Enviar registre</string>
-    <string name="prefs_sendlog_summary">Enviar el fitxer de registre a Threema per una anàlisi posterior en cas de problemes</string>
-    <string name="permission_storage_required">Per desar o enviar multimèdia, doneu a Threema permís per accedir a l\'emmagatzematge.</string>
-    <string name="permission_location_required">Per enviar una localització, doneu a Threema permís per accedir a la vostra posició.</string>
-    <string name="permission_contacts_required">Per enviar contactes, doneu a Threema permís per llegir els contactes.</string>
+    <string name="prefs_sendlog_summary">Enviar el fitxer de registre a LeOS-Messenger per una anàlisi posterior en cas de problemes</string>
+    <string name="permission_storage_required">Per desar o enviar multimèdia, doneu a LeOS-Messenger permís per accedir a l\'emmagatzematge.</string>
+    <string name="permission_location_required">Per enviar una localització, doneu a LeOS-Messenger permís per accedir a la vostra posició.</string>
+    <string name="permission_contacts_required">Per enviar contactes, doneu a LeOS-Messenger permís per llegir els contactes.</string>
     <string name="message_declined">«En desacord» enviat</string>
     <string name="notifications_settings">Configuració de les notificacions</string>
     <string name="notifications_default">Configuració del sistema</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">Per %d hora/es</string>
     <string name="notifications_until">Fins %s</string>
     <string name="notifications_mute">Silenciat</string>
     <string name="notifications_choose_sound">Escollir so</string>
@@ -613,7 +600,7 @@ de contacte</string>
     <string name="new_wizard_welcome">Benvinguts a Threema!</string>
     <string name="new_wizard_move_finger">Moveu el dit per la pantalla per generar una nova ID de Threema.</string>
     <string name="new_wizard_this_is_your_id">Aquesta és la vostra ID de Threema</string>
-    <string name="new_wizard_works_like_phone_number">La vostra ID de Threema actua com un número de telèfon.\nEls vostres amics poden contactar-vos a través d\'aquesta ID.</string>
+    <string name="new_wizard_works_like_phone_number">La vostra ID de LeOS-Messenger actua com un número de telèfon.\nEls vostres amics poden contactar-vos a través d\'aquesta ID.</string>
     <string name="new_wizard_choose_nickname">Escolliu un sobrenom</string>
     <string name="new_wizard_nickname_explain">Els vostres amics veuran el vostre sobrenom a les seves notificacions</string>
     <string name="new_wizard_hint_enter_nickname">Entreu el sobrenom</string>
@@ -626,9 +613,9 @@ de contacte</string>
     <string name="new_wizard_sync_contacts_explain">Activeu per veure quins amics utilitzen Threema.</string>
     <string name="new_wizard_done_title">Fet!\nTot correcte?</string>
     <string name="new_wizard_linked_to">Enllaçat a</string>
-    <string name="new_wizard_need_internet">Es requereix una connexió a Internet estable per crear la vostra ID de Threema única. Torneu a provar-ho.</string>
+    <string name="new_wizard_need_internet">Es requereix una connexió a Internet estable per crear la vostra ID de LeOS-Messenger única. Torneu a provar-ho.</string>
     <string name="new_wizard_more_information">Més informació</string>
-    <string name="new_wizard_use_id_as_nickname">Voleu usar la vostra ID de Threema com a sobrenom?</string>
+    <string name="new_wizard_use_id_as_nickname">Voleu usar la vostra ID de LeOS-Messenger com a sobrenom?</string>
     <string name="new_wizard_phone_email_invalid">El número de telèfon o l\'adreça de correu electrònic que he entrat no són vàlids.\nCorregiu-ho abans de continuar.</string>
     <string name="new_wizard_phone_invalid">El número de telèfon que heu entrat no és vàlid.\nCorregiu-ho abans de continuar.</string>
     <string name="new_wizard_info_fingerprint">Movent el vostre dit, creareu dades aleatòries (anomenades entropia) que s\'utilitzen per generar
@@ -637,19 +624,19 @@ vostres amics i una <b>clau privada</b> que s\'emmagatzema de forma segura al vo
 Els vostres amics xifraran els missatges que us enviïn amb la vostra clau pública. Només el propietari de la clau privada i ningú més és capaç de desxifrar aquests missatges.</string>
     <string name="new_wizard_info_id">També heu creat un parell de claus. La clau pública s\'ha transmès de forma segura als nostres
 servidors. La clau privada mai surt del vostre dispositiu. Això assegura que ningú més pot llegir els vostres missatges.</string>
-    <string name="new_wizard_info_sync_contacts">Si activeu aquesta opció, Threema xifra unidireccionalment (hashes) les adreces de correu electrònic i els números de telèfon
+    <string name="new_wizard_info_sync_contacts">Si activeu aquesta opció, LeOS-Messenger xifra unidireccionalment (hashes) les adreces de correu electrònic i els números de telèfon
 abans d\'enviar-los al servidor per buscar contactes coincidents. Nosaltres no guardem cap
 dada de la llibreta d\'adreces.</string>
-    <string name="new_wizard_info_link">Facilitant el vostre número de telèfon i adreça de correu electrònic, Threema pot ajudar els vostres amics
+    <string name="new_wizard_info_link">Facilitant el vostre número de telèfon i adreça de correu electrònic, LeOS-Messenger pot ajudar els vostres amics
 a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. Les dades s\'emmagatzemaran d\'una
 forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar Threema
 de forma completament anònima.</string>
-    <string name="new_wizard_info_link_phone_only">Facilitant el vostre número de telèfon, Threema pot ajudar els vostres amics
+    <string name="new_wizard_info_link_phone_only">Facilitant el vostre número de telèfon, LeOS-Messenger pot ajudar els vostres amics
 a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. El número s\'emmagatzemarà d\'una
 forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar Threema
 de forma completament anònima.</string>
     <string name="new_wizard_info_nickname">El sobrenom s\'utilitza a les notificacions push en alguns dispositius com una forma addicional per identificar-vos als usuaris que no us tenen encara a la seva llibreta d\'adreces. Recomanem
-donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzarem la vostra ID de Threema per defecte.</string>
+donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzarem la vostra ID de LeOS-Messenger per defecte.</string>
     <string name="not_linked">sense enllaçar</string>
     <string name="linked">enllaçada</string>
     <string name="pending_sms_verification_notice">El vostre número de mòbil encara no està verificat.</string>
@@ -661,8 +648,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="status_ballot_user_modified_vote">«%1$s» a canviat el vot a favor de «%2$s»</string>
     <string name="status_ballot_all_votes">Les votacions per «%1$s» s\'han completat</string>
     <string name="restore">Restaurar</string>
-    <string name="new_wizard_anonymous_confirm">No heu entrat ni un número de mòbil ni una adreça de correu electrònic per enllaçar a la vostra ID de Threema. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar Threema anònimament?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">No heu entrat un número de mòbil per enllaçar a la vostra ID de Threema. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar Threema anònimament?</string>
+    <string name="new_wizard_anonymous_confirm">No heu entrat ni un número de mòbil ni una adreça de correu electrònic per enllaçar a la vostra ID de Threema. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar LeOS-Messenger anònimament?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">No heu entrat un número de mòbil per enllaçar a la vostra ID de Threema. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar LeOS-Messenger anònimament?</string>
     <string name="new_wizard_scan_id_backup">O escanegeu el codi QR de la vostra exportació de la ID</string>
     <string name="error_saving_file">Error desant el fitxer. Comproveu els permisos.</string>
     <string name="wait_one_minute">Espereu almenys 10 minuts per tal que arribi l\'SMS abans de demanar una trucada.</string>
@@ -687,7 +674,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_proximity_sensor_explain">Utilitzar l\'auricular per reproduir missatges de veu si el sensor de proximitat està cobert</string>
     <string name="error_creating_group">Error creant/actualitzant el grup</string>
     <string name="no_media_found_generic">No s\'ha trobat multimèdia en aquest xat</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Es poden editar com a màxim %d elements a la vegada</string>
+    <string name="max_images_reached">Es poden editar com a màxim %d elements a la vegada</string>
     <string name="enter_description">Descriviu l\'error/problema aquí.</string>
     <string name="add_caption_hint">Afegir una captura opcional</string>
     <string name="disable">Desactivar</string>
@@ -704,7 +691,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="lock_option_none">Cap</string>
     <string name="lock_option_pin">PIN</string>
     <string name="lock_option_screenlock">Bloqueig de pantalla del sistema</string>
-    <string name="hide_chat_message_explain">Threema us permet protegir certs xats amb un PIN i amagar-los temporalment de la llista de missatges. Per activar els xats privats, definiu un PIN o activeu el bloqueig de pantalla del sistema (Android 6.0+) a la configuració.</string>
+    <string name="hide_chat_message_explain">LeOS-Messenger us permet protegir certs xats amb un PIN i amagar-los temporalment de la llista de missatges. Per activar els xats privats, definiu un PIN o activeu el bloqueig de pantalla del sistema (Android 6.0+) a la configuració.</string>
     <string name="set_lock">Configurar ara</string>
     <string name="prefs_title_access_protection">Protecció d\'accés</string>
     <string name="private_chat_subject">Privats</string>
@@ -726,16 +713,14 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="restore_disable_energy_saving">Connecteu el vostre dispositiu al carregador i desactiveu totes les opcions d\'estalvi d\'energia per evitar que el dispositiu interrompi el procés de còpia o restauració.</string>
     <string name="draft">Esborrany</string>
     <string name="prefs_bigger_single_emojis">Emojis sols més grans</string>
-    <string name="wizard1_sync_work">Sincronitzant dades de Threema Work...</string>
+    <string name="wizard1_sync_work">Sincronitzant dades de LeOS-Messenger Work…</string>
     <string name="notification_hidden_text">Continguts amagats</string>
     <string name="really_reset_ringtones">Voleu restablir la configuració del so de notificació a la predeterminada?</string>
     <string name="reset_ringtones_confirm">S\'ha restablert la configuració del so de notificació.</string>
     <string name="prefs_language_override">Idioma</string>
-    <string name="threema_channel_intro">El Canal Threema us proporciona notícies sobre totes les coses de Threema. Voleu subscriure-us al Canal Threema i afegir-lo als vostres contactes? És gratuït i podeu revocar la subscripció en qualsevol moment.</string>
+    <string name="threema_channel_intro">El Canal LeOS-Messenger us proporciona notícies sobre totes les coses de Threema. Voleu subscriure-us al Canal LeOS-Messenger i afegir-lo als vostres contactes? És gratuït i podeu revocar la subscripció en qualsevol moment.</string>
     <string name="quote">Citar</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Voleu eliminar %1$d contactes i tots els xats associats?</string>
     <string name="contacts_deleted">Els contactes s\'han eliminat</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d contactes no s\'han pogut eliminar perquè continuen formant part d\'un grup</string>
     <string name="take_photo">Fer una foto</string>
     <string name="select_from_gallery">Seleccionar de la galeria</string>
     <string name="palette">Paleta</string>
@@ -752,7 +737,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="battery_optimizations_disable_guide_ctd">Cerqueu %s a la llista i desactiveu l\'optimització</string>
     <string name="battery_optimizations_disable_confirm">Voleu mantenir l\'optimització de la bateria activada per %1$s? %2$s no funcionarà correctament.</string>
     <string name="enter_text_hint">Entreu el text</string>
-    <string name="backup_explain_text">Si canvieu o perdeu el vostre dispositiu, ningú podrà restaurar la vostra ID de Threema ni els vostres xats si no disposeu d\'una còpia. Guardeu les vostres dades utilitzant les opcions de còpia apropiades.</string>
+    <string name="backup_explain_text">Si canvieu o perdeu el vostre dispositiu, ningú podrà restaurar la vostra ID de LeOS-Messenger ni els vostres xats si no disposeu d\'una còpia. Guardeu les vostres dades utilitzant les opcions de còpia apropiades.</string>
     <string name="data_backup_explain">Les còpies de dades contenen:\n\n&#9679; La vostra ID i parell de claus\n&#9679; Contactes i nivells de confiança\n&#9679; Pertinences a grups\n&#9679; Xats\n&#9679; Multimèdia i fitxers (opcional)\n\nLes dades es guardaran en un fitxer ZIP xifrat. Es recomana moure el fitxer fora del dispositiu després que s\'hagi completat la còpia correctament.</string>
     <string name="draw">Dibuixar</string>
     <string name="edit">Editar</string>
@@ -762,8 +747,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_ipv6_preferred_off">Usar només connexions IPv4</string>
     <string name="prefs_ipv6_preferred_on">Preferència per a connexions IPv6 sobre IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 per trucades i web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Permetre IPv6 per Threema Calls i Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">No permetre IPv6 per Threema Calls i Threema Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Permetre IPv6 per LeOS-Messenger Calls i LeOS-Messenger Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">No permetre IPv6 per LeOS-Messenger Calls i LeOS-Messenger Web</string>
     <string name="ipv6_requires_restart">Per aplicar aquesta configuració, l\'aplicació necessita reiniciar-se.</string>
     <string name="ipv6_restart_now">Reiniciar ara</string>
     <string name="on_cap">Activat</string>
@@ -789,8 +774,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="menu_send_profilpic_off">Eliminar com a destinatari de la foto de perfil</string>
     <string name="menu_send_profilpic_now">Enviar la foto de perfil ara</string>
     <string name="profile_picture_sent">Foto de perfil enviada</string>
-    <string name="sending_messages">Enviant...</string>
-    <string name="backup_data_media_confirm">Desant fitxers multimèdia grans a una còpia de seguretat local en ZIP podria superar la capacitat de la CPU i de la memòria del vostre dispositiu i podria trigar molt. Threema no enviarà i rebrà missatges mentre la còpia de seguretat estigui en curs. Continuar de totes maneres?</string>
+    <string name="sending_messages">Enviant…</string>
+    <string name="backup_data_media_confirm">Desant fitxers multimèdia grans a una còpia de seguretat local en ZIP podria superar la capacitat de la CPU i de la memòria del vostre dispositiu i podria trigar molt. LeOS-Messenger no enviarà i rebrà missatges mentre la còpia de seguretat estigui en curs. Continuar de totes maneres?</string>
     <string name="backup_data_cancelled">Còpia cancel·lada</string>
     <string name="service_manager_not_available">No es pot iniciar Threema. Apagueu el vostre dispositiu i torneu a provar-ho.</string>
     <string name="message_sent">Missatge enviat</string>
@@ -799,7 +784,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="threema_call_with">Trucar a %s</string>
     <string name="prefs_title_voip">Trucades Threema</string>
     <string name="prefs_title_force_turn">Retransmetre sempre les trucades</string>
-    <string name="prefs_summary_force_turn_off">Establir una connexió directa, si és possible, i només retransmetre trucades a través dels servidors de Threema a contactes no verificats. Podria exposar la vostra adreça IP.</string>
+    <string name="prefs_summary_force_turn_off">Establir una connexió directa, si és possible, i només retransmetre trucades a través dels servidors de LeOS-Messenger a contactes no verificats. Podria exposar la vostra adreça IP.</string>
     <string name="prefs_summary_force_turn_on">Forçar la retransmissió de totes les trucades a través dels servidors de Threema, protegint la vostra adreça IP. Podria afectar la qualitat de la trucada.</string>
     <string name="permission_record_audio_required">Per fer trucades xifrades i enviar missatges de veu permeteu accés al micròfon.</string>
     <string name="prefs_voice_call_notifications">Trucades de veu</string>
@@ -808,19 +793,19 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_sum_voice_call_vibrate">Vibrar en les trucades entrants de Threema</string>
     <string name="prefs_title_voip_enable">Activar les trucades de Threema</string>
     <string name="webclient_invalid_push_token_message">Es requereix inici manual</string>
-    <string name="threema_work_contact">Contacte de Threema Work</string>
+    <string name="threema_work_contact">Contacte de LeOS-Messenger Work</string>
     <string name="permission_phone_required">Permetre el permís per gestionar trucades telefòniques mentre s\'utilitza la trucada de Threema</string>
     <string name="strikethrough">Ratllat</string>
     <string name="italic">Cursiva</string>
     <string name="bold">Negreta</string>
-    <string name="shortcut_choice_title">Crear un accés directe per a...</string>
+    <string name="shortcut_choice_title">Crear un accés directe per a…</string>
     <string name="prefs_title_device_info">Informació del dispositiu</string>
     <string name="notifications_disabled_title">Notificacions desactivades</string>
-    <string name="notifications_disabled_text">Les notificacions per a Threema s\'han desactivat en la configuració del sistema. No se us notificarà sobre nous missatges.</string>
+    <string name="notifications_disabled_text">Les notificacions per a LeOS-Messenger s\'han desactivat en la configuració del sistema. No se us notificarà sobre nous missatges.</string>
     <string name="notifications_disabled_settings">Editar la configuració del sistema</string>
     <string name="error_attaching_files">Error afegint adjunts.</string>
     <string name="prefs_fix_powermanager_problems">Desactivar restriccions d\'energia</string>
-    <string name="prefs_fix_powermanager_problems_desc">Permetre a Threema córrer en segon pla per tal que pugui rebre missatges fins i tot quan no està activa.</string>
+    <string name="prefs_fix_powermanager_problems_desc">Permetre a LeOS-Messenger córrer en segon pla per tal que pugui rebre missatges fins i tot quan no està activa.</string>
     <string name="disable_powermanager_explain">A la pantalla següent, assegureu-vos que \"%s\" està protegida o exclosa de qualsevol restricció de gestió d\'energia del vostre telèfon. Toqueu el botó \"tornar\" quan ho hàgiu fet.</string>
     <string name="disable_autostart_explain">A la pantalla següent, assegureu-vos que «%s» s\'inclou a la llista d\'aplicacions que poden iniciar-se automàticament. Toqueu el botó «tornar» quan ho hagueu fet.</string>
     <string name="notification_priority_default">Baixa</string>
@@ -856,11 +841,10 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="plus">Més</string>
     <string name="switched_off">Desactivat</string>
     <string name="switched_on">Activat</string>
-    <string name="title_tab_work_users">Usuaris de Threema Work</string>
-    <string name="no_matching_work_contacts">No s\'han trobat contactes de Threema Work verificats per l\'administrador</string>
+    <string name="title_tab_work_users">Usuaris de LeOS-Messenger Work</string>
+    <string name="no_matching_work_contacts">No s\'han trobat contactes de LeOS-Messenger Work verificats per l\'administrador</string>
     <string name="all">Tots</string>
     <string name="webclient_session_stop_all">Tancar tots</string>
-    <string name="webclient_running_sessions">%d sessió(ns) actives</string>
     <string name="passphrase_service_name">Contrasenya del servei</string>
     <string name="passphrase_service_description">Notificació quan la contrasenya s\'ha desbloquejat</string>
     <string name="webclient_service_description">Notificació quan una sessió de Web/Escriptori està activa</string>
@@ -878,41 +862,41 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="password_too_short_generic">Contrasenya massa curta</string>
     <string name="passwords_dont_match">Les contrasenyes no coincideixen</string>
     <string name="test_unsuccessful">Prova no satisfactòria</string>
-    <string name="preparing_threema_safe">Preparant Threema Safe</string>
+    <string name="preparing_threema_safe">Preparant LeOS-Messenger Safe</string>
     <string name="disable_powermanager_title">Restriccions d\'energia</string>
     <string name="disable_autostart_title">Inici automàtic</string>
     <string name="unchanged">sense canvis</string>
     <string name="safe_learn_more_button">Saber-ne més</string>
-    <string name="safe_enable_explain">Tot el que necessiteu per xatejar es guarda només en el vostre dispositiu. No teniu cap compte amb nosaltres i no podem ajudar-vos si perdeu el vostre telèfon o elimineu les dades accidentalment.\n\nThreema Safe crea còpies de seguretat automàtiques de totes les dades importants, incloent les vostres claus, la vostra llista de contactes i grups (però no el contingut dels missatges), anònimament en un servidor segur escollit per vós.</string>
-    <string name="safe_disable_confirm">Voleu continuar sense activar Threema Safe? Si utilitzeu Threema Safe, podeu restaurar la vostra ID de Threema, contactes i grups en cas que perdeu l\'accés al vostre dispositiu.</string>
-    <string name="safe_configure_choose_password">Escolliu una contrasenya segura. Necessitareu aquesta contrasenya per restaurar la vostra còpia de Threema Safe.</string>
-    <string name="safe_configure_choose_server">Escolliu el servidor Threema Safe</string>
-    <string name="safe_configure_server_explain">Podeu utilitzar el servidor de Threema o, en canvi, especificar un servidor de còpia de tercers.</string>
+    <string name="safe_enable_explain">Tot el que necessiteu per xatejar es guarda només en el vostre dispositiu. No teniu cap compte amb nosaltres i no podem ajudar-vos si perdeu el vostre telèfon o elimineu les dades accidentalment.\n\nLeOS-Messenger Safe crea còpies de seguretat automàtiques de totes les dades importants, incloent les vostres claus, la vostra llista de contactes i grups (però no el contingut dels missatges), anònimament en un servidor segur escollit per vós.</string>
+    <string name="safe_disable_confirm">Voleu continuar sense activar LeOS-Messenger Safe? Si utilitzeu LeOS-Messenger Safe, podeu restaurar la vostra ID de Threema, contactes i grups en cas que perdeu l\'accés al vostre dispositiu.</string>
+    <string name="safe_configure_choose_password">Escolliu una contrasenya segura. Necessitareu aquesta contrasenya per restaurar la vostra còpia de LeOS-Messenger Safe.</string>
+    <string name="safe_configure_choose_server">Escolliu el servidor LeOS-Messenger Safe</string>
+    <string name="safe_configure_server_explain">Podeu utilitzar el servidor de LeOS-Messenger o, en canvi, especificar un servidor de còpia de tercers.</string>
     <string name="safe_use_default_server">Usar el servidor predeterminat</string>
     <string name="safe_test_server">Provar servidor</string>
     <string name="safe_advanced_options">Configuració experta</string>
-    <string name="safe_enter_password">Entreu la vostra contrasenya de Threema Safe</string>
+    <string name="safe_enter_password">Entreu la vostra contrasenya de LeOS-Messenger Safe</string>
     <string name="safe_threema_id">La vostra ID de Threema</string>
-    <string name="safe_restore_enter_id">Entreu la ID de Threema que voldríeu recuperar</string>
+    <string name="safe_restore_enter_id">Entreu la ID de LeOS-Messenger que voldríeu recuperar</string>
     <string name="safe_search_id_title">Entreu el número de mòbil o l\'adreça de correu electrònic enllaçada amb la vostra ID</string>
     <string name="safe_id_lookup">Buscant la ID de Threema</string>
     <string name="safe_no_id_found">No s\'ha trobat cap ID de Threema</string>
     <string name="safe_no_backup_found">No s\'ha trobat cap còpia al servidor. Comproveu la ID i contrasenya.</string>
     <string name="safe_select_id">S\'ha trobat múltiples IDs de Threema. Seleccioneu la ID que voleu usar:</string>
     <string name="safe_backup_now">Copiar ara</string>
-    <string name="safe_enable_explain_short">Activeu Threema Safe per crear còpies segures automàtiques i anònimes de les vostres dades importants.</string>
-    <string name="safe_deleting">Eliminant còpia de Threema Safe</string>
+    <string name="safe_enable_explain_short">Activeu LeOS-Messenger Safe per crear còpies segures automàtiques i anònimes de les vostres dades importants.</string>
+    <string name="safe_deleting">Eliminant còpia de LeOS-Messenger Safe</string>
     <string name="safe_delete_error">Error eliminant la còpia: %s</string>
     <string name="safe_delete_success">Còpia eliminada correctament al servidor</string>
-    <string name="safe_error_preparing">Error preparant la còpia de Threema Safe</string>
-    <string name="safe_configure_choose_password_force">Establiu una contrasenya forta per assegurar la vostra ID de Threema amb Threema Safe. No oblideu el que poseu aquí!</string>
-    <string name="safe_deactivate">Desactivar Threema Safe</string>
-    <string name="safe_deactivate_explain">Si desactiveu Threema Safe, totes les còpies del servidor s\'eliminaran. Voleu continuar?</string>
+    <string name="safe_error_preparing">Error preparant la còpia de LeOS-Messenger Safe</string>
+    <string name="safe_configure_choose_password_force">Establiu una contrasenya forta per assegurar la vostra ID de LeOS-Messenger amb LeOS-Messenger Safe. No oblideu el que poseu aquí!</string>
+    <string name="safe_deactivate">Desactivar LeOS-Messenger Safe</string>
+    <string name="safe_deactivate_explain">Si desactiveu LeOS-Messenger Safe, totes les còpies del servidor s\'eliminaran. Voleu continuar?</string>
     <string name="add_group_members">Membre nou</string>
     <string name="contact_add_confirm">Voleu afegir el contacte nou «%1$s» a la vostra llista de contactes?</string>
     <string name="password_bad">Contrasenya dèbil</string>
     <string name="prefs_fix_background_data">Activar dades en segon pla</string>
-    <string name="prefs_fix_background_data_desc">Per rebre missatges quan Threema està en segon pla activeu tant les Dades en segon pla com l\'Ús de dades sense restricció</string>
+    <string name="prefs_fix_background_data_desc">Per rebre missatges quan LeOS-Messenger està en segon pla activeu tant les Dades en segon pla com l\'Ús de dades sense restricció</string>
     <string name="prefs_fix_device">Arreglar problemes de configuració del dispositiu</string>
     <string name="safe_successful">Satisfactori</string>
     <string name="safe_unsuccessful">Fallit</string>
@@ -926,10 +910,10 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="number_of_days">%d dies</string>
     <string name="backup_other_restore_options">Altres opcions de restauració</string>
     <string name="safe_size">Mida de la còpia</string>
-    <string name="safe_version_mismatch">La versió d\'aquesta còpia és major que la versió suportada. Actualitzeu a la darrera versió de l\'aplicació.</string>
+    <string name="backup_version_mismatch">La versió d\'aquesta còpia és major que la versió suportada. Actualitzeu a la darrera versió de l\'aplicació.</string>
     <string name="safe_restore_failed">Restauració fallida</string>
-    <string name="safe_failed_notification">La còpia de Threema Safe ha fallat durant %d dies consecutius. Toqueu per comprovar.</string>
-    <string name="safe_restore">Restaurar Threema Safe</string>
+    <string name="safe_failed_notification">La còpia de LeOS-Messenger Safe ha fallat durant %d dies consecutius. Toqueu per comprovar.</string>
+    <string name="safe_restore">Restaurar LeOS-Messenger Safe</string>
     <string name="backup_restore_in_progress">Còpia o restauració en procés. Comproveu la notificació per informació de l\'estat.</string>
     <string name="restore_error_body">La restauració no s\'ha completat correctament</string>
     <string name="forgot_your_id">Heu oblidat la ID?</string>
@@ -937,8 +921,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="work_data_sync">Sincr. de dades</string>
     <string name="private_contact">Contacte privat</string>
     <string name="ringtone_selection_default">Predeterminat (%s)</string>
-    <string name="work_data_sync_desc">Sincronització amb Threema Work</string>
-    <string name="ballot_not_connected">Assegureu-vos que Threema es troba en línia abans de tancar una enquesta.</string>
+    <string name="work_data_sync_desc">Sincronització amb LeOS-Messenger Work</string>
+    <string name="ballot_not_connected">Assegureu-vos que LeOS-Messenger es troba en línia abans de tancar una enquesta.</string>
     <string name="empty_chat_title">Buidar el xat</string>
     <string name="empty_chat_confirm">Tots els missatges d\'aquest xat s\'eliminaran. Continuar?</string>
     <string name="emptying_chat">Buidant el xat</string>
@@ -952,21 +936,21 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="notification_channel_notices">Notícies</string>
     <string name="chat_updates">Actualitzacions de xat</string>
     <string name="backup_or_restore_progress">Progrés de còpia i restauració</string>
-    <string name="tooltip_export_id">Toqueu aquí per compartir o imprimir la vostra ID de Threema xifrada ara</string>
+    <string name="tooltip_export_id">Toqueu aquí per compartir o imprimir la vostra ID de LeOS-Messenger xifrada ara</string>
     <string name="downloading">Descarregant</string>
     <string name="today">Avui</string>
     <string name="restore_data_cancelled">Restauració cancelada</string>
     <string name="safe_change_password">Canviar contrasenya</string>
     <string name="safe_configure_choose_password_title">Escollir una contrasenya</string>
-    <string name="password_bad_explain">La contrasenya escollida per a Threema Safe no és segura i pot ser deduïda fàcilment per atacants. Escolliu-ne una altra. Pista: Utilitzeu una contrasenya composta de diverses paraules inconnexes.</string>
-    <string name="safe_password_updated">La contrasenya de Threema Safe s\'ha actualitzat.</string>
-    <string name="safe_activated">Threema Safe ara està activat.</string>
+    <string name="password_bad_explain">La contrasenya escollida per a LeOS-Messenger Safe no és segura i pot ser deduïda fàcilment per atacants. Escolliu-ne una altra. Pista: Utilitzeu una contrasenya composta de diverses paraules inconnexes.</string>
+    <string name="safe_password_updated">La contrasenya de LeOS-Messenger Safe s\'ha actualitzat.</string>
+    <string name="safe_activated">LeOS-Messenger Safe ara està activat.</string>
     <string name="restore_zip_invalid_file">Fitxer de còpia no vàlid.</string>
     <string name="push_token_cleared">S\'ha netejat el testimoni push</string>
     <string name="insert_date">Inserir data</string>
     <string name="add_answer">Afegir resposta</string>
     <string name="title_cannot_be_empty">El títol de l\'enquesta no pot estar buit</string>
-    <string name="voip_disabled">Les trucades Threema estan desactivades</string>
+    <string name="voip_disabled">Les trucades LeOS-Messenger estan desactivades</string>
     <string name="hide_chat_enter_message_explain">El xat està marcat com a xat privat. Per entrar-hi definiu la protecció d\'accés primer.</string>
     <string name="unknown">Desconegut</string>
     <string name="miui_notification_title">Notícia important sobre les notificacions a MIUI</string>
@@ -974,7 +958,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="miui12_notification_body">MIUI desactiva el so, les llums i les notificacions flotants per totes les aplicacions per defecte (excepte per aplicacions molt populars que Xiaomi creu que són «importants»). Haureu d\'activar manualment aquests ajustos en la pantalla de configuració de les notificacions específiques de les aplicacions del vostre telèfon i repetir aquest procés per cada actualització de l\'aplicació. Contacteu amb Xiaomi per obtenir més informació.</string>
     <string name="dont_show_again">No m\'ho tornis a mostrar</string>
     <string name="miui_notification_prefs">Configuració MIUI</string>
-    <string name="threema_safe_upload_successful">La còpia de Threema Safe s\'ha carregat correctament</string>
+    <string name="threema_safe_upload_successful">La còpia de LeOS-Messenger Safe s\'ha carregat correctament</string>
     <string name="time_remaining">%s restants</string>
     <string name="safe_configure_server_credentials_title">Autenticació (opcional)</string>
     <string name="username_hint">Nom d\'usuari</string>
@@ -983,7 +967,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="biometric_enter_authentication">Cal autenticar-vos per desbloquejar</string>
     <string name="biometric_authentication_failed">Error en l\'autenticació</string>
     <string name="biometric_authentication_successful">Autenticat correctament</string>
-    <string name="work_safe_forced_explain">El vostre administrador ha activat Threema Safe al vostre dispositiu</string>
+    <string name="work_safe_forced_explain">El vostre administrador ha activat LeOS-Messenger Safe al vostre dispositiu</string>
     <string name="pin_locked_cannot_send">L\'aplicació està bloquejada. No pot enviar.</string>
     <string name="prefs_summary_hide_screenshots_notice">Per motius de privacitat, les miniatures i captures de pantalla sempre s\'eviten quan \"Bloqueig d\'Aplicació\" està activat a la configuració de seguretat</string>
     <string name="work_select_categories">Seleccioneu les categories</string>
@@ -993,7 +977,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="advanced_options">Opcions avançades</string>
     <string name="url_warning_body">El nom de l\'amfitrió de l\'enllaç que esteu a punt d\'obrir és sospitós:\n\nNom de l\'amfitrió mostrat: <b>%s</b>\nNom de l\'amfitrió real: <b>%s</b>\n\nAixò pot ser un intent per enganyar-vos i obrir un lloc fent veure que és un altre.\n\nVoleu continuar de totes maneres?</string>
     <string name="url_warning_title">Alerta de Phishing</string>
-    <string name="permission_camera_qr_required">Per escanejar codis QR, Threema necessita accés a la càmera</string>
+    <string name="permission_camera_qr_required">Per escanejar codis QR, LeOS-Messenger necessita accés a la càmera</string>
     <string name="voice_action_title">Accions de veu</string>
     <string name="voice_action_body">S\'està processant l\'acció de veu</string>
     <string name="permission_camera_photo_required">Per fer una fotografia, permeteu l\'accés a la càmera</string>
@@ -1013,11 +997,10 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="data_backup_last_date">Darrera còpia de les dades satisfactòria</string>
     <string name="archived">Arxivats</string>
     <string name="to_archive">Arxivar</string>
-    <string name="message_archived">%d xat(s) arxivat(s)</string>
     <string name="archived_chats">Xats arxivats</string>
     <string name="unarchive">Desarxivar</string>
     <string name="no_archived_chats">No hi ha xats arxivats.\nPer arxivar un xat, arrossegueu-lo cap a l\'esquerra a la llista de missatges</string>
-    <string name="add_contact_enter_id_hint">Entreu la ID de Threema del contacte que voleu afegir</string>
+    <string name="add_contact_enter_id_hint">Entreu la ID de LeOS-Messenger del contacte que voleu afegir</string>
     <string name="notification_channel_new_contact">Contactes nous</string>
     <string name="notification_channel_new_contact_desc">Notificació sobre contactes nous</string>
     <string name="notification_contact_has_joined">%1$s s\'ha unit a %2$s. Toqueu aquí per enviar-li un missatge.</string>
@@ -1025,9 +1008,8 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="system_default">Igual que el sistema</string>
     <string name="open_in_maps_app">Obrir a l\'App de mapes</string>
     <string name="delete">Eliminar</string>
-    <string name="num_archived_chats">%d xats arxivats</string>
     <string name="continue_recording">Continuar gravant</string>
-	<string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
+    <string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
     <string name="two_years">2 anys</string>
     <string name="invalid_backup_path">Camí de còpia no vàlid</string>
     <string name="backup_data_no_permission">No es pot escriure en aquest directori. Escolliu-ne un altre.</string>
@@ -1045,7 +1027,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="and">i</string>
     <string name="edit_type_content_description">Veure o editar %1$s %2$s</string>
     <string name="group">Grup</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>La nostra Política de Privacitat s\'ha actualitzat per reflectir el canvi següent:</p><p>%1$s ja no depèn de Google Play i Google Maps per facilitar mapes i dades de punts d\'interès.</p>Reviseu la Política de Privacitat completa <a href="%2$s">aquí</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Serveis no instal·lats. No es pot canviar a \"push\".</string>
     <string name="unable_to_get_current_location">No es pot determinar la posició actual.</string>
     <string name="lp_search_place_min_chars">Entreu almenys tres caràcters per cercar un lloc.</string>
@@ -1058,7 +1039,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="mime_type">Tipus MIME</string>
     <string name="password_does_not_comply">La contrasenya no compleix amb els requeriments definits per l\'administrador.</string>
     <string name="audio_mute_due_to_focus_loss">S\'ha silenciat l\'àudio temporalment a causa d\'una pèrdua de focus</string>
-    <string name="restore_data_backup_explain">Per restaurar una còpia de dades, primer elimineu la vostra ID de Threema des de la finestra \"El meu perfil\".\n\nQuan es reiniciï l\'aplicació, escolliu \"Restaurar d\'una còpia\", \"Altres opcions de restauració\", \"Còpia de les dades\" i llavors seleccioneu el fitxer de còpia que voleu restaurar.</string>
+    <string name="restore_data_backup_explain">Per restaurar una còpia de dades, primer elimineu la vostra ID de LeOS-Messenger des de la finestra \"El meu perfil\".\n\nQuan es reiniciï l\'aplicació, escolliu \"Restaurar d\'una còpia\", \"Altres opcions de restauració\", \"Còpia de les dades\" i llavors seleccioneu el fitxer de còpia que voleu restaurar.</string>
     <string name="audio_focus_loss_complete">Trucada desconnectada a causa d\'una pèrdua de focus d\'àudio completa.</string>
     <string name="tap_for_picture_hold_for_video">Toqueu per foto, manteniu per vídeo</string>
     <string name="sending_media">Enviant multimèdia</string>
@@ -1066,7 +1047,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="media_files">Fitxers</string>
     <string name="auto_download_limit_explain">Els vídeos i fitxers majors de %s sempre es baixaran sota demanda</string>
     <string name="quoted_message_deleted">El missatge citat ja no està disponible</string>
-    <string name="searching">Cercant...</string>
+    <string name="searching">Cercant…</string>
     <string name="prefs_work_life_balance">No molestar</string>
     <string name="prefs_title_working_days">Dies feiners</string>
     <string name="prefs_working_days_sum">Escolliu els dies feiners</string>
@@ -1083,7 +1064,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="safe_backup_tap_to_restart">Toqueu a la notificació del sistema mostrada per reiniciar l\'aplicació. Si no veieu la notificació arrossegueu avall la barra de notificacions del vostre telèfon.</string>
     <string name="send_to_support">Enviar a Suport de Threema</string>
     <string name="menu_legal">Legal</string>
-    <string name="tooltip_work_hint">Aquest contacte utilitza Threema Work.</string>
+    <string name="tooltip_work_hint">Aquest contacte utilitza LeOS-Messenger Work.</string>
     <string name="video_camera_on">Càmera de vídeo activada</string>
     <string name="video_camera_off">Càmera de vídeo desactivada</string>
     <string name="enable_picture_in_picture">Iniciar el mode imatge sobre imatge</string>
@@ -1123,7 +1104,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_sum_disable_smart_replies">Evitar les Respostes Intel·ligents a les notificacions d\'Android</string>
     <string name="prefs_title_disable_smart_replies">Desactivar Respostes Intel·ligents</string>
     <string name="url_warning_body_alt">El nom d\'amfitrió de l\'enllaç que esteu a punt d\'obrir és sospitós.\n\nAixò pot deure\'s a un intent d\'engany fent-vos obrir un lloc simulant que n\'és un altre.\n\nVoleu continuar de totes maneres?</string>
-    <string name="read_on">Llegir més...</string>
+    <string name="read_on">Llegir més…</string>
     <string name="forward_text">Reenviar el text</string>
     <string name="an_error_occurred_during_send">Hi ha hagut un error enviant un o més missatges.</string>
     <string name="state_processing">processant</string>
@@ -1195,8 +1176,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_request_already_sent"><![CDATA[Ja teniu una petició de grup oberta per a <b>%s</b> a través d\'aquest enllaç i resta pendent una resposta de l\'administrador de grup. Cliqueu a la petició de la llista si voleu intentar de tornar-la a enviar.]]></string>
     <string name="group_link_none">Encara no s\'ha generat un enllaç</string>
     <string name="group_request_confirm_send"><![CDATA[Esteu a punt d\'enviar una petició de grup per a <b>%1$s</b> a l\'administrador <b>%2$s</b>. Si l\'enllaç no està invalidat, sereu afegit automàticament al grup tan aviat com el dispositiu de l\'administrador rebi la vostra petició.]]></string>
-    <string name="really_delete_outgoing_request">Realment voleu eliminar %d petició de grup? Tingueu en compte que la petició no es revocarà i continuareu poden ser acceptat o rebutjat i la petició encara no havia estat resposta per l\'administrador de grup.</string>
-    <string name="really_delete_group_request_title">Segur que voleu eliminar la petició de grup</string>
     <string name="sent_to">Enviada a: %s</string>
     <string name="sent_on">Enviada: %s</string>
     <string name="group_response">Resposta a accés a grup</string>
@@ -1204,7 +1183,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_response_full">La vostra petició de grup per a %s s\'ha rebutjat perquè el grup està complet</string>
     <string name="group_response_rejected">La vostra petició de grup per a %s s\'ha rebutjat</string>
     <string name="group_link_expiration_none">Sense restriccions</string>
-    <string name="group_request_hint">Ei! Sóc jo...</string>
+    <string name="group_request_hint">Ei! Sóc jo…</string>
     <string name="group_request_send_title">Enviar Petició d\'Accés a Grup</string>
     <string name="group_request_message_empty">El missatge de la petició de grup no pot ser buit</string>
     <string name="group_requests_all_title">Totes les peticions de grup</string>
@@ -1216,7 +1195,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="link_administration_off_explain">Aquest enllaç ja ha estat configurat i compartit prèviament, ara no és possible canviar aquesta propietat. Genereu un nou enllaç amb la propietat que necessiteu.</string>
     <string name="group_link_update_success">Enllaç actualitzat correctament</string>
     <string name="no_group_links">No hi ha enllaços de grup. Per crear-ne un, cliqueu al botó d\'afegir a baix a la dreta o activeu l\'enllaç predeterminat a la vista de detalls del grup.</string>
-    <string name="really_delete_group_link">Segur que voleu eliminar %d enllaços de grup? La gent no podrà enviar més peticions a través d\'aquest. Tot i això, les peticions rebudes prèviament es poden continuar acceptant o rebutjant.</string>
     <string name="group_links_overview_title">Enllaços de grup per a %s</string>
     <string name="group_link_invalid">Caducats</string>
     <string name="group_link_valid">Vàlids</string>
@@ -1232,8 +1210,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="open_group_requests_show">Mostrar peticions d\'accés</string>
     <string name="open_group_requests_hide">Amagar peticions d\'accés</string>
     <string name="group_request_link_already_deleted">Enllaç de grup mentre s\'elimina</string>
-    <string name="really_delete_incoming_request">Voleu eliminar %d peticions de grup? No podreu respondre a les peticions una vegada eliminades.</string>
-    <string name="incoming_group_request_no_message">Enviat a través d\'un enllaç obert... cap missatge</string>
+    <string name="incoming_group_request_no_message">Enviat a través d\'un enllaç obert… cap missatge</string>
     <string name="group_request_received_through">A través de l\'enllaç: %s</string>
     <string name="reaccept">Reacceptar</string>
     <string name="group_link_edit_expiration_date">Editar data de caducitat</string>
@@ -1241,7 +1218,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_link_rename">Renombrar</string>
     <string name="group_link_rename_tag">Nom nou</string>
     <string name="tap_here_for_more">Toqueu aquí per a més informació</string>
-    <string name="another_connection_instructions">El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de Threema.\n\nNo es pot utilitzar la mateixa ID de Threema simultàniament en diversos dispositius. Els missatges nous només es transmetran a l\'últim dispositiu que ha iniciat sessió al servidor.\n\nSi esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al dispositiu antic i llavors reinicieu el nou.</string>
+    <string name="another_connection_instructions">El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de Threema.\n\nNo es pot utilitzar la mateixa ID de LeOS-Messenger simultàniament en diversos dispositius. Els missatges nous només es transmetran a l\'últim dispositiu que ha iniciat sessió al servidor.\n\nSi esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al dispositiu antic i llavors reinicieu el nou.</string>
     <string name="app_store_error_code">Codi d\'error de la botiga d\'Apps: %d</string>
     <string name="backup_restore_type"><![CDATA[Quin tipus de còpia de seguretat voleu restaurar?<br/><br/><a href=%s>Apreneu-ne més sobre còpies de seguretat a Threema</a>]]></string>
     <string name="data_backup_info">Restaurar-ho tot incloent xats</string>
@@ -1249,14 +1226,14 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="back_to_threema">Tornar a %s?</string>
     <string name="id_backup_info">Només restaura la vostra ID</string>
     <string name="restore_your_id_contacts_and_groups">Restaurar la vostra ID, contactes i grups</string>
-    <string name="threema_safe_backup">Threema Safe Backup</string>
+    <string name="threema_safe_backup">LeOS-Messenger Safe Backup</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Heu oblidat la contrasenya?</a>]]></string>
     <string name="download_failed">Error en la descàrrega. Codi d\'error: %d</string>
     <string name="edit_answer">Editar la resposta</string>
-    <string name="share_media">Compartir amb una altra aplicació...</string>
+    <string name="share_media">Compartir amb una altra aplicació…</string>
     <string name="group_link_administered">Administrada</string>
     <string name="group_link_open">Oberta</string>
-    <string name="group_link_share_message">Uniu-vos al meu grup Threema a través del següent enllaç!: %s</string>
+    <string name="group_link_share_message">Uniu-vos al meu grup LeOS-Messenger a través del següent enllaç!: %s</string>
     <string name="group_link_bottom_sheet_title">Enllaç de grup</string>
     <string name="group_link_bottom_sheet_desc">Compartiu aquest enllaç amb gent que vulgueu que s\'uneixi al grup. Tingueu en compte les opcions de sota.</string>
     <string name="group_link_bottom_sheet_link_title">Enllaç</string>
@@ -1298,7 +1275,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_request_already_sent_title">Petició ja enviada</string>
     <string name="qr_scanner_id_hint">Escanegeu el codi QR d\'un contacte per verificar la seva identitat. Per mostrar el codi, demaneu al contacte que toqui la foto de perfil a la cantonada de dalt a l\'esquerra de la pantalla d\'inici de Threema.</string>
     <string name="enable_storage_access_for_media">Activar l\'accés a l\'emmagatzematge per veure fotos i vídeos del vostre dispositiu</string>
-    <string name="take_me_there">Porteu-m\'hi...</string>
+    <string name="take_me_there">Porteu-m\'hi…</string>
     <string name="notification_channel_group_join_request">Canal de notificacions per peticions de grup rebudes</string>
     <string name="reset_default_group_link_title">Restablir info d\'enllaç predeterminada</string>
     <string name="reset_default_group_link_desc">L\'enllaç compartit anteriorment deixarà de ser vàlid i les peticions a través de l\'enllaç antic seran rebutjades automàticament amb una resposta de caducades.</string>
@@ -1316,12 +1293,12 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="web_link">Enllaç</string>
     <string name="link_copied">%s copiat</string>
     <string name="invalid_onprem_id_title">No es pot Afegir la ID</string>
-    <string name="full_name">Nom</string>
     <string name="name_given">Nom</string>
     <string name="name_family">Cognoms</string>
     <string name="name_prefix">Prefix del nom</string>
     <string name="name_middle">Segon nom</string>
     <string name="name_suffix">Sufix del nom</string>
+    <string name="full_name">Nom</string>
     <string name="phoneTypeCustom">Personalitzat</string>
     <string name="phoneTypeHome">Casa</string>
     <string name="phoneTypeMobile">Mòbil</string>
@@ -1349,7 +1326,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="relationTypeSpouse">Cònjuge</string>
     <string name="contact_property_key">"Clau"</string>
     <string name="header_nickname_entry">"Àlies"</string>
-	<string name="organization_type">Organització</string>
+    <string name="organization_type">Organització</string>
     <string name="messages_cannot_be_recovered">No podreu recuperar els missatges.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacte</item>

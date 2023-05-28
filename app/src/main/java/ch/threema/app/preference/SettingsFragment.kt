@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -140,7 +140,7 @@ class SettingsFragment() : ThreemaPreferenceFragment() {
             Pair(getPref("pref_key_notifications"), intArrayOf(R.string.prefs_voice_call_sound, R.string.prefs_vibrate, R.string.prefs_light).reduce()),
             Pair(getPref("pref_key_chatdisplay"), intArrayOf(R.string.prefs_header_keyboard, R.string.media).reduce()),
             Pair(getPref("pref_key_particular_settings"), intArrayOf(R.string.prefs_image_size, R.string.prefs_auto_download_title, R.string.prefs_storage_mgmt_title).reduce()),
-            getPrefOrNull<Preference>("pref_key_calls")?.let { Pair(it, intArrayOf(R.string.prefs_title_voip, R.string.video_calls).reduce()) },
+            getPrefOrNull<Preference>("pref_key_calls")?.let { Pair(it, intArrayOf(R.string.prefs_title_voip, R.string.video_calls, R.string.group_calls).reduce()) },
             Pair(getPref("pref_key_about"), ""),
             Pair(getPref("pref_key_developers"), "")
     )

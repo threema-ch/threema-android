@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -38,6 +38,8 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
 import ch.threema.app.services.NotificationService;
+import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.webclient.activities.SessionsActivity;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -168,15 +170,16 @@ public class SessionAndroidService extends Service {
 	}
 
 	private Notification getNotification() {
+		int amountOfRunningSessions = (int) sessionService.getRunningSessionsCount();
 		Intent contentIntent = new Intent(this, SessionsActivity.class);
-		PendingIntent contentPendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent contentPendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), contentIntent, PendingIntent.FLAG_UPDATE_CURRENT | IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE);
 
 		Intent stopIntent = new Intent(this, StopSessionsAndroidService.class);
-		PendingIntent stopPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent stopPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE);
 
 		NotificationCompat.Builder builder = new NotificationBuilderWrapper(this, NotificationService.NOTIFICATION_CHANNEL_WEBCLIENT, null);
 		builder.setContentTitle(getString(R.string.webclient))
-				.setContentText(String.format(getString(R.string.webclient_running_sessions), sessionService.getRunningSessionsCount()))
+				.setContentText(ConfigUtils.getSafeQuantityString(this, R.plurals.webclient_running_sessions, amountOfRunningSessions, amountOfRunningSessions))
 				.setSmallIcon(R.drawable.ic_web_notification)
 				.setPriority(Notification.PRIORITY_LOW)
 				.setContentIntent(contentPendingIntent)

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,63 +27,117 @@ import android.os.Bundle
 import android.view.View
 import androidx.preference.CheckBoxPreference
 import androidx.preference.DropDownPreference
-import androidx.preference.PreferenceCategory
 import ch.threema.app.R
+import ch.threema.app.ThreemaApplication
+import ch.threema.app.managers.ListenerManager
 import ch.threema.app.utils.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.voip.groupcall.GroupCallManager
+import ch.threema.app.voip.services.VoipStateService
+import ch.threema.app.voip.util.VoipUtil
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("SettingsCallsFragment")
 
 @Suppress("unused")
 class SettingsCallsFragment : ThreemaPreferenceFragment() {
 
     private var fragmentView: View? = null
     private var enableCallReject: CheckBoxPreference? = null
+    private lateinit var callEnable: CheckBoxPreference
+    private lateinit var groupCallsEnable: CheckBoxPreference
+    private var groupCallManager: GroupCallManager? = null
+    private var voipStateService: VoipStateService? = null
 
     override fun initializePreferences() {
         super.initializePreferences()
+
+        try {
+            val serviceManager = ThreemaApplication.requireServiceManager()
+            groupCallManager = serviceManager.groupCallManager
+            voipStateService = serviceManager.voipStateService
+        } catch (e: Exception) {
+            logger.error("Could not init dependencies", e)
+        }
+
+        initCallPrefListeners()
 
         initWorkRestrictions()
 
         initEnableCallRejectPref()
     }
 
-    override fun getPreferenceTitleResource(): Int = R.string.prefs_title_voip
+    override fun getPreferenceTitleResource(): Int = R.string.prefs_title_calls
 
     override fun getPreferenceResource(): Int = R.xml.preference_calls
 
+    private fun initCallPrefListeners() {
+        callEnable = getPref(R.string.preferences__voip_enable)
+        callEnable.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue == false && voipStateService?.callState?.isIdle != true) {
+                VoipUtil.sendOneToOneCallHangupCommand(requireActivity())
+            }
+            true
+        }
+
+        groupCallsEnable = getPref(R.string.preferences__group_calls_enable)
+        groupCallsEnable.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue == false) {
+                groupCallManager?.abortCurrentCall()
+            }
+            ListenerManager.conversationListeners.handle { it.onModifiedAll() }
+            true
+        }
+    }
+
     private fun initWorkRestrictions() {
         if (ConfigUtils.isWorkRestricted()) {
-            val callEnable: CheckBoxPreference = getPref(R.string.preferences__voip_enable)
             val disableCalls = AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_calls))
             var disableVideoCalls = AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_video_calls))
+            var disableGroupCalls = AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_group_calls))
+
             if (disableCalls != null) {
                 // admin does not want user to tamper with call setting
                 callEnable.isEnabled = false
                 callEnable.isSelectable = false
                 callEnable.isChecked = !disableCalls
                 if (disableCalls) {
-                    // disabled calls also disable video calls
+                    // disabled calls also disable video and group calls
                     disableVideoCalls = true
+                    disableGroupCalls = true
+                } else {
+                    // remove dependency to allow user to manipulate advanced call settings if admin enabled calls
+                    val forceTurn: CheckBoxPreference = getPref(R.string.preferences__voip_force_turn)
+                    val rejectCalls: CheckBoxPreference = getPref(R.string.preferences__voip_reject_mobile_calls)
+
+                    forceTurn.dependency = null
+                    rejectCalls.dependency = null
                 }
             }
 
+            val videoCallEnable: CheckBoxPreference = getPref(R.string.preferences__voip_video_enable)
             if (disableVideoCalls != null) {
                 // admin does not want user to tamper with video call setting
-                val videoCallEnable: CheckBoxPreference = getPref(R.string.preferences__voip_video_enable)
                 videoCallEnable.isEnabled = false
                 videoCallEnable.isSelectable = false
                 videoCallEnable.isChecked = !disableVideoCalls
+
+                if (!disableVideoCalls) {
+                    val videoCallProfile: DropDownPreference = getPref(R.string.preferences__voip_video_profile)
+                    videoCallProfile.dependency = null
+                    videoCallProfile.isEnabled = true
+                    videoCallProfile.isSelectable = true
+                }
+            } else if (disableCalls == false) {
+                // remove dependency to allow user to manipulate video setting if calls are force-enabled
+                videoCallEnable.dependency = null
             }
 
-            if (disableVideoCalls == null || !disableVideoCalls) {
-                // video calls are force-enabled or left to the user - user may change profile setting
-                val videoCategory: PreferenceCategory = getPref("pref_key_voip_video_settings")
-                videoCategory.dependency = null
-                videoCategory.isEnabled = true
-
-                val videoCallProfile: DropDownPreference = getPref(R.string.preferences__voip_video_profile)
-                videoCallProfile.dependency = null
-                videoCallProfile.isEnabled = true
-                videoCallProfile.isSelectable = true
+            if (disableGroupCalls != null) {
+                // admin does not want user to tamper with group call setting
+                groupCallsEnable.isEnabled = false
+                groupCallsEnable.isSelectable = false
+                groupCallsEnable.isChecked = !disableGroupCalls
             }
         }
     }

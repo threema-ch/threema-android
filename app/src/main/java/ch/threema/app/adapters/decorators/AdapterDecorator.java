@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,6 +27,7 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 
 import androidx.annotation.AnyThread;
+
 import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.utils.RuntimeUtil;
 
@@ -63,9 +64,9 @@ abstract class AdapterDecorator {
 	@AnyThread
 	protected void invalidate(final AbstractListItemHolder holder, final int position) {
 		RuntimeUtil.runOnUiThread(() -> {
-		if(holder != null && holder.position == position) {
-			configure(holder, position);
-		}
+			if (holder != null && holder.position == position) {
+				configure(holder, position);
+			}
 		});
 	}
 	abstract protected void configure(AbstractListItemHolder holder, int position);

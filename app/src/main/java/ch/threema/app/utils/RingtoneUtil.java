@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 
@@ -55,19 +56,22 @@ public class RingtoneUtil {
 	}
 
 	public static Intent getRingtonePickerIntent(int type, Uri currentUri, Uri defaultUri) throws ActivityNotFoundException {
-		// most tinkered devices will present a choice of more or less useful, or even plain useless excuses for a ringtone picker
-		// on an ACTION_RINGTONE_PICKER intent thus confusing the user. Let's use our own implementation in these cases
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !Build.MANUFACTURER.equalsIgnoreCase("Google")) {
-			throw new ActivityNotFoundException();
+		// Most tinkered devices will present a choice of more or less useful, or even plain useless excuses for a ringtone picker
+		// on an ACTION_RINGTONE_PICKER intent thus confusing the user.
+		// Also, some pickers do not accept multiple type flags to be set.
+		// Let's use our own implementation in these cases.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+			(type == RingtoneManager.TYPE_RINGTONE || type == RingtoneManager.TYPE_NOTIFICATION) &&
+			(Build.MANUFACTURER.equalsIgnoreCase("Google") || Build.MANUFACTURER.equalsIgnoreCase("Nothing"))) {
+			Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+			intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+			intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+			intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, type);
+			intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, currentUri);
+			intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, defaultUri);
+
+			return intent;
 		}
-
-		Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
-		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, type);
-		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, currentUri);
-		intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, defaultUri);
-
-		return intent;
+		throw new ActivityNotFoundException();
 	}
 }

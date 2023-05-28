@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
@@ -86,9 +87,6 @@ public class MessageQueue implements MessageAckListener, ConnectionStateListener
 		/* make box */
 		MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 		MessageBox boxmsg = messageCoder.encode(message, this.con.getNonceFactory());
-		if (boxmsg == null) {
-			return null;
-		}
 
 		// for the sake of efficiency: simply deduct overhead size
 		final int overhead = ProtocolDefines.OVERHEAD_MSG_HDR
@@ -190,6 +188,14 @@ public class MessageQueue implements MessageAckListener, ConnectionStateListener
 
 	public synchronized int getQueueSize() {
 		return queue.size();
+	}
+
+	public synchronized List<MessageBox> getQueue() {
+		return queue;
+	}
+
+	public synchronized void flushQueue() {
+		queue.clear();
 	}
 
 	private synchronized void processQueue() {

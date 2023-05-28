@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,6 +21,9 @@
 
 package ch.threema.app.services;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import net.sqlcipher.Cursor;
 
 import org.slf4j.Logger;
@@ -30,8 +33,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.listeners.ConversationListener;
@@ -192,7 +193,7 @@ public class ConversationServiceImpl implements ConversationService {
 					filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
 						@Override
 						public boolean apply(@NonNull ConversationModel conversationModel) {
-							return TestUtil.contains(filter.filterQuery(), conversationModel.getReceiver().getDisplayName());
+							return TestUtil.matchesConversationSearch(filter.filterQuery(), conversationModel.getReceiver().getDisplayName());
 						}
 					});
 				}
@@ -322,6 +323,26 @@ public class ConversationServiceImpl implements ConversationService {
 			return parser.refresh(modifiedMessageModel);
 		}
 		return null;
+	}
+
+	@Override
+	public synchronized void updateContactConversation(@NonNull ContactModel contactModel) {
+		synchronized (conversationCache) {
+			for (int i = 0; i < conversationCache.size(); i++) {
+				ConversationModel conversationModel = conversationCache.get(i);
+				if (conversationModel.isContactConversation() && contactModel.getIdentity().equals(conversationModel.getContact().getIdentity())) {
+					ContactConversationModelParser conversationModelParser = new ContactConversationModelParser();
+					List<ConversationResult> result = conversationModelParser.select(contactModel.getIdentity());
+					if (result.isEmpty() || result.get(0) == null) {
+						logger.warn("No result for updating identity {}", contactModel.getIdentity());
+						return;
+					}
+					ConversationModel updatedModel = conversationModelParser.parseResult(result.get(0), null, false);
+					conversationCache.set(i, updatedModel);
+					break;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -631,15 +652,10 @@ public class ConversationServiceImpl implements ConversationService {
 			List<ConversationResult> res = this.selectAll(true);
 
 			if (!TestUtil.empty(constraint)) {
-				constraint = constraint.toLowerCase();
 				for(ConversationResult r: res) {
 					ConversationModel conversationModel = this.parseResult(r, null, false);
-					String title = conversationModel.toString();
-
-					if (!TestUtil.empty(title)) {
-						if (title.toLowerCase().contains(constraint)) {
-							conversationModels.add(conversationModel);
-						}
+					if (TestUtil.matchesConversationSearch(constraint, conversationModel.toString())) {
+						conversationModels.add(conversationModel);
 					}
 				}
 			} else {
@@ -768,7 +784,7 @@ public class ConversationServiceImpl implements ConversationService {
 			final ConversationModel model = this.getCached(this.getIndex(messageModel));
 			//if the newest message is deleted, reload
 			if (model != null && model.getLatestMessage() != null && messageModel != null) {
-				if(model.getLatestMessage().getId() == messageModel.getId()) {
+				if(model.getLatestMessage().getId() >= messageModel.getId()) {
 					updateLatestConversationMessageAfterDelete(model);
 
 					final int oldPosition = model.getPosition();
@@ -1046,7 +1062,6 @@ public class ConversationServiceImpl implements ConversationService {
 	private void updateLatestConversationMessageAfterDelete(ConversationModel conversationModel) {
 		AbstractMessageModel newestMessage;
 
-		//dirty diana hack
 		newestMessage = Functional.select(this.messageService.getMessagesForReceiver(conversationModel.getReceiver(), new MessageService.MessageFilter() {
 			@Override
 			public long getPageSize() {

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -28,7 +28,6 @@ import android.graphics.PorterDuff;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -274,11 +273,11 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 					if (mutedIndex >= 5) {
 						radioSilentLimited.setText(getString(R.string.one_week) + deadlineString);
 					} else {
-						radioSilentLimited.setText(String.format(getString(R.string.notifications_for_x_hours), muteValues[mutedIndex]) + deadlineString);
+						radioSilentLimited.setText(ConfigUtils.getSafeQuantityString(this, R.plurals.notifications_for_x_hours, muteValues[mutedIndex], muteValues[mutedIndex], muteValues[mutedIndex]) + deadlineString);
 					}
 				} else {
 					radioSilentUnlimited.setChecked(true);
-					radioSilentLimited.setText(String.format(getString(R.string.notifications_for_x_hours), muteValues[0]) + deadlineString);
+					radioSilentLimited.setText((ConfigUtils.getSafeQuantityString(this, R.plurals.notifications_for_x_hours, muteValues[0], muteValues[0]) + deadlineString));
 				}
 			} else {
 				// mentions only
@@ -372,7 +371,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 		radioSilentUnlimited = this.findViewById(R.id.radio_silent_unlimited);
 		radioSilentLimited = this.findViewById(R.id.radio_silent_limited);
 		radioSilentLimited = this.findViewById(R.id.radio_silent_limited);
-		radioSilentLimited.setText(String.format(getString(R.string.notifications_for_x_hours), muteValues[0]));
+		radioSilentLimited.setText(ConfigUtils.getSafeQuantityString(this, R.plurals.notifications_for_x_hours, muteValues[0], muteValues[0]));
 		radioSilentExceptMentions = this.findViewById(R.id.radio_silent_except_mentions);
 	}
 

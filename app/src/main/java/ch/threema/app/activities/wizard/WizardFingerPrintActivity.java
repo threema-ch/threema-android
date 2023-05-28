@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -47,7 +47,7 @@ import ch.threema.base.utils.LoggingUtil;
 public class WizardFingerPrintActivity extends WizardBackgroundActivity implements WizardDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFingerPrintActivity");
 
-	public static final int PROGRESS_MAX = 50;
+	public static final int PROGRESS_MAX = 100;
 	private static final String DIALOG_TAG_CREATE_ID = "ci";
 	private static final String DIALOG_TAG_CREATE_ERROR = "ni";
 	private static final String DIALOG_TAG_FINGERPRINT_INFO = "fi";

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -34,6 +34,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -46,16 +47,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -67,6 +58,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
@@ -102,7 +105,6 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
-import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
@@ -115,6 +117,7 @@ import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.ResumePauseHandler;
@@ -123,6 +126,7 @@ import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -131,6 +135,8 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
+import ch.threema.app.voip.activities.GroupCallActivity;
+import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -191,9 +197,9 @@ public class MessageSectionFragment extends MainFragment
 
 	private ServiceManager serviceManager;
 	private ConversationService conversationService;
-	private AvatarCacheService avatarCacheService;
 	private ContactService contactService;
 	private GroupService groupService;
+	private GroupCallManager groupCallManager;
 	private MessageService messageService;
 	private DistributionListService distributionListService;
 	private BackupChatService backupChatService;
@@ -216,6 +222,8 @@ public class MessageSectionFragment extends MainFragment
 	private String filterQuery;
 	private int cornerRadius;
 	private TagModel unreadTagModel;
+
+	private @Nullable String myIdentity;
 
 	private ArchiveSnackbar archiveSnackbar;
 
@@ -257,7 +265,17 @@ public class MessageSectionFragment extends MainFragment
 		public void onNew(final ConversationModel conversationModel) {
 			logger.debug("on new conversation");
 			if (messageListAdapter != null && recyclerView != null) {
-				updateList(0, null, null);
+				List<ConversationModel> changedPositions = Collections.singletonList(conversationModel);
+
+				// If the first item of the recycler view is visible, then scroll up
+				Integer scrollToPosition = null;
+				RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+				if (layoutManager instanceof LinearLayoutManager
+					&& ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition() == 0) {
+					// By passing a large integer we simulate a "moving up" change that triggers scrolling up
+					scrollToPosition = Integer.MAX_VALUE;
+				}
+				updateList(scrollToPosition, changedPositions, null);
 			}
 		}
 
@@ -298,6 +316,16 @@ public class MessageSectionFragment extends MainFragment
 						});
 					}
 				});
+			}
+		}
+	};
+
+	private final GroupListener groupListener = new GroupListener() {
+		@Override
+		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
+			// If this user is added to an existing group
+			if (groupService != null && myIdentity != null && myIdentity.equals(newIdentity)) {
+				fireReceiverUpdate(groupService.createReceiver(group));
 			}
 		}
 	};
@@ -382,9 +410,9 @@ public class MessageSectionFragment extends MainFragment
 	protected boolean checkInstances() {
 		return TestUtil.required(
 				this.serviceManager,
-				this.avatarCacheService,
 				this.contactListener,
 				this.groupService,
+				this.groupCallManager,
 				this.conversationService,
 				this.distributionListService,
 				this.fileService,
@@ -401,9 +429,9 @@ public class MessageSectionFragment extends MainFragment
 
 		if (this.serviceManager != null) {
 			try {
-				this.avatarCacheService = this.serviceManager.getAvatarCacheService();
 				this.contactService = this.serviceManager.getContactService();
 				this.groupService = this.serviceManager.getGroupService();
+				this.groupCallManager = this.serviceManager.getGroupCallManager();
 				this.messageService = this.serviceManager.getMessageService();
 				this.conversationService = this.serviceManager.getConversationService();
 				this.distributionListService = this.serviceManager.getDistributionListService();
@@ -416,6 +444,10 @@ public class MessageSectionFragment extends MainFragment
 				this.preferenceService = this.serviceManager.getPreferenceService();
 				this.conversationTagService = this.serviceManager.getConversationTagService();
 				this.lockAppService = this.serviceManager.getLockAppService();
+				UserService userService = serviceManager.getUserService();
+				if (userService != null) {
+					myIdentity = userService.getIdentity();
+				}
 			} catch (MasterKeyLockedException e) {
 				logger.debug("Master Key locked!");
 			} catch (ThreemaException e) {
@@ -572,6 +604,11 @@ public class MessageSectionFragment extends MainFragment
 
 	private void showConversation(ConversationModel conversationModel, View v) {
 		conversationTagService.unTag(conversationModel, unreadTagModel);
+
+		// Close keyboard if search view is expanded
+		if (searchView != null && !searchView.isIconified()) {
+			EditTextUtil.hideSoftKeyboard(searchView);
+		}
 
 		Intent intent = IntentDataUtil.getShowConversationIntent(conversationModel, activity);
 
@@ -869,7 +906,7 @@ public class MessageSectionFragment extends MainFragment
 						updateList(null, conversationModels, new Runnable() {
 							@Override
 							public void run() {
-								ListenerManager.conversationListeners.handle((ConversationListener listener) -> {
+								conversationListeners.handle((ConversationListener listener) -> {
 									listener.onModified(holder.getConversationModel(), oldPosition);
 								});
 							}
@@ -999,24 +1036,29 @@ public class MessageSectionFragment extends MainFragment
 					}
 				}
 			});
-			recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-				private final int TOUCH_SAFE_AREA_PX = 5;
 
-				// ignore touches at the very left and right edge of the screen to prevent interference with UI gestures
-				@Override
-				public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-					int width = getResources().getDisplayMetrics().widthPixels;
-					int touchX = (int) e.getRawX();
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && getActivity() != null && getActivity().isInMultiWindowMode()) {
+				recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+					private final int TOUCH_SAFE_AREA_PX = 5;
 
-					return touchX < TOUCH_SAFE_AREA_PX || touchX > width - TOUCH_SAFE_AREA_PX;
-				}
+					// ignore touches at the very left and right edge of the screen to prevent interference with UI gestures
+					@Override
+					public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+						int width = getResources().getDisplayMetrics().widthPixels;
+						int touchX = (int) e.getRawX();
 
-				@Override
-				public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) { }
+						return touchX < TOUCH_SAFE_AREA_PX || touchX > width - TOUCH_SAFE_AREA_PX;
+					}
 
-				@Override
-				public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) { }
-			});
+					@Override
+					public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+					}
+
+					@Override
+					public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+					}
+				});
+			}
 
 			//instantiate fragment
 			//
@@ -1077,6 +1119,14 @@ public class MessageSectionFragment extends MainFragment
 		Intent intent = new Intent(getActivity(), ArchiveActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_ARCHIVE_FILTER, filterQuery);
 		AnimationUtil.startActivity(getActivity(), TestUtil.empty(filterQuery) ? view : null, intent);
+	}
+
+	@Override
+	public void onJoinGroupCallClick(ConversationModel conversationModel) {
+		GroupModel group = conversationModel.getGroup();
+		if (group != null) {
+			startActivity(GroupCallActivity.getJoinCallIntent(requireActivity(), group.getId()));
+		}
 	}
 
 	private void editGroup(ConversationModel model, View view) {
@@ -1446,6 +1496,7 @@ public class MessageSectionFragment extends MainFragment
 		ListenerManager.contactSettingsListeners.add(this.contactSettingsListener);
 		ListenerManager.synchronizeContactsListeners.add(this.synchronizeContactsListener);
 		ListenerManager.chatListener.add(this.chatListener);
+		ListenerManager.groupListeners.add(this.groupListener);
 	}
 
 	private void removeListeners() {
@@ -1456,6 +1507,7 @@ public class MessageSectionFragment extends MainFragment
 		ListenerManager.contactSettingsListeners.remove(this.contactSettingsListener);
 		ListenerManager.synchronizeContactsListeners.remove(this.synchronizeContactsListener);
 		ListenerManager.chatListener.remove(this.chatListener);
+		ListenerManager.groupListeners.remove(this.groupListener);
 	}
 
 	private void updateList() {
@@ -1473,7 +1525,6 @@ public class MessageSectionFragment extends MainFragment
 			logger.error("could not instantiate required objects");
 			return;
 		}
-
 		logger.debug("*** update list [" + scrollToPosition + ", " + (changedPositions != null ? changedPositions.size() : "0") + "]");
 
 		Thread updateListThread = new Thread(new Runnable() {
@@ -1517,6 +1568,7 @@ public class MessageSectionFragment extends MainFragment
 									MessageSectionFragment.this.activity,
 									contactService,
 									groupService,
+									groupCallManager,
 									distributionListService,
 									conversationService,
 									mutedChatsListService,
@@ -1538,22 +1590,12 @@ public class MessageSectionFragment extends MainFragment
 							// make sure footer is refreshed
 							messageListAdapter.refreshFooter();
 
-							if (recyclerView != null) {
-								if (scrollToPosition != null) {
-									if (changedPositions != null && changedPositions.size() == 1) {
-										ConversationModel changedModel = changedPositions.get(0);
+							if (recyclerView != null && scrollToPosition != null) {
+								if (changedPositions != null && changedPositions.size() == 1) {
+									ConversationModel changedModel = changedPositions.get(0);
 
-										if (changedModel != null) {
-											final List<ConversationModel> copyOfModels = new ArrayList<>(conversationModels);
-											for (ConversationModel model : copyOfModels) {
-												if (model.equals(changedModel)) {
-													if (scrollToPosition > changedModel.getPosition()) {
-														recyclerView.scrollToPosition(changedModel.getPosition());
-													}
-													break;
-												}
-											}
-										}
+									if (changedModel != null && scrollToPosition > changedModel.getPosition() && conversationModels.contains(changedModel)) {
+										recyclerView.scrollToPosition(changedModel.getPosition());
 									}
 								}
 							}
@@ -1657,9 +1699,9 @@ public class MessageSectionFragment extends MainFragment
 			}
 
 			if (getView() != null) {
-				String snackText = String.format(getString(R.string.message_archived), this.conversationModels.size());
+				int amountArchived = this.conversationModels.size();
+				String snackText = ConfigUtils.getSafeQuantityString(getContext(), R.plurals.message_archived, amountArchived, amountArchived, this.conversationModels.size());
 				this.snackbar = Snackbar.make(getView(), snackText, 7 * (int) DateUtils.SECOND_IN_MILLIS);
-
 				this.snackbar.setAction(R.string.undo, v -> conversationService.unarchive(conversationModels));
 				this.snackbar.addCallback(new Snackbar.Callback() {
 					@Override

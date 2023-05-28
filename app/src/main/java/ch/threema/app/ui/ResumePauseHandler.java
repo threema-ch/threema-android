@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -45,17 +45,14 @@ public class ResumePauseHandler {
 
 	public static ResumePauseHandler getByActivity(Object useInObject, Activity activity) {
 		final String key = useInObject.getClass().toString();
-		ResumePauseHandler instance = instances.get(key);
-		if (instance == null) {
-			synchronized (lock) {
-				instance = instances.get(key);
-				if (instance == null) {
-					instance = new ResumePauseHandler(activity);
-					instances.put(key, instance);
-				}
+		synchronized (lock) {
+			ResumePauseHandler instance = instances.get(key);
+			if (instance == null || instance.getActivity() == null) {
+				instance = new ResumePauseHandler(activity);
+				instances.put(key, instance);
 			}
+			return instance;
 		}
-		return instance;
 	}
 
 	public interface RunIfActive {
@@ -114,11 +111,18 @@ public class ResumePauseHandler {
 		}
 	}
 
-	private boolean run(final RunIfActive runIfActive) {
+	private void run(final RunIfActive runIfActive) {
 		if(TestUtil.required(runIfActive, this.activityReference.get())) {
-			RuntimeUtil.runOnUiThread(() -> runIfActive.runOnUiThread());
+			RuntimeUtil.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					runIfActive.runOnUiThread();
+				}
+			});
 		}
-		return true;
 	}
 
+	private Activity getActivity() {
+		return this.activityReference.get();
+	}
 }

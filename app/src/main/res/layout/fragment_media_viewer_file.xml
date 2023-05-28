@@ -1,45 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/gallery_background">
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/gallery_background">
+<ImageView
+	android:id="@+id/preview_image"
+	android:layout_width="0dp"
+	android:layout_height="0dp"
+	android:layout_gravity="center_horizontal"
+	android:layout_marginLeft="100dp"
+	android:layout_marginRight="100dp"
+	android:src="@drawable/ic_file_filled"
+	app:layout_constraintBottom_toBottomOf="parent"
+	app:layout_constraintDimensionRatio="h,1:1"
+	app:layout_constraintEnd_toEndOf="parent"
+	app:layout_constraintStart_toStartOf="parent"
+	app:layout_constraintTop_toTopOf="parent" />
 
-		<ImageView
-			android:id="@+id/preview_image"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
-			android:scaleType="fitCenter"/>
+<TextView
+	android:id="@+id/filename_view"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center_horizontal"
+	android:padding="@dimen/edittext_padding"
+	android:textSize="@dimen/text_size_body"
+	app:layout_constraintEnd_toEndOf="parent"
+	app:layout_constraintStart_toStartOf="parent"
+	app:layout_constraintTop_toBottomOf="@id/preview_image" />
 
-		<pl.droidsonroids.gif.GifImageView
-			android:id="@+id/gif_view"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"/>
+<TextView
+	android:id="@+id/file_type"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:paddingLeft="@dimen/edittext_padding"
+	android:paddingRight="@dimen/edittext_padding"
+	android:layout_marginBottom="@dimen/edittext_padding"
+	android:textSize="12sp"
+	android:textColor="?attr/textColorSecondary"
+	app:layout_constraintTop_toBottomOf="@id/filename_view"
+	app:layout_constraintEnd_toEndOf="parent"
+	app:layout_constraintStart_toStartOf="parent" />
 
-		<TextView
-			android:id="@+id/empty_text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:gravity="center_horizontal"
-			android:paddingLeft="10dp"
-			android:paddingRight="10dp"
-			android:fontFamily="sans-serif-light"
-			android:textColor="@android:color/white"
-			android:textSize="18sp"
-			android:visibility="gone"/>
-
-		<TextView
-			android:id="@+id/filename_view"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal|top"
-			android:layout_marginLeft="16dp"
-			android:layout_marginRight="16dp"
-			android:layout_marginTop="96dp"
-			android:textAlignment="center"
-			android:textColor="@color/dark_text_color_secondary"
-			android:textSize="16sp"
-			android:visibility="gone"/>
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

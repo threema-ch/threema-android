@@ -28,7 +28,14 @@
 
 		<include layout="@layout/view_sms_notice"/>
 
-		<include layout="@layout/view_ongoing_call_notice"/>
+		<ch.threema.app.ui.OngoingCallNoticeView
+			android:id="@+id/ongoing_call_notice"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:animateLayoutChanges="true"
+			android:background="?attr/background_openNotice"
+			android:elevation="4dp"
+			android:visibility="gone" />
 
 	</com.google.android.material.appbar.AppBarLayout>
 

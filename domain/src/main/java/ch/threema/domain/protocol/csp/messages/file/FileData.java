@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,6 +21,9 @@
 
 package ch.threema.domain.protocol.csp.messages.file;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,9 +35,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import androidx.annotation.IntDef;
-import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
 public class FileData {
 	@Retention(RetentionPolicy.SOURCE)
@@ -54,7 +56,7 @@ public class FileData {
 	private final static String KEY_FILE_SIZE = "s";
 	private final static String KEY_RENDERING_TYPE_DEPRECATED = "i";
 	private final static String KEY_RENDERING_TYPE = "j";
-	private final static String KEY_DESCRIPTION = "d";
+	private final static String KEY_CAPTION = "d";
 	private final static String KEY_CORRELATION_ID = "c";
 	private final static String KEY_META_DATA = "x";
 
@@ -66,7 +68,7 @@ public class FileData {
 	private long fileSize;
 	private String fileName;
 	private @RenderingType int renderingType;
-	private String description;
+	private String caption;
 	private String correlationId;
 	private Map<String, Object> metaData;
 
@@ -110,7 +112,7 @@ public class FileData {
 		return thumbnailMimeType;
 	}
 
-	public FileData setThumbnailMimeType(String thumbnailMimeType) {
+	public FileData setThumbnailMimeType(@Nullable String thumbnailMimeType) {
 		this.thumbnailMimeType = thumbnailMimeType;
 		return this;
 	}
@@ -142,12 +144,16 @@ public class FileData {
 		return this;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public String getCaption() {
+		return this.caption;
 	}
 
-	public FileData setDescription(String description) {
-		this.description = description;
+	public FileData setCaption(String caption) {
+		if (caption != null && !caption.isBlank()) {
+			this.caption = caption;
+		} else {
+			this.caption = null;
+		}
 		return this;
 	}
 
@@ -237,9 +243,9 @@ public class FileData {
 			}
 
 			//optional field
-			if(o.has(KEY_DESCRIPTION)) {
+			if(o.has(KEY_CAPTION)) {
 				try {
-					fileData.description = o.getString(KEY_DESCRIPTION);
+					fileData.caption = o.getString(KEY_CAPTION);
 				}
 				catch (IllegalArgumentException e) {
 					//ignore, optional field
@@ -291,8 +297,8 @@ public class FileData {
 			o.put(KEY_FILE_NAME, this.fileName);
 			o.put(KEY_FILE_SIZE, this.fileSize);
 			o.put(KEY_RENDERING_TYPE_DEPRECATED, this.renderingType == RENDERING_MEDIA ? RENDERING_MEDIA : RENDERING_DEFAULT);
-			if (this.description != null) {
-				o.put(KEY_DESCRIPTION, this.description);
+			if (this.caption != null) {
+				o.put(KEY_CAPTION, this.caption);
 			}
 
 			if (this.correlationId != null) {

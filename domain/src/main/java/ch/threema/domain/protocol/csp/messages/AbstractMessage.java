@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -30,6 +30,7 @@ import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.QueueMessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 
 /**
  * Abstract base class for messages that can be sent via the Threema server interface,
@@ -43,10 +44,12 @@ public abstract class AbstractMessage {
 	private String pushFromName;
 	private Date date;
 	private int messageFlags;
+	private ForwardSecurityMode forwardSecurityMode;
 
 	public AbstractMessage() {
 		this.date = new Date();
 		this.messageId = new MessageId();
+		this.forwardSecurityMode = ForwardSecurityMode.NONE;
 	}
 
 	/* Methods to be overridden by subclasses */
@@ -118,7 +121,7 @@ public abstract class AbstractMessage {
 	 * Return whether the user's profile information (nickname, picture etc.) is allowed to
 	 * be sent along with this message. This should be set to true for user-initiated messages only.
 	 */
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return false;
 	}
 
@@ -188,5 +191,13 @@ public abstract class AbstractMessage {
 
 	public void setMessageFlags(int messageFlags) {
 		this.messageFlags = messageFlags;
+	}
+
+	public ForwardSecurityMode getForwardSecurityMode() {
+		return forwardSecurityMode;
+	}
+
+	public void setForwardSecurityMode(ForwardSecurityMode forwardSecurityMode) {
+		this.forwardSecurityMode = forwardSecurityMode;
 	}
 }

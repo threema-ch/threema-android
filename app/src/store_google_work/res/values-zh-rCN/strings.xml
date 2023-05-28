@@ -2,7 +2,7 @@
 <resources>
     <string name="about_title">Threema Work Android版</string>
     <string name="enter_serial_body">请输入贵公司或组织提供的凭据</string>
-    <string name="serial_required_want_exit">许可证无效。您想重试还是退出Threema？</string>
+    <string name="serial_required_want_exit">许可证无效。您想重试还是退出 Threema Work？</string>
     <string name="checking_serial">正在检查凭据</string>
     <string name="username_hint">用户名</string>
     <string name="new_wizard_works_like_phone_number">您的 Threema ID 就像电话号码一样。\n您的联系人可以通过此 ID 与您联系。</string>
@@ -24,5 +24,8 @@
     <string name="private_threema_download"><![CDATA[<a href=%1$s>了解更多关于 Threema Work 的信息</a> <br/><br/>如果您是私人用户，请<a href=%2$s>点击这里</a> 下载 Threema。]]></string>
     <string name="directory_search">在目录中搜索</string>
     <string name="directory_title">公司目录</string>
-    <string name="directory_empty_view_text">请输入至少3个字符，以开始在贵公司的 Threema 用户目录中进行搜索</string>
+    <string name="directory_empty_view_text">找不到结果
+
+请输入至少3个字符，以开始在贵公司的 Threema 用户目录中进行搜索</string>
+    <string name="share_with_app">分享到 Threema Work</string>
 </resources>

@@ -23,7 +23,7 @@
     <string name="webclient_invalid_qr_code">Неправильный QR-код</string>
     <string name="webclient_new_connection_toast">Сессия приложения для ПК/веб-клиента запущена</string>
     <string name="webclient_protocol_error">Ошибка протокола</string>
-    <string name="webclient_protocol_version_to_old">Ваше приложение не поддерживает данную версию приложения для ПК / веб-клиента. Обновите Threema для Android до последней версии.</string>
+    <string name="webclient_protocol_version_to_old">Ваше приложение не поддерживает данную версию приложения для ПК / веб-клиента. Обновите LeOS-Messenger для Android до последней версии.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">Ваше приложение не поддерживает данную версию данную версию приложения для ПК / веб-клиента. Загрузите последнюю версию приложения для ПК или попросите администратора веб-клиента перейти на последнюю версию.</string>
     <string name="webclient_protocol_version_too_new_threema">Ваше приложение не поддерживает данную версию приложения для ПК / веб-клиента. Используйте более новую версию приложения для ПК / веб-клиента.</string>
     <string name="webclient_session_already_exists">Сессия, соответствующая сканированному вами QR-коду, уже существует. Перезапустите приложение для ПК / перезагрузите веб-клиент и повторите попытку.</string>

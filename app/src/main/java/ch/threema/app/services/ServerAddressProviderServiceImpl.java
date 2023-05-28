@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -129,6 +129,16 @@ public class ServerAddressProviderServiceImpl implements ServerAddressProviderSe
 			@Override
 			public String getWebServerUrl() throws ThreemaException {
 				return BuildConfig.WEB_SERVER_URL;
+			}
+
+			@Override
+			public String getWebOverrideSaltyRtcHost() throws ThreemaException {
+				return null;
+			}
+
+			@Override
+			public int getWebOverrideSaltyRtcPort() throws ThreemaException {
+				return 0;
 			}
 		};
 	}

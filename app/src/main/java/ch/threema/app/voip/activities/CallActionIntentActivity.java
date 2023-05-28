@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,6 +21,7 @@
 
 package ch.threema.app.voip.activities;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -31,7 +32,10 @@ import android.widget.Toast;
 
 import org.slf4j.Logger;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
@@ -56,6 +60,17 @@ public class CallActionIntentActivity extends ThreemaActivity {
 	private ContactService contactService;
 	private PreferenceService preferenceService;
 	private LicenseService licenseService;
+	private ContactModel contact;
+
+	private final ActivityResultLauncher<String> readPhoneStatePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+		if (!isGranted && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
+			ConfigUtils.showPermissionRationale(this, null, R.string.read_phone_state_short_message);
+		} else {
+			if (!VoipUtil.initiateCall(this, contact, false, this::finish, null)) {
+				finish();
+			}
+		}
+	});
 
 	@Override
 	protected boolean checkInstances() {
@@ -91,14 +106,14 @@ public class CallActionIntentActivity extends ThreemaActivity {
 			return;
 		}
 
-		if (!ConfigUtils.isCallsEnabled(this, preferenceService, licenseService)) {
+		if (!ConfigUtils.isCallsEnabled() || !licenseService.isLicensed()) {
 			Toast.makeText(getApplicationContext(), R.string.voip_disabled, Toast.LENGTH_LONG).show();
 			this.finish();
 			return;
 		}
 
 	//	String contactIdentity = null;
-		ContactModel contact = null;
+		contact = null;
 
 		// Validate intent
 		final Intent intent = getIntent();
@@ -133,12 +148,7 @@ public class CallActionIntentActivity extends ThreemaActivity {
 
 		logger.info("Calling {} via call intent action", contact.getIdentity());
 
-		if (!VoipUtil.initiateCall(this, contact, false, new Runnable() {
-			@Override
-			public void run() {
-				finish();
-			}
-		})) {
+		if (!VoipUtil.initiateCall(this, contact, false, this::finish, readPhoneStatePermissionLauncher)) {
 			finish();
 		}
 	}

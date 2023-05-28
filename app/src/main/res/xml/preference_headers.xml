@@ -41,7 +41,7 @@
 		app:icon="@drawable/ic_videocall"
 		app:key="pref_key_calls"
 		app:persistent="true"
-		app:title="@string/prefs_title_voip" />
+		app:title="@string/prefs_title_calls" />
 	<Preference
 		app:fragment="ch.threema.app.preference.SettingsAboutFragment"
 		app:icon="@drawable/ic_about_outline"

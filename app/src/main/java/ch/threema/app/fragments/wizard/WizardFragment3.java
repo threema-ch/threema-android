@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -98,7 +98,7 @@ public class WizardFragment3 extends WizardFragment {
 		contentViewStub.setLayoutResource(R.layout.fragment_wizard3);
 		contentViewStub.inflate();
 
-		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+		WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 
 		countrySpinner = rootView.findViewById(R.id.country_spinner);
 		emailEditText = rootView.findViewById(R.id.wizard_email);
@@ -435,7 +435,7 @@ public class WizardFragment3 extends WizardFragment {
 
 	void initValues() {
 		if (isResumed()) {
-			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+			WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 			emailEditText.setText(callback.getEmail());
 
 			if (TestUtil.empty(callback.getPresetEmail())) {

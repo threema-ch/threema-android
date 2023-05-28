@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,29 +21,26 @@
 
 package ch.threema.app.fragments.mediaviews;
 
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
-import ch.threema.app.utils.FileUtil;
-import ch.threema.app.utils.TestUtil;
-import pl.droidsonroids.gif.GifDrawable;
-import pl.droidsonroids.gif.GifImageView;
+import ch.threema.app.utils.IconUtil;
+import ch.threema.app.utils.MimeUtil;
 
 public class FileViewFragment extends MediaViewFragment {
-	private WeakReference<GifImageView> imageViewRef;
 	private WeakReference<ImageView> previewViewRef;
 	private WeakReference<TextView> filenameViewRef;
-	private boolean uiVisibilityStatus = false;
+	private WeakReference<TextView> mimeTypeViewRef;
 
 	public FileViewFragment() { super(); }
 
@@ -58,44 +55,10 @@ public class FileViewFragment extends MediaViewFragment {
 	}
 
 	@Override
-	protected void showThumbnail(Bitmap thumbnail, boolean isGeneric, String filename) {
-		if (imageViewRef.get() != null) {
-			this.setOnClickListener(null);
-
-			if (thumbnail != null && !thumbnail.isRecycled()) {
-				if (isGeneric) {
-					if (!TestUtil.empty(filename)) {
-						filenameViewRef.get().setText(filename);
-						filenameViewRef.get().setVisibility(View.VISIBLE);
-					}
-				}
-				previewViewRef.get().setImageBitmap(thumbnail);
-				previewViewRef.get().setVisibility(View.VISIBLE);
-			} else {
-				previewViewRef.get().setVisibility(View.INVISIBLE);
-			}
-			imageViewRef.get().setVisibility(View.INVISIBLE);
-		}
-	}
-
-	@Override
-	protected void hideThumbnail() {
-		this.previewViewRef.get().setVisibility(View.INVISIBLE);
-	}
-
-	@Override
 	protected void created(Bundle savedInstanceState) {
-		this.imageViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.gif_view));
 		this.previewViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.preview_image));
 		this.filenameViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.filename_view));
-
-		this.imageViewRef.get().setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				showUi(uiVisibilityStatus);
-				uiVisibilityStatus = !uiVisibilityStatus;
-			}
-		});
+		this.mimeTypeViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.file_type));
 	}
 
 	@Override
@@ -111,23 +74,40 @@ public class FileViewFragment extends MediaViewFragment {
 	@Override
 	protected void handleDecryptedFile(final File file) {
 		if (this.isAdded() && getContext() != null) {
-			if (FileUtil.isAnimGif(getContext().getContentResolver(), Uri.fromFile(file))) {
-				try {
-					GifDrawable gifDrawable = new GifDrawable(getContext().getContentResolver(), Uri.fromFile(file));
-					this.imageViewRef.get().setImageDrawable(gifDrawable);
-					this.imageViewRef.get().setVisibility(View.VISIBLE);
-					gifDrawable.start();
-					this.previewViewRef.get().setVisibility(View.GONE);
-				} catch (IOException e) {
-					//
+			this.previewViewRef.get().setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					((MediaViewerActivity) requireActivity()).viewMediaInGallery();
 				}
+			});
+		}
+	}
+
+	@Override
+	protected void handleMimeCategory(@NonNull MimeUtil.MimeCategory category) {
+		// Set mime category icon
+		if (this.previewViewRef != null && this.previewViewRef.get() != null) {
+			this.previewViewRef.get().setImageDrawable(ResourcesCompat.getDrawable(getResources(), IconUtil.getMimeCategoryIcon(category), requireActivity().getTheme()));
+		}
+		// Set mime description
+		if (this.mimeTypeViewRef != null && this.mimeTypeViewRef.get() != null) {
+			Integer mimeDescription = MimeUtil.getMimeDescription(category);
+			if (mimeDescription != null) {
+				this.mimeTypeViewRef.get().setText(mimeDescription);
 			} else {
-				this.previewViewRef.get().setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						((MediaViewerActivity) getActivity()).viewMediaInGallery();
-					}
-				});
+				this.mimeTypeViewRef.get().setVisibility(View.GONE);
+			}
+		}
+	}
+
+	@Override
+	protected void handleFileName(@Nullable String filename) {
+		if (filenameViewRef != null && filenameViewRef.get() != null) {
+			if (filename != null) {
+				filenameViewRef.get().setText(filename);
+				filenameViewRef.get().setVisibility(View.VISIBLE);
+			} else {
+				filenameViewRef.get().setVisibility(View.GONE);
 			}
 		}
 	}

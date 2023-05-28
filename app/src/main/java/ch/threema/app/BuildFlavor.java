@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -63,12 +63,7 @@ public class BuildFlavor {
 	 */
 	@SuppressWarnings("ConstantConditions")
 	public static boolean maySelfUpdate() {
-		switch (BuildConfig.FLAVOR) {
-			case FLAVOR_STORE_THREEMA:
-				return true;
-			default:
-				return false;
-		}
+		return FLAVOR_STORE_THREEMA.equals(BuildConfig.FLAVOR);
 	}
 
 	/**
@@ -76,12 +71,7 @@ public class BuildFlavor {
 	 */
 	@SuppressWarnings("ConstantConditions")
 	public static boolean forceThreemaPush() {
-		switch (BuildConfig.FLAVOR) {
-			case FLAVOR_LIBRE:
-				return true;
-			default:
-				return false;
-		}
+		return FLAVOR_LIBRE.equals(BuildConfig.FLAVOR);
 	}
 
 	/**
@@ -90,12 +80,7 @@ public class BuildFlavor {
 	 */
 	@SuppressWarnings("ConstantConditions")
 	public static boolean isLibre() {
-		switch (BuildConfig.FLAVOR) {
-			case FLAVOR_LIBRE:
-				return true;
-			default:
-				return false;
-		}
+		return FLAVOR_LIBRE.equals(BuildConfig.FLAVOR);
 	}
 
 	@SuppressWarnings("ConstantConditions")

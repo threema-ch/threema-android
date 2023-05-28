@@ -1,7 +1,7 @@
 buildscript {
-    ext.kotlin_version = '1.6.10'
-    ext.kotlin_coroutines_version = '1.6.0'
-    ext.slf4j_version = '1.7.32'
+    ext.kotlin_version = '1.7.20'
+    ext.kotlin_coroutines_version = '1.6.4'
+    ext.slf4j_version = '1.7.36'
     ext.junit_version = '4.13.2'
     repositories {
         google()
@@ -9,7 +9,7 @@ buildscript {
         flatDir { dirs 'app/libs' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath 'org.owasp:dependency-check-gradle:6.5.3'
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.18'
 
@@ -31,13 +31,12 @@ plugins {
     id 'org.sonarqube' version '3.0'
 }
 
-
 allprojects {
     repositories {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        jcenter()
+        jcenter() // TODO(ANDR-2023): Remove repository
         flatDir { dirs 'libs' }
 
         // Huawei

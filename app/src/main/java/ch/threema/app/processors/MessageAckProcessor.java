@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -29,9 +29,9 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.connection.MessageAckListener;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.QueueMessageId;
+import ch.threema.domain.protocol.csp.connection.MessageAckListener;
 import ch.threema.storage.models.MessageState;
 
 /**
@@ -65,7 +65,7 @@ public class MessageAckProcessor implements MessageAckListener {
 		}
 
 		if (this.messageService != null) {
-			this.messageService.updateMessageStateAtOutboxed(
+			this.messageService.updateMessageStateForOutgoingMessage(
 				queueMessageId.getMessageId(),
 				MessageState.SENT,
 				null

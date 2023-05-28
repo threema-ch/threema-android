@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -66,7 +66,7 @@ public class NewWizardFingerPrintView extends SquareImageView implements View.On
 	private int fixedCharCount;
 	private int charsToFixPerStep;
 
-	private class Char {
+	private static class Char {
 		public boolean isFixed = false;
 		public char text;
 		public int[] position = new int[2];
@@ -105,9 +105,7 @@ public class NewWizardFingerPrintView extends SquareImageView implements View.On
 
 	@Override
 	protected void onWindowVisibilityChanged(int visibility) {
-
 		ViewParent p = this.getParent();
-
 		while (p != null) {
 			if (p instanceof LockableScrollView) {
 				this.lockableScrollViewParent = (LockableScrollView) p;
@@ -116,7 +114,6 @@ public class NewWizardFingerPrintView extends SquareImageView implements View.On
 
 			p = p.getParent();
 		}
-
 		super.onWindowVisibilityChanged(visibility);
 	}
 
@@ -139,7 +136,6 @@ public class NewWizardFingerPrintView extends SquareImageView implements View.On
 
 	@Override
 	public boolean onTouch(View view, MotionEvent motionEvent) {
-
 		if (!this.isEnabled()) {
 			return false;
 		}
@@ -204,7 +200,6 @@ public class NewWizardFingerPrintView extends SquareImageView implements View.On
 		}
 
 		this.pointLeakCount++;
-
 
 		return true;
 	}

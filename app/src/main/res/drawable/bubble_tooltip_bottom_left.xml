@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:bottom="8dp" android:left="2dp" android:top="2dp">
 		<shape android:shape="rectangle">
-			<corners android:radius="10dp"/>
+			<corners android:radius="@dimen/tooltip_border_radius"/>
 			<solid android:color="@color/tooltip_shadow_color"/>
 		</shape>
 	</item>
@@ -20,7 +20,7 @@
 	</item>
 	<item android:bottom="10dp" android:right="2dp">
 		<shape android:shape="rectangle">
-			<corners android:radius="@dimen/chat_bubble_border_radius"/>
+			<corners android:radius="@dimen/tooltip_border_radius"/>
 			<solid android:color="@color/tooltip_background_color"/>
 		</shape>
 	</item>

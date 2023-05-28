@@ -257,7 +257,7 @@
 💤|alvás|képregény
 👋|integetés|integető kéz|kéz|test
 🤚|felemelt|kézfej
-🖐|felemelt kéz szétálló ujjakkal|kéz|szétálló|test|ujj
+🖐️|felemelt kéz szétálló ujjakkal|kéz|szétálló|test|ujj
 ✋|felemelt kéz|kéz|test
 🖖|kéz|spock|star trek-üdvözlet|test|ujj|vulcan
 👌|kéz|ok jel|oké|rendben|test
@@ -403,7 +403,7 @@
 👮|rendőrség|zsaru
 👮‍♂️|férfi|rendőr|zsaru
 👮‍♀️|nő|rendőrnő|zsaru
-🕵|detektív|kopó
+🕵️|detektív|kopó
 🕵️‍♂️|detektív|férfi|kém|nyomozó
 🕵️‍♀️|detektív|kémnő|nő|nyomozónő
 💂|gárdista|őrség
@@ -505,7 +505,7 @@
 🏇|lóverseny|versenyló|zsoké
 ⛷️|hó|síelés|síelő|téli sportok
 🏂|hódeszka|snowboardozó|téli sportok
-🏌|golfozó|golfütő|labda
+🏌️|golfozó|golfütő|labda
 🏌️‍♂️|férfi|golfozó férfi
 🏌️‍♀️|golfozó nő|nő
 🏄|szörföző
@@ -517,10 +517,10 @@
 🏊|úszás|úszó
 🏊‍♂️|férfi|úszás|úszó
 🏊‍♀️|nő|úszás|úszó
-⛹|ember labdával|labda|sportoló
+⛹️|ember labdával|labda|sportoló
 ⛹️‍♂️|férfi labdával|labda
 ⛹️‍♀️|labda|nő labdával
-🏋|sportoló|súlyemelő
+🏋️|sportoló|súlyemelő
 🏋️‍♂️|férfi|súlyemelő
 🏋️‍♀️|nő|súlyemelő
 🚴|biciklista|kerékpáros|sportoló
@@ -1430,7 +1430,7 @@
 📶|antennasávok|mobiltelefon|térerő
 📳|mobiltelefon|rádiótelefon|rezgés|rezgő mód|telefon|tiltott
 📴|kikapcsolva|mobiltelefon|rádiótelefon|telefon|tiltott
-⚧|transznemű szimbólum
+⚧️|transznemű szimbólum
 ♾️|korlátlan|örökké|univerzális|végtelen
 ‼️|dupla felkiáltójel|felkiáltás|írásjel|központozás
 💱|átváltás|bank|pénzváltás|pénzváltó|valuta

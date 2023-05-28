@@ -8,17 +8,6 @@
             <PersistentState>
               <option name="children">
                 <map>
-                  <entry key="confirmationStep">
-                    <value>
-                      <PersistentState>
-                        <option name="values">
-                          <map>
-                            <entry key="resourceDirectory" value="main" />
-                          </map>
-                        </option>
-                      </PersistentState>
-                    </value>
-                  </entry>
                   <entry key="imageAssetPanel">
                     <value>
                       <PersistentState>
@@ -73,6 +62,17 @@
                                 <PersistentState>
                                   <option name="children">
                                     <map>
+                                      <entry key="backgroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="0" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                       <entry key="foregroundClipArt">
                                         <value>
                                           <PersistentState>
@@ -90,7 +90,8 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="$PROJECT_DIR$/app/src/main/ic_launcher-web.png" />
+                                                <entry key="imagePath" value="$PROJECT_DIR$/app/src/main/threema.png" />
+                                                <entry key="scalingPercent" value="69" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -286,6 +287,29 @@
                                 </PersistentState>
                               </value>
                             </entry>
+                          </map>
+                        </option>
+                      </PersistentState>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </PersistentState>
+          </value>
+        </entry>
+        <entry key="vectorWizard">
+          <value>
+            <PersistentState>
+              <option name="children">
+                <map>
+                  <entry key="vectorAssetStep">
+                    <value>
+                      <PersistentState>
+                        <option name="values">
+                          <map>
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="outputName" value="threema" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/app/src/main/threema.svg" />
                           </map>
                         </option>
                       </PersistentState>

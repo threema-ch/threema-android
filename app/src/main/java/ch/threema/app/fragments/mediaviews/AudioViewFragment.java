@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,8 +21,8 @@
 
 package ch.threema.app.fragments.mediaviews;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -38,7 +38,8 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultDataSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 
 import org.slf4j.Logger;
@@ -46,13 +47,18 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.lang.ref.WeakReference;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.mediaattacher.PreviewFragmentInterface;
+import ch.threema.app.utils.IconUtil;
+import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -92,16 +98,6 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	@Override
-	protected void showThumbnail(Bitmap thumbnail, boolean isGeneric, String filename) {
-		if (this.audioView != null && this.audioView.get() != null) {
-			this.audioView.get().setDefaultArtwork(new BitmapDrawable(getResources(), thumbnail));
-		}
-	}
-
-	@Override
-	protected void hideThumbnail() {}
-
-	@Override
 	protected void handleDecryptingFile() {
 		if (progressBarRef.get() != null) {
 			this.progressBarRef.get().setVisibility(View.VISIBLE);
@@ -135,10 +131,12 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 			audioView.setControllerHideOnTouch(true);
 			audioView.setControllerShowTimeoutMs(-1);
 			audioView.setControllerAutoShow(true);
+			audioView.setDefaultArtwork(ResourcesCompat.getDrawable(getResources(), IconUtil.getMimeCategoryIcon(MimeUtil.MimeCategory.AUDIO), ThreemaApplication.getAppContext().getTheme()));
 			View controllerView = audioView.findViewById(R.id.position_container);
 			ViewCompat.setOnApplyWindowInsetsListener(controllerView, new OnApplyWindowInsetsListener() {
+				@NonNull
 				@Override
-				public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+				public WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
 					ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
 					params.leftMargin = insets.getSystemWindowInsetLeft();
 					params.rightMargin = insets.getSystemWindowInsetRight();
@@ -149,6 +147,13 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 		}
 
 		this.progressBarRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.progress_bar));
+	}
+
+	@Override
+	protected void showThumbnail(@NonNull Drawable thumbnail) {
+		if (this.audioView != null && this.audioView.get() != null) {
+			this.audioView.get().setDefaultArtwork(thumbnail);
+		}
 	}
 
 	@Override
@@ -174,8 +179,9 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	private void loadAudio(Uri audioUri) {
-		if (this.audioPlayer != null) {
-			DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(), getContext().getString(R.string.app_name)));
+		Context context = getContext();
+		if (this.audioPlayer != null && context != null) {
+			DataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(context, new DefaultHttpDataSource.Factory().setUserAgent(Util.getUserAgent(context, getContext().getString(R.string.app_name))));
 			MediaSource audioSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(audioUri));
 
 			this.audioPlayer.setPlayWhenReady(this.isImmediatePlay);

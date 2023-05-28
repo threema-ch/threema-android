@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,6 +22,9 @@
 package ch.threema.domain.protocol.api;
 
 import android.annotation.SuppressLint;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -48,20 +51,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.ThreemaKDF;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.ProtocolStrings;
 import ch.threema.domain.protocol.SSLSocketFactoryFactory;
 import ch.threema.domain.protocol.ServerAddressProvider;
@@ -76,6 +79,7 @@ import ch.threema.domain.protocol.api.work.WorkDirectoryFilter;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.stores.TokenStoreInterface;
+import ove.crypto.digest.Blake2b;
 
 /**
  * Fetches data and executes commands on the Threema API (such as creating a new
@@ -93,6 +97,7 @@ public class APIConnector {
 	private static final byte[] MOBILENO_HMAC_KEY = new byte[]{(byte) 0x85, (byte) 0xad, (byte) 0xf8, (byte) 0x22, (byte) 0x69, (byte) 0x53, (byte) 0xf3, (byte) 0xd9, (byte) 0x6c, (byte) 0xfd, (byte) 0x5d, (byte) 0x09, (byte) 0xbf, (byte) 0x29, (byte) 0x55, (byte) 0x5e, (byte) 0xb9, (byte) 0x55, (byte) 0xfc, (byte) 0xd8, (byte) 0xaa, (byte) 0x5e, (byte) 0xc4, (byte) 0xf9, (byte) 0xfc, (byte) 0xd8, (byte) 0x69, (byte) 0xe2, (byte) 0x58, (byte) 0x37, (byte) 0x07, (byte) 0x23};
 
 	private static final int DEFAULT_MATCH_CHECK_INTERVAL = 86400;
+	private static final int RESPONSE_LEN = 32;
 
 	private final @NonNull
 	SSLSocketFactoryFactory sslSocketFactoryFactory;
@@ -181,21 +186,17 @@ public class APIConnector {
 
 		byte[] token = Base64.decode(tokenString);
 		byte[] tokenRespKeyPub = Base64.decode(p1Result.getString("tokenRespKeyPub"));
-		if (isBadToken(token)) {
-			throw new ThreemaException("Bad token");
-		}
 
 		logger.debug("Got token from server; sending response");
 
-		// Phase 2: encrypt token and send response to server
-		String nonceStr = "createIdentity response.";
-		NaCl nacl = new NaCl(privateKey, tokenRespKeyPub);
-		byte[] clientResponse = nacl.encrypt(token, nonceStr.getBytes());
+		// Phase 2: create token authenticator and send response to server
+		byte[] sharedSecret = new NaCl(privateKey, tokenRespKeyPub).getPrecomputed();
+		byte[] response = calcTokenResponse(sharedSecret, token);
 
 		JSONObject p2Body = requestData.createIdentityRequestDataJSON();
 		p2Body.put("publicKey", Base64.encodeBytes(publicKey));
 		p2Body.put("token", tokenString);
-		p2Body.put("response", Base64.encodeBytes(clientResponse));
+		p2Body.put("response", Base64.encodeBytes(response));
 
 		String p2ResultString = this.postJson(url, p2Body);
 		JSONObject p2Result = new JSONObject(p2ResultString);
@@ -291,13 +292,14 @@ public class APIConnector {
 		// Phase 1: send identity
 		JSONObject request = new JSONObject();
 		request.put("identity", identityStore.getIdentity());
+		request.put("appVariant", isWork ? "work" : "consumer");
 
 		logger.debug("Fetch identity private phase 1: sending to server: {}", request);
 		JSONObject p1Result = new JSONObject(this.postJson(url, request));
 		logger.debug("Fetch identity private phase 1: response from server: {}", p1Result);
 
 		if (p1Result.has("success") && !p1Result.getBoolean("success")) {
-			throw new ThreemaException(p1Result.getString("error"));
+			throw new FetchIdentityException(p1Result.getString("error"));
 		}
 
 		makeTokenResponse(p1Result, request, identityStore);
@@ -308,7 +310,7 @@ public class APIConnector {
 		logger.debug("Fetch identity private: response from server: {}", p2Result);
 
 		if (!p2Result.getBoolean("success")) {
-			throw new ThreemaException(p2Result.getString("error"));
+			throw new FetchIdentityException(p2Result.getString("error"));
 		}
 
 		FetchIdentityPrivateResult result = new FetchIdentityPrivateResult();
@@ -811,6 +813,47 @@ public class APIConnector {
 		return "3ma;" + token;
 	}
 
+	public @NonNull SfuToken obtainSfuToken(@NonNull IdentityStoreInterface identityStore) throws Exception {
+		String url = getServerUrl() + "identity/sfu_cred";
+
+		// Phase 1: send identity
+		final JSONObject request = new JSONObject();
+		request.put("identity", identityStore.getIdentity());
+		final JSONObject p1Result = new JSONObject(postJson(url, request));
+		makeTokenResponse(p1Result, request, identityStore);
+
+		// Phase 2: send token response
+		final JSONObject p2Result = new JSONObject(postJson(url, request));
+		if (!p2Result.getBoolean("success")) {
+			throw new ThreemaException(p2Result.getString("error"));
+		}
+
+		String baseUrl = p2Result.getString("sfuBaseUrl");
+		if (baseUrl.isEmpty()) {
+			throw new ThreemaException("Received empty sfu base url");
+		}
+
+		Set<String> allowedSfuHostnameSuffixes = new HashSet<>();
+
+		JSONArray suffixes = p2Result.getJSONArray("allowedSfuHostnameSuffixes");
+		for (int i = 0; i < suffixes.length(); i++) {
+			allowedSfuHostnameSuffixes.add(suffixes.getString(i));
+		}
+
+		String token = p2Result.getString("sfuToken");
+		if (token.isEmpty()) {
+			throw new ThreemaException("Received empty sfu token");
+		}
+
+		int expiration = p2Result.getInt("expiration");
+		if (expiration < 1) {
+			throw new ThreemaException("Received invalid expiration");
+		}
+		Date expirationDate = new Date(new Date().getTime() + expiration * 1000L);
+
+		return new SfuToken(baseUrl, allowedSfuHostnameSuffixes, token, expirationDate);
+	}
+
 	/**
 	 * Set the group chat flag for the identity in the given store.
 	 *
@@ -1156,6 +1199,7 @@ public class APIConnector {
 	/**
 	 * Fetch all custom work data from work API.
 	 */
+	@NonNull
 	public WorkData fetchWorkData(String username, String password, String[] identities) throws Exception {
 		WorkData workData = new WorkData();
 
@@ -1169,13 +1213,13 @@ public class APIConnector {
 		}
 		request.put("contacts", identityArray);
 
-		String data = this.postJson(getWorkServerUrl() + "fetch2", request);
-
-		if (data == null || data.length() == 0) {
+		PostJsonResult postJsonResult = this.postJsonWithResult(getWorkServerUrl() + "fetch2", request);
+		if (postJsonResult.responseCode > 0 || postJsonResult.responseBody == null || postJsonResult.responseBody.length() == 0) {
+			workData.responseCode = postJsonResult.responseCode;
 			return workData;
 		}
 
-		JSONObject jsonResponse = new JSONObject(data);
+		JSONObject jsonResponse = new JSONObject(postJsonResult.responseBody);
 		if (jsonResponse.has("support") && !jsonResponse.isNull("support")) {
 			workData.supportUrl = jsonResponse.getString("support");
 		}
@@ -1451,20 +1495,23 @@ public class APIConnector {
 	 * @return result of license check (success status, error message if success = false)
 	 * @throws Exception on network error
 	 */
-	public boolean updateWorkInfo(String username,
-								  String password,
-								  IdentityStoreInterface identityStore,
-								  String firstName,
-								  String lastName,
-								  String csi,
-								  String category) throws Exception {
+	public boolean updateWorkInfo(
+		String username,
+		String password,
+		IdentityStoreInterface identityStore,
+		@Nullable String firstName,
+		@Nullable String lastName,
+		@Nullable String csi,
+		@Nullable String category,
+		@Nullable String mdmSource
+	) throws Exception {
 		String url = getServerUrl() + "identity/update_work_info";
 		JSONObject request = new JSONObject();
 		request.put("licenseUsername", username);
 		request.put("licensePassword", password);
 		request.put("identity", identityStore.getIdentity());
 		request.put("publicNickname", identityStore.getPublicNickname());
-		request.put("version", version.getFullVersion());
+		request.put("version", getUpdateWorkInfoVersion(mdmSource));
 		if (firstName != null) {
 			request.put("firstName", firstName);
 		}
@@ -1494,6 +1541,26 @@ public class APIConnector {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Get the full app version.
+	 *
+	 * If provided also append the mdm source to the version.
+	 * This might seem to not be the appropriate location for this information
+	 * but has been specified in ANDR-2213 and https://confluence.threema.ch/display/EN/Update+Work+Info.
+	 *
+	 * @param mdmSource The source(s) of the active mdm parameters
+	 * @return The version string
+	 */
+	@NonNull
+	private String getUpdateWorkInfoVersion(@Nullable String mdmSource) {
+		StringBuilder updateWorkInfoVersion = new StringBuilder(version.getFullVersion());
+		if (mdmSource != null) {
+			updateWorkInfoVersion.append(";");
+			updateWorkInfoVersion.append(mdmSource);
+		}
+		return updateWorkInfoVersion.toString();
 	}
 
 	public int getMatchCheckInterval() {
@@ -1553,7 +1620,27 @@ public class APIConnector {
 	 * @param body The request body
 	 * @return The response body, UTF-8 decoded
 	 */
+	@Nullable
 	protected String postJson(@NonNull String urlStr, @NonNull JSONObject body) throws IOException {
+		PostJsonResult postJsonResult = postJsonWithResult(urlStr, body);
+		if (postJsonResult.responseCode > 0) {
+			throw new IOException("HTTP POST failed. Server response code: " + postJsonResult.responseCode);
+		}
+		return postJsonResult.responseBody;
+	}
+
+	/**
+	 * Send a HTTP POST request with the specified body to the specified URL.
+	 *
+	 * The `Content-Type` header will be set to `application/json`, and the `User-Agent`
+	 * will be set appropriately as well.
+	 *
+	 * @param urlStr The target URL
+	 * @param body The request body
+	 * @return A PostJsonResult object containing the response body, UTF-8 decoded and the server's response code
+	 */
+	@NonNull
+	protected PostJsonResult postJsonWithResult(@NonNull String urlStr, @NonNull JSONObject body) throws IOException {
 		final URL url = new URL(urlStr);
 
 		final HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
@@ -1581,11 +1668,13 @@ public class APIConnector {
 			}
 
 			// Read response body
-			final String responseBody;
+			PostJsonResult result = new PostJsonResult();
 			try (InputStream inputStream = urlConnection.getInputStream()) {
-				responseBody = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+				result.responseBody = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				result.responseCode = urlConnection.getResponseCode();
 			}
-			return responseBody;
+			return result;
 		} finally {
 			urlConnection.disconnect();
 		}
@@ -1609,30 +1698,12 @@ public class APIConnector {
 	) throws JSONException, IOException, ThreemaException {
 		byte[] token = Base64.decode(p1Result.getString("token"));
 		byte[] tokenRespKeyPub = Base64.decode(p1Result.getString("tokenRespKeyPub"));
-		if (isBadToken(token)) {
-			throw new ThreemaException("Bad token");
-		}
 
-		// Sign token with our secret key
-		byte[] nonce = new byte[NaCl.NONCEBYTES];
-		random.nextBytes(nonce);
-
-		byte[] response = identityStore.encryptData(token, nonce, tokenRespKeyPub);
-		if (response == null) {
-			throw new ThreemaException("TM047"); // encryption failed
-		}
+		// Create authenticator response for token with our secret key
+		byte[] response = calcTokenResponse(identityStore.calcSharedSecret(tokenRespKeyPub), token);
 
 		request.put("token", Base64.encodeBytes(token));
 		request.put("response", Base64.encodeBytes(response));
-		request.put("nonce", Base64.encodeBytes(nonce));
-	}
-
-	/**
-	 * A token must start with 0xff and be longer than 32 bytes to avoid payload confusion.
-	 * @return true if the token is invalid, false otherwise.
-	 */
-	private boolean isBadToken(@Nullable byte[] token) {
-		return (token == null || token.length <= 32 || token[0] != (byte) ProtocolDefines.MSGTYPE_AUTH_TOKEN);
 	}
 
 	public @Nullable APIConnector.FetchIdentityResult getFetchResultByIdentity(
@@ -1654,6 +1725,12 @@ public class APIConnector {
 	}
 	private String getWorkServerUrl() throws ThreemaException {
 		return serverAddressProvider.getWorkServerUrl(ipv6);
+	}
+
+	private byte[] calcTokenResponse(byte[] sharedSecret, byte[] token) {
+		ThreemaKDF kdf = new ThreemaKDF("3ma-csp");
+		byte[] responseKey = kdf.deriveKey("dir", sharedSecret);
+		return Blake2b.Mac.newInstance(responseKey, RESPONSE_LEN).digest(token);
 	}
 
 	public static class FetchIdentityResult {

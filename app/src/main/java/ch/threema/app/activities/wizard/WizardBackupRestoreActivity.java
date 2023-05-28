@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -50,6 +50,7 @@ import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
+import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.PreferenceService;
@@ -71,6 +72,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 	private static final String DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM = "de";
 	private static final String DIALOG_TAG_DOWNLOADING_BACKUP = "dwnldBkp";
 	private static final String DIALOG_TAG_NO_INTERNET = "nin";
+	private static final String DIALOG_TAG_ERROR_TMP_FILE_DIR = "tmpFileDialog";
 
 	public static final int REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS = 541;
 
@@ -177,7 +179,14 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 			GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP);
 
 			new Thread(() -> {
-				final File file = fileService.copyUriToTempFile(uri, "file", "zip", true);
+				final File file;
+				final File externalFile = fileService.copyUriToTempFile(uri, "file", "zip", true);
+				if (externalFile != null) {
+					file = externalFile;
+				} else {
+					logger.warn("Could not copy the backup file to temp file; trying to copy it to internal storage instead.");
+					file = fileService.copyUriToTempFile(uri, "file", "zip", false);
+				}
 
 				RuntimeUtil.runOnUiThread(() -> {
 					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP, true);
@@ -186,7 +195,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 						restoreBackupFile(file);
 						file.deleteOnExit();
 					} else {
-						Toast.makeText(this, "Unable to access/copy selected file to temporary directory", Toast.LENGTH_LONG).show();
+						SimpleStringAlertDialog.newInstance(R.string.an_error_occurred, R.string.missing_permission_external_storage).show(getSupportFragmentManager(), DIALOG_TAG_ERROR_TMP_FILE_DIR);
 					}
 				});
 			}).start();

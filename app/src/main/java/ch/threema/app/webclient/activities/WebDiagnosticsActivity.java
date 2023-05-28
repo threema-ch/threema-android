@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -324,8 +324,8 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 						"\n---\n" +
 						caption +
 						"\n---\n" +
-						ConfigUtils.getDeviceInfo(WebDiagnosticsActivity.this, false) + "\n" +
-						"Threema " + ConfigUtils.getFullAppVersion(WebDiagnosticsActivity.this) + "\n" +
+						ConfigUtils.getSupportDeviceInfo(WebDiagnosticsActivity.this) + "\n" +
+						"Threema " + ConfigUtils.getAppVersion(WebDiagnosticsActivity.this) + "\n" +
 						getMyIdentity(), messageReceiver);
 					Toast.makeText(getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
 					finish();
@@ -530,7 +530,8 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 		// Set up peer connection
 		assert this.webrtcExecutor != null;
 		this.webrtcExecutor.execute(() -> {
-			WebRTCUtil.initializeAndroidGlobals(this.getApplicationContext());
+			WebRTCUtil.initializePeerConnectionFactory(
+				this.getApplicationContext(), WebRTCUtil.Scope.DIAGNOSTIC);
 
 			final PeerConnection.RTCConfiguration rtcConfig;
 			try {

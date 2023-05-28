@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -41,6 +41,8 @@ import ch.threema.app.services.PollingHelper;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
+
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AlarmManagerBroadcastReceiver");
@@ -133,7 +135,7 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 								intent.putExtra(EXTRA_REQUIRE_LOGGED_IN_CONNECTION, true);
 								intent.putExtra(EXTRA_NEXT_CHECK, milliseconds*2);
 
-								requireLoggedInConnectionIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+								requireLoggedInConnectionIntent = PendingIntent.getBroadcast(context, 0, intent, PENDING_INTENT_FLAG_MUTABLE);
 								alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + milliseconds, requireLoggedInConnectionIntent);
 							}
 

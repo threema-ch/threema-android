@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -37,6 +37,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -47,6 +49,7 @@ import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -58,6 +61,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 
 	private ControlPanelButton selectButton, cancelButton;
 	private Button selectCounterButton;
+
 
 	@Override
 	protected void initActivity(Bundle savedInstanceState) {
@@ -169,7 +173,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 		this.cancelButton = selectPanel.findViewById(R.id.cancel);
 		this.selectButton = selectPanel.findViewById(R.id.select);
 		this.selectCounterButton = selectPanel.findViewById(R.id.select_counter_button);
-		this.selectCounterButton.setContentDescription(getResources().getQuantityString(R.plurals.selection_counter_label, 0, 0));
+		this.selectCounterButton.setContentDescription(ConfigUtils.getSafeQuantityString(this, R.plurals.selection_counter_label, 0, 0));
 	}
 
 	public void setupControlPanelListeners(){
@@ -189,18 +193,13 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 		});
 	}
 
-	private void selectItemsAndClose(ArrayList<Uri> uris) {
-		ArrayList<MediaItem> mediaItems = new ArrayList<>();
-		for (Uri uri : uris) {
-			MediaItem mediaItem = new MediaItem(uri, FileUtil.getMimeTypeFromUri(MediaSelectionActivity.this, uri), null);
-			mediaItem.setFilename(FileUtil.getFilenameFromUri(getContentResolver(), mediaItem));
-			mediaItems.add(mediaItem);
-		}
+	private void selectItemsAndClose(List<Uri> uris) {
+		ArrayList<MediaItem> mediaItems = MediaItem.getFromUris(uris, this);
 
 		Intent resultIntent = new Intent();
 		resultIntent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
 		if (mediaAttachViewModel.getLastQuery() != null) {
-			resultIntent = IntentDataUtil.addLastMediaFilterToIntent(resultIntent,
+			IntentDataUtil.addLastMediaFilterToIntent(resultIntent,
 				mediaAttachViewModel.getLastQuery(), mediaAttachViewModel.getLastQueryType());
 		}
 		setResult(RESULT_OK, resultIntent);
@@ -237,17 +236,12 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
-
-		if (resultCode == Activity.RESULT_OK) {
-			switch (requestCode) {
-				case REQUEST_CODE_ATTACH_FROM_GALLERY:
-					selectItemsAndClose(FileUtil.getUrisFromResult(intent, getContentResolver()));
-					break;
-				default:
-					break;
-			}
-		}
+	protected ActivityResultLauncher<Intent> getFileAttachedResultLauncher() {
+		return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+			result -> {
+				if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+					selectItemsAndClose(FileUtil.getUrisFromResult(result.getData(), getContentResolver()));
+				}
+			});
 	}
 }

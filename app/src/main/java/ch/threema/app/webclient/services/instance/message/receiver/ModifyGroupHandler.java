@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2022 Threema GmbH
+ * Copyright (c) 2016-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -161,7 +161,7 @@ public class ModifyGroupHandler extends MessageReceiver {
 
 		// Save changes
 		try {
-			this.groupService.updateGroup(groupModel, name, identities, avatar, false);
+			this.groupService.updateGroup(groupModel, name, null, identities, avatar, false);
 			this.success(temporaryId, groupModel);
 		} catch (Exception e1) {
 			this.failed(temporaryId, Protocol.ERROR_INTERNAL);

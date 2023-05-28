@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -34,7 +34,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  *
  * The contents are referenced by the {@code audioBlobId}, the {@code audioSize} in bytes, and the
  * {@code encryptionKey} to be used when decrypting the audio blob.
+ *
+ *  @Deprecated Use GroupFileMessage instead
  */
+@Deprecated
 public class GroupAudioMessage extends AbstractGroupMessage {
 
 	private int duration;
@@ -57,7 +60,7 @@ public class GroupAudioMessage extends AbstractGroupMessage {
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 
@@ -67,7 +70,7 @@ public class GroupAudioMessage extends AbstractGroupMessage {
 
 		try {
 			bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			EndianUtils.writeSwappedShort(bos, (short)duration);
 			bos.write(audioBlobId);
 			EndianUtils.writeSwappedInteger(bos, audioSize);

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -37,8 +37,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.R;
+import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.voip.VoipAudioManager.AudioDevice;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.services.VoipCallService;

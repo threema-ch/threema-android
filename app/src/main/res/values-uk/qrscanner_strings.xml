@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="msg_default_status">Розташуйте QR-код у прямокутнику видошукача, щоб відсканувати його.</string>
+    <string name="msg_default_status">Розташуйте QR-код у рамці на екрані, щоб відсканувати його.</string>
     <string name="msg_camera_framework_bug">Не вдалося скористатися камерою Android. Переконайтеся, що ви надали доступ до камери, або перезавантажте пристрій.</string>
 </resources>

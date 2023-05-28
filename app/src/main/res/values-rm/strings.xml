@@ -68,8 +68,8 @@
     <string name="prefs_troubleshooting">Reparar disturbis</string>
     <string name="prefs_sum_troubleshooting">Analisar e curreger disturbis</string>
     <string name="prefs_workarounds">Soluziuns</string>
-    <string name="prefs_title_threema_push_switch">Duvrar Threema Push</string>
-    <string name="prefs_sum_threema_push_on">Duvrar Threema Push per survegnir infurmaziuns davart novs messadis</string>
+    <string name="prefs_title_threema_push_switch">Duvrar LeOS-Messenger Push</string>
+    <string name="prefs_sum_threema_push_on">Duvrar LeOS-Messenger Push per survegnir infurmaziuns davart novs messadis</string>
     <string name="prefs_sum_threema_push_off">Controllar, sch\'i dat novs messadis cun agid dal servetsch push dal sistem</string>
     <string name="prefs_logging">Registraziun</string>
     <string name="prefs_title_message_log_switch">Registrar en ina datoteca</string>
@@ -112,6 +112,7 @@
     <string name="copy_message_action">Copiar</string>
     <string name="delete_contact_action">Stizzar il contact</string>
     <string name="scan_id">Scannar l\'ID</string>
+    <string name="id_scanned">Scannà l\'ID</string>
     <string name="id_mismatch">La clav publica che ti has scannà na correspundà betg a la clav ch\'il server ha registrà per quest contact. Quai pudess esser in cas da manipulaziun che periclitescha la communicaziun. P.pl. annunziar quest cas a security@threema.ch e sche pussaivel inditgar l\'ID e las circumstanzas.</string>
     <string name="scan_successful">L\'ID è vegnida scannada cun success. Il contact è ussa verifitgà.</string>
     <string name="scan_duplicate">Questa ID è gia vegnida scannada e verifitgada.</string>
@@ -121,15 +122,14 @@
     <string name="share_via">Parter via ...</string>
     <string name="share_subject">Chat da %s</string>
     <string name="message_delete_undo">Enavos</string>
-    <string name="message_deleted">Stizzà il(s) messadi(s)</string>
-    <string name="mobile_already_linked">Tia ID da Threema è gia colliada cun quest numer da telefonin</string>
-    <string name="email_already_linked">Tia ID da Threema è gia colliada cun questa adressa dad e-mail</string>
+    <string name="mobile_already_linked">Tia ID da LeOS-Messenger è gia colliada cun quest numer da telefonin</string>
+    <string name="email_already_linked">Tia ID da LeOS-Messenger è gia colliada cun questa adressa dad e-mail</string>
     <string name="whoaaa">Avis</string>
     <string name="really_delete_message_title">Stizzar il(s) messadi(s)</string>
     <string name="really_delete_thread">Stizzar il chat</string>
     <string name="really_delete_contact">Vuls ti propi stizzar quest contact e tut ils chats cun quel?</string>
     <string name="image_placeholder">Maletg</string>
-    <string name="invalid_threema_id">L\'ID da Threema è nunvalaivla</string>
+    <string name="invalid_threema_id">L\'ID da LeOS-Messenger è nunvalaivla</string>
     <string name="contact_already_exists">Quest contact exista gia</string>
     <string name="close">Serrar</string>
     <string name="creating_contact">Agiuntar in nov contact</string>
@@ -151,7 +151,7 @@
     <string name="delete_id_title">Stizzar l\'ID</string>
     <string name="delete_id_message">Sche ti n\'has betg fatg in backup, na vegns ti mai pli a pudair trametter u retschaiver messadis cun questa ID.\n\nSche ti na vuls betg pli duvrar questa ID, duessas ti allontanar la colliaziun (e-mail/numer) avant che stizzar ella.</string>
     <string name="delete_id_message2">Ultim avertiment: Vuls ti propi stizzar tia ID?</string>
-    <string name="delete_id_sum">Stizzar l\'ID da Threema ed ils chats sin quest apparat</string>
+    <string name="delete_id_sum">Stizzar l\'ID da LeOS-Messenger ed ils chats sin quest apparat</string>
     <string name="backup_password_summary">Tegna endament quai che ti endateschas qua. Tia ID vegn codada cun questas indicaziuns e na po betg pli vegnir restaurada senza il pled-clav.</string>
     <string name="backup_password_again_summary">Repetiziun dal pled-clav</string>
     <string name="password_hint">Pled-clav</string>
@@ -161,7 +161,7 @@
     <string name="support">Agid</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">Las suandantas datas da backup pon vegnir utilisadas ensemen cun il pled-clav tschernì per restaurar tia ID.</string>
-    <string name="backup_share_subject">Backup da l\'ID da Threema per</string>
+    <string name="backup_share_subject">Backup da l\'ID da LeOS-Messenger per</string>
     <string name="add_attachment">Encollar</string>
     <string name="invalid_passphrase">Frasa secreta nunvalaivla</string>
     <string name="master_key_locked">La clav principala è bloccada</string>
@@ -170,7 +170,7 @@
     <string name="prefs_title_masterkey_passphrase">Frasa secreta</string>
     <string name="setting_masterkey_passphrase">Definir ina frasa secreta per la clav principala</string>
     <string name="masterkey_passphrase_title">Frasa secreta per la clav principala</string>
-    <string name="masterkey_passphrase_summary">Tia clav principala po vegnir protegida cun ina frasa secreta che ti tschernas. Sche Threema è vegnì serrà, stos ti endatar ella da nov.</string>
+    <string name="masterkey_passphrase_summary">Tia clav principala po vegnir protegida cun ina frasa secreta che ti tschernas. Sche LeOS-Messenger è vegnì serrà, stos ti endatar ella da nov.</string>
     <string name="masterkey_passphrase_again_summary">Repeter la frasa secreta</string>
     <string name="masterkey_passphrase_hint">Frasa secreta</string>
     <string name="master_key_locked_want_exit">La clav principala è anc adina bloccada. Vuls ti empruvar anc ina giada u bandunar Threema?</string>
@@ -244,6 +244,8 @@
     <string name="emoji_emotions">Emoziuns</string>
     <string name="emoji_activities">Activitads</string>
     <string name="emoji_flags">Bandieras</string>
+    <string name="emoji_search">Tschertgar emojis</string>
+    <string name="emoji_search_no_result">Nagins resultats da retschertga</string>
     <string name="title_lock">Bloccar</string>
     <string name="new_messages_locked">Novs messadis èn disponibels</string>
     <string name="new_messages_locked_description">Tutgar per mussar</string>
@@ -253,8 +255,6 @@
     <string name="prefs_masterkey_notification_newmsg_off">Betg avisar novs messadis, sche la clav principala è bloccada</string>
     <string name="prefs_masterkey_notification_newmsg_on">Avisar (senza detagls) novs messadis, sche la clav principala è bloccada</string>
     <string name="chat_history_attached">Il protocol dal chat è en l\'annexa.</string>
-    <string name="new_message">1 nov messadi</string>
-    <string name="new_messages">novs messadis</string>
     <string name="backup_data_title">Backup da las datas</string>
     <string name="backup_data_password_msg">Tia ID, tes chats e contacts sco era tias configuraziuns vegnan memorisads en ina datoteca da ZIP en l\'arcun USB e pon vegnir restaurads sin in auter apparat d\'Android.
 Endatescha in pled-clav per tes backup da datas.</string>
@@ -281,7 +281,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_group_notifications">Chat da gruppa</string>
     <string name="add_group_members_list">Commembers da la gruppa</string>
     <string name="group_select_at_least_two">P.pl. tscherner almain in commember</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">Ti pos agiuntar a la gruppa maximalmain %1$d commembers</string>
+    <string name="group_select_max">Ti pos agiuntar a la gruppa maximalmain %1$d commembers</string>
     <string name="search">Tschertga</string>
     <string name="hint_search_keyword">Tschertgar</string>
     <string name="add_group_owner">Creatur da la gruppa</string>
@@ -348,7 +348,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_show_inactive_contacts">Mussar las IDs inactivas</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Mussar tegnaplazzas da differentas colurs, sche nagin maletg da contact n\'è avant maun.</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Mussar tegnaplazzas grischs, sche nagin maletg da contact n\'è avant maun.</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Mussar tut las IDs da Threema en la glista dals contacts</string>
+    <string name="prefs_sum_show_inactive_contacts_on">Mussar tut las IDs da LeOS-Messenger en la glista dals contacts</string>
     <string name="prefs_sum_show_inactive_contacts_off">Zuppar IDs inactivas u stizzadas</string>
     <string name="contact_sorting_first_name">Prenum - num</string>
     <string name="contact_sorting_last_name">Num - prenum</string>
@@ -356,7 +356,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="contact_format_last_name_first_name">Num prenum</string>
     <string name="block_contact">Bloccar il contact</string>
     <string name="unblock_contact">Debloccar il contact</string>
-    <string name="unread_messages">%d messadis betg legids</string>
     <string name="one_unread_message">1 messadi betg legì</string>
     <string name="really_unlink_contact_title">Allontanar la colliaziun</string>
     <string name="really_unlink_contact">Vuls ti propi allontanar la colliaziun cun il contact dal cudesch d\'adressas?</string>
@@ -372,7 +371,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="save_image">Memorisar il maletg</string>
     <string name="share_image">Parter il maletg</string>
     <string name="view_in_gallery">Guardar en la gallaria</string>
-    <string name="file_saved">Memorisà la(s) %d datoteca(s).</string>
     <string name="token_register_failed">Il simbol da push n\'ha betg pudì vegnir reinizialisà. P.pl. empruvar pli tard anc ina giada.</string>
     <string name="internet_connection_required">Nagina colliaziun d\'internet.</string>
     <string name="prefs_sum_save_media">Chargiar automaticamain medias e maletgs da la camera e memorisar senza codar</string>
@@ -399,7 +397,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="edit_name">Fixar in num ed in maletg</string>
     <string name="edit_name_only">Fixar in num</string>
     <string name="group_was_synchronized">La gruppa è vegnida sincronisada danovamain</string>
-    <string name="verification_level2_work_explain">L\'administratur da Threema Work ha verifitgà l\'identitad da questa persuna.</string>
+    <string name="verification_level2_work_explain">L\'administratur da LeOS-Messenger Work ha verifitgà l\'identitad da questa persuna.</string>
     <string name="verification_level3_work_explain">Ti has verifitgà l\'identitad da questa persuna cun scannar ses code.</string>
     <string name="verification_level3_explain">Ti has verifitgà l\'identitad da questa persuna cun scannar ses code.</string>
     <string name="verification_level2_explain">L\'identitad da questa persuna è vegnida controllada via e-mail u SMS.</string>
@@ -415,9 +413,9 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="media_gallery_videos">Videos</string>
     <string name="group_membership_title">Commember da questas gruppas</string>
     <string name="num_items_sected">Tschernì %s</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Vuls ti propi stizzar quest(s) %d messadi(s) da medias?</string>
+    <string name="really_delete_media">Vuls ti propi stizzar quest(s) %d messadi(s) da medias?</string>
     <string name="check_updates">Tschertgar updates</string>
-    <string name="masterkey_lock_explain">Threema memorisescha la frasa secreta en l\'arcun RAM. Sche ti stos savens endatar la frasa secreta, ha quai forsa da far cun in\'app da taskkiller u da spargnar battaria che allontanescha la frasa secreta.</string>
+    <string name="masterkey_lock_explain">LeOS-Messenger memorisescha la frasa secreta en l\'arcun RAM. Sche ti stos savens endatar la frasa secreta, ha quai forsa da far cun in\'app da taskkiller u da spargnar battaria che allontanescha la frasa secreta.</string>
     <string name="identity_already_exists">Questa ID è gia en tia glista dals contacts</string>
     <string name="share_contact">Parter il contact</string>
     <string name="add_shortcut">Far ina colliaziun al desktop</string>
@@ -430,7 +428,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="sending_images">Trametter maletgs</string>
     <string name="share_conversation_body">Ti dovras in tool da ZIP modern che sustegna AES per avrir la datoteca, p.ex. http://www.7-zip.org oder https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Il chat vegn tramess sco datoteca da ZIP codada. P.pl. tscherner in pled-clav:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d novs messadis en %2$d chats</string>
     <string name="ballot_create">Nova enquista</string>
     <string name="ballot_choice_add">Text da resposta</string>
     <string name="ballot_state_closed">Serrar</string>
@@ -448,8 +445,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="ballot_overview">Enquistas</string>
     <string name="ballot_copy">Copiar l\'enquista</string>
     <string name="ballot_remove">Allontanar l\'enquista</string>
-    <string name="ballot_really_delete">Stizzar l\'enquista</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Vulst ti propi stizzar %1$d enquista(s)? Las vuschs na pon betg pli vegnir restauradas.</string>
     <string name="ballot_not_exist">L\'enquista n\'exista betg</string>
     <string name="ballot_tap_to_vote">Tippar per vuschar</string>
     <string name="ballot_tap_to_view_results">L\'enquista è a fin. Tippar per survegnir ils resultats</string>
@@ -464,14 +459,14 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="invalid_cannot_send">Ti na pos betg trametter messadis ad in contact nunvalaivel</string>
     <string name="ballot_answer_count_error">P.pl. crear almain duas respostas.</string>
     <string name="ballot_one_contact_not_supported">Attenziun: %1$s na po anc betg participar ad enquistas.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Attenziun: %1$d contacts na pon anc betg participar ad enquistas.</string>
+    <string name="ballot_x_contact_not_supported">Attenziun: %1$d contacts na pon anc betg participar ad enquistas.</string>
     <string name="contact_state_inactive">Inactiv</string>
     <string name="contact_state_invalid">Nunvalaivel</string>
     <string name="back">Enavos</string>
     <string name="wearable_reply">Respunder</string>
     <string name="wearable_reply_label">Respunder a %s</string>
     <string name="message_acknowledged">Confermar il messadi</string>
-    <string name="push_disable_text">Sche ti cuntinueschas, vegnan messadis da push deactivads e Threema vegn a controllar mintga 15 minutas, sch\'i dat novs messadis.</string>
+    <string name="push_disable_text">Sche ti cuntinueschas, vegnan messadis da push deactivads e LeOS-Messenger vegn a controllar mintga 15 minutas, sch\'i dat novs messadis.</string>
     <string name="ballot_intermediate_results_show">Mussar resultats intermediars</string>
     <string name="converting_video">Il video vegn elavurà</string>
     <string name="video_size_small">Aut (pitschna quantitad da datas)</string>
@@ -497,7 +492,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="send_media">Trametter maletgs</string>
     <string name="rotate">Volver</string>
     <string name="remove">Allontanar</string>
-    <string name="image_already_added">Ti has gia tschernì quest maletg.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">(Almain %d segns)</string>
     <string name="mark_read">Marcar sco legì</string>
     <string name="attach_document">Datoteca</string>
@@ -505,10 +499,9 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="file_placeholder">Datoteca</string>
     <string name="internal_storage">Arcun intern</string>
     <string name="no_activity_for_mime_type">Chattà nagina app adattada per questa datoteca.</string>
-    <string name="message_copied">Copià il messadi</string>
     <string name="open_from">Avrir da</string>
     <string name="file_one_contact_not_supported">%1$s na po anc retschaiver naginas datotecas.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Attenziun: %1$d contacts na pon retschaiver naginas datotecas.</string>
+    <string name="file_x_contact_not_supported">Attenziun: %1$d contacts na pon retschaiver naginas datotecas.</string>
     <string name="mime_android_apk">Pachet d\'Android</string>
     <string name="mime_audio">Audiodatoteca</string>
     <string name="mime_certificate">Certificat digital</string>
@@ -547,7 +540,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="storage_explain">Sche la capacitad da memorisar è stgarsa, pos ti stizzar datotecas da medias veglias memorisadas cun in code per crear nov spazi. Ils maletgs da prevista vegnan mantegnids.</string>
     <string name="delete_data">Stizzar las datas</string>
     <string name="delete_date_confirm_message">Las datotecas vegnan stizzadas definitivamain, i restan sulettamain maletgs da prevista.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">Stizzà %d media(s)/datoteca(s).</string>
     <string name="storage_management">Management da l\'arcun</string>
     <string name="media">Medias</string>
     <string name="prefs_storage_mgmt_title">Far urden cun datotecas e messadis</string>
@@ -560,7 +552,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="invalid_data">Datas nunvalaivlas. Betg pussaivel da trametter.</string>
     <string name="prefs_emoji_style">Stil emoji</string>
     <string name="prefs_android_emojis">Emojis dal sistem</string>
-    <string name="prefs_default_emojis">Emojis da Threema (standard)</string>
+    <string name="prefs_default_emojis">Emojis da LeOS-Messenger (standard)</string>
     <string name="android_emojis_warning">Avis: Il set da segns dal sistem na po eventualmain betg visualisar tut ils emojis sustegnids da Threema.</string>
     <string name="crop">Adattar</string>
     <string name="scan_id_mismatch_title">L\'ID na correspunda betg</string>
@@ -577,9 +569,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="fontsize_large">Grond</string>
     <string name="fontsize_xlarge">Fitg grond</string>
     <string name="no_app_for_location">Chattà nagina app da chartas sin quest apparat.</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">Stizzà %d chat(s)</string>
     <string name="prefs_sendlog">Trametter la datoteca da protocol</string>
-    <string name="prefs_sendlog_summary">Trametter la datoteca da protocol a Threema per analisar ils problems</string>
+    <string name="prefs_sendlog_summary">Trametter la datoteca da protocol a LeOS-Messenger per analisar ils problems</string>
     <string name="prefs_exportlog">Parter la datoteca da protocol</string>
     <string name="prefs_exportlog_summary">Parter la datoteca da protocol per analisar ils problems</string>
     <string name="permission_storage_required">Activescha l\'autorisaziun da l\'arcun per trametter medias.</string>
@@ -588,7 +579,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="message_declined">Refusà il messadi</string>
     <string name="notifications_settings">Configuraziuns dals avis</string>
     <string name="notifications_default">Configuraziun da standard</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">Per %d ura(s)</string>
     <string name="notifications_until">Fin %s</string>
     <string name="notifications_mute">Senza tun</string>
     <string name="notifications_choose_sound">Tscherner in tun</string>
@@ -605,7 +595,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="new_wizard_welcome">Bainvegni tar Threema</string>
     <string name="new_wizard_move_finger">Muventa tes det en il champ</string>
     <string name="new_wizard_this_is_your_id">Quai è tia ID da Threema:</string>
-    <string name="new_wizard_works_like_phone_number">Tia ID da Threema funcziuna sco in numer da telefon. Tes amis pon cuntanscher tai sur questa ID.</string>
+    <string name="new_wizard_works_like_phone_number">Tia ID da LeOS-Messenger funcziuna sco in numer da telefon. Tes amis pon cuntanscher tai sur questa ID.</string>
     <string name="new_wizard_choose_nickname">Tscherner in surnum</string>
     <string name="new_wizard_nickname_explain">Tes amis vesan tes surum, cura ch\'els retschaivan in messadi da tai.</string>
     <string name="new_wizard_hint_enter_nickname">Endatar tes surnum</string>
@@ -618,16 +608,18 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="new_wizard_sync_contacts_explain">Activar per vesair tge amis da tai che utiliseschan Threema.</string>
     <string name="new_wizard_done_title">Tut correct?</string>
     <string name="new_wizard_linked_to">Collià cun</string>
-    <string name="new_wizard_need_internet">Ti dovras ina colliaziun d\'internet stabila per crear tia ID da Threema precisa. P.pl. empruvar anc ina giada.</string>
+    <string name="new_wizard_need_internet">Ti dovras ina colliaziun d\'internet stabila per crear tia ID da LeOS-Messenger precisa. P.pl. empruvar anc ina giada.</string>
     <string name="new_wizard_more_information">Dapli infurmaziuns</string>
-    <string name="new_wizard_use_id_as_nickname">Vuls ti duvrar tia ID da Threema sco surnum?</string>
+    <string name="contact_details_id_copied">Copià l\'ID en l\'archiv provisoric.</string>
+    <string name="contact_details_nickname_copied">Copià il surnum en l\'archiv provisoric.</string>
+    <string name="new_wizard_use_id_as_nickname">Vuls ti duvrar tia ID da LeOS-Messenger sco surnum?</string>
     <string name="new_wizard_phone_email_invalid">L\'adressa dad e-mail u il numer da telefonin inditgà è nunvalaivel. P.pl. curreger u stizzar las indicaziuns marcadas avant che cuntinuar.</string>
     <string name="new_wizard_phone_invalid">Il numer da telefonin inditgà è nunvalaivel. P.pl. curreger u stizzar las indicaziuns marcadas avant che cuntinuar.</string>
     <string name="new_wizard_info_fingerprint">Cun muventar il det creeschas ti datas casualas (in\'uschenumnada entropia) che vegnan utilisadas per crear il pèr da clavs. Quest pèr da clavs vegn collia cun tia nova ID da Threema. El consista d\'ina <b>clav publica</b> che vegn repartida a tes amis e d\'ina <b>clav privata</b> che resta sin tes apparat. Tar tes amis vegn la clav publica utilisada per codar messadis a tai. Mo il possessur da la clav privata e nagin auter na po decodar ils messadis.</string>
-    <string name="new_wizard_info_id">Ti has creà cun l\'ID da Threema in pèr da clavs. La clav publica è vegnida tramessa a noss server. La clav privata na banduna mai tes apparat. Quai garantescha che nagin auter na po leger tes messadis.</string>
+    <string name="new_wizard_info_id">Ti has creà cun l\'ID da LeOS-Messenger in pèr da clavs. La clav publica è vegnida tramessa a noss server. La clav privata na banduna mai tes apparat. Quai garantescha che nagin auter na po leger tes messadis.</string>
     <string name="new_wizard_info_sync_contacts">Sche ti activeschas questa opziun, vegnan adressas dad e-mail e numers da telefon da tes cudesch d\'adressas codads en furma da diever unic (furma da hash) avant ch\'els vegnan tramess al server per cumparegliar cun il contact. Nus n\'arcunain naginas datas da cudeschs d\'adressas.</string>
-    <string name="new_wizard_info_link">Sche ti inditgescha tes numer da telefonin e/u tia adressa dad e-mail, po Threema gidar tes amis da ta chattar automaticamain, sche ti es registrà en lur cudeschs d\'adressas. Las adressas dad e-mail vegnan memorisadas en furma da diever unic (furma da hash) sin noss server. Ti pos era sursiglir quest pass, sche ti vuls utilisar anonimamain Threema.</string>
-    <string name="new_wizard_info_link_phone_only">Sche ti inditgescha tes numer da telefonin, po Threema gidar tes amis da ta chattar automaticamain, sche ti es registrà en lur cudeschs d\'adressas. Il numer vegn memorisadas en furma da diever unic (furma da hash) sin noss server. Ti pos era sursiglir quest pass, sche ti vuls utilisar anonimamain Threema.</string>
+    <string name="new_wizard_info_link">Sche ti inditgescha tes numer da telefonin e/u tia adressa dad e-mail, po LeOS-Messenger gidar tes amis da ta chattar automaticamain, sche ti es registrà en lur cudeschs d\'adressas. Las adressas dad e-mail vegnan memorisadas en furma da diever unic (furma da hash) sin noss server. Ti pos era sursiglir quest pass, sche ti vuls utilisar anonimamain Threema.</string>
+    <string name="new_wizard_info_link_phone_only">Sche ti inditgescha tes numer da telefonin, po LeOS-Messenger gidar tes amis da ta chattar automaticamain, sche ti es registrà en lur cudeschs d\'adressas. Il numer vegn memorisadas en furma da diever unic (furma da hash) sin noss server. Ti pos era sursiglir quest pass, sche ti vuls utilisar anonimamain Threema.</string>
     <string name="new_wizard_info_nickname">Il surnum vegn visualisà sin insaquants apparats en avis e serva en la glista da contacts sco ulteriura pussaivladad d\'identifitgar partenaris da chat che ti n\'has betg en tia glista dals contacts. Nus cussegliain da duvrar sulettamain il prenum u in pseudonim. Sche ti na tschernas betg in surnum, vegn utilisada tia ID da Threema.</string>
     <string name="not_linked">Betg collià</string>
     <string name="linked">Collià</string>
@@ -640,8 +632,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="status_ballot_user_modified_vote">«%1$s» ha midà sia vusch per «%2$s»</string>
     <string name="status_ballot_all_votes">L\'enquista «%1$s» è cumpletta</string>
     <string name="restore">Restaurar</string>
-    <string name="new_wizard_anonymous_confirm">Ti n\'has inditgà ni in numer da telefonin ni in\'adressa dad e-mail per la colliaziun. Ti na vegns perquai betg a cumparair automaticamain en la glista dals contacts da tes amis. Vuls ti propi duvrar Threema a moda cumplettamain anonima?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Ti n\'has inditgà nagin numer da telefonin per la colliaziun. Ti na vegns perquai betg a cumparair automaticamain en la glista dals contacts da tes amis. Vuls ti propi duvrar Threema a moda cumplettamain anonima?</string>
+    <string name="new_wizard_anonymous_confirm">Ti n\'has inditgà ni in numer da telefonin ni in\'adressa dad e-mail per la colliaziun. Ti na vegns perquai betg a cumparair automaticamain en la glista dals contacts da tes amis. Vuls ti propi duvrar LeOS-Messenger a moda cumplettamain anonima?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Ti n\'has inditgà nagin numer da telefonin per la colliaziun. Ti na vegns perquai betg a cumparair automaticamain en la glista dals contacts da tes amis. Vuls ti propi duvrar LeOS-Messenger a moda cumplettamain anonima?</string>
     <string name="new_wizard_scan_id_backup">U scannescha il backup da tia ID</string>
     <string name="error_saving_file">Errur da memorisar. Nagina autorisaziun?</string>
     <string name="wait_one_minute">P.pl. spetgar almain 10 minutas sin il SMS avant che pretender in telefonat.</string>
@@ -666,7 +658,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_proximity_sensor_explain">Utilisar il receptur per il messadi discurrì, sch\'il sensur d\'avischinaziun è cuvretg</string>
     <string name="error_creating_group">Errur da crear la gruppa</string>
     <string name="no_media_found_generic">Chattà naginas medias</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Ti na pos betg trametter dapli che %d maletgs enina</string>
+    <string name="max_images_reached">Ti na pos betg trametter dapli che %d maletgs enina</string>
     <string name="enter_description">P.pl. descriver qua il problem u l\'errur.</string>
     <string name="add_caption_hint">Agiuntar ina legenda</string>
     <string name="disable">Deactivar</string>
@@ -710,11 +702,9 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="really_reset_ringtones">Reinizialisar ils tuns dals avis a las configuraziuns da basa?</string>
     <string name="reset_ringtones_confirm">Ils tuns dals avis èn vegnids reinizialisads</string>
     <string name="prefs_language_override">Lingua</string>
-    <string name="threema_channel_intro">Chanal Threema furnescha a tai novitads davart Threema. Vuls ti abunar ed agiuntar a tes contacts Chanal Threema? Quai è gratuit e ti pos da tut temp puspè annullar l\'abo.</string>
+    <string name="threema_channel_intro">Chanal LeOS-Messenger furnescha a tai novitads davart Threema. Vuls ti abunar ed agiuntar a tes contacts Chanal Threema? Quai è gratuit e ti pos da tut temp puspè annullar l\'abo.</string>
     <string name="quote">Citar</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Vuls ti propi stizzar %1$d contacts e tut ils chats cun quests contacts?</string>
     <string name="contacts_deleted">Ils contacts èn vegnids stizzads</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d contacts n\'han betg pudì vegnir stizzads, perquai ch\'els èn anc en ina gruppa</string>
     <string name="take_photo">Far ina foto</string>
     <string name="select_from_gallery">Tscherner da la gallaria</string>
     <string name="palette">Paletta</string>
@@ -731,7 +721,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="battery_optimizations_disable_guide_ctd">Tschertga %s en la glista e deactivescha l\'optimaziun</string>
     <string name="battery_optimizations_disable_confirm">Vuls ti propi laschar activà l\'optimaziun da la prestaziun da l\'accu per %1$s? Uschia na po %2$s betg vegnir utilisà a moda raschunaivla.</string>
     <string name="enter_text_hint">Endatar il text</string>
-    <string name="backup_explain_text">En cas che ti midas u perdas tes apparat na po nagin restaurar tia ID da Threema e tes chats. Segirescha perquai tias datas cun las pussaivladads da backup avant maun.</string>
+    <string name="backup_explain_text">En cas che ti midas u perdas tes apparat na po nagin restaurar tia ID da LeOS-Messenger e tes chats. Segirescha perquai tias datas cun las pussaivladads da backup avant maun.</string>
     <string name="data_backup_explain">"In backup da las datas segirescha:\n\n&#9679; ID e pèr da clavs\n&#9679; contacts e status da confidenza\n&#9679; commembranzas da las gruppas\n&#9679; chats\n&#9679; medias e datotecas (opziunal)\n\nLas datas vegnan segiradas en in ZIP codà. Il backup duess alura vegnir memorisà en in lieu adattà ordaifer l'apparat. "</string>
     <string name="draw">dissegnar</string>
     <string name="edit">Elavurar</string>
@@ -741,8 +731,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_ipv6_preferred_off">Utilisar mo colliaziuns IPv4</string>
     <string name="prefs_ipv6_preferred_on">Preferir IPv6</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 per telefonats e web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Acceptar IPv6 per telefonats da Threema e Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Betg utilisar IPv6 per telefonats da Threema e Threema Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Acceptar IPv6 per telefonats da LeOS-Messenger e LeOS-Messenger Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Betg utilisar IPv6 per telefonats da LeOS-Messenger e LeOS-Messenger Web</string>
     <string name="ipv6_requires_restart">Questa midada basegna ina reinizialisaziun da l\'app.</string>
     <string name="ipv6_restart_now">Reaviar ussa</string>
     <string name="on_cap">Activà</string>
@@ -780,14 +770,14 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_title_force_turn">Telefonats adina sur il server</string>
     <string name="prefs_summary_force_turn_off">Utilisar, sche pussaivel, la colliaziun directa e telefonar mo a contacts betg verifitgads sur il server da Threema. Po tradir tia adressa IP.</string>
     <string name="prefs_summary_force_turn_on">Adina telefonar sur il server da Threema. Quai protegia tia adressa IP, ma la qualitad dal telefonat po esser mendra.</string>
-    <string name="permission_record_audio_required">Activescha l\'autorisaziun dal microfon per far telefonats da Threema codads e registrar messadis discurrids.</string>
+    <string name="permission_record_audio_required">Activescha l\'autorisaziun dal microfon per far telefonats da LeOS-Messenger codads e registrar messadis discurrids.</string>
     <string name="prefs_voice_call_notifications">Messadis discurrids</string>
     <string name="prefs_voice_call_sound">Tun da scalin</string>
     <string name="prefs_sum_voice_call_sound">Tscherner il tun da scalin per telefonats da Threema</string>
-    <string name="prefs_sum_voice_call_vibrate">Vibrar, sch\'in telefonat da Threema entra</string>
+    <string name="prefs_sum_voice_call_vibrate">Vibrar, sch\'in telefonat da LeOS-Messenger entra</string>
     <string name="prefs_title_voip_enable">Activar telefonats da Threema</string>
     <string name="webclient_invalid_push_token_message">Necessari dad aviar manualmain</string>
-    <string name="threema_work_contact">Contact da Threema Work</string>
+    <string name="threema_work_contact">Contact da LeOS-Messenger Work</string>
     <string name="permission_phone_required">Per administrar telefonats durant che ti telefoneschas cun Threema, stos ti dar questa autorisaziun</string>
     <string name="strikethrough">Stritgà</string>
     <string name="italic">Cursiv</string>
@@ -795,7 +785,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="shortcut_choice_title">Crear ina scursanida per ...</string>
     <string name="prefs_title_device_info">Info davart l\'apparat</string>
     <string name="notifications_disabled_title">Deactivà avis</string>
-    <string name="notifications_disabled_text">Deactivà cumplettamain ils avis per Threema en il sistem. Ti na vegns betg infurmà davart novs messadis.</string>
+    <string name="notifications_disabled_text">Deactivà cumplettamain ils avis per LeOS-Messenger en il sistem. Ti na vegns betg infurmà davart novs messadis.</string>
     <string name="notifications_disabled_settings">Modifitgar configuraziuns dal sistem</string>
     <string name="error_attaching_files">Errur cun agiuntar datotecas.</string>
     <string name="prefs_fix_powermanager_problems">Curreger problems da Huawei</string>
@@ -810,6 +800,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="unpin">Allontanar la marcaziun</string>
     <string name="location_services_disabled">Ils servetschs da localisaziun èn deactivads. Vuls ti activar els ussa?</string>
     <string name="send_location">Trametter il lieu</string>
+    <string name="forward_location">Transmetter il lieu</string>
     <string name="unknown_address">Adressas nunenconuschenta</string>
     <string name="your_location">Voss lieu</string>
     <string name="network_blocked_title">Deactivà las datas davos las culissas</string>
@@ -835,14 +826,13 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="plus">Plus</string>
     <string name="switched_off">Deactivà</string>
     <string name="switched_on">Activà</string>
-    <string name="title_tab_work_users">Utilisader da Threema Work</string>
-    <string name="no_matching_work_contacts">Chattà nagins contacts da Threema Work controllads da l\'administratur</string>
+    <string name="title_tab_work_users">Utilisader da LeOS-Messenger Work</string>
+    <string name="no_matching_work_contacts">Chattà nagins contacts da LeOS-Messenger Work controllads da l\'administratur</string>
     <string name="all">Tuts</string>
     <string name="webclient_session_stop_all">Terminar tuts</string>
-    <string name="webclient_running_sessions">%d sesida(s) activa(s)</string>
     <string name="passphrase_service_name">Servetsch da la frasa secreta</string>
     <string name="passphrase_service_description">Avisar, en cas che la frasa secreta vegn debloccada</string>
-    <string name="webclient_service_description">Avisar, sch\'ina sesida da Threema Web è activa</string>
+    <string name="webclient_service_description">Avisar, sch\'ina sesida da LeOS-Messenger Web è activa</string>
     <string name="prefs_title_accept_privacy_policy">Acceptar la decleraziun davart la protecziun da datas</string>
     <string name="privacy_policy_explain">%1$s protegia tia sfera privata uschè consequentamain sco nagin auter messenger. En nossa %2$s chattas ti ulteriuras infurmaziuns.</string>
     <string name="privacy_policy_check_confirm">Accepta la decleraziun davart la proteciun da las datas per pudair utilisar %s.\n\n(obligatoric tenor l\'ordinaziun da l\'UE 2016/679)</string>
@@ -862,19 +852,19 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="disable_autostart_title">Autostart</string>
     <string name="unchanged">senza midadas</string>
     <string name="safe_learn_more_button">Activar ussa</string>
-    <string name="safe_enable_explain">Tar Threema n\'has ti betg in conto d\'utilisader central. Tias dattas èn sulettamain sin tes apparat ed èn uschia protegidas il meglier pussaivel da l\'access tras auters.\n\nThreemaSAFE fa regularmain in backup criptà anonim da <b> tias clavs, tes contacts, tias gruppas e tias configuraziuns</b> sin in server che ti pos tscherner. Tia ID ed il pled-clav tanschan per restaurar tias datas sin in auter apparat.</string>
+    <string name="safe_enable_explain">Tar LeOS-Messenger n\'has ti betg in conto d\'utilisader central. Tias dattas èn sulettamain sin tes apparat ed èn uschia protegidas il meglier pussaivel da l\'access tras auters.\n\nThreemaSAFE fa regularmain in backup criptà anonim da <b> tias clavs, tes contacts, tias gruppas e tias configuraziuns</b> sin in server che ti pos tscherner. Tia ID ed il pled-clav tanschan per restaurar tias datas sin in auter apparat.</string>
     <string name="safe_disable_confirm">Vuls ti propi cuntinuar senza activar ThreemaSAFE?</string>
-    <string name="safe_configure_choose_password">Tscherna in pled-clav. Ti dovras quest pled-clav per restaurar tes backup da Threema Safe.</string>
+    <string name="safe_configure_choose_password">Tscherna in pled-clav. Ti dovras quest pled-clav per restaurar tes backup da LeOS-Messenger Safe.</string>
     <string name="safe_configure_choose_server">Tscherner in server</string>
-    <string name="safe_configure_server_explain">Memorisescha tes backup da ThreemaSAFE tar Threema u tscherna in auter server.</string>
+    <string name="safe_configure_server_explain">Memorisescha tes backup da ThreemaSAFE tar LeOS-Messenger u tscherna in auter server.</string>
     <string name="safe_use_default_server">Server da standard (Threema)</string>
     <string name="safe_test_server">Testar il server</string>
     <string name="safe_advanced_options">Configuraziuns d\'expert</string>
     <string name="safe_enter_password">P.pl. endatar tes pled-clav da ThreemaSAFE</string>
     <string name="safe_threema_id">Tia ID da Threema</string>
-    <string name="safe_restore_enter_id">P.pl. endatar l\'ID da Threema che ti vuls restaurar</string>
+    <string name="safe_restore_enter_id">P.pl. endatar l\'ID da LeOS-Messenger che ti vuls restaurar</string>
     <string name="safe_search_id_title">P.pl. endatar il numer dal telefonin u l\'adressa dad e-mail collià cun tia ID da Threema</string>
-    <string name="safe_id_lookup">L\'ID da Threema vegn tschertgada</string>
+    <string name="safe_id_lookup">L\'ID da LeOS-Messenger vegn tschertgada</string>
     <string name="safe_no_id_found">Chattà nagina ID da Threema</string>
     <string name="safe_no_backup_found">Chattà nagin backup sin il server. Verifitgescha l\'ID ed il pled-clav.</string>
     <string name="safe_select_id">Chattà pliras IDs da Threema. Tscherna l\'ID giavischada:</string>
@@ -891,7 +881,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="contact_add_confirm">Vuls ti agiuntar il contact «%1$s» a tia glista da contacts?</string>
     <string name="password_bad">Pled-clav debel</string>
     <string name="prefs_fix_background_data">Activar las datas davos las culissas</string>
-    <string name="prefs_fix_background_data_desc">Per che Threema possia retschaiver messadis davos las culissas, stos ti activar las datas davos las culissas ed il diever da datas illimità</string>
+    <string name="prefs_fix_background_data_desc">Per che LeOS-Messenger possia retschaiver messadis davos las culissas, stos ti activar las datas davos las culissas ed il diever da datas illimità</string>
     <string name="prefs_fix_device">Curreger ils problems da la configuraziun da l\'apparat</string>
     <string name="safe_successful">Reussì</string>
     <string name="safe_unsuccessful">Betg reussì</string>
@@ -905,7 +895,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="number_of_days">%d dis</string>
     <string name="backup_other_restore_options">Ulteriuras opziuns</string>
     <string name="safe_size">Grondezza dal backup</string>
-    <string name="safe_version_mismatch">L\'app na sustegna betg questa versiun da backup. P.pl. actualisar l\'app.</string>
+    <string name="backup_version_mismatch">L\'app na sustegna betg questa versiun da backup. P.pl. actualisar l\'app.</string>
     <string name="safe_restore_failed">Betg reussì da restaurar</string>
     <string name="safe_failed_notification">ThreemaSAFE n\'ha dapi %d dis betg pli pudì far in backup. P.pl. tippar qua per controllar.</string>
     <string name="safe_restore">Restaurar ThreemaSAFE</string>
@@ -916,8 +906,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="work_data_sync">Sincronisaziun da las datas</string>
     <string name="private_contact">Contact privat</string>
     <string name="ringtone_selection_default">Standard (%s)</string>
-    <string name="work_data_sync_desc">Sincronisaziun da Threema Work</string>
-    <string name="ballot_not_connected">P.pl. verifitgar che Threema è online avant che ti termineschas in\'enquista.</string>
+    <string name="work_data_sync_desc">Sincronisaziun da LeOS-Messenger Work</string>
+    <string name="ballot_not_connected">P.pl. verifitgar che LeOS-Messenger è online avant che ti termineschas in\'enquista.</string>
     <string name="empty_chat_title">Svidar il chat</string>
     <string name="empty_chat_confirm">Tut ils messadis en quest chat vegnan stizzads. Cuntinuar?</string>
     <string name="emptying_chat">Il chat vegn svidà</string>
@@ -931,15 +921,15 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="notification_channel_notices">Remarcas</string>
     <string name="chat_updates">Actualisaziun dal chat</string>
     <string name="backup_or_restore_progress">Progress da la restauraziun dal backup</string>
-    <string name="tooltip_export_id">Smatga qua per parter u stampar ussa tia ID da Threema criptada</string>
+    <string name="tooltip_export_id">Smatga qua per parter u stampar ussa tia ID da LeOS-Messenger criptada</string>
     <string name="downloading">Vegn telechargià</string>
     <string name="today">Oz</string>
     <string name="restore_data_cancelled">La restauraziun vegn interruta</string>
     <string name="safe_change_password">Midar il pled-clav</string>
     <string name="safe_configure_choose_password_title">Tscherner in pled-clav</string>
     <string name="password_bad_explain">Il pled-clav per ThreemaSAFE che ti has tschernì e fitg debel ed attatgaders al pon spert eruir. P.pl. tscherna in pled-clav segir. Tip: duvrar in pled cumponì cun pliras noziuns.</string>
-    <string name="safe_password_updated">Il pled-clav da Threema Safe è vegnì actualisà.</string>
-    <string name="safe_activated">Activà Threema Safe.</string>
+    <string name="safe_password_updated">Il pled-clav da LeOS-Messenger Safe è vegnì actualisà.</string>
+    <string name="safe_activated">Activà LeOS-Messenger Safe.</string>
     <string name="restore_zip_invalid_file">Errur da zip: la datoteca dal backup è nunvalaivla u il pled-clav incorrect.</string>
     <string name="push_token_cleared">Il simbol da push è vegnì allontanà.</string>
     <string name="insert_date">Agiuntar la data</string>
@@ -949,11 +939,11 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="hide_chat_enter_message_explain">Quest chat è marcà sco privat. P.pl l\'emprim fixar ina protecziun d\'access per visualisar el.</string>
     <string name="unknown">Nunenconuschent</string>
     <string name="miui_notification_title">Infurmaziun impurtanta per utilisaders da MIUI 10</string>
-    <string name="miui_notification_body">MIUI 10 supprima sco standard tuns, LED e popups per novs chanals d\'infurmaziun (cun excepziun d\'insaquants apps che Xiaomi considerescha sco «impurtants»). En las configuraziuns d\'infurmaziun specificas per Threema stos ti perquai activar quests parameters per tut ils chanals. Contactescha il producent da tes telefonin per ulteriuras infurmaziuns.</string>
-    <string name="miui12_notification_body">MIUI supprima sco standard tuns, LED e popups (cun excepziun d\'insaquantas apps che Xiaomi considerescha sco «impurtantas»). Deplorablamain stos ti perquai activar manualmain questa opziun en las configuraziuns d\'infurmaziun da tes telefonin specificas per Threema – e quai danovamain suenter mintga update da l\'app. Contactescha il producent da tes telefonin per ulteriuras infurmaziuns.</string>
+    <string name="miui_notification_body">MIUI 10 supprima sco standard tuns, LED e popups per novs chanals d\'infurmaziun (cun excepziun d\'insaquants apps che Xiaomi considerescha sco «impurtants»). En las configuraziuns d\'infurmaziun specificas per LeOS-Messenger stos ti perquai activar quests parameters per tut ils chanals. Contactescha il producent da tes telefonin per ulteriuras infurmaziuns.</string>
+    <string name="miui12_notification_body">MIUI supprima sco standard tuns, LED e popups (cun excepziun d\'insaquantas apps che Xiaomi considerescha sco «impurtantas»). Deplorablamain stos ti perquai activar manualmain questa opziun en las configuraziuns d\'infurmaziun da tes telefonin specificas per LeOS-Messenger – e quai danovamain suenter mintga update da l\'app. Contactescha il producent da tes telefonin per ulteriuras infurmaziuns.</string>
     <string name="dont_show_again">Betg mussar pli</string>
     <string name="miui_notification_prefs">Configuraziuns MIUI</string>
-    <string name="threema_safe_upload_successful">Chargià si cun success il backup da Threema Safe</string>
+    <string name="threema_safe_upload_successful">Chargià si cun success il backup da LeOS-Messenger Safe</string>
     <string name="time_remaining">anc %s</string>
     <string name="safe_configure_server_credentials_title">Autentificaziun (opziunal)</string>
     <string name="username_hint">Num d\'utilisader</string>
@@ -962,7 +952,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="biometric_enter_authentication">P.pl. autentifitgar per debloccar</string>
     <string name="biometric_authentication_failed">Igl ha dà in sbagl cun s\'autentifitgar</string>
     <string name="biometric_authentication_successful">Reussì da s\'autentifitgar</string>
-    <string name="work_safe_forced_explain">Tes administratur ha activà Threema Safe per tes apparat.</string>
+    <string name="work_safe_forced_explain">Tes administratur ha activà LeOS-Messenger Safe per tes apparat.</string>
     <string name="pin_locked_cannot_send">L\'app è bloccada. Betg pussaivel da trametter.</string>
     <string name="prefs_summary_hide_screenshots_notice">Avis: Per motivs da la sfera privata vegnan adina impedidas miniaturas e screenshots, cura ch\'è activà la protecziun da l\'app.</string>
     <string name="work_select_categories">Tscherner categorias</string>
@@ -992,11 +982,10 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="data_backup_last_date">Ultim backup reussì</string>
     <string name="archived">Archivà</string>
     <string name="to_archive">Archivar</string>
-    <string name="message_archived">Archivà %d chat(s)</string>
     <string name="archived_chats">Chats archivads</string>
     <string name="unarchive">Betg pli archivar</string>
     <string name="no_archived_chats">Nagins chats archivads.\nPer archivar in chat sfruscha el a sanestra en la glista</string>
-    <string name="add_contact_enter_id_hint">P.pl. endatar l\'ID da Threema dal contact che ti vuls agiuntar</string>
+    <string name="add_contact_enter_id_hint">P.pl. endatar l\'ID da LeOS-Messenger dal contact che ti vuls agiuntar</string>
     <string name="notification_channel_new_contact">Novs contacts</string>
     <string name="notification_channel_new_contact_desc">Avis davart novs contacts</string>
     <string name="notification_contact_has_joined">%1$s è ussa tar %2$s. Tippescha qua per trametter in messadi.</string>
@@ -1004,9 +993,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="system_default">Standard</string>
     <string name="open_in_maps_app">Avrir en l\'app Maps</string>
     <string name="delete">Stizzar</string>
-    <string name="num_archived_chats">%d chats archivads</string>
     <string name="continue_recording">Registrar vinavant</string>
-	<string name="tap_to_start">Smatga qua per aviar uss %s.</string>
+    <string name="tap_to_start">Smatga qua per aviar uss %s.</string>
     <string name="two_years">2 onns</string>
     <string name="invalid_backup_path">Percurs dal backup nunvalaivel</string>
     <string name="backup_data_no_permission">Nagin dretg da scriver en questa glista. P.pl. tscherner in\'autra.</string>
@@ -1024,7 +1012,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="and">e(d)</string>
     <string name="edit_type_content_description">Mussar u elavurar %1$s %2$s</string>
     <string name="group">Gruppa</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Unsere Datenschutzerklärung wurde angepasst, um die folgende Änderung widerzuspiegeln:</p><p>%1$s ist nicht mehr von Google Play und Google Maps abhängig, um Karten- und OVI-Daten bereitzustellen.</p>Bitte überprüfen Sie die vollständige Datenschutzerklärung <a href="%2$s">hier</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Betg installà servetschs. Betg pussaivel da midar sin «Push»</string>
     <string name="unable_to_get_current_location">Betg pussaivel d\'eruir la posiziun actuala.</string>
     <string name="lp_search_place_min_chars">P.pl. inditgar almain 3 segns per tschertgar in lieu.</string>
@@ -1037,7 +1024,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="mime_type">Tip MIME</string>
     <string name="password_does_not_comply">Il pled-clav endatà na correspunda betg a las directivas.</string>
     <string name="audio_mute_due_to_focus_loss">Temporarmain deactivà il tun pervia da la perdita dal focus audio.</string>
-    <string name="restore_data_backup_explain">Per reinizialisar in backup da datas, stizza l\'emprim tia ID da Threema sut «Mes profil». \n\nCura che l\'app aviescha danovamain, tscherna «Restaurar il backup», «Ulteriuras opziuns da reinizialisaziun», «Backup da datas» e tippescha en la schelta da datotecas sin il backup da datas che ti vuls restaurar.</string>
+    <string name="restore_data_backup_explain">Per reinizialisar in backup da datas, stizza l\'emprim tia ID da LeOS-Messenger sut «Mes profil». \n\nCura che l\'app aviescha danovamain, tscherna «Restaurar il backup», «Ulteriuras opziuns da reinizialisaziun», «Backup da datas» e tippescha en la schelta da datotecas sin il backup da datas che ti vuls restaurar.</string>
     <string name="audio_focus_loss_complete">Terminà il telefonat pervia da la perdita dal focus audio</string>
     <string name="tap_for_picture_hold_for_video">Per fotos tippar, per videos tegnair</string>
     <string name="sending_media">Medias vegnan tramessas</string>
@@ -1054,7 +1041,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_work_time_end">Fin da la lavur</string>
     <string name="prefs_work_time_end_sum">Definescha la fin da la lavur</string>
     <string name="prefs_working_days_enable_title">Regulaziun dal temp da paus</string>
-    <string name="prefs_working_days_enable_sum">Na mussar nagins messadis e refusar telefonats da Threema ordaifer il temp da lavur</string>
+    <string name="prefs_working_days_enable_sum">Na mussar nagins messadis e refusar telefonats da LeOS-Messenger ordaifer il temp da lavur</string>
     <string name="work_life_dnd_active">Temp da paus activ</string>
     <string name="pencil">Rispli</string>
     <string name="warning">Avertiment</string>
@@ -1062,7 +1049,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="safe_backup_tap_to_restart">Smatga sin il messadi per reaviar l\'app.</string>
     <string name="send_to_support">Trametter al support da Threema</string>
     <string name="menu_legal">Indicaziuns giuridicas</string>
-    <string name="tooltip_work_hint">Quest contact utilisescha Threema Work.</string>
+    <string name="tooltip_work_hint">Quest contact utilisescha LeOS-Messenger Work.</string>
     <string name="video_camera_on">Activà camera da video</string>
     <string name="video_camera_off">Deactivà camera da video</string>
     <string name="enable_picture_in_picture">Aviar il modus da maletg en il maletg</string>
@@ -1174,8 +1161,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="group_request_already_sent"><![CDATA[Ti has gia tramess ina dumonda da gruppa a <b>%s</b> e spetgas ina resposta da l\'administratur. Clicca sin la dumonda sin la glista, sche ti vuls trametter anc ina giada la dumonda. ]]></string>
     <string name="group_link_none">Anc betg generà ina colliaziun</string>
     <string name="group_request_confirm_send"><![CDATA[Ti es per trametter a l\'administratur <b>%2$s</b> ina dumonda da gruppa per <b>%1$s</b>. Sche questa colliaziun n\'è betg vegnida invalidada en il fratemp, vegns ti agiuntà a la gruppa, uschespert che l\'apparat da l\'admin è cuntanschibel.]]></string>
-    <string name="really_delete_outgoing_request">Vuls ti propi stizzar %d dumonda(s) da gruppa? La dumonda averta na vegn betg retratga e ti pos pli tard tuttina aderir a la gruppa.</string>
-    <string name="really_delete_group_request_title">Vuls ti propi stizzar la dumonda da gruppa?</string>
     <string name="sent_to">Tramess a: %s</string>
     <string name="sent_on">Tramess il(s): %s</string>
     <string name="group_response">Resposta a la dumonda da gruppa</string>
@@ -1195,7 +1180,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="link_administration_off_explain">Questa colliaziun è gia vegnida partida ed è publica. I n\'è betg pussaivel da midar posteriuramain l\'administraziun. Generescha simplamain ina nova colliaziun cun l\'opziun giavischada.</string>
     <string name="group_link_update_success">Reussì da far l\'update da la colliaziun</string>
     <string name="no_group_links">Naginas colliaziuns da gruppa. Clicca sin il buttun \"Crear ina colliaziun\" u activescha la colliaziun default en la survista da la gruppa per crear ina colliaziun da gruppa.</string>
-    <string name="really_delete_group_link">Vuls ti propi stizzar %d colliaziun(s) da gruppa? Sche la colliaziun è stizzada, na pon utilisaders betg pli trametter dumondas valaivlas. Dumondas gia tramessas pon però anc vegnir acceptadas u refusadas.</string>
     <string name="group_links_overview_title">Colliaziuns da gruppa per %s</string>
     <string name="group_link_invalid">Scadì</string>
     <string name="group_link_valid">Valaivel</string>
@@ -1211,7 +1195,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="open_group_requests_show">Mussar las dumondas da gruppa</string>
     <string name="open_group_requests_hide">Zuppentar las dumondas da gruppa</string>
     <string name="group_request_link_already_deleted">Gia stizzà la colliaziun da gruppa</string>
-    <string name="really_delete_incoming_request">Vuls ti propi stizzar %d dumondas da gruppa? Sche las dumondas èn stizzadas, na pos ti betg pli respunder ad ellas.</string>
     <string name="incoming_group_request_no_message">Tramess via ina colliaziun averta ... Nagin messadi</string>
     <string name="group_request_received_through">Via la colliaziun: %s</string>
     <string name="reaccept">Acceptar anc ina giada</string>
@@ -1220,7 +1203,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="group_link_rename">Dar in auter num a la colliaziun</string>
     <string name="group_link_rename_tag">Nov num</string>
     <string name="tap_here_for_more">Clicca qua per dapli infurmaziuns</string>
-    <string name="another_connection_instructions">Il server ha identifitgà dus u plirs apparats colliads cun la medema ID da Threema.\n\nI n\'è betg pussaivel d\'utilisar in\'ID da Threema il medem mument sin plirs apparats. Novs messadis vegnan tramess sulettamain a l\'apparat ch\'è s\'annunzià sco ultim sin il server.\n\nSche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'apparat vegl e reaviescha suenter il nov apparat.</string>
+    <string name="another_connection_instructions">Il server ha identifitgà dus u plirs apparats colliads cun la medema ID da Threema.\n\nI n\'è betg pussaivel d\'utilisar in\'ID da LeOS-Messenger il medem mument sin plirs apparats. Novs messadis vegnan tramess sulettamain a l\'apparat ch\'è s\'annunzià sco ultim sin il server.\n\nSche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'apparat vegl e reaviescha suenter il nov apparat.</string>
     <string name="app_store_error_code">Code dal sbagl da l\'App Store: %d</string>
     <string name="backup_restore_type"><![CDATA[Tge tip da backup vuls ti restaurar? <br/><br/><a href=%s>Leger dapli davart backups en Threema</a>]]></string>
     <string name="data_backup_info">Restaurar tut incl. chats</string>
@@ -1228,14 +1211,14 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="back_to_threema">Enavos tar %s?</string>
     <string name="id_backup_info">Mo restaurar tia ID</string>
     <string name="restore_your_id_contacts_and_groups">Restaurar tia ID, contacts e gruppas</string>
-    <string name="threema_safe_backup">Backup da Threema Safe</string>
+    <string name="threema_safe_backup">Backup da LeOS-Messenger Safe</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Emblidà il pled-clav?</a>]]></string>
     <string name="download_failed">Download betg reussì. Code dal sbagl: %d</string>
     <string name="edit_answer">Elavurar ina resposta</string>
     <string name="share_media">Parter cun in\'autra app...</string>
     <string name="group_link_administered">Administrà</string>
     <string name="group_link_open">Avert</string>
-    <string name="group_link_share_message">Entra en mia gruppa da Threema via la suandanta colliaziun: %s</string>
+    <string name="group_link_share_message">Entra en mia gruppa da LeOS-Messenger via la suandanta colliaziun: %s</string>
     <string name="group_link_bottom_sheet_title">Colliaziun da gruppa</string>
     <string name="group_link_bottom_sheet_desc">Trametta questa colliaziun als contacts che ti vuls envidar en la gruppa. Ponderescha las opziuns sutvart.</string>
     <string name="group_link_bottom_sheet_link_title">Colliaziun</string>
@@ -1289,15 +1272,15 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="permission_contacts_sync_required">P.pl. permetter l\'access als contacts per als sincronisar.</string>
     <string name="not_voted_user_list">Quests participants n\'han betg vuschà: %s</string>
     <string name="contact_update">Actualisar las infurmaziuns dals contacts</string>
-    <string name="invalid_onprem_id">Nagina ID da Threema OnPrem valaivla</string>
+    <string name="invalid_onprem_id">Nagina ID da LeOS-Messenger OnPrem valaivla</string>
     <string name="enable_unknown_sources">Betg pussaivel d\'installar. P.pl. activar \"Installar apps nunenconuschentas\" per %s.</string>
-    <string name="threema_push">Threema Push</string>
+    <string name="threema_push">LeOS-Messenger Push</string>
     <string name="threema_push_notification_text">Smatgar per dapli infurmaziuns.</string>
-    <string name="threema_push_notification_info_text_1">Threema Push è activ davosvart per infurmar tai davart novs messadis e telefonats.</string>
-    <string name="threema_push_notification_info_text_2">Apps na pon betg esser activas davosvart, senza mussar in avis permanent. Cun mussar quest avis pudain nus garantir che Threema Push è er activ, cura che ti na dovras betg l\'app.</string>
+    <string name="threema_push_notification_info_text_1">LeOS-Messenger Push è activ davosvart per infurmar tai davart novs messadis e telefonats.</string>
+    <string name="threema_push_notification_info_text_2">Apps na pon betg esser activas davosvart, senza mussar in avis permanent. Cun mussar quest avis pudain nus garantir che LeOS-Messenger Push è er activ, cura che ti na dovras betg l\'app.</string>
     <string name="threema_push_notification_info_text_3">Sche ti has anc adina problems cun messadis retardads u mancants, adattescha per plaschair las configuraziuns dal sistem per garantir che l\'app possia esser activa davosvart senza disturbis e tut las funcziuns per spargnar battaria sajan deactivadas.</string>
-    <string name="threema_push_service_description">Avis permanent, cura che Threema Push è activ</string>
-    <string name="threema_push_activated">Activà Threema Push</string>
+    <string name="threema_push_service_description">Avis permanent, cura che LeOS-Messenger Push è activ</string>
+    <string name="threema_push_activated">Activà LeOS-Messenger Push</string>
     <string name="add_shortcut_success">Creà ina scursanida</string>
     <string name="add_shortcut_error">Igl è capità in sbagl cun crear la scursanida sin il desktop</string>
     <string name="web_link">Colliaziun</string>
@@ -1305,15 +1288,64 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="invalid_onprem_id_title">Betg pussaivel d\'agiuntar</string>
     <string name="name_given">Prenum</string>
     <string name="name_family">Num</string>
+    <string name="name_prefix">Prefix dal num</string>
+    <string name="name_middle">Segund prenum</string>
+    <string name="name_suffix">Suffix dal num</string>
     <string name="full_name">Имя</string>
+    <string name="send_contact">Trametter il contact</string>
+    <string name="edit_send_contact_detail_icon">Tip da detagl dal contact</string>
+    <string name="phoneTypeCustom">Persunalisà</string>
+    <string name="phoneTypeHome">Privat</string>
+    <string name="phoneTypeMobile">Mobil</string>
+    <string name="phoneTypeWork">Commerzial</string>
+    <string name="phoneTypePager">Pager</string>
+    <string name="phoneTypeOther">Auters</string>
+    <string name="phoneTypeCar">Auto</string>
     <string name="phoneTypeIsdn">ISDN</string>
+    <string name="phoneTypeOtherFax">Ulteriur numer da fax</string>
+    <string name="eventTypeCustom">Persunalisà</string>
+    <string name="eventTypeBirthday">Data da naschientscha</string>
+    <string name="eventTypeAnniversary">Anniversari</string>
+    <string name="eventTypeOther">Auters</string>
+    <string name="emailTypeHome">Privat</string>
+    <string name="emailTypeWork">Commerzial</string>
+    <string name="emailTypeOther">Auters</string>
+    <string name="postalTypeCustom">Persunalisà</string>
+    <string name="postalTypeHome">Privat</string>
+    <string name="postalTypeWork">Commerzial</string>
+    <string name="postalTypeOther">Auters</string>
+    <string name="relationTypeCustom">Persunalisà</string>
+    <string name="relationTypeChild">Uffant</string>
+    <string name="relationTypeFriend">Ami</string>
+    <string name="relationTypeParent">Genitur</string>
+    <string name="relationTypeSpouse">Conjugal</string>
+    <string name="contact_property_key">"Clav"</string>
     <string name="header_nickname_entry">"Surnum"</string>
+    <string name="contact_picture_content_description">Maletg dal contact</string>
     <string name="prefs_title_use_system_ringtone">Duvrar il tun dal sistem</string>
+    <string name="organization_type">Organisaziun</string>
     <string name="permission_bluetooth_connect_required">Activescha l\'autorisaziun «apparats en la vischinanza» per chattar apparats da bluetooth colliads.</string>
-    <string name="threema_push_start_webclient_sessions_manually">Activà Threema Push. Threema Web e sesidas da dektop stos ti perquai avrir manualmain.</string>
+    <string name="threema_push_start_webclient_sessions_manually">Activà LeOS-Messenger Push. LeOS-Messenger Web e sesidas da dektop stos ti perquai avrir manualmain.</string>
     <string name="tooltip_multiple_recipients_title">Nov: plirs retschaviders</string>
     <string name="tooltip_multiple_recipients_text">Tippar ditg per tscherner plirs retschaviders e trametter a tuts il medem messadi.</string>
+    <string name="synchronizing">Sincronisaziun ...</string>
+    <string name="self_updater_installation_failed">Betg reussì da chargiar giu l\'update. P.pl. chargiar giu l\'update da la pagina-web <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ed installar el manualmain.</string>
+    <string name="spam_first_contact">Quest chat deriva d\'in contact nunenconuschent</string>
+    <string name="spam_report">Annunziar spam</string>
+    <string name="spam_report_dialog_explain">Sche ti cuntinueschas, survegn LeOS-Messenger l\'ID ed il surnum da quest speditur e tia ID. I na vegnan tramess nagins cuntegns e naginas indicaziuns davart la persuna. Il contact na vegn betg infurmà.</string>
+    <string name="spam_report_dialog_block_checkbox">Plinavant bloccar il contact e stizzar il chat</string>
+    <string name="spam_report_dialog_title">Annunziar %s</string>
+    <string name="spam_successfully_reported">Annunzià l\'ID sco speditur da spam.</string>
+    <string name="spam_error_reporting">Igl ha dà in sbagl cun annunziar sco spam: %s</string>
+    <string name="spam_report_short">Annunziar</string>
+    <string name="wizard_incompatible_contact_sync_params">Fixà parameters MDM incumpatibels. Betg pussaivel d\'activar il parameter MDM da LeOS-Messenger th_contact_sync, sche la restricziun DISALLOW_MODIFY_ACCOUNTS è activada. P.pl. contactar tes administratur dal sistem.</string>
     <string name="messages_cannot_be_recovered">Ils messadis na pon betg pli vegnir restaurads.</string>
+    <string name="contact_deleted">Stizzà il contact</string>
+    <string name="last_added_contact">Agiuntà sco ultim</string>
+    <string name="directory_explain_text">Tschertgar sin la glista da l\'interpresa las collavuraturas ed ils collavuraturs che mancan en tia glista da contacts.</string>
+    <string name="cannot_display_location">Betg pussaivel da mussar quest lieu.</string>
+    <string name="unable_to_restore_identity_because">Betg stà pussaivel da restituir l\'ID. Motiv: %s</string>
+    <string name="share_with_app">Parter cun Threema</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

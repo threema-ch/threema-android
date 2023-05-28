@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -44,6 +44,15 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.preference.PreferenceManager;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.apache.commons.io.FileUtils;
@@ -72,14 +81,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
-import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.preference.PreferenceManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.NamedFileProvider;
 import ch.threema.app.R;
@@ -564,12 +565,12 @@ public class FileServiceImpl implements FileService {
 		try {
 			is = getDecryptedMessageStream(messageModel);
 			if (is != null) {
-				File decoded = this.createTempFile(messageModel.getId() + "" + messageModel.getCreatedAt().getTime(), ext, false);
-				fos = new FileOutputStream(decoded);
+				File decrypted = this.createTempFile(messageModel.getId() + "" + messageModel.getCreatedAt().getTime(), ext, false);
+				fos = new FileOutputStream(decrypted);
 
 				IOUtils.copy(is, fos);
 
-				return decoded;
+				return decrypted;
 			}
 		} finally {
 			if (fos != null) {
@@ -737,6 +738,13 @@ public class FileServiceImpl implements FileService {
 				contentValues.put(MediaStore.MediaColumns.IS_PENDING, false);
 				context.getContentResolver().update(fileUri, contentValues, null, null);
 			} else {
+				logger.error("Cannot open file '{}' with mime type '{}' at '{}/{}' for content uri '{}'",
+					filename,
+					mimeType,
+					relativePath,
+					BuildConfig.MEDIA_PATH,
+					contentUri
+				);
 				throw new Exception("Unable to open file");
 			}
 		} else {
@@ -1222,12 +1230,16 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType) {
+	public Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType, boolean returnNullIfNotCached) {
 		if (thumbnailCache != null) {
 			Bitmap cached = thumbnailCache.get(messageModel.getId());
 			if (cached != null && !cached.isRecycled()) {
 				return cached;
 			}
+		}
+
+		if (returnNullIfNotCached) {
+			return null;
 		}
 
 		// supply fallback thumbnail based on mime type
@@ -1508,12 +1520,13 @@ public class FileServiceImpl implements FileService {
 				if (activity != null) {
 					DialogUtil.dismissDialog(activity.getSupportFragmentManager(), DIALOG_TAG_SAVING_MEDIA, true);
 					if (feedbackView != null) {
-						Snackbar.make(feedbackView, String.format(activity.getString(R.string.file_saved), saved), Snackbar.LENGTH_SHORT).show();
+						Snackbar.make(feedbackView, String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.file_saved, saved, saved)), Snackbar.LENGTH_SHORT).show();
 					} else {
-						Toast.makeText(activity, String.format(activity.getString(R.string.file_saved), saved), Toast.LENGTH_LONG).show();
+						Toast.makeText(activity, String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.file_saved, saved, saved)), Toast.LENGTH_SHORT).show();
 					}
 				}
 			}
+
 
 			@Override
 			protected void onProgressUpdate(Integer... index) {

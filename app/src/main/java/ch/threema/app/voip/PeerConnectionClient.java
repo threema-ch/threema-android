@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -97,6 +97,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.core.util.Pair;
 import ch.threema.app.R;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.RuntimeUtil;
@@ -109,11 +110,12 @@ import ch.threema.app.voip.util.SdpUtil;
 import ch.threema.app.voip.util.VideoCapturerUtil;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.voip.util.VoipVideoParams;
+import ch.threema.app.webrtc.Camera;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.protobuf.callsignaling.CallSignaling;
+import ch.threema.protobuf.callsignaling.O2OCall;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.stream.StreamSupport;
 
@@ -374,7 +376,7 @@ public class PeerConnectionClient {
 		 * @param envelope The protobuf envelope.
 		 */
 		@WorkerThread
-		default void onSignalingMessage(long callId, final @NonNull CallSignaling.Envelope envelope) { }
+		default void onSignalingMessage(long callId, final @NonNull O2OCall.Envelope envelope) { }
 
 		/**
 		 * This is triggered whenever a capturing camera reports the first available frame.
@@ -504,8 +506,9 @@ public class PeerConnectionClient {
 
 		this.isError = false;
 
-		// Initialize peer connection factory
-		WebRTCUtil.initializeAndroidGlobals(this.appContext);
+		// Initialize peer connection factory globals
+		WebRTCUtil.initializePeerConnectionFactory(
+			this.appContext, WebRTCUtil.Scope.CALL_OR_GROUP_CALL_OR_WEB_CLIENT);
 
 		// Enable/disable tracing
 		//
@@ -1727,7 +1730,7 @@ public class PeerConnectionClient {
 			// Notify event listener asychronously
 			RuntimeUtil.runInAsyncTask(() -> {
 				try {
-					final @NonNull CallSignaling.Envelope envelope = CallSignaling.Envelope.parseFrom(copy);
+					final @NonNull O2OCall.Envelope envelope = O2OCall.Envelope.parseFrom(copy);
 					if (events != null) {
 						events.onSignalingMessage(callId, envelope);
 					}
@@ -1751,14 +1754,16 @@ public class PeerConnectionClient {
 
 		synchronized (this.capturingLock) {
 			// Create video capturer
-			this.videoCapturer = VideoCapturerUtil.createVideoCapturer(
+			final Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> capturer = VideoCapturerUtil.createVideoCapturer(
 				this.appContext,
 				new CameraEventsHandler()
 			);
-			if (this.videoCapturer == null) {
+			if (capturer == null) {
 				logger.error("Could not create camera video capturer");
 				return false;
 			}
+
+			this.videoCapturer = capturer.first;
 			logger.info("Video capturer created");
 
 			// Initialize capturer

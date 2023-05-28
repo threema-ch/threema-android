@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -84,11 +84,11 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat() {
     /**
      * Get the preference with the given key. Returns null if there is no such preference.
      */
-    protected fun <T : Preference> getPrefOrNull(string: String): T? {
+    protected fun <T : Preference> getPrefOrNull(key: String): T? {
         return try {
-            getPref(string)
+            getPref(key)
         } catch (e: Exception) {
-            logger.error("Preference not found", e)
+            logger.warn("Preference '$key' not found")
             null
         }
     }
@@ -172,8 +172,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat() {
     }
 
     private fun preferenceNotFound(pref: String): Nothing {
-        logger.error("No preference '$pref' found")
-        throw IllegalArgumentException("Exception")
+        throw IllegalArgumentException("No preference '$pref' found")
     }
 
 }

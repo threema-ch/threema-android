@@ -5,16 +5,16 @@
     <string name="title_compose_message">Пачаць чат</string>
     <string name="title_choose_recipient">Выбраць атрымальніка</string>
     <string name="title_keyfingerprint">Адбітак ключа</string>
-    <string name="title_mythreemaid">Мой Threema ID</string>
-    <string name="title_threemaid">Threema ID</string>
+    <string name="title_mythreemaid">Мой LeOS-Messenger ID</string>
+    <string name="title_threemaid">LeOS-Messenger ID</string>
     <string name="title_adduser">Дадаць новы кантакт</string>
     <string name="title_enter_id">Увесці ID</string>
     <string name="title_invite_friend">Запрасіць сябра</string>
     <string name="invite_via">Запрасіць сябра праз...</string>
-    <string name="invite_email_body">Прывітанне!\n\nЯ выкарыстоўваю %1$s – праграму для бяспечнага імгненнага абмену паведамленнямі, якае абараняе канфідэнцыяльнасць карыстальнікаў.\n\nМой Threema ID: https://threema.id/%2$s\n\nДавайце размаўляць у %1$s!\n\nУдачы!\n</string>
-    <string name="invite_sms_body">Давайце выкарыстоўваць %1$s для бяспечнай і канфідэнцыйнай сувязі!  Мой Threema ID: https://threema.id/%2$s</string>
+    <string name="invite_email_body">Прывітанне!\n\nЯ выкарыстоўваю %1$s – праграму для бяспечнага імгненнага абмену паведамленнямі, якае абараняе канфідэнцыяльнасць карыстальнікаў.\n\nМой LeOS-Messenger ID: https://threema.id/%2$s\n\nДавайце размаўляць у %1$s!\n\nУдачы!\n</string>
+    <string name="invite_sms_body">Давайце выкарыстоўваць %1$s для бяспечнай і канфідэнцыйнай сувязі!  Мой LeOS-Messenger ID: https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema.Бясьпечны мэсанджар, які ахоўвае наша прыватнае жыццё.</string>
-    <string name="enter_id_hint">"Увесці Threema ID "</string>
+    <string name="enter_id_hint">"Увесці LeOS-Messenger ID "</string>
     <string name="account_links">Сувязі уліковай запісі.</string>
     <string name="menu_settings">Налады</string>
     <string name="menu_about">Аб Threema</string>
@@ -68,8 +68,8 @@
     <string name="prefs_troubleshooting">Ліквідацыя непаладак</string>
     <string name="prefs_sum_troubleshooting">Аналіз і ўхіленне праблем</string>
     <string name="prefs_workarounds">Патчы</string>
-    <string name="prefs_title_threema_push_switch">Выкарыст. Threema Push</string>
-    <string name="prefs_sum_threema_push_on">Выкарыст. функцыю Threema Push для атрым. апавяшч. аб новых паведамленнях</string>
+    <string name="prefs_title_threema_push_switch">Выкарыст. LeOS-Messenger Push</string>
+    <string name="prefs_sum_threema_push_on">Выкарыст. функцыю LeOS-Messenger Push для атрым. апавяшч. аб новых паведамленнях</string>
     <string name="prefs_sum_threema_push_off">Правярайце наяўн. новых паведамл. з дапамогай сіст. службы push-паведамл</string>
     <string name="prefs_logging">Журнал</string>
     <string name="prefs_title_message_log_switch">Запіс журналу</string>
@@ -97,7 +97,7 @@
     <string name="next">Далей</string>
     <string name="finish">Скончыць</string>
     <string name="please_wait">Пачакайце...</string>
-    <string name="wizard_first_create_id">Стварэнне вашага Threema ID...</string>
+    <string name="wizard_first_create_id">Стварэнне вашага LeOS-Messenger ID...</string>
     <string name="wizard1_sync_contacts">Сінхранізацыя кантактаў…</string>
     <string name="wizard2_email_hint">Увядзіце свой email</string>
     <string name="wizard2_email_linking">Прывязка email да вашага ID</string>
@@ -111,7 +111,9 @@
     <string name="cancel">Адмена</string>
     <string name="copy_message_action">Капіяваць</string>
     <string name="delete_contact_action">Выдаліць кантакт</string>
+    <string name="delete_multiple_contact_action">Выдаліць кантакты</string>
     <string name="scan_id">СканавацьID</string>
+    <string name="id_scanned">ID адсканаваны</string>
     <string name="id_mismatch">Адкрыты ключ, які вы адсканавалі, не адпавядае ключу, які захоўваецца на сэрвэры для гэтага ID. Гэта азначае, што нехта змяніў адсканаваны код і ключу нельга давяраць.</string>
     <string name="scan_successful">ID паспяхова адсканаваны, а кантакт правераны.</string>
     <string name="scan_duplicate">Гэты ID ужо быў адсканаваны і правераны.</string>
@@ -121,21 +123,21 @@
     <string name="share_via">Адправіць праз…</string>
     <string name="share_subject">Размова ў %s</string>
     <string name="message_delete_undo">Адмена</string>
-    <string name="message_deleted">Паведамленне выдалена</string>
-    <string name="mobile_already_linked">Ваш Threema ID ужо прывязаны да гэтага нумара мабільнага тэлефона</string>
-    <string name="email_already_linked">"Ваш Threema ID ужо прывязаны да гэтага email "</string>
+    <string name="mobile_already_linked">Ваш LeOS-Messenger ID ужо прывязаны да гэтага нумара мабільнага тэлефона</string>
+    <string name="email_already_linked">"Ваш LeOS-Messenger ID ужо прывязаны да гэтага email "</string>
     <string name="whoaaa">Апавяшчэнне</string>
     <string name="really_delete_message_title">Выдаліць паведамленне</string>
     <string name="really_delete_thread">Выдаліць чат</string>
+    <string name="really_delete_multiple_threads">Выдаліць чаты</string>
     <string name="really_delete_contact">Вы сапраўды хочаце выдаліць гэты кантакт і ўсе звязаныя паведамленні?</string>
     <string name="image_placeholder">Відарыс</string>
-    <string name="invalid_threema_id">Няправільны Threema ID</string>
+    <string name="invalid_threema_id">Няправільны LeOS-Messenger ID</string>
     <string name="contact_already_exists">Кантакт ужо існуе</string>
     <string name="close">Закрыць</string>
     <string name="creating_contact">Даданне новага кантакту</string>
     <string name="creating_contact_successful">Кантакт паспяхова дададзены</string>
     <string name="invalid_threema_qr_code">Няправільны QR-код</string>
-    <string name="threema_contact">"Кантакт Threema "</string>
+    <string name="threema_contact">"Кантакт LeOS-Messenger "</string>
     <string name="first_name">Імя</string>
     <string name="last_name">Прозвішча</string>
     <string name="os_licenses">Ліцэнзіі</string>
@@ -160,8 +162,8 @@
     <string name="backup_id_summary">Тэкставы радок, паказаны вышэй, або QR-код, а таксама пароль, які вы выбралі, можна выкарыстоўваць для аднаўлення вашага ідэнтыфікатара на іншай прыладзе.  Вы павінны скапіяваць яго ў падыходнае месца, падзяліцца ім па электроннай пошце або адсканіруйце QR-код з дапамогай іншай прылады.</string>
     <string name="support">Падтрымка</string>
     <string name="support_url">https://threema.ch/android/support/</string>
-    <string name="backup_share_content">Наступныя рэзервовыя копіі могуць быць выкарыстаны разам з абраным паролем для аднаўлення вашага Threema ID.</string>
-    <string name="backup_share_subject">Экспарт ID Threema для</string>
+    <string name="backup_share_content">Наступныя рэзервовыя копіі могуць быць выкарыстаны разам з абраным паролем для аднаўлення вашага LeOS-Messenger ID.</string>
+    <string name="backup_share_subject">Экспарт ID LeOS-Messenger для</string>
     <string name="add_attachment">Новае ўкладанне</string>
     <string name="invalid_passphrase">Няправільная кодавая фраза</string>
     <string name="master_key_locked">Галоўны ключ заблакаваны</string>
@@ -255,8 +257,6 @@
     <string name="prefs_masterkey_notification_newmsg_off">Новыя паведамленні не выклікаюць апавяшчэнне, калі галоўны ключ заблакаваны</string>
     <string name="prefs_masterkey_notification_newmsg_on">Новыя паведамленні выклікаюць апавяшчэнне, калі галоўны ключ заблакаваны</string>
     <string name="chat_history_attached">Журнал размовы прыкладзены.</string>
-    <string name="new_message">1 новае паведамленне</string>
-    <string name="new_messages">новыя паведамленні</string>
     <string name="backup_data_title">Рэз. копія даных</string>
     <string name="backup_data_password_msg">Вашы даныя будуць захаваны ў ZIP-файл ва ўнутраным сховішчы, і могуць быць адноўлены на любой Android-прыладзе. Калі ласка, увядзіце пароль для абароны рэзервовай копіі.</string>
     <string name="restore_data_password_msg">Увядзіце пароль, які вы выкарыстоўвалі пры стварэнні гэтай рэзервовай копіі.</string>
@@ -282,7 +282,7 @@
     <string name="prefs_group_notifications">Супольны чат</string>
     <string name="add_group_members_list">Удзельнікі суполкі</string>
     <string name="group_select_at_least_two">Каб працягнуць, трэба абраць як мінімум аднаго ўдзельніка</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">Вы не можаце абраць больш за %1$d удзельнікаў суполкі</string>
+    <string name="group_select_max">Вы не можаце абраць больш за %1$d удзельнікаў суполкі</string>
     <string name="search">Пошук</string>
     <string name="hint_search_keyword">Пошук па ключ-м слове</string>
     <string name="add_group_owner">Стваральнік суполкі</string>
@@ -349,15 +349,14 @@
     <string name="prefs_show_inactive_contacts">Паказваць неактыўныя ID</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Паказваць каляровыя меткі-запаўняльнікі, калі відарыс кантакту адсутнічае</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Паказваць шэрыя меткі-запаўняльнікі, калі відарыс кантакту адсутнічае</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Паказваць усе Threema ID у спісе кантактаў</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Хаваць неактыўныя ці выдаленыя Threema ID</string>
+    <string name="prefs_sum_show_inactive_contacts_on">Паказваць усе LeOS-Messenger ID у спісе кантактаў</string>
+    <string name="prefs_sum_show_inactive_contacts_off">Хаваць неактыўныя ці выдаленыя LeOS-Messenger ID</string>
     <string name="contact_sorting_first_name">Імя - Прозвішча</string>
     <string name="contact_sorting_last_name">Прозвішча - Імя</string>
     <string name="contact_format_first_name_last_name">Імя-Прозвішча</string>
     <string name="contact_format_last_name_first_name">Прозвішча-Імя</string>
     <string name="block_contact">Заблакаваць кантакт</string>
     <string name="unblock_contact">Разблакаваць кантакт</string>
-    <string name="unread_messages">Непрачыт. паведамленняў: %d</string>
     <string name="one_unread_message">1 непрачыт. Паведамленне</string>
     <string name="really_unlink_contact_title">Адвязаць кантакт</string>
     <string name="really_unlink_contact">Вы сапраўды хочаце адмяніць сувязь гэтага кантакту?</string>
@@ -369,11 +368,10 @@
     <string name="prefs_title_fullscreen_ime">Поўнаэкранная клавіятура</string>
     <string name="prefs_sum_fullscreen_ime_on">Клавіятура закрывае праграму, калі прылада знаходзіцца ў ландшафтным рэжыме</string>
     <string name="prefs_sum_fullscreen_ime_off">Паказваць папярэдні прагляд чата над клавіятурай, калі для гэтага дастаткова месца</string>
-    <string name="add_acount_from_within_threema">Кіруйце сваім Threema ID з праграмы Threema.</string>
+    <string name="add_acount_from_within_threema">Кіруйце сваім LeOS-Messenger ID з праграмы Threema.</string>
     <string name="save_image">Захаваць відарыс</string>
     <string name="share_image">Абагуліць відарыс</string>
     <string name="view_in_gallery">Паглядзець у галерэі</string>
-    <string name="file_saved">%d Файл(ы) паспяхова захаваны(я).</string>
     <string name="token_register_failed">Не ўдалося скінуць push-метку. Калі ласка, паспрабуйце пазней.</string>
     <string name="internet_connection_required">Няма падлучэння да інтэрнэту.</string>
     <string name="prefs_sum_save_media">Аўтаматычна загружаць, расшыфроўваць, і захоўваць у галерэю ўваходныя мультымедыя-файлы</string>
@@ -415,10 +413,16 @@
     <string name="media_gallery_pictures">Відарысы</string>
     <string name="media_gallery_videos">Відэа</string>
     <string name="group_membership_title">Удзельнік гэтых суполак</string>
+    <string name="group_description">Апісанне суполкі</string>
+    <string name="change_group_description">Змяніць апісанне суполкі</string>
+    <string name="add_group_description">Дадайце апісанне суполкі</string>
+    <string name="read_more">чытаць далей</string>
+    <string name="read_less">менш чытайце</string>
+    <string name="changed_group_desc_date">\u0410\u043f\u043e\u0448\u043d\u044f\u0435 \u0437\u043c\u044f\u043d\u0435\u043d\u043d\u0435</string>
     <string name="num_items_sected">%s выбрана</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Вы сапраўды хочаце выдаліць %d мультымедыя паведамленняў?</string>
+    <string name="really_delete_media">Вы сапраўды хочаце выдаліць %d мультымедыя паведамленняў?</string>
     <string name="check_updates">Праверыць абнаўлення</string>
-    <string name="masterkey_lock_explain">Threema захоўвае кодавую фразу ў сховішчы. Калі вам даводзіцца ўводзіць кодавую фразу занадта часта, пераканайцеся, што праграмы \"Task killer\" і \"Battery saver\", якія могуць спыняць працу Threema, адключаныя.</string>
+    <string name="masterkey_lock_explain">LeOS-Messenger захоўвае кодавую фразу ў сховішчы. Калі вам даводзіцца ўводзіць кодавую фразу занадта часта, пераканайцеся, што праграмы \"Task killer\" і \"Battery saver\", якія могуць спыняць працу Threema, адключаныя.</string>
     <string name="identity_already_exists">Гэты ID ужо ёсць у вашым спісе кантактаў</string>
     <string name="share_contact">Абагуліць кантакт</string>
     <string name="add_shortcut">Дадаць ярлык</string>
@@ -431,7 +435,6 @@
     <string name="sending_images">Адпраўка відарысаў</string>
     <string name="share_conversation_body">Каб разархіваваць файл, патрэбен ZIP-архіватар з падтрымкай AES, напрыклад http://www.7-zip.org або https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Чат будзе адпраўлены зашыфраваным zip-файлам. Калі ласка, абярыце пароль:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d новых паведамленняў у %2$d чатах</string>
     <string name="ballot_create">Новае апытанне</string>
     <string name="ballot_choice_add">Дадаць варыянт</string>
     <string name="ballot_state_closed">Закрыты</string>
@@ -449,8 +452,6 @@
     <string name="ballot_overview">Усе апытанні</string>
     <string name="ballot_copy">Кап. апытанне</string>
     <string name="ballot_remove">Выдаліць апытанне</string>
-    <string name="ballot_really_delete">Выдаліць апытанне(і)</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Вы сапраўды хочаце выдаліць %1$d апытанне?  Вы не зможаце аднавіць галасы.</string>
     <string name="ballot_not_exist">Апытанне не існуе</string>
     <string name="ballot_tap_to_vote">Прагаласаваць</string>
     <string name="ballot_tap_to_view_results">Апыт. зачынена. Націсніце, каб паглядзець вынікі</string>
@@ -466,26 +467,29 @@
     <string name="invalid_cannot_send">Вы не можаце адпраўляць паведамленні несапраўднаму кантакту</string>
     <string name="ballot_answer_count_error">Задайце не менш за два варыянты адказаў для гэтага апытання.</string>
     <string name="ballot_one_contact_not_supported">Увага!  %1$s не зможа ўдзельнічаць у вашым апытанні.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Увага!  %1$d кантакты(аў) не змогуць удзельнічаць у вашым апытанні.</string>
+    <string name="ballot_x_contact_not_supported">Увага!  %1$d кантакты(аў) не змогуць удзельнічаць у вашым апытанні.</string>
     <string name="contact_state_inactive">Не актыўны</string>
     <string name="contact_state_invalid">Несапраўдны</string>
     <string name="back">Назад</string>
     <string name="wearable_reply">Адказаць</string>
     <string name="wearable_reply_label">Адказаць %s</string>
     <string name="message_acknowledged">Згодзен</string>
-    <string name="push_disable_text">Калі працягнуць, замест службы push-апавяшчэнняў сістэмы будзе выкарыстоўвацца функцыя Threema Push.  Гэта дапамагае скараціць «лічбавы след», але патрабуе настройкі тэлефона такім чынам, каб праграма магла працаваць у фонавым рэжыме.  Калі адпаведныя параметры не ўдаецца знайсці ў настройках прылады, паспрабуйце звярнуцца ў службу падтрымкі вытворцы вашай прылады за дапамогай з настройкай.</string>
+    <string name="push_disable_text">Калі працягнуць, замест службы push-апавяшчэнняў сістэмы будзе выкарыстоўвацца функцыя LeOS-Messenger Push.  Гэта дапамагае скараціць «лічбавы след», але патрабуе настройкі тэлефона такім чынам, каб праграма магла працаваць у фонавым рэжыме.  Калі адпаведныя параметры не ўдаецца знайсці ў настройках прылады, паспрабуйце звярнуцца ў службу падтрымкі вытворцы вашай прылады за дапамогай з настройкай.</string>
     <string name="ballot_intermediate_results_show">Паказаць прамежкавыя вынікі</string>
     <string name="converting_video">Апрацоўка відэа</string>
     <string name="video_size_small">Высокая (менш даных)</string>
     <string name="video_size_large">Нізкая (больш даных)</string>
     <string name="video_size_original">Няма (вельмі вялікая колькасць даных)</string>
     <string name="prefs_video_size">Ступень сціску відэа</string>
+    <string name="menu_video_size_small">Невялікі памер</string>
+    <string name="menu_video_size_medium">Сярэдні памер</string>
+    <string name="menu_video_size_large">Арыгінальны памер</string>
     <string name="show_contact">Паказаць кантакт</string>
     <string name="chat_with">Чат з %1$s</string>
     <string name="kick_user_from_group">Выгнаць %1$s з суполкі</string>
     <string name="show_as_qrcode">Паказаць як QR-код</string>
     <string name="qr_code">QR-код</string>
-    <string name="really_leave_id_export">Калі вы яшчэ не зрабілі гэтага, захавайце радок, які змяшчае ваш ID, або адпаведны QR-код у надзейным месцы або раздрукуйце яго. Ваш Threema ID немагчыма аднавіць без рэзервовай копіі.</string>
+    <string name="really_leave_id_export">Калі вы яшчэ не зрабілі гэтага, захавайце радок, які змяшчае ваш ID, або адпаведны QR-код у надзейным месцы або раздрукуйце яго. Ваш LeOS-Messenger ID немагчыма аднавіць без рэзервовай копіі.</string>
     <string name="revocation_key_title">Ануляваць ID</string>
     <string name="revocation_key_not_set">Пароль анулявання не ўсталяваны</string>
     <string name="revocation_key_set_at">Пароль устаноўлены %1$s</string>
@@ -494,12 +498,13 @@
     <string name="really_remove_wallpapers">Вы сапраўды хочаце выдаліць усе шпалеры?</string>
     <string name="wallpapers_removed">Шпалеры выдалены</string>
     <string name="invalid_backup">Няправільныя даныя рэз. копіі. Не ўдалося аднавіць.</string>
+    <string name="invalid_zip_restore_failed">Аднавіць не атрымалася.Несапраўдны файл рэзервовай копіі: %1$s</string>
     <string name="revocation_explain">Пароль, які вы ўвядзеце тут, дазваляе ануляваць ваш ID на https://myid.threema.ch/revoke у выпадку, калі вы страцілі свой тэлефон ці ён быў скрадзены</string>
     <string name="no_unread_messages">Няма непрачыт. паведамленняў або актывавана блакіроўка PIN</string>
     <string name="send_media">Адпр. мультымед</string>
     <string name="rotate">Паварот</string>
     <string name="remove">Выдаліць</string>
-    <string name="image_already_added">Гэты відарыс ўжо дададзены.</string>
+    <string name="item_already_added">Гэты элемент ужо дададзены.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">(не менш за %d сімвалаў)</string>
     <string name="mark_read">Пазн. як прачыт.</string>
     <string name="attach_document">Файл</string>
@@ -507,10 +512,9 @@
     <string name="file_placeholder">Файл</string>
     <string name="internal_storage">Унутранае сховішча</string>
     <string name="no_activity_for_mime_type">Не знайшлі праграму для адкрыцця гэтага файла.</string>
-    <string name="message_copied">Паведамл. скапіявана</string>
     <string name="open_from">Адкрыць з</string>
     <string name="file_one_contact_not_supported">%1$s не можа прымаць файлы.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Увага: %1$d кантакты(аў) не могуць прыняць ваш файл.</string>
+    <string name="file_x_contact_not_supported">Увага: %1$d кантакты(аў) не могуць прыняць ваш файл.</string>
     <string name="mime_android_apk">Пакет для Android</string>
     <string name="mime_audio">Аўдыёфайл</string>
     <string name="mime_certificate">Лічбавы сертыфікат</string>
@@ -549,7 +553,6 @@
     <string name="storage_explain">Калі ў вас сканчаецца вольнае месца, вы можаце выдаліць старыя зашыфраваныя мэдыяфайлы, вызваліўшы такім чынам месца. Мініяцюры пры гэтым будуць захаваны.</string>
     <string name="delete_data">Выдаліць даныя</string>
     <string name="delete_date_confirm_message">Калі вы працягнеце, файлы будуць выдаленыя, застануцца толькі мініяцюры.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">Выдалена файлаў мультымедыя: %d</string>
     <string name="storage_management">Кіраванне памяццю</string>
     <string name="media">Мультымедыя</string>
     <string name="prefs_storage_mgmt_title">Выдаленне мультымедыя, файлаў і паведамленняў</string>
@@ -562,7 +565,7 @@
     <string name="invalid_data">Няправільныя даныя. Адпраўка немагчымая</string>
     <string name="prefs_emoji_style">Стыль смайлікаў</string>
     <string name="prefs_android_emojis">Смайлікі сістэмы</string>
-    <string name="prefs_default_emojis">Смайлікі Threema (па змаўчанні)</string>
+    <string name="prefs_default_emojis">Смайлікі LeOS-Messenger (па змаўчанні)</string>
     <string name="android_emojis_warning">Заўвага: сістэмны набор сімвалаў можа адлюстроўваць не ўсе смайлікі, якія падтрымліваюцца Threema.</string>
     <string name="crop">Абрэзаць</string>
     <string name="scan_id_mismatch_title">ID не адпавядае</string>
@@ -579,18 +582,16 @@
     <string name="fontsize_large">Вялікі</string>
     <string name="fontsize_xlarge">Вельмі вялікі</string>
     <string name="no_app_for_location">Праграма прагляду мап не знойдзена на гэтай прыладзе</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%d чатаў выдалена</string>
     <string name="prefs_sendlog">Адправіць лог</string>
-    <string name="prefs_sendlog_summary">Адправіць лог-файл у Threema для далейшага аналізу ў выпадку ўзнікнення праблем</string>
+    <string name="prefs_sendlog_summary">Адправіць лог-файл у LeOS-Messenger для далейшага аналізу ў выпадку ўзнікнення праблем</string>
     <string name="prefs_exportlog">Журнал экспарту</string>
     <string name="prefs_exportlog_summary">Падзяліцеся файлам журнала з іншай праграмай</string>
-    <string name="permission_storage_required">Каб адпраўляць медыя, дазвольце Threema доступ да сховішча.</string>
-    <string name="permission_location_required">Каб адправіць месцазнаходжанне, дазвольце Threema атрымаць доступ да вашай пазіцыі.</string>
-    <string name="permission_contacts_required">Каб адпраўляць кантакты, дазвольце Threema чытанне кантактаў.</string>
+    <string name="permission_storage_required">Каб адпраўляць медыя, дазвольце LeOS-Messenger доступ да сховішча.</string>
+    <string name="permission_location_required">Каб адправіць месцазнаходжанне, дазвольце LeOS-Messenger атрымаць доступ да вашай пазіцыі.</string>
+    <string name="permission_contacts_required">Каб адпраўляць кантакты, дазвольце LeOS-Messenger чытанне кантактаў.</string>
     <string name="message_declined">Не згодны</string>
     <string name="notifications_settings">Налады апавяшчэнняў</string>
     <string name="notifications_default">Налады па змаўчанні</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">На працягу %d гадзін</string>
     <string name="notifications_until">Да% s</string>
     <string name="notifications_mute">Прыглушаны</string>
     <string name="notifications_choose_sound">Выбраць гук</string>
@@ -606,35 +607,36 @@
     <string name="new_wizard_restore_id_backup">Аднавіць экспартаваны ID</string>
     <string name="new_wizard_welcome">Сардэчна запрашаем у Threema!</string>
     <string name="new_wizard_move_finger">Соўгайце пальцам па экране</string>
-    <string name="new_wizard_this_is_your_id">Гэта ваш Threema ID:</string>
-    <string name="new_wizard_works_like_phone_number">Ваш Threema ID працуе сапраўды гэтак жа, як нумар тэлефона.  Вашыя сябры могуць звязацца з вамі праз гэты ID.</string>
+    <string name="new_wizard_this_is_your_id">Гэта ваш LeOS-Messenger ID:</string>
+    <string name="new_wizard_works_like_phone_number">Ваш LeOS-Messenger ID працуе сапраўды гэтак жа, як нумар тэлефона.  Вашыя сябры могуць звязацца з вамі праз гэты ID.</string>
     <string name="new_wizard_choose_nickname">Абярыце нік</string>
     <string name="new_wizard_nickname_explain">Вашы сябры будуць бачыць ваш нік пры атрыманні паведамлення</string>
     <string name="new_wizard_hint_enter_nickname">Увядзіце нік</string>
     <string name="new_wizard_help_your_friends_find_you">Дапамажыце сваім сябрам знайсці вас!</string>
-    <string name="new_wizard_link_mobile">Прывяжыце свой нумар мабільнага тэлефона і/або email да вашага Threema ID.</string>
-    <string name="new_wizard_link_mobile_only">\u041f\u0440\u044b\u0432\u044f\u0436\u044b\u0446\u0435 \u0441\u0432\u043e\u0439 \u043d\u0443\u043c\u0430\u0440 \u043c\u0430\u0431\u0456\u043b\u044c\u043d\u0430\u0433\u0430 \u0442\u044d\u043b\u0435\u0444\u043e\u043d\u0430 \u0434\u0430 Threema ID.</string>
+    <string name="new_wizard_link_mobile">Прывяжыце свой нумар мабільнага тэлефона і/або email да вашага LeOS-Messenger ID.</string>
+    <string name="new_wizard_link_mobile_only">\u041f\u0440\u044b\u0432\u044f\u0436\u044b\u0446\u0435 \u0441\u0432\u043e\u0439 \u043d\u0443\u043c\u0430\u0440 \u043c\u0430\u0431\u0456\u043b\u044c\u043d\u0430\u0433\u0430 \u0442\u044d\u043b\u0435\u0444\u043e\u043d\u0430 \u0434\u0430 LeOS-Messenger ID.</string>
     <string name="new_wizard_hint_mobile_number">Нумар мабільнага тэлефона</string>
     <string name="new_wizard_hint_email">Email</string>
     <string name="new_wizard_find_friends">Знайдзіце сваіх сяброў у Threema</string>
     <string name="new_wizard_sync_contacts_explain">Уключыце, каб убачыць, хто з вашых сяброў выкарыстоўвае Threema.</string>
     <string name="new_wizard_done_title">Гатова!  Усё правільна?</string>
     <string name="new_wizard_linked_to">Прывязана да</string>
-    <string name="new_wizard_need_internet">Неабходна стабільнае падключэнне да інтэрнэту для стварэння вашага Threema ID. Калі ласка, паспрабуйце яшчэ раз.</string>
+    <string name="new_wizard_need_internet">Неабходна стабільнае падключэнне да інтэрнэту для стварэння вашага LeOS-Messenger ID. Калі ласка, паспрабуйце яшчэ раз.</string>
     <string name="new_wizard_more_information">Больш інфармацыі</string>
     <string name="contact_details_id_copied">ID скапіяваны ў буфер абмену</string>
     <string name="contact_details_nickname_copied">Нік скапіяваны ў буфер абмену</string>
-    <string name="new_wizard_use_id_as_nickname">Хочаце выкарыстоўваць свой Threema ID у якасці ніка?</string>
+    <string name="new_wizard_use_id_as_nickname">Хочаце выкарыстоўваць свой LeOS-Messenger ID у якасці ніка?</string>
     <string name="new_wizard_phone_email_invalid">Тэлефонны нумар або email, які вы ўвялі - несапраўдны.\nКалі ласка, выпраўце, перш чым працягнуць.</string>
     <string name="new_wizard_phone_invalid">Тэлефонны нумар, які вы ўвялі, несапраўдны.\nВыпраўце нумар, перш чым працягнуць.</string>
-    <string name="new_wizard_info_fingerprint">Соўваючы пальцам па экране, вы ствараеце выпадковыя даныя (званыя энтрапіяй), якія выкарыстоўваюцца для стварэння пары ключоў, звязаных з вашым новым унікальным Threema ID. Пара ключоў складаецца з <b>адчыненага ключа</b>, які рассылаецца вашым сябрам, і <b>зачыненага ключа</b>, які бяспечна захоўваецца ў вашым тэлефоне. Вашыя сябры будуць шыфраваць паведамленні пры дапамозе адчыненага ключа.  Толькі ўладальнік зачыненага ключа, і ніхто іншы, можа расшыфраваць гэтыя паведамленні.</string>
+    <string name="new_wizard_info_fingerprint">Соўваючы пальцам па экране, вы ствараеце выпадковыя даныя (званыя энтрапіяй), якія выкарыстоўваюцца для стварэння пары ключоў, звязаных з вашым новым унікальным LeOS-Messenger ID. Пара ключоў складаецца з <b>адчыненага ключа</b>, які рассылаецца вашым сябрам, і <b>зачыненага ключа</b>, які бяспечна захоўваецца ў вашым тэлефоне. Вашыя сябры будуць шыфраваць паведамленні пры дапамозе адчыненага ключа.  Толькі ўладальнік зачыненага ключа, і ніхто іншы, можа расшыфраваць гэтыя паведамленні.</string>
     <string name="new_wizard_info_id">Вы стварылі пару ключоў. Адчынены ключ па абароненым канале перададзены на нашыя сэрверы. Зачынены ключ заўсёды застаецца на вашай прыладзе. Гэта гарантуе, што ніхто іншы не зможа прачытаць вашыя паведамленні.</string>
-    <string name="new_wizard_info_sync_contacts">Калі ўключыць гэтую опцыю, Threema шыфруе (хэшуе) адрасы электроннай пошты і нумары мабільных тэлефонаў перад адпраўкай іх на сэрвер, для пошуку адпаведных кантактаў. Мы не захоўваем даныя адраснай кнігі.</string>
-    <string name="new_wizard_info_link">Калі вы пакажаце свой нумар тэлефона і адрас электроннай пошты, Threema дапаможа вашым сябрам аўтаматычна знайсці вас, калі вы запісаны ў іх тэлефоннай кнізе.
-Адрасы электроннай пошты будуць захоўвацца ў зашыфраваным (хэшаваным) выглядзе на нашым сэрверы. Вы можаце прапусціць гэты крок, калі хочаце выкарыстоўваць Threema ананімна.</string>
-    <string name="new_wizard_info_link_phone_only">Калі вы пакажаце свой нумар тэлефона, Threema дапаможа вашым сябрам аўтаматычна знайсці вас, калі вы запісаны ў іх тэлефоннай кнізе.
-Нумары захоўваюцца на нашым сэрверы ў зашыфраваным (хэшаваным) выглядзе. Вы можаце прапусціць гэты крок, калі хочаце выкарыстоўваць Threema ананімна.</string>
-    <string name="new_wizard_info_nickname">Нік выкарыстоўваецца ў push-паведамленнях на некаторых прыладах або ў якасці дадатковага спосабу распавесці пра сябе карыстачам, у адраснай кнізе якіх вы пакуль адсутнічаеце. Мы рэкамендуем паведамляць толькі сваё імя або псеўданім. Калі вы не задалі нік, мы па змаўчанні будзем выкарыстоўваць ваш Threema ID.</string>
+    <string name="new_wizard_info_sync_contacts">Калі ўключыць гэтую опцыю, LeOS-Messenger шыфруе (хэшуе) адрасы электроннай пошты і нумары мабільных тэлефонаў перад адпраўкай іх на сэрвер, для пошуку адпаведных кантактаў. Мы не захоўваем даныя адраснай кнігі.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Аўтаматычная сінхранізацыя кантактаў можа дапамагчы вам знайсці вашых сяброў аўтаматычна.  Калі вы згодныя, нумары тэлефонаў і адрасы электроннай пошты з вашай тэлефоннай кнігі будуць зашыфраваны перад адпраўкай на наш сервер для пошуку адпаведных кантактаў.  Абсалютна ніякія даныя не будуць захоўвацца або распаўсюджвацца.\n\n Вы хочаце ўключыць сінхранізацыю кантактаў?</string>
+    <string name="new_wizard_info_link">Калі вы пакажаце свой нумар тэлефона і адрас электроннай пошты, LeOS-Messenger дапаможа вашым сябрам аўтаматычна знайсці вас, калі вы запісаны ў іх тэлефоннай кнізе.
+Адрасы электроннай пошты будуць захоўвацца ў зашыфраваным (хэшаваным) выглядзе на нашым сэрверы. Вы можаце прапусціць гэты крок, калі хочаце выкарыстоўваць LeOS-Messenger ананімна.</string>
+    <string name="new_wizard_info_link_phone_only">Калі вы пакажаце свой нумар тэлефона, LeOS-Messenger дапаможа вашым сябрам аўтаматычна знайсці вас, калі вы запісаны ў іх тэлефоннай кнізе.
+Нумары захоўваюцца на нашым сэрверы ў зашыфраваным (хэшаваным) выглядзе. Вы можаце прапусціць гэты крок, калі хочаце выкарыстоўваць LeOS-Messenger ананімна.</string>
+    <string name="new_wizard_info_nickname">Нік выкарыстоўваецца ў push-паведамленнях на некаторых прыладах або ў якасці дадатковага спосабу распавесці пра сябе карыстачам, у адраснай кнізе якіх вы пакуль адсутнічаеце. Мы рэкамендуем паведамляць толькі сваё імя або псеўданім. Калі вы не задалі нік, мы па змаўчанні будзем выкарыстоўваць ваш LeOS-Messenger ID.</string>
     <string name="not_linked">Не прывязаны</string>
     <string name="linked">Прывязаны</string>
     <string name="pending_sms_verification_notice">Ваш нумар мабільнага тэлефона яшчэ не пацверджаны.</string>
@@ -646,8 +648,8 @@
     <string name="status_ballot_user_modified_vote">\"%1$s\" змяніў(ла) голас за \"%2$s\"</string>
     <string name="status_ballot_all_votes">Галасоў за «%1$s»</string>
     <string name="restore">Аднавіць</string>
-    <string name="new_wizard_anonymous_confirm">Вы не ўказалі ні нумар мабільнага тэлефона, ні адрас электроннай пошты для прывязкі да вашага Threema ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў.  Вы сапраўды хочаце выкарыстоўваць Threema ананімна?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Вы не ўказалі нумар мабільнага тэлефона для прывязкі да свайго Threema ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў. Вы сапраўды хочаце выкарыстоўваць Threema ананімна?</string>
+    <string name="new_wizard_anonymous_confirm">Вы не ўказалі ні нумар мабільнага тэлефона, ні адрас электроннай пошты для прывязкі да вашага LeOS-Messenger ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў.  Вы сапраўды хочаце выкарыстоўваць LeOS-Messenger ананімна?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Вы не ўказалі нумар мабільнага тэлефона для прывязкі да свайго LeOS-Messenger ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў. Вы сапраўды хочаце выкарыстоўваць LeOS-Messenger ананімна?</string>
     <string name="new_wizard_scan_id_backup">Або скануйце QR-код свайго экспарту ID</string>
     <string name="error_saving_file">Памылка захавання файла. Праверце дазволы.</string>
     <string name="wait_one_minute">Калі ласка, пачакайце SMS не менш за 10 хвілін, перш, чым запытаць званок.</string>
@@ -672,7 +674,7 @@
     <string name="prefs_proximity_sensor_explain">Ужываць гутарковы дынамік для прайгравання галасавых паведамленняў, калі датчык набліжэння зачынены</string>
     <string name="error_creating_group">Памылка стварэння суполкі</string>
     <string name="no_media_found_generic">Медыяфайлаў у гэтым чаце не знойдзена</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Макс.  %d элементаў можна рэдагаваць адначасова</string>
+    <string name="max_images_reached">Макс.  %d элементаў можна рэдагаваць адначасова</string>
     <string name="enter_description">Калі ласка, апішыце памылку/праблему тут.</string>
     <string name="add_caption_hint">Дадаць подпіс</string>
     <string name="disable">Адключыць</string>
@@ -689,7 +691,7 @@
     <string name="lock_option_none">Не</string>
     <string name="lock_option_pin">PIN-код</string>
     <string name="lock_option_screenlock">Сістэмная блакіроўка экрана</string>
-    <string name="hide_chat_message_explain">Threema дазваляе абараніць пэўныя чаты з дапамогай PIN-кода і часова схаваць іх са спісу паведамленняў. Для таго, каб выкарыстоўваць прыватныя чаты, калі ласка, усталюйце PIN-код або актывуйце сістэмнае блакаванне экрана (Android 6.0+) у наладах.</string>
+    <string name="hide_chat_message_explain">LeOS-Messenger дазваляе абараніць пэўныя чаты з дапамогай PIN-кода і часова схаваць іх са спісу паведамленняў. Для таго, каб выкарыстоўваць прыватныя чаты, калі ласка, усталюйце PIN-код або актывуйце сістэмнае блакаванне экрана (Android 6.0+) у наладах.</string>
     <string name="set_lock">Наладзьце зараз</string>
     <string name="prefs_title_access_protection">Абарона доступу</string>
     <string name="private_chat_subject">Прыватны</string>
@@ -711,16 +713,14 @@
     <string name="restore_disable_energy_saving">Калі ласка, падключыце тэлефон да зараднай прылады і адключыце ўсе энергазберагальныя опцыі, каб прадухіліць перапыненне працэсу рэзервовага капіявання або аднаўлення.</string>
     <string name="draft">Чарнавік</string>
     <string name="prefs_bigger_single_emojis">Вялікія адзіночныя смайлікі</string>
-    <string name="wizard1_sync_work">Сінхранізацыя даных Threema Work...</string>
+    <string name="wizard1_sync_work">Сінхранізацыя даных LeOS-Messenger Work...</string>
     <string name="notification_hidden_text">Змест схаваны</string>
     <string name="really_reset_ringtones">Скінуць налады гукавых апавяшчэнняў па змаўчанні?</string>
     <string name="reset_ringtones_confirm">Налады гукавых апавяшчэнняў былі скінутыя.</string>
     <string name="prefs_language_override">Мова</string>
-    <string name="threema_channel_intro">Канал Threema дае вам навіны аб усім Threema.  Вы хочаце падпісацца на канал Threema і дадаць яго ў свае кантакты?  Гэта бясплатна, і вы можаце адмовіцца ад падпіскі ў любы час.</string>
+    <string name="threema_channel_intro">Канал LeOS-Messenger дае вам навіны аб усім Threema.  Вы хочаце падпісацца на канал LeOS-Messenger і дадаць яго ў свае кантакты?  Гэта бясплатна, і вы можаце адмовіцца ад падпіскі ў любы час.</string>
     <string name="quote">Цытаваць</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Вы сапраўды хочаце выдаліць %1$d кантактаў і ўсе звязаныя чаты?</string>
     <string name="contacts_deleted">Кантакты былі выдалены</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d кантактаў не могуць быць выдалены, бо яны ўсё яшчэ з\'яўляюцца ўдзельнікамі суполкі</string>
     <string name="take_photo">Сфатаграфаваць</string>
     <string name="select_from_gallery">Выбраць з галерэі</string>
     <string name="palette">Палітра</string>
@@ -737,7 +737,7 @@
     <string name="battery_optimizations_disable_guide_ctd">Шукаць %s у спісе і адключыць энергазберажэнне</string>
     <string name="battery_optimizations_disable_confirm">Вы сапраўды хочаце захаваць энергазберажэнне для %1$s?  %2$s не будзе працаваць карэктна.</string>
     <string name="enter_text_hint">Увядзіце тэкст</string>
-    <string name="backup_explain_text">Калі вы страціце вашу прыладу, ніхто не зможа аднавіць ваш Threema ID або чаты, калі ў вас няма рэзервовай копіі. Калі ласка, захавайце вашыя даныя, выкарыстоўваючы адпаведныя параметры рэзервовага капіявання.</string>
+    <string name="backup_explain_text">Калі вы страціце вашу прыладу, ніхто не зможа аднавіць ваш LeOS-Messenger ID або чаты, калі ў вас няма рэзервовай копіі. Калі ласка, захавайце вашыя даныя, выкарыстоўваючы адпаведныя параметры рэзервовага капіявання.</string>
     <string name="data_backup_explain">Рэзервовыя копіі даных змяшчаюць:\n &#9679; Ваш ID і вашу ключавую пару\n &#9679; Кантакты і ўзровень даверу да іх\n &#9679; Сяброўства ў суполках\n &#9679; Чаты\n &#9679; Мультымедыя і файлы (апцыянальна)\n Даныя будуць захаваны ў зашыфраваным ZIP-файле.  Рэкамендуецца перамясціць файл з прылады пасля паспяховага завяршэння рэзервовага капіявання.</string>
     <string name="draw">Маляваць</string>
     <string name="edit">Рэдагаваць</string>
@@ -747,8 +747,8 @@
     <string name="prefs_ipv6_preferred_off">Выкарыстоўваць толькі IPv4-злучэнні</string>
     <string name="prefs_ipv6_preferred_on">Аддаваць перавагу IPv6-злучэнням па-над IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 для званкоў і інтэрнэту</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Дазволіць IPv6 для Threema Calls і Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Забараніць IPv6 для Threema Calls і Threema Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Дазволіць IPv6 для LeOS-Messenger Calls і LeOS-Messenger Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Забараніць IPv6 для LeOS-Messenger Calls і LeOS-Messenger Web</string>
     <string name="ipv6_requires_restart">Для прымянення гэтай налады патрабуецца перазапуск праграмы.</string>
     <string name="ipv6_restart_now">Перазапусціць</string>
     <string name="on_cap">Уключана</string>
@@ -775,7 +775,7 @@
     <string name="menu_send_profilpic_now">Адправіць аватар</string>
     <string name="profile_picture_sent">Аватар адпраўлены</string>
     <string name="sending_messages">Адпраўка...</string>
-    <string name="backup_data_media_confirm">Пры захаванні вялікіх мультымедыйных файлаў з лакальнай рэзервовай копіі можа быць перавышана ёмістасць сховішча прылады, захаванне таксама можа заняць шмат часу.  Threema не будзе адпраўляць і атрымліваць паведамленні падчас рэзервовага капіявання. Працягнуць?</string>
+    <string name="backup_data_media_confirm">Пры захаванні вялікіх мультымедыйных файлаў з лакальнай рэзервовай копіі можа быць перавышана ёмістасць сховішча прылады, захаванне таксама можа заняць шмат часу.  LeOS-Messenger не будзе адпраўляць і атрымліваць паведамленні падчас рэзервовага капіявання. Працягнуць?</string>
     <string name="backup_data_cancelled">Рэз. капіяв. адменена</string>
     <string name="service_manager_not_available">База даных пашкоджана або няпоўная. Запуск немагчымы.</string>
     <string name="message_sent">Павед. адпраўлена</string>
@@ -785,8 +785,8 @@
     <string name="prefs_title_voip">Званок Threema</string>
     <string name="prefs_title_force_turn">Заўсёды рэтранслір. званкі</string>
     <string name="prefs_summary_force_turn_off">Па магчымасці ўсталёўваць прамое злучэнне і рэтрансляваць званкі неправераным кантактам толькі праз сэрверы Threema.  Можа быць бачны ваш IP-адрас.</string>
-    <string name="prefs_summary_force_turn_on">Прымусова рэтрансляваць усе званкі праз сэрверы Threema з абаронай вашага IP-адрасу. Можа пагаршацца якасць сувязі.</string>
-    <string name="permission_record_audio_required">Для здзяйснення нешыфраваных званкоў і адпраўкі галасавых паведамленняў дазвольце Threema доступ да мікрафона.</string>
+    <string name="prefs_summary_force_turn_on">Прымусова рэтрансляваць усе званкі праз сэрверы LeOS-Messenger з абаронай вашага IP-адрасу. Можа пагаршацца якасць сувязі.</string>
+    <string name="permission_record_audio_required">Для здзяйснення нешыфраваных званкоў і адпраўкі галасавых паведамленняў дазвольце LeOS-Messenger доступ да мікрафона.</string>
     <string name="prefs_voice_call_notifications">Галасавыя званкі</string>
     <string name="prefs_voice_call_sound">Рынгтон</string>
     <string name="prefs_sum_voice_call_sound">Абярыце сігнал для ўваходных званкоў Threema</string>
@@ -801,7 +801,7 @@
     <string name="shortcut_choice_title">Стварыце цэтлік для...</string>
     <string name="prefs_title_device_info">Звесткі аб прыладзе</string>
     <string name="notifications_disabled_title">Апавяшчэнні адключаныя</string>
-    <string name="notifications_disabled_text">Апавяшчэнні Threema былі адключаныя ў наладах сістэмы. Вы не будзеце атрымліваць апавяшчэнні аб новых паведамленнях.</string>
+    <string name="notifications_disabled_text">Апавяшчэнні LeOS-Messenger былі адключаныя ў наладах сістэмы. Вы не будзеце атрымліваць апавяшчэнні аб новых паведамленнях.</string>
     <string name="notifications_disabled_settings">Змяніць налады сістэмы</string>
     <string name="error_attaching_files">Памылка дадання ўкладанняў.</string>
     <string name="prefs_fix_powermanager_problems">Выпраўлены праблемы з Huawei</string>
@@ -816,6 +816,7 @@
     <string name="unpin">Зняць</string>
     <string name="location_services_disabled">Службы вызначэння месцазнаходжання адключаны. Хочаце ўключыць іх зараз?</string>
     <string name="send_location">Адправіць месцазн.</string>
+    <string name="forward_location">Месцазнаходжанне</string>
     <string name="unknown_address">Невядомы адрас</string>
     <string name="your_location">Ваша месцазнаходж.</string>
     <string name="network_blocked_title">Фонавая перадача даных адключана</string>
@@ -841,14 +842,13 @@
     <string name="plus">Больш</string>
     <string name="switched_off">Выкл.</string>
     <string name="switched_on">Укл.</string>
-    <string name="title_tab_work_users">Карыстальнікі Threema Work</string>
-    <string name="no_matching_work_contacts">Правераных адміністратарам кантактаў Threema Work не знойдзена</string>
+    <string name="title_tab_work_users">Карыстальнікі LeOS-Messenger Work</string>
+    <string name="no_matching_work_contacts">Правераных адміністратарам кантактаў LeOS-Messenger Work не знойдзена</string>
     <string name="all">Усе</string>
     <string name="webclient_session_stop_all">Закрыць усё</string>
-    <string name="webclient_running_sessions">%d сеанс(ы) запушчаны</string>
     <string name="passphrase_service_name">Служба кодавых фраз</string>
     <string name="passphrase_service_description">Апавяшчэнне пры разблакіроўцы кодавай фразы</string>
-    <string name="webclient_service_description">Апавяшчэнне пры актыўнай сесіі Threema Web</string>
+    <string name="webclient_service_description">Апавяшчэнне пры актыўнай сесіі LeOS-Messenger Web</string>
     <string name="prefs_title_accept_privacy_policy">Прыняць палітыку канфідэнц-ці</string>
     <string name="privacy_policy_explain">%1$s абараняе вашую прыватнасць больш, чым любы іншы мэсанджар. Больш падрабязна гл. у нашай %2$s.</string>
     <string name="privacy_policy_check_confirm">Для карыстання %s прыміце Палітыку канфідэнцыяльнасці.\n\n (патрабуецца згодна з рэгламентам ЕС 2016/679)</string>
@@ -863,41 +863,41 @@
     <string name="password_too_short_generic">Занадта кароткі пароль</string>
     <string name="passwords_dont_match">Паролі не супадаюць</string>
     <string name="test_unsuccessful">Тэст не пройдзены</string>
-    <string name="preparing_threema_safe">Падрыхтоўка Threema Safe...</string>
+    <string name="preparing_threema_safe">Падрыхтоўка LeOS-Messenger Safe...</string>
     <string name="disable_powermanager_title">Абмежаванні па электрасілк.</string>
     <string name="disable_autostart_title">Аўтазапуск</string>
     <string name="unchanged">без змен</string>
     <string name="safe_learn_more_button">Даведацца больш</string>
-    <string name="safe_enable_explain">Усё, што вам трэба для чата, захоўваецца на вашай прыладзе. У нас няма вашага ўліковага запісу, і мы не зможам дапамагчы вам, калі вы страціце тэлефон або выпадкова выдаліце ​​даныя.\n\n Threema Safe стварае аўтаматычныя рэзервовыя копіі ўсіх важных даных, у тым ліку вашых ключоў, вашага спісу кантактаў і суполак (але не кантэнту паведамленняў). Даныя ў ананімным выглядзе захоўваюцца на абраным вамі абароненым сэрверы.</string>
-    <string name="safe_disable_confirm">Вы хочаце працягнуць без уключэння Threema Safe?  Пры выкарыстанні Threema Safe вы можаце аднавіць свой Threema ID, кантакты і суполкі ў выпадку, калі вы страціце доступ да прылады.</string>
-    <string name="safe_configure_choose_password">Абярыце пароль. Гэты пароль спатрэбіцца вам для аднаўлення даных з рэзервовай копіі Threema Safe.</string>
-    <string name="safe_configure_choose_server">Абярыце сэрвер Threema Safe</string>
-    <string name="safe_configure_server_explain">Можна выкарыстоўваць сэрвер Threema Safe або паказаць пабочны сэрвер для рэзервовага капіявання.</string>
+    <string name="safe_enable_explain">Усё, што вам трэба для чата, захоўваецца на вашай прыладзе. У нас няма вашага ўліковага запісу, і мы не зможам дапамагчы вам, калі вы страціце тэлефон або выпадкова выдаліце ​​даныя.\n\n LeOS-Messenger Safe стварае аўтаматычныя рэзервовыя копіі ўсіх важных даных, у тым ліку вашых ключоў, вашага спісу кантактаў і суполак (але не кантэнту паведамленняў). Даныя ў ананімным выглядзе захоўваюцца на абраным вамі абароненым сэрверы.</string>
+    <string name="safe_disable_confirm">Вы хочаце працягнуць без уключэння LeOS-Messenger Safe?  Пры выкарыстанні LeOS-Messenger Safe вы можаце аднавіць свой LeOS-Messenger ID, кантакты і суполкі ў выпадку, калі вы страціце доступ да прылады.</string>
+    <string name="safe_configure_choose_password">Абярыце пароль. Гэты пароль спатрэбіцца вам для аднаўлення даных з рэзервовай копіі LeOS-Messenger Safe.</string>
+    <string name="safe_configure_choose_server">Абярыце сэрвер LeOS-Messenger Safe</string>
+    <string name="safe_configure_server_explain">Можна выкарыстоўваць сэрвер LeOS-Messenger Safe або паказаць пабочны сэрвер для рэзервовага капіявання.</string>
     <string name="safe_use_default_server">Сэрвер па змаўчанні</string>
     <string name="safe_test_server">Тэставы сервер</string>
     <string name="safe_advanced_options">Пашыраныя налады</string>
-    <string name="safe_enter_password">Увядзіце пароль Threema Safe</string>
+    <string name="safe_enter_password">Увядзіце пароль LeOS-Messenger Safe</string>
     <string name="safe_threema_id">Ваш ID Threema</string>
     <string name="safe_restore_enter_id">Увядзіце ID Threema, які вы хочаце аднавіць</string>
     <string name="safe_search_id_title">Увядзіце нумар мабільнага ці email, звязаны з вашым ID</string>
     <string name="safe_id_lookup">Пошук ID Threema</string>
-    <string name="safe_no_id_found">ID Threema не знойдзены</string>
+    <string name="safe_no_id_found">ID LeOS-Messenger не знойдзены</string>
     <string name="safe_no_backup_found">На сэрверы не знойдзена рэзервовая копія. Праверце ID і пароль.</string>
     <string name="safe_select_id">Знойдзена некалькі ID Threema. Абярыце ID для выкарыстання:</string>
     <string name="safe_backup_now">Стварыць копію</string>
-    <string name="safe_enable_explain_short">Уключыце Threema Safe для аўтаматычнага стварэння абароненых ананімных рэзервовых копій усіх вашых важных даных.</string>
-    <string name="safe_deleting">Выдаленне рэзервовай копіі Threema Safe...</string>
+    <string name="safe_enable_explain_short">Уключыце LeOS-Messenger Safe для аўтаматычнага стварэння абароненых ананімных рэзервовых копій усіх вашых важных даных.</string>
+    <string name="safe_deleting">Выдаленне рэзервовай копіі LeOS-Messenger Safe...</string>
     <string name="safe_delete_error">Памылка выдалення рэзервовай копіі: %s</string>
     <string name="safe_delete_success">Рэзервовая копія паспяхова выдалена з сэрвера</string>
-    <string name="safe_error_preparing">Памылка падрыхтоўкі рэзервовай копіі Threema Safe</string>
-    <string name="safe_configure_choose_password_force">Задайце надзейны пароль, каб абараніць свой ID Threema з дапамогай Threema Safe. Абавязкова запомніце пароль!</string>
-    <string name="safe_deactivate">Адключыць Threema Safe</string>
-    <string name="safe_deactivate_explain">Калі адключыць Threema Safe, усе існуючыя рэзервовыя копіі будуць выдалены з сэрвера. Працягнуць?</string>
+    <string name="safe_error_preparing">Памылка падрыхтоўкі рэзервовай копіі LeOS-Messenger Safe</string>
+    <string name="safe_configure_choose_password_force">Задайце надзейны пароль, каб абараніць свой ID LeOS-Messenger з дапамогай LeOS-Messenger Safe. Абавязкова запомніце пароль!</string>
+    <string name="safe_deactivate">Адключыць LeOS-Messenger Safe</string>
+    <string name="safe_deactivate_explain">Калі адключыць LeOS-Messenger Safe, усе існуючыя рэзервовыя копіі будуць выдалены з сэрвера. Працягнуць?</string>
     <string name="add_group_members">Новы удзельнік</string>
     <string name="contact_add_confirm">Вы хочаце дадаць новы кантакт «%1$s» у ваш сьпіс кантактаў?</string>
     <string name="password_bad">Ненадзейны пароль</string>
     <string name="prefs_fix_background_data">Уключыць фонавую перадачу даных</string>
-    <string name="prefs_fix_background_data_desc">Каб атрымліваць паведамленні, калі Threema працуе ў фонавым рэжыме, уключыце фонавую перадачу даных і неабмежаваны трафік</string>
+    <string name="prefs_fix_background_data_desc">Каб атрымліваць паведамленні, калі LeOS-Messenger працуе ў фонавым рэжыме, уключыце фонавую перадачу даных і неабмежаваны трафік</string>
     <string name="prefs_fix_device">Выправіць праблемы канфігурацыі прылады</string>
     <string name="safe_successful">Выканана</string>
     <string name="safe_unsuccessful">Не выканана</string>
@@ -911,10 +911,10 @@
     <string name="number_of_days">%d дзён.</string>
     <string name="backup_other_restore_options">Іншыя варыянты аднаўлення</string>
     <string name="safe_size">Памер рэз. копіі</string>
-    <string name="safe_version_mismatch">Версія рэзервовай копіі вышэй за падтрымліваемую. Выканайце абнаўленне да апошняй версіі праграмы.</string>
+    <string name="backup_version_mismatch">Версія рэзервовай копіі вышэй за падтрымліваемую. Выканайце абнаўленне да апошняй версіі праграмы.</string>
     <string name="safe_restore_failed">Не ўдалося аднавіць</string>
-    <string name="safe_failed_notification">Немагчыма стварыць рэзервовую копію Threema Safe %d дзён.  запар. Націсніце тут для праверкі.</string>
-    <string name="safe_restore">Аднавіць Threema Safe</string>
+    <string name="safe_failed_notification">Немагчыма стварыць рэзервовую копію LeOS-Messenger Safe %d дзён.  запар. Націсніце тут для праверкі.</string>
+    <string name="safe_restore">Аднавіць LeOS-Messenger Safe</string>
     <string name="backup_restore_in_progress">Выконваецца рэзервовае капіяванне або аднаўленне. Глядзіце звесткі аб статусе ў апавяшчэннях.</string>
     <string name="restore_error_body">Не ўдалося выканаць аднаўленне</string>
     <string name="forgot_your_id">Забыліся свой ID?</string>
@@ -922,8 +922,8 @@
     <string name="work_data_sync">Сінхр. даных</string>
     <string name="private_contact">Прыватны кантакт</string>
     <string name="ringtone_selection_default">Па змаўчанні (%s)</string>
-    <string name="work_data_sync_desc">Сінхранізацыя Threema Work</string>
-    <string name="ballot_not_connected">Перад тым як зачыняць апытанне, пераканайцеся, што Threema зараз анлайн.</string>
+    <string name="work_data_sync_desc">Сінхранізацыя LeOS-Messenger Work</string>
+    <string name="ballot_not_connected">Перад тым як зачыняць апытанне, пераканайцеся, што LeOS-Messenger зараз анлайн.</string>
     <string name="empty_chat_title">Ачысціць чат</string>
     <string name="empty_chat_confirm">Усе паведамленні ў гэтым чаце будуць выдалены. Працягнуць?</string>
     <string name="emptying_chat">Ачыстка чата ...</string>
@@ -937,22 +937,22 @@
     <string name="notification_channel_notices">Апавяшчэнні</string>
     <string name="chat_updates">Абнаўленні чата</string>
     <string name="backup_or_restore_progress">Ход рэзервовага капіявання/аднаўлення</string>
-    <string name="tooltip_export_id">Націсніце тут, каб падзяліцца зашыфраваным ID Threema або раздрукаваць яго</string>
+    <string name="tooltip_export_id">Націсніце тут, каб падзяліцца зашыфраваным ID LeOS-Messenger або раздрукаваць яго</string>
     <string name="downloading">Спампоўванне...</string>
     <string name="today">Сёння</string>
     <string name="restore_data_cancelled">Аднаўленне адменена</string>
     <string name="safe_change_password">Змяніць пароль</string>
     <string name="safe_configure_choose_password_title">Абярыце пароль</string>
-    <string name="password_bad_explain">Абраны для Threema Safe пароль нядосыць надзейны, г.зн.  яго лёгка адгадаць. Парада: выкарыстоўвайце пароль з некалькіх асобных слоў.</string>
-    <string name="safe_password_updated">Пароль Threema Safe абноўлены.</string>
-    <string name="safe_activated">Функцыя Threema Safe актываваная.</string>
+    <string name="password_bad_explain">Абраны для LeOS-Messenger Safe пароль нядосыць надзейны, г.зн.  яго лёгка адгадаць. Парада: выкарыстоўвайце пароль з некалькіх асобных слоў.</string>
+    <string name="safe_password_updated">Пароль LeOS-Messenger Safe абноўлены.</string>
+    <string name="safe_activated">Функцыя LeOS-Messenger Safe актываваная.</string>
     <string name="restore_zip_invalid_file">"Памылка сціску, не той пароль
 "</string>
     <string name="push_token_cleared">Push-метка была ачышчана</string>
     <string name="insert_date">Устаўце дату</string>
     <string name="add_answer">Дадайце адказ</string>
     <string name="title_cannot_be_empty">Назва апытання не можа быць пустой</string>
-    <string name="voip_disabled">Званкі Threema адключаныя</string>
+    <string name="voip_disabled">Званкі LeOS-Messenger адключаныя</string>
     <string name="hide_chat_enter_message_explain">Гэты чат пазначаны як прыватны. Каб увайсці ў яго, спачатку наладзьце абарону доступу.</string>
     <string name="unknown">Невядома</string>
     <string name="miui_notification_title">Важная заўвага па апавяшчэннях ў MIUI</string>
@@ -960,7 +960,7 @@
     <string name="miui12_notification_body">MIUI па змаўчанні адключае гукавыя, светлавыя і якія плаваюць абвесткі для ўсіх праграм (за выключэннем некаторых вельмі папулярных праграм, якія аднесены кампаніяй Xiaomi да катэгорыі \"важных\"). Вы павінны будзеце ўручную актываваць гэтыя налады на экране налад апавяшчэнняў для вашага тэлефона, а таксама паўтараць гэтую працэдуру пасля кожнага абнаўлення праграмы.  Для атрымання дадатковых звестак звяртайцеся ў Xiaomi.</string>
     <string name="dont_show_again">Больш не паказваць</string>
     <string name="miui_notification_prefs">Налады MIUI</string>
-    <string name="threema_safe_upload_successful">Рэзервовая копія Threema Safe паспяхова перададзена</string>
+    <string name="threema_safe_upload_successful">Рэзервовая копія LeOS-Messenger Safe паспяхова перададзена</string>
     <string name="time_remaining">%s засталося</string>
     <string name="safe_configure_server_credentials_title">Аўтэнтыфікацыя (неабавязкова)</string>
     <string name="username_hint">Імя карыст-а</string>
@@ -969,7 +969,7 @@
     <string name="biometric_enter_authentication">Для разблакавання выканайце аўтэнтыфікацыю</string>
     <string name="biometric_authentication_failed">Збой аўтэнтыфікацыі</string>
     <string name="biometric_authentication_successful">Аўтэнтыфікацыя паспяхова пройдзена</string>
-    <string name="work_safe_forced_explain">Ваш адміністратар актываваў Threema Safe для вашай прылады.</string>
+    <string name="work_safe_forced_explain">Ваш адміністратар актываваў LeOS-Messenger Safe для вашай прылады.</string>
     <string name="pin_locked_cannot_send">Праграма заблакавана. Адпраўка немагчымая.</string>
     <string name="prefs_summary_hide_screenshots_notice">Заўвага. У мэтах абароны прыватнасці пры актываванай абароне праграмы блакуюцца мініяцюры і здымкі экрана.</string>
     <string name="work_select_categories">Абярыце катэгорыі</string>
@@ -979,7 +979,7 @@
     <string name="advanced_options">Пашыраныя параметры</string>
     <string name="url_warning_body">Імя хоста спасылкі, якую вы збіраецеся адкрыць, падазрона:\n\n Адлюстраванае імя хаста: <b>%s</b>\n Сапраўднае імя хаста: <b>%s</b>\n\n Гэта можа быць спробай падмануць вас, каб адкрыць сайт, выдаючы сябе за нешта іншае.\n\n Вы ўсё роўна хочаце працягнуць?</string>
     <string name="url_warning_title">Папярэджанне аб фішынгу</string>
-    <string name="permission_camera_qr_required">Для сканавання QR-кодаў праграме Threema патрабуецца доступ да камеры</string>
+    <string name="permission_camera_qr_required">Для сканавання QR-кодаў праграме LeOS-Messenger патрабуецца доступ да камеры</string>
     <string name="voice_action_title">Галасавыя дзеянні</string>
     <string name="voice_action_body">Выконваецца апрацоўка галасавога дзеяння</string>
     <string name="permission_camera_photo_required">Каб зрабіць фота, падайце доступ да камеры</string>
@@ -999,11 +999,10 @@
     <string name="data_backup_last_date">Апошняе паспяховае рэз. капіяванне даных</string>
     <string name="archived">Архівавана</string>
     <string name="to_archive">Архіў</string>
-    <string name="message_archived">Архівавана чатаў: %d</string>
     <string name="archived_chats">Архіваваныя чаты</string>
     <string name="unarchive">Выняць</string>
     <string name="no_archived_chats">Няма архіваваных чатаў.\nКаб архіваваць чат, правядзіце па ім налева ў спісе паведамленняў</string>
-    <string name="add_contact_enter_id_hint">Увядзіце Threema ID кантакту, які вы хочаце дадаць</string>
+    <string name="add_contact_enter_id_hint">Увядзіце LeOS-Messenger ID кантакту, які вы хочаце дадаць</string>
     <string name="notification_channel_new_contact">Новыя кантакты</string>
     <string name="notification_channel_new_contact_desc">Апавяшчэнні аб новых кантактах</string>
     <string name="notification_contact_has_joined">%1$s далучыўся да %2$s. Краніце, каб адправіць паведамленне.</string>
@@ -1011,23 +1010,12 @@
     <string name="system_default">Сістэмны па змаўчанні</string>
     <string name="open_in_maps_app">Адк-ць у праграме \"Мапы\"</string>
     <string name="delete">Выдаліць</string>
-    <string name="num_archived_chats">Архіваваных чатаў: %d</string>
     <string name="continue_recording">Працягнуць запіс</string>
-    <string name="whatsnew_title">Вітаем у %1$s %2$s</string>
-    <string name="whatsnew_headline"><![CDATA[<p><b>Новыя функцыі ў гэтай версіі %s для Android:</b></p>
-<p>
-Шмат новых эмодзі ў адпаведнасці са стандартам Unicode 13.1. 😵‍💫❤️‍🔥
-</p><p>
-Шукайце эмодзі па назве або значэнні (даступна на 17 мовах).
-</p><p>
-Дэтэрмінаваныя колеры для кантактаў і суполак, якія не маюць уласнага відарыса профілю. Гэтыя новыя колеры будуць працаваць на розных платформах і прыладах.
-</p><p>
-Палепшаная прадукцыйнасць пракруткі ў многіх спісах.
-</p><p>
- Аптымізаваны макет для медыя-рэдактара. Павялічана колькасць медыяэлементаў, якія можна рэдагаваць перад адпраўкай, да 256.
-</p><p>
-Шмат невялікіх паляпшэнняў і выпраўленняў памылак.
-</p>]]></string>
+    <string name="whatsnew_title">Навінка: супольныя званкі %1$s</string>
+    <string name="whatsnew_headline"><![CDATA[<p>Супольныя званкі са скразным шыфраваннем цяпер даступныя ў %1$s для Android.</p>
+ <p>Каб пачаць званок, адкрыйце супольны чат і краніце значок камеры ўверсе.</p>
+ <p>Усе ўдзельнікі суполкі атрымаюць апавяшчэнне і змогуць самі вырашыць, ці жадаюць яны далучыцца да званка.</p>
+ <p><b>Звярніце ўвагу:</b> для iOS-дадатку функцыя супольнага званка будзе рэалізавана пазней.</p>]]></string>
     <string name="tap_to_start">Націсьніце тут, каб запусціць %s.</string>
     <string name="two_years">2 года</string>
     <string name="invalid_backup_path">Нядзейнічае.шлях да рэз.копіі</string>
@@ -1046,7 +1034,6 @@
     <string name="and">і</string>
     <string name="edit_type_content_description">Прагляд/рэдакцір.  %1$s %2$s</string>
     <string name="group">Суполка</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Наша палітыка канфідэнцыяльнасці была абноўлена, каб адлюстраваць наступную змену:</p><p>%1$s больш не залежыць ад Google Play і Google Maps у прадастаўленні карты і даных POI.</p>Прагладзіце палітыку прыватнасці<a href="%2$s">тут</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Службы не ўсталяваны. Немагчыма пераключыцца на Google FCM або HMS Push.</string>
     <string name="unable_to_get_current_location">Немагчыма вызначыць бягучае месцазнаходжанне.</string>
     <string name="lp_search_place_min_chars">Для пошуку месца ўвядзіце не менш за тры сімвалы.</string>
@@ -1059,7 +1046,7 @@
     <string name="mime_type">Тып MIME</string>
     <string name="password_does_not_comply">Пароль не адпавядае патрабаванням, зададзеным адміністратарам.</string>
     <string name="audio_mute_due_to_focus_loss">Гук часова адключаны: аўдыёканал выкарыстоўваецца іншай праграмай</string>
-    <string name="restore_data_backup_explain">Каб аднавіць даныя з рэзервовай копіі, спачатку выдаліце ​​свой Threema ID на экране \"Мой профіль\".\n\nПасля запуску праграмы абярыце \"Аднавіць з рэзервовай копіі\", \"Іншыя варыянты аднаўлення\", \"Рэзервовая копія даных\", пасля чаго абярыце файл рэзервовай копіі, з якога вы хочаце аднавіць даныя.</string>
+    <string name="restore_data_backup_explain">Каб аднавіць даныя з рэзервовай копіі, спачатку выдаліце ​​свой LeOS-Messenger ID на экране \"Мой профіль\".\n\nПасля запуску праграмы абярыце \"Аднавіць з рэзервовай копіі\", \"Іншыя варыянты аднаўлення\", \"Рэзервовая копія даных\", пасля чаго абярыце файл рэзервовай копіі, з якога вы хочаце аднавіць даныя.</string>
     <string name="audio_focus_loss_complete">Званок перапынены ў сувязі з поўнай стратай фокусу на аўдыё.</string>
     <string name="tap_for_picture_hold_for_video">Націсніце для фота, утрымлівайце для відэа</string>
     <string name="sending_media">Адпраўл. мультымедыя</string>
@@ -1080,18 +1067,18 @@
     <string name="work_life_dnd_active">Цяпер непрацоўны час</string>
     <string name="pencil">Аловак</string>
     <string name="warning">Увага!</string>
-    <string name="password_remember_warning">Запомніце, што вы ўводзіце тут! Паколькі %s не захоўвае паролі на сэрверах, мы не зможам дапамагчы вам, калі вы забудзецеся свой PIN-код або парольную фразу.</string>
+    <string name="password_remember_warning">Запомніце, што вы тут уводзіце!  Паколькі %s не захоўвае ніякіх пароляў на серверах, мы не можам дапамагчы вам, калі вы забудзеце PIN-код або пароль.</string>
     <string name="safe_backup_tap_to_restart">Націсніце на апавяшчэнне, каб перазапусціць праграму зараз.</string>
     <string name="send_to_support">Адправіць у службу падтрымкі Threema</string>
     <string name="menu_legal">Юрыд. інф.</string>
-    <string name="tooltip_work_hint">Гэты кантакт выкарыстоўвае Threema Work.</string>
+    <string name="tooltip_work_hint">Гэты кантакт выкарыстоўвае LeOS-Messenger Work.</string>
     <string name="video_camera_on">Уключана відэакамера</string>
     <string name="video_camera_off">Відэакамера адключана</string>
     <string name="enable_picture_in_picture">Смарт-рэжым «малюнак у малюнку»</string>
     <string name="call_with">Званок %s</string>
     <string name="picture_in_picture_disabled_in_setting">Рэжым «малюнак у малюнку» адключаны для %s. Уключыце яго ў сістэмных наладах.</string>
     <string name="delete_everything">Выдаліць усё</string>
-    <string name="prefs_title_voip_video_enable">Укл. відэазванкі Threema</string>
+    <string name="prefs_title_voip_video_enable">Дазволіць відэа</string>
     <string name="video_calls">Відэазв. Threema</string>
     <string name="prefs_videocall_profile">Пераважная якасць відарыса</string>
     <string name="videocall_profile_auto">Збалансаванае (рэкамендавана)</string>
@@ -1109,6 +1096,8 @@
     <string name="translators_thanks">Вялікі дзякуй нашым перакладчыкам-валанцёрам:\n %s</string>
     <string name="ballot_window_hide">Схаваць адкр-я апытанні</string>
     <string name="ballot_window_show">Паказаць адк-я апытанні</string>
+    <string name="single_ballot_really_delete">Выдаліць гэтае апытанне</string>
+    <string name="single_ballot_really_delete_text">Вы сапраўды хочаце выдаліць гэтае апытанне?  Вы не зможаце аднавіць галасы.</string>
     <string name="tooltip_voip_other_party_video_on">Суразмоўца пачаў відэазванок. Націсніце тут, каб таксама ўключыць камеру.</string>
     <string name="tooltip_voip_other_party_video_disabled">Суразмоўца не выкарыстоўвае бягучую версію праграмы або не дазваляе відэазванкі.</string>
     <string name="biometrics_not_enrolled">Біяметрычныя даныя ў сістэме не рэалізаваны.</string>
@@ -1196,8 +1185,8 @@
     <string name="group_request_already_sent"><![CDATA[Вы ўжо адправілі запыт уступлення ў суполку для <b>%s</b> па гэтай спасылцы. Націсніце на запыт, каб паўтарыць.]]></string>
     <string name="group_link_none">Спасылка яшчэ не створана</string>
     <string name="group_request_confirm_send"><![CDATA[Вы збіраецеся адправіць запыт уступлення ў суполку <b>%1$s</b> яе адміністратару <b>%2$s</b>. Калі спасылка сапраўдная, вы будзеце аўтаматычна дададзены ў суполку, як толькі ваш запыт паступіць на прыладу адміністратара.]]></string>
-    <string name="really_delete_outgoing_request">Ці сапраўды выдаліць запыт(ы) уступлення ў суполку (%d)?  Звярніце ўвагу, што запыт не будзе адкліканы, і вас усё яшчэ могуць прыняць ці не прыняць у суполку, калі запыт яшчэ не разгледжаны.</string>
-    <string name="really_delete_group_request_title">Сапраўды выдаліць запыт у суполку?</string>
+    <string name="really_delete_group_request_title_singular">Выдаліць супольны запыт</string>
+    <string name="really_delete_group_request_title_plural">Выдаліць супольныя запыты</string>
     <string name="sent_to">Каму адпраўл.: %s</string>
     <string name="sent_on">Калі адпраўл.: %s</string>
     <string name="group_response">Адказ на запыт у суполку</string>
@@ -1217,7 +1206,6 @@
     <string name="link_administration_off_explain">Гэта спасылка ўжо наладжана і адпраўлена раней, змяніць яе ўласцівасці ўжо нельга. Стварыце новую спасылку з патрэбнымі ўласцівасцямі.</string>
     <string name="group_link_update_success">Спасылка паспяхова абноўлена</string>
     <string name="no_group_links">Няма спасылак на суполку. Каб стварыць спасылку на суполку, націсніце кнопку \"Дадаць\" унізе справа або актывуйце спасылку па змаўчанні ў акне звестак аб суполцы.</string>
-    <string name="really_delete_group_link">Сапраўды выдаліць спасылку або спасылкі на суполку (%d).  Карыстальнікі больш не змогуць з іх дапамогай дасылаць запыты ўступлення. Пры гэтым раней атрыманыя запыты па-ранейшаму могуць быць прыняты або адхілены.</string>
     <string name="group_links_overview_title">Спасылкі на суполку %s</string>
     <string name="group_link_invalid">Пратэрмін-а</string>
     <string name="group_link_valid">Дзейнічае</string>
@@ -1233,7 +1221,6 @@
     <string name="open_group_requests_show">Паказаць запыты ўступлення</string>
     <string name="open_group_requests_hide">Схаваць запыты ўступлення</string>
     <string name="group_request_link_already_deleted">Спасылка на суполку ўжо выдалена</string>
-    <string name="really_delete_incoming_request">Ці сапраўды выдаліць запыт(ы) у суполку (%d)? Пасля выдалення адказаць на гэтыя запыты будзе немагчыма.</string>
     <string name="incoming_group_request_no_message">Адпраўлена праз адкрытую спасылку…няма паведамлення</string>
     <string name="group_request_received_through">Праз спасылку: %s</string>
     <string name="reaccept">Пр. паўторна</string>
@@ -1242,7 +1229,7 @@
     <string name="group_link_rename">Перайм-ць</string>
     <string name="group_link_rename_tag">Новае імя</string>
     <string name="tap_here_for_more">Націсніце тут для атрым. падрабязных звестак</string>
-    <string name="another_connection_instructions">Сэрвер выявіў два ці больш падключэння з розных прылад з аднолькавым Threema ID.\n\nВыкарыстоўваць адзін і той жа Threema ID на некалькіх прыладах адначасова нельга. Новыя паведамленні дастаўляюцца толькі на прыладу, якая апошняй выканала ўваход на сэрвер.\n\nКалі вы пачалі выкарыстоўваць новую прыладу, выдаліце ​​або адключыце %s на старой прыладзе і перазапусціце новую.</string>
+    <string name="another_connection_instructions">Сэрвер выявіў два ці больш падключэння з розных прылад з аднолькавым LeOS-Messenger ID.\n\nВыкарыстоўваць адзін і той жа LeOS-Messenger ID на некалькіх прыладах адначасова нельга. Новыя паведамленні дастаўляюцца толькі на прыладу, якая апошняй выканала ўваход на сэрвер.\n\nКалі вы пачалі выкарыстоўваць новую прыладу, выдаліце ​​або адключыце %s на старой прыладзе і перазапусціце новую.</string>
     <string name="app_store_error_code">Код памылкі крамы праграм: %d</string>
     <string name="backup_restore_type"><![CDATA[Якую рэзервовую копію вы жадаеце аднавіць?  <br/><br/> <a href=%s>Больш падрабязна аб рэзервовых копіях у Threema</a>]]></string>
     <string name="data_backup_info">Аднавіць усё, у т.л. чаты</string>
@@ -1257,7 +1244,7 @@
     <string name="share_media">Падзяліцца з іншай праграмай…</string>
     <string name="group_link_administered">Апрацавана</string>
     <string name="group_link_open">Адкрыта</string>
-    <string name="group_link_share_message">Уступайце ў маю суполку Threema па гэтай спасылцы: %s</string>
+    <string name="group_link_share_message">Уступайце ў маю суполку LeOS-Messenger па гэтай спасылцы: %s</string>
     <string name="group_link_bottom_sheet_title">Сп. на суполку</string>
     <string name="group_link_bottom_sheet_desc">Дзяліцеся гэтай спасылкай з людзьмі, якіх вы жадаеце бачыць у суполцы. Даступныя пералічаныя ніжэй варыянты.</string>
     <string name="group_link_bottom_sheet_link_title">Спасылка</string>
@@ -1289,6 +1276,7 @@
     <string name="group_links_manage_menu">Кір-е спасылкамі на суполку</string>
     <string name="group_request_sent_menu">Адпраўленыя запыты ў суполку</string>
     <string name="really_delete_group_link_title">Выд-ць спасылку на суполку</string>
+    <string name="really_delete_multiple_group_links_title">Выдаліць спасылкі на суполку</string>
     <string name="qr_scan_result_dialog_title">Вынікі скан. QR-кода</string>
     <string name="scan_failure_dialog_title">Памылка сканір.</string>
     <string name="no_threema_qr_info">Гэта не QR-Code Threema. Расшыфраванае змесціва:</string>
@@ -1313,13 +1301,13 @@
     <string name="contact_update">Абнаўленне станаў кантактаў</string>
     <string name="invalid_onprem_id">Гэты ID альбо (больш) не існуе, альбо несумяшчальны з вашым ID.</string>
     <string name="enable_unknown_sources">Не ўдаецца ўстанавіць. Упэўніцеся, што для %s актываваны параметр \"Усталёўваць невядомыя праграмы\".</string>
-    <string name="threema_push">Threema Push</string>
+    <string name="threema_push">LeOS-Messenger Push</string>
     <string name="threema_push_notification_text">Націсніце, каб давед. больш</string>
-    <string name="threema_push_notification_info_text_1">Функцыя Threema Push працуе ў фонавым рэжыме, апавяшчаючы вас аб уваходных паведамленнях і званках.</string>
-    <string name="threema_push_notification_info_text_2">Праграмы не могуць працаваць у фонавым рэжыме без пастаяннага адлюстравання апавяшчэння. Адлюстроўваючы гэта апавяшчэнне, мы можам падтрымліваць працу Threema Push нават у тым выпадку, калі актыўнае карыстанне праграмай не вядзецца.</string>
+    <string name="threema_push_notification_info_text_1">Функцыя LeOS-Messenger Push працуе ў фонавым рэжыме, апавяшчаючы вас аб уваходных паведамленнях і званках.</string>
+    <string name="threema_push_notification_info_text_2">Праграмы не могуць працаваць у фонавым рэжыме без пастаяннага адлюстравання апавяшчэння. Адлюстроўваючы гэта апавяшчэнне, мы можам падтрымліваць працу LeOS-Messenger Push нават у тым выпадку, калі актыўнае карыстанне праграмай не вядзецца.</string>
     <string name="threema_push_notification_info_text_3">Калі вы ўсё роўна назіраеце такія праблемы, як затрымка атрымання або неатрыманне апавяшчэнняў, адрэгулюйце сістэмныя налады такім чынам, каб праграма магла працаваць у фонавым рэжыме без абмежаванняў, а ўсе сродкі эканоміі зарада акумулятара былі адключаныя.</string>
-    <string name="threema_push_service_description">Пастаяннае апавяшчэнне, якое адлюстроўваецца, калі функцыя Threema Push актыўная</string>
-    <string name="threema_push_activated">Функцыя Threema Safe актываваная.</string>
+    <string name="threema_push_service_description">Пастаяннае апавяшчэнне, якое адлюстроўваецца, калі функцыя LeOS-Messenger Push актыўная</string>
+    <string name="threema_push_activated">Функцыя LeOS-Messenger Safe актываваная.</string>
     <string name="add_shortcut_success">Цэтлік паспяхова створаны.</string>
     <string name="add_shortcut_error">Памылка дадання цэтліка на экран сродку запуску.</string>
     <string name="web_link">Спасылка</string>
@@ -1364,21 +1352,79 @@
     <string name="prefs_title_use_system_ringtone">Ужываць сіст. мелодыю выкліку</string>
     <string name="organization_type">Арганізацыя</string>
     <string name="permission_bluetooth_connect_required">Актывуйце дазвол \"Прылады паблізу\" для пошуку падлучаных гарнітур Bluetooth</string>
-    <string name="threema_push_start_webclient_sessions_manually">Функцыя Threema Push актыўная. Такім чынам, сеансы вэб-версіі і версіі для ПК трэба запускаць уручную.</string>
+    <string name="threema_push_start_webclient_sessions_manually">Функцыя LeOS-Messenger Push актыўная. Такім чынам, сеансы вэб-версіі і версіі для ПК трэба запускаць уручную.</string>
     <string name="tooltip_multiple_recipients_title">Навінка: некалькі атрымальнікаў</string>
     <string name="tooltip_multiple_recipients_text">Зацісніце кнопку, каб выбраць некалькі атрымальнікаў для адпраўкі ім аднаго і таго ж паведамлення.</string>
     <string name="synchronizing">Сінхранізацыя…</string>
+    <string name="forward_security">Адпраўляйце паведамленні ў рэжыме PFS</string>
+    <string name="forward_security_mode">Perfect Forward Secrecy</string>
+    <string name="forward_security_mode_none">не</string>
+    <string name="clear_forward_security">Ачысціце сеансы сакрэтнасці Perfect Forward</string>
+    <string name="forward_security_cleared">Сеансы Perfect Forward Secrecy з гэтым кантактам ачышчаны</string>
+    <string name="message_without_forward_security">Атрымана паведамленне без Perfect Forward Secrecy.  Пераканайцеся, што адпраўнік наўмысна адключыў Perfect Forward Secrecy.</string>
+    <string name="forward_security_established">Паведамленні ў гэтым чаце цяпер абаронены Perfect Forward Secrecy.</string>
+    <string name="forward_security_established_rx">Паведамленні, атрыманыя ў гэтым чаце, цяпер абаронены Perfect Forward Secrecy.  Уключыце Perfect Forward Secrecy у кантактных дадзеных, каб таксама абараніць адпраўленыя паведамленні.</string>
+    <string name="forward_security_reset">Сеанс Perfect Forward Secrecy з гэтым кантактам быў скінуты.  Гэта можа адбыцца, калі кантакт змяніў прыладу або пераўсталяваў праграму.</string>
+    <string name="forward_security_reset_simple">Сеанс Perfect Forward Secrecy з гэтым кантактам быў скінуты.</string>
+    <string name="forward_security_message_out_of_order">Паведамленне было атрымана не ўшкаджонае і не можа быць расшыфравана.</string>
     <string name="self_updater_installation_failed">Не атрымалася загрузіць абнаўленне.  Спампуйце і ўсталюйце абнаўленне з <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ўручную.</string>
     <string name="spam_first_contact">Гэты чат ад невядомага кантакту</string>
     <string name="spam_report">Паведаміць пра спам</string>
-    <string name="spam_report_dialog_explain">Калі вы працягнеце, ID і нік гэтага кантакту будуць перададзены Threema разам з вашым ID.  Змест або асабістыя даныя не адпраўляюцца.  Кантакт не будзе апавешчаны пра гэта.</string>
+    <string name="spam_report_dialog_explain">Калі вы працягнеце, ID і нік гэтага кантакту будуць перададзены LeOS-Messenger разам з вашым ID.  Змест або асабістыя даныя не адпраўляюцца.  Кантакт не будзе апавешчаны пра гэта.</string>
     <string name="spam_report_dialog_block_checkbox">Таксама заблакіруйце гэты кантакт і выдаліце ​​чат</string>
     <string name="spam_report_dialog_title">Паведаміць %s</string>
     <string name="spam_successfully_reported">Паведамляецца, што ID рассылае спам.</string>
     <string name="spam_error_reporting">Адбылася памылка падчас паведамлення пра спам: %s</string>
     <string name="spam_report_short">Справаздача</string>
-    <string name="wizard_incompatible_contact_sync_params">Устаноўлены несумяшчальныя параметры MDM.  Параметр Threema MDM th_contact_sync не можа мець значэнне true, калі ўсталявана абмежаванне карыстальніка DISALLOW_MODIFY_ACCOUNTS.  Звярніцеся да адміністратара вашай прылады.</string>
+    <string name="wizard_incompatible_contact_sync_params">Устаноўлены несумяшчальныя параметры MDM.  Параметр LeOS-Messenger MDM th_contact_sync не можа мець значэнне true, калі ўсталявана абмежаванне карыстальніка DISALLOW_MODIFY_ACCOUNTS.  Звярніцеся да адміністратара вашай прылады.</string>
     <string name="messages_cannot_be_recovered">Вы не зможаце аднавіць паведамленні.</string>
+    <string name="contact_deleted">Кантакт выдалены</string>
+    <string name="last_added_contact">Апошні дададзены</string>
+    <string name="directory_explain_text">Шукайце ў каталогу кампаніі супрацоўнікаў, якіх яшчэ няма ў вашым спісе кантактаў.</string>
+    <string name="cannot_display_location">Гэта месца не можа быць паказана.</string>
+    <string name="draw_reply">Намалюй адказ</string>
+    <string name="drawing">Маляванне</string>
+    <string name="background_color">Колер фону</string>
+    <string name="send_video_muted">Прыбраць гук з відэа</string>
+    <string name="send_without_audio">Выдаліць аўдыя</string>
+    <string name="edit_filename">Рэдагаваць імя файла</string>
+    <string name="unable_to_restore_identity_because">Немагчыма аднавіць ID. Прычына: %s</string>
+    <string name="share_with_app">Падзяліцеся з Threema</string>
+    <string name="read_phone_state_dialog_allow">Даць дазвол</string>
+    <string name="read_phone_state_dialog_disallow">Усё роўна працягнуць</string>
+    <string name="read_phone_state_dialog_never_ask_again">Больш не пытайся</string>
+    <string name="read_phone_state_dialog_title">Патрабуецца дазвол</string>
+    <string name="read_phone_state_dialog_message">Каб званкі LeOS-Messenger не перарывалі рэгулярныя званкі, патрабуецца дазвол у наладах тэлефона.  Калі гэты дазвол не дадзены, уваходны выклік LeOS-Messenger будзе гучаць, нават калі ідзе звычайны выклік.</string>
+    <string name="read_phone_state_short_message">Каб праверыць бягучыя выклікі, дайце LeOS-Messenger дазвол да налад тэлефона.</string>
+    <string name="prefs_title_read_phone_state">Даць дазвол да тэлефона</string>
+    <string name="prefs_title_hibernation">Налады не выкарыстоўваюцца</string>
+    <string name="prefs_summary_hibernation_api_32">Каб прадухіліць прыпыненне LeOS-Messenger сістэмай пасля працяглай бяздзейнасці, адключыце сістэмны параметр «Выдаліць дазволы і вызваліць месца».</string>
+    <string name="prefs_summary_hibernation_api">Каб прадухіліць прыпыненне LeOS-Messenger сістэмай пасля працяглай бяздзейнасці, адключыце сістэмны параметр «Прыпыніць дзейнасць праграмы, калі яна не выкарыстоўваецца».</string>
+    <string name="unable_to_fetch_configuration">Немагчыма атрымаць дадзеныя з сервера.  Паўтарыце спробу пазней.</string>
+    <string name="rogue_device_warning">Сервер выявіў злучэнне з іншай прылады з такім жа ID Threema.\n\nКалі вы тым часам не выкарыстоўвалі свой ідэнтыфікатар LeOS-Messenger на іншай прыладзе або са старой версіяй праграмы, звярніцеся ў службу падтрымкі і, калі магчыма, адпраўце файл журнала.</string>
+    <string name="fetch2_failure">Збой сінхранізацыі з серверам забеспячэння.</string>
+    <string name="no_members_support_group_calls">У гэтай суполцы няма іншых удзельнікаў, якія могуць адказваць на супольныя выклікі</string>
+    <string name="group_calls">Супольныя званкі</string>
+    <string name="prefs_title_group_calls_enable">Уключыць супольныя выклікі</string>
+    <string name="group_no_members">Гэтая суполка не змяшчае іншых удзельнікаў</string>
+    <string name="group_call">Супольны званок</string>
+    <string name="checking_compatibility">Праверка сумяшчальнасці…</string>
+    <string name="group_call_mic_permission_rationale">Для выканання супольных выклікаў вы павінны дазволіць %s доступ да мікрафона ў «наладах».</string>
+    <string name="group_call_camera_permission_rationale">Каб іншыя ўдзельнікі маглі бачыць ваш відарыс, вы павінны дазволіць %s доступ да камеры ў «наладах».</string>
+    <string name="settings">Налады</string>
+    <string name="leave">Пакінуць</string>
+    <string name="fs_key_mismatch">несупадзенне ключоў</string>
+    <string name="tap_to_resend">Націсніце, каб адправіць яшчэ раз</string>
+    <string name="group_calls_tooltip_title">Новае: супольныя званкі</string>
+    <string name="group_calls_tooltip_text">Націсніце тут, каб запрасіць усіх удзельнікаў суполкі далучыцца да размовы. Усе удзельнікі суполкі атрымаюць апавяшчэнне і змогуць вырашыць, жадаюць яны далучыцца да размовы ці не.</string>
+    <string name="prefs_title_calls">Бяспечныя званкі</string>
+    <string name="prefs_sum_group_calls_vibration">Выберыце, ці трэба вібраваць пры пачатку супольнага выкліку</string>
+    <string name="forward_security_mode_4dh">Поўны</string>
+    <string name="forward_security_mode_2dh">Аднабаковы</string>
+    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) абараняе запісанае паведамленне ад дэшыфравання заднім лікам, нават калі доўгатэрміновы ключ шыфравання скампраметаваны.\n\nОпцыю можна ўключыць, калі праграма з абодвух бакоў падтрымлівае PFS.</string>
+    <string name="group_call_inactivity_left">Суполкавы выклік пакінуты з-за бяздзейнасці</string>
+    <string name="missing_permission_external_storage">Немагчыма скапіяваць файл. Паспрабуйце наступныя крокі:\n 1. Адкрыйце праграму налад.\n 2. Перайдзіце ў раздзел «Праграмы» і абярыце «Доступ да спецыяльных праграм».\n 3. Націсніце на «Доступ да ўсіх файлаў».\n 4. Націсніце на тры кропкі ў правым верхнім куце і абярыце «Паказаць сістэму».\n 5. Націсніце на «Знешняе сховішча» і пераканайцеся, што «Дазволены доступ для кіравання ўсімі файламі».\n 6. Паспрабуйце яшчэ раз аднавіць рэзервовую копію.</string>
+    <string name="forward_security_downgraded_status_message">Гэты кантакт пачаў выкарыстоўваць версію праграмы, якая не падтрымлівае Perfect Forward Secrecy.  З гэтага часу паведамленні будуць адпраўляцца без PFS.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d кантактаў</item>
         <item quantity="many">%d кантакты</item>
@@ -1386,9 +1432,9 @@
         <item quantity="other">%d кантактаў</item>
     </plurals>
     <plurals name="really_delete_thread_message">
-        <item quantity="one">Вы сапраўды хочаце выдаліць %d чат?</item>
         <item quantity="few">Вы сапраўды хочаце выдаліць %d чат?</item>
         <item quantity="many">Вы сапраўды хочаце выдаліць %d чат?</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %d чат?</item>
         <item quantity="other">Вы сапраўды хочаце выдаліць %d чат?</item>
     </plurals>
     <plurals name="sending_message_failed">
@@ -1402,5 +1448,113 @@
         <item quantity="many">Выбрана відарысы %d</item>
         <item quantity="one">Выбрана відарысаў %d</item>
         <item quantity="other">Выбрана %d відарысаў</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Паведамленне скапіявана</item>
+        <item quantity="other">Паведамленні скапіяваны</item>
+        <item quantity="few">Зыходная мова не ўтрымлівае гэтай формы множнага ліку</item>
+        <item quantity="many">Зыходная мова не ўтрымлівае гэтай формы множнага ліку</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="few">%d новых паведамленняў</item>
+        <item quantity="many">%d новых паведамленняў</item>
+        <item quantity="one">%d новае паведамленне</item>
+        <item quantity="other">%d новых паведамленняў</item>
+    </plurals>
+    <plurals name="file_saved">
+        <item quantity="few">%d файлы паспяхова захаваны.</item>
+        <item quantity="many">%d файлы паспяхова захаваны.</item>
+        <item quantity="one">%d файл паспяхова захаваны.</item>
+        <item quantity="other">%d файлы паспяхова захаваны.</item>
+    </plurals>
+    <plurals name="ballot_really_delete">
+        <item quantity="few">Выдаліць апытанні</item>
+        <item quantity="many">Выдаліць апытанні</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Выдаліць апытанне</item>
+        <item quantity="other">Выдаліць апытанні</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="few">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
+        <item quantity="many">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %1$d апытанне? Вы не зможаце аднавіць галасы.</item>
+        <item quantity="other">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="few">%d паведамленні выдалены</item>
+        <item quantity="many">%d паведамленні выдалены</item>
+        <item quantity="one">%d паведамленне выдалена</item>
+        <item quantity="other">%d паведамленні выдалены</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="few">На працягу %d гадзін</item>
+        <item quantity="many">На працягу %d гадзін</item>
+        <item quantity="one">На %d гадзіну</item>
+        <item quantity="other">На працягу %d гадзін</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="few">Немагчыма выдаліць %d кантакты, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
+        <item quantity="many">Немагчыма выдаліць %d кантакты, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
+        <item quantity="one">%d кантакт не можа быць выдалены, таму што ён усё яшчэ ўваходзіць у суполку.</item>
+        <item quantity="other">Немагчыма выдаліць %d кантакты, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
+    </plurals>
+    <plurals name="message_archived">
+        <item quantity="few">%d чатаў заархівавана</item>
+        <item quantity="many">%d чатаў заархівавана</item>
+        <item quantity="one">%d чат заархіваваны</item>
+        <item quantity="other">%d чатаў заархівавана</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="few">%d сеансаў працуе</item>
+        <item quantity="many">%d сеансаў працуе</item>
+        <item quantity="one">%d сеанс працуе</item>
+        <item quantity="other">%d сеансаў працуе</item>
+    </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="few">Мала</item>
+        <item quantity="many">Многа</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Адзін</item>
+        <item quantity="other">Іншае</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="few">Вы сапраўды хочаце выдаліць %d супольныя запыты?
+ Вы не можаце адказваць на запыты пасля выдалення.</item>
+        <item quantity="many">Вы сапраўды хочаце выдаліць %d супольныя запыты?
+ Вы не можаце адказваць на запыты пасля выдалення.</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %d супольны запыт?
+ Вы не можаце адказваць на запыты пасля выдалення.</item>
+        <item quantity="other">Вы сапраўды хочаце выдаліць %d супольныя запыты?
+ Вы не можаце адказваць на запыты пасля выдалення.</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="few">Вы сапраўды жадаеце выдаліць %d спасылкі на суполку?
+ Людзі больш не змогуць праз яго адпраўляць запыты.
+ Раней атрыманыя запыты ўсё яшчэ могуць быць прыняты або адхілены.</item>
+        <item quantity="many">Вы сапраўды жадаеце выдаліць %d спасылкі на суполку?
+ Людзі больш не змогуць праз яго адпраўляць запыты.
+ Раней атрыманыя запыты ўсё яшчэ могуць быць прыняты або адхілены.</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %d спасылку на суполку?
+ Людзі больш не змогуць праз яго адпраўляць запыты.
+ Раней атрыманыя запыты ўсё яшчэ могуць быць прыняты або адхілены.</item>
+        <item quantity="other">Вы сапраўды жадаеце выдаліць %d спасылкі на суполку?
+ Людзі больш не змогуць праз яго адпраўляць запыты.
+ Раней атрыманыя запыты ўсё яшчэ могуць быць прыняты або адхілены.</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="few">%d чатаў выдалена.</item>
+        <item quantity="many">%d чаты выдалены.</item>
+        <item quantity="one">%d чат выдалены.</item>
+        <item quantity="other">%d чатаў выдалена.</item>
+    </plurals>
+    <plurals name="forward_security_messages_skipped">
+        <item quantity="few">%d паведамленняў было страчана пасля апошняга паведамлення.</item>
+        <item quantity="many">%d паведамленняў было страчана пасля апошняга паведамлення.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Адно паведамленне было страчана пасля апошняга паведамлення.</item>
+        <item quantity="other">%d паведамленні былі страчаны з моманту апошняга паведамлення.</item>
+    </plurals>
+    <plurals name="delete_messages">
+        <item quantity="few">Выдаліць %d паведамленні на гэтай прыладзе?</item>
+        <item quantity="many">Выдаліць %d паведамленні на гэтай прыладзе?</item>
+        <item quantity="one">Выдаліць %d паведамленне на гэтай прыладзе?</item>
+        <item quantity="other">Выдаліць %d паведамленняў на гэтай прыладзе?</item>
     </plurals>
 </resources>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,13 +23,15 @@ package ch.threema.app.managers;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
 
+import java.util.Date;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.BackupChatService;
@@ -125,6 +127,11 @@ import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DeviceIdUtil;
+import ch.threema.app.utils.ForwardSecurityStatusSender;
+import ch.threema.app.voip.groupcall.GroupCallManager;
+import ch.threema.app.voip.groupcall.GroupCallManagerImpl;
+import ch.threema.app.voip.groupcall.sfu.SfuConnection;
+import ch.threema.app.voip.groupcall.sfu.SfuConnectionImpl;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.webclient.manager.WebClientServiceManager;
 import ch.threema.app.webclient.services.ServicesContainer;
@@ -135,9 +142,13 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
+import ch.threema.domain.stores.DHSessionStoreInterface;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.SQLDHSessionStore;
+import ch.threema.storage.models.MessageState;
 
 public class ServiceManager {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ServiceManager");
@@ -195,21 +206,26 @@ public class ServiceManager {
 	private ThreemaSafeService threemaSafeService;
 	private RingtoneService ringtoneService;
 	private BackupChatService backupChatService;
+	@NonNull
 	private final DatabaseServiceNew databaseServiceNew;
 	private SensorService sensorService;
 	private VoipStateService voipStateService;
+	private GroupCallManager groupCallManager;
+	private SfuConnection sfuConnection;
 	private BrowserDetectionService browserDetectionService;
 	private ConversationTagServiceImpl conversationTagService;
 	private ServerAddressProviderService serverAddressProviderService;
 
 	private WebClientServiceManager webClientServiceManager;
 
+	private DHSessionStoreInterface dhSessionStore;
+	private ForwardSecurityMessageProcessor forwardSecurityMessageProcessor;
 	private SymmetricEncryptionService symmetricEncryptionService;
 
 	private EmojiService emojiService;
 
 	public ServiceManager(ThreemaConnection connection,
-						  DatabaseServiceNew databaseServiceNew,
+						  @NonNull DatabaseServiceNew databaseServiceNew,
 						  IdentityStore identityStore,
 						  PreferenceStoreInterface preferenceStore,
 						  MasterKey masterKey,
@@ -317,7 +333,10 @@ public class ServiceManager {
 					this.getBallotService(),
 					this.getFileService(),
 					this.getNotificationService(),
-					this.getVoipStateService());
+					this.getVoipStateService(),
+					this.getForwardSecurityMessageProcessor(),
+					this.getGroupCallManager()
+		);
 		}
 		return this.messageProcessor;
 	}
@@ -388,6 +407,7 @@ public class ServiceManager {
 		return this.userService;
 	}
 
+	@NonNull
 	public ContactService getContactService() throws MasterKeyLockedException, FileSystemNotPresentException {
 		if (this.contactService == null) {
 			if(this.masterKey.isLocked()) {
@@ -413,7 +433,8 @@ public class ServiceManager {
 					this.getApiService(),
 					this.getWallpaperService(),
 					this.getLicenseService(),
-					this.getAPIConnector());
+					this.getAPIConnector(),
+					this.getForwardSecurityMessageProcessor());
 		}
 
 		return this.contactService;
@@ -439,7 +460,8 @@ public class ServiceManager {
 					this.getDownloadService(),
 					this.getHiddenChatsListService(),
 					this.getProfilePicRecipientsService(),
-					this.getBlackListService()
+					this.getBlackListService(),
+					this.getForwardSecurityMessageProcessor()
 			);
 		}
 
@@ -518,7 +540,6 @@ public class ServiceManager {
 	public BackupRestoreDataService getBackupRestoreDataService() throws FileSystemNotPresentException {
 		if(this.backupRestoreDataService == null) {
 			this.backupRestoreDataService = new BackupRestoreDataServiceImpl(
-					this.getContext(),
 					this.getFileService());
 		}
 
@@ -974,8 +995,45 @@ public class ServiceManager {
 		return this.voipStateService;
 	}
 
+	@NonNull
 	public DatabaseServiceNew getDatabaseServiceNew() {
 		return this.databaseServiceNew;
+	}
+
+	public DHSessionStoreInterface getDHSessionStore() throws MasterKeyLockedException {
+		if (this.dhSessionStore == null) {
+			this.dhSessionStore = new SQLDHSessionStore(this.getContext(), this.masterKey.getKey());
+		}
+		return this.dhSessionStore;
+	}
+
+	public ForwardSecurityMessageProcessor getForwardSecurityMessageProcessor() throws MasterKeyLockedException {
+		if (!ConfigUtils.isForwardSecurityEnabled()) {
+			return null;
+		}
+
+		if (this.forwardSecurityMessageProcessor == null) {
+			this.forwardSecurityMessageProcessor = new ForwardSecurityMessageProcessor(
+				this.getDHSessionStore(),
+				this.getContactStore(),
+				this.getIdentityStore(),
+				this.getMessageQueue(),
+				(sender, rejectedApiMessageId) -> {
+					this.messageService.updateMessageStateForOutgoingMessage(rejectedApiMessageId, MessageState.FS_KEY_MISMATCH, new Date());
+			}
+			);
+
+			try {
+				this.forwardSecurityMessageProcessor.addStatusListener(new ForwardSecurityStatusSender(
+					this.getContactService(),
+					this.getMessageService(),
+					this.getAPIConnector()
+				));
+			} catch (ThreemaException e) {
+				logger.error("Exception while adding FS status listener", e);
+			}
+		}
+		return this.forwardSecurityMessageProcessor;
 	}
 
 	public @NonNull
@@ -1000,5 +1058,33 @@ public class ServiceManager {
 			);
 		}
 		return emojiService;
+	}
+
+	public @NonNull GroupCallManager getGroupCallManager() throws ThreemaException {
+		if (groupCallManager == null) {
+			groupCallManager = new GroupCallManagerImpl(
+				getContext().getApplicationContext(),
+				getDatabaseServiceNew(),
+				getGroupService(),
+				getContactService(),
+				getPreferenceService(),
+				getMessageService(),
+				getGroupMessagingService(),
+				getNotificationService(),
+				getSfuConnection()
+			);
+		}
+		return groupCallManager;
+	}
+
+	public @NonNull SfuConnection getSfuConnection() {
+		if (sfuConnection == null) {
+			sfuConnection = new SfuConnectionImpl(
+				getAPIConnector(),
+				getIdentityStore(),
+				ThreemaApplication.getAppVersion()
+			);
+		}
+		return sfuConnection;
 	}
 }

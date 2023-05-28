@@ -54,6 +54,7 @@
 	<string name="preferences__exportlog" translatable="false">pref_key_exportlog</string>
 	<string name="preferences__lockout_deadline" translatable="false">pref_key_lock_deadline</string>
 	<string name="preferences__lockout_timeout" translatable="false">pref_key_lock_timeout</string>
+	<string name="preferences__lockout_attempts" translatable="false">pref_key_lock_attempts</string>
 	<string name="preferences__wizard_running" translatable="false">pref_wizard_running</string>
 	<string name="preferences__push_token" translatable="false">pref_push_token</string>
 	<string name="preferences__gif_autoplay" translatable="false">pref_gif_autoplay</string>
@@ -122,6 +123,7 @@
 	<string name="preferences__threema_safe_server_password" translatable="false">pref_threema_safe_server_password</string>
 	<string name="preferences__threema_safe_backup_date" translatable="false">pref_threema_safe_backup_date</string>
 	<string name="preferences__threema_safe_error_code" translatable="false">pref_threema_safe_error_code</string>
+	<string name="preferences__threema_safe_create_error_date" translatable="false">pref_threema_safe_error_date</string>
 	<string name="preferences__threema_safe_enabled" translatable="false">pref_threema_safe_enabled</string>
 	<string name="preferences__background_data" translatable="false">pref_background_data</string>
 	<string name="preferences__threema_safe_server_retention" translatable="false">pref_safe_server_retention</string>
@@ -134,6 +136,7 @@
 	<string name="preferences__noti_channel_chat_seq" translatable="false">pref_nchan_chat_seq</string>
 	<string name="preferences__noti_channel_chat_update_seq" translatable="false">pref_nchan_update_seq</string>
 	<string name="preferences__noti_channel_voip_seq" translatable="false">pref_nchan_voip_seq</string>
+	<string name="preferences__noti_channel_gc_seq" translatable="false">pref_nchan_gc_seq</string>
 	<string name="preferences__tooltip_export_id_shown" translatable="false">pref_tooltip_export_id_shown</string>
 	<string name="preferences__token_sent_date" translatable="false">pref_token_sent_date</string>
 	<string name="preferences__work_directory_enabled" translatable="false">pref_work_directory_enabled</string>
@@ -184,4 +187,16 @@
 	<string name="preferences__use_system_ringtone" translatable="false">pref_use_system_ringtone</string>
 	<string name="preferences__tooltip_multi_recipients" translatable="false">pref_tooltip_multi_recipients</string>
 	<string name="preferences__quote_drafts" translatable="false">pref_quote_drafts</string>
+	<string name="preferences__enable_read_phone_state_permission_request" translatable="false">pref_read_phone_state_permission_request</string>
+	<string name="preferences__grant_read_phone_state_permission" translatable="false">pref_read_phone_state</string>
+	<string name="preferences__hibernation_mode" translatable="false">pref_hibernation_mode</string>
+	<string name="preferences__group_calls_enable" translatable="false">pref_group_calls_enable</string>
+	<string name="preferences__tooltip_gc_camera" translatable="false">pref_tooltip_gc_camera</string>
+	<string name="preferences__group_call_send_init" translatable="false">pref_gc_send_init</string>
+	<string name="preferences__group_call_skip_delay" translatable="false">pref_gc_skip_delay</string>
+	<string name="preferences__group_calls_tooltip_shown" translatable="false">pref_gc_tooltip_shown</string>
+	<string name="preferences__group_calls_ringtone" translatable="false">pref_gc_ringtone</string>
+	<string name="preferences__group_calls_vibration" translatable="false">pref_gc_vibration</string>
+    <string name="preferences__group_calls_use_system_ringtone" translatable="false">pref_gc_use_system_ringtone</string>
+	<string name="preferences__device_cookie" translatable="false">device_cookie</string>
 </resources>

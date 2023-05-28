@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -50,7 +50,9 @@ import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -64,6 +66,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 	private static final String DIALOG_TAG_PROGRESS = "tpr";
 	private static final String DIALOG_TAG_FORGOT_ID = "li";
 	private static final String DIALOG_TAG_ADVANCED = "adv";
+	private static final String DIALOG_TAG_WORK_SYNC = "workSync";
 
 	private ThreemaSafeService threemaSafeService;
 
@@ -248,17 +251,32 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_PROGRESS, true);
 
 				if (failureMessage == null) {
-					SimpleStringAlertDialog.newInstance(R.string.restore_success_body,
-							Build.VERSION.SDK_INT <= Build.VERSION_CODES.P ?
-									R.string.android_backup_restart_threema :
-									R.string.safe_backup_tap_to_restart,
-							true).show(getSupportFragmentManager(), "d");
-					try {
-						serviceManager.startConnection();
-					} catch (ThreemaException e) {
-						logger.error("Exception", e);
+					if (ConfigUtils.isWorkBuild()) {
+						GenericProgressDialog.newInstance(R.string.work_data_sync_desc,
+							R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC);
+
+						WorkSyncWorker.Companion.performOneTimeWorkSync(
+							WizardSafeRestoreActivity.this,
+							() -> {
+								// On success
+								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
+								onSuccessfulRestore();
+							},
+							() -> {
+								// On fail
+								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
+								RuntimeUtil.runOnUiThread(() -> Toast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
+								logger.info("Unable to post work request for fetch2");
+								try {
+									userService.removeIdentity();
+								} catch (Exception e) {
+									logger.error("Unable to remove identity", e);
+								}
+								finishAndRemoveTask();
+							});
+					} else {
+						onSuccessfulRestore();
 					}
-					ConfigUtils.scheduleAppRestart(getApplicationContext(), 3000, getApplicationContext().getString(R.string.ipv6_restart_now));
 				} else {
 					Toast.makeText(WizardSafeRestoreActivity.this, getString(R.string.safe_restore_failed) + ". " + failureMessage, Toast.LENGTH_LONG).show();
 					if (safeMDMConfig.isRestoreForced()) {
@@ -267,6 +285,20 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 				}
 			}
 		}.execute();
+	}
+
+	private void onSuccessfulRestore() {
+		SimpleStringAlertDialog.newInstance(R.string.restore_success_body,
+			Build.VERSION.SDK_INT <= Build.VERSION_CODES.P ?
+				R.string.android_backup_restart_threema :
+				R.string.safe_backup_tap_to_restart,
+			true).show(getSupportFragmentManager(), "d");
+		try {
+			serviceManager.startConnection();
+		} catch (ThreemaException e) {
+			logger.error("Exception", e);
+		}
+		ConfigUtils.scheduleAppRestart(getApplicationContext(), 3000, getApplicationContext().getString(R.string.ipv6_restart_now));
 	}
 
 	@Override

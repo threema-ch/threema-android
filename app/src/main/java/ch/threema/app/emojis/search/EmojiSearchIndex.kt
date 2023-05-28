@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -43,7 +43,7 @@ class EmojiSearchIndex(
 	private var searchIndexVersion = preferenceService.emojiSearchIndexVersion
 
 	private companion object {
-		const val SEARCH_INDEX_VERSION = 5
+		const val SEARCH_INDEX_VERSION = 6
 		const val INDEX_FILE_EXTENSION = ".csv"
 		const val EMOJI_ORDERS_FILE = "orders.csv"
 		const val EMOJI_DIVERSITIES_FILE = "diversities.csv"

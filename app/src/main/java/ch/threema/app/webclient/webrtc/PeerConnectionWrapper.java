@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2022 Threema GmbH
+ * Copyright (c) 2016-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -148,7 +148,8 @@ public class PeerConnectionWrapper {
 		logger.info("Initialize WebRTC PeerConnection");
 
 		// Initialise WebRTC for Android
-		WebRTCUtil.initializeAndroidGlobals(appContext);
+		WebRTCUtil.initializePeerConnectionFactory(
+			appContext, WebRTCUtil.Scope.CALL_OR_GROUP_CALL_OR_WEB_CLIENT);
 		this.factory = getPeerConnectionFactory();
 
 		// Store handler, listener, task and set message handler

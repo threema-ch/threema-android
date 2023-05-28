@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,10 +21,10 @@
 
 package ch.threema.storage.models.data;
 
+import androidx.annotation.IntDef;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
 
 @IntDef({
 	MessageContentsType.UNDEFINED,
@@ -39,7 +39,9 @@ import androidx.annotation.IntDef;
 	MessageContentsType.FILE,
 	MessageContentsType.VOIP_STATUS,
 	MessageContentsType.GIF,
-	MessageContentsType.CONTACT
+	MessageContentsType.CONTACT,
+	MessageContentsType.GROUP_CALL_STATUS,
+	MessageContentsType.FORWARD_SECURITY_STATUS
 })
 
 @Retention(RetentionPolicy.SOURCE)
@@ -57,5 +59,7 @@ public @interface MessageContentsType {
 	int VOIP_STATUS = 10;
 	int GIF = 11;
 	int CONTACT = 12;
+	int GROUP_CALL_STATUS = 13;
+	int FORWARD_SECURITY_STATUS = 14;
 }
 

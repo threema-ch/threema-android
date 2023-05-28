@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -112,6 +112,26 @@ public class ServerAddressProviderOnPrem implements ServerAddressProvider {
 			return onPremConfigWeb.getUrl();
 		}
 		throw new ThreemaException("Unable to fetch Threema Web server url");
+	}
+
+	@Override
+	public String getWebOverrideSaltyRtcHost() throws ThreemaException {
+		OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
+
+		if (onPremConfigWeb != null) {
+			return onPremConfigWeb.getOverrideSaltyRtcHost();
+		}
+		return null;
+	}
+
+	@Override
+	public int getWebOverrideSaltyRtcPort() throws ThreemaException {
+		OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
+
+		if (onPremConfigWeb != null) {
+			return onPremConfigWeb.getOverrideSaltyRtcPort();
+		}
+		return 0;
 	}
 
 	private OnPremConfigFetcher getOnPremConfigFetcher() throws ThreemaException {

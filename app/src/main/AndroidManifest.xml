@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="ch.threema.app"
-          android:installLocation="internalOnly"
-          android:testOnly="false"
-          tools:ignore="GoogleAppIndexingWarning">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:installLocation="internalOnly"
+	android:testOnly="false"
+	tools:ignore="GoogleAppIndexingWarning">
 
 	<supports-screens
 		android:anyDensity="true"
@@ -61,25 +60,24 @@
 
 	<!-- Access to audio settings and bluetooth for voice calls -->
 	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-	<uses-permission android:name="android.permission.BLUETOOTH"/>
+	<uses-permission
+		android:name="android.permission.BLUETOOTH"
+		android:maxSdkVersion="30" />
 	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 
 	<!-- Permissions for biometric unlocking  -->
 	<uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 	<uses-permission android:name="android.permission.USE_FINGERPRINT"/>
 
-	<!-- licence stuff -->
-	<uses-permission android:name="com.android.vending.CHECK_LICENSE"/>
-
-	<!-- launcher shortcuts -->
+	<!-- Launcher shortcuts -->
 	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
 
-	<!-- for huawei launcher badges -->
+	<!-- Huawei launcher badges -->
 	<uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE"/>
 	<uses-permission android:name="com.huawei.android.launcher.permission.READ_SETTINGS"/>
 	<uses-permission android:name="com.huawei.android.launcher.permission.WRITE_SETTINGS"/>
 
-	<!-- sony launcher badges -->
+	<!-- Sony launcher badges -->
 	<uses-permission android:name="com.sonymobile.home.permission.PROVIDER_INSERT_BADGE"/>
 
 	<!-- only for fastlane test -->
@@ -158,23 +156,24 @@
 
 	<application
 		android:name=".ThreemaApplication"
-		android:allowBackup="true"
+		android:allowBackup="false"
 		android:extractNativeLibs="true"
 		android:hardwareAccelerated="true"
-		android:icon="@mipmap/ic_launcher_leos"
-		android:roundIcon="@mipmap/ic_launcher_leos"
-		android:label="LeOS-Messenger"
+		android:icon="@mipmap/ic_launcher"
+		android:roundIcon="@mipmap/ic_launcher"
+		android:label="@string/app_name"
 		android:largeHeap="true"
 		android:resizeableActivity="true"
 		android:supportsRtl="false"
 		android:theme="@style/AppBaseTheme"
 		android:usesCleartextTraffic="false"
 		android:networkSecurityConfig="@xml/network_security_config"
-		android:manageSpaceActivity=".activities.StorageManagementActivity"
+		android:manageSpaceActivity="ch.threema.app.activities.StorageManagementActivity"
 		android:allowAudioPlaybackCapture="false"
 		android:appCategory="social"
 		android:hasFragileUserData="true"
-		tools:replace="android:supportsRtl,android:allowBackup">
+		tools:replace="android:supportsRtl,android:allowBackup"
+		android:dataExtractionRules="@xml/data_extraction_rules">
 		<!-- Note: The "replace" entry above should be kept to ensure that a library cannot accidentally
 		override rtl or backup support. Unfortunately the linter warning cannot be silenced. -->
 		<meta-data
@@ -233,7 +232,7 @@
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="uiMode"
 			android:exported="true">
-			<intent-filter android:label="@string/app_name">
+			<intent-filter android:label="@string/share_with_app">
 				<action android:name="android.intent.action.SEND"/>
 				<category android:name="android.intent.category.DEFAULT"/>
 				<data android:mimeType="text/plain"/>
@@ -243,7 +242,7 @@
 				<data android:mimeType="application/*"/>
 				<data android:mimeType="*/*"/>
 			</intent-filter>
-			<intent-filter android:label="@string/app_name">
+			<intent-filter android:label="@string/share_with_app">
 				<action android:name="android.intent.action.SEND_MULTIPLE"/>
 				<category android:name="android.intent.category.DEFAULT"/>
 				<data android:mimeType="*/*"/>
@@ -259,7 +258,9 @@
 					android:host="compose"
 					android:scheme="${uriScheme}"/>
 			</intent-filter>
-			<intent-filter android:label="@string/app_name">
+			<intent-filter
+				android:label="@string/app_name"
+				android:autoVerify="true">
 				<action android:name="android.intent.action.VIEW"/>
 				<action android:name="android.intent.action.SENDTO"/>
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -287,14 +288,16 @@
 		</activity>
 		<activity
 			android:name=".preference.SettingsNotificationsDummyActivity"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.NOTIFICATION_PREFERENCES"/>
 			</intent-filter>
 		</activity>
 		<activity
-			android:name=".preference.SettingsMediaDummyActivity">
+			android:name=".preference.SettingsMediaDummyActivity"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MANAGE_NETWORK_USAGE"/>
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -312,7 +315,8 @@
 			android:name=".activities.AddContactActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:launchMode="singleTask"
-			android:theme="@style/Theme.Threema.Translucent">
+			android:theme="@style/Theme.Threema.Translucent"
+			android:exported="true">
 			<intent-filter android:label="@string/app_name">
 				<action android:name="android.intent.action.VIEW"/>
 
@@ -323,7 +327,9 @@
 					android:host="add"
 					android:scheme="${uriScheme}"/>
 			</intent-filter>
-			<intent-filter android:label="@string/app_name">
+			<intent-filter
+				android:label="@string/app_name"
+				android:autoVerify="true">
 				<action android:name="android.intent.action.VIEW"/>
 
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -366,8 +372,12 @@
 			android:launchMode="singleTop"
 			android:screenOrientation="sensorPortrait"
 			android:theme="@style/Theme.Threema.Wizard"
-			android:windowSoftInputMode="adjustPan">
-			<intent-filter android:priority="1000">
+			android:windowSoftInputMode="adjustPan"
+			android:exported="true">
+			<intent-filter
+				android:label="@string/app_name"
+				android:priority="1000"
+				android:autoVerify="true">
 				<action android:name="android.intent.action.VIEW"/>
 
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -545,7 +555,7 @@
 			android:name=".activities.ImagePaintActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:theme="@style/Theme.Threema.LowProfile"
-			android:windowSoftInputMode="stateHidden|adjustPan"/>
+			android:windowSoftInputMode="stateHidden|adjustResize"/>
 
 		<!-- Webclient activities -->
 		<activity
@@ -579,7 +589,8 @@
 			android:excludeFromRecents="true"
 			android:screenOrientation="sensorPortrait"
 			android:theme="@style/Theme.Threema.TransparentStatusbar"
-			tools:ignore="LockedOrientationActivity">
+			tools:ignore="LockedOrientationActivity"
+			android:exported="true">
 			<intent-filter android:label="@string/threema_call">
 				<action android:name="android.intent.action.VIEW"/>
 
@@ -587,14 +598,22 @@
 			</intent-filter>
 		</activity>
 		<activity
+			android:name=".voip.activities.GroupCallActivity"
+			android:exported="false"
+			android:launchMode="singleTask"
+			android:taskAffinity=".voip.activities.GroupCallActivity"
+			android:excludeFromRecents="true"
+			android:theme="@style/Theme.Threema.TransparentStatusbar_Fullscreen" />
+		<activity
 			android:name=".voip.activities.CallActionIntentActivity"
 			android:screenOrientation="sensorPortrait"
-			tools:ignore="LockedOrientationActivity">
+			tools:ignore="LockedOrientationActivity"
+			android:exported="true">
 			<intent-filter tools:ignore="AppLinkUrlError">
 				<!-- Handle calls from phonebook -->
 				<action android:name="android.intent.action.VIEW"/>
 				<category android:name="android.intent.category.DEFAULT"/>
-				<data android:mimeType="vnd.android.cursor.item/vnd.ch.threema.app.call"/>
+				<data android:mimeType="${callMimeType}"/>
 			</intent-filter>
 		</activity>
 		<activity
@@ -649,7 +668,8 @@
 			android:windowSoftInputMode="stateAlwaysHidden"/>
 		<activity
 			android:name=".activities.SMSVerificationLinkActivity"
-			android:theme="@android:style/Theme.NoDisplay">
+			android:theme="@android:style/Theme.NoDisplay"
+			android:exported="true" >
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW"/>
 
@@ -740,8 +760,11 @@
 			android:name=".activities.AppLinksActivity"
 			android:autoRemoveFromRecents="true"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:theme="@style/Theme.Threema.Transparent.Background">
-			<intent-filter android:autoVerify="true">
+			android:theme="@style/Theme.Threema.Transparent.Background"
+			android:exported="true">
+			<intent-filter
+				android:label="@string/app_name"
+				android:autoVerify="true">
 				<action android:name="android.intent.action.VIEW"/>
 
 				<category android:name="android.intent.category.DEFAULT"/>
@@ -859,11 +882,6 @@
 			android:permission="android.permission.BIND_REMOTEVIEWS"
 			android:exported="false"/>
 		<service
-			android:name=".services.ConnectivityChangeService"
-			android:permission="android.permission.BIND_JOB_SERVICE"
-			android:enabled="true"
-			android:exported="false"/>
-		<service
 			android:name=".services.RestrictBackgroundChangedService"
 			android:permission="android.permission.BIND_JOB_SERVICE"
 			android:enabled="true"
@@ -890,14 +908,6 @@
 			android:exported="false"
 			android:label="WebClientService"/>
 		<service
-			android:name=".threemasafe.ThreemaSafeUploadJobService"
-			android:permission="android.permission.BIND_JOB_SERVICE"
-			android:exported="false"/>
-		<service
-			android:name=".threemasafe.ThreemaSafeUploadService"
-			android:permission="android.permission.BIND_JOB_SERVICE"
-			android:exported="false"/>
-		<service
 			android:name=".webclient.services.StopSessionsAndroidService"
 			android:enabled="true"
 			android:exported="false"/>
@@ -906,19 +916,21 @@
 			android:enabled="true"
 			android:exported="false"/>
 		<service
-			android:name=".jobs.WorkSyncJobService"
-			android:enabled="true"
-			android:exported="false"
-			android:permission="android.permission.BIND_JOB_SERVICE"/>
-		<service
-			android:name=".jobs.WorkSyncService"
-			android:enabled="true"
-			android:exported="false"
-			android:permission="android.permission.BIND_JOB_SERVICE"/>
-		<service
 			android:name=".services.ThreemaPushService"
 			android:exported="false"
 			android:label="ThreemaPushService"/>
+
+		<service
+			android:name=".voip.groupcall.service.GroupCallService"
+			android:exported="false"
+			android:foregroundServiceType="phoneCall" />
+
+		<!-- Set the exported attribute for the sharetarget (needed for target api 31) -->
+		<service
+			android:name="androidx.sharetarget.ChooserTargetServiceCompat"
+			android:exported="true"
+			tools:node="merge">
+		</service>
 
 		<!-- broadcast receivers -->
 		<receiver
@@ -936,7 +948,8 @@
 		</receiver>
 		<receiver android:name=".receivers.AlarmManagerBroadcastReceiver">
 		</receiver>
-		<receiver android:name=".receivers.WidgetProvider">
+		<receiver android:name=".receivers.WidgetProvider"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
 			</intent-filter>
@@ -945,7 +958,8 @@
 				android:name="android.appwidget.provider"
 				android:resource="@xml/appwidget_info"/>
 		</receiver>
-		<receiver android:name=".receivers.UpdateReceiver">
+		<receiver android:name=".receivers.UpdateReceiver"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
 			</intent-filter>
@@ -955,12 +969,14 @@
 			android:exported="false">
 		</receiver>
 		<receiver android:name=".receivers.FetchMessagesBroadcastReceiver"/>
-		<receiver android:name=".voip.receivers.VoipMediaButtonReceiver">
+		<receiver android:name=".voip.receivers.VoipMediaButtonReceiver"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MEDIA_BUTTON"/>
 			</intent-filter>
 		</receiver>
-		<receiver android:name=".receivers.PowerSaveModeReceiver">
+		<receiver android:name=".receivers.PowerSaveModeReceiver"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.os.action.POWER_SAVE_MODE_CHANGED"/>
 			</intent-filter>

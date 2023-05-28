@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/ongoing_call_layout"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:background="?attr/colorAccent"
-	android:clickable="false"
-	android:orientation="vertical"
-	android:visibility="visible"
-	android:animateLayoutChanges="true">
+<merge xmlns:tools="http://schemas.android.com/tools"
+	xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<RelativeLayout
 		android:id="@+id/button_layout"
@@ -20,8 +11,8 @@
 		android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
 		android:paddingLeft="16dp"
 		android:paddingRight="16dp"
-		android:paddingTop="8dp"
-		android:paddingBottom="8dp">
+		android:paddingTop="4dp"
+		android:paddingBottom="4dp">
 
 		<RelativeLayout
 			android:id="@+id/call_container"
@@ -30,65 +21,73 @@
 			android:layout_toLeftOf="@+id/call_hangup"
 			android:layout_alignParentLeft="true"
 			android:layout_centerVertical="true"
+			android:gravity="center_vertical"
 			android:background="?android:selectableItemBackground"
 			android:clickable="true"
 			android:paddingTop="8dp"
 			android:paddingBottom="8dp">
 
-			<ImageView
-				android:id="@+id/call_image"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentLeft="true"
-				android:layout_centerVertical="true"
-				android:layout_marginRight="8dp"
-				android:contentDescription="@string/call_ongoing"
-				app:srcCompat="@drawable/ic_phone_locked_outline"
-				app:tint="@android:color/white" />
-
 			<TextView
 				android:id="@+id/call_text"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_toRightOf="@+id/call_image"
-				android:layout_toLeftOf="@+id/call_duration"
-				android:layout_centerVertical="true"
 				android:layout_marginRight="8dp"
-				android:text="@string/call_ongoing"
-				android:textColor="@android:color/white"
+				android:layout_alignParentLeft="true"
+				android:text="@string/voip_gc_ongoing_call"
+				android:textColor="?attr/textColorPrimary"
 				android:textSize="16sp"
 				android:ellipsize="end"
 				android:maxLines="1"/>
+
 
 			<Chronometer
 				android:id="@+id/call_duration"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_alignParentRight="true"
-				android:layout_marginRight="8dp"
-				android:layout_centerVertical="true"
+				android:layout_alignParentLeft="true"
+				android:layout_below="@+id/call_text"
 				android:maxLines="1"
-				android:textColor="@android:color/white"
-				android:textSize="16sp" />
+				android:textColor="?attr/textColorSecondary"
+				android:textSize="12sp" />
+
+			<TextView
+				android:id="@+id/ongoing_call_divider"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_toRightOf="@id/call_duration"
+				android:layout_alignWithParentIfMissing="true"
+				android:layout_below="@+id/call_text"
+				android:layout_marginLeft="2dp"
+				android:layout_marginRight="2dp"
+				android:text="|"
+				android:maxLines="1"
+				android:textColor="?attr/textColorSecondary"
+				android:textSize="12sp"
+				android:visibility="gone"
+				tools:ignore="HardcodedText" />
+
+			<TextView
+				android:id="@+id/participants_count"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/call_text"
+				android:layout_toRightOf="@+id/ongoing_call_divider"
+				android:layout_alignWithParentIfMissing="true"
+				android:maxLines="1"
+				android:textColor="?attr/textColorSecondary"
+				android:textSize="12sp" />
 
 		</RelativeLayout>
 
-		<TextView
+		<com.google.android.material.chip.Chip
 			android:id="@+id/call_hangup"
+			style="@style/Threema.Chip.Action.Material"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:background="?android:selectableItemBackground"
-			android:clickable="true"
 			android:layout_alignParentRight="true"
 			android:layout_centerVertical="true"
-			android:paddingTop="8dp"
-			android:paddingBottom="8dp"
-			android:text="@string/voip_hangup"
-			android:textAllCaps="true"
-			android:textColor="@android:color/white"
-			android:textSize="15sp"
-			android:textStyle="bold"/>
+			android:text="@string/voip_hangup" />
 
 	</RelativeLayout>
 
-</LinearLayout>
+</merge>

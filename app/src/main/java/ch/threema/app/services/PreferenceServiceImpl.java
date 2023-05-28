@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,6 +25,10 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,11 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import ch.threema.app.BuildConfig;
-import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.notifications.NotificationUtil;
@@ -73,6 +73,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public PreferenceServiceImpl(Context context, PreferenceStoreInterface preferenceStore) {
 		this.context = context;
 		this.preferenceStore = preferenceStore;
+	}
+
+	@Nullable
+	private Uri ringtoneKeyToUri(@StringRes int ringtoneKey) {
+		String ringtone = this.preferenceStore.getString(this.getKeyName(ringtoneKey));
+		if (ringtone != null && ringtone.length() > 0 && !"null".equals(ringtone)) {
+			return Uri.parse(ringtone);
+		}
+		return null;
 	}
 
 	@Override
@@ -117,34 +126,32 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public Uri getNotificationSound() {
-		String ringTone = this.preferenceStore.getString(this.getKeyName(R.string.preferences__notification_sound));
-		if (ringTone != null && ringTone.length() > 0) {
-			return Uri.parse(ringTone);
-		}
-		return null;
+		return ringtoneKeyToUri(R.string.preferences__notification_sound);
 	}
 
 	@Override
 	public Uri getGroupNotificationSound() {
-		String ringTone = this.preferenceStore.getString(this.getKeyName(R.string.preferences__group_notification_sound));
-		if (ringTone != null && ringTone.length() > 0) {
-			return Uri.parse(ringTone);
-		}
-		return null;
+		return ringtoneKeyToUri(R.string.preferences__group_notification_sound);
+	}
+
+	@Override
+	public Uri getGroupCallRingtone() {
+		return ringtoneKeyToUri(R.string.preferences__group_calls_ringtone);
 	}
 
 	@Override
 	public Uri getVoiceCallSound() {
-		String ringTone = this.preferenceStore.getString(this.getKeyName(R.string.preferences__voip_ringtone));
-		if (ringTone != null && ringTone.length() > 0 && !"null".equals(ringTone)) {
-			return Uri.parse(ringTone);
-		}
-		return null;
+		return ringtoneKeyToUri(R.string.preferences__voip_ringtone);
 	}
 
 	@Override
 	public boolean isVoiceCallVibrate() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voip_vibration));
+	}
+
+	@Override
+	public boolean isGroupCallVibrate() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_calls_vibration));
 	}
 
 	@Override
@@ -310,7 +317,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	@Deprecated
 	public LinkedList<Integer> getRecentEmojis() {
-		LinkedList<Integer> list = new LinkedList<Integer>();
+		LinkedList<Integer> list = new LinkedList<>();
 		JSONArray array = this.preferenceStore.getJSONArray(this.getKeyName(R.string.preferences__recent_emojis), false);
 		for (int i = 0; i < array.length(); i++) {
 			try {
@@ -329,7 +336,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 		if (theArray != null) {
 			return new LinkedList<>(Arrays.asList(theArray));
 		} else {
-			return new LinkedList<>(new LinkedList<String>());
+			return new LinkedList<>(new LinkedList<>());
 		}
 	}
 
@@ -427,7 +434,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 				return time;
 			}
 		} catch (NumberFormatException x) {
-
+			// ignored
 		}
 		return -1;
 	}
@@ -597,13 +604,14 @@ public class PreferenceServiceImpl implements PreferenceService {
 		);
 	}
 
+	@Override
 	public void clear() {
 		this.preferenceStore.clear();
 	}
 
 	@Override
 	public List<String[]> write() {
-		List<String[]> res = new ArrayList<String[]>();
+		List<String[]> res = new ArrayList<>();
 		Map<String, ?> values = this.preferenceStore.getAllNonCrypted();
 		Iterator<String> i = values.keySet().iterator();
 		while (i.hasNext()) {
@@ -733,10 +741,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public int getEmojiStyle() {
-		if (BuildFlavor.isLibre()) {
-			return EmojiStyle_ANDROID;
-		}
-
 		String theme = this.preferenceStore.getString(this.getKeyName(R.string.preferences__emoji_style));
 		if (theme != null && theme.length() > 0) {
 			if (Integer.valueOf(theme) == 1) {
@@ -764,6 +768,17 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public long getLockoutTimeout() {
 		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__lockout_timeout));
+	}
+
+    @Override
+    public void setLockoutAttempts(int numWrongConfirmAttempts) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__lockout_attempts), numWrongConfirmAttempts);
+
+	}
+
+	@Override
+	public int getLockoutAttempts() {
+		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__lockout_attempts));
 	}
 
 	@Override
@@ -938,6 +953,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 		this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis), diverseEmojis, false);
 	}
 
+	@Override
 	public boolean isWebClientEnabled() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__web_client_enabled));
 	}
@@ -1030,8 +1046,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__receive_profilepics));
 	}
 
-	public @NonNull
-	String getAECMode() {
+	@Override
+	@NonNull
+	public String getAECMode() {
 		String mode = this.preferenceStore.getString(this.getKeyName(R.string.preferences__voip_echocancel));
 		if ("sw".equals(mode)) {
 			return mode;
@@ -1157,13 +1174,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public boolean getIsVideoCallTooltipShown() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__video_call_tooltip_shown));
+	public boolean getIsGroupCallsTooltipShown() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_calls_tooltip_shown));
 	}
 
 	@Override
-	public void setVideoCallTooltipShown(boolean shown) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__video_call_tooltip_shown), shown);
+	public void setGroupCallsTooltipShown(boolean shown) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__group_calls_tooltip_shown), shown);
 	}
 
 	@Override
@@ -1229,6 +1246,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	@Nullable
 	public Date getThreemaSafeUploadDate() {
 		return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__threema_safe_backup_date));
 	}
@@ -1256,6 +1274,17 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public int getThreemaSafeErrorCode() {
 		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__threema_safe_error_code));
+	}
+
+	@Override
+	public void setThreemaSafeErrorDate(@Nullable Date date) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_create_error_date), date);
+	}
+
+	@Override
+	@Nullable
+	public Date getThreemaSafeErrorDate() {
+		return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__threema_safe_create_error_date));
 	}
 
 	@Override
@@ -1333,6 +1362,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__work_safe_mdm_config), true);
 	}
 
+	@Override
 	public void setWorkDirectoryEnabled(boolean enabled) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__work_directory_enabled), enabled);
 	}
@@ -1489,6 +1519,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	public boolean isGroupCallsEnabled() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_calls_enable));
+	}
+
+	@Override
 	@Nullable
 	public String getVideoCallsProfile() {
 		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__voip_video_profile));
@@ -1579,5 +1614,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void incrementMultipleRecipientsTooltipCount() {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__tooltip_multi_recipients), getMultipleRecipientsTooltipCount() + 1);
+	}
+
+	@Override
+	public boolean isGroupCallSendInitEnabled() {
+		return ConfigUtils.isTestBuild() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_call_send_init), false);
+	}
+
+	@Override
+	public boolean skipGroupCallCreateDelay() {
+		return ConfigUtils.isTestBuild() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_call_skip_delay), false);
 	}
 }

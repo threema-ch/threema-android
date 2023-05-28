@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -40,11 +40,13 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.stores.IdentityStore;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.ThreemaFeature;
@@ -72,7 +74,6 @@ import ch.threema.storage.models.data.media.FileDataModel;
 
 public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactMessageReceiver");
-	private static final Logger validationLogger = LoggingUtil.getThreemaLogger("Validation");
 
 	private final ContactModel contactModel;
 	private final ContactService contactService;
@@ -81,19 +82,22 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	private final MessageQueue messageQueue;
 	private final IdentityStore identityStore;
 	private final IdListService blackListIdentityService;
+	private final ForwardSecurityMessageProcessor fsmp;
 
 	public ContactMessageReceiver(ContactModel contactModel,
 								  ContactService contactService,
 								  DatabaseServiceNew databaseServiceNew,
 								  MessageQueue messageQueue,
 								  IdentityStore identityStore,
-								  IdListService blackListIdentityService) {
+								  IdListService blackListIdentityService,
+	                              ForwardSecurityMessageProcessor fsmp) {
 		this.contactModel = contactModel;
 		this.contactService = contactService;
 		this.databaseServiceNew = databaseServiceNew;
 		this.messageQueue = messageQueue;
 		this.identityStore = identityStore;
 		this.blackListIdentityService = blackListIdentityService;
+		this.fsmp = fsmp;
 	}
 
 	protected ContactMessageReceiver(ContactMessageReceiver contactMessageReceiver) {
@@ -103,7 +107,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 			contactMessageReceiver.databaseServiceNew,
 			contactMessageReceiver.messageQueue,
 			contactMessageReceiver.identityStore,
-			contactMessageReceiver.blackListIdentityService
+			contactMessageReceiver.blackListIdentityService,
+			contactMessageReceiver.fsmp
 		);
 		avatar = contactMessageReceiver.avatar;
 	}
@@ -148,37 +153,19 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
 	@Override
 	public boolean createBoxedTextMessage(String text, MessageModel messageModel) throws ThreemaException {
-		BoxTextMessage msg = new BoxTextMessage();
-		msg.setText(text);
-		msg.setToIdentity(contactModel.getIdentity());
+		BoxTextMessage innerMsg = new BoxTextMessage();
+		innerMsg.setText(text);
+		innerMsg.setToIdentity(this.contactModel.getIdentity());
 
-		//fix #ANDR-512
-		//save model after receiving a new message id
-		initNewAbstractMessage(messageModel, msg);
-
-		logger.info("Enqueue text message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		MessageBox boxmsg = messageQueue.enqueue(msg);
+		MessageBox boxmsg = wrapAndEnqueueMessage(innerMsg, messageModel);
 		if (boxmsg != null) {
 			messageModel.setIsQueued(true);
 			MessageId id = boxmsg.getMessageId();
 
-			logger.info("Outgoing message {} from {} to {} (type {})",
-				id,
-				boxmsg.getFromIdentity(),
-				boxmsg.getToIdentity(),
-				Utils.byteToHex((byte) msg.getType(), true, true)
-			);
-			if (validationLogger.isInfoEnabled()) {
-				validationLogger.info("> Nonce: {}", Utils.byteArrayToHexString(boxmsg.getNonce()));
-				validationLogger.info("> Data: {}", Utils.byteArrayToHexString(boxmsg.getBox()));
-				validationLogger.info("> Public key ({}): {}",
-					msg.getToIdentity(), Utils.byteArrayToHexString(contactModel.getPublicKey()));
-			}
-
 			if(id != null) {
 				messageModel.setApiMessageId(id.toString());
-				contactService.setIsHidden(msg.getToIdentity(), false);
-				contactService.setIsArchived(msg.getToIdentity(), false);
+				contactService.setIsHidden(innerMsg.getToIdentity(), false);
+				contactService.setIsArchived(innerMsg.getToIdentity(), false);
 				return true;
 			}
 		}
@@ -191,28 +178,22 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
 		LocationDataModel locationDataModel = messageModel.getLocationData();
 
-		BoxLocationMessage msg = new BoxLocationMessage();
-		msg.setLatitude(locationDataModel.getLatitude());
-		msg.setLongitude(locationDataModel.getLongitude());
-		msg.setAccuracy(locationDataModel.getAccuracy());
-		msg.setToIdentity(contactModel.getIdentity());
-		msg.setPoiName(locationDataModel.getPoi());
-		msg.setPoiAddress(locationDataModel.getAddress());
+		BoxLocationMessage innerMsg = new BoxLocationMessage();
+		innerMsg.setLatitude(locationDataModel.getLatitude());
+		innerMsg.setLongitude(locationDataModel.getLongitude());
+		innerMsg.setAccuracy(locationDataModel.getAccuracy());
+		innerMsg.setToIdentity(contactModel.getIdentity());
+		innerMsg.setPoiName(locationDataModel.getPoi());
+		innerMsg.setPoiAddress(locationDataModel.getAddress());
 
-		//fix #ANDR-512
-		//save model after receiving a new message id
-		initNewAbstractMessage(messageModel, msg);
-
-		logger.info("Enqueue location message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		MessageBox boxmsg = messageQueue.enqueue(msg);
-
+		MessageBox boxmsg = wrapAndEnqueueMessage(innerMsg, messageModel);
 		if (boxmsg != null) {
 			messageModel.setIsQueued(true);
 			MessageId id = boxmsg.getMessageId();
 			if (id!= null) {
 				messageModel.setApiMessageId(id.toString());
-				contactService.setIsHidden(msg.getToIdentity(), false);
-				contactService.setIsArchived(msg.getToIdentity(), false);
+				contactService.setIsHidden(innerMsg.getToIdentity(), false);
+				contactService.setIsArchived(innerMsg.getToIdentity(), false);
 				return true;
 			}
 		}
@@ -238,20 +219,14 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 				.setFileSize(modelFileData.getFileSize())
 				.setFileName(modelFileData.getFileName())
 				.setRenderingType(modelFileData.getRenderingType())
-				.setDescription(modelFileData.getCaption())
+				.setCaption(modelFileData.getCaption())
 				.setCorrelationId(messageModel.getCorrelationId())
 				.setMetaData(modelFileData.getMetaData());
 
 		fileMessage.setData(fileData);
 		fileMessage.setToIdentity(contactModel.getIdentity());
 
-		//fix #ANDR-512
-		//save model after receiving a new message id
-		initNewAbstractMessage(messageModel, fileMessage);
-
-		logger.info("Enqueue file message ID {} to {}",
-			fileMessage.getMessageId(), fileMessage.getToIdentity());
-		MessageBox messageBox = messageQueue.enqueue(fileMessage);
+		MessageBox messageBox = wrapAndEnqueueMessage(fileMessage, messageModel);
 		if(messageBox != null) {
 			messageModel.setIsQueued(true);
 			MessageId id = messageBox.getMessageId();
@@ -274,23 +249,18 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
 		final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
-		BallotCreateMessage msg = new BallotCreateMessage();
-		msg.setToIdentity(contactModel.getIdentity());
-		msg.setBallotCreator(identityStore.getIdentity());
-		msg.setBallotId(ballotId);
-		msg.setData(ballotData);
+		BallotCreateMessage innerMsg = new BallotCreateMessage();
+		innerMsg.setToIdentity(contactModel.getIdentity());
+		innerMsg.setBallotCreator(identityStore.getIdentity());
+		innerMsg.setBallotId(ballotId);
+		innerMsg.setData(ballotData);
 
-		//fix #ANDR-512
-		//save model after receiving a new message id
-		initNewAbstractMessage(messageModel, msg);
-
-		logger.info("Enqueue ballot message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		MessageBox messageBox = messageQueue.enqueue(msg);
+		MessageBox messageBox = wrapAndEnqueueMessage(innerMsg, messageModel);
 		if(messageBox != null) {
 			messageModel.setIsQueued(true);
 			messageModel.setApiMessageId(messageBox.getMessageId().toString());
-			contactService.setIsHidden(msg.getToIdentity(), false);
-			contactService.setIsArchived(msg.getToIdentity(), false);
+			contactService.setIsHidden(innerMsg.getToIdentity(), false);
+			contactService.setIsArchived(innerMsg.getToIdentity(), false);
 			return true;
 		}
 		return false;
@@ -307,20 +277,19 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 			}
 		}
 
-		BallotVoteMessage msg = new BallotVoteMessage();
+		BallotVoteMessage innerMsg = new BallotVoteMessage();
 
-		msg.setBallotCreator(ballotModel.getCreatorIdentity());
-		msg.setBallotId(ballotId);
-		msg.setToIdentity(getContact().getIdentity());
+		innerMsg.setBallotCreator(ballotModel.getCreatorIdentity());
+		innerMsg.setBallotId(ballotId);
+		innerMsg.setToIdentity(getContact().getIdentity());
 		for(BallotVote v: votes) {
-			msg.getBallotVotes().add(v);
+			innerMsg.getBallotVotes().add(v);
 		}
 
-		logger.info("Enqueue ballot vote message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-		MessageBox messageBox = messageQueue.enqueue(msg);
+		MessageBox messageBox = wrapAndEnqueueMessage(innerMsg, null);
 		if (messageBox != null) {
-			contactService.setIsHidden(msg.getToIdentity(), false);
-			contactService.setIsArchived(msg.getToIdentity(), false);
+			contactService.setIsHidden(innerMsg.getToIdentity(), false);
+			contactService.setIsArchived(innerMsg.getToIdentity(), false);
 			return true;
 		}
 		return false;
@@ -332,6 +301,17 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		return databaseServiceNew.getMessageModelFactory().find(
 			contactModel.getIdentity(),
 				filter);
+	}
+
+	/**
+	 * Check if there is a call among the latest calls with the given call id.
+	 *
+	 * @param callId the call id
+	 * @param limit the maximum number of latest calls
+	 * @return {@code true} if there is a call with the given id within the latest calls, {@code false} otherwise
+	 */
+	public boolean hasVoipCallStatus(long callId, int limit) {
+		return databaseServiceNew.getMessageModelFactory().hasVoipStatusForCallId(contactModel.getIdentity(), callId, limit);
 	}
 
 	@Override
@@ -488,9 +468,42 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		if(messageModel != null
 				&& abstractMessage != null
 				&& abstractMessage.getMessageId() != null
-				&& TestUtil.empty(messageModel.getApiMessageId())) {
+				&& (TestUtil.empty(messageModel.getApiMessageId()) || messageModel.getForwardSecurityMode() != abstractMessage.getForwardSecurityMode())) {
 			messageModel.setApiMessageId(abstractMessage.getMessageId().toString());
+			messageModel.setForwardSecurityMode(abstractMessage.getForwardSecurityMode());
 			saveLocalModel(messageModel);
+		}
+	}
+
+	private MessageBox wrapAndEnqueueMessage(@NonNull AbstractMessage innerMsg, @Nullable MessageModel messageModel) throws ThreemaException {
+		// Check whether peer contact supports forward security
+		if (ConfigUtils.isForwardSecurityEnabled() &&
+			ThreemaFeature.canForwardSecurity(this.getContact().getFeatureMask()) &&
+			this.getContact().isForwardSecurityEnabled()) {
+
+			// Synchronize FS wrapping and enqueuing to ensure the order stays correct
+			synchronized (fsmp) {
+				AbstractMessage wrappedMessage = fsmp.makeMessage(this.getContact(), innerMsg);
+
+				if (messageModel != null) {
+					// Save model before enqueuing new message (fixes ANDR-512)
+					initNewAbstractMessage(messageModel, wrappedMessage);
+				}
+
+				logger.info("Enqueue FS wrapped {} message ID {} to {}", innerMsg.getClass().getSimpleName(), wrappedMessage.getMessageId(), wrappedMessage.getToIdentity());
+				return messageQueue.enqueue(wrappedMessage);
+			}
+		} else {
+			// No forward security support or not enabled
+			logger.debug("Recipient {} does not support forward security or it is not enabled", innerMsg.getToIdentity());
+
+			if (messageModel != null) {
+				// Save model before enqueuing new message (fixes ANDR-512)
+				initNewAbstractMessage(messageModel, innerMsg);
+			}
+
+			logger.info("Enqueue {} message ID {} to {}", innerMsg.getClass().getSimpleName(), innerMsg.getMessageId(), innerMsg.getToIdentity());
+			return messageQueue.enqueue(innerMsg);
 		}
 	}
 }

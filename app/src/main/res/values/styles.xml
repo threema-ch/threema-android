@@ -95,6 +95,14 @@
 		<item name="android:textSize">@dimen/chip_text_size</item>
 	</style>
 
+	<style name="Chip.MessageDetails" parent="Widget.MaterialComponents.Chip.Action">
+		<item name="ensureMinTouchTargetSize">false</item>
+		<item name="chipMinTouchTargetSize">32dp</item>
+		<item name="textEndPadding">@dimen/chip_end_padding_text_only</item>
+		<item name="android:clickable">false</item>
+		<item name="android:focusable">false</item>
+	</style>
+
 	<style name="Chip.ChatNotice.Overview" parent="Widget.MaterialComponents.Chip.Action">
 		<item name="android:textAppearance">@style/TextAppearance.Chip.ChatNotice</item>
 		<item name="chipBackgroundColor">@android:color/transparent</item>
@@ -220,6 +228,11 @@
 		<item name="cornerSizeTopRight">0dp</item>
 	</style>
 
+	<style name="Threema.ShapeAppearance.DeleteMediaItem" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">50%</item>
+	</style>
+
 	<style name="Threema.ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
 		<item name="android:background">?attr/material_toolbar_color</item>
 		<item name="titleTextAppearance">@style/TextAppearance.Toolbar.Title</item>
@@ -289,6 +302,14 @@
 
 	<style name="Threema.TextAppearance.List.SecondLine.Light" parent="Threema.TextAppearance.List.SecondLine">
 		<item name="android:fontFamily">sans-serif-light</item>
+	</style>
+
+	<style name="Threema.TextAppearance.List.SecondLine.Accent" parent="Threema.TextAppearance.List.SecondLine">
+		<item name="android:textColor">?attr/colorAccent</item>
+	</style>
+
+	<style name="Threema.TextAppearance.List.SecondLine.GroupCall" parent="Threema.TextAppearance.List.SecondLine">
+		<item name="android:textColor">@color/group_call_accent</item>
 	</style>
 
 	<style name="Threema.TextAppearance.List.ThirdLine" parent="TextAppearance.MaterialComponents.Body2">
@@ -694,6 +715,16 @@
 		<item name="chipMinHeight">36dp</item>
 	</style>
 
+	<style name="Threema.Chip.Action.Material" parent="@style/Widget.MaterialComponents.Chip.Action">
+		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip</item>
+		<item name="android:textColor">?attr/colorAccent</item>
+		<item name="chipBackgroundColor">?attr/accent_alpha</item>
+		<item name="chipCornerRadius">18dp</item>
+		<item name="chipMinHeight">36dp</item>
+		<item name="chipIconTint">?attr/colorAccent</item>
+		<item name="chipStartPadding">@dimen/chip_start_padding</item>
+	</style>
+
 	<style name="Threema.Chip.Outline.Action" parent="@style/Widget.MaterialComponents.Chip.Action">
 		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip</item>
 		<item name="android:textColor">?attr/colorAccent</item>
@@ -727,7 +758,7 @@
 	</style>
 
 	<style name="Threema.Chip.Choice" parent="@style/Widget.MaterialComponents.Chip.Choice">
---		<item name="checkedIconTint">?attr/textColorPrimary</item>
+		<item name="checkedIconTint">?attr/textColorPrimary</item>
 	</style>
 
 	<style name="Threema.OutlinedButton" parent="@style/Threema.AlertDialog.ButtonStyle.Flush"/>
@@ -814,5 +845,16 @@
 	<style name="Threema.MaterialCalendarHeaderTitle" parent="@style/Widget.MaterialComponents.MaterialCalendar.HeaderTitle">
 		<item name="android:textAppearance">@style/Threema.Text.Overline</item>
 		<item name="autoSizeTextType">none</item>
+	</style>
+
+	<style name="SeekBar.Audio" parent="@style/Widget.AppCompat.SeekBar">
+		<item name="android:progressBackgroundTint">@android:color/transparent</item>
+		<item name="android:progressTint">@android:color/transparent</item>
+		<item name="android:thumb">@drawable/seekbar_thumb_audio</item>
+	</style>
+
+	<style name="Threema.GroupCallParticipantRoundedCorner" parent="ShapeAppearance.MaterialComponents">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">@dimen/media_attach_button_radius</item>
 	</style>
 </resources>

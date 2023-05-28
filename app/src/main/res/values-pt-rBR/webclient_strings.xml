@@ -16,14 +16,14 @@
     <string name="webclient_disposable">descartável</string>
     <string name="webclient_unnamed_session">Sessão sem nome</string>
     <string name="webclient_session_remove">Remover sessão</string>
-    <string name="webclient_welcome_title">Converse de seu PC!</string>
-    <string name="webclient_welcome_explain">O aplicativo para desktop e o cliente web possibilitam que você envie mensagens do seu PC ou notebook enquanto fornece acesso completo a todos os seus contatos, mídia e conversas, inclusive conversas antigas.\n\n<b>Toda a comunicação entre telefone e PC é integralmente criptografada de ponta a ponta</b> e usa uma conexão direta caso seu celular e PC estejam na mesma rede.\n\nObservação: o aplicativo para desktop/cliente web pode causar uso adicional da bateria enquanto estiver ativo. Você pode ativar ou desativa-lo a qualquer momento.</string>
+    <string name="webclient_welcome_title">Converse no seu computador!</string>
+    <string name="webclient_welcome_explain">O aplicativo para desktop e o cliente web permitem que você converse a partir do seu PC ou notebook, com acesso completo a todos os seus contatos, mídia e conversas, inclusive conversas antigas.\n\n<b>Toda a comunicação entre o telefone e o computador é integralmente criptografada de ponta a ponta</b> e usa uma conexão direta caso seu celular e PC estejam na mesma rede.\n\nObservação: o aplicativo para desktop / cliente web pode causar uso adicional da bateria enquanto estiver ativo. Você pode ativar ou desativar o app a qualquer momento.</string>
     <string name="webclient_launch">Abra o aplicativo para desktop/cliente web agora</string>
     <string name="webclient_qr_scan_message">Escaneie o código QR exibido no PC.</string>
     <string name="webclient_invalid_qr_code">Código QR inválido</string>
     <string name="webclient_new_connection_toast">Sessão de desktop/web iniciada</string>
     <string name="webclient_protocol_error">Erro de protocolo</string>
-    <string name="webclient_protocol_version_to_old">Seu aplicativo não suporta esta versão do aplicativo para desktop/cliente web. Baixe a versão mais recente do Threema para Android.</string>
+    <string name="webclient_protocol_version_to_old">Seu aplicativo não suporta esta versão do aplicativo para desktop/cliente web. Baixe a versão mais recente do LeOS-Messenger para Android.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">Seu aplicativo não suporta essa versão do aplicativo para desktop/cliente web. Baixe a versão mais recente do aplicativo para desktop ou peça para o administrador do seu cliente web para instalar a versão mais recente.</string>
     <string name="webclient_protocol_version_too_new_threema">Seu aplicativo não suporta essa versão do aplicativo para desktop/cliente web. Use a versão mais nova do aplicativo para desktop/cliente web.</string>
     <string name="webclient_session_already_exists">A sessão do código QR que você escaneou já existe. Recarregue o aplicativo para desktop/cliente web e tente novamente.</string>

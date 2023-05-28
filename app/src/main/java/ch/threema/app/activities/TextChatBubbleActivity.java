@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -50,6 +50,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
@@ -213,6 +214,16 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 
 		// display message status
 		StateBitmapUtil.getInstance().setStateDrawable(messageModel, findViewById(R.id.delivered_indicator), true);
+
+		// mock a composemessageholder
+		ComposeMessageHolder holder = new ComposeMessageHolder();
+		holder.groupAckContainer = footerView.findViewById(R.id.groupack_container);
+		holder.groupAckThumbsUpCount = footerView.findViewById(R.id.groupack_thumbsup_count);
+		holder.groupAckThumbsDownCount = footerView.findViewById(R.id.groupack_thumbsdown_count);
+		holder.groupAckThumbsUpImage = footerView.findViewById(R.id.groupack_thumbsup);
+		holder.groupAckThumbsDownImage = footerView.findViewById(R.id.groupack_thumbsdown);
+		holder.deliveredIndicator = findViewById(R.id.delivered_indicator);
+		StateBitmapUtil.getInstance().setGroupAckCount(messageModel, holder);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			// do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508

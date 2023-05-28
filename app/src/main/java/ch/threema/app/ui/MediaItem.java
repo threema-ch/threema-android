@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,22 +21,32 @@
 
 package ch.threema.app.ui;
 
+import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
+import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
+
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import org.slf4j.Logger;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.BitmapUtil;
+import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
-
-import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
-import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
 
 /**
  * This class holds all meta information about a media item to be sent
@@ -45,7 +55,7 @@ public class MediaItem implements Parcelable {
 	@MediaType private int type;
 	private Uri originalUri; // Uri of original media item before creating a local copy
 	private Uri uri;
-	private int rotation;
+	private int rotation; // Rotation in Degrees
 	private int exifRotation;
 	private long durationMs;
 	private String caption;
@@ -59,6 +69,10 @@ public class MediaItem implements Parcelable {
 	@PreferenceService.VideoSize private int videoSize; // desired video scale factor
 	private String filename;
 	private boolean deleteAfterUse;
+	private boolean isEdited;
+	private boolean muted;
+
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaItem");
 
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE, TYPE_TEXT, TYPE_LOCATION})
@@ -74,6 +88,54 @@ public class MediaItem implements Parcelable {
 	public static final int TYPE_LOCATION = 8;
 
 	public static final long TIME_UNDEFINED = Long.MIN_VALUE;
+
+	public static ArrayList<MediaItem> getFromUris(List<Uri> uris, Context context) {
+		return getFromUris(uris, context, false);
+	}
+
+	public static ArrayList<MediaItem> getFromUris(@NonNull List<Uri> uris, @NonNull Context context, boolean asFile) {
+		ArrayList<MediaItem> mediaItems = new ArrayList<>(uris.size());
+
+		for (Uri uri: uris) {
+			mediaItems.add(getFromUri(uri, context, asFile));
+		}
+
+		return mediaItems;
+	}
+
+	@NonNull
+	public static MediaItem getFromUri(@NonNull Uri uri, @NonNull Context context, boolean asFile) {
+		String mimeType = FileUtil.getMimeTypeFromUri(context, uri);
+		Uri originalUri = uri;
+		try {
+			// log the number of permissions due to limit https://commonsware.com/blog/2020/06/13/count-your-saf-uri-permission-grants.html
+			logger.info("Number of taken persistable uri permissions {}", context.getContentResolver().getPersistedUriPermissions().size());
+			context.getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		} catch (Exception e) {
+			logger.info(e.getMessage());
+			uri = FileUtil.getFileUri(uri);
+		}
+
+		MediaItem mediaItem = new MediaItem(uri, mimeType, null);
+
+		// Set exif orientation
+		BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(context, uri);
+		mediaItem.setExifRotation((int) exifOrientation.getRotation());
+		mediaItem.setExifFlip(exifOrientation.getFlip());
+
+		mediaItem.setOriginalUri(originalUri);
+		mediaItem.setFilename(FileUtil.getFilenameFromUri(context.getContentResolver(), mediaItem));
+		if (asFile) {
+			if (MimeUtil.isImageFile(mimeType)) {
+				mediaItem.setImageScale(PreferenceService.ImageScale_SEND_AS_FILE);
+			} else if (MimeUtil.isVideoFile(mimeType)) {
+				mediaItem.setVideoSize(PreferenceService.VideoSize_SEND_AS_FILE);
+			} else {
+				mediaItem.setType(TYPE_FILE);
+			}
+		}
+		return mediaItem;
+	}
 
 	public MediaItem(Uri uri, @MediaType int type) {
 		init();
@@ -119,6 +181,7 @@ public class MediaItem implements Parcelable {
 		this.videoSize = VideoSize_DEFAULT;
 		this.filename = null;
 		this.deleteAfterUse = false;
+		isEdited = false;
 	}
 
 
@@ -140,6 +203,7 @@ public class MediaItem implements Parcelable {
 		filename = in.readString();
 		deleteAfterUse = in.readInt() != 0;
 		originalUri = in.readParcelable(Uri.class.getClassLoader());
+		isEdited = in.readInt() != 0;
 	}
 
 	@Override
@@ -161,6 +225,7 @@ public class MediaItem implements Parcelable {
 		dest.writeString(filename);
 		dest.writeInt(deleteAfterUse ? 1 : 0);
 		dest.writeParcelable(originalUri, flags);
+		dest.writeInt(isEdited ? 1 : 0);
 	}
 
 	@Override
@@ -168,7 +233,7 @@ public class MediaItem implements Parcelable {
 		return 0;
 	}
 
-	public static final Creator<MediaItem> CREATOR = new Creator<MediaItem>() {
+	public static final Creator<MediaItem> CREATOR = new Creator<>() {
 		@Override
 		public MediaItem createFromParcel(Parcel in) {
 			return new MediaItem(in);
@@ -229,12 +294,26 @@ public class MediaItem implements Parcelable {
 			durationMs;
 	}
 
+	/**
+	 * Return true, if the video needs to be trimmed
+	 */
+	public boolean needsTrimming() {
+		return getDurationMs() != getTrimmedDurationMs();
+	}
+
 	public void setDurationMs(long durationMs) {
 		this.durationMs = durationMs;
 	}
 
 	public @Nullable String getCaption() {
 		return caption;
+	}
+
+	public @Nullable String getTrimmedCaption() {
+		if (caption != null) {
+			return caption.trim();
+		}
+		return null;
 	}
 
 	public void setCaption(@Nullable String caption) {
@@ -348,4 +427,61 @@ public class MediaItem implements Parcelable {
 	public void setOriginalUri(Uri originalUri) {
 		this.originalUri = originalUri;
 	}
+
+	/**
+	 * Return true, if the picture has been edited (painted or cropped)
+	 */
+	public boolean isEdited() {
+		return isEdited;
+	}
+
+	/**
+	 * Mark this media item as edited (painted or cropped)
+	 */
+	public void setEdited(boolean edited) {
+		this.isEdited = edited;
+	}
+
+	/**
+	 * Return true, if the video should be sent without audio
+	 */
+	public boolean isMuted() {
+		return muted;
+	}
+
+	/**
+	 * Set flag to remove the audio before sending
+	 */
+	public void setMuted(boolean muted) {
+		this.muted = muted;
+	}
+
+	/**
+	 * Return true if the media item has been modified. For images this includes: crop, painted,
+	 * rotated, or flipped. For videos this includes: different start time, different end time
+	 */
+	public boolean hasChanges() {
+		if (type == TYPE_IMAGE) {
+			return isEdited() || rotation != 0 || flip != BitmapUtil.FLIP_NONE;
+		} else if (type == TYPE_VIDEO) {
+			return needsTrimming() || muted;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Return true if the media item will be sent as file. This is the case for files, or for images
+	 * or videos with the quality set to file.
+	 */
+	public boolean sendAsFile() {
+		if (type == TYPE_VIDEO || type == TYPE_VIDEO_CAM) {
+			return getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE;
+		} else if (type == TYPE_IMAGE || type == TYPE_IMAGE_CAM) {
+			return getImageScale() == PreferenceService.ImageScale_SEND_AS_FILE;
+		} else {
+			return type == TYPE_FILE || type == TYPE_GIF;
+		}
+	}
+
 }

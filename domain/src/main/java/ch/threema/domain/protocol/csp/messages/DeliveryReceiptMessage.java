@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -49,6 +49,15 @@ public class DeliveryReceiptMessage extends AbstractMessage {
 	@Override
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_DELIVERY_RECEIPT;
+	}
+
+	private boolean isReaction() {
+		return DeliveryReceiptUtils.isReaction(this.receiptType);
+	}
+
+	@Override
+	public boolean allowUserProfileDistribution() {
+		return this.isReaction();
 	}
 
 	@Override

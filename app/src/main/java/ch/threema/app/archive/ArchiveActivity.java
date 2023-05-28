@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -30,12 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.appbar.MaterialToolbar;
-
-import org.slf4j.Logger;
-
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.SearchView;
@@ -43,6 +37,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.google.android.material.appbar.MaterialToolbar;
+
+import org.slf4j.Logger;
+
+import java.util.List;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
@@ -300,7 +301,8 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 	@SuppressLint("StringFormatInvalid")
 	private void delete(List<ConversationModel> checkedItems) {
 		int num = checkedItems.size();
-		String confirmText = getResources().getQuantityString(R.plurals.really_delete_thread_message, num, num) + " " + getString(R.string.messages_cannot_be_recovered);
+		String confirmText = ConfigUtils.getSafeQuantityString(this, R.plurals.really_delete_thread_message, num, num) + " " + getString(R.string.messages_cannot_be_recovered);
+		String reallyDeleteThreadText = getResources().getString(num > 1 ? R.string.really_delete_multiple_threads : R.string.really_delete_thread);
 
 		if (num == 1 && checkedItems.get(0).isGroupConversation()) {
 			if (groupService.isGroupMember(checkedItems.get(0).getGroup())) {
@@ -309,11 +311,12 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 				} else {
 					confirmText = getString(R.string.delete_group_message);
 				}
+				reallyDeleteThreadText = getResources().getString((R.string.action_delete_group));
 			}
 		}
 
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(
-			R.string.really_delete_thread,
+			reallyDeleteThreadText,
 			confirmText,
 			R.string.ok,
 			R.string.cancel);

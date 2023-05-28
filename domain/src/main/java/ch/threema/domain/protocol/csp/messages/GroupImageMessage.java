@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -35,7 +35,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  *
  * The contents are referenced by the {@code blobId}, the file {@code size} in bytes,
  * and the symmetric encryption key to be used when decrypting the image blob.
+ *
+ *  @Deprecated Use GroupFileMessage instead
  */
+@Deprecated
 public class GroupImageMessage extends AbstractGroupMessage {
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupImageMessage");
@@ -59,7 +62,7 @@ public class GroupImageMessage extends AbstractGroupMessage {
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 
@@ -68,7 +71,7 @@ public class GroupImageMessage extends AbstractGroupMessage {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			bos.write(blobId);
 			EndianUtils.writeSwappedInteger(bos, size);
 			bos.write(encryptionKey);

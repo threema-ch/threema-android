@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-
-IMPORTANT NOTE!
-
-There's an alternative XML file in layout!
-
--->
 <com.google.android.material.card.MaterialCardView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/list_item"
 	android:layout_width="match_parent"
 	android:layout_height="@dimen/messagelist_item_height"
@@ -21,7 +15,7 @@ There's an alternative XML file in layout!
 	app:cardPreventCornerOverlap="false"
 	app:cardUseCompatPadding="false">
 
-	<RelativeLayout
+	<androidx.constraintlayout.widget.ConstraintLayout
 		android:id="@+id/list_item_fg"
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/messagelist_item_height"
@@ -33,18 +27,23 @@ There's an alternative XML file in layout!
 			android:id="@+id/avatar_view"
 			android:layout_width="@dimen/avatar_size_small"
 			android:layout_height="@dimen/avatar_size_small"
-			android:layout_centerVertical="true"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
 			android:clickable="true"
 			android:contentDescription="@string/show_contact"
 			android:foreground="@drawable/selector_avatar"
 			/>
 
 		<RelativeLayout
-			android:layout_width="wrap_content"
+			android:id="@+id/content_container"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
-			android:layout_marginLeft="@dimen/messagelist_avatar_padding"
-			android:layout_toRightOf="@id/avatar_view">
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintStart_toEndOf="@id/avatar_view"
+			app:layout_constraintEnd_toStartOf="@id/join_group_call_button"
+			app:layout_constraintBottom_toBottomOf="parent"
+			android:layout_marginLeft="@dimen/messagelist_avatar_padding">
 
 			<ImageView
 				android:id="@+id/mute_status"
@@ -67,7 +66,6 @@ There's an alternative XML file in layout!
 				android:layout_toRightOf="@+id/mute_status"
 				android:ellipsize="end"
 				android:singleLine="true"
-				android:text="Title"
 				android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
 
 			<ImageView
@@ -140,8 +138,7 @@ There's an alternative XML file in layout!
 					android:layout_marginTop="2sp"
 					android:layout_toLeftOf="@id/delivery"
 					android:singleLine="true"
-					android:text="Date"
-					android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine"/>
+					android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine" />
 
 				<ch.threema.app.emojis.EmojiTextView
 					android:id="@+id/group_member_name"
@@ -150,7 +147,6 @@ There's an alternative XML file in layout!
 					android:layout_alignBaseline="@id/date"
 					android:layout_alignWithParentIfMissing="true"
 					android:singleLine="true"
-					android:text="Member: "
 					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
 
 				<ImageView
@@ -159,10 +155,10 @@ There's an alternative XML file in layout!
 					android:layout_height="wrap_content"
 					android:layout_alignBottom="@id/date"
 					android:layout_alignWithParentIfMissing="true"
-					android:layout_marginLeft="-5dp"
+					android:layout_marginLeft="-3dp"
 					android:layout_marginRight="-3dp"
 					android:layout_toRightOf="@id/group_member_name"
-					android:tint="?attr/textColorSecondary"
+					app:tint="?attr/textColorSecondary"
 					android:visibility="visible"
 					app:srcCompat="@drawable/ic_attachment"/>
 
@@ -177,14 +173,68 @@ There's an alternative XML file in layout!
 					android:layout_toRightOf="@id/attachment"
 					android:ellipsize="none"
 					android:singleLine="true"
-					android:text="Subject"
 					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
+
+			</RelativeLayout>
+
+			<RelativeLayout
+				android:id="@+id/ongoing_group_call_container"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/from"
+				android:visibility="gone">
+
+				<Chronometer
+					android:id="@+id/group_call_duration"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignWithParentIfMissing="true"
+					android:layout_alignBaseline="@+id/ongoing_call_text"
+					android:maxLines="1"
+					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall" />
+
+				<TextView
+					android:id="@+id/ongoing_call_divider"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignBaseline="@+id/ongoing_call_text"
+					android:layout_toRightOf="@id/group_call_duration"
+					android:layout_marginLeft="2dp"
+					android:layout_marginRight="2dp"
+					android:maxLines="1"
+					android:text="|"
+					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall"
+					tools:ignore="HardcodedText" />
+
+				<TextView
+					android:id="@+id/ongoing_call_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/voip_gc_ongoing_call"
+					android:layout_toRightOf="@id/ongoing_call_divider"
+					android:ellipsize="end"
+					android:maxLines="1"
+					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall" />
 
 			</RelativeLayout>
 
 		</RelativeLayout>
 
-	</RelativeLayout>
+		<com.google.android.material.chip.Chip
+			style="@style/Threema.Chip.Action.Material"
+			android:id="@+id/join_group_call_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/voip_gc_join_call"
+			android:visibility="gone"
+			app:chipEndPadding="@dimen/chip_start_padding"
+			app:chipMinHeight="@dimen/avatar_size_small"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintStart_toEndOf="@id/content_container"
+			app:layout_constraintEnd_toEndOf="parent" />
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<LinearLayout
 		android:layout_width="wrap_content"

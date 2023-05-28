@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,6 +25,7 @@ import android.content.Context;
 
 import ch.threema.app.R;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
@@ -39,12 +40,7 @@ public class FirstUnreadChatAdapterDecorator extends ChatAdapterDecorator {
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		String s;
-		if (this.unreadMessagesCount > 1) {
-			s = getContext().getString(R.string.unread_messages, unreadMessagesCount);
-		} else {
-			s = getContext().getString(R.string.one_unread_message);
-		}
+		String s = ConfigUtils.getSafeQuantityString(getContext(), R.plurals.unread_messages, unreadMessagesCount, unreadMessagesCount);
 
 		if(this.showHide(holder.bodyTextView, !TestUtil.empty(s))) {
 			holder.bodyTextView.setText(s);

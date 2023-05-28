@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -58,8 +58,8 @@ import ch.threema.storage.models.ContactModel;
 
 public class DNDUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DNDUtil");
-	private DeadlineListService mutedChatsListService;
-	private DeadlineListService mentionOnlyChatsListService;
+	private final DeadlineListService mutedChatsListService;
+	private final DeadlineListService mentionOnlyChatsListService;
 	private final IdentityStore identityStore;
 	private final Context context;
 
@@ -99,6 +99,34 @@ public class DNDUtil {
 	}
 
 	/**
+	 * Returns true if the chat for the provided MessageReceiver is set to mention only at this time.
+	 * @param messageReceiver MessageReceiver to check for DND status
+	 * @return true if the chat is muted
+	 */
+	public boolean isMentionOnlyChat(@Nullable MessageReceiver<?> messageReceiver) {
+		if (messageReceiver instanceof  GroupMessageReceiver) {
+			String uniqueId = messageReceiver.getUniqueIdString();
+			return mentionOnlyChatsListService != null && mentionOnlyChatsListService.has(uniqueId);
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true if the chat for the provided MessageReceiver is muted at this time. This does
+	 * NOT check for work hours (use {@link #isMutedWork()} for this) or mention-only chats (use
+	 * {@link #isMentionOnlyChat(MessageReceiver)} to check this).
+	 * @param messageReceiver MessageReceiver to check for DND status
+	 * @return true if the chat is muted
+	 */
+	public boolean isMutedChat(@Nullable MessageReceiver<?> messageReceiver) {
+		if (messageReceiver != null) {
+			String uniqueId = messageReceiver.getUniqueIdString();
+			return mutedChatsListService != null && mutedChatsListService.has(uniqueId);
+		}
+		return false;
+	}
+
+	/**
 	 * Returns true if the chat for the provided MessageReceiver is permanently or temporarily muted AT THIS TIME and
 	 * no intrusive notification should be shown for an incoming message
 	 * If a message text is provided it is checked for possible mentions - group messages only
@@ -114,20 +142,16 @@ public class DNDUtil {
 	public boolean isMutedPrivate(MessageReceiver messageReceiver, CharSequence rawMessageText) {
 		String uniqueId = messageReceiver.getUniqueIdString();
 
-		if (this.mutedChatsListService != null &&
-				this.mutedChatsListService.has(uniqueId)) {
+		if (isMutedChat(messageReceiver)) {
 			// user has set DND option on this chat
 			logger.info("Chat is muted");
 			return true;
 		}
-		if (messageReceiver instanceof GroupMessageReceiver) {
-			if (this.mentionOnlyChatsListService != null &&
-					this.mentionOnlyChatsListService.has(uniqueId)) {
-				// user has "DND except when mentioned" option enabled on this chat
-				logger.info("Chat is mention only");
-				// user is not mentioned => mute
-				return !isUserMentioned(rawMessageText);
-			}
+		if (isMentionOnlyChat(messageReceiver)) {
+			// user has "DND except when mentioned" option enabled on this chat
+			logger.info("Chat is mention only");
+			// user is not mentioned => mute
+			return !isUserMentioned(rawMessageText);
 		}
 		return false;
 	}

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -62,5 +62,16 @@ public class VoipCallAnswerMessage extends VoipMessage {
 	@Override
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_VOIP_CALL_ANSWER;
+	}
+
+	@Override
+	public boolean allowUserProfileDistribution() {
+		// True only if we're accepting the call
+		final VoipCallAnswerData answerData = this.callAnswerData;
+		if (answerData == null) {
+			return false;
+		}
+		final Byte action = answerData.getAction();
+		return action != null && action == VoipCallAnswerData.Action.ACCEPT;
 	}
 }

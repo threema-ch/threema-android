@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -375,8 +375,13 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 		final SparseBooleanArray checkedItems = listView.getCheckedItemPositions();
 		final int numCheckedItems = listView.getCheckedItemCount();
 
-		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.ballot_really_delete, getString(R.string.ballot_really_delete_text, numCheckedItems), R.string.ok, R.string.cancel);
-		dialog.setData(checkedItems);
+		GenericAlertDialog dialog = GenericAlertDialog.newInstance(
+			ConfigUtils.getSafeQuantityString(this, R.plurals.ballot_really_delete, numCheckedItems, numCheckedItems),
+			ConfigUtils.getSafeQuantityString(this, R.plurals.ballot_really_delete_text, numCheckedItems, numCheckedItems),
+			R.string.ok,
+			R.string.cancel
+		);
+			dialog.setData(checkedItems);
 		dialog.show(getSupportFragmentManager(), DIALOG_TAG_BALLOT_DELETE);
 	}
 

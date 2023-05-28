@@ -15,12 +15,15 @@
     <string name="new_wizard_welcome">Welkom bij Threema OnPrem!</string>
     <string name="new_wizard_info_fingerprint">Door je vinger te bewegen maak je een willekeurig patroon aan (entropie) dat wordt gebruikt om een sleutelpaar aan te maken dat wordt gekoppeld aan je nieuwe unieke Threema ID. Het sleutelpaar bestaat uit een <b>openbare sleutel</b> die aan je contactpersonen wordt gestuurd en een <b>privésleutel</b> die veilig wordt opgeslagen op je telefoon. Je contactpersonen kunnen boodschappen aan jou versleutelen met je openbare sleutel. Alleen de eigenaar van de privésleutel (jij) en niemand anders kan deze boodschappen ontcijferen.</string>
     <string name="new_wizard_info_link">Als je je telefoonnummer en e-mailadres opgeeft, kan Threema OnPrem helpen je vrienden automatisch te vinden als jij in hun lijst van contactpersonen staat. E-mailadressen worden versleuteld (hashed) op onze server opgeslagen. Je kunt deze stap ook overslaan als je Threema OnPrem liever anoniem gebruikt.</string>
+    <string name="new_wizard_info_sync_contacts">Als u deze optie inschakelt, past Threema OnPrem eenrichtigs-versleuteling (hashfunctie) toe op uw e-mailadressen en telefoonnummers, voordat ze naar de server worden verstuurd om naar overeenkomende contactpersonen te zoeken. De gegevens worden alleen in het geheugen bewaard en nooit op de server opgeslagen.</string>
     <string name="threema_contact">Contactpersoon Threema OnPrem</string>
     <string name="menu_about">Over Threema OnPrem</string>
     <string name="list_theme_light">Licht</string>
     <string name="list_theme_dark">Donker (standaard)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Voor privégebruikers</a>]]></string>
-	<string name="directory_search">ディレクトリ内検索</string>
+    <string name="directory_search">ディレクトリ内検索</string>
     <string name="directory_title">会社のディレクトリ</string>
     <string name="directory_empty_view_text">あなたの会社のThreema OnPremユーザーのディレクトリで検索を開始するには、少なくとも3文字を入力してください。</string>
+    <string name="safe_configure_server_explain">Bewaar uw Threema Safe back-up op de server van uw organisatie of geef een andere back-up server op.</string>
+    <string name="share_with_app">Met Threema OnPrem delen</string>
 </resources>

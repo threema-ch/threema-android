@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -56,10 +56,11 @@ import com.google.android.material.tabs.TabLayout;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -68,6 +69,7 @@ import androidx.core.util.Pair;
 import androidx.core.view.MenuItemCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import ch.threema.app.R;
@@ -84,9 +86,9 @@ import ch.threema.app.dialogs.BottomSheetGridDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.TextWithCheckboxDialog;
+import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
-import ch.threema.app.jobs.WorkSyncService;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.ConversationListener;
@@ -94,9 +96,11 @@ import ch.threema.app.listeners.PreferenceListener;
 import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
@@ -109,6 +113,7 @@ import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
@@ -116,14 +121,17 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.workers.IdentityStatesWorker;
+import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
 import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
 import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
+import static ch.threema.app.ThreemaApplication.WORKER_WORK_SYNC;
 
 public class ContactsSectionFragment
 		extends MainFragment
@@ -132,16 +140,16 @@ public class ContactsSectionFragment
 		ListView.OnItemClickListener,
 		ContactListAdapter.AvatarListener,
 		SelectorDialog.SelectorDialogClickListener,
-		GenericAlertDialog.DialogClickListener,
 		BottomSheetAbstractDialog.BottomSheetDialogCallback,
-		TextWithCheckboxDialog.TextWithCheckboxDialogClickListener {
+		TextWithCheckboxDialog.TextWithCheckboxDialogClickListener,
+		GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSectionFragment");
 
 	private static final int PERMISSION_REQUEST_REFRESH_CONTACTS = 1;
-	private static final String DIALOG_TAG_REALLY_DELETE_CONTACTS = "rdc";
-	private static final String DIALOG_TAG_REALLY_DELETE_CONTACT = "rd";
 	private static final String DIALOG_TAG_SHARE_WITH = "wsw";
 	private static final String DIALOG_TAG_RECENTLY_ADDED_SELECTOR = "ras";
+	private static final String DIALOG_TAG_REALLY_DELETE_CONTACTS = "rdc";
+	private static final String DIALOG_TAG_REPORT_SPAM = "spam";
 
 	private static final String RUN_ON_ACTIVE_SHOW_LOADING = "show_loading";
 	private static final String RUN_ON_ACTIVE_HIDE_LOADING = "hide_loading";
@@ -714,7 +722,7 @@ public class ContactsSectionFragment
 				}
 				if (numContacts > 1) {
 					final StringBuilder builder = new StringBuilder();
-					builder.append(getResources().getQuantityString(R.plurals.contacts_counter_label, numContacts, numContacts));
+					builder.append(ConfigUtils.getSafeQuantityString(getContext(), R.plurals.contacts_counter_label, numContacts, numContacts));
 					if (counts != null) {
 						builder.append(" (+").append(counts.last30d).append(" / ").append(getString(R.string.thirty_days_abbrev)).append(")");
 					}
@@ -857,19 +865,18 @@ public class ContactsSectionFragment
 
 				@Override
 				public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
-					switch (item.getItemId()) {
-						case R.id.menu_contacts_remove:
-							deleteSelectedContacts();
-							return true;
-						case R.id.menu_contacts_share:
-							HashSet<ContactModel> contactModels = contactListAdapter.getCheckedItems();
-							if (contactModels.size() == 1) {
-								ShareUtil.shareContact(getActivity(), contactModels.iterator().next());
-							}
-							return true;
-						default:
-							return false;
+					int id = item.getItemId();
+					if (id == R.id.menu_contacts_remove) {
+						deleteContacts(contactListAdapter.getCheckedItems());
+						return true;
+					} else if (id == R.id.menu_contacts_share) {
+						HashSet<ContactModel> contactModels = contactListAdapter.getCheckedItems();
+						if (contactModels.size() == 1) {
+							ShareUtil.shareContact(getActivity(), contactModels.iterator().next());
+						}
+						return true;
 					}
+					return false;
 				}
 
 				@Override
@@ -1070,11 +1077,21 @@ public class ContactsSectionFragment
 		}
 
 		if (ConfigUtils.isWorkBuild()) {
-			WorkSyncService.enqueueWork(getActivity(), new Intent(), true);
+			try {
+				OneTimeWorkRequest workRequest = WorkSyncWorker.Companion.buildOneTimeWorkRequest(false, true, "WorkContactSync");
+				WorkManager.getInstance(ThreemaApplication.getAppContext()).enqueueUniqueWork(WORKER_WORK_SYNC, ExistingWorkPolicy.REPLACE, workRequest);
+			} catch (IllegalStateException e) {
+				logger.error("Unable to schedule work sync one time work", e);
+			}
 		}
 	}
 
 	private void openConversationForIdentity(@Nullable View v, String identity) {
+		// Close keyboard if search view is expanded
+		if (searchView != null && !searchView.isIconified()) {
+			EditTextUtil.hideSoftKeyboard(searchView);
+		}
+
 		Intent intent = new Intent(getActivity(), ComposeMessageActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
@@ -1165,8 +1182,18 @@ public class ContactsSectionFragment
 			tags.add(SELECTOR_TAG_SHOW_CONTACT);
 
 			if (!ConfigUtils.isOnPremBuild()) {
-				items.add(new SelectorDialogItem(getString(R.string.spam_report), R.drawable.ic_outline_report_24));
-				tags.add(SELECTOR_TAG_REPORT_SPAM);
+				if (
+					contactModel.getAndroidContactLookupKey() == null &&
+					TestUtil.empty(contactModel.getFirstName()) &&
+					TestUtil.empty(contactModel.getLastName()) &&
+					contactModel.getVerificationLevel() == VerificationLevel.UNVERIFIED
+				) {
+					MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
+					if (messageReceiver != null && messageReceiver.getMessagesCount() > 0) {
+						items.add(new SelectorDialogItem(getString(R.string.spam_report), R.drawable.ic_outline_report_24));
+						tags.add(SELECTOR_TAG_REPORT_SPAM);
+					}
+				}
 			}
 
 			if (serviceManager.getBlackListService().has(contactModel.getIdentity())) {
@@ -1217,44 +1244,64 @@ public class ContactsSectionFragment
 		ListenerManager.preferenceListeners.remove(this.preferenceListener);
 	}
 
+	private boolean showExcludeFromContactSync(Set<ContactModel> contacts) {
+		if (preferenceService == null || !preferenceService.isSyncContacts()) {
+			return false;
+		}
+
+		for (ContactModel contactModel : contacts) {
+			if (contactModel.getAndroidContactLookupKey() != null) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	@SuppressLint("StringFormatInvalid")
-	private void deleteSelectedContacts() {
-		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.delete_contact_action,
-				String.format(getString(R.string.really_delete_contacts_message), contactListAdapter.getCheckedItemCount()),
+	private void deleteContacts(@NonNull Set<ContactModel> contacts) {
+		int contactsSelectedToDelete = contacts.size();
+		final String deleteContactTitle = getString(contactsSelectedToDelete > 1 ? R.string.delete_multiple_contact_action : R.string.delete_contact_action);
+		final String message = String.format(ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.really_delete_contacts_message, contactsSelectedToDelete, contactsSelectedToDelete), contactListAdapter.getCheckedItemCount());
+
+		ThreemaDialogFragment dialog;
+		if (showExcludeFromContactSync(contacts)) {
+			dialog = TextWithCheckboxDialog.newInstance(
+				deleteContactTitle,
+				0,
+				message,
+				R.string.exclude_contact,
 				R.string.ok,
 				R.string.cancel);
-
+		} else {
+			dialog = GenericAlertDialog.newInstance(
+				deleteContactTitle,
+				message,
+				R.string.ok,
+				R.string.cancel);
+		}
 		dialog.setTargetFragment(this, 0);
+		dialog.setData(contacts);
 		dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_CONTACTS);
 	}
 
-	@Override
-	public void onYes(String tag, Object data) {
-		switch(tag) {
-			case DIALOG_TAG_REALLY_DELETE_CONTACTS:
-				reallyDeleteContacts(contactListAdapter.getCheckedItems());
-				break;
-			case DIALOG_TAG_REALLY_DELETE_CONTACT:
-				reallyDeleteContacts(new HashSet<>(Arrays.asList((ContactModel) data)));
-				break;
-			default:
-				break;
-		}
-	}
-
 	@SuppressLint("StaticFieldLeak")
-	private void reallyDeleteContacts(HashSet<ContactModel> contactModels) {
-		new DeleteContactAsyncTask(getFragmentManager(), contactModels, contactService, new DeleteContactAsyncTask.DeleteContactsPostRunnable() {
+	private void reallyDeleteContacts(@NonNull Set<ContactModel> contactModels, boolean excludeFromSync) {
+		new DeleteContactAsyncTask(getParentFragmentManager(), contactModels, contactService, new DeleteContactAsyncTask.DeleteContactsPostRunnable() {
 			@Override
 			public void run() {
 				if (isAdded()) {
 					if (failed > 0) {
-						Toast.makeText(getActivity(), String.format(getString(R.string.some_contacts_not_deleted), failed), Toast.LENGTH_LONG).show();
+						Toast.makeText(getActivity(), ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.some_contacts_not_deleted, failed, failed), Toast.LENGTH_LONG).show();
 					} else {
 						if (contactModels.size() > 1) {
 							Toast.makeText(getActivity(), R.string.contacts_deleted, Toast.LENGTH_LONG).show();
 						} else {
 							Toast.makeText(getActivity(), R.string.contact_deleted, Toast.LENGTH_LONG).show();
+						}
+
+						if (excludeFromSync) {
+							excludeContactsFromSync(contactModels);
 						}
 					}
 				}
@@ -1266,8 +1313,16 @@ public class ContactsSectionFragment
 		}).execute();
 	}
 
-	@Override
-	public void onNo(String tag, Object data) { }
+	private void excludeContactsFromSync(@NonNull Collection<ContactModel> contactModels) {
+		IdListService excludedService = serviceManager.getExcludedSyncIdentitiesService();
+		if (excludedService != null) {
+			for (ContactModel contactModel : contactModels) {
+				if (contactModel.getAndroidContactLookupKey() != null) {
+					excludedService.add(contactModel.getIdentity());
+				}
+			}
+		}
+	}
 
 	@Override
 	public void onSelected(String tag) {
@@ -1371,16 +1426,13 @@ public class ContactsSectionFragment
 					R.string.spam_report_dialog_block_checkbox, R.string.spam_report_short, R.string.cancel);
 				sdialog.setData(contactModel);
 				sdialog.setTargetFragment(this, 0);
-				sdialog.show(getParentFragmentManager(), "");
+				sdialog.show(getParentFragmentManager(), DIALOG_TAG_REPORT_SPAM);
 				break;
 			case SELECTOR_TAG_BLOCK:
 				serviceManager.getBlackListService().toggle(getActivity(), contactModel);
 				break;
 			case SELECTOR_TAG_DELETE:
-				GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.delete_contact_action, R.string.really_delete_contact, R.string.delete, R.string.cancel);
-				dialog.setData(contactModel);
-				dialog.setTargetFragment(this, 0);
-				dialog.show(getParentFragmentManager(), DIALOG_TAG_REALLY_DELETE_CONTACT);
+				deleteContacts(Set.of(contactModel));
 				break;
 		}
 	}
@@ -1392,44 +1444,69 @@ public class ContactsSectionFragment
 	public void onNo(String tag) {}
 
 	/* callback from TextWithCheckboxDialog */
-
 	@Override
 	public void onYes(String tag, Object data, boolean checked) {
-		ContactModel contactModel = (ContactModel) data;
+		switch(tag) {
+			case DIALOG_TAG_REALLY_DELETE_CONTACTS:
+				reallyDeleteContacts((Set<ContactModel>) data, checked);
+				break;
+			case DIALOG_TAG_REPORT_SPAM:
+				ContactModel contactModel = (ContactModel) data;
 
-		contactService.reportSpam(contactModel,
-			unused -> {
-				if (isAdded()) {
-					Toast.makeText(getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();
-				}
+				contactService.reportSpam(contactModel,
+					unused -> {
+						if (isAdded()) {
+							Toast.makeText(getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();
+						}
 
-				if (checked) {
-					ThreemaApplication.requireServiceManager().getBlackListService().add(contactModel.getIdentity());
-					ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(contactModel.getIdentity());
+						if (checked) {
+							ThreemaApplication.requireServiceManager().getBlackListService().add(contactModel.getIdentity());
+							ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(contactModel.getIdentity());
 
-					try {
-						new EmptyChatAsyncTask(
-							contactService.createReceiver(contactModel),
-							ThreemaApplication.requireServiceManager().getMessageService(),
-							ThreemaApplication.requireServiceManager().getConversationService(),
-							null,
-							true,
-							() -> {
-								ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
-								ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
-							}).execute();
-					} catch (Exception e) {
-						logger.error("Unable to empty chat", e);
+							try {
+								new EmptyChatAsyncTask(
+									contactService.createReceiver(contactModel),
+									ThreemaApplication.requireServiceManager().getMessageService(),
+									ThreemaApplication.requireServiceManager().getConversationService(),
+									null,
+									true,
+									() -> {
+										ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
+										ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
+									}).execute();
+							} catch (Exception e) {
+								logger.error("Unable to empty chat", e);
+							}
+						} else {
+							ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
+						}
+					},
+					message -> {
+						if (isAdded()) {
+							Toast.makeText(getContext(), requireContext().getString(R.string.spam_error_reporting, message), Toast.LENGTH_LONG).show();
+						}
 					}
-				} else {
-					ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
-				}
-			},
-			message -> {
-				if (isAdded()) {
-					Toast.makeText(getContext(), requireContext().getString(R.string.spam_error_reporting, message), Toast.LENGTH_LONG).show();
-				}
-			}
-		);
+				);
+				break;
+			default:
+				break;
+		}
 	}
+
+	/**
+	 * Callbacks from GenericAlertDialog
+	 */
+	@Override
+	public void onYes(String tag, Object data) {
+		switch(tag) {
+			case DIALOG_TAG_REALLY_DELETE_CONTACTS:
+				reallyDeleteContacts((Set<ContactModel>) data, false);
+				break;
+			default:
+				break;
+		}
+	}
+
+	@Override
+	public void onNo(String tag, Object data) {	}
 }

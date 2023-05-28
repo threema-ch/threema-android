@@ -23,13 +23,13 @@
     <string name="voip_status_ringing">Bellen</string>
     <string name="voip_mic_enable">Microfoon inschakelen</string>
     <string name="voip_mic_disable">Microfoon uitschakelen</string>
-    <string name="voip_checking_compatibility">Controleren of deze contactpersoon oproepen via Threema kan ontvangen</string>
-    <string name="voip_incompatible">Deze contactpersoon kan nog geen oproepen via Threema ontvangen.</string>
+    <string name="voip_checking_compatibility">Controleren of deze contactpersoon oproepen via LeOS-Messenger kan ontvangen</string>
+    <string name="voip_incompatible">Deze contactpersoon kan nog geen oproepen via LeOS-Messenger ontvangen.</string>
     <string name="voip_call_status_unavailable">Ontvanger is niet beschikbaar</string>
     <string name="voip_call_status_rejected">Oproep afgewezen</string>
     <string name="voip_call_status_busy">Ontvanger is in gesprek</string>
     <string name="voip_call_status_busy_short">In gesprek</string>
-    <string name="voip_call_status_disabled">Threema oproepen zijn uitgeschakeld door de ontvanger</string>
+    <string name="voip_call_status_disabled">LeOS-Messenger oproepen zijn uitgeschakeld door de ontvanger</string>
     <string name="voip_call_status_missed">Oproep gemist</string>
     <string name="voip_call_finished_outbox">Uitgaande oproep</string>
     <string name="voip_call_finished_inbox">Ontvangen oproep</string>
@@ -60,6 +60,7 @@
     <string name="voip_another_pstn_call">Kon oproep niet initiëren. Er is nog een normale oproep actief.</string>
     <string name="voip_call_status_off_hours">Oproep kantooruren</string>
     <string name="voip_peer_video_disabled">Video-oproepen zijn door de andere partij uitgeschakeld.</string>
+    <string name="voip_reject_channel_name">Wijziging gespreksstatus</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC Diagnostics</string>
     <string name="voip_prefs_webrtc_debug_summary">Gebruik dit hulpprogramma om problemen met het instellen van verbindingen voor oproepen op te lossen</string>
@@ -69,4 +70,36 @@
     <string name="voip_webrtc_debug_done">Gereed. Als u problemen ondervindt met het opzetten van een oproepverbinding, stuur deze uitvoergegevens dan naar Threema-ondersteuning.</string>
     <string name="voip_webrtc_debug_copied">Gekopieerd naar klembord</string>
     <string name="voip_webrtc_debug_copy_clipboard">Kopiëren naar klembord</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Alle groepsleden zijn op de hoogte gebracht</string>
+    <string name="voip_gc_notification_channel_description">Groepsgesprekken</string>
+    <string name="voip_gc_notification_title">Groepsgesprek</string>
+    <string name="voip_gc_notification_call_started">%1$s is een groepsgesprek begonnen in %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s is een groepsgesprek begonnen</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">U bent een groepsgesprek begonnen</string>
+    <string name="voip_gc_dismiss_call">Negeren</string>
+    <string name="voip_gc_join_call">Deelnemen</string>
+    <string name="voip_gc_ongoing_call">Lopend groepsgesprek</string>
+    <string name="voip_gc_waiting_for_participants">Wachten op deelnemers</string>
+    <string name="voip_gc_participant_avatar_description">Profielfoto van deelnemer</string>
+    <string name="voip_gc_participant_mute_status_description">Gedempte status deelnemer</string>
+    <string name="voip_gc_notification_new_call_public">Er is een nieuw groepsgesprek begonnen</string>
+    <string name="voip_gc_open_call">Open</string>
+    <string name="voip_gc_call_started">Groepsgesprek is gestart</string>
+    <string name="voip_gc_call_ended">Groepsgesprek is beëindigd</string>
+    <string name="voip_gc_in_call">In groepsgesprek</string>
+    <string name="voip_gc_sfu_not_available">Server niet beschikbaar, probeer het later opnieuw</string>
+    <string name="voip_gc_call_error">Gesprek afgebroken vanwege een fout</string>
+    <string name="voip_gc_call_start_error">Groepsgesprek is niet gestart</string>
+    <string name="voip_gc_call_already_ended">Groepsgesprek is al beëindigd</string>
+    <string name="voip_gc_call_full_generic">Maximum bereikt: niet mogelijk om extra deelnemers toe te voegen aan dit groepsgesprek.</string>
+    <string name="voip_gc_call_full_n">Maximum van %1$d deelnemers is bereikt, u kunt niet deelnemen aan dit groepsgesprek.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d deelnemer</item>
+        <item quantity="other">%d deelnemers</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Let op: één lid kan niet deelnemen aan groepsgesprekken.</item>
+        <item quantity="other">Let op: %d leden kunnen niet deelnemen aan groepsgesprekken.</item>
+    </plurals>
 </resources>

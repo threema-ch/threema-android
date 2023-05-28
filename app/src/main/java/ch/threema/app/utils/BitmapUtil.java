@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -35,7 +35,12 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.NetworkOnMainThreadException;
 import android.provider.MediaStore;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.view.View;
 
 import org.slf4j.Logger;
@@ -134,8 +139,6 @@ public class BitmapUtil {
 
 	/**
 	 * Get a compressed byte array representation of the supplied bitmap
-	 * @param bitmap
-	 * @param quality
 	 * @return Byte array of bitmap
 	 */
 	public static byte[] bitmapToByteArray(@NonNull Bitmap bitmap, @NonNull Bitmap.CompressFormat format, int quality) {
@@ -230,7 +233,6 @@ public class BitmapUtil {
 	 * The image is scaled so that it fits into a bounding box of maxSize x maxSize unless the scaleToWidth parameter is set.
 	 * If scaleToWidth is set, the image will be scaled so that its width does not exceed maxSize while the height may be larger
 	 *
-	 * @param context
 	 * @param imageUri Uri pointing to source image
 	 * @param maxSize max size of the image
 	 * @param replaceTransparency if set to true, transparency in the image will be replaced with Color.WHITE
@@ -452,7 +454,7 @@ public class BitmapUtil {
 	 */
 	@SuppressLint("InlinedApi")
 	@WorkerThread
-	public static ExifOrientation getExifOrientation(Context context, Uri uri) {
+	public static ExifOrientation getExifOrientation(@NonNull Context context, @Nullable Uri uri) {
 		ExifOrientation retVal = new ExifOrientation(FLIP_NONE, 0);
 
 		if (uri != null) {
@@ -465,12 +467,14 @@ public class BitmapUtil {
 						orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
 					}
 				} catch (IOException | NegativeArraySizeException e) {
-					logger.debug("Error checking exif");
+					logger.error("Error checking exif", e);
 				} catch (SecurityException e) {
-					logger.debug("Error checking exif: Permission denied");
+					logger.error("Error checking exif: Permission denied", e);
+				} catch (NetworkOnMainThreadException e) {
+					logger.error("Error checking exif: Cannot get it from network", e);
 				}
 			} catch (IllegalStateException e) {
-				logger.debug("Error opening input stream");
+				logger.error("Error opening input stream", e);
 			}
 
 			if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
@@ -514,7 +518,6 @@ public class BitmapUtil {
 	public static void recycle(Bitmap bitmapToRecycle) {
 		if(bitmapToRecycle != null && !bitmapToRecycle.isRecycled()) {
 			bitmapToRecycle.recycle();
-			bitmapToRecycle = null;
 		}
 	}
 
@@ -604,7 +607,6 @@ public class BitmapUtil {
 	/**
 	 * Check a bitmap for the presence of transparency
 	 * For the sake of speed we only check the topmost left pixel...
-	 * @param bitmap
 	 * @return true if the topmost left pixel is transparent, false otherwise
 	 */
 	public static boolean hasTransparency(@NonNull Bitmap bitmap) {
@@ -632,6 +634,32 @@ public class BitmapUtil {
 		else
 			canvas.drawColor(Color.WHITE);
 		view.draw(canvas);
+		return bitmap;
+	}
+
+	/**
+	 * Blur the Bitmap.
+	 * NOTE: The input Bitmap will be altered.
+	 *
+	 * @param bitmap The bitmap to blur
+	 * @return The blurred bitmap. This is the same object which has been passed as input
+	 */
+	@WorkerThread
+	public static Bitmap blurBitmap(@Nullable Bitmap bitmap, Context context) {
+		if (bitmap != null && bitmap.getConfig() != null) {
+			final RenderScript rs = RenderScript.create(context);
+			final Allocation input = Allocation.createFromBitmap(rs, bitmap);
+			final Allocation output = Allocation.createTyped(rs, input.getType());
+			final ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+			blurScript.setRadius(12f);
+			blurScript.setInput(input);
+			blurScript.forEach(output);
+			output.copyTo(bitmap);
+			blurScript.destroy();
+			input.destroy();
+			output.destroy();
+			rs.destroy();
+		}
 		return bitmap;
 	}
 }

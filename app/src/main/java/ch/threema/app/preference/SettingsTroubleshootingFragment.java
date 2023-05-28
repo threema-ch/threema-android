@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -42,6 +42,10 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -49,7 +53,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.IntentCompat;
+import androidx.core.content.PackageManagerCompat;
+import androidx.core.content.UnusedAppRestrictionsConstants;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.DropDownPreference;
 import androidx.preference.Preference;
@@ -144,6 +154,26 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 	private boolean pushServicesInstalled;
 
+	/**
+	 * This activity result launcher is needed to open the settings to disable hibernation.
+	 * Unfortunately the intent cannot be called with {@code startActivity} even if the results are
+	 * not needed.
+	 */
+	private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), ignored -> {
+		// results are ignored
+	});
+
+	private final ActivityResultLauncher<String> readPhoneStatePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+		if (isGranted) {
+			updateReadPhoneStatePermissionPref();
+		} else {
+			Context context = getContext();
+			if (context != null) {
+				ConfigUtils.showPermissionRationale(context, fragmentView, R.string.read_phone_state_short_message);
+			}
+		}
+	});
+
 	@Override
 	protected void initializePreferences() {
 		if (!requiredInstances()) {
@@ -209,6 +239,9 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				boolean newCheckedValue = newValue.equals(true);
 
 				DebugLogFileBackend.setEnabled(newCheckedValue);
+				if (newCheckedValue) {
+					ThreemaApplication.logVersion();
+				}
 
 				return true;
 			}
@@ -354,6 +387,18 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 			preferenceScreen.removePreference(preferenceCategory);
 		}
 
+		final Context context = getContext();
+		if (context != null) {
+			updateHibernationPref(context);
+		} else {
+			try {
+				Preference hibernationPref = getPref(getString(R.string.preferences__hibernation_mode));
+				preferenceScreen.removePreference(hibernationPref);
+			} catch (IllegalArgumentException e) {
+				logger.debug("Unable to remove prefs");
+			}
+		}
+
 		DropDownPreference echoCancelPreference = getPref(getResources().getString(R.string.preferences__voip_echocancel));
 		int echoCancelIndex = preferenceService.getAECMode().equals("sw") ? 1 : 0;
 		final String[] echoCancelArray = getResources().getStringArray(R.array.list_echocancel);
@@ -402,7 +447,7 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_calls));
 			}
 
-			if (value != null) {
+			if (value != null && value) {
 				PreferenceCategory preferenceCategory = findPreference("pref_key_voip");
 				if (preferenceCategory != null) {
 					preferenceScreen.removePreference(preferenceCategory);
@@ -416,6 +461,113 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 				preferenceScreen.removePreference(preferenceCategory);
 			}
 		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		updateReadPhoneStatePermissionPref();
+
+		final Context context = getContext();
+		if (context != null) {
+			updateHibernationPref(context);
+		}
+	}
+
+	private void updateReadPhoneStatePermissionPref() {
+		Context context = getContext();
+
+		Preference phonePref = getPrefOrNull(R.string.preferences__grant_read_phone_state_permission);
+		if (phonePref == null) {
+			// This preference is not available if th_disable_calls is set to true
+			return;
+		}
+		if (context != null && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+			phonePref.setEnabled(false);
+		} else {
+			phonePref.setEnabled(true);
+			phonePref.setOnPreferenceClickListener(preference -> {
+				Activity activity = getActivity();
+				if (activity == null) {
+					return false;
+				}
+				ConfigUtils.requestReadPhonePermission(activity, readPhoneStatePermissionLauncher);
+				return true;
+			});
+		}
+	}
+
+	/**
+	 * Update the hibernation preference depending on the system settings and android version.
+	 *
+	 * If hibernation is available and can be applied to Threema, the preference is shown and redirects
+	 * the users to the system setting. If hibernation is available on the device but Threema is excluded,
+	 * the preference is shown but disabled. If hibernation is not available on the device, the preference
+	 * isn't shown at all.
+	 *
+	 * @param context the context is needed to read the hibernation setting and to open system settings
+	 */
+	private void updateHibernationPref(@NonNull Context context) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+			// "fix device" settings are not present on older Android versions
+			return;
+		}
+
+		PreferenceCategory fixDeviceCategory = getPref("pref_key_fix_device");
+		final Preference hibernationPref = getPrefOrNull(getString(R.string.preferences__hibernation_mode));
+		if (hibernationPref == null) {
+			return;
+		}
+
+		// Set summary depending on sdk version to match the exact description in settings
+		// Note that on API 31 and 32 the hibernation setting is called differently (even though it is activated!)
+		if (Build.VERSION.SDK_INT <= 32) {
+			hibernationPref.setSummary(R.string.prefs_summary_hibernation_api_32);
+		}
+
+		// Handle the current state of hibernation
+		final ListenableFuture<Integer> future = PackageManagerCompat.getUnusedAppRestrictionsStatus(context);
+		Futures.addCallback(future, new FutureCallback<>() {
+			@Override
+			public void onSuccess(Integer result) {
+				switch (result) {
+					case UnusedAppRestrictionsConstants.DISABLED:
+						// Only Android S and newer have the hibernation mode
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+							// Disable hibernation preference if hibernation is explicitly disabled
+							hibernationPref.setEnabled(false);
+							break;
+						}
+						// fall through
+					case UnusedAppRestrictionsConstants.ERROR:
+						// fall through
+					case UnusedAppRestrictionsConstants.FEATURE_NOT_AVAILABLE:
+						// fall through
+					case UnusedAppRestrictionsConstants.API_30_BACKPORT:
+						// fall through
+					case UnusedAppRestrictionsConstants.API_30:
+						// Don't show the hibernation preference when hibernation is not available
+						fixDeviceCategory.removePreference(hibernationPref);
+						break;
+					case UnusedAppRestrictionsConstants.API_31:
+						// In this case hibernation is possible and can be disabled in settings
+						hibernationPref.setEnabled(true);
+						hibernationPref.setOnPreferenceClickListener(preference -> {
+							Intent intent = IntentCompat.createManageUnusedAppRestrictionsIntent(context, context.getPackageName());
+							activityResultLauncher.launch(intent);
+							return true;
+						});
+						break;
+				}
+			}
+
+			@Override
+			public void onFailure(@NonNull Throwable t) {
+				logger.error("Could not get hibernation status", t);
+				fixDeviceCategory.removePreference(hibernationPref);
+			}
+		}, ContextCompat.getMainExecutor(context));
 	}
 
 	private void updatePowerManagerPrefs() {
@@ -614,8 +766,8 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 
 					messageService.sendText(caption +
 						"\n-- \n" +
-						ConfigUtils.getDeviceInfo(getActivity(), false) + "\n" +
-						ConfigUtils.getAppVersion(requireActivity()) + "\n" +
+						ConfigUtils.getSupportDeviceInfo(getActivity()) + "\n" +
+						getVersionString() + "\n" +
 						userService.getIdentity(), receiver);
 
 					MediaItem mediaItem = new MediaItem(Uri.fromFile(zipFile), MediaItem.TYPE_FILE);
@@ -678,6 +830,18 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		}
 	}
 
+	@NonNull
+	private String getVersionString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(ConfigUtils.getAppVersion(requireActivity()));
+		if (BuildConfig.DEBUG) {
+			builder.append(" (Commit ");
+			builder.append(BuildConfig.GIT_HASH);
+			builder.append(")");
+		}
+		return builder.toString();
+	}
+
 	/**
 	 * Request disabling of battery optimizations.
 	 *
@@ -696,11 +860,6 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 	                                       @NonNull String[] permissions, @NonNull int[] grantResults) {
 		boolean result = (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
 
-		if (!result) {
-			if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-				ConfigUtils.showPermissionRationale(getContext(), fragmentView, R.string.permission_storage_required);
-			}
-		}
 		switch (requestCode) {
 			case PERMISSION_REQUEST_MESSAGE_LOG:
 				DebugLogFileBackend.setEnabled(result);

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2022 Threema GmbH
+ * Copyright (c) 2016-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -38,16 +38,6 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import org.saltyrtc.client.crypto.CryptoException;
-import org.saltyrtc.client.exceptions.InvalidKeyException;
-import org.slf4j.Logger;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,6 +48,17 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
+import org.saltyrtc.client.crypto.CryptoException;
+import org.saltyrtc.client.exceptions.InvalidKeyException;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -97,6 +98,7 @@ import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.WebClientSessionModel;
 
@@ -843,9 +845,26 @@ public class SessionsActivity extends ThreemaToolbarActivity
 				this.finish();
 				return;
 			}
+		}
+
+		try {
+			// Make sure that all listeners are initialized
+			this.init();
+
+			// Override saltyRtcHost/Port from OPPF?
+			String saltyRtcHost = qrCodeResult.saltyRtcHost;
+			int saltyRtcPort = qrCodeResult.saltyRtcPort;
+			ServerAddressProvider serverAddressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
+			if (!TestUtil.empty(serverAddressProvider.getWebOverrideSaltyRtcHost())) {
+				saltyRtcHost = serverAddressProvider.getWebOverrideSaltyRtcHost();
+			}
+			if (serverAddressProvider.getWebOverrideSaltyRtcPort() != 0) {
+				saltyRtcPort = serverAddressProvider.getWebOverrideSaltyRtcPort();
+			}
 
 			// Signaling hosts may be constrained
-			if (!AppRestrictionUtil.isWebHostAllowed(this, qrCodeResult.saltyRtcHost)) {
+			if (ConfigUtils.isWorkRestricted() &&
+				!AppRestrictionUtil.isWebHostAllowed(this, saltyRtcHost)) {
 				final SimpleStringAlertDialog dialog = SimpleStringAlertDialog.newInstance(
 					R.string.webclient_cannot_start,
 					R.string.webclient_constrained_by_mdm
@@ -853,18 +872,13 @@ public class SessionsActivity extends ThreemaToolbarActivity
 				dialog.show(getSupportFragmentManager(), DIALOG_TAG_MDM_CONSTRAINTS);
 				return;
 			}
-		}
-
-		try {
-			// Make sure that all listeners are initialized
-			this.init();
 
 			// Create new session
 			this.sessionService.create(
 				qrCodeResult.key,
 				qrCodeResult.authToken,
-				qrCodeResult.saltyRtcHost,
-				qrCodeResult.saltyRtcPort,
+				saltyRtcHost,
+				saltyRtcPort,
 				qrCodeResult.serverKey,
 				qrCodeResult.isPermanent,
 				qrCodeResult.isSelfHosted,

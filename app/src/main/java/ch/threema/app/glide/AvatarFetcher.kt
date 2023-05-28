@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,15 +23,13 @@ package ch.threema.app.glide
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
+import androidx.core.content.ContextCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.FileService
 import ch.threema.app.utils.AvatarConverterUtil
-import ch.threema.app.utils.BitmapUtil
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.data.DataFetcher
 
@@ -56,23 +54,19 @@ abstract class AvatarFetcher(protected val context: Context) : DataFetcher<Bitma
 
     override fun getDataSource(): DataSource = DataSource.LOCAL
 
+    protected fun getBackgroundColor(options: AvatarOptions): Int {
+        return if (options.darkerBackground)
+            ContextCompat.getColor(context, R.color.material_grey_300)
+        else
+            Color.WHITE
+    }
+
     /**
      * Create a bitmap of the given drawable with the given color in high resolution. Used for large views like
      * in GroupDetailActivity.
      */
-    protected fun buildDefaultAvatarHighRes(drawable: VectorDrawableCompat?, color: Int): Bitmap {
-        val borderWidth: Int = this.avatarSizeHiRes * 3 / 2
-        val defaultBitmap = AvatarConverterUtil.getAvatarBitmap(drawable, Color.WHITE, avatarSizeHiRes)
-        defaultBitmap.density = Bitmap.DENSITY_NONE
-        val config = Bitmap.Config.ARGB_8888
-        val newBitmap = Bitmap.createBitmap(defaultBitmap.width + borderWidth, defaultBitmap.height + borderWidth, config)
-        val canvas = Canvas(newBitmap)
-        val paint = Paint()
-        paint.color = color
-        canvas.drawRect(0f, 0f, newBitmap.width.toFloat(), newBitmap.height.toFloat(), paint)
-        canvas.drawBitmap(defaultBitmap, borderWidth / 2f, borderWidth / 2f, null)
-        BitmapUtil.recycle(defaultBitmap)
-        return newBitmap
+    protected fun buildDefaultAvatarHighRes(drawable: VectorDrawableCompat?, color: Int, backgroundColor: Int): Bitmap {
+        return AvatarConverterUtil.buildDefaultAvatarHighRes(drawable, avatarSizeHiRes, color, backgroundColor)
     }
 
     /**

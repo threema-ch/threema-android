@@ -35,5 +35,6 @@
 	<string name="directory_search">Im Verzeichnis suchen</string>
 	<string name="directory_title">Firmenverzeichnis</string>
 	<string name="directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Firmenverzeichnis zu beginnen oder wählen Sie eine Kategorie, indem Sie auf das Filter-Symbol tippen.</string>
+	<string name="share_with_app">Mit Threema OnPrem teilen</string>
 </resources>
 

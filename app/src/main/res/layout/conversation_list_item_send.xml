@@ -65,7 +65,6 @@
 
 		</FrameLayout>
 
-
 		<include layout="@layout/conversation_bubble_footer_send"/>
 
 	</LinearLayout>

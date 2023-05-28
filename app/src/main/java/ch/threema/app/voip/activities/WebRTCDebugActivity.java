@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,7 +27,6 @@ import android.content.ClipboardManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -69,8 +68,7 @@ import ch.threema.app.utils.WebRTCUtil;
 import ch.threema.app.voip.PeerConnectionClient;
 import ch.threema.app.voip.util.SdpPatcher;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.logging.WebRTCLoggable;
-import ch.threema.protobuf.callsignaling.CallSignaling;
+import ch.threema.protobuf.callsignaling.O2OCall;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.preference.SettingsTroubleshootingFragment.THREEMA_SUPPORT_IDENTITY;
@@ -201,7 +199,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		this.addToLog("Starting Call Diagnostics...");
 		this.addToLog("----------------");
 		this.addToLog("Device info: " + ConfigUtils.getDeviceInfo(this, false));
-		this.addToLog("App version: " + ConfigUtils.getFullAppVersion(this));
+		this.addToLog("App version: " + ConfigUtils.getAppVersion(this));
 		this.addToLog("App language: " + LocaleUtil.getAppLanguage());
 		this.addToLog("----------------");
 
@@ -218,9 +216,6 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		this.introText.setVisibility(View.GONE);
 		this.doneText.setVisibility(View.GONE);
 		this.footerButtons.setVisibility(View.GONE);
-
-		// Change log level in the log forwarder
-		WebRTCLoggable.setMinLevelFilter(Log.INFO);
 
 		// Initialize peer connection client
 		final boolean useOpenSLES = false;
@@ -375,7 +370,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 	}
 
 	@Override
-	public void onSignalingMessage(long callId, @NonNull CallSignaling.Envelope envelope) {
+	public void onSignalingMessage(long callId, @NonNull O2OCall.Envelope envelope) {
 		logger.info("onSignalingMessage: {}", envelope);
 	}
 
@@ -385,9 +380,6 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 	@AnyThread
 	private void onComplete() {
 		this.gatheringComplete = true;
-
-		// Reset log level
-		WebRTCLoggable.setMinLevelFilter(Log.WARN);
 
 		RuntimeUtil.runOnUiThread(() -> {
 			progressBar.setVisibility(View.GONE);
@@ -453,8 +445,8 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 						"\n---\n" +
 						caption +
 						"\n---\n" +
-						ConfigUtils.getDeviceInfo(WebRTCDebugActivity.this, false) + "\n" +
-						"Threema " + ConfigUtils.getFullAppVersion(WebRTCDebugActivity.this) + "\n" +
+						ConfigUtils.getSupportDeviceInfo(WebRTCDebugActivity.this) + "\n" +
+						"Threema " + ConfigUtils.getAppVersion(WebRTCDebugActivity.this) + "\n" +
 						getMyIdentity(), messageReceiver);
 
 					return true;

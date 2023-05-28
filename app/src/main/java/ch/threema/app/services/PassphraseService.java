@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -42,6 +42,8 @@ import ch.threema.app.activities.StopPassphraseServiceActivity;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
+
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 public class PassphraseService extends Service {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("PassphraseService");
@@ -98,7 +100,7 @@ public class PassphraseService extends Service {
 
 		Intent stopIntent = new Intent(this, StopPassphraseServiceActivity.class);
 		stopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		PendingIntent stopPendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent stopPendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		// Adds the back stack
@@ -106,7 +108,7 @@ public class PassphraseService extends Service {
 		// Adds the Intent to the top of the stack
 		stackBuilder.addNextIntent(notificationIntent);
 		// Gets a PendingIntent containing the entire back stack
-		PendingIntent pendingIntent = stackBuilder.getPendingIntent((int)System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingIntent = stackBuilder.getPendingIntent((int)System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
 		NotificationCompat.Builder builder = new NotificationBuilderWrapper(this, NotificationService.NOTIFICATION_CHANNEL_PASSPHRASE, null)
 				.setSmallIcon(R.drawable.ic_noti_passguard)

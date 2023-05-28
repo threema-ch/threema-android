@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,26 +25,25 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.os.PowerManager;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
+import androidx.annotation.UiThread;
 
 import org.slf4j.Logger;
 
 import java.io.File;
 
-import androidx.annotation.UiThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.messageplayer.MessagePlayer;
+import ch.threema.app.ui.AudioProgressBarView;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
@@ -82,29 +81,13 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		keepScreenOnUpdate();
 	}
 
-	private void keepScreenOnUpdate() {
-/*		RuntimeUtil.runOnUiThread(() -> {
-			try {
-				helper.getFragment().getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			} catch (Exception e) {
-				//
-			}
-		});
-*/	}
+	private void keepScreenOnUpdate() {}
 
 	private void keepScreenOff() {
 		if (audioPlayerWakelock != null && audioPlayerWakelock.isHeld()) {
 			audioPlayerWakelock.release();
 		}
-
-/*		RuntimeUtil.runOnUiThread(() -> {
-			try {
-				helper.getFragment().getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			} catch (Exception e) {
-				//
-			}
-		});
-*/	}
+	}
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
@@ -139,6 +122,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		});
 
 		setSpeedButtonText(holder, getPreferenceService().getAudioPlaybackSpeed());
+		holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
 		holder.readOnButton.setVisibility(View.GONE);
 		holder.messageTypeButton.setVisibility(View.VISIBLE);
 		holder.controller.setOnClickListener(v -> {
@@ -159,14 +143,15 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						audioMessagePlayer.cancel();
 					}
 					break;
-				case ControllerView.STATUS_READY_TO_RETRY:
-					if (onClickRetry != null) {
-						onClickRetry.onClick(getMessageModel());
-					}
+				default:
+					// no action taken for other statuses
+					break;
 			}
 		});
 
 		RuntimeUtil.runOnUiThread(() -> {
+			setupResendStatus(holder);
+
 			holder.controller.setNeutral();
 
 			//reset progressbar
@@ -181,6 +166,9 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 				switch (audioMessagePlayer.getState()) {
 					case MessagePlayer.State_NONE:
 						if (isDownloaded) {
+							if (holder.seekBar != null) {
+								holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
+							}
 							holder.controller.setPlay();
 						} else {
 							if (helper.getDownloadService().isDownloading(getMessageModel().getId())) {
@@ -197,6 +185,9 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						break;
 					case MessagePlayer.State_DOWNLOADED:
 					case MessagePlayer.State_DECRYPTED:
+						if (holder.seekBar != null) {
+							holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
+						}
 						holder.controller.setPlay();
 						break;
 					case MessagePlayer.State_PLAYING:
@@ -217,7 +208,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 							holder.seekBar.setMax(audioMessagePlayer.getDuration());
 							logger.debug("SeekBar: Position = " + audioMessagePlayer.getPosition());
 							updateProgressCount(holder, audioMessagePlayer.getPosition());
-							holder.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+							holder.seekBar.setOnSeekBarChangeListener(new AudioProgressBarView.OnSeekBarChangeListener() {
 								@Override
 								public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 									if (fromUser) {
@@ -354,6 +345,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						holder.controller.setProgressing();
 						break;
 					case SENDFAILED:
+					case FS_KEY_MISMATCH:
 						holder.controller.setRetry();
 						break;
 					default:
@@ -376,22 +368,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 			holder.contentView.getLayoutParams().width = ConfigUtils.getPreferredAudioMessageWidth(getContext(), false);
 		}
 
-		// format caption
-		if (!TextUtils.isEmpty(caption)) {
-			holder.bodyTextView.setText(formatTextString(caption, filterString));
-
-			LinkifyUtil.getInstance().linkify(
-				(ComposeMessageFragment) helper.getFragment(),
-				holder.bodyTextView,
-				getMessageModel(),
-				true,
-				actionModeStatus.getActionModeEnabled(),
-				onClickElement);
-
-			showHide(holder.bodyTextView, true);
-		} else {
-			showHide(holder.bodyTextView, false);
-		}
+		configureBodyText(holder, caption);
 	}
 
 	@UiThread

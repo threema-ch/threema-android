@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -38,19 +38,32 @@ public interface MessageProcessorInterface {
 			this.abstractMessage = abstractMessage;
 		}
 
+		/**
+		 * Processing a message failed. It should not be acked towards the chat server.
+		 */
 		public static ProcessIncomingResult failed() {
 			return new ProcessIncomingResult(false, null);
 		}
+
+		/**
+		 * A message should be ignored and dropped. It should be acked towards the chat server.
+		 */
 		public static ProcessIncomingResult ignore() {
 			return new ProcessIncomingResult(true, null);
 		}
+
+		/**
+		 * A message was successfully processed. It should be acked towards the chat server.
+		 */
 		public static ProcessIncomingResult ok(AbstractMessage abstractMessage) {
 			return new ProcessIncomingResult(true, abstractMessage);
 		}
 	}
+
 	/**
 	 * Process an incoming message. This method should return true if the message has been processed
-	 * successfully, or false on error. An ACK will only be sent to the server if the return value is true.
+	 * successfully, or false on error. An ACK will only be sent to the server if the return value
+	 * is true.
 	 *
 	 * @param boxmsg boxed message to be processed
 	 */

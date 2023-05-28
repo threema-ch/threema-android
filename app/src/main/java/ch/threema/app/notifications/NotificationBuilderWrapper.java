@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -20,6 +20,16 @@
  */
 
 package ch.threema.app.notifications;
+
+import static androidx.core.app.NotificationCompat.VISIBILITY_PRIVATE;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNELGROUP_CHAT;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNELGROUP_CHAT_UPDATE;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNELGROUP_GROUP_CALLS;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNELGROUP_VOIP;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CHAT_ID_PREFIX;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CHAT_UPDATE_ID_PREFIX;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_GROUP_CALLS_ID_PREFIX;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_VOIP_ID_PREFIX;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -38,6 +48,10 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
 import org.slf4j.Logger;
 
 import java.io.InputStream;
@@ -45,8 +59,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.NotificationService;
@@ -55,20 +67,13 @@ import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.base.utils.LoggingUtil;
 
-import static androidx.core.app.NotificationCompat.VISIBILITY_PRIVATE;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNELGROUP_CHAT;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNELGROUP_CHAT_UPDATE;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNELGROUP_VOIP;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CHAT_ID_PREFIX;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CHAT_UPDATE_ID_PREFIX;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_VOIP_ID_PREFIX;
-
 public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationBuilderWrapper");
 
 	public static long[] VIBRATE_PATTERN_SHORT = new long[]{0, 100, 150, 100};
 	public static long[] VIBRATE_PATTERN_REGULAR = new long[]{0, 250, 250, 250};
 	public static long[] VIBRATE_PATTERN_INCOMING_CALL = new long[]{0, 1000, 1000, 0};
+	public static long[] VIBRATE_PATTERN_GROUP_CALL = new long[]{0, 5000};
 	public static long[] VIBRATE_PATTERN_SILENT = new long[]{0};
 
 	private final NotificationService.NotificationSchema notificationSchema;
@@ -151,6 +156,12 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 						notificationManager.createNotificationChannel(notificationChannel);
 						newChannelId = notificationChannel.getId();
 					}
+				} else if (NotificationService.NOTIFICATION_CHANNEL_GROUP_CALL.equals(newChannelId)) {
+					notificationChannel = getNewGroupCallNotificationChannel(context, notificationManager, ringtone, vibrate);
+					if (notificationChannel != null) {
+						notificationManager.createNotificationChannel(notificationChannel);
+						newChannelId = notificationChannel.getId();
+					}
 				}
 			}
 		}
@@ -172,27 +183,8 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 				notificationChannelSettings.setSound(null);
 			}
 		} else {
-			if (ringtone != null && ringtone.toString().length() > 4) {
-				if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(ringtone.getScheme())) {
-					// https://commonsware.com/blog/2016/09/07/notifications-sounds-android-7p0-aggravation.html
-					ThreemaApplication.getAppContext().grantUriPermission("com.android.systemui", ringtone, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-				} else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(ringtone.getScheme())) {
-					// content://settings/system/notification_sound
-					if (!ringtone.equals(Settings.System.DEFAULT_NOTIFICATION_URI)) {
-						// check if ringtone is still available
-						try (InputStream ignored = context.getContentResolver().openInputStream(ringtone)) {
-						} catch (Exception e) {
-							// cannot open ringtone - fallback to default ringtone
-							ringtone = Settings.System.DEFAULT_NOTIFICATION_URI;
-							logger.error("Unable to open ringtone. Falling back to default", e);
-							logger.info("Attempted to open {}", ringtone.toString());
-						}
-					}
-				}
-				notificationChannelSettings.setSound(ringtone);
-			} else {
-				notificationChannelSettings.setSound(null);
-			}
+			notificationChannelSettings.setSound(checkIfRingtoneIsAccessible(context, ringtone, Settings.System.DEFAULT_NOTIFICATION_URI));
+
 			if (vibrate) {
 				notificationChannelSettings.setVibrationPattern(VIBRATE_PATTERN_REGULAR);
 			}
@@ -201,7 +193,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 			}
 		}
 
-		return validateNotificationChannel(notificationManager, sharedPreferences, notificationChannelSettings);
+		return validateNotificationChannel(notificationManager, sharedPreferences, notificationChannelSettings, true);
 	}
 
 	@TargetApi(Build.VERSION_CODES.O)
@@ -218,7 +210,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 		}
 		notificationChannelSettings.setSound(null);
 
-		return validateNotificationChannel(notificationManager, sharedPreferences, notificationChannelSettings);
+		return validateNotificationChannel(notificationManager, sharedPreferences, notificationChannelSettings, false);
 	}
 
 	@TargetApi(Build.VERSION_CODES.O)
@@ -234,7 +226,52 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 		notificationChannelSettings.setSound(null);
 		notificationChannelSettings.setLightColor(null);
 
-		return validateNotificationChannel(notificationManager, sharedPreferences, notificationChannelSettings);
+		return validateNotificationChannel(notificationManager, sharedPreferences, notificationChannelSettings, true);
+	}
+
+	@TargetApi(Build.VERSION_CODES.O)
+	private static NotificationChannel getNewGroupCallNotificationChannel(Context context, NotificationManager notificationManager, Uri ringtone, boolean vibrate) {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+		NotificationChannelSettings notificationChannelSettings = new NotificationChannelSettings(NOTIFICATION_CHANNELGROUP_GROUP_CALLS,
+			NOTIFICATION_CHANNEL_GROUP_CALLS_ID_PREFIX, sharedPreferences, NotificationManager.IMPORTANCE_HIGH, false, VISIBILITY_PRIVATE,
+			context.getString(R.string.group_calls), context.getString(R.string.notification_setting_ignored),
+			context.getString(R.string.preferences__noti_channel_gc_seq));
+
+		notificationChannelSettings.setVibrationPattern(vibrate ? VIBRATE_PATTERN_GROUP_CALL : null);
+		notificationChannelSettings.setSound(checkIfRingtoneIsAccessible(context, ringtone, Settings.System.DEFAULT_RINGTONE_URI));
+
+		return validateNotificationChannel(notificationManager, sharedPreferences, notificationChannelSettings, false);
+	}
+
+	/**
+	 * Check if the provided ringtone is still accessible and fall back to default ringtone in case we're unable to open it
+	 * See https://commonsware.com/blog/2016/09/07/notifications-sounds-android-7p0-aggravation.html for more information on why this is necessary
+	 * @param context The context
+	 * @param ringtone The ringtone to check
+	 * @param defaultRingtone The default ringtone to fall back to
+	 * @return A valid ringtone Uri or null, if the provided ringtone is not valid
+	 */
+	@Nullable
+	private static Uri checkIfRingtoneIsAccessible(@NonNull Context context, @Nullable Uri ringtone, @NonNull Uri defaultRingtone) {
+		if (ringtone != null && ringtone.toString().length() > 4) {
+			if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(ringtone.getScheme())) {
+				ThreemaApplication.getAppContext().grantUriPermission("com.android.systemui", ringtone, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			} else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(ringtone.getScheme())) {
+				if (!ringtone.equals(defaultRingtone)) {
+					// check if ringtone is still available
+					try (InputStream ignored = context.getContentResolver().openInputStream(ringtone)) {
+					} catch (Exception e) {
+						// cannot open ringtone - fallback to default ringtone
+						ringtone = defaultRingtone;
+						logger.error("Unable to open ringtone. Falling back to default", e);
+						logger.info("Attempted to open {}", ringtone.toString());
+					}
+				}
+			}
+			return ringtone;
+		}
+		return null;
 	}
 
 	/**
@@ -245,10 +282,14 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 	 * @param notificationManager The system's NotificationManager
 	 * @param sharedPreferences The system's SharedPreferences
 	 * @param notificationChannelSettings The desired notification settings
+	 * @param allowMultipleChannelsPerGroup Whether multiple channels with different settings per channel are allowed (for example per-chat notification settings)
 	 * @return NotificationChannel which is guaranteed to have the correct settings
 	 */
 	@TargetApi(Build.VERSION_CODES.O)
-	private static NotificationChannel validateNotificationChannel(NotificationManager notificationManager, SharedPreferences sharedPreferences, NotificationChannelSettings notificationChannelSettings) {
+	private static NotificationChannel validateNotificationChannel(NotificationManager notificationManager,
+																   SharedPreferences sharedPreferences,
+																   NotificationChannelSettings notificationChannelSettings,
+																   boolean allowMultipleChannelsPerGroup) {
 		String hash = notificationChannelSettings.hash();
 		NotificationChannel existingNotificationChannel = notificationManager.getNotificationChannel(hash);
 		// create a new channel with the requested settings. if no previous channel exists with the same settings, directly use the new channel, otherwise use it for testing
@@ -273,9 +314,13 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 			// update prefs
 			sharedPreferences.edit().putLong(notificationChannelSettings.getSeqPrefKey(), notificationChannelSettings.getSeqNum()).apply();
 		} else {
-			createNotificationChannelGroupIfNotExists(notificationManager, notificationChannelSettings);
-
 			if (existingNotificationChannel == null) {
+				if (!allowMultipleChannelsPerGroup &&
+					getNotificationChannelGroup(notificationManager, notificationChannelSettings.getChannelGroupId()) != null) {
+						notificationManager.deleteNotificationChannelGroup(notificationChannelSettings.getChannelGroupId());
+				}
+				createNotificationChannelGroupIfNotExists(notificationManager, notificationChannelSettings);
+
 				sharedPreferences.edit().putLong(notificationChannelSettings.getSeqPrefKey(), notificationChannelSettings.getSeqNum()).apply();
 
 				logger.info("Creating new channel {} in group \"{}\"", newNotificationChannel.getId(), notificationChannelSettings.getChannelGroupId());
@@ -323,6 +368,13 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 		if (!Objects.equals(existingNotificationChannel.getSound(), newNotificationChannel.getSound())) {
 			return false;
 		}
+
+		try {
+			logger.info("Audio Attributes Usage: {} -> {}", existingNotificationChannel.getAudioAttributes().getUsage(), newNotificationChannel.getAudioAttributes().getUsage());
+			if (existingNotificationChannel.getAudioAttributes().getUsage() != newNotificationChannel.getAudioAttributes().getUsage()) {
+				return false;
+			}
+		} catch (Exception e) { /* */ }
 
 		try {
 			logger.info("Vibrate: {} -> {}", existingNotificationChannel.shouldVibrate(), newNotificationChannel.shouldVibrate());
@@ -382,7 +434,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 	 */
 	@TargetApi(Build.VERSION_CODES.O)
 	private static NotificationChannel createNotificationChannel(String hash, NotificationChannelSettings notificationChannelSettings) {
-		AudioAttributes audioAttributes = SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT);
+		AudioAttributes audioAttributes = SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_NOTIFICATION);
 
 		@SuppressLint("WrongConstant") NotificationChannel newNotificationChannel = new NotificationChannel(
 				hash, hash.substring(0, 16),
@@ -418,6 +470,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 		return newNotificationChannel;
 	}
 
+	@NonNull
 	@Override
 	public Notification build() {
 		if (notificationSchema != null && !ConfigUtils.supportsNotificationChannels()) {

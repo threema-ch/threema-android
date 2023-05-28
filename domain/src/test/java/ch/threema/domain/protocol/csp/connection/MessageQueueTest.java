@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,7 +23,7 @@ package ch.threema.domain.protocol.csp.connection;
 
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.stores.ContactStore;
-import ch.threema.domain.stores.TestHelpers;
+import ch.threema.domain.testhelpers.TestHelpers;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.helpers.DummyUsers;
 import ch.threema.domain.helpers.InMemoryContactStore;

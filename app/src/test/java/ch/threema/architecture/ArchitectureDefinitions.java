@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,9 +21,9 @@
 
 package ch.threema.architecture;
 
-import com.tngtech.archunit.library.Architectures;
-
 import androidx.annotation.NonNull;
+
+import com.tngtech.archunit.library.Architectures;
 
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 

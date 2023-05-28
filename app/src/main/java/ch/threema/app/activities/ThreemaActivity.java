@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,6 +22,7 @@
 package ch.threema.app.activities;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.base.utils.LoggingUtil;
 
 public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
@@ -64,7 +66,6 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 	final static public int ACTIVITY_ID_BACKUP_PICKER = 20042;
 	final static public int ACTIVITY_ID_COPY_BALLOT = 20043;
 	public static final int ACTIVITY_ID_CHECK_LOCK = 20046;
-	public static final int ACTIVITY_ID_PICK_FILE = 20047;
 	public static final int ACTIVITY_ID_PAINT = 20049;
 	public static final int ACTIVITY_ID_PICK_MEDIA = 20050;
 	public static final int ACTIVITY_ID_MANAGE_GROUP_LINKS = 20051;

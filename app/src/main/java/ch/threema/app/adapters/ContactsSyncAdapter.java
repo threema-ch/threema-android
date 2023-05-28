@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -47,18 +47,9 @@ import ch.threema.storage.models.ContactModel;
 
 public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSyncAdapter");
-	private Context context;
 
 	public ContactsSyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
-
-		this.context = context;
-	}
-
-	public ContactsSyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs) {
-		super(context, autoInitialize, allowParallelSyncs);
-
-		this.context = context;
 	}
 
 	@Override

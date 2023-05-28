@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,7 +25,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -36,23 +35,10 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-
-import org.slf4j.Logger;
-import org.webrtc.IceCandidate;
-import org.webrtc.SessionDescription;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -60,8 +46,26 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
+import org.slf4j.Logger;
+import org.webrtc.IceCandidate;
+import org.webrtc.SessionDescription;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
@@ -98,16 +102,22 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipMessage;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
 
-import static androidx.media.AudioAttributesCompat.USAGE_NOTIFICATION_RINGTONE;
 import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
 import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_INCOMING_CALL;
 import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_SILENT;
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_CALL;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
+import static ch.threema.app.voip.activities.CallActivity.EXTRA_ACCEPT_INCOMING_CALL;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CALL_ID;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CONTACT_IDENTITY;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_REJECT_REASON;
 import static ch.threema.app.voip.services.VoipCallService.ACTION_ICE_CANDIDATES;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
@@ -152,6 +162,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	private volatile Boolean initiator = null;
 	private final CallState callState = new CallState();
 	private Long callStartTimestamp = null;
+	private boolean isPeerRinging = false;
 
 	// Map that stores incoming offers
 	private final HashMap<Long, VoipCallOfferData> offerMap = new HashMap<>();
@@ -161,6 +172,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 	// Candidate cache
 	private final Map<String, List<VoipICECandidatesData>> candidatesCache;
+
+	// Call cache
+	private final Set<Long> recentCallIds = new HashSet<>();
 
 	// Notifications
 	private final List<String> callNotificationTags = new ArrayList<>();
@@ -173,6 +187,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 	// Pending intents
 	private @Nullable PendingIntent acceptIntent;
+	private final @Nullable PendingIntent mediaButtonPendingIntent;
 
 	// Connection status
 	private boolean connectionAcquired = false;
@@ -180,6 +195,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	// Timeouts
 	private static final int RINGING_TIMEOUT_SECONDS = 60;
 	private static final int VOIP_CONNECTION_LINGER = 1000 * 5;
+
+	private final AtomicBoolean timeoutReject = new AtomicBoolean(true);
 
 	private ScreenOffReceiver screenOffReceiver;
 
@@ -208,6 +225,10 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		this.notificationManagerCompat = NotificationManagerCompat.from(appContext);
 		this.notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		this.audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
+
+		Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+		mediaButtonIntent.setClass(appContext, VoipMediaButtonReceiver.class);
+		this.mediaButtonPendingIntent = PendingIntent.getBroadcast(appContext, 0, mediaButtonIntent, PENDING_INTENT_FLAG_MUTABLE);
 	}
 
 	//region Logging
@@ -294,6 +315,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			newState.getName(), newState.getCallId(), newState.getIncomingCallCounter()
 		);
 
+		// As soon as the callers state changes from initializing to another state, the callee is
+		// not ringing anymore
+		if (oldState.isInitializing()) {
+			isPeerRinging = false;
+		}
+
 		// Clear pending accept intent
 		if (!newState.isRinging()) {
 			this.acceptIntent = null;
@@ -302,13 +329,21 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 		// Ensure bluetooth media button receiver is registered when a call starts
 		if (newState.isRinging() || newState.isInitializing()) {
-			audioManager.registerMediaButtonEventReceiver(new ComponentName(appContext, VoipMediaButtonReceiver.class));
+			audioManager.registerMediaButtonEventReceiver(mediaButtonPendingIntent);
 		}
 
 		// Ensure bluetooth media button receiver is deregistered when a call ends
 		if (newState.isDisconnecting() || newState.isIdle()) {
-			audioManager.unregisterMediaButtonEventReceiver(new ComponentName(appContext, VoipMediaButtonReceiver.class));
+			audioManager.unregisterMediaButtonEventReceiver(mediaButtonPendingIntent);
 		}
+
+		long callId = oldState.getCallId();
+		if (callId != 0L) {
+			recentCallIds.add(callId);
+		}
+
+		// Enable rejecting calls after a timeout
+		enableTimeoutReject();
 	}
 
 	/**
@@ -342,7 +377,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 		// Make sure connection is open
 		if (!this.connectionAcquired) {
-			this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
+			this.lifetimeService.acquireUnpauseableConnection(LIFETIME_SERVICE_TAG);
 			this.connectionAcquired = true;
 		}
 
@@ -442,6 +477,25 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		}
 	}
 
+	/**
+	 * Set the current state of the peer device regarding ringing.
+	 *
+	 * @param isPeerRinging the current peer ringing state
+	 */
+	public void setPeerRinging(boolean isPeerRinging) {
+		this.isPeerRinging = isPeerRinging;
+	}
+
+	/**
+	 * Check whether the peer device is currently ringing. This function returns {@code true} from
+	 * the time the other device rings until the call state changes on this device.
+	 *
+	 * @return {@code true} if the other device is ringing, {@code false} otherwise
+	 */
+	public boolean isPeerRinging() {
+		return this.isPeerRinging;
+	}
+
 	//endregion
 
 	/**
@@ -466,23 +520,44 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	 * Create a new accept intent for the specified call ID / identity.
 	 */
 	public static Intent createAcceptIntent(long callId, @NonNull String identity) {
-		final Intent intent = new Intent(getAppContext(), VoipCallService.class);
+		final Intent intent = new Intent(getAppContext(), CallActivity.class);
 		intent.putExtra(EXTRA_CALL_ID, callId);
 		intent.putExtra(EXTRA_CONTACT_IDENTITY, identity);
 		intent.putExtra(EXTRA_IS_INITIATOR, false);
+		intent.putExtra(EXTRA_ACCEPT_INCOMING_CALL, true);
+		intent.putExtra(EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		return intent;
 	}
 
 	/**
 	 * Create a new reject intent for the specified call ID / identity.
 	 */
-	public static Intent createRejectIntent(long callId, @NonNull String identity, byte rejectReason) {
+	private static Intent createRejectIntent(long callId, @NonNull String identity) {
 		final Intent intent = new Intent(getAppContext(), CallRejectService.class);
 		intent.putExtra(EXTRA_CALL_ID, callId);
 		intent.putExtra(EXTRA_CONTACT_IDENTITY, identity);
 		intent.putExtra(EXTRA_IS_INITIATOR, false);
-		intent.putExtra(CallRejectService.EXTRA_REJECT_REASON, rejectReason);
+		intent.putExtra(CallRejectService.EXTRA_REJECT_REASON, VoipCallAnswerData.RejectReason.REJECTED);
 		return intent;
+	}
+
+	/**
+	 * Creates a reject work request builder.
+	 *
+	 * @param callId the call id of the call to be rejected
+	 * @param identity the contact identity of the call partner
+	 * @param rejectReason the reject reason
+	 * @return a work request builder
+	 */
+	private static OneTimeWorkRequest.Builder createRejectWorkRequestBuilder(long callId, @NonNull String identity, byte rejectReason) {
+		return new OneTimeWorkRequest.Builder(RejectIntentServiceWorker.class)
+			.setInputData(new Data.Builder()
+				.putLong(KEY_CALL_ID, callId)
+				.putString(KEY_CONTACT_IDENTITY, identity)
+				.putByte(KEY_REJECT_REASON, rejectReason
+				).build()
+			);
 	}
 
 	/**
@@ -545,7 +620,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Handle some reasons for rejecting calls...
 		Byte rejectReason = null; // Set to non-null in order to reject the call
 		boolean silentReject = false; // Set to true if you don't want a "missed call" chat message
-		if (!this.preferenceService.isVoipEnabled()) {
+		if (!ConfigUtils.isCallsEnabled()) {
 			// Calls disabled
 			logCallInfo(callId, "Rejecting call from {} (disabled)", contact.getIdentity());
 			rejectReason = VoipCallAnswerData.RejectReason.DISABLED;
@@ -597,34 +672,25 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		Bundle bundle = new Bundle();
 		bundle.putBoolean(EXTRA_CANCEL_WEAR, true);
 		answerIntent.putExtras(bundle);
-		final PendingIntent accept;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			accept = PendingIntent.getForegroundService(
-					this.appContext,
-					IdUtil.getTempId(contact),
-					answerIntent,
-					PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
-			);
-		} else {
-			accept = PendingIntent.getService(
-					this.appContext,
-					IdUtil.getTempId(contact),
-					answerIntent,
-					PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
-			);
-		}
+		final PendingIntent accept = PendingIntent.getActivity(
+			this.appContext,
+			-IdUtil.getTempId(contact),
+			answerIntent,
+			PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PENDING_INTENT_FLAG_IMMUTABLE
+		);
 		this.acceptIntent = accept;
 
 		// If the call is rejected, start the CallRejectService
 		final Intent rejectIntent = createRejectIntent(
 			callId,
-			msg.getFromIdentity(),
-			VoipCallAnswerData.RejectReason.REJECTED
+			msg.getFromIdentity()
 		);
 
-		final PendingIntent reject = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ?
-			PendingIntent.getForegroundService(this.appContext, -IdUtil.getTempId(contact), rejectIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT) :
-			PendingIntent.getService(this.appContext, -IdUtil.getTempId(contact), rejectIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+		final PendingIntent reject = PendingIntent.getService(
+			this.appContext,
+			-IdUtil.getTempId(contact),
+			rejectIntent,
+			PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PENDING_INTENT_FLAG_IMMUTABLE);
 
 		final ContactMessageReceiver messageReceiver = this.contactService.createReceiver(contact);
 
@@ -646,45 +712,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			logger.error(callId + ": Could not send ringing message", e);
 		}
 
-		// Start timer to reject the call after a while
-		final long originalCallCounter = this.callState.getIncomingCallCounter();
-		final Runnable ringerTimeoutRunnable = () -> {
-			final CallStateSnapshot currentCallState = this.getCallState();
-
-			// Note: Because different incoming calls might have the same call ID (0),
-			// as a transitional solution we're still using the call counter.
-
-			// Only reject the call if the state is still initializing with the same call id.
-			if (!currentCallState.isRinging()) {
-				logger.info(
-					"Ignoring ringer timeout for call #{} (state is {}, not RINGING)",
-					originalCallCounter,
-					currentCallState.getName()
-				);
-			} else if (currentCallState.getIncomingCallCounter() != originalCallCounter) {
-				logger.info(
-					"Ignoring ringer timeout for call #{} (current: #{})",
-					originalCallCounter,
-					currentCallState.getIncomingCallCounter()
-				);
-			} else {
-				logger.info(
-					"Ringer timeout for call #{} reached after {}s",
-					originalCallCounter,
-					RINGING_TIMEOUT_SECONDS
-				);
-
-				// Reject call
-				final Intent rejectIntent1 = createRejectIntent(
-					currentCallState.getCallId(),
-					msg.getFromIdentity(),
-					VoipCallAnswerData.RejectReason.TIMEOUT
-				);
-				ContextCompat.startForegroundService(appContext, rejectIntent1);
-			}
-		};
-		(new Handler(Looper.getMainLooper()))
-			.postDelayed(ringerTimeoutRunnable, RINGING_TIMEOUT_SECONDS * 1000);
+		// Reject the call after a while
+		OneTimeWorkRequest rejectWork = createRejectWorkRequestBuilder(callId, msg.getFromIdentity(), VoipCallAnswerData.RejectReason.TIMEOUT)
+			.setInitialDelay(RINGING_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+			.build();
+		WorkManager.getInstance(appContext).enqueue(rejectWork);
 
 		// Notify listeners
 		VoipListenerManager.messageListener.handle(listener -> {
@@ -741,7 +773,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				case VoipCallAnswerData.Action.REJECT:
 					// TODO: only for tests!
 					VoipListenerManager.callEventListener.handle(listener -> {
-						listener.onRejected(msg.getFromIdentity(), false, callAnswerData.getRejectReason());
+						listener.onRejected(callId, msg.getFromIdentity(), false, callAnswerData.getRejectReason());
 					});
 					logCallInfo(callId, "Call answer received from {}: reject/{}",
 						msg.getFromIdentity(), callAnswerData.getRejectReasonName());
@@ -885,10 +917,16 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Validate Call ID
 		//
 		// NOTE: Hangup messages from older Threema versions may not have any associated data!
+		// NOTE: If a remote hangup message arrives with an invalid call id that does not appear
+		// in the call history, it is a missed call
 		final long callId = msg.getData() == null
 			? 0L
 			: msg.getData().getCallIdOrDefault(0L);
 		if (!this.isCallIdValid(callId)) {
+			if (isMissedCall(msg, callId)) {
+				handleMissedCall(msg, callId);
+				return true;
+			}
 			logger.info(
 				"Call hangup message received from {} for an invalid Call ID ({}, local={}), ignoring",
 				msg.getFromIdentity(), callId, this.callState.getCallId()
@@ -925,16 +963,29 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			VoipListenerManager.callEventListener.handle(
 				listener -> {
 					final boolean accepted = prevState.isInitializing();
-					listener.onMissed(identity, accepted);
+					listener.onMissed(callId, identity, accepted, msg.getDate());
 				}
 			);
 		} else if (prevState.isCalling() && duration != null) {
 			VoipListenerManager.callEventListener.handle(listener -> {
-				listener.onFinished(msg.getFromIdentity(), !incoming, duration);
+				listener.onFinished(callId, msg.getFromIdentity(), !incoming, duration);
 			});
 		}
 
 		return true;
+	}
+
+	/**
+	 * Handle a missed call.
+	 *
+	 * @param msg the hangup message of the missed call
+	 * @param callId the call id of the missed call
+	 */
+	private void handleMissedCall(@NonNull final VoipCallHangupMessage msg, final long callId) {
+		logger.info("Missed call received from {} with call id {}", msg.getFromIdentity(), callId);
+		VoipListenerManager.callEventListener.handle(
+			listener -> listener.onMissed(callId, msg.getFromIdentity(), false, msg.getDate())
+		);
 	}
 
 	//endregion
@@ -964,6 +1015,29 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Otherwise, there's a call ID mismatch.
 		return false;
 	}
+
+	/**
+	 * Check whether this hangup voip message is a missed call.
+	 *
+	 * @param msg the received voip message that is checked for a missed call
+	 * @param callId the call id
+	 * @return {@code true} if it is a missed call, {@code false} otherwise
+	 */
+	public boolean isMissedCall(VoipMessage msg, long callId) {
+		if (recentCallIds.contains(callId)) {
+			logger.info("No missed call: call id {} is contained in recent call ids", callId);
+			return false;
+		}
+		// Limit the check to the last 4 calls. Note that only call status messages with the
+		// contact of this hangup message are considered.
+		if (contactService.createReceiver(contactService.getByIdentity(msg.getFromIdentity())).hasVoipCallStatus(callId, 4)) {
+			logger.info("No missed call: call id {} found in database", callId);
+			return false;
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Send a call offer to the specified contact.
@@ -1072,10 +1146,10 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 					case VoipCallAnswerData.RejectReason.BUSY:
 					case VoipCallAnswerData.RejectReason.TIMEOUT:
 					case VoipCallAnswerData.RejectReason.OFF_HOURS:
-						listener.onMissed(receiver.getIdentity(), false);
+						listener.onMissed(callId, receiver.getIdentity(), false, null);
 						break;
 					default:
-						listener.onRejected(receiver.getIdentity(), true, reason);
+						listener.onRejected(callId, receiver.getIdentity(), true, reason);
 						break;
 				}
 			});
@@ -1236,9 +1310,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			VoipListenerManager.callEventListener.handle(
 				listener -> {
 					if (outgoing) {
-						listener.onAborted(peerIdentity);
+						listener.onAborted(callId, peerIdentity);
 					} else {
-						listener.onMissed(peerIdentity, true);
+						listener.onMissed(callId, peerIdentity, true, null);
 					}
 				}
 			);
@@ -1337,7 +1411,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	/**
 	 * Cancel all pending call notifications.
 	 */
-	void cancelCallNotificationsForNewCall() {
+	public void cancelCallNotificationsForNewCall() {
 		this.stopRingtone();
 
 		synchronized (this.callNotificationTags) {
@@ -1380,6 +1454,30 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			}
 			return (int) seconds;
 		}
+	}
+
+	/**
+	 * Disable automatically rejecting the call after a timeout.
+	 */
+	public synchronized void disableTimeoutReject() {
+		this.timeoutReject.set(false);
+	}
+
+	/**
+	 * Enable automatically rejecting the call after a timeout.
+	 */
+	public synchronized void enableTimeoutReject() {
+		this.timeoutReject.set(true);
+	}
+
+	/**
+	 * Return if the call should be auto rejected. Normally every call should be rejected after a
+	 * timeout. If the timeout is reached just after the user accepted the call (but the call did
+	 * not start yet), then this returns false and the call should not be rejected based on the
+	 * timeout.
+	 */
+	public synchronized boolean isTimeoutReject() {
+		return timeoutReject.get();
 	}
 
 	// Private helper methods
@@ -1510,7 +1608,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				if (Build.VERSION.SDK_INT <= 21) {
 					ringtonePlayer.setAudioStreamType(AudioManager.STREAM_RING);
 				} else {
-					ringtonePlayer.setAudioAttributes(SoundUtil.getAudioAttributesForUsage(USAGE_NOTIFICATION_RINGTONE));
+					ringtonePlayer.setAudioAttributes(SoundUtil.getAudioAttributesForCallNotification());
 				}
 
 				try {
@@ -1561,7 +1659,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// and clicks the notification's expanded view.  It's also used to
 		// launch the InCallActivity immediately when when there's an incoming
 		// call (see the "fullScreenIntent" field below).
-		return PendingIntent.getActivity(appContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		return PendingIntent.getActivity(appContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 	}
 
 	/**

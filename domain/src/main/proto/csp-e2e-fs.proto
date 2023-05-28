@@ -1,105 +1,249 @@
-// ## Forward Security Subprotocol
-
+// # Forward Security Subprotocol
+//
 // This protocol specifies forward security for end-to-end encrypted chat server
 // messages. It is based on sessions established between two parties, where each
 // session has a unique ID and is associated with ephemeral key material
 // negotiated between the parties using ECDH key agreement and hash chain based
 // key derivation.
-
-// Each party is either an initiator or a responder in a given session. For
-// bidirectional communication, two separate sessions are established. This is
-// reflected in the envelope message types: one for control and content messages
-// sent from the initiator of a session to the responder
-// (`FromSessionInitiatorEnvelope`), and another for control messages sent by
-// the responder back to the initiator (`FromSessionResponderEnvelope`) to
-// enable an ECDH based key exchange.
-
-// Content messages from an initiator to a responder can take any other type that
-// could normally be sent without Forward Security, and wrap the message
-// contained within using a separate cryptographic layer that provides Forward
-// Security.
-
-// ### Terminology
-
-// - `FS`: Forward Security
-// - `SI`: Session Initiator
-// - `SR`: Session Responder
-// - `2DH`: One-sided forward security with two DH calculations in the key
+//
+// Each party is either an initiator or a responder in a given session. Once
+// established, a session can be used for communication in either direction.
+//
+// Content messages can take any other type that could normally be sent without
+// Forward Security, and wrap the message contained within using a separate
+// cryptographic layer that provides Forward Security.
+//
+// TODO(SE-221): Add a section that describes when this subprotocol is being
+// triggered and to which messages it is being applied.
+//
+// ## Terminology
+//
+// - FS: Forward Security
+// - SI: Session Initiator
+// - SR: Session Responder
+// - 2DH: One-sided forward security with two DH calculations in the key
 //   derivation
-// - `4DH`: Full two-sided forward security with four DH calculations in the key
+// - 4DH: Full two-sided forward security with four DH calculations in the key
 //   derivation
-
-// # Modes
-
+//
+// ## Modes
+//
 // An ECDH key negotiation normally needs active calculations by both involved
-// parties before any actual messages can be exchanged. This is not practical
-// in a messaging app, as the other party may not be online at the time when the
+// parties before any actual messages can be exchanged. This is not practical in
+// a messaging app, as the other party may not be online at the time when the
 // first message(s) are sent.
-
+//
 // Thus, the protocol specifies two modes, called 2DH and 4DH.
-
-// ## 2DH mode
-
+//
+// ### 2DH mode
+//
 // 2DH mode can be used immediately, even in a new session, as it does not
 // involve any ECDH calculations from the peer (responder). However, it only
 // protects against a compromise of the initiator's permanent secret key, not of
 // the responder's permanent secret key. It is still better than sending all
 // messages without Forward Security until a full two-sided session has been
 // negotiated.
-
-// ## 4DH mode
-
+//
+// ### 4DH mode
+//
 // A session enters 4DH mode once the responder has received and processed the
 // initiator's `Init` message, and the resulting `Accept` message has been
 // received by the initiator. At this point, ephemeral key material is available
 // from the responder and is used in the ECDH calculations. Messages sent from
 // this point on are secure even in the event of a future compromise of the
 // permanent secret key of either party.
-
-// # Ratchet counters
-
-// Each session is associated with a counter, which describes how many times the
-// KDF ratchet has been turned since the initial ECDH based key negotiation.
-// Whenever a new message has been sent in session, the counter must be
-// incremented and the ratchet must be turned. As a KDF ratchet operation cannot
-// be reversed, counter values cannot go back, and the original message order
-// must be preserved during transport over the network and during processing on
-// both sides.
-
+//
+// The initiator should discard his 2DH key material after having received the
+// `Accept` message. The responder should discard it after receiving the first
+// message in 4DH mode, as no further messages in 2DH mode are to be expected
+// (barring message reordering).
+//
+// ## Asymmetric keys
+//
+// Each party uses two different asymmetric Curve25519 key pairs:
+//
+// - myStaticKey (permanent key pair associated with Threema ID)
+// - myEphemeralKey (ephemeral key pair generated for each session)
+//
+// The initiator needs to store `myEphemeralKey.private` until he has received
+// the `Accept` message from the responder and should then erase it securely.
+// The responder can discard his `myEphemeralKey.private` immediately after
+// performing the initial chain key calculations (see below) and does not need
+// to store it persistently for any amount of time.
+//
+// Each party also learns `peerEphemeralKey.public` from the
+// `Init.ephemeral_public_key` or `Accept.ephemeral_public_key` message received
+// from the peer. The `peerStaticKey.public` of the peer's Threema ID is assumed
+// to be already known.
+//
+// ## Ratchets
+//
+// The two parties keep the following KDF ratchets per session:
+//
+// - myRatchet2DH (initiator only)
+// - peerRatchet2DH (responder only)
+// - myRatchet4DH (both parties)
+// - peerRatchet4DH (both parties)
+//
+// For each ratchet, the current chain key and a counter (see below) are stored.
+//
+// The initiator calculates the initial chain keys as follows:
+//
+//     myRatchet2DH.chainKey = BLAKE2b(
+//         key=ECDH(myStaticKey.private, peerStaticKey.public) ||
+//             ECDH(myEphemeralKey.private, peerStaticKey.public),
+//         salt="ke-2dh-<myThreemaId>", personal="3ma-e2e")
+//
+//     myRatchet4DH.chainKey = BLAKE2b(
+//         key=BLAKE2b(
+//                 ECDH(myStaticKey.private, peerStaticKey.public) ||
+//                 ECDH(myEphemeralKey.private, peerStaticKey.public) ||
+//                 ECDH(myStaticKey.private, peerEphemeralKey.public) ||
+//                 ECDH(myEphemeralKey.private, peerEphemeralKey.public)
+//             ),
+//         salt="ke-4dh-<myThreemaId>", personal="3ma-e2e")
+//
+//     peerRatchet4DH.chainKey = BLAKE2b(
+//         key=BLAKE2b(
+//                 ECDH(myStaticKey.private, peerStaticKey.public) ||
+//                 ECDH(myEphemeralKey.private, peerStaticKey.public) ||
+//                 ECDH(myStaticKey.private, peerEphemeralKey.public) ||
+//                 ECDH(myEphemeralKey.private, peerEphemeralKey.public)
+//             ),
+//         salt="ke-4dh-<peerThreemaId>", personal="3ma-e2e")
+//
+// The responder calculates the initial chain keys as follows:
+//
+//     peerRatchet2DH.chainKey = BLAKE2b(
+//         key=ECDH(myStaticKey.private, peerStaticKey.public) ||
+//             ECDH(myStaticKey.private, peerEphemeralKey.public),
+//         salt="ke-2dh-<peerThreemaId>", personal="3ma-e2e")
+//
+//     myRatchet4DH.chainKey = BLAKE2b(
+//         key=BLAKE2b(
+//                 ECDH(myStaticKey.private, peerStaticKey.public) ||
+//                 ECDH(myStaticKey.private, peerEphemeralKey.public) ||
+//                 ECDH(myEphemeralKey.private, peerStaticKey.public) ||
+//                 ECDH(myEphemeralKey.private, peerEphemeralKey.public)
+//             ),
+//         salt="ke-4dh-<myThreemaId>", personal="3ma-e2e")
+//
+//     peerRatchet4DH.chainKey = BLAKE2b(
+//         key=BLAKE2b(
+//                 ECDH(myStaticKey.private, peerStaticKey.public) ||
+//                 ECDH(myStaticKey.private, peerEphemeralKey.public) ||
+//                 ECDH(myEphemeralKey.private, peerStaticKey.public) ||
+//                 ECDH(myEphemeralKey.private, peerEphemeralKey.public)
+//             ),
+//         salt="ke-4dh-<peerThreemaId>", personal="3ma-e2e")
+//
+// The ratchets are rotated after each message as follows:
+//
+//     ratchet.chainKey = BLAKE2b(key=ratchet.chainKey, salt="kdf-ck", personal="3ma-e2e")
+//
+// From the current chain key, an encryption key for the actual message is
+// derived as follows:
+//
+//     encryptionKey = BLAKE2b(key=ratchet.chainKey, salt="kdf-aek", personal="3ma-e2e")
+//
+// Notes:
+//
+// - The only difference between the "my" and "peer" ratchets for each mode is
+//   the Threema ID that is included in the salt.
+// - The ECDH() function is the one from NaCl, i.e. crypto_box_beforenm(), which
+//   applies a HSalsa20 step to the raw Curve25519 output.
+// - BLAKE2b is used twice for 4DH. This is because it can only accept up to 64
+//   bytes as its key input, but 128 bytes are provided in 4DH mode. In the
+//   inner application, it is simply used as a hash function with 64 bytes
+//   output and no parameters. In the outer application, it is used as a KDF
+//   with key/salt/personal parameters, but no input.
+//
+// ### Ratchet counters
+//
+// Each session, direction and type (2DH/4DH) is associated with a counter,
+// which describes how many times the KDF ratchet has been turned since the
+// initial ECDH based key negotiation. Whenever a new message has been sent in a
+// session, the corresponding counter must be incremented and the ratchet must
+// be turned. As a KDF ratchet operation cannot be reversed, counter values
+// cannot go back, and the original message order must be preserved during
+// transport over the network and during processing on both sides.
+//
 // To account for lost messages (e.g. when the recipient has been offline for an
-// extended period of time), the responder must be prepared to accept counters
+// extended period of time), either party must be prepared to accept counters
 // that have skipped a few values, and turn the KDF ratchet as many times as is
 // needed to reach the new counter value. To limit the CPU impact on the
 // responder side, the permissible counter increment is limited to 10'000.
-
-// ### Usual Protocol Flow
-
+//
+// ## Usual Protocol Flow
+//
 // A forward security session negotiation is typically started when a user sends
 // the first message to a peer. The user assumes the role of the session
 // initiator, creates a new session and sends an `Init` message, followed by any
 // number of encapsulated `Message`s in 2DH mode.
-
-//     SI -- 0xa0 Init -----------> SR   [1]
-//     SI -- 0xa0 Message (2DH) --> SR   [0..N]
-
+//
+//     SI -- Init -----------> SR   [1]
+//     SI -- Message (2DH) --> SR   [0..N]
+//
 // At this point, SI established a session in 2DH mode for messages flowing from
 // SI to SR.
-
-// The session responder will then eventually process the `Init` and `Accept` the
-// session.
-
-//     SR -- 0xa1 Accept ---------> SI
-
+//
+// The session responder will then eventually process the `Init` and `Accept`
+// the session.
+//
+//     SR -- Accept ---------> SI   [1]
+//
 // At that point, the session has been upgraded to 4DH mode for future messages
-// sent from SI to SR.
-
-//     SI -- 0xa0 Message (4DH) --> SR   [0..N]
-
-// At any point SI may `Terminate` or replace a session by sending a new `Init`,
-// following the above flow.
-
-// In case of an error, the protocol flow will deviate. See the concrete message
-// descriptions.
+// sent between SI and SR.
+//
+//     SR -- Message (4DH) --> SI   [0..N]
+//     SI -- Message (4DH) --> SR   [0..N]
+//     ...
+//
+// At any point either party may `Terminate` a session, for example when the
+// user is about to delete their account (or FS session information) and wants
+// to notify the peer that the key material should be discarded.
+//
+// If any party receives a `Message` that it cannot decrypt (e.g. due to having
+// lost the FS key material), it sends a `Reject` message to inform the other
+// party that it can no longer use this particular FS session, and also tells it
+// the ID of the message that could not be decrypted. The sender can then (after
+// manual confirmation by the user) send the message again in a new FS session.
+//
+// ## Handling data loss
+//
+// A party could lose their stored forward security session information, e.g.
+// due to reinstallation or relocation of the app to a new device. Forward
+// security sessions are not included in backups, as this would conflict with
+// their ephemeralness. When a party receives a message that it cannot decrypt
+// due to missing session information, it signals this to the other party using
+// a Reject message. Also, upon receiving an Init message, the receiving party
+// can assume that the sender does not have any existing session information,
+// and should thus delete any 4DH sessions on its side. 2DH sessions (i.e. those
+// initiated by the party that has not lost the data) should not be deleted, as
+// this could interfere with race condition resolution (see below).
+//
+// ## Race Conditions
+//
+// It is possible for both parties to start a negotiation independently, before
+// having received the other party's `Init`. They should proceed normally to
+// ensure any messages sent during the race will be received. However, when
+// choosing a session for sending a new message and there is more than one
+// session in 4DH mode available for the desired peer, the one with the lowest
+// session ID should be used. This will ensure both parties will eventually
+// start using the same session in both directions.
+//
+// ### Pruning unused sessions
+//
+// As soon as a 4DH message has been received from the peer in what is currently
+// considered the lowest session ID by the receiving party, other leftover
+// sessions should be discarded.
+//
+// ## Informing the user
+//
+// To prevent undetected MITM attacks by a third party that has gained access to
+// the permanent private key of either party, the user should be informed
+// whenever a new session is negotiated or a non-FS message has been received
+// even though an FS session was available.
 
 syntax = "proto3";
 
@@ -108,7 +252,7 @@ package csp_e2e_fs;
 option java_package = "ch.threema.protobuf.csp.e2e.fs";
 option java_multiple_files = true;
 
-message FromSessionInitiatorEnvelope {
+message ForwardSecurityEnvelope {
   // Forward security session ID, 16 bytes
   bytes session_id = 1;
 
@@ -118,8 +262,41 @@ message FromSessionInitiatorEnvelope {
     bytes ephemeral_public_key = 1;
   }
 
-  // Signals that the initiator will not send any further `Message`s in this
-  // session. The responder should discard all key material related to this
+  // Accept a newly established session as a responder. The session ID is
+  // equal to the one of the initiator.
+  message Accept {
+    // Ephemeral public key of the responder for this session
+    bytes ephemeral_public_key = 1;
+  }
+
+  // Sent when receiving a `Message` that cannot be decrypted (e.g. because
+  // the recipient has lost the session information).
+  //
+  // The peer should discard the FS session and start a new one, if possible.
+  message Reject {
+    // Message ID of the message that could not be decrypted and that should be
+    // sent again in a new session or without a session.
+    fixed64 rejected_message_id = 1;
+
+    // Cause for the reject.
+    enum Cause {
+      // General state mismatch. Explicitly includes the following cases:
+      //
+      // - A `Message` could not be decrypted.
+      // - The DH type of a `Message` does not match the expected DH type.
+      STATE_MISMATCH = 0;
+      // The Session ID a `Message` was delivered with is not associated to a
+      // known session
+      UNKNOWN_SESSION = 1;
+      // Signals that forward security has been explicitly disabled in response
+      // to an `Init`, `Accept` or `Message`.
+      DISABLED = 2;
+    }
+    Cause cause = 2;
+  }
+
+  // Signals that the sender will not send any further `Message`s in this
+  // session. The recipient should discard all key material related to this
   // session.
   message Terminate {}
 
@@ -139,48 +316,24 @@ message FromSessionInitiatorEnvelope {
     //
     // - Counters for 2DH and 4DH are separate, as they are based on different
     //   root keys.
-    // - Can be used by the responder as a hint of how many times to
+    // - Counters for each direction are separate.
+    // - Can be used by the recipient as a hint of how many times to
     //   rotate/ratchet the KDF, in case an intermediate `Message` went missing.
     uint64 counter = 2;
 
     // A message defined in `e2e.container`, encrypted by the keys negotiated
     // for FS in this session.
     //
-    // An inner E2EE message of type `0xa0` or `0xa1` is disallowed and **must** be
+    // An inner E2EE message of type `0xa0` is disallowed and **must** be
     // discarded.
     bytes message = 3;
   }
 
   oneof content {
     Init init = 2;
-    Terminate terminate = 3;
-    Message message = 4;
-  }
-}
-
-message FromSessionResponderEnvelope {
-  // Forward security session ID, 16 bytes
-  bytes session_id = 1;
-
-  // Accept a newly established session by the initiator. The session ID is
-  // equal to the one of the initiator.
-  message Accept {
-    // Ephemeral public key of the responder for this session
-    bytes ephemeral_public_key = 1;
-  }
-
-  // Sent when receiving a `FromSessionInitiatorEnvelope.Message` that cannot be
-  // decrypted (e.g. because the responder has lost the session information).
-  //
-  // The initiator should discard the FS session and start a new one.
-  message Reject {
-    // Message ID of the message that could not be decrypted and that should be
-    // sent again in a new session (8 bytes)
-    fixed64 rejected_message_id = 1;
-  }
-
-  oneof content {
-    Accept accept = 2;
-    Reject reject = 3;
+    Accept accept = 3;
+    Reject reject = 4;
+    Terminate terminate = 5;
+    Message message = 6;
   }
 }

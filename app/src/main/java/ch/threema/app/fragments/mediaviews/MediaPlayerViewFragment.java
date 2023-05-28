@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,7 +21,6 @@
 
 package ch.threema.app.fragments.mediaviews;
 
-import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -30,9 +29,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -45,34 +42,28 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
-import pl.droidsonroids.gif.GifImageView;
 
-import static ch.threema.app.R.id.position_container;
 import static ch.threema.app.utils.StringConversionUtil.getDurationString;
 
 public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragment implements TimeBar.OnScrubListener, MediaPlayerStateWrapper.StateListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaPlayerViewFragment");
 
-	private WeakReference<GifImageView> imageViewRef;
-	private WeakReference<ImageView> previewViewRef;
 	private WeakReference<TextView> filenameViewRef, positionRef, durationRef;
 	private WeakReference<DefaultTimeBar> timeBarRef;
 	private WeakReference<ProgressBar> progressBarRef;
 	private WeakReference<ImageButton> playRef, pauseRef;
-	private WeakReference<FrameLayout> playPauseLayoutRef;
-	private WeakReference<View> controllerViewRef;
 
 	private MediaPlayerStateWrapper mediaPlayer;
 	private boolean isImmediatePlay;
 
-	private Handler progressBarHandler = new Handler();
+	private final Handler progressBarHandler = new Handler();
 
 	public MediaPlayerViewFragment() { super(); }
 
@@ -85,34 +76,11 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 	public boolean inquireClose() { return true; }
 
 	@Override
-	protected void showThumbnail(Bitmap thumbnail, boolean isGeneric, String filename) {
-		if (this.imageViewRef.get() != null) {
-			this.setOnClickListener(null);
-
-			if (thumbnail != null && !thumbnail.isRecycled()) {
-				if (isGeneric) {
-					if (!TestUtil.empty(filename)) {
-						this.filenameViewRef.get().setText(filename);
-						this.filenameViewRef.get().setVisibility(View.VISIBLE);
-					}
-				}
-				this.previewViewRef.get().setImageBitmap(thumbnail);
-				this.previewViewRef.get().setVisibility(View.VISIBLE);
-			} else {
-				this.previewViewRef.get().setVisibility(View.INVISIBLE);
-			}
-			this.imageViewRef.get().setVisibility(View.INVISIBLE);
-		}
-	}
-
-	@Override
-	protected void hideThumbnail() {
-		this.previewViewRef.get().setVisibility(View.INVISIBLE);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.isImmediatePlay = getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
+		Bundle arguments = getArguments();
+		if (arguments != null) {
+			this.isImmediatePlay = arguments.getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
+		}
 
 		this.mediaPlayer = new MediaPlayerStateWrapper();
 		this.mediaPlayer.setStateListener(this);
@@ -124,18 +92,14 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 	protected void created(Bundle savedInstanceState) {
 		ViewGroup rootView = rootViewReference.get();
 
-		this.imageViewRef = new WeakReference<>(rootView.findViewById(R.id.gif_view));
-		this.previewViewRef = new WeakReference<>(rootView.findViewById(R.id.preview_image));
 		this.filenameViewRef = new WeakReference<>(rootView.findViewById(R.id.filename_view));
 		this.positionRef = new WeakReference<>(rootView.findViewById(R.id.exo_position));
 		this.durationRef = new WeakReference<>(rootView.findViewById(R.id.exo_duration));
-		this.timeBarRef = new WeakReference<>(rootView.findViewById(R.id.exo_progress));
+		this.timeBarRef = new WeakReference<>(rootView.findViewById(R.id.time_bar));
 		this.playRef = new WeakReference<>(rootView.findViewById(R.id.exo_play));
 		this.pauseRef = new WeakReference<>(rootView.findViewById(R.id.exo_pause));
-		this.playPauseLayoutRef = new WeakReference<>(rootView.findViewById(R.id.play_pause_layout));
 		this.progressBarRef = new WeakReference<>(rootView.findViewById(R.id.progress_bar));
-		this.controllerViewRef = new WeakReference<>(rootView.findViewById(position_container));
-		ViewCompat.setOnApplyWindowInsetsListener(controllerViewRef.get(), (v, insets) -> {
+		ViewCompat.setOnApplyWindowInsetsListener(filenameViewRef.get(), (v, insets) -> {
 			ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
 			params.leftMargin = insets.getSystemWindowInsetLeft();
 			params.rightMargin = insets.getSystemWindowInsetRight();
@@ -145,22 +109,13 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 
 		this.playRef.get().setVisibility(View.GONE);
 		this.pauseRef.get().setVisibility(View.GONE);
-		this.playPauseLayoutRef.get().setVisibility(View.GONE);
+
 		this.positionRef.get().setText(getDurationString(0));
+		this.durationRef.get().setText(getDurationString(0));
 
-		this.playRef.get().setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				resumeAudio();
-			}
-		});
+		this.playRef.get().setOnClickListener(v -> resumeAudio());
 
-		this.pauseRef.get().setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				pauseAudio();
-			}
-		});
+		this.pauseRef.get().setOnClickListener(v -> pauseAudio());
 
 		this.timeBarRef.get().addListener(this);
 	}
@@ -179,25 +134,14 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 	}
 
 	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		logger.debug("setUserVisibleHint = " + isVisibleToUser);
-
-		// stop player if fragment comes out of view
-		if (!isVisibleToUser) {
-			pauseAudio();
-		}
-	}
-
-	@Override
 	public void onPause() {
-		setUserVisibleHint(false);
+		pauseAudio();
 		super.onPause();
 	}
 
 	@Override
 	protected void handleDecryptingFile() {
 		if (progressBarRef.get() != null) {
-			this.playPauseLayoutRef.get().setVisibility(View.GONE);
 			this.progressBarRef.get().setVisibility(View.VISIBLE);
 		}
 	}
@@ -206,7 +150,9 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 	protected void handleDecryptFailure() {
 		if (this.progressBarRef.get() != null) {
 			this.progressBarRef.get().setVisibility(View.GONE);
-			this.controllerViewRef.get().setVisibility(View.GONE);
+			this.positionRef.get().setVisibility(View.GONE);
+			this.timeBarRef.get().setVisibility(View.GONE);
+			this.durationRef.get().setVisibility(View.GONE);
 		}
 		super.showBrokenImage();
 	}
@@ -217,7 +163,6 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 			this.progressBarRef.get().setVisibility(View.GONE);
 			this.playRef.get().setVisibility(View.VISIBLE);
 			this.pauseRef.get().setVisibility(View.GONE);
-			this.playPauseLayoutRef.get().setVisibility(View.VISIBLE);
 
 			if (this.mediaPlayer.getState() == MediaPlayerStateWrapper.State.PREPARED) {
 				// navigated back to fragment
@@ -258,6 +203,13 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 		if (this.mediaPlayer != null) {
 			if (requestFocus()) {
 				this.mediaPlayer.setScreenOnWhilePlaying(true);
+				if (this.mediaPlayer.getState() != MediaPlayerStateWrapper.State.PREPARED) {
+					try {
+						this.mediaPlayer.prepare();
+					} catch (IOException e) {
+						logger.error("Exception", e);
+					}
+				}
 				this.mediaPlayer.start();
 				this.pauseRef.get().setVisibility(View.VISIBLE);
 				this.playRef.get().setVisibility(View.GONE);
@@ -294,6 +246,7 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 	public void resumeAudio() {
 		if (this.mediaPlayer != null) {
 			switch (this.mediaPlayer.getState()) {
+				case STOPPED:
 				case PAUSED:
 				case PREPARED:
 					if (requestFocus()) {
@@ -350,4 +303,16 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 
 	@Override
 	public void onPrepared(MediaPlayer mp) {}
+
+	@Override
+	protected void handleFileName(@Nullable String filename) {
+		if (filenameViewRef != null && filenameViewRef.get() != null) {
+			if (filename != null) {
+				filenameViewRef.get().setText(filename);
+				filenameViewRef.get().setVisibility(View.VISIBLE);
+			} else {
+				filenameViewRef.get().setVisibility(View.INVISIBLE);
+			}
+		}
+	}
 }

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -63,21 +63,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.datatheorem.android.trustkit.TrustKit;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.slf4j.Logger;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.net.ssl.SSLSocketFactory;
-
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -98,6 +84,23 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
+
+import com.datatheorem.android.trustkit.TrustKit;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.slf4j.Logger;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -105,6 +108,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
+import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
@@ -124,6 +128,7 @@ import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.camera.CameraUtil.isInternalCameraSupported;
 import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
 import static ch.threema.app.services.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class ConfigUtils {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ConfigUtils");
@@ -149,10 +154,10 @@ public class ConfigUtils {
 	private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1;
 
 	private static final float[] NEGATIVE_MATRIX = {
-			-1.0f,     0,     0,    0, 255, // red
-			0, -1.0f,     0,    0, 255, // green
-			0,     0, -1.0f,    0, 255, // blue
-			0,     0,     0, 1.0f,   0  // alpha
+		-1.0f,     0,     0,    0, 255, // red
+		0, -1.0f,     0,    0, 255, // green
+		0,     0, -1.0f,    0, 255, // blue
+		0,     0,     0, 1.0f,   0  // alpha
 	};
 
 	public static boolean isTabletLayout(Context context) {
@@ -234,10 +239,14 @@ public class ConfigUtils {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 	}
 
-	public static boolean isCallsEnabled(Context context, PreferenceService preferenceService, LicenseService licenseService) {
-		return preferenceService.isVoipEnabled() &&
-			!AppRestrictionUtil.isCallsDisabled(context) &&
-			licenseService.isLicensed();
+	public static boolean isCallsEnabled() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+
+		if (serviceManager != null && serviceManager.getPreferenceService() != null) {
+			return serviceManager.getPreferenceService().isVoipEnabled() &&
+				!AppRestrictionUtil.isCallsDisabled();
+		}
+		return true;
 	}
 
 	public static boolean isVideoCallsEnabled() {
@@ -249,6 +258,18 @@ public class ConfigUtils {
 				!AppRestrictionUtil.isVideoCallsDisabled());
 		}
 		return BuildConfig.VIDEO_CALLS_ENABLED;
+	}
+
+	public static boolean isGroupCallsEnabled() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+
+		if (serviceManager != null && serviceManager.getPreferenceService() != null) {
+			return (BuildConfig.GROUP_CALLS_ENABLED &&
+				serviceManager.getPreferenceService().isGroupCallsEnabled() &&
+				!AppRestrictionUtil.isGroupCallsDisabled() &&
+				!AppRestrictionUtil.isCallsDisabled());
+		}
+		return BuildConfig.GROUP_CALLS_ENABLED;
 	}
 
 	public static boolean isWorkDirectoryEnabled() {
@@ -265,7 +286,10 @@ public class ConfigUtils {
 	 * Get a Socket Factory for certificate pinning and forced TLS version upgrade.
 	 */
 	public static @NonNull SSLSocketFactory getSSLSocketFactory(String host) {
-		return new TLSUpgradeSocketFactoryWrapper(TrustKit.getInstance().getSSLSocketFactory(host));
+		return new TLSUpgradeSocketFactoryWrapper(
+			ConfigUtils.isOnPremBuild() ?
+				HttpsURLConnection.getDefaultSSLSocketFactory() :
+				TrustKit.getInstance().getSSLSocketFactory(host));
 	}
 
 	public static boolean hasNoMapLibreSupport() {
@@ -408,14 +432,9 @@ public class ConfigUtils {
 		if (newStyle != -1) {
 			emojiStyle = newStyle;
 		} else {
-			if (BuildFlavor.isLibre()) {
-				emojiStyle = EMOJI_ANDROID;
-				return;
-			}
-			emojiStyle = Integer.valueOf(
-				PreferenceManager.getDefaultSharedPreferences(context).
-				getString(context.getString(R.string.preferences__emoji_style),
-				"0"));
+			emojiStyle = Integer.parseInt(
+				PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.preferences__emoji_style), "0")
+			);
 		}
 	}
 
@@ -435,9 +454,9 @@ public class ConfigUtils {
 	}
 
 	/**
-	 * Get user-facing application version string without alpha/beta version suffix
-	 * @param context
-	 * @return version string
+	 * Get user-facing application version string including alpha/beta version suffix
+	 *
+	 * @return application version string
 	 */
 	public static String getAppVersion(@NonNull Context context) {
 		try {
@@ -464,17 +483,6 @@ public class ConfigUtils {
 			logger.error("Exception", e);
 		}
 		return 1.0f;
-	}
-
-	/**
-	 * Get full user-facing application version string including alpha/beta version suffix
-	 * Deprecated! use getAppVersion()
-	 * @param context
-	 * @return version string
-	 */
-	@Deprecated
-	public static String getFullAppVersion(@NonNull Context context) {
-		return getAppVersion(context);
 	}
 
 	/**
@@ -508,6 +516,24 @@ public class ConfigUtils {
 			.append(Build.MODEL).append("/")
 			.append(Build.VERSION.RELEASE).append("/")
 			.append(BuildFlavor.getName());
+		return info.toString();
+	}
+
+	/**
+	 * Return information about the device including the manufacturer and the model.
+	 * The version is NOT included.
+	 * If mdm parameters are active on this device they are also appended according to ANDR-2213.
+	 *
+	 * @return The device info meant to be sent with support requests
+	 */
+	public static @NonNull String getSupportDeviceInfo(Context context) {
+		final StringBuilder info = new StringBuilder(getDeviceInfo(context, false));
+		if (isWorkRestricted()) {
+			String mdmSource = AppRestrictionService.getInstance().getMdmSource();
+			if (mdmSource != null) {
+				info.append("/").append(mdmSource);
+			}
+		}
 		return info.toString();
 	}
 
@@ -566,11 +592,11 @@ public class ConfigUtils {
 		// Android Q does not allow restart in the background
 		// https://developer.android.com/preview/privacy/background-activity-starts
 		Intent restartIntent = context.getPackageManager()
-				.getLaunchIntentForPackage(context.getPackageName());
+			.getLaunchIntentForPackage(context.getPackageName());
 		restartIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		PendingIntent pendingIntent = PendingIntent.getActivity(
-				context, 0,
-				restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+			context, 0,
+			restartIntent, PendingIntent.FLAG_CANCEL_CURRENT | PENDING_INTENT_FLAG_MUTABLE);
 
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
 			// on older android version we restart directly after delayMs
@@ -628,6 +654,11 @@ public class ConfigUtils {
 		return false;
 	}
 
+	public static boolean supportGroupDescription() {
+		return false;
+	}
+
+
 	/**
 	 * Returns true if this is a work build and app is under control of a device policy controller (DPC) or Threema MDM
 	 * @return boolean
@@ -638,7 +669,7 @@ public class ConfigUtils {
 		}
 
 		Bundle restrictions = AppRestrictionService.getInstance()
-				.getAppRestrictions();
+			.getAppRestrictions();
 
 		return restrictions != null && !restrictions.isEmpty();
 	}
@@ -683,7 +714,7 @@ public class ConfigUtils {
 	 * @return true if disabled, false otherwise or in case of failure
 	 */
 	public static boolean getScreenshotsDisabled(@Nullable PreferenceService preferenceService, @Nullable LockAppService lockAppService) {
-		 return preferenceService != null && lockAppService != null && lockAppService.isLockingEnabled();
+		return preferenceService != null && lockAppService != null && lockAppService.isLockingEnabled();
 	}
 
 	public static void setScreenshotsAllowed(@NonNull Activity activity, @Nullable PreferenceService preferenceService, @Nullable LockAppService lockAppService) {
@@ -1010,10 +1041,16 @@ public class ConfigUtils {
 	 * @return true if permissions are already granted, false otherwise
 	 */
 	@RequiresApi(api = Build.VERSION_CODES.S)
-	public static boolean requestBluetoothConnectPermissions(@NonNull Activity activity, Fragment fragment, int requestCode) {
+	public static boolean requestBluetoothConnectPermissions(@NonNull AppCompatActivity activity, Fragment fragment, int requestCode, boolean showHelpDialog) {
 		final String[] permissions = new String[]{ Manifest.permission.BLUETOOTH_CONNECT };
 		if (checkIfNeedsPermissionRequest(activity, permissions)) {
-			requestPermissions(activity, fragment, permissions, requestCode);
+			if (showHelpDialog) {
+				SimpleStringAlertDialog.newInstance(R.string.voip_bluetooth, R.string.permission_bluetooth_connect_required)
+					.setOnDismissRunnable(() -> requestPermissions(activity, fragment, permissions, requestCode))
+					.show(activity.getSupportFragmentManager(), "");
+			} else {
+				requestPermissions(activity, fragment, permissions, requestCode);
+			}
 			return false;
 		}
 		return true;
@@ -1038,6 +1075,19 @@ public class ConfigUtils {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Request read phone state permission.
+	 *
+	 * @param activity                  activity context
+	 * @param requestPermissionLauncher the request permission launcher
+	 */
+	public static void requestReadPhonePermission(@NonNull Activity activity,@Nullable ActivityResultLauncher<String> requestPermissionLauncher) {
+		String permission = Manifest.permission.READ_PHONE_STATE;
+		if (checkIfNeedsPermissionRequest(activity, new String[]{permission}) && requestPermissionLauncher != null) {
+			requestPermissionLauncher.launch(permission);
+		}
 	}
 
 	/**
@@ -1212,7 +1262,7 @@ public class ConfigUtils {
 			} else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && (orgTheme != R.style.Theme_Threema_MediaViewer && orgTheme != R.style.Theme_Threema_Transparent_Background)) {
 				View decorView = activity.getWindow().getDecorView();
 				decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
-						SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+					SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 			}
 		}
 
@@ -1477,10 +1527,38 @@ public class ConfigUtils {
 		}
 	}
 
+	/**
+	 * Return whether forward security features should be enabled.
+	 */
+	public static boolean isForwardSecurityEnabled() {
+		return BuildConfig.FORWARD_SECURITY;
+	}
+
+	public static boolean isGroupAckEnabled() {
+		return true;
+	}
+
 	public static void clearAppData(Context context) {
 		ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		if (manager != null) {
 			manager.clearApplicationUserData();
 		}
+	}
+	/**
+	 * @param context    context required to know which string resource it is.
+	 * @param id         of the object
+	 * @param quantity   quantity of given values
+	 * @param formatArgs how the string should be formatted
+	 * @return returns the QuantityString or missing translation.
+	 */
+	public static @NonNull
+	String getSafeQuantityString(@NonNull Context context, int id, int quantity, @NonNull Object... formatArgs) {
+		String result = "missing translation";
+		try {
+			result = context.getResources().getQuantityString(id, quantity, formatArgs);
+		} catch (Exception e) {
+			logger.error("Quantity String not found.", e);
+		}
+		return result;
 	}
 }

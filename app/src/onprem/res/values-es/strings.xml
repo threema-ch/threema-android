@@ -21,12 +21,15 @@
 		a que le encuentren automáticamente si le tienen en la agenda de sus teléfonos. Las direcciones de correo electrónico se almacenarán
 		de manera cifrada (con hash) unidireccional en nuestro servidor. Si lo desea, puede omitir este paso y utilizar Threema OnPrem
 		anónimamente.</string>
+    <string name="new_wizard_info_sync_contacts">Si habilita esta opción, Threema OnPrem encripta unidireccionalmente las direcciones de correo electrónico y números de teléfono antes de enviarlas al servidor para buscar contactos coincidentes. Los datos se conservan solo en la memoria y nunca se almacenan en el servidor.</string>
     <string name="threema_contact">Contactar con Threema OnPrem</string>
     <string name="menu_about">Acerca de Threema OnPrem</string>
     <string name="list_theme_light">Claro</string>
     <string name="list_theme_dark">Oscuro (predeterminado)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Para usuarios privados</a>]]></string>
-	<string name="directory_search">Buscar en el directorio</string>
+    <string name="directory_search">Buscar en el directorio</string>
     <string name="directory_title">Directorio de la empresa</string>
     <string name="directory_empty_view_text">Introduce al menos 3 caracteres de un nombre para comenzar la búsqueda en el directorio de usuarios de Threema OnPrem de tu empresa.</string>
+    <string name="safe_configure_server_explain">Guarde su copia de seguridad de Threema Safe en el servidor de su organización o especifique un servidor de copia de seguridad diferente.</string>
+    <string name="share_with_app">Compartir con Threema OnPrem</string>
 </resources>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -51,7 +51,7 @@ public class WizardFragment2 extends WizardFragment {
 							 Bundle savedInstanceState) {
 		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
 
-		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+		WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 
 		TextView title = rootView.findViewById(R.id.wizard_title);
 		title.setText(R.string.new_wizard_choose_nickname);
@@ -133,7 +133,7 @@ public class WizardFragment2 extends WizardFragment {
 
 	private void initValues() {
 		if (isResumed()) {
-			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+			WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 			String nickname = callback.getNickname();
 			nicknameText.setText(nickname);
 			if (!TestUtil.empty(nickname)) {

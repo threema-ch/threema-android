@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -49,6 +49,7 @@ import ch.threema.app.voicemessage.VoiceRecorderActivity;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
@@ -69,7 +70,7 @@ public class BackupChatServiceImpl implements BackupChatService {
 		this.contactService = contactService;
 	}
 
-	private boolean buildThread(ConversationModel conversationModel, ZipOutputStream zipOutputStream, StringBuilder messageBody, String password, boolean includeMedia) {
+	private boolean buildThread(ConversationModel conversationModel, ZipOutputStream zipOutputStream, StringBuilder messageBody, boolean includeMedia) {
 		AbstractMessageModel m;
 
 		isCanceled = false;
@@ -84,6 +85,10 @@ public class BackupChatServiceImpl implements BackupChatService {
 			}
 
 			if (m.isStatusMessage()) {
+				continue;
+			}
+
+			if (m.getType() == MessageType.GROUP_CALL_STATUS || m.getType() == MessageType.FORWARD_SECURITY_STATUS) {
 				continue;
 			}
 
@@ -129,7 +134,7 @@ public class BackupChatServiceImpl implements BackupChatService {
 						messageLine += " <" + GeoLocationUtil.getLocationUri(m) + ">";
 						break;
 					case VOIP_STATUS:
-						if (m.getVoipStatusData().getDuration() != null) {
+						if (m.getVoipStatusData() != null && m.getVoipStatusData().getDuration() != null) {
 							messageLine += " <" + StringConversionUtil.secondsToString(
 								m.getVoipStatusData().getDuration(),
 								false) + ">";
@@ -146,12 +151,12 @@ public class BackupChatServiceImpl implements BackupChatService {
 					if (includeMedia) {
 						try (InputStream is = fileService.getDecryptedMessageStream(m)) {
 							if (is != null) {
-								ZipUtil.addZipStream(zipOutputStream, is, filename);
+								ZipUtil.addZipStream(zipOutputStream, is, filename, false);
 							} else {
 								// if media is missing, try thumbnail
 								try (InputStream tis = fileService.getDecryptedMessageThumbnailStream(m)) {
 									if (tis != null) {
-										ZipUtil.addZipStream(zipOutputStream, tis, filename);
+										ZipUtil.addZipStream(zipOutputStream, tis, filename, false);
 									}
 								}
 							}
@@ -189,8 +194,8 @@ public class BackupChatServiceImpl implements BackupChatService {
 		StringBuilder messageBody = new StringBuilder();
 
 		try(final ZipOutputStream zipOutputStream = ZipUtil.initializeZipOutputStream(outputFile, password)) {
-			if (buildThread(conversationModel, zipOutputStream, messageBody, password, includeMedia)) {
-				ZipUtil.addZipStream(zipOutputStream, IOUtils.toInputStream(messageBody, StandardCharsets.UTF_8), "messages.txt");
+			if (buildThread(conversationModel, zipOutputStream, messageBody, includeMedia)) {
+				ZipUtil.addZipStream(zipOutputStream, IOUtils.toInputStream(messageBody, StandardCharsets.UTF_8), "messages.txt", true);
 			}
 			return true;
 

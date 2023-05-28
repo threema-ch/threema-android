@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -20,8 +20,6 @@
  */
 
 package ch.threema.app.backuprestore.csv;
-
-import android.content.Context;
 
 import org.slf4j.Logger;
 
@@ -42,14 +40,10 @@ import ch.threema.base.utils.LoggingUtil;
 public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupRestoreDataServiceImpl");
 
-	private final Context context;
 	private final FileService fileService;
 
-
 	public BackupRestoreDataServiceImpl(
-			Context context,
 			FileService fileService) {
-		this.context = context;
 		this.fileService = fileService;
 	}
 
@@ -62,12 +56,9 @@ public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 
 	@Override
 	public List<BackupData> getBackups() {
-		File[] files = this.fileService.getBackupPath().listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String filename) {
-				return filename.endsWith(".zip");
-			}
-		});
+		File[] files = this.fileService
+			.getBackupPath()
+			.listFiles((dir, filename) -> filename.endsWith(".zip"));
 
 		List<BackupData> result = new ArrayList<BackupData>();
 
@@ -80,12 +71,10 @@ public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 			}
 		}
 
-		Collections.sort(result, new Comparator<BackupData>() {
-			@Override
-			public int compare(BackupData lhs, BackupData rhs) {
-				return rhs.getBackupTime().compareTo(lhs.getBackupTime());
-			}
-		});
+		Collections.sort(
+			result,
+			(lhs, rhs) -> rhs.getBackupTime().compareTo(lhs.getBackupTime())
+		);
 		return result;
 	}
 
@@ -138,6 +127,4 @@ public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 		}
 		return null;
 	}
-
-
 }

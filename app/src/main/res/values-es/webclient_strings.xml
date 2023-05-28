@@ -23,7 +23,7 @@
     <string name="webclient_invalid_qr_code">Código QR no válido</string>
     <string name="webclient_new_connection_toast">Sesión de escritorio/web iniciada</string>
     <string name="webclient_protocol_error">Error de protocolo</string>
-    <string name="webclient_protocol_version_to_old">Su aplicación no admite esta versión de la aplicación de escritorio o cliente web. Actualice Threema para Android a la última versión.</string>
+    <string name="webclient_protocol_version_to_old">Su aplicación no admite esta versión de la aplicación de escritorio o cliente web. Actualice LeOS-Messenger para Android a la última versión.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">Su aplicación no admite esta versión de la aplicación de escritorio o cliente web. Descargue la versión más reciente de la aplicación de escritorio o pida al administrador de su cliente web que actualice a la versión más reciente.</string>
     <string name="webclient_protocol_version_too_new_threema">Su aplicación no admite esta versión de la aplicación de escritorio o cliente web. Use la versión actual de la aplicación de escritorio o cliente web.</string>
     <string name="webclient_session_already_exists">La sesión del código QR escaneado ya existe. Vuelva a iniciar la aplicación de escritorio o recargue el cliente web e inténtelo de nuevo.</string>

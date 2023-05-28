@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -138,6 +138,26 @@ public class TestUtilTest {
 				date1Instance2,
 				date2Instance2));
 
+	}
+
+	@Test
+	public void testMatchesConversationSearch() {
+		assertTrue(TestUtil.matchesConversationSearch("aaaaaaa", "aàáâãäå"));
+		assertTrue(TestUtil.matchesConversationSearch("eeeee", "eèéêë"));
+		assertTrue(TestUtil.matchesConversationSearch("iiiii", "iíìîï"));
+		assertTrue(TestUtil.matchesConversationSearch("oooooo", "oóòôöõ"));
+		assertTrue(TestUtil.matchesConversationSearch("uuuuu", "uüúùû"));
+		assertTrue(TestUtil.matchesConversationSearch("n", "ñ"));
+		assertTrue(TestUtil.matchesConversationSearch("c", "ç"));
+
+		assertTrue(TestUtil.matchesConversationSearch("A", "ä"));
+		assertTrue(TestUtil.matchesConversationSearch("a", "ä"));
+		assertTrue(TestUtil.matchesConversationSearch("a", "Ä"));
+		assertTrue(TestUtil.matchesConversationSearch("A", "Ä"));
+		assertFalse(TestUtil.matchesConversationSearch("Ä", "a"));
+
+		assertFalse(TestUtil.matchesConversationSearch(null, "a"));
+		assertFalse(TestUtil.matchesConversationSearch("a", null));
 	}
 
 }

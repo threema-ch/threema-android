@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -131,33 +131,15 @@ public class DistributionListServiceImpl implements DistributionListService {
 		return distributionListModel;
 	}
 
-	@Override
-	@Nullable
-	public Bitmap getAvatar(DistributionListModel model, boolean highResolution) {
-		return avatarCacheService.getDistributionListAvatarLow(model);
-	}
-
 	@Nullable
 	@Override
-	public Bitmap getAvatar(@Nullable DistributionListModel model, boolean highResolution, boolean returnDefaultAvatarIfNone) {
+	public Bitmap getAvatar(@Nullable DistributionListModel model, @Nullable AvatarOptions options) {
 		return avatarCacheService.getDistributionListAvatarLow(model);
 	}
 
 	@Override
-	public void loadAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, AvatarOptions options) {
+	public void loadAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
 		avatarCacheService.loadDistributionListAvatarIntoImage(model, imageView, options);
-	}
-
-	@Nullable
-	@Override
-	public Bitmap getDefaultAvatar(@Nullable DistributionListModel model, boolean highResolution) {
-		return avatarCacheService.getDistributionListAvatarLow(model);
-	}
-
-	@Nullable
-	@Override
-	public Bitmap getNeutralAvatar(boolean highResolution) {
-		return avatarCacheService.getDistributionListAvatarLow(null);
 	}
 
 	@Override

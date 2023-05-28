@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -53,6 +53,8 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
+
+import static ch.threema.storage.models.data.status.VoipStatusDataModel.NO_CALL_ID;
 
 @SuppressWarnings("unused")
 public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
@@ -134,16 +136,16 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 
 		// Test messages
 		final VoipMessage[] testMessages = new VoipMessage[]{
-			new VoipMessage(VoipStatusDataModel.createMissed(), "missed"),
-			new VoipMessage(VoipStatusDataModel.createFinished(42), "finished"),
-			new VoipMessage(VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.UNKNOWN), "rejected (unknown)"),
-			new VoipMessage(VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.BUSY), "rejected (busy)"),
-			new VoipMessage(VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.TIMEOUT), "rejected (timeout)"),
-			new VoipMessage(VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.REJECTED), "rejected (rejected)"),
-			new VoipMessage(VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.DISABLED), "rejected (disabled)"),
-			new VoipMessage(VoipStatusDataModel.createRejected((byte) 99), "rejected (invalid reason code)"),
-			new VoipMessage(VoipStatusDataModel.createRejected(null), "rejected (null reason code)"),
-			new VoipMessage(VoipStatusDataModel.createAborted(), "aborted"),
+			new VoipMessage(VoipStatusDataModel.createMissed(NO_CALL_ID, null), "missed"),
+			new VoipMessage(VoipStatusDataModel.createFinished(NO_CALL_ID,42), "finished"),
+			new VoipMessage(VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.UNKNOWN), "rejected (unknown)"),
+			new VoipMessage(VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.BUSY), "rejected (busy)"),
+			new VoipMessage(VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.TIMEOUT), "rejected (timeout)"),
+			new VoipMessage(VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.REJECTED), "rejected (rejected)"),
+			new VoipMessage(VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.DISABLED), "rejected (disabled)"),
+			new VoipMessage(VoipStatusDataModel.createRejected(NO_CALL_ID, (byte) 99), "rejected (invalid reason code)"),
+			new VoipMessage(VoipStatusDataModel.createRejected(NO_CALL_ID,null), "rejected (null reason code)"),
+			new VoipMessage(VoipStatusDataModel.createAborted(NO_CALL_ID), "aborted"),
 		};
 
 		new AsyncTask<Void, Void, Exception>() {

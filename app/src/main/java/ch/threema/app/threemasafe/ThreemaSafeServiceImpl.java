@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,9 +22,6 @@
 package ch.threema.app.threemasafe;
 
 import android.app.Activity;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +33,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.lambdaworks.crypto.SCrypt;
 import com.neilalexander.jnacl.NaCl;
@@ -65,8 +67,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -89,9 +91,12 @@ import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.GzipOutputStream;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.WorkManagerUtil;
+import ch.threema.app.workers.ThreemaSafeUploadWorker;
 import ch.threema.base.Result;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
@@ -121,13 +126,15 @@ import ch.threema.storage.models.group.GroupInviteModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
+import static ch.threema.app.ThreemaApplication.WORKER_PERIODIC_THREEMA_SAFE_UPLOAD;
+import static ch.threema.app.ThreemaApplication.WORKER_THREEMA_SAFE_UPLOAD;
 import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_EVERYONE;
 import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_NOBODY;
 import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_SOME;
+import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_OPEN_HOME_ACTIVITY;
 import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_WORK_FORCE_PASSWORD;
 import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_MAX_BACKUP_BYTES;
 import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_RETENTION_DAYS;
-import static ch.threema.app.threemasafe.ThreemaSafeUploadService.EXTRA_FORCE_UPLOAD;
 
 public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServiceImpl");
@@ -153,7 +160,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 	private static final int ENCRYPTION_KEY_LENGTH = NaCl.SYMMKEYBYTES;
 	private static final int PROTOCOL_VERSION = 1;
-	private static final int UPLOAD_JOB_ID = 6587625;
 
 	public static final int MIN_PW_LENGTH = 8;
 	public static final int MAX_PW_LENGTH = 4096;
@@ -398,19 +404,19 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		if (preferenceService.getThreemaSafeEnabled()) {
 			logger.info("Scheduling Threema Safe upload");
 
-			// schedule the start of the service every 24 hours
-			JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-			if (jobScheduler != null) {
-				ComponentName serviceComponent = new ComponentName(context, ThreemaSafeUploadJobService.class);
-				JobInfo.Builder builder = new JobInfo.Builder(UPLOAD_JOB_ID, serviceComponent)
-					.setPeriodic(SCHEDULE_PERIOD)
-					.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-				try {
-					jobScheduler.schedule(builder.build());
-				} catch (IllegalArgumentException e) {
-					logger.error("Exception", e);
-				}
+			try {
+				// schedule the start of the service every 24 hours
+				WorkManager workManager = WorkManager.getInstance(ThreemaApplication.getAppContext());
+				PeriodicWorkRequest workRequest = ThreemaSafeUploadWorker.Companion.buildPeriodicWorkRequest(SCHEDULE_PERIOD);
+				workManager.enqueueUniquePeriodicWork(WORKER_PERIODIC_THREEMA_SAFE_UPLOAD,
+					WorkManagerUtil.shouldScheduleNewWorkManagerInstance(workManager, WORKER_PERIODIC_THREEMA_SAFE_UPLOAD, SCHEDULE_PERIOD) ?
+						ExistingPeriodicWorkPolicy.REPLACE :
+						ExistingPeriodicWorkPolicy.KEEP,
+					workRequest);
+
 				return true;
+			} catch (IllegalStateException e) {
+				logger.error("Unable to schedule periodic safe upload", e);
 			}
 		} else {
 			logger.info("Threema Safe disabled");
@@ -422,10 +428,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	public void unscheduleUpload() {
 		logger.info("Unscheduling Threema Safe upload");
 
-		JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-		if (jobScheduler != null) {
-			jobScheduler.cancel(UPLOAD_JOB_ID);
-		}
+		WorkManager workManager = WorkManager.getInstance(ThreemaApplication.getAppContext());
+		workManager.cancelUniqueWork(WORKER_PERIODIC_THREEMA_SAFE_UPLOAD);
 	}
 
 	@Override
@@ -459,28 +463,25 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 	@Override
 	public void uploadNow(Context context, boolean force) {
-		Intent intent = new Intent();
-		if (force) {
-			intent.putExtra(EXTRA_FORCE_UPLOAD, true);
+		try {
+			OneTimeWorkRequest workRequest = ThreemaSafeUploadWorker.Companion.buildOneTimeWorkRequest(true);
+			WorkManager.getInstance(ThreemaApplication.getAppContext()).enqueueUniqueWork(WORKER_THREEMA_SAFE_UPLOAD, ExistingWorkPolicy.REPLACE, workRequest);
+		} catch (IllegalStateException e) {
+			logger.error("Unable to schedule safe upload one time work", e);
 		}
-		ThreemaSafeUploadService.enqueueWork(context, intent);
 	}
 
 	@Override
-	public void createBackup(boolean force) throws ThreemaException {
+	public void createBackup(boolean force) throws ThreemaSafeUploadException {
 		logger.info("Starting Threema Safe backup");
 
 		if (!preferenceService.getThreemaSafeEnabled()) {
-			throw new ThreemaException("Disabled");
-		}
-
-		if (getThreemaSafeEncryptionKey() == null) {
-			throw new ThreemaException("No key");
+			throw new ThreemaSafeUploadException("Disabled", false);
 		}
 
 		ThreemaSafeServerInfo serverInfo = preferenceService.getThreemaSafeServerInfo();
 		if (serverInfo == null) {
-			throw new ThreemaException("No server info");
+			throw new ThreemaSafeUploadException("No server info", true);
 		}
 
 		// test server to update configuration
@@ -489,13 +490,13 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			serverTestResponse = testServer(serverInfo);
 		} catch (ThreemaException e) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_SERVER_FAIL);
-			throw new ThreemaException("Server test failed. " + e.getMessage());
+			throw new ThreemaSafeUploadException("Server test failed. " + e.getMessage(), true);
 		}
 
 		String json = getJson();
 		if (json == null) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_JSON_FAIL);
-			throw new ThreemaException("Json failed");
+			throw new ThreemaSafeUploadException("Json failed", true);
 		}
 
 		// get a hash of the json to determine if there are any changes
@@ -506,18 +507,24 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			hashString = StringConversionUtil.byteArrayToString(messageDigest.digest());
 		} catch (NoSuchAlgorithmException e) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_HASH_FAIL);
-			throw new ThreemaException("Hash calculation failed");
+			throw new ThreemaSafeUploadException("Hash calculation failed", true);
 		}
 
 		if (!force) {
 			if (hashString.equals(preferenceService.getThreemaSafeHashString())) {
-				Date aWeekAgo = new Date(System.currentTimeMillis() - DateUtils.WEEK_IN_MILLIS);
+				long halfRetentionTimeMillis = (serverTestResponse.retentionDays == 0 ? 180 : serverTestResponse.retentionDays) * DateUtils.DAY_IN_MILLIS / 2;
+				Date reUploadThreshold = new Date(System.currentTimeMillis() - halfRetentionTimeMillis);
 				if (preferenceService.getThreemaSafeErrorCode() == ERROR_CODE_OK &&
-					aWeekAgo.before(preferenceService.getThreemaSafeUploadDate())) {
-					preferenceService.setThreemaSafeErrorCode(ERROR_CODE_OK);
-					preferenceService.setThreemaSafeBackupDate(new Date());
-					logger.info("Threema Safe contents unchanged. Not uploaded");
+					reUploadThreshold.before(preferenceService.getThreemaSafeUploadDate())) {
+					logger.info("Threema Safe contents unchanged. NOT uploaded");
 					return;
+				}
+			} else {
+				Date reUploadThreshold = new Date(System.currentTimeMillis() - (DateUtils.HOUR_IN_MILLIS * 23));
+				if (preferenceService.getThreemaSafeErrorCode() == ERROR_CODE_OK &&
+					preferenceService.getThreemaSafeUploadDate() != null &&
+					reUploadThreshold.before(preferenceService.getThreemaSafeUploadDate())) {
+					throw new ThreemaSafeUploadException("Grace time not yet reached. NOT uploaded", false);
 				}
 			}
 		}
@@ -525,7 +532,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		byte[] gzippedPlaintext = gZipCompress(json.getBytes());
 		if (gzippedPlaintext == null || gzippedPlaintext.length <= 0) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_GZIP_FAIL);
-			throw new ThreemaException("Compression failed");
+			throw new ThreemaSafeUploadException("Compression failed", true);
+		}
+
+		if (getThreemaSafeEncryptionKey() == null) {
+			throw new ThreemaSafeUploadException("No key", true);
 		}
 
 		SecureRandom random = new SecureRandom();
@@ -554,20 +565,15 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		} catch (UploadSizeExceedException e) {
 			logger.error("Exception", e);
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_SIZE_EXCEEDED);
-			throw new ThreemaException(e.getMessage());
+			throw new ThreemaSafeUploadException(e.getMessage(), true);
 		} catch (Exception e) {
 			logger.error("Exception", e);
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_UPLOAD_FAIL);
-			throw new ThreemaException("Upload failed");
+			throw new ThreemaSafeUploadException("Upload failed", true);
 		}
 
 		if (force) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(context, R.string.threema_safe_upload_successful, Toast.LENGTH_LONG).show();
-				}
-			});
+			RuntimeUtil.runOnUiThread(() -> Toast.makeText(context, R.string.threema_safe_upload_successful, Toast.LENGTH_LONG).show());
 		}
 
 		logger.info(context.getString(R.string.threema_safe_upload_successful));
@@ -676,21 +682,20 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			throw new ThreemaException("Unable to decrypt");
 		}
 
-		byte[] uncompressed = gZipUncompress(gzippedData);
-		if (uncompressed == null) {
+		byte[] uncompressedData = gZipUncompress(gzippedData);
+		if (uncompressedData == null) {
 			throw new ThreemaException("Uncompress failed");
 		}
 
-		String json;
-		json = new String(uncompressed, StandardCharsets.UTF_8);
+		String json = new String(uncompressedData, StandardCharsets.UTF_8);
 
-		parseJson(identity, json);
+		restoreJson(identity, json);
 
 		// successfully restored - update mdm settings config
 		ThreemaSafeMDMConfig.getInstance().saveConfig(preferenceService);
 	}
 
-	private void parseJson(String identity, String json) throws ThreemaException {
+	private void restoreJson(String identity, String json) throws ThreemaException {
 		JSONObject jsonObject;
 
 		try {
@@ -701,32 +706,32 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 
 		try {
-			parseUser(identity, jsonObject.getJSONObject(TAG_SAFE_USER));
+			restoreUser(identity, jsonObject.getJSONObject(TAG_SAFE_USER));
 		} catch (IOException | JSONException e) {
 			throw new ThreemaException("Unable to restore user");
 		}
 
 		try {
-			parseSettings(jsonObject.getJSONObject(TAG_SAFE_SETTINGS));
+			restoreSettings(jsonObject.getJSONObject(TAG_SAFE_SETTINGS));
 		} catch (JSONException e) {
 			// no settings - ignore and continue
 		}
 
 		try {
-			parseContacts(jsonObject.getJSONArray(TAG_SAFE_CONTACTS));
+			restoreContacts(jsonObject.getJSONArray(TAG_SAFE_CONTACTS));
 		} catch (JSONException e) {
 			// no contacts - stop here as groups and distributions lists are of no use without contacts
 			return;
 		}
 
 		try {
-			parseGroups(jsonObject.getJSONArray(TAG_SAFE_GROUPS));
+			restoreGroups(jsonObject.getJSONArray(TAG_SAFE_GROUPS));
 		} catch (JSONException e) {
 			// no groups - ignore and continue
 		}
 
 		try {
-			parseDistributionlists(jsonObject.getJSONArray(TAG_SAFE_DISTRIBUTIONLISTS));
+			restoreDistributionlists(jsonObject.getJSONArray(TAG_SAFE_DISTRIBUTIONLISTS));
 		} catch (JSONException e) {
 			// no distribution lists - ignore and continue
 		}
@@ -734,14 +739,14 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		// Careful! incoming requests have to be restored before group links to update the foreign keys to the restored group link db index ids
 		if (ConfigUtils.isTestBuild()) {
 			try {
-				parseIncomingGroupRequests(jsonObject.getJSONArray(TAG_SAFE_INCOMING_GROUP_REQUESTS));
+				restoreIncomingGroupRequests(jsonObject.getJSONArray(TAG_SAFE_INCOMING_GROUP_REQUESTS));
 			} catch (JSONException e) {
 				logger.info("No incoming group requests to restore from Threema Safe");
 				// no incoming group requests - ignore and continue
 			}
 
 			try {
-				parseOutgoingGroupRequests(jsonObject.getJSONArray(TAG_SAFE_OUTGOING_GROUP_REQUESTS));
+				restoreOutgoingGroupRequests(jsonObject.getJSONArray(TAG_SAFE_OUTGOING_GROUP_REQUESTS));
 			} catch (JSONException e) {
 				logger.info("No outgoing group requests to restore from Threema Safe");
 				// no outgoing group request - ignore and continue
@@ -749,7 +754,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 			try {
 				logger.info("safe try parse group links");
-				parseGroupLinks(jsonObject.getJSONArray(TAG_SAFE_GROUP_LINKS));
+				restoreGroupLinks(jsonObject.getJSONArray(TAG_SAFE_GROUP_LINKS));
 			} catch (JSONException e) {
 				logger.info("No group links to restore from Threema Safe");
 				// no group links - ignore and continue
@@ -757,7 +762,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
-	private void parseUser(String identity, JSONObject user) throws ThreemaException, IOException, JSONException {
+	private void restoreUser(String identity, JSONObject user) throws ThreemaException, IOException, JSONException {
 		byte[] privateKey, publicKey;
 
 		String encodedPrivateKey = user.getString(TAG_SAFE_USER_PRIVATE_KEY);
@@ -770,7 +775,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		try {
 			userService.restoreIdentity(identity, privateKey, publicKey);
 		} catch (Exception e) {
-			throw new ThreemaException("Unable to restore identity: " + e.getMessage());
+			throw new ThreemaException(context.getString(R.string.unable_to_restore_identity_because, e.getMessage()));
 		}
 
 		String nickname = user.optString(TAG_SAFE_USER_NICKNAME, identity);
@@ -787,12 +792,12 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 				stringPreset = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__linked_email));
 				if (stringPreset != null) {
 					isLinksRestricted = true;
-					doLink(TAG_SAFE_USER_LINK_TYPE_EMAIL, stringPreset);
+					addUserLink(TAG_SAFE_USER_LINK_TYPE_EMAIL, stringPreset);
 				}
 				stringPreset = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__linked_phone));
 				if (stringPreset != null) {
 					isLinksRestricted = true;
-					doLink(TAG_SAFE_USER_LINK_TYPE_MOBILE, stringPreset);
+					addUserLink(TAG_SAFE_USER_LINK_TYPE_MOBILE, stringPreset);
 				}
 				// do not restore links if readonly profile is set to true and the user is unable to change or remove links later
 				Boolean booleanRestriction = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__readonly_profile));
@@ -802,7 +807,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			}
 
 			if (!isLinksRestricted) {
-				parseLinks(user.optJSONArray(TAG_SAFE_USER_LINKS));
+				restoreLinks(user.optJSONArray(TAG_SAFE_USER_LINKS));
 			}
 
 			String profilePic = user.optString(TAG_SAFE_USER_PROFILE_PIC, null);
@@ -836,7 +841,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
-	private void doLink(String type, String value) {
+	private void addUserLink(String type, String value) {
 		if (TestUtil.empty(type, value)) return;
 
 		switch (type) {
@@ -860,25 +865,25 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
-	private void parseLink(JSONObject link) {
+	private void restoreLink(JSONObject link) {
 		String type = link.optString(TAG_SAFE_USER_LINK_TYPE);
 		String value = link.optString(TAG_SAFE_USER_LINK_VALUE);
 
-		doLink(type, value);
+		addUserLink(type, value);
 	}
 
-	private void parseLinks(JSONArray links) {
+	private void restoreLinks(JSONArray links) {
 		if (links == null) return;
 
 		for (int i = 0; i < links.length(); i++) {
 			JSONObject link = links.optJSONObject(i);
 			if (link != null) {
-				parseLink(link);
+				restoreLink(link);
 			}
 		}
 	}
 
-	private void parseContacts(JSONArray contacts) {
+	private void restoreContacts(JSONArray contacts) {
 		if (contacts == null) return;
 		if (databaseServiceNew == null) return;
 
@@ -963,7 +968,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
-	private void parseGroups(JSONArray groups) {
+	private void restoreGroups(JSONArray groups) {
 		if (groups == null) return;
 		if (databaseServiceNew == null) return;
 		final GroupService groupService;
@@ -1038,7 +1043,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
-	private void parseGroupLinks(JSONArray groupLinks) {
+	private void restoreGroupLinks(JSONArray groupLinks) {
 		if (groupLinks == null) return;
 		if (databaseServiceNew == null) return;
 
@@ -1079,7 +1084,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		updateGroupInviteForeignKeyForIncomingRequests(updateGroupInviteIDForeigntKeysToRequests);
 	}
 
-	private void parseIncomingGroupRequests(JSONArray incomingRequests) {
+	private void restoreIncomingGroupRequests(JSONArray incomingRequests) {
 		if (incomingRequests == null) return;
 		if (databaseServiceNew == null) return;
 
@@ -1106,7 +1111,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
-	private void parseOutgoingGroupRequests(JSONArray outgoingRequests) {
+	private void restoreOutgoingGroupRequests(JSONArray outgoingRequests) {
 		if (outgoingRequests == null) return;
 		if (databaseServiceNew == null) return;
 
@@ -1139,7 +1144,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
-	private void parseDistributionlists(JSONArray distributionlists) {
+	private void restoreDistributionlists(JSONArray distributionlists) {
 		if (distributionlists == null) return;
 		if (databaseServiceNew == null) return;
 		final DistributionListService distributionListService;
@@ -1199,7 +1204,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 	}
 
-	private void parseSettings(JSONObject settings) {
+	private void restoreSettings(JSONObject settings) {
 		boolean syncContactsRestricted = false;
 		if (ConfigUtils.isWorkRestricted()) {
 			Boolean booleanPreset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__contact_sync));
@@ -1229,26 +1234,19 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private void parseInfo(JSONObject info) throws ThreemaException, JSONException {
 		int version = info.getInt(TAG_SAFE_INFO_VERSION);
 		if (version > PROTOCOL_VERSION) {
-			throw new ThreemaException(context.getResources().getString(R.string.safe_version_mismatch));
+			throw new ThreemaException(context.getResources().getString(R.string.backup_version_mismatch));
 		}
 	}
 
-	/**
-	 * Search a Threema ID by phone number and/or email address.
-	 * @param phone
-	 * @param email
-	 * @return ArrayList of matching Threema IDs, null if none was found
-	 */
 	@Override
 	@Nullable
 	public ArrayList<String> searchID(String phone, String email) {
 		if (phone != null  || email != null) {
-			Map<String, Object> phoneMap = new HashMap<String, Object>() {{
-				put(phone, null);
-			}};
-			Map<String, Object> emailMap = new HashMap<String, Object>() {{
-				put(email, null);
-			}};
+			Map<String, Object> phoneMap = new HashMap<>();
+			phoneMap.put(phone, null);
+
+			Map<String, Object> emailMap = new HashMap<>();
+			emailMap.put(email, null);
 
 			try {
 				Map<String, APIConnector.MatchIdentityResult> results = apiConnector.matchIdentities(emailMap, phoneMap, localeService.getCountryIsoCode(), true, identityStore, null);
@@ -1277,10 +1275,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	}
 
 	@Override
-	public void launchForcedPasswordDialog(Activity activity) {
+	public void launchForcedPasswordDialog(Activity activity, boolean openHomeActivity) {
 		// ask user for a new password
 		Intent intent = new Intent(activity, ThreemaSafeConfigureActivity.class);
 		intent.putExtra(EXTRA_WORK_FORCE_PASSWORD, true);
+		intent.putExtra(EXTRA_OPEN_HOME_ACTIVITY, openHomeActivity);
 		activity.startActivity(intent);
 		activity.overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
 	}
@@ -1319,10 +1318,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			}
 
 			final int responseCode = urlConnection.getResponseCode();
-			if (BuildConfig.DEBUG) {
-				RuntimeUtil.runOnUiThread(() -> Toast.makeText(context, "ThreemaSafe response code: " + responseCode, Toast.LENGTH_LONG).show());
-			}
-
 			if (responseCode != 200 && responseCode != 201 && responseCode != 204) {
 				throw new ThreemaException("Server error: " + responseCode);
 			}
@@ -1338,7 +1333,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private byte[] gZipCompress(byte[] uncompressedBytes) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(uncompressedBytes.length);
-			GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+			// Use gzip for backward compatibility, but don't actually compress (to avoid compression oracles)
+			GzipOutputStream gzipOutputStream = new GzipOutputStream(outputStream, Deflater.NO_COMPRESSION, 512, false);
 			gzipOutputStream.write(uncompressedBytes);
 			gzipOutputStream.close();
 			byte[] compressedBytes = outputStream.toByteArray();
@@ -1401,11 +1397,19 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		JSONObject contact = new JSONObject();
 
 		contact.put(TAG_SAFE_CONTACT_IDENTITY, contactModel.getIdentity());
-		if (contactModel.getVerificationLevel() == VerificationLevel.FULLY_VERIFIED && contactModel.getPublicKey() != null) {
+		boolean contactIsVerified = contactModel.getVerificationLevel() == VerificationLevel.FULLY_VERIFIED;
+		boolean contactIsRevoked = contactModel.getState() == ContactModel.State.INVALID;
+		if ((contactIsVerified || contactIsRevoked) && contactModel.getPublicKey() != null) {
+			// Back up the public key if the contact is verified, or if it's revoked.
+			//
+			// Rationale: If the contact is unverified, then it doesn't really matter and the
+			// public key can be re-fetched. By not including the key in the backup, we can reduce
+			// its size. On the other hand, if a contact is revoked, then the public key cannot be
+			// re-fetched, so it must be included.
 			contact.put(TAG_SAFE_CONTACT_PUBLIC_KEY, Base64.encodeBytes(contactModel.getPublicKey()));
 		}
 		if (contactModel.getDateCreated() != null) {
-			contact.put(TAG_SAFE_CONTACT_CREATED_AT, contactModel.getDateCreated().getTime());
+			contact.put(TAG_SAFE_CONTACT_CREATED_AT, Utils.getUnsignedTimestamp(contactModel.getDateCreated()));
 		} else {
 			contact.put(TAG_SAFE_CONTACT_CREATED_AT, 0);
 		}
@@ -1449,9 +1453,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 		group.put(TAG_SAFE_GROUP_ID, groupModel.getApiGroupId());
 		group.put(TAG_SAFE_GROUP_CREATOR, groupModel.getCreatorIdentity());
-		group.put(TAG_SAFE_GROUP_NAME, groupModel.getName());
+		if (groupModel.getName() != null) {
+			group.put(TAG_SAFE_GROUP_NAME, groupModel.getName());
+		}
 		if (groupModel.getCreatedAt() != null) {
-			group.put(TAG_SAFE_GROUP_CREATED_AT, groupModel.getCreatedAt().getTime());
+			group.put(TAG_SAFE_GROUP_CREATED_AT, Utils.getUnsignedTimestamp(groupModel.getCreatedAt()));
 		} else {
 			group.put(TAG_SAFE_GROUP_CREATED_AT, 0);
 		}
@@ -1623,7 +1629,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_ID, Utils.byteArrayToHexString(Utils.longToByteArray(distributionListModel.getId())));
 		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_NAME, distributionListModel.getName());
 		if (distributionListModel.getCreatedAt() != null) {
-			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, distributionListModel.getCreatedAt().getTime());
+			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, Utils.getUnsignedTimestamp(distributionListModel.getCreatedAt()));
 		} else {
 			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, 0);
 		}
@@ -1670,7 +1676,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		JSONObject info = new JSONObject();
 
 		info.put(TAG_SAFE_INFO_VERSION, PROTOCOL_VERSION);
-		info.put(TAG_SAFE_INFO_DEVICE, ConfigUtils.getAppVersion(context) + "A/" + Locale.getDefault().toString());
+		info.put(TAG_SAFE_INFO_DEVICE, ConfigUtils.getAppVersion(context) + "A/" + Locale.getDefault());
 
 		return info;
 	}
@@ -1860,11 +1866,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		return null;
 	}
 
-	public class UploadSizeExceedException extends Exception {
+	public static class UploadSizeExceedException extends Exception {
 		UploadSizeExceedException(String e) {
 			super(e);
 		}
 	}
-
-
 }

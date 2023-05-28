@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2022 Threema GmbH
+ * Copyright (c) 2016-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -30,10 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.routines.ReadMessagesRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
@@ -142,16 +139,7 @@ public class MessageReadRequestHandler extends MessageReceiver {
 						return null;
 					}
 				};
-				List<AbstractMessageModel> mark = Functional.filter(
-						receiver.loadMessages(filter),
-						new IPredicateNonNull<AbstractMessageModel>() {
-							@Override
-							public boolean apply(@NonNull AbstractMessageModel msg) {
-								return msg.getId() <= messageId;
-							}
-						}
-				);
-				(new ReadMessagesRoutine(mark, messageService, notificationService)).run();
+				(new ReadMessagesRoutine(receiver.loadMessages(filter), messageService, notificationService)).run();
 			} catch (SQLException e) {
 				logger.error("Exception", e);
 				//do nothing more

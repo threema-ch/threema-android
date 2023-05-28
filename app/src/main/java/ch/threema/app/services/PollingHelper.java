@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -44,6 +44,8 @@ import ch.threema.app.receivers.FetchMessagesBroadcastReceiver;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.QueueSendCompleteListener;
+
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 /**
  * Helper class to simplify polling (both time-based and GCM based) by handling all the gory details
@@ -129,7 +131,7 @@ public class PollingHelper implements QueueSendCompleteListener {
 				if(!lifetimeService.isActive()) {
 					AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 					PendingIntent pendingIntent = PendingIntent.getBroadcast(this.context, 0,
-							new Intent(this.context, FetchMessagesBroadcastReceiver.class), 0);
+							new Intent(this.context, FetchMessagesBroadcastReceiver.class), PENDING_INTENT_FLAG_MUTABLE);
 
 					// cancel pending alarms
 					alarmManager.cancel(pendingIntent);

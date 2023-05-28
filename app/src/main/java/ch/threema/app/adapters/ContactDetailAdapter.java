@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -31,35 +31,50 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-
-import org.slf4j.Logger;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+
+import org.slf4j.Logger;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.PublicKeyDialog;
+import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
+import java8.util.concurrent.CompletableFuture;
 
 public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactDetailAdapter");
@@ -70,7 +85,9 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	private final Context context;
 	private ContactService contactService;
 	private GroupService groupService;
+	private UserService userService;
 	private PreferenceService preferenceService;
+	private APIConnector apiConnector;
 	private IdListService excludeFromSyncListService;
 	private IdListService blackListIdentityService;
 	private final ContactModel contactModel;
@@ -100,6 +117,10 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		private final TextView publicNickNameView;
 		private final LinearLayout groupMembershipTitle;
 		private final MaterialAutoCompleteTextView readReceiptsSpinner, typingIndicatorsSpinner;
+		private final MaterialCheckBox forwardSecurityCheckbox;
+		private final RelativeLayout forwardSecurityContainer;
+		private final Chip clearForwardSecurityButton;
+		private final ImageButton forwardSecurityInfo;
 
 		public HeaderHolder(View view) {
 			super(view);
@@ -115,6 +136,10 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			this.syncSourceIcon = itemView.findViewById(R.id.sync_source_icon);
 			this.readReceiptsSpinner = itemView.findViewById(R.id.read_receipts_spinner);
 			this.typingIndicatorsSpinner = itemView.findViewById(R.id.typing_indicators_spinner);
+			this.forwardSecurityCheckbox = itemView.findViewById(R.id.forward_security_enabled);
+			this.clearForwardSecurityButton = itemView.findViewById(R.id.clear_forward_security);
+			this.forwardSecurityContainer = itemView.findViewById(R.id.forward_security_container);
+			this.forwardSecurityInfo = itemView.findViewById(R.id.forward_security_info);
 
 			verificationLevelIconView.setOnClickListener(v -> {
 				if (onClickListener != null) {
@@ -162,9 +187,11 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		try {
 			this.contactService = serviceManager.getContactService();
 			this.groupService = serviceManager.getGroupService();
+			this.userService = serviceManager.getUserService();
 			this.excludeFromSyncListService = serviceManager.getExcludedSyncIdentitiesService();
 			this.blackListIdentityService = serviceManager.getBlackListService();
 			this.preferenceService = serviceManager.getPreferenceService();
+			this.apiConnector = serviceManager.getAPIConnector();
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}
@@ -193,9 +220,13 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			ItemHolder itemHolder = (ItemHolder) holder;
 			final GroupModel groupModel = getItem(position);
 
-			this.groupService.loadAvatarIntoImage(groupModel, itemHolder.avatarView, AvatarOptions.DEFAULT);
+			this.groupService.loadAvatarIntoImage(groupModel, itemHolder.avatarView, AvatarOptions.PRESET_DEFAULT_FALLBACK);
 
-			itemHolder.nameView.setText(groupModel.getName());
+			String groupName = groupModel.getName();
+			if (groupName == null) {
+				groupName = groupService.getMembersString(groupModel);
+			}
+			itemHolder.nameView.setText(groupName);
 
 			if (groupService.isGroupOwner(groupModel)) {
 				itemHolder.statusView.setImageResource(R.drawable.ic_group_outline);
@@ -286,6 +317,48 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 				contactModel.setTypingIndicators(position12);
 				contactService.save(contactModel);
 			});
+
+			if (ConfigUtils.isForwardSecurityEnabled()) {
+				headerHolder.forwardSecurityInfo.setOnClickListener(v -> SimpleStringAlertDialog.newInstance(R.string.forward_security_mode, R.string.forward_security_explanation).show(((AppCompatActivity) context).getSupportFragmentManager(), "fsinfo"));
+
+				if (ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask())) {
+					headerHolder.forwardSecurityCheckbox.setEnabled(true);
+				} else {
+					try {
+						UpdateFeatureLevelRoutine.removeTimeCache(contactModel);
+						CompletableFuture
+							.runAsync(new UpdateFeatureLevelRoutine(
+								contactService,
+								apiConnector,
+								Collections.singletonList(this.contactModel)
+							))
+							.thenRun(() -> RuntimeUtil.runOnUiThread(() -> {
+								headerHolder.forwardSecurityCheckbox.setEnabled(ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask()));
+							}))
+							.get();
+					} catch (InterruptedException | ExecutionException e) {
+						logger.warn("Unable to fetch feature mask");
+					}
+				}
+				headerHolder.forwardSecurityCheckbox.setChecked(contactModel.isForwardSecurityEnabled());
+				headerHolder.forwardSecurityCheckbox.setOnCheckedChangeListener((compoundButton, b) -> {
+					contactModel.setForwardSecurityEnabled(b);
+					contactService.save(contactModel);
+				});
+				headerHolder.forwardSecurityContainer.setVisibility(View.VISIBLE);
+
+				if (ConfigUtils.isTestBuild()) {
+					headerHolder.clearForwardSecurityButton.setOnClickListener(view -> {
+						try {
+							ThreemaApplication.getServiceManager().getDHSessionStore().deleteAllDHSessions(userService.getIdentity(), contactModel.getIdentity());
+							Toast.makeText(this.context, R.string.forward_security_cleared, Toast.LENGTH_LONG).show();
+						} catch (Exception e) {
+							Toast.makeText(this.context, e.getMessage(), Toast.LENGTH_LONG).show();
+						}
+					});
+					headerHolder.clearForwardSecurityButton.setVisibility(View.VISIBLE);
+				}
+			}
 		}
 	}
 

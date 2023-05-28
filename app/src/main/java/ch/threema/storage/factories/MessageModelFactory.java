@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -28,6 +28,7 @@ import net.sqlcipher.Cursor;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.services.MessageService;
 import ch.threema.domain.models.MessageId;
 import ch.threema.storage.CursorHelper;
@@ -357,6 +358,48 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 		return messageModels;
 	}
 
+	/**
+	 * Check if there is a call with the given identity and call id within the latest calls.
+	 *
+	 * @param identity the identity of the call partner
+	 * @param callId the call id
+	 * @param limit the maximum number of latest calls
+	 * @return {@code true} if this call exists in the latest calls, {@code false} otherwise
+	 */
+	public boolean hasVoipStatusForCallId(@NonNull String identity, long callId, int limit) {
+		QueryBuilder queryBuilder = new QueryBuilder();
+
+		String orderBy = AbstractMessageModel.COLUMN_CREATED_AT + " DESC";
+
+		queryBuilder.appendWhere(AbstractMessageModel.COLUMN_IDENTITY + "=?");
+		queryBuilder.appendWhere(AbstractMessageModel.COLUMN_TYPE + "=?");
+
+		queryBuilder.setTables(this.getTableName());
+
+		Cursor cursor = queryBuilder.query(this.databaseService.getReadableDatabase(),
+			null,
+			null,
+			new String[]{identity, String.valueOf(MessageType.VOIP_STATUS.ordinal())},
+			null,
+			null,
+			orderBy,
+			String.valueOf(limit));
+
+		if (cursor != null) {
+			try (cursor) {
+				List<MessageModel> messageModels = convertList(cursor);
+				for (MessageModel messageModel : messageModels) {
+					if (messageModel.getVoipStatusData() != null && callId == messageModel.getVoipStatusData().getCallId()) {
+						return true;
+					}
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+		return false;
+	}
+
 	public List<MessageModel> getByIdentityUnsorted(String identity) {
 		return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
 				null,
@@ -425,7 +468,8 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 						"`" + MessageModel.COLUMN_MESSAGE_CONTENTS_TYPE +"` TINYINT ," +
 						"`" + MessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
 						"`" + MessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
-						"`" + MessageModel.COLUMN_READ_AT +"` DATETIME );",
+						"`" + MessageModel.COLUMN_READ_AT +"` DATETIME ," +
+						"`" + MessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 );",
 
 			//indices
 				"CREATE INDEX `messageUidIdx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_UID +"` )",

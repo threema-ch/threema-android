@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -31,6 +31,8 @@ import android.os.Environment;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -47,6 +49,12 @@ import ch.threema.base.utils.LoggingUtil;
  */
 public class DownloadUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DownloadUtil");
+
+	/**
+	 * Maps the download id to the destination file if it is stored in the public external
+	 * directory. Otherwise the file is not put into this map.
+	 */
+	public static final Map<Long, File> publicExternalDestination = new HashMap<>();
 
 	/**
 	 * Get the external download path. This is NOT used in Android version N or higher.
@@ -137,6 +145,8 @@ public class DownloadUtil {
 		boolean toPublicExternalDirectory
 	) {
 		String destinationFileName = getFileName(context, toPublicExternalDirectory);
+		// The destination file is only set if we download the apk into the public external dir
+		File destinationFile = null;
 
 		logger.info("Update target file name: {}", destinationFileName);
 		try {
@@ -144,12 +154,17 @@ public class DownloadUtil {
 			request.setTitle(destinationFileName);
 			request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 			if (toPublicExternalDirectory) {
-				request.setDestinationUri(Uri.fromFile(new File(getDownloadPath(), destinationFileName)));
+				destinationFile = new File(getDownloadPath(), destinationFileName);
+				request.setDestinationUri(Uri.fromFile(destinationFile));
 			}
 			// enqueue file for download
 			DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 			final long id = manager.enqueue(request);
 			logger.info("Enqueued update download with id {}", id);
+
+			if (destinationFile != null) {
+				publicExternalDestination.put(id, destinationFile);
+			}
 
 			return id;
 		} catch (Exception e) {

@@ -24,4 +24,5 @@
     <string name="directory_search">Поиск в каталоге</string>
     <string name="directory_title">Каталог компании</string>
     <string name="directory_empty_view_text">Чтобы начать поиск в каталоге пользователей Threema Work в вашей компании, введите по меньшей мере 3 символа имени</string>
+    <string name="share_with_app">Поделиться через Threema Work</string>
 </resources>

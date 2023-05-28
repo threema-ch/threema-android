@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,7 +21,6 @@
 
 package ch.threema.app.video.transcoder;
 
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -34,8 +33,10 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.text.TextUtils;
 import android.view.Surface;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.slf4j.Logger;
 
@@ -46,8 +47,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.video.transcoder.audio.AbstractAudioTranscoder;
 import ch.threema.app.video.transcoder.audio.AudioComponent;
@@ -56,6 +55,8 @@ import ch.threema.app.video.transcoder.audio.AudioNullTranscoder;
 import ch.threema.app.video.transcoder.audio.UnsupportedAudioFormatException;
 import ch.threema.base.utils.LoggingUtil;
 import java8.util.Optional;
+
+import static ch.threema.app.video.transcoder.VideoTranscoderUtil.getRoundedSize;
 
 /**
  * Based on https://github.com/groupme/android-video-kit
@@ -73,7 +74,6 @@ import java8.util.Optional;
  * limitations under the License.
  */
 
-@TargetApi(18)
 public class VideoTranscoder {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoTranscoder");
 	private @NonNull Optional<AbstractAudioTranscoder> audioTranscoder = Optional.empty();
@@ -90,11 +90,9 @@ public class VideoTranscoder {
 
 	public static final int TRIM_TIME_END = -1;
 
-	private static final int POLLING_SUCCESS = 0;
+	private static final int POLLING_END_OF_STREAM = 0;
 	private static final int POLLING_ERROR = -1;
 	private static final int POLLING_CANCELED = 1;
-
-	private static final String KEY_ROTATION = "rotation";
 
 	/**
 	 * How long to wait for the next buffer to become available in microseconds.
@@ -128,8 +126,8 @@ public class VideoTranscoder {
 	/**
 	 * Approximate start time in Milliseconds.
 	 */
-	private long mTrimStartTimeMs = 0;
-	private long mTrimEndTimeMs = TRIM_TIME_END;
+	private long mTrimStartTimeUs = 0;
+	private long mTrimEndTimeUs = TRIM_TIME_END;
 
 	private MediaFormat mOutputVideoFormat;
 
@@ -267,7 +265,7 @@ public class VideoTranscoder {
 		mStats = new Stats();
 		createComponents();
 
-		setOrientationHint();
+		mOrientationHint = VideoTranscoderUtil.getOrientationHint(mContext, mInputVideoComponent, mSrcUri);
 		if (!calculateOutputDimensions()) {
 			throw new UnrecoverableVideoTranscoderException("Unable to calculate dimensions");
 		}
@@ -287,14 +285,14 @@ public class VideoTranscoder {
 				audioTranscoder = Optional.of(new AudioNullTranscoder(
 					mInputAudioComponent,
 					mStats,
-					mTrimEndTimeMs
+					mTrimEndTimeUs / 1000
 				));
 			} else {
 				logger.info("Transcoding audio track, as in- and output format differ");
 				audioTranscoder = Optional.of(new AudioFormatTranscoder(
 					mInputAudioComponent,
 					mStats,
-					mTrimEndTimeMs,
+					mTrimEndTimeUs / 1000,
 					mOutputAudioBitRate
 				));
 			}
@@ -340,7 +338,7 @@ public class VideoTranscoder {
 			// Poll output frames from the video decoder and feed the encoder
 			if (!videoDecoderDone && (mEncoderOutputVideoFormat == null || muxing)) {
 				int pollingResult = pollVideoFromDecoderAndFeedToEncoder(videoDecoderOutputBufferInfo);
-				videoDecoderDone = pollingResult == POLLING_SUCCESS;
+				videoDecoderDone = pollingResult == POLLING_END_OF_STREAM;
 
 				if (pollingResult == POLLING_CANCELED) {
 					return CANCELED;
@@ -384,28 +382,31 @@ public class VideoTranscoder {
 	 *               <<<<¦
 	 *    [---------|--------------------] video track
 	 *
-	 * 2. Search for next audio keyframe after real video cut
-	 *              |>>
-	 *    [------------‖-----------------] audio track
+	 * 2. Search for previous audio keyframe before real video cut
+	 *                 <<¦
+	 *    [-----------‖------------------] audio track
+	 *
+	 * Note that the frames between the real video cut (|) and the time of the trim start variable
+	 * (¦) are not rendered and not written to the output file. The same applies for the audio
+	 * samples between the real audio cut (‖) and the trim start variable (¦).
 	 *
 	 * (¦ is the time of this variable, | is the real video cut, ‖ the real audio cut)
 	 *
 	 */
 	private void trimStart() {
-		if (this.mTrimStartTimeMs > 0) {
+		if (this.mTrimStartTimeUs > 0) {
 			this.mInputVideoComponent.getMediaExtractor().seekTo(
-				this.mTrimStartTimeMs * 1000,
+				this.mTrimStartTimeUs,
 				MediaExtractor.SEEK_TO_PREVIOUS_SYNC
 			);
-			final long exactVideoStartTrimUs = this.mInputVideoComponent.getMediaExtractor().getSampleTime();
 
 			logger.debug(
 				"transcoder: trim video decoder start to keyframe at {}us (originally requested {}us)",
 				this.mInputVideoComponent.getMediaExtractor().getSampleTime(),
-				this.mTrimStartTimeMs * 1000
+				this.mTrimStartTimeUs
 			);
 
-			this.audioTranscoder.ifPresent(t -> t.trimMediaStartTo(exactVideoStartTrimUs));
+			this.audioTranscoder.ifPresent(t -> t.trimMediaStartTo(mTrimStartTimeUs));
 		}
 	}
 
@@ -605,7 +606,7 @@ public class VideoTranscoder {
 		logger.trace("{} extractor: returned buffer of chunkSize {}", type, chunkSize);
 		logger.trace("{} extractor: returned buffer for sampleTime {}", type, sampleTime);
 
-		if (mTrimEndTimeMs > 0 && sampleTime > (mTrimEndTimeMs * 1000)) {
+		if (mTrimEndTimeUs > 0 && sampleTime > mTrimEndTimeUs) {
 			logger.debug("{} extractor: The current sample is over the trim time. Lets stop.", type);
 			decoder.queueInputBuffer(
 				decoderInputBufferIndex,
@@ -699,7 +700,7 @@ public class VideoTranscoder {
 			return POLLING_CANCELED;
 		}
 
-		boolean render = videoDecoderOutputBufferInfo.size != 0;
+		boolean render = videoDecoderOutputBufferInfo.size != 0 && videoDecoderOutputBufferInfo.presentationTimeUs >= mTrimStartTimeUs;
 
 		mVideoDecoder.releaseOutputBuffer(decoderOutputBufferIndex, render);
 
@@ -715,7 +716,7 @@ public class VideoTranscoder {
 			logger.debug("video decoder: EOS");
 
 			mVideoEncoder.signalEndOfInputStream();
-			return POLLING_SUCCESS;
+			return POLLING_END_OF_STREAM;
 		}
 
 		mStats.videoDecodedFrameCount++;
@@ -763,7 +764,7 @@ public class VideoTranscoder {
 		ByteBuffer encoderOutputBuffer =
 			mVideoEncoder.getOutputBuffer(encoderOutputBufferIndex);
 
-		if (videoEncoderOutputBufferInfo.size != 0) {
+		if (videoEncoderOutputBufferInfo.size != 0 && videoEncoderOutputBufferInfo.presentationTimeUs >= mTrimStartTimeUs) {
 			mMuxer.writeSampleData(mOutputVideoTrack, encoderOutputBuffer, videoEncoderOutputBufferInfo);
 		}
 
@@ -869,33 +870,6 @@ public class VideoTranscoder {
 		return false;
 	}
 
-	private int getRoundedSize(float ratio, int size) {
-		// width/height need to be a multiple of 2 otherwise mediacodec encoder will crash
-		// with android.media.MediaCodec$CodecException: Error 0xfffffc0e
-		return 16 * Math.round(size * ratio / 16);
-	}
-
-
-	private void setOrientationHint() {
-		MediaFormat trackFormat = mInputVideoComponent.getTrackFormat();
-
-		if (trackFormat.containsKey(KEY_ROTATION)) {
-			mOrientationHint = trackFormat.getInteger(KEY_ROTATION);
-		} else {
-			// do not use automatic resource management on MediaMetadataRetriever
-			final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-			try {
-				retriever.setDataSource(mContext, mSrcUri);
-				String orientation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-				if (!TextUtils.isEmpty(orientation)) {
-					mOrientationHint = Integer.parseInt(orientation);
-				}
-			} finally {
-				retriever.release();
-			}
-		}
-	}
-
 	private void createOutputFormats() {
 		createVideoOutputFormat();
 
@@ -933,21 +907,21 @@ public class VideoTranscoder {
 
 	private void createVideoDecoder() throws IOException {
 		MediaFormat inputFormat = mInputVideoComponent.getTrackFormat();
-		if(inputFormat == null) {
+		if (inputFormat == null) {
 			throw new UnrecoverableVideoTranscoderException("Could not detect video track");
 		}
 
-		if (mTrimEndTimeMs == TRIM_TIME_END) {
-			if (!inputFormat.containsKey(MediaFormat.KEY_DURATION)) {
+		if (mTrimEndTimeUs == TRIM_TIME_END) {
+			if (mInputVideoComponent.getDurationUs() == 0L) {
 				throw new UnrecoverableVideoTranscoderException("Video key length duration could not be detected");
 			}
-			outputDurationUs = inputFormat.getLong(MediaFormat.KEY_DURATION);
+			outputDurationUs = mInputVideoComponent.getDurationUs();
 		} else {
-			outputDurationUs = (mTrimEndTimeMs - mTrimStartTimeMs) * 1000;
+			outputDurationUs = mTrimEndTimeUs - mTrimStartTimeUs;
 		}
-		outputStartTimeUs = mTrimStartTimeMs * 1000;
+		outputStartTimeUs = mTrimStartTimeUs;
 
-		mVideoDecoder = MediaCodec.createDecoderByType(getMimeTypeFor(inputFormat));
+		mVideoDecoder = MediaCodec.createDecoderByType(mInputVideoComponent.getMimeType());
 		mVideoDecoder.configure(inputFormat, mOutputSurface.getSurface(), null, 0);
 		mVideoDecoder.start();
 	}
@@ -982,8 +956,11 @@ public class VideoTranscoder {
 					e
 				);
 			} finally {
-				retriever.release();
-
+				try {
+					retriever.release();
+				} catch (IOException e) {
+					logger.debug("Failed to release MediaMetadataRetriever");
+				}
 			}
 		}
 
@@ -1042,10 +1019,6 @@ public class VideoTranscoder {
 		}
 	}
 
-	public static String getMimeTypeFor(MediaFormat format) {
-		return format.getString(MediaFormat.KEY_MIME);
-	}
-
 	public static final class Builder {
 		private final Uri mSrcUri;
 		private final File mDestFile;
@@ -1060,8 +1033,8 @@ public class VideoTranscoder {
 		private int mVideoIFrameInterval = Defaults.OUTPUT_VIDEO_IFRAME_INTERVAL;
 		private int mAudioBitRate = Defaults.OUTPUT_AUDIO_BIT_RATE;
 
-		private long mStartTime = 0;
-		private long mEndTime = TRIM_TIME_END;
+		private long mStartTimeMs = 0;
+		private long mEndTimeMs = TRIM_TIME_END;
 
 		public Builder(Uri srcUri, File destFile) {
 			if (srcUri == null) {
@@ -1112,8 +1085,8 @@ public class VideoTranscoder {
 		}
 
 		public Builder trim(long startTimeMillis, long endTimeMillis) {
-			mStartTime = startTimeMillis;
-			mEndTime = endTimeMillis;
+			mStartTimeMs = startTimeMillis;
+			mEndTimeMs = endTimeMillis;
 			return this;
 		}
 
@@ -1128,12 +1101,12 @@ public class VideoTranscoder {
 			transcoder.mOutputVideoIFrameInterval = mVideoIFrameInterval;
 			transcoder.mOutputFilePath = mDestFile.getAbsolutePath();
 
-			if (mStartTime > 0) {
-				transcoder.mTrimStartTimeMs = mStartTime;
+			if (mStartTimeMs > 0) {
+				transcoder.mTrimStartTimeUs = mStartTimeMs * 1000;
 			}
 
-			if (mEndTime != -1) {
-				transcoder.mTrimEndTimeMs = mEndTime;
+			if (mEndTimeMs != -1) {
+				transcoder.mTrimEndTimeUs = mEndTimeMs * 1000;
 			}
 
 			return transcoder;

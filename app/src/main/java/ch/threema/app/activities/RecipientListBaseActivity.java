@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -49,19 +49,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
-
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Executors;
-
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,6 +64,20 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Executors;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -157,6 +158,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	public static final String INTENT_DATA_MULTISELECT_FOR_COMPOSE = "msi"; // allow multi select for composing a new message (automatically creates a distribution list)
 
 	private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
+	private static final String BUNDLE_QUERY_TEXT = "query";
 
 	private ViewPager viewPager;
 	private UserGroupPagerAdapter userGroupPagerAdapter;
@@ -164,7 +166,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private ThreemaSearchView searchView;
 
 	private boolean hideUi, hideRecents, multiSelect, multiSelectIdentities;
-	private String captionText;
+	private String captionText, queryText;
 	private final List<MediaItem> mediaItems = new ArrayList<>();
 	private final List<MessageReceiver> recipientMessageReceivers = new ArrayList<>();
 	private final List<AbstractMessageModel> originalMessageModels = new ArrayList<>();
@@ -209,14 +211,18 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 	@Override
 	public boolean onQueryTextChange(String newText) {
-		int currentItem = viewPager.getCurrentItem();
-		Fragment fragment = userGroupPagerAdapter.getRegisteredFragment(currentItem);
+		int itemCount = userGroupPagerAdapter.getCount();
 
-		if (fragment != null) {
-			FilterableListAdapter listAdapter = ((RecipientListFragment) fragment).getAdapter();
-			// adapter can be null if it has not been initialized yet (runs in different thread)
-			if (listAdapter == null) return false;
-			listAdapter.getFilter().filter(newText);
+		// apply filter to all adapters
+		for (int currentItem = 0; currentItem < itemCount; currentItem++) {
+			Fragment fragment = userGroupPagerAdapter.getRegisteredFragment(currentItem);
+			if (fragment != null) {
+				FilterableListAdapter listAdapter = ((RecipientListFragment) fragment).getAdapter();
+				// adapter can be null if it has not been initialized yet (runs in different thread)
+				if (listAdapter != null) {
+					listAdapter.getFilter().filter(newText);
+				}
+			}
 		}
 		return true;
 	}
@@ -350,13 +356,31 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 				@Override
 				public void onPageSelected(int position) {
-					if (searchMenuItem != null) {
-						searchMenuItem.collapseActionView();
-						if (searchView != null) {
-							searchView.setQuery("", false);
+					if (searchView != null) {
+						if (searchMenuItem != null) {
+							CharSequence query = searchView.getQuery();
+							if (TestUtil.empty(query)) {
+								invalidateOptionsMenu();
+								if (searchMenuItem.isActionViewExpanded()) {
+									searchMenuItem.collapseActionView();
+									onQueryTextChange(null);
+								}
+								searchView.setQuery("", false);
+								queryText = null;
+							} else {
+								searchMenuItem.getActionView().post(new Runnable() {
+									@Override
+									public void run() {
+										if (!searchMenuItem.isActionViewExpanded()) {
+											searchMenuItem.expandActionView();
+										}
+										searchView.setQuery(query, true);
+									}
+								});
+								queryText = query.toString();
+							}
 						}
 					}
-					invalidateOptionsMenu();
 				}
 			});
 
@@ -678,7 +702,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 		setupUI();
 	}
 
-	private @Nullable String getMimeTypeFromContentUri(@NonNull Uri uri) {
+	@Nullable
+	private String getMimeTypeFromContentUri(@NonNull Uri uri) {
 		if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
 			// query database for correct mime type as ACTION_SEND may have been called with a generic mime type such as "image/*"
 			String[] proj = {
@@ -811,6 +836,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			this.searchView.setOnQueryTextListener(this);
 			if (hideUi) {
 				this.searchMenuItem.setVisible(false);
+			} else if (!TestUtil.empty(queryText)) {
+				this.searchMenuItem.expandActionView();
+				this.searchView.setQuery(queryText, true);
 			}
 		} else {
 			this.searchMenuItem.setVisible(false);
@@ -855,7 +883,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 	private void sendSharedMedia(final MessageReceiver[] messageReceivers, final Intent intent) {
 		if (messageReceivers.length == 1 && mediaItems.size() == 1 && TYPE_TEXT == mediaItems.get(0).getType()) {
-			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getCaption());
+			intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, mediaItems.get(0).getTrimmedCaption());
 			startComposeActivity(intent);
 		} else if (messageReceivers.length > 1 || mediaItems.size() > 0) {
 			messageService.sendMediaSingleThread(mediaItems, Arrays.asList(messageReceivers));
@@ -1007,7 +1035,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 					if (!expandable) {
 						alertDialog = TextWithCheckboxDialog.newInstance(getString(R.string.really_forward, recipientName), hasCaptions ? R.string.forward_captions : 0, R.string.send, R.string.cancel);
 					} else {
-						alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_forward, recipientName), R.string.add_caption_hint, presetCaption, R.string.send, R.string.cancel, expandable);
+						alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_forward, recipientName), R.string.add_caption_hint, presetCaption, R.string.send, R.string.cancel, true);
 					}
 					alertDialog.setData(recipients);
 					alertDialog.show(getSupportFragmentManager(), null);
@@ -1019,18 +1047,17 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 						CompletableFuture
 							.runAsync(copyFilesRunnable, Executors.newSingleThreadExecutor())
 							.thenRunAsync(() -> {
-								int numEditableMedia = 0;
+								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_FILECOPY, true);
+
+								boolean containsGeoUri = false;
 								for (MediaItem mediaItem : mediaItems) {
-									String mimeType = mediaItem.getMimeType();
-									if (MimeUtil.isImageFile(mimeType) || MimeUtil.isVideoFile(mimeType)) {
-										numEditableMedia++;
+									if (mediaItem!= null && mediaItem.getUri() != null && "geo".equals(mediaItem.getUri().getScheme())) {
+										containsGeoUri = true;
+										break;
 									}
 								}
 
-								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_FILECOPY, true);
-
-								if (numEditableMedia == mediaItems.size() && mediaItems.size() <= MAX_EDITABLE_IMAGES) { // all files are images or videos
-									// all files are either images or videos => redirect to SendMediaActivity
+								if (mediaItems.size() <= MAX_EDITABLE_IMAGES && !containsGeoUri) { // use send media activity for a reasonable number of files
 									recipientMessageReceivers.clear();
 									for (Object model : recipients) {
 										MessageReceiver messageReceiver = getMessageReceiver(model);
@@ -1048,11 +1075,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 								} else {
 									// mixed media
 									ExpandableTextEntryDialog alertDialog;
-									boolean expandable = mediaItems.size() == 1 && mediaItems.get(0).getType() != TYPE_LOCATION;
 									if (hideUi) {
-										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.app_name), getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, expandable);
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.app_name), getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, false);
 									} else {
-										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, expandable);
+										alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_send, finalRecipientName), R.string.add_caption_hint, captionText, R.string.send, R.string.cancel, false);
 									}
 									alertDialog.setData(recipients);
 									alertDialog.show(getSupportFragmentManager(), null);
@@ -1096,6 +1122,15 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	protected void onPause() {
 		logger.debug("onPause");
 		super.onPause();
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		if (savedInstanceState != null) {
+			queryText = savedInstanceState.getString(BUNDLE_QUERY_TEXT, null);
+		}
 	}
 
 	@Override
@@ -1366,5 +1401,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 	public boolean isCalledFromExternalApp() {
 		return false;
+	}
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		if (searchView != null) {
+			CharSequence query = searchView.getQuery();
+			outState.putString(BUNDLE_QUERY_TEXT, TextUtils.isEmpty(query) ? null : query.toString());
+		}
+		super.onSaveInstanceState(outState);
 	}
 }

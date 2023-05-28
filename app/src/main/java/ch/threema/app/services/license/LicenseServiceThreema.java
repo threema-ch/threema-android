@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2022 Threema GmbH
+ * Copyright (c) 2016-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,6 +22,7 @@
 package ch.threema.app.services.license;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.domain.onprem.UnauthorizedFetchException;
 import ch.threema.domain.protocol.api.APIConnector;
 
 abstract public class  LicenseServiceThreema<T extends LicenseService.Credentials>  implements LicenseService<T> {
@@ -74,6 +75,10 @@ abstract public class  LicenseServiceThreema<T extends LicenseService.Credential
 				this.isLicensed = false;
 				return result.error;
 			}
+		} catch (UnauthorizedFetchException e) {
+			// Treat unauthorized OPPF fetch like (temporarily) bad license
+			this.isLicensed = false;
+			return e.getMessage();
 		} catch (Exception e) {
 			if(!allowException) {
 				return e.getMessage();

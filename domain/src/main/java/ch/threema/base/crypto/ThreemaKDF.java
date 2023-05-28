@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -37,11 +37,19 @@ public class ThreemaKDF {
 	/**
 	 * Derive a key from a secret key and a salt with BLAKE2b.
 	 * @param salt Salt for key derivation
-	 * @param secretKey Secret key of 32 bytes length
-	 * @return
+	 * @param secretKey Secret key of 32..64 bytes length
+	 * @return derived key (32 bytes)
 	 */
 	public byte[] deriveKey(byte[] salt, byte[] secretKey) throws IllegalArgumentException {
-		if (secretKey.length != 32) {
+		return getInstance(salt, secretKey).digest();
+	}
+
+	public byte[] deriveKey(String salt, byte[] secretKey) throws IllegalArgumentException {
+		return this.deriveKey(salt.getBytes(), secretKey);
+	}
+
+	private Blake2b.Digest getInstance(byte[] salt, byte[] secretKey) {
+		if (secretKey.length < 32 || secretKey.length > 64) {
 			throw new IllegalArgumentException("Wrong secret key size");
 		}
 
@@ -51,10 +59,6 @@ public class ThreemaKDF {
 			.setPersonal(personal)
 			.setSalt(salt);
 
-		return Blake2b.Digest.newInstance(param).digest();
-	}
-
-	public byte[] deriveKey(String salt, byte[] secretKey) throws IllegalArgumentException {
-		return this.deriveKey(salt.getBytes(), secretKey);
+		return Blake2b.Digest.newInstance(param);
 	}
 }

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -40,7 +40,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  *
  * Video:     0x000000000000000000000000000000000000000000000001
  * Thumbnail: 0x000000000000000000000000000000000000000000000002
+ *
+ *  @Deprecated Use GroupFileMessage instead
  */
+@Deprecated
 public class GroupVideoMessage extends AbstractGroupMessage {
 
 	private int duration;
@@ -65,7 +68,7 @@ public class GroupVideoMessage extends AbstractGroupMessage {
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 
@@ -75,7 +78,7 @@ public class GroupVideoMessage extends AbstractGroupMessage {
 
 		try {
 			bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(getGroupId().getGroupId());
+			bos.write(getApiGroupId().getGroupId());
 			EndianUtils.writeSwappedShort(bos, (short)duration);
 			bos.write(videoBlobId);
 			EndianUtils.writeSwappedInteger(bos, videoSize);

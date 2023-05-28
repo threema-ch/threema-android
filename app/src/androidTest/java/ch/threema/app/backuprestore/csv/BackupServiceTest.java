@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -263,7 +263,7 @@ public class BackupServiceTest {
 	    // Messages contact 1
 	    this.messageService.sendText("Bonjour!", this.contactService.createReceiver(contact1));
 	    this.messageService.sendText("Phở?", this.contactService.createReceiver(contact1));
-	    this.messageService.createVoipStatus(VoipStatusDataModel.createAborted(), this.contactService.createReceiver(contact1), true, false);
+	    this.messageService.createVoipStatus(VoipStatusDataModel.createAborted(0), this.contactService.createReceiver(contact1), true, false);
 	    // Messages contact 2
 	    this.messageService.sendText("\uD83D\uDC4B", this.contactService.createReceiver(contact2));
 

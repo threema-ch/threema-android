@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,9 +21,9 @@
 
 package ch.threema.domain.protocol.csp.messages;
 
-import ch.threema.domain.protocol.csp.messages.GroupDeletePhotoMessage;
-import ch.threema.domain.models.GroupId;
 import org.junit.Test;
+
+import ch.threema.domain.models.GroupId;
 
 public class GroupDeletePhotoMessageTest {
 
@@ -32,7 +32,7 @@ public class GroupDeletePhotoMessageTest {
 		final GroupDeletePhotoMessage msg = new GroupDeletePhotoMessage();
 		msg.setGroupCreator("GRCREATE");
 		GroupId groupId = new GroupId();
-		msg.setGroupId(groupId);
+		msg.setApiGroupId(groupId);
 
 		org.junit.Assert.assertArrayEquals(
 			groupId.getGroupId(),

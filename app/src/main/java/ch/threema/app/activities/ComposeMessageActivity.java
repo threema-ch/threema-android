@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -206,7 +206,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode,
-								 final Intent intent) {
+	                             final Intent intent) {
 		switch (requestCode) {
 			case ID_HIDDEN_CHECK_ON_CREATE:
 				super.onActivityResult(requestCode, resultCode, intent);
@@ -230,6 +230,10 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 					if (composeMessageFragment != null) {
 						getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
 						composeMessageFragment.onNewIntent(this.currentIntent);
+					}
+				} else {
+					if (!ConfigUtils.isTabletLayout()) {
+						finish();
 					}
 				}
 				break;

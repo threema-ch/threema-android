@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -49,6 +49,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.notifications.BackgroundErrorNotification;
+import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.util.AppRTCUtils;
@@ -61,18 +62,6 @@ import java8.util.concurrent.CompletableFuture;
 public class VoipAudioManager {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipAudioManager");
 	private static final String TAG = "VoipAudioManager";
-
-	/**
-	 * AudioDevice is the names of possible audio devices that we currently
-	 * support.
-	 */
-	public enum AudioDevice {
-		SPEAKER_PHONE,
-		WIRED_HEADSET,
-		EARPIECE,
-		BLUETOOTH,
-		NONE,
-	}
 
 	/**
 	 * AudioManager state.

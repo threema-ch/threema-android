@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,11 +22,13 @@
 package ch.threema.app.dialogs;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -35,6 +37,8 @@ import ch.threema.app.utils.TestUtil;
 
 public class SimpleStringAlertDialog extends ThreemaDialogFragment {
 	protected Activity activity;
+	@Nullable
+	private Runnable onDismissRunnable;
 
 	public static SimpleStringAlertDialog newInstance(int title, CharSequence message) {
 		SimpleStringAlertDialog dialog = new SimpleStringAlertDialog();
@@ -110,5 +114,19 @@ public class SimpleStringAlertDialog extends ThreemaDialogFragment {
 		}
 
 		return builder.create();
+	}
+
+	public SimpleStringAlertDialog setOnDismissRunnable(Runnable onDismissRunnable) {
+		this.onDismissRunnable = onDismissRunnable;
+		return this;
+	}
+
+	@Override
+	public void onDismiss(@NonNull DialogInterface dialog) {
+		super.onDismiss(dialog);
+
+		if (onDismissRunnable != null) {
+			onDismissRunnable.run();
+		}
 	}
 }

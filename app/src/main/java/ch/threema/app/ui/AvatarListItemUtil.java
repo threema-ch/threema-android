@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -36,7 +36,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
-import ch.threema.storage.models.DistributionListModel;
+import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.ReceiverModel;
 
 public class AvatarListItemUtil {
@@ -55,19 +55,19 @@ public class AvatarListItemUtil {
 				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
 					ThreemaApplication.getAppContext().getString(R.string.mime_contact),
 					NameUtil.getDisplayNameOrNickname(conversationModel.getContact(), true)));
-			contactService.loadAvatarIntoImage(conversationModel.getContact(), avatarView, AvatarOptions.DEFAULT);
+			contactService.loadAvatarIntoImage(conversationModel.getContact(), avatarView, AvatarOptions.PRESET_RESPECT_SETTINGS);
 		} else if (conversationModel.isGroupConversation()) {
 			holder.avatarView.setContentDescription(
 				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
 					ThreemaApplication.getAppContext().getString(R.string.group),
 					NameUtil.getDisplayName(conversationModel.getGroup(), groupService)));
-			groupService.loadAvatarIntoImage(conversationModel.getGroup(), avatarView, AvatarOptions.DEFAULT);
+			groupService.loadAvatarIntoImage(conversationModel.getGroup(), avatarView, AvatarOptions.PRESET_DEFAULT_FALLBACK);
 		} else if (conversationModel.isDistributionListConversation()) {
 			holder.avatarView.setContentDescription(
 				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
 					ThreemaApplication.getAppContext().getString(R.string.distribution_list),
 					NameUtil.getDisplayName(conversationModel.getDistributionList(), distributionListService)));
-			distributionListService.loadAvatarIntoImage(conversationModel.getDistributionList(), avatarView, AvatarOptions.DEFAULT_NO_CACHE);
+			distributionListService.loadAvatarIntoImage(conversationModel.getDistributionList(), avatarView, AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE);
 		}
 
 		// Set work badge
@@ -92,7 +92,16 @@ public class AvatarListItemUtil {
 			holder.avatarView.setBadgeVisible(false);
 		}
 
-		avatarService.loadAvatarIntoImage(model, holder.avatarView.getAvatarView(), model instanceof DistributionListModel ? AvatarOptions.DEFAULT_NO_CACHE : AvatarOptions.DEFAULT);
+		AvatarOptions options;
+		if (model instanceof ContactModel) {
+			options = AvatarOptions.PRESET_RESPECT_SETTINGS;
+		} else if (model instanceof GroupModel) {
+			options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
+		} else {
+			options = AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE;
+		}
+
+		avatarService.loadAvatarIntoImage(model, holder.avatarView.getAvatarView(), options);
 
 		holder.avatarView.setVisibility(View.VISIBLE);
 	}

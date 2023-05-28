@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -60,6 +60,7 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -156,16 +157,18 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 		});
 
 		Button deleteAllButton = findViewById(R.id.delete_everything_button);
-		deleteAllButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				GenericAlertDialog.newInstance(
-					R.string.delete_id_title,
-					R.string.delete_id_message,
-					R.string.delete_everything,
-					R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_DELETE_ID);
-			}
-		});
+
+		if (ConfigUtils.isWorkBuild() && AppRestrictionUtil.isReadonlyProfile(this)) {
+			// In readonly profile the user should not be able to delete its ID
+			deleteAllButton.setVisibility(View.GONE);
+		} else {
+			deleteAllButton.setOnClickListener(v -> GenericAlertDialog.newInstance(
+				R.string.delete_id_title,
+				R.string.delete_id_message,
+				R.string.delete_everything,
+				R.string.cancel
+			).show(getSupportFragmentManager(), DIALOG_TAG_DELETE_ID));
+		}
 
 		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.storagemanager_timeout, android.R.layout.simple_spinner_dropdown_item);
 		timeSpinner.setAdapter(adapter);
@@ -326,7 +329,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 			protected void onPostExecute(Void result) {
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DELETE_MESSAGES_PROGRESS_TAG, true);
 
-				Snackbar.make(coordinatorLayout, String.valueOf(delCount) + " " + getString(R.string.message_deleted), Snackbar.LENGTH_LONG).show();
+				Snackbar.make(coordinatorLayout, ConfigUtils.getSafeQuantityString(StorageManagementActivity.this, R.plurals.message_deleted, delCount, delCount), Snackbar.LENGTH_LONG).show();
 
 				updateStorageDisplay();
 
@@ -431,7 +434,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 			protected void onPostExecute(Void result) {
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DELETE_PROGRESS_TAG, true);
 
-				Snackbar.make(coordinatorLayout, String.format(getString(R.string.media_files_deleted), delCount), Snackbar.LENGTH_LONG).show();
+				Snackbar.make(coordinatorLayout, ConfigUtils.getSafeQuantityString(StorageManagementActivity.this, R.plurals.media_files_deleted, delCount, delCount), Snackbar.LENGTH_LONG).show();
 
 				updateStorageDisplay();
 

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -37,22 +37,22 @@ public class GroupInviteData implements ProtobufDataInterface<GroupInvite> {
 	private final @NonNull GroupInviteToken token;
 	private final @NonNull String groupName;
 	private final @NonNull
-	GroupInvite.InviteType inviteType;
+	GroupInvite.ConfirmationMode confirmationMode;
 
 	/**
 	 *
 	 * @param adminIdentity Invite admin identity
 	 * @param token Invite token
 	 * @param groupName Group name
-	 * @param inviteType if the requests through the invite have the be manually accepted or not
+	 * @param confirmationMode if the requests through the invite have the be manually accepted or not
 	 * @throws BadMessageException if invalid data was provided
 	 */
 	public GroupInviteData(@NonNull String adminIdentity, @NonNull GroupInviteToken token,
-	                       @NonNull String groupName, @NonNull GroupInvite.InviteType inviteType) {
+	                       @NonNull String groupName, @NonNull GroupInvite.ConfirmationMode confirmationMode) {
 		this.adminIdentity = adminIdentity;
 		this.token = token;
 		this.groupName = groupName;
-		this.inviteType = inviteType;
+		this.confirmationMode = confirmationMode;
 	}
 
 	@NonNull
@@ -71,8 +71,8 @@ public class GroupInviteData implements ProtobufDataInterface<GroupInvite> {
 	}
 
 	@NonNull
-	public GroupInvite.InviteType getInviteType() {
-		return inviteType;
+	public GroupInvite.ConfirmationMode getConfirmationMode() {
+		return confirmationMode;
 	}
 
 	@NonNull
@@ -80,10 +80,10 @@ public class GroupInviteData implements ProtobufDataInterface<GroupInvite> {
 		try {
 			GroupInvite protobufMessage = GroupInvite.parseFrom(rawProtobufMessage);
 			return new GroupInviteData(
-				protobufMessage.getAdminIdentity().toStringUtf8(),
+				protobufMessage.getAdminIdentity(),
 				new GroupInviteToken(protobufMessage.getToken().toByteArray()),
 				protobufMessage.getGroupName(),
-				protobufMessage.getInviteType()
+				protobufMessage.getConfirmationMode()
 			);
 		} catch (InvalidProtocolBufferException e) {
 			throw new BadMessageException("Invalid Group Join Request Protobuf Data", true);
@@ -96,10 +96,10 @@ public class GroupInviteData implements ProtobufDataInterface<GroupInvite> {
 	@Override
 	public GroupInvite toProtobufMessage() {
 		return GroupInvite.newBuilder()
-			.setAdminIdentity(ByteString.copyFromUtf8(this.adminIdentity))
+			.setAdminIdentity(this.adminIdentity)
 			.setToken(ByteString.copyFrom(this.token.get()))
 			.setGroupName(this.groupName)
-			.setInviteType(this.inviteType).build();
+			.setConfirmationMode(this.confirmationMode).build();
 	}
 
 	@Override
@@ -115,11 +115,11 @@ public class GroupInviteData implements ProtobufDataInterface<GroupInvite> {
 		return this.adminIdentity.equals(that.adminIdentity) &&
 			this.token.equals(that.token) &&
 			this.groupName.equals(that.groupName) &&
-			this.inviteType.equals(that.inviteType);
+			this.confirmationMode.equals(that.confirmationMode);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.adminIdentity, this.token, this.groupName, this.inviteType);
+		return Objects.hash(this.adminIdentity, this.token, this.groupName, this.confirmationMode);
 	}
 }

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -31,9 +31,10 @@ import com.bumptech.glide.signature.ObjectKey
 
 class ContactAvatarLoader(val context: Context) : ModelLoader<AvatarCacheServiceImpl.ContactAvatarConfig, Bitmap> {
     private val contactService = ThreemaApplication.getServiceManager()?.contactService
+    private val preferenceService = ThreemaApplication.getServiceManager()?.preferenceService
 
     override fun buildLoadData(config: AvatarCacheServiceImpl.ContactAvatarConfig, width: Int, height: Int, options: Options): ModelLoader.LoadData<Bitmap> {
-        return ModelLoader.LoadData(ObjectKey(config), ContactAvatarFetcher(context, contactService, config))
+        return ModelLoader.LoadData(ObjectKey(config), ContactAvatarFetcher(context, contactService, config, preferenceService))
     }
 
     override fun handles(model: AvatarCacheServiceImpl.ContactAvatarConfig) = true

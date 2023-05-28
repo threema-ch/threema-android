@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -348,5 +349,9 @@ public class MediaPlayerStateWrapper {
 			logger.error("Unable to get current playback speed", e);
 			return 1f;
 		}
+	}
+
+	public void setOnSeekCompleteListener(@Nullable MediaPlayer.OnSeekCompleteListener listener) {
+		mediaPlayer.setOnSeekCompleteListener(listener);
 	}
 }

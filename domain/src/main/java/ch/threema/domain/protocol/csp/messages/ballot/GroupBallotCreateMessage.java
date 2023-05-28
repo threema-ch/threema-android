@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,8 +27,8 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 
 /**
  * A group ballot creation message.
@@ -52,7 +52,7 @@ public class GroupBallotCreateMessage extends AbstractGroupMessage
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 
@@ -93,7 +93,7 @@ public class GroupBallotCreateMessage extends AbstractGroupMessage
 
 			//ballot stuff
 			bos.write(this.getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(this.getGroupId().getGroupId());
+			bos.write(this.getApiGroupId().getGroupId());
 			bos.write(this.getBallotId().getBallotId());
 			this.ballotData.write(bos);
 			return bos.toByteArray();

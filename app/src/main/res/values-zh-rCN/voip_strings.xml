@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources>
-    <string name="voip_title">Threema 通话</string>
+    <string name="voip_title">LeOS-Messenger 通话</string>
     <string name="voip_hangup">挂断</string>
     <string name="voip_toggle_mic">切换麦克风</string>
     <string name="voip_toggle_speaker">切换扬声器</string>
@@ -9,9 +9,9 @@
     <string name="voip_switch_cam_rear">切换到后置摄像头</string>
     <string name="voip_toggle_video">切换视频模式</string>
     <string name="voip_call_confirm">您要致电 %1$s 吗？</string>
-    <string name="voip_error_call">在 Threema 通话中出错</string>
+    <string name="voip_error_call">在 LeOS-Messenger 通话中出错</string>
     <string name="voip_error_init_call">初始化通话时出错</string>
-    <string name="voip_notification_title">Threema 通话来电</string>
+    <string name="voip_notification_title">LeOS-Messenger 通话来电</string>
     <string name="voip_notification_text">%1$s正在通话</string>
     <!-- Shown when starting a call, before the peer device is ringing -->
     <string name="voip_status_initializing">正在初始化</string>
@@ -23,13 +23,13 @@
     <string name="voip_status_ringing">响铃中</string>
     <string name="voip_mic_enable">启用麦克风</string>
     <string name="voip_mic_disable">禁用麦克风</string>
-    <string name="voip_checking_compatibility">检查此联系人是否可以接收 Threema 通话</string>
-    <string name="voip_incompatible">此联系人尚无法接收 Threema 通话。</string>
+    <string name="voip_checking_compatibility">检查此联系人是否可以接收 LeOS-Messenger 通话</string>
+    <string name="voip_incompatible">此联系人尚无法接收 LeOS-Messenger 通话。</string>
     <string name="voip_call_status_unavailable">通话接收者无法接通</string>
     <string name="voip_call_status_rejected">通话被拒</string>
     <string name="voip_call_status_busy">通话接收者忙碌中</string>
     <string name="voip_call_status_busy_short">忙碌中</string>
-    <string name="voip_call_status_disabled">Threema 通话被接收者禁用</string>
+    <string name="voip_call_status_disabled">LeOS-Messenger 通话被接收者禁用</string>
     <string name="voip_call_status_missed">未接来电</string>
     <string name="voip_call_finished_outbox">拨出通话</string>
     <string name="voip_call_finished_inbox">来电</string>
@@ -42,8 +42,8 @@
     <string name="voip_earpiece">电话</string>
     <string name="voip_bluetooth">蓝牙</string>
     <string name="voip_none">无法使用</string>
-    <string name="voip_call_finished">Threema 通话已结束</string>
-    <string name="voip_another_call">无法连接。另一个 Threema 通话目前正在进行中。</string>
+    <string name="voip_call_finished">LeOS-Messenger 通话已结束</string>
+    <string name="voip_another_call">无法连接。另一个 LeOS-Messenger 通话目前正在进行中。</string>
     <string name="voip_prefs_title_aec">回声消除</string>
     <string name="voip_prefs_aec_sw">软件回声消除</string>
     <string name="voip_prefs_aec_hw">硬件回音消除</string>
@@ -55,18 +55,49 @@
     <string name="voip_connection_failed">无法建立连接</string>
     <string name="voip_connection_lost">连接丢失</string>
     <string name="prefs_voip_reject_incoming_calls_title">拒绝手机通话</string>
-    <string name="prefs_voip_reject_incoming_calls_summary">在 Threema 通话时拒绝来电。</string>
-    <string name="voip_contact_not_found">找不到此号码与 Threema 关联的联系人。</string>
-    <string name="voip_another_pstn_call">无法发起通话，常规电话仍正在进行中。</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">在 LeOS-Messenger 通话时拒绝来电。</string>
+    <string name="voip_contact_not_found">找不到此号码与 LeOS-Messenger 关联的联系人。</string>
+    <string name="voip_another_pstn_call">无法建立通话，常规电话仍正在进行中。</string>
     <string name="voip_call_status_off_hours">非工作时间通话</string>
     <string name="voip_peer_video_disabled">对方已禁止视频通话。</string>
+    <string name="voip_reject_channel_name">呼叫状态改变</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC 诊断</string>
     <string name="voip_prefs_webrtc_debug_summary">启动此工具以调试与设置语音通话连接有关的问题</string>
     <string name="voip_webrtc_debug">WebRTC 诊断</string>
     <string name="voip_webrtc_debug_intro">按 “开始” 按钮开始测试。</string>
     <string name="voip_webrtc_debug_start">开始</string>
-    <string name="voip_webrtc_debug_done">大功告成。如果您在建立通话连接时遇到问题，请将错误日志发送给 Threema 支持。</string>
+    <string name="voip_webrtc_debug_done">大功告成。如果您在建立通话连接时遇到问题，请将错误日志发送给 LeOS-Messenger 支持。</string>
     <string name="voip_webrtc_debug_copied">已复制到剪贴板。</string>
     <string name="voip_webrtc_debug_copy_clipboard">复制到剪贴板</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">已通知所有群组成员进行群组通话</string>
+    <string name="voip_gc_notification_channel_description">群组通话</string>
+    <string name="voip_gc_notification_title">群组通话</string>
+    <string name="voip_gc_notification_call_started">%1$s在%2$s发起了群组通话</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s发起了群组通话</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">您发起了群组通话</string>
+    <string name="voip_gc_dismiss_call">忽略</string>
+    <string name="voip_gc_join_call">加入</string>
+    <string name="voip_gc_ongoing_call">正在进行的群组通话</string>
+    <string name="voip_gc_waiting_for_participants">正在等待参与者</string>
+    <string name="voip_gc_participant_avatar_description">参与者个人头像</string>
+    <string name="voip_gc_participant_mute_status_description">参与者静音状态</string>
+    <string name="voip_gc_notification_new_call_public">新的群组通话已开始</string>
+    <string name="voip_gc_open_call">打开</string>
+    <string name="voip_gc_call_started">群组通话已开始</string>
+    <string name="voip_gc_call_ended">群组通话已结束</string>
+    <string name="voip_gc_in_call">在群组通话中</string>
+    <string name="voip_gc_sfu_not_available">服务器现时无法使用，请稍后再试。</string>
+    <string name="voip_gc_call_error">因为发生错误，群组通话被中止</string>
+    <string name="voip_gc_call_start_error">无法发起群组通话</string>
+    <string name="voip_gc_call_already_ended">群组通话已经结束</string>
+    <string name="voip_gc_call_full_generic">已达到人数上限：其他参与者无法加入此群组通话。</string>
+    <string name="voip_gc_call_full_n">已达到 %1$d 个参与者的上限，您无法加入此群组通话。</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="other">%d位参与者</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="other">注意：%d位成员不能参与群组通话。</item>
+    </plurals>
 </resources>

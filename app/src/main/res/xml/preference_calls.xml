@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ Copyright (c) 2020 Threema GmbH
+  ~ Copyright (c) 2020 LeOS-Messenger GmbH
   ~ All rights reserved.
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   android:key="pref_key_voip_settings"
                   android:persistent="true"
-                  android:title="@string/prefs_title_voip">
+                  android:title="@string/prefs_title_calls">
 
 	<PreferenceCategory
 		android:key="pref_key_voip"
@@ -20,6 +20,14 @@
 			android:icon="@drawable/ic_phone_locked_outline"
 			android:widgetLayout="@layout/preference_switch_layout"
 			android:title="@string/prefs_title_voip_enable"/>
+
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="@string/preferences__voip_video_enable"
+			android:icon="@drawable/ic_camera_locked"
+			android:title="@string/prefs_title_voip_video_enable"
+			android:dependency="@string/preferences__voip_enable"
+			android:widgetLayout="@layout/preference_switch_layout" />
 
 		<CheckBoxPreference
 			android:defaultValue="false"
@@ -35,20 +43,6 @@
 			android:title="@string/prefs_voip_reject_incoming_calls_title"
 			android:summary="@string/prefs_voip_reject_incoming_calls_summary"
 			android:dependency="@string/preferences__voip_enable"/>
-
-	</PreferenceCategory>
-
-	<PreferenceCategory
-		android:key="pref_key_voip_video_settings"
-		android:title="@string/video_calls"
-		android:dependency="@string/preferences__voip_enable">
-
-		<CheckBoxPreference
-			android:defaultValue="true"
-			android:key="@string/preferences__voip_video_enable"
-			android:icon="@drawable/ic_camera_locked"
-			android:title="@string/prefs_title_voip_video_enable"
-			android:widgetLayout="@layout/preference_switch_layout" />
 
 		<DropDownPreference
 			android:defaultValue="0"
@@ -66,6 +60,19 @@
 			android:icon="@drawable/ic_info_outline"
 			android:dependency="@string/preferences__voip_video_enable"
 			android:selectable="false"/>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:key="pref_key_group_calls_settings"
+		android:title="@string/group_calls">
+
+	<CheckBoxPreference
+		android:defaultValue="true"
+		android:key="@string/preferences__group_calls_enable"
+		android:icon="@drawable/ic_group_call"
+		android:title="@string/prefs_title_group_calls_enable"
+		android:widgetLayout="@layout/preference_switch_layout" />
 
 	</PreferenceCategory>
 

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -36,14 +36,12 @@ import ch.threema.app.utils.AnimationUtil;
 
 public class EmojiDetailPopup extends PopupWindow implements View.OnClickListener {
 
-	private ImageView originalImage;
-	private FrameLayout topLayout;
-	private View parentView;
-	private EmojiManager emojiManager;
+	private final ImageView originalImage;
+	private final View parentView;
+	private final EmojiManager emojiManager;
 	private EmojiDetailPopupListener emojiDetailPopupListener;
-	private int popupHeight, popupOffsetLeft;
-
-	final int[] location = new int[2];
+	private final int popupHeight;
+	private final int popupOffsetLeft;
 
 	public EmojiDetailPopup(final Context context, View parentView) {
 		super(context);
@@ -56,7 +54,7 @@ public class EmojiDetailPopup extends PopupWindow implements View.OnClickListene
 		this.popupOffsetLeft = context.getResources().getDimensionPixelSize(R.dimen.emoji_popup_cardview_margin_horizontal);
 
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		topLayout = (FrameLayout) layoutInflater.inflate(R.layout.popup_emoji_detail, null, true);
+		FrameLayout topLayout = (FrameLayout) layoutInflater.inflate(R.layout.popup_emoji_detail, null, true);
 
 		this.originalImage = topLayout.findViewById(R.id.image_original);
 
@@ -85,8 +83,6 @@ public class EmojiDetailPopup extends PopupWindow implements View.OnClickListene
 			@Override
 			public void onGlobalLayout() {
 				getContentView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-
-				AnimationUtil.getViewCenter(originView, getContentView(), location);
 				AnimationUtil.popupAnimateIn(getContentView());
 			}
 		});

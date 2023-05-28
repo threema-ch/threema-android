@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -44,7 +44,7 @@ public class SystemUpdateToVersion40 extends  UpdateToVersion implements UpdateS
 		if(!this.fieldExist(this.sqLiteDatabase,
 				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_PUSH_TOKEN)) {
 			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
-					" ADD COLUMN " +  WebClientSessionModel.COLUMN_PUSH_TOKEN + " VARCHAR(255) NULL");
+					" ADD COLUMN " +  WebClientSessionModel.COLUMN_PUSH_TOKEN + " VARCHAR(255) DEFAULT NULL");
 		}
 
 		return true;

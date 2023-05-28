@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -75,12 +75,13 @@ public class ZipUtil {
 	 * @param zipOutputStream
 	 * @param inputStream
 	 * @param filenameInZip
+	 * @param compress whether to compress the data (don't use for already compressed data like images)
 	 * @throws IOException
 	 */
-	public static void addZipStream(ZipOutputStream zipOutputStream, InputStream inputStream, String filenameInZip) throws IOException {
+	public static void addZipStream(ZipOutputStream zipOutputStream, InputStream inputStream, String filenameInZip, boolean compress) throws IOException {
 		if (inputStream != null) {
 			try {
-				zipOutputStream.putNextEntry(createZipParameter(filenameInZip));
+				zipOutputStream.putNextEntry(createZipParameter(filenameInZip, compress));
 
 				byte[] buf = new byte[16384];
 				int nread;
@@ -98,10 +99,10 @@ public class ZipUtil {
 		}
 	}
 
-	private static ZipParameters createZipParameter(String filenameInZip) {
+	private static ZipParameters createZipParameter(String filenameInZip, boolean compress) {
 		ZipParameters parameters = new ZipParameters();
 		parameters.setCompressionMethod(CompressionMethod.DEFLATE);
-		parameters.setCompressionLevel(CompressionLevel.NORMAL);
+		parameters.setCompressionLevel(compress ? CompressionLevel.NORMAL : CompressionLevel.NO_COMPRESSION);
 		parameters.setEncryptFiles(true);
 		parameters.setEncryptionMethod(EncryptionMethod.AES);
 		parameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);

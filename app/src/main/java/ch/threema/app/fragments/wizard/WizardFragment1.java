@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -20,6 +20,9 @@
  */
 
 package ch.threema.app.fragments.wizard;
+
+import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MAX_PW_LENGTH;
+import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MIN_PW_LENGTH;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -45,9 +48,6 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 
-import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MAX_PW_LENGTH;
-import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MIN_PW_LENGTH;
-
 public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvancedDialog.WizardDialogCallback {
 	public static final int PAGE_ID = 1;
 
@@ -69,7 +69,7 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 		contentViewStub.setLayoutResource(R.layout.fragment_wizard1);
 		contentViewStub.inflate();
 
-		WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+		WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 
 		this.password1 = rootView.findViewById(R.id.safe_password1);
 		this.password2 = rootView.findViewById(R.id.safe_password2);
@@ -219,7 +219,7 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 
 	private void initValues() {
 		if (isResumed()) {
-			WizardFragment5.SettingsInterface callback = (WizardFragment5.SettingsInterface) requireActivity();
+			WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 			if (callback.isSafeEnabled()) {
 				password1.setText(callback.getSafePassword());
 				password2.setText(callback.getSafePassword());

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,6 +23,9 @@ package ch.threema.storage.models.data.media;
 
 import android.util.JsonWriter;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -30,8 +33,6 @@ import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.utils.JsonUtil;
 import ch.threema.app.utils.ListReader;
 import ch.threema.app.utils.MimeUtil;
@@ -77,8 +78,8 @@ public class FileDataModel implements MediaMessageDataInterface {
 		this.fileSize = fileSize;
 		this.fileName = fileName;
 		this.renderingType = renderingType;
-		this.isDownloaded = isDownloaded;
 		this.caption = caption;
+		this.isDownloaded = isDownloaded;
 		this.metaData = metaData;
 	}
 
@@ -96,8 +97,8 @@ public class FileDataModel implements MediaMessageDataInterface {
 		this.fileSize = fileSize;
 		this.fileName = fileName;
 		this.renderingType = renderingType;
-		this.isDownloaded = isDownloaded;
 		this.caption = caption;
+		this.isDownloaded = isDownloaded;
 		this.metaData = metaData;
 	}
 
@@ -141,7 +142,8 @@ public class FileDataModel implements MediaMessageDataInterface {
 		return new byte[0];
 	}
 
-	public @NonNull String getMimeType() {
+	@NonNull
+	public String getMimeType() {
 		if (this.mimeType == null) {
 			return MimeUtil.MIME_TYPE_DEFAULT;
 		}
@@ -152,10 +154,8 @@ public class FileDataModel implements MediaMessageDataInterface {
 		this.mimeType = mimeType;
 	}
 
-	public @NonNull String getThumbnailMimeType() {
-		if (this.thumbnailMimeType == null) {
-			return MimeUtil.MIME_TYPE_IMAGE_JPG;
-		}
+	@Nullable
+	public String getThumbnailMimeType() {
 		return this.thumbnailMimeType;
 	}
 

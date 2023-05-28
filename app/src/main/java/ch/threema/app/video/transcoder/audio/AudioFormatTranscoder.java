@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -467,7 +467,7 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
 		logger.trace("audio encoder: returned buffer of size {}", audioEncoderOutputBufferInfo.size);
 		logger.trace("audio encoder: returned buffer for time {}", audioEncoderOutputBufferInfo.presentationTimeUs);
 
-		if (audioEncoderOutputBufferInfo.size != 0) {
+		if (audioEncoderOutputBufferInfo.size != 0 && audioEncoderOutputBufferInfo.presentationTimeUs >= trimStartTimeUs) {
 			ByteBuffer encoderOutputBuffer = this.encoder.getOutputBuffer(encoderOutputBufferIndex);
 			if (audioEncoderOutputBufferInfo.presentationTimeUs >= this.previousPresentationTime) {
 				this.previousPresentationTime = audioEncoderOutputBufferInfo.presentationTimeUs;

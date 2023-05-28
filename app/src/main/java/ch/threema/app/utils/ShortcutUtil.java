@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -32,15 +32,6 @@ import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -50,6 +41,16 @@ import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
@@ -82,6 +83,7 @@ public final class ShortcutUtil {
 	public static final int TYPE_NONE = 0;
 	public static final int TYPE_CHAT = 1;
 	public static final int TYPE_CALL = 2;
+	public static final String EXTRA_CALLED_FROM_SHORTCUT = "shortcut";
 
 	private static final Object dynamicShortcutLock = new Object();
 
@@ -240,6 +242,7 @@ public final class ShortcutUtil {
 		intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		intent.setAction(Intent.ACTION_MAIN);
+		intent.putExtra(EXTRA_CALLED_FROM_SHORTCUT, true);
 
 		return intent;
 	}
@@ -248,7 +251,7 @@ public final class ShortcutUtil {
 		Intent intent = new Intent(getContext(), CallActivity.class);
 		intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 		intent.setAction(Intent.ACTION_MAIN);
-		intent.putExtra(CallActivity.EXTRA_CALL_FROM_SHORTCUT, true);
+		intent.putExtra(EXTRA_CALLED_FROM_SHORTCUT, true);
 		intent.putExtra(VoipCallService.EXTRA_IS_INITIATOR, true);
 		intent.putExtra(VoipCallService.EXTRA_CALL_ID, -1L);
 

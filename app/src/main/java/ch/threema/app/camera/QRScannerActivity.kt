@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -62,7 +62,7 @@ class QRScannerActivity : ThreemaActivity() {
     private lateinit var cameraPreviewContainer: View
 
     private var hint: String = ""
-    @QRCodeColor private var qrColor = QR_TYPE_ANY;
+    @QRCodeColor private var qrColor = QR_TYPE_ANY
 
     private var camera: Camera? = null
     private var preview: Preview? = null
@@ -94,10 +94,10 @@ class QRScannerActivity : ThreemaActivity() {
         qrColor = intent.getIntExtra(KEY_QR_TYPE, QR_TYPE_ANY)
 
         if (hint.isEmpty()) {
-            if (intent.hasExtra(KEY_HINT_TEXT)) {
-                hint = intent.getStringExtra(KEY_HINT_TEXT)!!
+            hint = if (intent.hasExtra(KEY_HINT_TEXT)) {
+                intent.getStringExtra(KEY_HINT_TEXT)!!
             } else {
-                hint = getString(R.string.msg_default_status)
+                getString(R.string.msg_default_status)
             }
         }
         findViewById<TextView>(R.id.hint_view).text = hint
@@ -122,7 +122,7 @@ class QRScannerActivity : ThreemaActivity() {
 
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener(Runnable {
+        cameraProviderFuture.addListener({
 
             // CameraProvider
             cameraProvider = cameraProviderFuture.get()

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -26,6 +26,7 @@ import java.util.HashSet;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.voip.VoipAudioManager;
 
 /**
@@ -36,8 +37,8 @@ public interface VoipAudioManagerListener {
 	 * Audio device changed, or list of available audio devices changed.
 	 */
 	@AnyThread default void onAudioDeviceChanged(
-		@Nullable VoipAudioManager.AudioDevice selectedAudioDevice,
-	    @NonNull HashSet<VoipAudioManager.AudioDevice> availableAudioDevices
+		@Nullable AudioDevice selectedAudioDevice,
+	    @NonNull HashSet<AudioDevice> availableAudioDevices
 	) { }
 
 	/**

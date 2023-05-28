@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,7 +23,6 @@ package ch.threema.app.adapters.decorators;
 
 import android.content.Context;
 import android.os.Parcel;
-import android.view.View;
 
 import org.slf4j.Logger;
 
@@ -32,15 +31,16 @@ import java.util.ArrayList;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.SelectorDialog;
-import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.BallotUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.media.BallotDataModel;
 
@@ -88,9 +88,8 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
 				holder.secondaryTextView.setText(explain);
 			}
 
-			this.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
+			this.setOnClickListener(view -> {
+				if (messageModel.getState() != MessageState.FS_KEY_MISMATCH && messageModel.getState() != MessageState.SENDFAILED) {
 					onActionButtonClick(ballotModel);
 				}
 			}, holder.messageBlockView);
@@ -98,6 +97,8 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
 			if (holder.controller != null) {
 				holder.controller.setImageResource(R.drawable.ic_outline_rule);
 			}
+
+			RuntimeUtil.runOnUiThread(() -> setupResendStatus(holder));
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}

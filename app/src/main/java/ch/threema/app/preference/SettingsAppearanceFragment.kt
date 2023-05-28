@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -24,8 +24,6 @@ package ch.threema.app.preference
 import androidx.preference.CheckBoxPreference
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
-import androidx.preference.PreferenceCategory
-import ch.threema.app.BuildFlavor
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.dialogs.GenericAlertDialog
@@ -147,45 +145,41 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
 
     private fun initEmojiStylePref() {
         val emojiPreference = getPref<DropDownPreference>(R.string.preferences__emoji_style)
-        if (BuildFlavor.isLibre()) {
-            val aboutCategory = getPref<PreferenceCategory>("pref_key_appearance_cat")
-            aboutCategory.removePreference(emojiPreference)
-        } else {
-            var emojiIndex: Int = preferenceManager.sharedPreferences?.getString(resources.getString(R.string.preferences__emoji_style), "0")?.toInt() ?: 0
-            val emojiArray = resources.getStringArray(R.array.list_emoji_style)
-            if (emojiIndex >= emojiArray.size) {
-                emojiIndex = 0
-            }
-            val oldEmojiStyle = emojiIndex
-            emojiPreference.summary = emojiArray[emojiIndex]
-            emojiPreference.setOnPreferenceChangeListener { _, newValue ->
-                val newEmojiStyle = newValue.toString().toInt()
-                if (newEmojiStyle != oldEmojiStyle) {
-                    if (newEmojiStyle == PreferenceService.EmojiStyle_ANDROID) {
-                        val dialog = GenericAlertDialog.newInstance(R.string.prefs_android_emojis,
-                                R.string.android_emojis_warning,
-                                R.string.ok,
-                                R.string.cancel)
-                        dialog.setData(newEmojiStyle)
-                        dialog.setCallback(object : GenericAlertDialog.DialogClickListener {
-                            override fun onYes(tag: String?, data: Any?) {
-                                ConfigUtils.setEmojiStyle(activity, data as Int)
-                                updateEmojiPrefs(data)
-                                ConfigUtils.recreateActivity(activity)
-                            }
-                            override fun onNo(tag: String?, data: Any?) {
-                                updateEmojiPrefs(PreferenceService.EmojiStyle_DEFAULT)
-                            }
-                        })
-                        dialog.show(parentFragmentManager, "android_emojis")
-                    } else {
-                        ConfigUtils.setEmojiStyle(activity, newEmojiStyle)
-                        updateEmojiPrefs(newEmojiStyle)
-                        ConfigUtils.recreateActivity(activity)
-                    }
+
+        var emojiIndex: Int = preferenceManager.sharedPreferences?.getString(resources.getString(R.string.preferences__emoji_style), "0")?.toInt() ?: 0
+        val emojiArray = resources.getStringArray(R.array.list_emoji_style)
+        if (emojiIndex >= emojiArray.size) {
+            emojiIndex = 0
+        }
+        val oldEmojiStyle = emojiIndex
+        emojiPreference.summary = emojiArray[emojiIndex]
+        emojiPreference.setOnPreferenceChangeListener { _, newValue ->
+            val newEmojiStyle = newValue.toString().toInt()
+            if (newEmojiStyle != oldEmojiStyle) {
+                if (newEmojiStyle == PreferenceService.EmojiStyle_ANDROID) {
+                    val dialog = GenericAlertDialog.newInstance(R.string.prefs_android_emojis,
+                        R.string.android_emojis_warning,
+                        R.string.ok,
+                        R.string.cancel)
+                    dialog.setData(newEmojiStyle)
+                    dialog.setCallback(object : GenericAlertDialog.DialogClickListener {
+                        override fun onYes(tag: String?, data: Any?) {
+                            ConfigUtils.setEmojiStyle(activity, data as Int)
+                            updateEmojiPrefs(data)
+                            ConfigUtils.recreateActivity(activity)
+                        }
+                        override fun onNo(tag: String?, data: Any?) {
+                            updateEmojiPrefs(PreferenceService.EmojiStyle_DEFAULT)
+                        }
+                    })
+                    dialog.show(parentFragmentManager, "android_emojis")
+                } else {
+                    ConfigUtils.setEmojiStyle(activity, newEmojiStyle)
+                    updateEmojiPrefs(newEmojiStyle)
+                    ConfigUtils.recreateActivity(activity)
                 }
-                true
             }
+            true
         }
     }
 

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022 Threema GmbH
+ * Copyright (c) 2022-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -54,6 +54,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.asFlow
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
@@ -66,20 +67,19 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.base.utils.LoggingUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.floor
+import kotlin.math.min
 
 class CameraFragment : Fragment() {
     private val logger = LoggingUtil.getThreemaLogger("CameraFragment")
-
-    private val ASPECT_RATIO_16_9 = Rational(16, 9)
-    private val ASPECT_RATIO_9_16 = Rational(9, 16)
-    private val PERMISSION_REQUEST_CODE_AUDIO = 869
-    private val PERMISSION_REQUEST_CODE_CAMERA = 868
-    private val RECORDING_MODE_IMAGE = 0
-    private val RECORDING_MODE_VIDEO = 1
 
     private lateinit var viewModel: CameraFragmentViewModel
 
@@ -280,7 +280,7 @@ class CameraFragment : Fragment() {
         preferenceService = ThreemaApplication.getServiceManager()?.preferenceService
         mediaActionSound = LessObnoxiousMediaActionSound()
         mediaActionSound?.load(LessObnoxiousMediaActionSound.SHUTTER_CLICK)
-        scaleGestureDetector = ScaleGestureDetector(context, scaleGestureListener)
+        scaleGestureDetector = ScaleGestureDetector(requireContext(), scaleGestureListener)
     }
 
     override fun onAttach(context: Context) {
@@ -334,12 +334,12 @@ class CameraFragment : Fragment() {
             // Select lensFacing depending on the available cameras
             if (viewModel.lensFacing == CameraSelector.LENS_FACING_BACK && !hasBackCamera()) {
                 // try front camera
-                viewModel.lensFacing = CameraSelector.LENS_FACING_FRONT;
+                viewModel.lensFacing = CameraSelector.LENS_FACING_FRONT
             }
 
             if (viewModel.lensFacing == CameraSelector.LENS_FACING_FRONT && !hasFrontCamera()) {
                 if (hasBackCamera()) {
-                    viewModel.lensFacing = CameraSelector.LENS_FACING_BACK;
+                    viewModel.lensFacing = CameraSelector.LENS_FACING_BACK
                 } else {
                     Toast.makeText(context, R.string.no_camera_installed, Toast.LENGTH_SHORT).show()
                     logger.info("Back and front camera are unavailable")
@@ -459,10 +459,10 @@ class CameraFragment : Fragment() {
 
             // A variable number of use-cases can be passed here -
             // camera provides access to CameraControl & CameraInfo
-            if (videoCapture != null) {
-                camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, videoCapture)
+            camera = if (videoCapture != null) {
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, videoCapture)
             } else {
-                camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
             }
 
             // Attach the viewfinder's surface provider to preview use case
@@ -494,12 +494,16 @@ class CameraFragment : Fragment() {
                     @FlashMode val flashMode: Int = imageCapture?.flashMode ?: 0
                     it.post {
                         it.visibility = View.VISIBLE
-                        if (flashMode == ImageCapture.FLASH_MODE_AUTO) {
-                            it.setImageResource(R.drawable.ic_flash_auto_outline)
-                        } else if (flashMode == ImageCapture.FLASH_MODE_ON) {
-                            it.setImageResource(R.drawable.ic_flash_on_outline)
-                        } else if (flashMode == ImageCapture.FLASH_MODE_OFF) {
-                            it.setImageResource(R.drawable.ic_flash_off_outline)
+                        when (flashMode) {
+                            ImageCapture.FLASH_MODE_AUTO -> {
+                                it.setImageResource(R.drawable.ic_flash_auto_outline)
+                            }
+                            ImageCapture.FLASH_MODE_ON -> {
+                                it.setImageResource(R.drawable.ic_flash_on_outline)
+                            }
+                            ImageCapture.FLASH_MODE_OFF -> {
+                                it.setImageResource(R.drawable.ic_flash_off_outline)
+                            }
                         }
                     }
                     return
@@ -694,7 +698,7 @@ class CameraFragment : Fragment() {
                                             it.postDelayed({
                                                 if (isAdded && !isDetached) {
                                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) it.foreground = null
-                                                    progressBar?.visibility = View.VISIBLE;
+                                                    progressBar?.visibility = View.VISIBLE
                                                 }
                                             }, 50L)
                                             mediaActionSound?.play(LessObnoxiousMediaActionSound.SHUTTER_CLICK)
@@ -793,12 +797,16 @@ class CameraFragment : Fragment() {
 
     private fun switchFlash() {
         @FlashMode var flashMode: Int = imageCapture?.flashMode ?: ImageCapture.FLASH_MODE_OFF
-        if (flashMode == ImageCapture.FLASH_MODE_AUTO) {
-            flashMode = ImageCapture.FLASH_MODE_ON
-        } else if (flashMode == ImageCapture.FLASH_MODE_ON) {
-            flashMode = ImageCapture.FLASH_MODE_OFF
-        } else if (flashMode == ImageCapture.FLASH_MODE_OFF) {
-            flashMode = ImageCapture.FLASH_MODE_AUTO
+        when (flashMode) {
+            ImageCapture.FLASH_MODE_AUTO -> {
+                flashMode = ImageCapture.FLASH_MODE_ON
+            }
+            ImageCapture.FLASH_MODE_ON -> {
+                flashMode = ImageCapture.FLASH_MODE_OFF
+            }
+            ImageCapture.FLASH_MODE_OFF -> {
+                flashMode = ImageCapture.FLASH_MODE_AUTO
+            }
         }
         imageCapture?.flashMode = flashMode
         preferenceService?.cameraFlashMode = flashMode + 1
@@ -817,8 +825,6 @@ class CameraFragment : Fragment() {
         val durationSeconds = floor(((ThreemaApplication.MAX_BLOB_SIZE - 1000000).toFloat() / bytesPerSecond).toDouble()).toLong() // we assume a MP4 overhead of 1 MB
         logger.debug("Calculated video duration: " + LocaleUtil.formatTimerText(durationSeconds * DateUtils.SECOND_IN_MILLIS, true))
 
-        timerView?.start(durationSeconds * DateUtils.SECOND_IN_MILLIS) { _: Long -> stopVideoRecording() }
-
         if (hasFlash() && imageCapture?.flashMode == ImageCapture.FLASH_MODE_ON) {
             camera?.cameraControl?.enableTorch(true)
         }
@@ -827,7 +833,19 @@ class CameraFragment : Fragment() {
         // Create output options object which contains file + metadata
         val outputOptions = VideoCapture.OutputFileOptions.Builder(File(cameraCallback?.videoFilePath!!)).build()
 
-        videoCapture?.startRecording(outputOptions, RuntimeUtil.MainThreadExecutor(), onVideoSavedCallback)
+        CoroutineScope(Dispatchers.Default).launch {
+            // Wait until camera is open
+            camera?.cameraInfo?.cameraState?.asFlow()?.takeWhile { it.type != CameraState.Type.OPEN }?.collect {}
+
+            // Add some delay so that the camera can adjust the brightness
+            delay(400)
+
+            // Start the timer and the recording
+            RuntimeUtil.runOnUiThread {
+                timerView?.start(durationSeconds * DateUtils.SECOND_IN_MILLIS) { _: Long -> stopVideoRecording() }
+            }
+            videoCapture?.startRecording(outputOptions, RuntimeUtil.MainThreadExecutor(), onVideoSavedCallback)
+        }
     }
 
     @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError", "RestrictedApi")
@@ -859,14 +877,15 @@ class CameraFragment : Fragment() {
     }
 
     private fun setTargetResolution(width: Int, height: Int) {
-        targetHeight = Math.min(height, CameraConfig.getDefaultImageSize())
-        targetWidth = Math.min(width, CameraConfig.getDefaultImageSize())
+        targetHeight = min(height, CameraConfig.getDefaultImageSize())
+        targetWidth = min(width, CameraConfig.getDefaultImageSize())
     }
 
     private fun restart() {
         requireActivity().recreate()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -890,5 +909,14 @@ class CameraFragment : Fragment() {
 
     internal interface CameraConfiguration {
         val videoEnable: Boolean
+    }
+
+    companion object {
+        private val ASPECT_RATIO_16_9 = Rational(16, 9)
+        private val ASPECT_RATIO_9_16 = Rational(9, 16)
+        private const val PERMISSION_REQUEST_CODE_AUDIO = 869
+        private const val PERMISSION_REQUEST_CODE_CAMERA = 868
+        private const val RECORDING_MODE_IMAGE = 0
+        private const val RECORDING_MODE_VIDEO = 1
     }
 }

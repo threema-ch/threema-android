@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,11 +23,12 @@ package ch.threema.app.asynctasks;
 
 import android.os.AsyncTask;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.DialogUtil;
@@ -36,7 +37,7 @@ import ch.threema.storage.models.ContactModel;
 public class DeleteContactAsyncTask extends AsyncTask<Void, Integer, Integer> {
 	private static final String DIALOG_TAG_DELETE_CONTACT = "dc";
 
-	private HashSet<ContactModel> contacts;
+	private final Set<ContactModel> contacts;
 	private final ContactService contactService;
 	private final FragmentManager fragmentManager;
 	private final DeleteContactsPostRunnable runOnCompletion;
@@ -54,7 +55,7 @@ public class DeleteContactAsyncTask extends AsyncTask<Void, Integer, Integer> {
 	}
 
 	public DeleteContactAsyncTask(FragmentManager fragmentManager,
-	                              HashSet<ContactModel> contacts,
+	                              Set<ContactModel> contacts,
 	                              ContactService contactService,
 	                              DeleteContactsPostRunnable runOnCompletion) {
 
@@ -69,6 +70,8 @@ public class DeleteContactAsyncTask extends AsyncTask<Void, Integer, Integer> {
 		CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.deleting_contact, 0, R.string.cancel, contacts.size());
 		dialog.setOnCancelListener((dialog1, which) -> cancelled = true);
 		dialog.show(fragmentManager, DIALOG_TAG_DELETE_CONTACT);
+
+		ThreemaApplication.onAndroidContactChangeLock.lock();
 	}
 
 	@Override
@@ -102,5 +105,15 @@ public class DeleteContactAsyncTask extends AsyncTask<Void, Integer, Integer> {
 			runOnCompletion.setFailed(failed);
 			runOnCompletion.run();
 		}
+
+		ThreemaApplication.onAndroidContactChangeLock.unlock();
+	}
+
+	@Override
+	protected void onCancelled(Integer integer) {
+		super.onCancelled(integer);
+
+		// Release the lock just in case this async task was cancelled
+		ThreemaApplication.onAndroidContactChangeLock.unlock();
 	}
 }

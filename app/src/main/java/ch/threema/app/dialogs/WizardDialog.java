@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -28,10 +28,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.core.content.res.ResourcesCompat;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import ch.threema.app.R;
 
 public class WizardDialog extends ThreemaDialogFragment {

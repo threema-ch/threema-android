@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,12 +21,18 @@
 
 package ch.threema.app.services;
 
+import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.ThreemaApplication.getServiceManager;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.ContactsContract;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,8 +42,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.collections.Functional;
@@ -69,9 +74,6 @@ import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
-
-import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
-import static ch.threema.app.ThreemaApplication.getServiceManager;
 
 /**
  * This service class handle all user actions (db/identity....)
@@ -535,7 +537,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 	}
 
 	@Override
-	public boolean restoreIdentity(String identity, byte[] privateKey, byte[] publicKey) throws Exception {
+	public boolean restoreIdentity(@NonNull String identity, @NonNull byte[] privateKey, @NonNull byte[] publicKey) throws Exception {
 		IdentityStoreInterface temporaryIdentityStore = new IdentityStore(new PreferenceStoreInterfaceDevNullImpl());
 		//store identity without server group
 		temporaryIdentityStore.storeIdentity(
@@ -548,7 +550,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 		APIConnector.FetchIdentityPrivateResult result = this.apiConnector.fetchIdentityPrivate(temporaryIdentityStore);
 
 		if(result == null) {
-			throw new ThreemaException("fetching private result failed");
+			throw new ThreemaException("fetching private identity data failed");
 		}
 
 		this.removeAccount();
@@ -601,6 +603,15 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 					.file(true)
 					.voip(true)
 					.videocalls(true);
+
+			if (ConfigUtils.isForwardSecurityEnabled()) {
+				builder.forwardSecurity(true);
+			}
+
+			if (BuildConfig.GROUP_CALLS_ENABLED) {
+				builder.groupCalls(true);
+			}
+
 			if(this.preferenceService.getTransmittedFeatureLevel() != builder.build()) {
 				this.apiConnector.setFeatureMask(builder, this.identityStore);
 				this.preferenceService.setTransmittedFeatureLevel(builder.build());

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -24,16 +24,18 @@ package ch.threema.storage.models.data.media;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 
+@Deprecated
 public class VideoDataModel implements MediaMessageDataInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoDataModel");
 

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -28,6 +28,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.StrikethroughSpan;
 import android.util.Pair;
 import android.widget.TextView;
 
@@ -157,6 +158,10 @@ public class EmojiMarkupUtil {
 			}
 		}
 
+		if (!ignoreMarkup) {
+			MarkupParser.getInstance().markify(builder);
+		}
+
 		if (!ignoreMentions) {
 			if (textView == null) {
 				builder = new SpannableStringBuilder(applyTextMentionMarkup(text));
@@ -165,14 +170,14 @@ public class EmojiMarkupUtil {
 			}
 		}
 
-		if (!ignoreMarkup) {
-			MarkupParser.getInstance().markify(builder);
-		}
-
 		return builder;
 	}
 
 	private SpannableStringBuilder applyMentionMarkup(Context context, SpannableStringBuilder inputText) {
+		return applyMentionMarkup(context, inputText, false);
+	}
+
+	private SpannableStringBuilder applyMentionMarkup(Context context, SpannableStringBuilder inputText, boolean isStrikeThrough) {
 		int start, end;
 
 		ArrayList<Pair<Integer, Integer>> matches = new ArrayList<>();
@@ -193,11 +198,37 @@ public class EmojiMarkupUtil {
 
 		SpannableStringBuilder s = new SpannableStringBuilder(inputText);
 
+		final StrikethroughSpan[] strikethroughSpans = s.getSpans(0, s.length(), StrikethroughSpan.class);
+		final MentionSpan[] mentionSpans = s.getSpans(0, s.length(), MentionSpan.class);
+
 		for (int i = matches.size() - 1; i >= 0; i--) {
 			start = matches.get(i).first;
 			end = matches.get(i).second;
 
-			s.setSpan(new MentionSpan(mentionColor, invertedMentionColor, mentionTextColor, invertedMentionTextColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			// Check if there is a strike through span surrounding this mention. If there is one,
+			// then the line must be drawn explicitly as the mention draws over the text.
+			boolean inStrikethroughSpan = isStrikeThrough;
+			for (StrikethroughSpan sts : strikethroughSpans) {
+				if (s.getSpanStart(sts) <= start && s.getSpanEnd(sts) >= end) {
+					inStrikethroughSpan = true;
+					break;
+				}
+			}
+
+			MentionSpan mentionSpan = null;
+			for (MentionSpan ms : mentionSpans) {
+				if (s.getSpanStart(ms) == start) {
+					mentionSpan = ms;
+					break;
+				}
+			}
+
+			// Create a new mention span if already available, otherwise update the existing span
+			if (mentionSpan == null) {
+				s.setSpan(new MentionSpan(mentionColor, invertedMentionColor, mentionTextColor, invertedMentionTextColor, inStrikethroughSpan), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			} else {
+				mentionSpan.setStrikeThrough(inStrikethroughSpan);
+			}
 			// hack: https://stackoverflow.com/questions/20069537/replacementspans-draw-method-isnt-called
 			if (inputText.length() == end - start) {
 				s.append(" ");
@@ -210,7 +241,7 @@ public class EmojiMarkupUtil {
 	/**
 	 * Replace mentions by text instead of spans (used where spans cannot be displayed, i.e. in notifications)
 	 * @param inputText
-	 * @return ChatSequence where all mentions have been replaced by contact names
+	 * @return ChatSequence where all mentions have been replaced by contact names or ids
 	 */
 	private CharSequence applyTextMentionMarkup(CharSequence inputText) {
 		String match, identity;
@@ -223,6 +254,9 @@ public class EmojiMarkupUtil {
 			String quoteName = NameUtil.getQuoteName(identity, getContactService(), getUserService());
 
 			if (TestUtil.empty(quoteName)) {
+				// Note that the quote name is only empty if there went something wrong while
+				// accessing the contact. If the contact is unknown, the quote name consists of its
+				// threema id.
 				outputText = TextUtils.replace(outputText, new String[]{match}, new CharSequence[]{""});
 			} else {
 				outputText = TextUtils.replace(outputText, new String[]{match}, new CharSequence[]{MENTION_INDICATOR +
@@ -237,16 +271,20 @@ public class EmojiMarkupUtil {
 	public CharSequence addMarkup(Context context, CharSequence text) {
 		SpannableStringBuilder builder = new SpannableStringBuilder(text);
 
-		builder = applyMentionMarkup(context, builder);
 		MarkupParser.getInstance().markify(builder);
+		builder = applyMentionMarkup(context, builder);
 
 		return builder;
 	}
 
 	public CharSequence addMentionMarkup(Context context, CharSequence text) {
+		return addMentionMarkup(context, text, false);
+	}
+
+	public CharSequence addMentionMarkup(Context context, CharSequence text, boolean isStrikeThrough) {
 		SpannableStringBuilder builder = new SpannableStringBuilder(text);
 
-		builder = applyMentionMarkup(context, builder);
+		builder = applyMentionMarkup(context, builder, isStrikeThrough);
 
 		return builder;
 	}

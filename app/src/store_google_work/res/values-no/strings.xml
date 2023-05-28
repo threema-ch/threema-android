@@ -23,4 +23,5 @@
     <string name="directory_search">Søk i katalogen</string>
     <string name="directory_title">Bedriftskatalog</string>
     <string name="directory_empty_view_text">Vennligst skriv inn minst 3 tegn av et navn for å kunne søke i bedriftskatalogen etter Threema Work brukere</string>
+    <string name="share_with_app">Del med Threema Work</string>
 </resources>

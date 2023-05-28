@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.adapters.GroupDetailAdapter;
 import ch.threema.app.services.ContactService;
 import ch.threema.storage.models.ContactModel;
 
@@ -52,13 +54,17 @@ public class GroupDetailViewModel extends ViewModel {
 	private static final String KEY_GROUP_NAME = "name";
 	private static final String KEY_GROUP_IDENTITIES = "contacts";
 	private static final String KEY_AVATAR_REMOVED = "isRemoved";
+	private static final String KEY_GROUP_DESC = "description";
+	private static final String KEY_GROUP_DESC_TIMESTAMP = "descTimestamp";
+	private static final String KEY_GROUP_DESC_STATE = "descState";
+
 
 	private SavedStateHandle savedState;
 	private ContactService contactService;
 	private MutableLiveData<List<ContactModel>> groupMembers;
 
 	public GroupDetailViewModel(SavedStateHandle savedStateHandle) {
-		this.savedState = savedStateHandle;
+		savedState = savedStateHandle;
 
 		try {
 			this.contactService = ThreemaApplication.getServiceManager().getContactService();
@@ -98,6 +104,7 @@ public class GroupDetailViewModel extends ViewModel {
 	public String getGroupName() {
 		return this.savedState.get(KEY_GROUP_NAME);
 	}
+
 
 	public void setGroupName(String groupName) {
 		this.savedState.set(KEY_GROUP_NAME, groupName);
@@ -187,5 +194,37 @@ public class GroupDetailViewModel extends ViewModel {
 			}
 		}.execute();
 	}
-}
 
+
+	public GroupDetailViewModel setGroupDesc(String groupDesc) {
+		this.savedState.set(KEY_GROUP_DESC, groupDesc);
+		return this;
+	}
+
+
+	public GroupDetailViewModel setGroupDescTimestamp(Date groupDescDate) {
+		this.savedState.set(KEY_GROUP_DESC_TIMESTAMP, groupDescDate);
+		return this;
+	}
+
+
+	public String getGroupDesc() {
+		return this.savedState.get(KEY_GROUP_DESC);
+	}
+
+
+	public Date getGroupDescTimestamp() {
+		return this.savedState.get(KEY_GROUP_DESC_TIMESTAMP);
+	}
+
+
+	public GroupDetailViewModel setGroupDescState(GroupDetailAdapter.GroupDescState groupDescState) {
+		this.savedState.set(KEY_GROUP_DESC_STATE, groupDescState);
+		return this;
+	}
+
+
+	public GroupDetailAdapter.GroupDescState getGroupDescState() {
+		return savedState.get(KEY_GROUP_DESC_STATE);
+	}
+}

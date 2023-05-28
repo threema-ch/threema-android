@@ -11,6 +11,12 @@
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"/>
 
+	<pl.droidsonroids.gif.GifImageView
+		android:id="@+id/gif_view"
+		android:scaleType="fitCenter"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"/>
+
 	<com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
             android:id="@+id/subsampling_image"
             android:layout_width="fill_parent"

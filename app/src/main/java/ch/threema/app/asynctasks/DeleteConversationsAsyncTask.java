@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -42,6 +42,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ConversationModel;
@@ -134,7 +135,7 @@ public class DeleteConversationsAsyncTask extends AsyncTask<Void, Integer, Integ
 
 			// API 19 min
 			if (feedbackView != null && feedbackView.isAttachedToWindow()) {
-				Snackbar.make(feedbackView, String.format(ThreemaApplication.getAppContext().getString(R.string.chat_deleted), count), Snackbar.LENGTH_SHORT).show();
+				Snackbar.make(feedbackView, (ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.chat_deleted, count, count)), Snackbar.LENGTH_SHORT).show();
 			}
 
 			if (runOnCompletion != null) {

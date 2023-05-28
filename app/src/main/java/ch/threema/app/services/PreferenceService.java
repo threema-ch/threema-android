@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -24,6 +24,10 @@ package ch.threema.app.services;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
@@ -32,9 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils.AppTheme;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
@@ -42,7 +43,7 @@ import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public interface PreferenceService {
 
-	@Retention(RetentionPolicy.SOURCE)
+    @Retention(RetentionPolicy.SOURCE)
 	@IntDef({ImageScale_DEFAULT, ImageScale_SMALL, ImageScale_MEDIUM, ImageScale_LARGE, ImageScale_XLARGE, ImageScale_ORIGINAL, ImageScale_SEND_AS_FILE})
 	@interface ImageScale {}
 	int ImageScale_DEFAULT = -1;
@@ -53,12 +54,13 @@ public interface PreferenceService {
 	int ImageScale_ORIGINAL = 4;
 	int ImageScale_SEND_AS_FILE = 5;
 
-	@IntDef({VideoSize_DEFAULT, VideoSize_SMALL, VideoSize_MEDIUM, VideoSize_ORIGINAL})
+	@IntDef({VideoSize_DEFAULT, VideoSize_SMALL, VideoSize_MEDIUM, VideoSize_ORIGINAL, VideoSize_SEND_AS_FILE})
 	@interface VideoSize {}
 	int VideoSize_DEFAULT = -1;
 	int VideoSize_SMALL = 0;
 	int VideoSize_MEDIUM = 1;
 	int VideoSize_ORIGINAL = 2;
+	int VideoSize_SEND_AS_FILE = 3;
 
 	int Theme_LIGHT = 0;
 	int Theme_DARK = 1;
@@ -103,9 +105,13 @@ public interface PreferenceService {
 
 	Uri getGroupNotificationSound();
 
+	Uri getGroupCallRingtone();
+
 	Uri getVoiceCallSound();
 
 	boolean isVoiceCallVibrate();
+
+	boolean isGroupCallVibrate();
 
 	void setNotificationSound(Uri uri);
 
@@ -278,6 +284,10 @@ public interface PreferenceService {
 
 	long getLockoutTimeout();
 
+	void setLockoutAttempts(int numWrongConfirmAttempts);
+
+	int getLockoutAttempts();
+
 	void setWizardRunning(boolean running);
 
 	boolean getWizardRunning();
@@ -409,8 +419,8 @@ public interface PreferenceService {
 	float getPrivacyPolicyAcceptedVersion();
 	void  setPrivacyPolicyAcceptedVersion(float version);
 
-	boolean getIsVideoCallTooltipShown();
-	void setVideoCallTooltipShown(boolean shown);
+	boolean getIsGroupCallsTooltipShown();
+	void setGroupCallsTooltipShown(boolean shown);
 
 	boolean getIsWorkHintTooltipShown();
 	void setIsWorkHintTooltipShown(boolean shown);
@@ -428,6 +438,7 @@ public interface PreferenceService {
 	ThreemaSafeServerInfo getThreemaSafeServerInfo();
 
 	void setThreemaSafeUploadDate(Date date);
+	@Nullable
 	Date getThreemaSafeUploadDate();
 
 	void setIncognitoKeyboard(boolean enabled);
@@ -437,6 +448,24 @@ public interface PreferenceService {
 
 	void setThreemaSafeErrorCode(int code);
 	int getThreemaSafeErrorCode();
+
+	/**
+	 * Set the earliest date where the threema safe backup failed. Only set this if there are
+	 * changes for the backup available. Don't update the date when there is already a date set as
+	 * this is the first occurrence of a failed backup. Override this date with null, when a safe
+	 * backup has been created successfully.
+	 *
+	 * @param date the date when the safe backup first failed
+	 */
+	void setThreemaSafeErrorDate(@Nullable Date date);
+
+	/**
+	 * Get the first date where the safe backup failed. If this is null, then the last safe backup
+	 * was successful.
+	 * @return the date of the first failed safe backup
+	 */
+	@Nullable
+	Date getThreemaSafeErrorDate();
 
 	void setThreemaSafeServerMaxUploadSize(long maxBackupBytes);
 	long getThreemaSafeServerMaxUploadSize();
@@ -497,6 +526,9 @@ public interface PreferenceService {
 	int getPipPosition();
 
 	boolean isVideoCallsEnabled();
+
+	boolean isGroupCallsEnabled();
+
 	@Nullable String getVideoCallsProfile();
 
 	void setBallotOverviewHidden(boolean hidden);
@@ -523,4 +555,7 @@ public interface PreferenceService {
 
 	int getMultipleRecipientsTooltipCount();
 	void incrementMultipleRecipientsTooltipCount();
+
+	boolean isGroupCallSendInitEnabled();
+	boolean skipGroupCallCreateDelay();
 }

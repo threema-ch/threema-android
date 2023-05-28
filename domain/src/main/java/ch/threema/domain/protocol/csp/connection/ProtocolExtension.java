@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -30,6 +30,7 @@ public class ProtocolExtension {
 	public static final int CLIENT_INFO_TYPE = 0x00;
 	public static final int DEVICE_ID_TYPE = 0x01;
 	public static final int MESSAGE_PAYLOAD_VERSION_TYPE = 0x02;
+	public static final int DEVICE_COOKIE_TYPE = 0x03;
 	public static final String VERSION_MAGIC_STRING = "threema-clever-extension-field";
 	public static final int MESSAGE_PAYLOAD_VERSION = 0x01;
 

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -32,17 +32,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.fragment.app.Fragment;
+
 import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.cache.ThumbnailCache;
+import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DownloadService;
@@ -55,6 +58,7 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.StateBitmapUtil;
@@ -64,14 +68,11 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
+import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
 abstract public class ChatAdapterDecorator extends AdapterDecorator {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ChatAdapterDecorator");
-
-	public interface OnClickRetry {
-		void onClick(AbstractMessageModel messageModel);
-	}
 
 	public interface OnClickElement {
 		void onClick(AbstractMessageModel messageModel);
@@ -93,7 +94,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 	protected final Helper helper;
 	private final StateBitmapUtil stateBitmapUtil;
 
-	protected OnClickRetry onClickRetry = null;
 	protected OnClickElement onClickElement = null;
 	private OnLongClickElement onLongClickElement = null;
 	private OnTouchElement onTouchElement = null;
@@ -277,10 +277,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		this.identityColors = identityColors;
 	}
 
-	public void setOnClickRetry(OnClickRetry onClickRetry) {
-		this.onClickRetry = onClickRetry;
-	}
-
 	public void setOnClickElement(OnClickElement onClickElement) {
 		this.onClickElement = onClickElement;
 	}
@@ -304,7 +300,8 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		}
 
 		boolean isUserMessage = !getMessageModel().isStatusMessage()
-			&& getMessageModel().getType() != MessageType.STATUS;
+			&& getMessageModel().getType() != MessageType.STATUS
+			&& getMessageModel().getType() != MessageType.GROUP_CALL_STATUS;
 
 		String identity = (
 			messageModel.isOutbox() ?
@@ -392,6 +389,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 			}
 
 			stateBitmapUtil.setStateDrawable(messageModel, holder.deliveredIndicator, true);
+			stateBitmapUtil.setGroupAckCount(messageModel, holder);
 		}
 	}
 
@@ -524,5 +522,42 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 	 */
 	public void setGroupedMessage(boolean grouped) {
 		isGroupedMessage = grouped;
+	}
+
+	/**
+	 * Setup "Tap to resend" UI
+	 * @param holder ComposeMessageHolder
+	 */
+	protected void setupResendStatus(ComposeMessageHolder holder) {
+		if (holder.tapToResend != null) {
+			if (getMessageModel() != null &&
+				getMessageModel().isOutbox() &&
+				(getMessageModel().getState() == MessageState.FS_KEY_MISMATCH ||
+				getMessageModel().getState() == MessageState.SENDFAILED)) {
+				holder.tapToResend.setVisibility(View.VISIBLE);
+				holder.dateView.setVisibility(View.GONE);
+			} else {
+				holder.tapToResend.setVisibility(View.GONE);
+				holder.dateView.setVisibility(View.VISIBLE);
+			}
+		}
+	}
+
+	protected void configureBodyText(@NonNull ComposeMessageHolder holder, @Nullable String caption) {
+		if (!TestUtil.empty(caption)) {
+			holder.bodyTextView.setText(formatTextString(caption, filterString));
+
+			LinkifyUtil.getInstance().linkify(
+				(ComposeMessageFragment) helper.getFragment(),
+				holder.bodyTextView,
+				getMessageModel(),
+				true,
+				actionModeStatus.getActionModeEnabled(),
+				onClickElement);
+
+			showHide(holder.bodyTextView, true);
+		} else {
+			showHide(holder.bodyTextView, false);
+		}
 	}
 }

@@ -13,7 +13,7 @@
 		android:layout_marginLeft="16dp"
 		android:layout_marginRight="16dp"
 		android:layout_gravity="left|center_vertical"
-		android:src="@mipmap/ic_launcher_leos"
+		android:src="@mipmap/ic_launcher"
 		android:tint="?attr/textColorSecondary"/>
 
 	<TextView

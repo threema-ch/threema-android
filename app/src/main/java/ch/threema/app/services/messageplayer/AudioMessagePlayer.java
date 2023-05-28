@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,6 +21,8 @@
 
 package ch.threema.app.services.messageplayer;
 
+import static android.media.AudioManager.STREAM_MUSIC;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -30,11 +32,12 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.core.content.ContextCompat;
+
 import org.slf4j.Logger;
 
 import java.io.File;
 
-import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.listeners.SensorListener;
@@ -55,13 +58,10 @@ import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
-import static android.media.AudioManager.STREAM_MUSIC;
-
 public class AudioMessagePlayer extends MessagePlayer implements AudioManager.OnAudioFocusChangeListener, SensorListener {
 	private final Logger logger = LoggingUtil.getThreemaLogger("AudioMessagePlayer");
-	private final String UID;
 
-	private final int SEEKBAR_UPDATE_FREQUENCY = 500;
+	private static final int SEEKBAR_UPDATE_FREQUENCY = 100;
 	private MediaPlayerStateWrapper mediaPlayer;
 	private File decryptedFile = null;
 	private int duration = 0;
@@ -90,12 +90,12 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 		this.mediaPlayer = null;
 		this.micPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
 
-		this.UID = messageModel.getUid();
-		logger.info("New MediaPlayer instance: {}", this.UID);
+		String UID = messageModel.getUid();
+		logger.info("New MediaPlayer instance: {}", UID);
 
 		// Set logger prefix
 		if (logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(String.valueOf(this.UID));
+			((ThreemaLogger) logger).setPrefix(String.valueOf(UID));
 		}
 	}
 
@@ -203,7 +203,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 	/**
 	 * called, after the media player was prepared
 	 */
-	private void prepared(MediaPlayerStateWrapper mp, boolean resume) {
+	private void prepared(MediaPlayerStateWrapper mp, final boolean resume) {
 		logger.debug("prepared");
 
 		//do not play if state is changed! (not playing)
@@ -230,11 +230,18 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 		}
 		logger.debug("duration = {}", duration);
 
-		if (this.position != 0) {
+		if (this.position >= 0) {
+			this.mediaPlayer.setOnSeekCompleteListener(mp1 -> onSeekCompleted(resume));
 			this.mediaPlayer.seekTo(this.position);
+		} else {
+			onSeekCompleted(resume);
 		}
+	}
 
+	private void onSeekCompleted(final boolean resume) {
 		logger.debug("play from position {}", this.position);
+
+		this.mediaPlayer.setOnSeekCompleteListener(null);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			float audioPlaybackSpeed = preferenceService.getAudioPlaybackSpeed();
@@ -277,7 +284,10 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 						Thread.sleep(SEEKBAR_UPDATE_FREQUENCY);
 
 						if (mediaPlayer != null && getState() == State_PLAYING && isPlaying()) {
-							position = mediaPlayer.getCurrentPosition();
+							int newposition = mediaPlayer.getCurrentPosition();
+							if (newposition > position) {
+								position = newposition;
+							}
 							AudioMessagePlayer.this.updatePlayState();
 							cont = !Thread.interrupted();
 						}
@@ -308,7 +318,7 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 
 	@Override
 	protected void makePause(int source) {
-		logger.info("makePause");
+		logger.info("makePause with source {}", source);
 
 		if (source != SOURCE_LIFECYCLE) {
 			if (this.mediaPlayer != null) {

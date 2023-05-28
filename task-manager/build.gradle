@@ -7,14 +7,14 @@ plugins {
 
 dependencies {
 
-    implementation platform('org.jetbrains.kotlin:kotlin-bom')
+    implementation platform("org.jetbrains.kotlin:kotlin-bom:$kotlin_version")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlin_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
     implementation "org.slf4j:slf4j-api:$slf4j_version"
 
     testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
-    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }
 
 test {

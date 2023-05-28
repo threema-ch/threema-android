@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -41,17 +41,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.push.PushService;
 import ch.threema.app.services.AppRestrictionService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
@@ -247,25 +247,43 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 	private void parseUrlAndCheck(Uri data) {
 		String query = data.getQuery();
-
 		if (!TestUtil.empty(query)) {
 			if (licenseService instanceof LicenseServiceUser) {
-				final String username = data.getQueryParameter("username");
-				final String password = data.getQueryParameter("password");
-				final String server = data.getQueryParameter("server");
-				if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
-					check(new UserCredentials(username, password), server);
-					return;
-				}
+				parseWorkLicense(data);
 			} else {
-				final String key = data.getQueryParameter("key");
-				if (!TestUtil.empty(key)) {
-					check(new SerialCredentials(key), null);
-					return;
-				}
+				parseConsumerLicense(data);
 			}
 		}
-		Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
+	}
+
+	private void parseConsumerLicense(Uri data) {
+		final String key = data.getQueryParameter("key");
+		if (!TestUtil.empty(key)) {
+			check(new SerialCredentials(key), null);
+		}
+	}
+
+	private void parseWorkLicense(Uri data) {
+		final String username = data.getQueryParameter("username");
+		final String password = data.getQueryParameter("password");
+		final String server = data.getQueryParameter("server");
+
+		if (ConfigUtils.isOnPremBuild()) {
+			if (!TestUtil.empty(username) && !TestUtil.empty(password) && !TestUtil.empty(server)) {
+				check(new UserCredentials(username, password), server);
+			} else {
+				licenseKeyOrUsernameText.setText(username);
+				passwordText.setText(password);
+				serverText.setText(server);
+			}
+		} else {
+			if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
+				check(new UserCredentials(username, password), null);
+			} else {
+				licenseKeyOrUsernameText.setText(username);
+				passwordText.setText(password);
+			}
+		}
 	}
 
 	private void doUnlock() {
@@ -341,7 +359,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		if (!TestUtil.empty(licenseKeyOrUsernameText.getText())) {
+		if (licenseKeyOrUsernameText != null && !TestUtil.empty(licenseKeyOrUsernameText.getText())) {
 			outState.putString(BUNDLE_LICENSE_KEY, licenseKeyOrUsernameText.getText().toString());
 		}
 

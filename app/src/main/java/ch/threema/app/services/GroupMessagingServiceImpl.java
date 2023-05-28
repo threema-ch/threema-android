@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,13 +21,14 @@
 
 package ch.threema.app.services;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
@@ -146,7 +147,7 @@ public class GroupMessagingServiceImpl implements GroupMessagingService {
 			// If contact is valid, enqueue group message
 			if (contactModel.getState() != ContactModel.State.INVALID) {
 				final AbstractGroupMessage groupMessage = createApiMessage.create(messageId);
-				groupMessage.setGroupId(groupId);
+				groupMessage.setApiGroupId(groupId);
 				groupMessage.setGroupCreator(groupCreatorId);
 				groupMessage.setFromIdentity(ownIdentity);
 				groupMessage.setToIdentity(identity);

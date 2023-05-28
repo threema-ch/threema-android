@@ -31,4 +31,5 @@
 	<string name="directory_search">Search in the directory</string>
 	<string name="directory_title">Company directory</string>
 	<string name="directory_empty_view_text">Please enter at least 3 characters of a name to begin searching in your company\'s directory of Threema Work users or select a category by tapping on the filter icon.</string>
+	<string name="share_with_app">Share with Threema Work</string>
 </resources>

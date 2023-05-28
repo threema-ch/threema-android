@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,9 +25,9 @@ import com.google.protobuf.ByteString;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.utils.RandomUtil;
-import ch.threema.protobuf.callsignaling.CallSignaling;
-import ch.threema.protobuf.callsignaling.CallSignaling.CaptureState.CaptureDevice;
-import ch.threema.protobuf.callsignaling.CallSignaling.CaptureState.Mode;
+import ch.threema.protobuf.callsignaling.O2OCall;
+import ch.threema.protobuf.callsignaling.O2OCall.CaptureState.CaptureDevice;
+import ch.threema.protobuf.callsignaling.O2OCall.CaptureState.Mode;
 
 /**
  * Hold information about the capturing state for a certain device.
@@ -53,7 +53,7 @@ public class CaptureState implements ToSignalingMessage {
 
 	@Override
 	public int getType() {
-		return CallSignaling.Envelope.CAPTURE_STATE_CHANGE_FIELD_NUMBER;
+		return O2OCall.Envelope.CAPTURE_STATE_CHANGE_FIELD_NUMBER;
 	}
 
 	//endregion
@@ -61,11 +61,11 @@ public class CaptureState implements ToSignalingMessage {
 	//region Protocol buffers
 
 	@Override
-	public @NonNull CallSignaling.Envelope toSignalingMessage() {
-		final CallSignaling.CaptureState.Builder captureState = CallSignaling.CaptureState.newBuilder()
+	public @NonNull O2OCall.Envelope toSignalingMessage() {
+		final O2OCall.CaptureState.Builder captureState = O2OCall.CaptureState.newBuilder()
 			.setDevice(this.device)
 			.setState(this.capturing ? Mode.ON : Mode.OFF);
-		return CallSignaling.Envelope.newBuilder()
+		return O2OCall.Envelope.newBuilder()
 			.setPadding(ByteString.copyFrom(RandomUtil.generateRandomPadding(0, 255)))
 			.setCaptureStateChange(captureState)
 			.build();

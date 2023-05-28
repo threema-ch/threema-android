@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,12 +25,16 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.EnumMap;
 import java.util.Map;
 
-import androidx.annotation.Nullable;
 import ch.threema.app.R;
+import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.storage.models.AbstractMessageModel;
+import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageState;
 
 /**
@@ -73,6 +77,7 @@ public class StateBitmapUtil {
 		this.messageStateBitmapResourceIds.put(MessageState.PENDING, R.drawable.ic_upload_filled);
 		this.messageStateBitmapResourceIds.put(MessageState.TRANSCODING, R.drawable.ic_outline_hourglass_top_24);
 		this.messageStateBitmapResourceIds.put(MessageState.CONSUMED, R.drawable.ic_baseline_hearing_24);
+		this.messageStateBitmapResourceIds.put(MessageState.FS_KEY_MISMATCH, R.drawable.ic_baseline_key_off_24);
 
 		this.messageStateDescriptionMap.put(MessageState.READ, R.string.state_read);
 		this.messageStateDescriptionMap.put(MessageState.DELIVERED, R.string.state_delivered);
@@ -84,6 +89,7 @@ public class StateBitmapUtil {
 		this.messageStateDescriptionMap.put(MessageState.PENDING, R.string.state_pending);
 		this.messageStateDescriptionMap.put(MessageState.TRANSCODING, R.string.state_processing);
 		this.messageStateDescriptionMap.put(MessageState.CONSUMED, R.string.listened_to);
+		this.messageStateDescriptionMap.put(MessageState.FS_KEY_MISMATCH, R.string.fs_key_mismatch);
 
 		this.ackColor = context.getResources().getColor(R.color.material_green);
 		this.decColor = context.getResources().getColor(R.color.material_orange);
@@ -115,11 +121,11 @@ public class StateBitmapUtil {
 			if (resId != null && ViewUtil.showAndSet(imageView, resId)) {
 				imageView.setContentDescription(context.getString(this.messageStateDescriptionMap.get(state)));
 
-				if (state == MessageState.SENDFAILED) {
+				if (state == MessageState.SENDFAILED || state == MessageState.FS_KEY_MISMATCH) {
 					imageView.setColorFilter(this.warningColor);
 				} else if (state == MessageState.USERACK) {
 					imageView.setColorFilter(this.ackColor);
-				}  else if (state == MessageState.USERDEC) {
+				} else if (state == MessageState.USERDEC) {
 					imageView.setColorFilter(this.decColor);
 				} else {
 					if (useInverseColors) {
@@ -128,5 +134,57 @@ public class StateBitmapUtil {
 				}
 			}
 		}
+	}
+
+	public void setGroupAckCount(AbstractMessageModel messageModel, @NonNull ComposeMessageHolder holder) {
+		if (!ConfigUtils.isGroupAckEnabled()) {
+			return;
+		}
+
+		if (messageModel instanceof GroupMessageModel) {
+			GroupMessageModel groupMessageModel = (GroupMessageModel) messageModel;
+			if (groupMessageModel.getGroupMessageStates() != null && groupMessageModel.getGroupMessageStates().size() > 0) {
+				int ackCount = 0;
+				int decCount = 0;
+
+				Map<String, Object> messageStatesMap = groupMessageModel.getGroupMessageStates();
+				for(Map.Entry<String, Object> entry: messageStatesMap.entrySet()) {
+					if (MessageState.USERACK.toString().equals(entry.getValue())) {
+						ackCount++;
+					} else if (MessageState.USERDEC.toString().equals(entry.getValue())) {
+						decCount++;
+					}
+				}
+
+				if (ackCount > 0 || decCount > 0) {
+					MessageState state = messageModel.getState();
+
+					if (ackCount > 0) {
+						holder.groupAckThumbsUpImage.setImageResource(state == MessageState.USERACK ? R.drawable.ic_thumb_up_filled : R.drawable.ic_thumb_up_grey600_24dp);
+						holder.groupAckThumbsUpCount.setText(String.valueOf(ackCount));
+						holder.groupAckThumbsUpImage.setVisibility(View.VISIBLE);
+						holder.groupAckThumbsUpCount.setVisibility(View.VISIBLE);
+					} else {
+						holder.groupAckThumbsUpImage.setVisibility(View.GONE);
+						holder.groupAckThumbsUpCount.setVisibility(View.GONE);
+					}
+
+					if (decCount > 0) {
+						holder.groupAckThumbsDownImage.setImageResource(state == MessageState.USERDEC ? R.drawable.ic_thumb_down_filled : R.drawable.ic_thumb_down_grey600_24dp);
+						holder.groupAckThumbsDownCount.setText(String.valueOf(decCount));
+						holder.groupAckThumbsDownImage.setVisibility(View.VISIBLE);
+						holder.groupAckThumbsDownCount.setVisibility(View.VISIBLE);
+					} else {
+						holder.groupAckThumbsDownImage.setVisibility(View.GONE);
+						holder.groupAckThumbsDownCount.setVisibility(View.GONE);
+					}
+
+					holder.groupAckContainer.setVisibility(View.VISIBLE);
+					holder.deliveredIndicator.setVisibility(View.GONE);
+					return;
+				}
+			}
+		}
+		holder.groupAckContainer.setVisibility(View.GONE);
 	}
 }

@@ -11,7 +11,7 @@
     <string name="voip_call_confirm">Voleu trucar a %1$s?</string>
     <string name="voip_error_call">Error durant la trucada de Threema</string>
     <string name="voip_error_init_call">Error inicialitzant la trucada</string>
-    <string name="voip_notification_title">Trucada de Threema entrant</string>
+    <string name="voip_notification_title">Trucada de LeOS-Messenger entrant</string>
     <string name="voip_notification_text">%1$s us està trucant</string>
     <!-- Shown when starting a call, before the peer device is ringing -->
     <string name="voip_status_initializing">Inicialitzant</string>
@@ -29,7 +29,7 @@
     <string name="voip_call_status_rejected">Trucada rebutjada</string>
     <string name="voip_call_status_busy">Destinatari de la trucada ocupat</string>
     <string name="voip_call_status_busy_short">Ocupat</string>
-    <string name="voip_call_status_disabled">Trucades de Threema desactivades pel destinatari</string>
+    <string name="voip_call_status_disabled">Trucades de LeOS-Messenger desactivades pel destinatari</string>
     <string name="voip_call_status_missed">Trucada perduda</string>
     <string name="voip_call_finished_outbox">Trucada sortint</string>
     <string name="voip_call_finished_inbox">Trucada entrant</string>
@@ -42,8 +42,8 @@
     <string name="voip_earpiece">Telèfon</string>
     <string name="voip_bluetooth">Bluetooth</string>
     <string name="voip_none">No disponible</string>
-    <string name="voip_call_finished">La trucada de Threema ha acabat</string>
-    <string name="voip_another_call">No es pot connectar. Hi ha una altra trucada de Threema activa actualment.</string>
+    <string name="voip_call_finished">La trucada de LeOS-Messenger ha acabat</string>
+    <string name="voip_another_call">No es pot connectar. Hi ha una altra trucada de LeOS-Messenger activa actualment.</string>
     <string name="voip_prefs_title_aec">Cancel·lació d\'eco</string>
     <string name="voip_prefs_aec_sw">Cancel·lació d\'eco per programari</string>
     <string name="voip_prefs_aec_hw">Cancel·lació d\'eco per maquinari</string>
@@ -55,8 +55,8 @@
     <string name="voip_connection_failed">No s\'ha pogut establir la connexió</string>
     <string name="voip_connection_lost">Connexió perduda</string>
     <string name="prefs_voip_reject_incoming_calls_title">Rebutjar trucades de mòbil</string>
-    <string name="prefs_voip_reject_incoming_calls_summary">Rebutjar trucades de mòbil entrants mentre hi hagi una trucada de Threema activa.</string>
-    <string name="voip_contact_not_found">No s\'ha trobat el contacte de Threema per aquest número.</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Rebutjar trucades de mòbil entrants mentre hi hagi una trucada de LeOS-Messenger activa.</string>
+    <string name="voip_contact_not_found">No s\'ha trobat el contacte de LeOS-Messenger per aquest número.</string>
     <string name="voip_another_pstn_call">No es pot iniciar la trucada. Una trucada de telèfon estàndard segueix activa.</string>
     <string name="voip_call_status_off_hours">Trucada fora d\'horari</string>
     <string name="voip_peer_video_disabled">Les videotrucades s\'han desactivat per l\'altra part.</string>

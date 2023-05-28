@@ -26,9 +26,9 @@
 	<string name="webclient_really_start_webclient_by_payload_body">Möchten Sie diese Sitzung jetzt starten?</string>
 	<string name="webclient_cannot_restore">Kann die Sitzung nicht wieder aufnehmen</string>
 	<string name="webclient_disabled">Desktop/Web ist deaktiviert</string>
-	<string name="webclient_protocol_version_to_old">Die Desktop-App / der Web-Client ist nicht kompatibel mit dieser Android-App. Bitte aktualisieren Sie Threema für Android auf die neueste Version.</string>
-	<string name="webclient_protocol_version_too_new_selfhosted">Ihre App unterstützt diese Version der Desktop-App / von Threema Web nicht. Bitten Sie den Administrator Ihrer Threema-Web-Instanz, auf die neuesten Version von Threema Web zu aktualisieren.</string>
-	<string name="webclient_protocol_version_too_new_threema">Ihre App unterstützt diese Version diese Version der Desktop-App / von Threema Web nicht. Bitte benutzen Sie eine neuere Version von Threema Web / der Desktop-App.</string>
+	<string name="webclient_protocol_version_to_old">Die Desktop-App / der Web-Client ist nicht kompatibel mit dieser Android-App. Bitte aktualisieren Sie LeOS-Messenger für Android auf die neueste Version.</string>
+	<string name="webclient_protocol_version_too_new_selfhosted">Ihre App unterstützt diese Version der Desktop-App / von LeOS-Messenger Web nicht. Bitten Sie den Administrator Ihrer Threema-Web-Instanz, auf die neuesten Version von LeOS-Messenger Web zu aktualisieren.</string>
+	<string name="webclient_protocol_version_too_new_threema">Ihre App unterstützt diese Version diese Version der Desktop-App / von LeOS-Messenger Web nicht. Bitte benutzen Sie eine neuere Version von LeOS-Messenger Web / der Desktop-App.</string>
 	<string name="webclient_session_already_exists">Eine Sitzung für diesen QR-Code existiert bereits. Bitte starten Sie Ihren Browser / Ihre Desktop-App neu.</string>
 	<string name="webclient_clear_all_sessions">Alle Sitzungen löschen</string>
 	<string name="webclient_clear_all_sessions_confirm">Möchten Sie wirklich alle Sitzungen löschen?</string>

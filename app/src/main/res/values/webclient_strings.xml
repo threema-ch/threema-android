@@ -24,7 +24,7 @@
 	<string name="webclient_invalid_qr_code">Invalid QR code</string>
 	<string name="webclient_new_connection_toast">Desktop/Web session started</string>
 	<string name="webclient_protocol_error">Protocol Error</string>
-	<string name="webclient_protocol_version_to_old">Your app does not support this version of the desktop app / web client. Please update Threema for Android to the latest version.</string>
+	<string name="webclient_protocol_version_to_old">Your app does not support this version of the desktop app / web client. Please update LeOS-Messenger for Android to the latest version.</string>
 	<string name="webclient_protocol_version_too_new_selfhosted">Your app does not support this version of the desktop app / web client. Please download the latest version of the desktop app, or ask the administrator of your web client to upgrade to the latest version.</string>
 	<string name="webclient_protocol_version_too_new_threema">Your app does not support this version of the desktop app / web client. Please use the current version of the desktop app / web client.</string>
 	<string name="webclient_session_already_exists">The session of the QR code you scanned already exists. Please relaunch the desktop app / reload the web client, and try again.</string>
@@ -39,5 +39,5 @@
 	<string name="webclient_diagnostics">Desktop/Web Diagnostics</string>
 	<string name="webclient_diagnostics_start">Start</string>
 	<string name="webclient_diagnostics_intro">Tap on «Start» to launch the test.</string>
-	<string name="webclient_diagnostics_done">Done. If you experience problems with the connection build-up to the desktop app or the web client, please send this log to Threema support.</string>
+	<string name="webclient_diagnostics_done">Done. If you experience problems with the connection build-up to the desktop app or the web client, please send this log to LeOS-Messenger support.</string>
 </resources>

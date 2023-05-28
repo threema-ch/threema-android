@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -38,6 +38,7 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
+import static ch.threema.storage.models.data.status.VoipStatusDataModel.NO_CALL_ID;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -102,7 +103,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			false,
-			VoipStatusDataModel.createMissed(),
+			VoipStatusDataModel.createMissed(NO_CALL_ID, null),
 			ICON_INCOMING,
 			COLOR_RED,
 			"Missed call",
@@ -115,7 +116,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			false,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.UNKNOWN),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.UNKNOWN),
 			ICON_INCOMING,
 			COLOR_RED,
 			"Missed call",
@@ -128,7 +129,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			false,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.BUSY),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.BUSY),
 			ICON_INCOMING,
 			COLOR_RED,
 			"Missed call (Busy)",
@@ -141,7 +142,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			false,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.TIMEOUT),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.TIMEOUT),
 			ICON_INCOMING,
 			COLOR_RED,
 			"Missed call",
@@ -154,7 +155,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			false,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.REJECTED),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.REJECTED),
 			ICON_INCOMING,
 			COLOR_ORANGE,
 			"Call declined",
@@ -167,7 +168,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			false,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.DISABLED),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.DISABLED),
 			ICON_INCOMING,
 			COLOR_ORANGE,
 			"Call declined",
@@ -180,7 +181,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			true,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.UNKNOWN),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.UNKNOWN),
 			ICON_OUTGOING,
 			COLOR_RED,
 			"Call declined",
@@ -193,7 +194,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			true,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.BUSY),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.BUSY),
 			ICON_OUTGOING,
 			COLOR_RED,
 			"Call recipient is busy",
@@ -206,7 +207,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			true,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.TIMEOUT),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.TIMEOUT),
 			ICON_OUTGOING,
 			COLOR_RED,
 			"Call recipient is unavailable",
@@ -219,7 +220,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			true,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.REJECTED),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.REJECTED),
 			ICON_OUTGOING,
 			COLOR_RED,
 			"Call declined",
@@ -232,7 +233,7 @@ public class VoipStatusMessageTest {
 		new TestCase(
 			this.getContext(),
 			true,
-			VoipStatusDataModel.createRejected(VoipCallAnswerData.RejectReason.DISABLED),
+			VoipStatusDataModel.createRejected(NO_CALL_ID, VoipCallAnswerData.RejectReason.DISABLED),
 			ICON_OUTGOING,
 			COLOR_RED,
 			"Threema calls disabled by recipient",

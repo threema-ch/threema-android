@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2021-2022 Threema GmbH
+ * Copyright (c) 2021-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -224,7 +224,7 @@ public class GroupInviteServiceImpl implements GroupInviteService {
 		return new GroupInviteData(groupLinkInfos[0],
 			GroupInviteToken.fromHexString(groupLinkInfos[1]),
 			groupLinkInfos[2],
-			Objects.requireNonNull(GroupInvite.InviteType.forNumber(Integer.parseInt(groupLinkInfos[3]))));
+			Objects.requireNonNull(GroupInvite.ConfirmationMode.forNumber(Integer.parseInt(groupLinkInfos[3]))));
 	}
 
 	/**

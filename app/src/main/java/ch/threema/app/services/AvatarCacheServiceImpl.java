@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -106,45 +106,29 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 	@AnyThread
 	@Override
-	public @Nullable Bitmap getContactAvatarHigh(@Nullable final ContactModel contactModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone) {
+	public @Nullable Bitmap getContactAvatar(@Nullable final ContactModel contactModel, @NonNull AvatarOptions options) {
 		return getBitmapInWorkerThread(
-			() -> this.getAvatar(contactModel, new AvatarOptions.Builder().setHighRes(true).setDefaultOnly(defaultOnly).setReturnDefaultAvatarIfNone(returnDefaultAvatarIfNone).toOptions())
+			() -> this.getAvatar(contactModel, options)
 		);
 	}
 
 	@AnyThread
 	@Override
-	public @Nullable Bitmap getContactAvatarLow(@Nullable final ContactModel contactModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone) {
-		return getBitmapInWorkerThread(
-			() -> this.getAvatar(contactModel, new AvatarOptions.Builder().setHighRes(false).setDefaultOnly(defaultOnly).setReturnDefaultAvatarIfNone(returnDefaultAvatarIfNone).toOptions())
-		);
-	}
-
-	@AnyThread
-	@Override
-	public void loadContactAvatarIntoImage(@NonNull ContactModel model, @NonNull ImageView imageView, AvatarOptions options) {
+	public void loadContactAvatarIntoImage(@NonNull ContactModel model, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
 		loadBitmap(new ContactAvatarConfig(model, options), contactPlaceholder, imageView);
 	}
 
 	@AnyThread
 	@Override
-	public @Nullable Bitmap getGroupAvatarHigh(@Nullable GroupModel groupModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone) {
+	public @Nullable Bitmap getGroupAvatar(@Nullable GroupModel groupModel, @NonNull AvatarOptions options) {
 		return getBitmapInWorkerThread(
-			() -> getAvatar(groupModel, new AvatarOptions.Builder().setHighRes(true).setDefaultOnly(defaultOnly).setReturnDefaultAvatarIfNone(returnDefaultAvatarIfNone).toOptions())
+			() -> getAvatar(groupModel, options)
 		);
 	}
 
 	@AnyThread
 	@Override
-	public @Nullable Bitmap getGroupAvatarLow(@Nullable final GroupModel groupModel, boolean defaultOnly, boolean returnDefaultAvatarIfNone) {
-		return getBitmapInWorkerThread(
-			() -> getAvatar(groupModel, new AvatarOptions.Builder().setHighRes(false).setDefaultOnly(defaultOnly).setReturnDefaultAvatarIfNone(returnDefaultAvatarIfNone).toOptions())
-		);
-	}
-
-	@AnyThread
-	@Override
-	public void loadGroupAvatarIntoImage(@Nullable GroupModel groupModel, @NonNull ImageView imageView, AvatarOptions options) {
+	public void loadGroupAvatarIntoImage(@Nullable GroupModel groupModel, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
 		loadBitmap(new GroupAvatarConfig(groupModel, options), groupPlaceholder, imageView);
 	}
 
@@ -158,7 +142,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 	@AnyThread
 	@Override
-	public void loadDistributionListAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, AvatarOptions options) {
+	public void loadDistributionListAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
 		loadBitmap(new DistributionListAvatarConfig(model, options), distributionListPlaceholder, imageView);
 	}
 
@@ -201,15 +185,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 	@WorkerThread
 	private @Nullable Bitmap getAvatar(@Nullable DistributionListModel distributionListModel) {
-		return getBitmap(new DistributionListAvatarConfig(distributionListModel, AvatarOptions.DEFAULT_NO_CACHE));
-	}
-
-	@AnyThread
-	@Override
-	public Bitmap getGroupAvatarNeutral(boolean highResolution) {
-		return getBitmapInWorkerThread(
-			() -> getAvatar((GroupModel) null, new AvatarOptions.Builder().setHighRes(highResolution).setReturnDefaultAvatarIfNone(true).setDefaultOnly(true).toOptions())
-		);
+		return getBitmap(new DistributionListAvatarConfig(distributionListModel, AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE));
 	}
 
 	@WorkerThread
@@ -318,7 +294,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 	 */
 	public class ContactAvatarConfig extends AvatarConfig<ContactModel> {
 
-		private ContactAvatarConfig(@Nullable ContactModel model, AvatarOptions options) {
+		private ContactAvatarConfig(@Nullable ContactModel model, @NonNull AvatarOptions options) {
 			super(model, options);
 		}
 
@@ -354,7 +330,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 	 * with the same hashcode references the same image and can therefore be cached by glide.
 	 */
 	public class GroupAvatarConfig extends AvatarConfig<GroupModel> {
-		private GroupAvatarConfig(@Nullable GroupModel model, AvatarOptions options) {
+		private GroupAvatarConfig(@Nullable GroupModel model, @NonNull AvatarOptions options) {
 			super(model, options);
 		}
 
@@ -390,7 +366,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 	 * this class with the same hashcode references the same image and can therefore be cached by glide.
 	 */
 	public static class DistributionListAvatarConfig extends AvatarConfig<DistributionListModel> {
-		private DistributionListAvatarConfig(@Nullable DistributionListModel model, AvatarOptions options) {
+		private DistributionListAvatarConfig(@Nullable DistributionListModel model, @NonNull AvatarOptions options) {
 			super(model, options);
 		}
 

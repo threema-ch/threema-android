@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -26,6 +26,8 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -80,6 +82,9 @@ public abstract class MotionEntity {
 	 * @see #destPoints
 	 */
 	protected final float[] srcPoints = new float[10];  // x0, y0, x1, y1, x2, y2, x3, y3, x0, y0
+
+	@ColorInt
+	protected int color;
 
 	@NonNull
 	private Paint borderPaint = new Paint();
@@ -271,7 +276,18 @@ public abstract class MotionEntity {
 
 	protected abstract void drawContent(@NonNull Canvas canvas, @Nullable Paint drawingPaint);
 
-	public abstract boolean hasFixedPositionAndSize();
+	public abstract boolean canMove();
+
+	public abstract boolean canChangeColor();
+
+	@ColorInt
+	public int getColor() {
+		return this.color;
+	}
+
+	public void setColor(@ColorInt int color) {
+		this.color = color;
+	}
 
 	public abstract int getWidth();
 

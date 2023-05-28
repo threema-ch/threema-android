@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,6 +22,7 @@
 package ch.threema.app.utils;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +31,7 @@ import androidx.annotation.NonNull;
 import ch.threema.app.R;
 
 public class StringConversionUtil {
+
 	public static byte[] stringToByteArray(String s) {
 		if(s == null) {
 			return new byte[0];
@@ -74,11 +76,17 @@ public class StringConversionUtil {
 				context.getString(R.string.and) + " " + seconds + " " + context.getString(R.string.seconds);
 	}
 
-
 	public static String getDurationString(long milliseconds) {
-		return String.format(Locale.US, "%02d:%02d",
-			TimeUnit.MILLISECONDS.toMinutes(milliseconds) % TimeUnit.HOURS.toMinutes(1),
-			TimeUnit.MILLISECONDS.toSeconds(milliseconds) % TimeUnit.MINUTES.toSeconds(1));
+		if (milliseconds > DateUtils.HOUR_IN_MILLIS) {
+			return String.format(Locale.US, "%d:%02d:%02d",
+				TimeUnit.MILLISECONDS.toHours(milliseconds),
+				TimeUnit.MILLISECONDS.toMinutes(milliseconds) % TimeUnit.HOURS.toMinutes(1),
+				TimeUnit.MILLISECONDS.toSeconds(milliseconds) % TimeUnit.MINUTES.toSeconds(1));
+		} else {
+			return String.format(Locale.US, "%02d:%02d",
+				TimeUnit.MILLISECONDS.toMinutes(milliseconds) % TimeUnit.HOURS.toMinutes(1),
+				TimeUnit.MILLISECONDS.toSeconds(milliseconds) % TimeUnit.MINUTES.toSeconds(1));
+		}
 	}
 
 	public static String xDigit(int number, int digits) {

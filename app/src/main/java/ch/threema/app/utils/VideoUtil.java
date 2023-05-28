@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -28,12 +28,15 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayer;
 
 import org.slf4j.Logger;
 
-import androidx.annotation.NonNull;
+import java.io.IOException;
+
 import ch.threema.base.utils.LoggingUtil;
 
 public class VideoUtil {
@@ -62,7 +65,11 @@ public class VideoUtil {
 			//do not show the exception!
 			logger.error("Exception", e);
 		} finally {
-			retriever.release();
+			try {
+				retriever.release();
+			} catch (IOException e) {
+				logger.debug("Failed to release MediaMetadataRetriever");
+			}
 		}
 
 		//duration fallback
@@ -85,13 +92,12 @@ public class VideoUtil {
 	}
 
 	public static ExoPlayer getExoPlayer(@NonNull Context context) {
+		DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);
+		renderersFactory.setEnableDecoderFallback(true);
 		if (ConfigUtils.hasAsyncMediaCodecBug()) {
 			// Workaround for https://github.com/google/ExoPlayer/issues/10021
-			DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);
 			renderersFactory.forceDisableMediaCodecAsynchronousQueueing();
-			return new ExoPlayer.Builder(context, renderersFactory).build();
-		} else {
-			return new ExoPlayer.Builder(context).build();
 		}
+		return new ExoPlayer.Builder(context, renderersFactory).build();
 	}
 }

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -40,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.preference.PreferenceManager;
+
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.utils.ConfigUtils;
@@ -240,10 +241,9 @@ public class TooltipPopup extends PopupWindow implements DefaultLifecycleObserve
 				popupY = originLocation[1];
 				popupWidth = Math.min(screenWidth - popupX - marginOnOtherEdge, maxWidth);
 			} else {
-				popupX = originLocation[0] + anchor.getWidth();
+				popupX = originLocation[0] + anchor.getWidth() - arrowOffset;
 				popupY = originLocation[1] + anchor.getHeight();
-//				popupWidth = Math.min(popupX - (screenWidth - popupX) - marginOnOtherEdge, maxWidth);
-				popupWidth = Math.min(popupX + arrowOffset - marginOnOtherEdge, maxWidth);
+				popupWidth = Math.min(popupX - marginOnOtherEdge, maxWidth);
 			}
 			this.setWidth(popupWidth);
 			if (activity.isFinishing() || activity.isDestroyed()) {

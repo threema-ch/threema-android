@@ -11,7 +11,7 @@
     <string name="title_enter_id">Saisir l\'ID</string>
     <string name="title_invite_friend">Inviter un ami</string>
     <string name="invite_via">Inviter un ami via…</string>
-    <string name="invite_email_body">Bonjour,\n\nJ\'utilise %1$s, la messagerie instantanée sécurisée qui protège la vie privée de ses utilisateurs.\n\nMon ID Threema : https://threema.id/%2$s\n\nCommuniquons à travers %1$s !\n\nBonne journée,\n</string>
+    <string name="invite_email_body">Bonjour,\n\nJ\'utilise %1$s, la messagerie instantanée sécurisée qui protège la vie privée de ses utilisateurs.\n\nMon ID LeOS-Messenger : https://threema.id/%2$s\n\nCommuniquons à travers %1$s !\n\nBonne journée,\n</string>
     <string name="invite_sms_body">Bonjour ! Utilisons %1$s pour communiquer d\'une manière sécurisée et respectant la vie privée ! Mon ID Threema : https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema. La messagerie sécurisée qui protège notre vie privée</string>
     <string name="enter_id_hint">Saisissez l\'ID Threema</string>
@@ -68,8 +68,8 @@
     <string name="prefs_troubleshooting">Résolution des problèmes</string>
     <string name="prefs_sum_troubleshooting">Analyser et corriger les problèmes</string>
     <string name="prefs_workarounds">Solutions</string>
-    <string name="prefs_title_threema_push_switch">Utiliser Threema Push</string>
-    <string name="prefs_sum_threema_push_on">Utilisez Threema Push pour être informé en cas de nouveaux messages.</string>
+    <string name="prefs_title_threema_push_switch">Utiliser LeOS-Messenger Push</string>
+    <string name="prefs_sum_threema_push_on">Utilisez LeOS-Messenger Push pour être informé en cas de nouveaux messages.</string>
     <string name="prefs_sum_threema_push_off">Vérifiez la présence de nouveaux messages en utilisant le service Push système</string>
     <string name="prefs_logging">Journalisation</string>
     <string name="prefs_title_message_log_switch">Consigner dans le fichier</string>
@@ -111,7 +111,9 @@
     <string name="cancel">Annuler</string>
     <string name="copy_message_action">Copier</string>
     <string name="delete_contact_action">Supprimer le contact</string>
+    <string name="delete_multiple_contact_action">Supprimer les contacts</string>
     <string name="scan_id">Scanner un ID</string>
+    <string name="id_scanned">ID scanné</string>
     <string name="id_mismatch">La clé publique que vous avez scannée ne correspond pas à celle stockée par le serveur pour cet ID. Cela signifie que quelqu\'un a manipulé le code scanné, et que la clé n\'est pas fiable.</string>
     <string name="scan_successful">L\'ID a bien été scanné et le contact est vérifié.</string>
     <string name="scan_duplicate">L\'ID a déjà été scanné et vérifié.</string>
@@ -121,15 +123,15 @@
     <string name="share_via">Partager via…</string>
     <string name="share_subject">Conversation %s</string>
     <string name="message_delete_undo">Annuler</string>
-    <string name="message_deleted">Message supprimé</string>
-    <string name="mobile_already_linked">Votre ID Threema est déjà lié à ce numéro de mobile</string>
-    <string name="email_already_linked">Votre ID Threema est déjà lié à cette adresse e-mail</string>
+    <string name="mobile_already_linked">Votre ID LeOS-Messenger est déjà lié à ce numéro de mobile</string>
+    <string name="email_already_linked">Votre ID LeOS-Messenger est déjà lié à cette adresse e-mail</string>
     <string name="whoaaa">Avis Threema</string>
     <string name="really_delete_message_title">Supprimer le message</string>
     <string name="really_delete_thread">Supprimer les messages</string>
+    <string name="really_delete_multiple_threads">Supprimer les chats</string>
     <string name="really_delete_contact">Souhaitez-vous vraiment supprimer ce contact et tous les messages associés ?</string>
     <string name="image_placeholder">Image</string>
-    <string name="invalid_threema_id">ID Threema invalide</string>
+    <string name="invalid_threema_id">ID LeOS-Messenger invalide</string>
     <string name="contact_already_exists">Le contact existe déjà</string>
     <string name="close">Fermer</string>
     <string name="creating_contact">Ajout d\'un nouveau contact</string>
@@ -161,7 +163,7 @@
     <string name="support">Support</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">Les données de sauvegarde suivantes peuvent être utilisées avec le mot de passe choisi pour restaurer votre ID Threema.</string>
-    <string name="backup_share_subject">Exportation de l\'ID Threema pour</string>
+    <string name="backup_share_subject">Exportation de l\'ID LeOS-Messenger pour</string>
     <string name="add_attachment">Ajouter une pièce jointe</string>
     <string name="invalid_passphrase">Phrase secrète invalide</string>
     <string name="master_key_locked">Clé principale verrouillée</string>
@@ -170,7 +172,7 @@
     <string name="prefs_title_masterkey_passphrase">Phrase secrète</string>
     <string name="setting_masterkey_passphrase">Définition de la phrase secrète de la clé principale</string>
     <string name="masterkey_passphrase_title">Phrase secrète de la clé principale</string>
-    <string name="masterkey_passphrase_summary">Définissez une phrase secrète pour protéger votre clé principale. Vous devrez la saisir à chaque fois que Threema redémarre.</string>
+    <string name="masterkey_passphrase_summary">Définissez une phrase secrète pour protéger votre clé principale. Vous devrez la saisir à chaque fois que LeOS-Messenger redémarre.</string>
     <string name="masterkey_passphrase_again_summary">Saisissez de nouveau la phrase secrète.</string>
     <string name="masterkey_passphrase_hint">Phrase secrète</string>
     <string name="master_key_locked_want_exit">La clé principale est toujours verrouillée. Voulez-vous réessayer ?</string>
@@ -186,7 +188,7 @@
     <string name="error">Erreur</string>
     <string name="no_contacts"><![CDATA[Vous n\'avez pas encore de contacts. Activez la synchronisation (Paramètres > Confidentialité), ou ajoutez des contacts manuellement en utilisant le bouton +.>]]></string>
     <string name="masterkey_title">Saisissez la phrase secrète</string>
-    <string name="masterkey_body">Votre clé principale Threema est protégée par une phrase secrète. Pour déverrouiller la clé et accéder à l\'application, saisissez votre phrase secrète ici.</string>
+    <string name="masterkey_body">Votre clé principale LeOS-Messenger est protégée par une phrase secrète. Pour déverrouiller la clé et accéder à l\'application, saisissez votre phrase secrète ici.</string>
     <string name="masterkey_unlocking">Déverrouillage de la clé principale</string>
     <string name="verify_phonecall_text">Demander un appel</string>
     <string name="prepare_call_message">Si vous poursuivez, nous essaierons de vous appeler immédiatement. Votre code de vérification vous sera lu deux fois. Nous n\'effectuerons qu\'une seule tentative, alors assurez-vous d\'être prêt avant de poursuivre.</string>
@@ -224,7 +226,7 @@
     <string name="deleting_thread">Suppression du fil en cours</string>
     <string name="enter_serial_body"><![CDATA[Veuillez saisir votre clé de licence pour déverrouiller Threema]]></string>
     <string name="enter_serial_title">Veuillez saisir une clé de licence</string>
-    <string name="serial_required_want_exit">La clé de licence est invalide. Voulez-vous réessayer ou quitter Threema ?</string>
+    <string name="serial_required_want_exit">La clé de licence est invalide. Voulez-vous réessayer ou quitter LeOS-Messenger ?</string>
     <string name="checking_serial">Vérification de la licence</string>
     <string name="update_available">Mise à jour disponible</string>
     <string name="no_update_available">Aucune mise à jour disponible</string>
@@ -255,8 +257,6 @@
     <string name="prefs_masterkey_notification_newmsg_off">Les nouveaux messages ne génèrent pas une notification lorsque la clé principale est verrouillée</string>
     <string name="prefs_masterkey_notification_newmsg_on">Les nouveaux messages génèrent une notification lorsque la clé principale est verrouillée</string>
     <string name="chat_history_attached">Le journal de conversation est joint.</string>
-    <string name="new_message">nouveau message</string>
-    <string name="new_messages">nouveaux messages</string>
     <string name="backup_data_title">Sauvegarde de données</string>
     <string name="backup_data_password_msg">Vos données seront enregistrées dans un fichier ZIP sur votre dispositif de stockage interne USB et peuvent être restaurées sur tout appareil Android. Veuillez saisir un mot de passe pour protéger la sauvegarde de vos données.</string>
     <string name="restore_data_password_msg">Saisissez le mot de passe que vous avez utilisé pour créer cette sauvegarde.</string>
@@ -271,7 +271,7 @@
     <string name="prefs_sum_pin_grace">Délai jusqu\'à l\'activation du verrouillage par code NIP</string>
     <string name="click_here_to_change_pin">Modifier le code NIP</string>
     <string name="set_pin_menu_title">Définir un nouveau code NIP</string>
-    <string name="set_pin_summary_intro">Protégez votre vie privée en définissant un code NIP numérique. Threema se verrouillera automatiquement en cas de non-utilisation durant un délai spécifié par l\'utilisateur (chiffres uniquement).</string>
+    <string name="set_pin_summary_intro">Protégez votre vie privée en définissant un code PIN (chiffres uniquement). Ce code peut être utilisé pour verrouiller l’accès à l’interface utilisateur de l’application après un certain temps ou pour protéger les conversations privées.</string>
     <string name="set_pin_again_summary">Saisissez de nouveau le code NIP</string>
     <string name="set_pin_hint">Code NIP</string>
     <string name="title_addgroup">Nouveau groupe</string>
@@ -282,7 +282,7 @@
     <string name="prefs_group_notifications">Notifications de groupe</string>
     <string name="add_group_members_list">Membres du groupe</string>
     <string name="group_select_at_least_two">Vous devez sélectionner au moins un membre pour continuer</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">Vous ne pouvez pas sélectionner plus de %1$d membres pour le groupe</string>
+    <string name="group_select_max">Vous ne pouvez pas sélectionner plus de %1$d membres pour le groupe</string>
     <string name="search">Chercher</string>
     <string name="hint_search_keyword">Chercher par mot-clé</string>
     <string name="add_group_owner">Créateur du groupe</string>
@@ -318,7 +318,7 @@
     <string name="updating_group">Mise à jour du groupe</string>
     <string name="status_create_group">Groupe créé.</string>
     <string name="status_rename_group">Groupe renommé en « %1$s »</string>
-    <string name="status_group_new_photo">Groupe mis à jour.</string>
+    <string name="status_group_new_photo">Image de groupe mise à jour.</string>
     <string name="status_group_new_member">« %1$s » ajouté au groupe.</string>
     <string name="status_group_member_left">« %1$s » a quitté le groupe.</string>
     <string name="status_group_member_kicked">« %1$s » a été retiré du groupe.</string>
@@ -349,15 +349,14 @@
     <string name="prefs_show_inactive_contacts">Montrer les ID inactifs</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Afficher des placeholders multicolores si la photo du contact est manquante.</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Utiliser des placeholders gris si la photo du contact est manquante.</string>
-    <string name="prefs_sum_show_inactive_contacts_on">Montrer tous les ID Threema de votre liste de contacts</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Cacher les ID Threema inactifs ou supprimés</string>
+    <string name="prefs_sum_show_inactive_contacts_on">Montrer tous les ID LeOS-Messenger de votre liste de contacts</string>
+    <string name="prefs_sum_show_inactive_contacts_off">Cacher les ID LeOS-Messenger inactifs ou supprimés</string>
     <string name="contact_sorting_first_name">Prénom - Nom</string>
     <string name="contact_sorting_last_name">Nom - Prénom</string>
     <string name="contact_format_first_name_last_name">Prénom Nom</string>
     <string name="contact_format_last_name_first_name">Nom Prénom</string>
     <string name="block_contact">Bloquer le contact</string>
     <string name="unblock_contact">Débloquer le contact</string>
-    <string name="unread_messages">%d messages non lus</string>
     <string name="one_unread_message">1 message non lu</string>
     <string name="really_unlink_contact_title">Retirer le lien du contact</string>
     <string name="really_unlink_contact">Souhaitez-vous vraiment retirer le lien de ce contact ?</string>
@@ -369,11 +368,10 @@
     <string name="prefs_title_fullscreen_ime">Clavier plein écran</string>
     <string name="prefs_sum_fullscreen_ime_on">Le clavier couvre l\'application si votre appareil est en mode paysage</string>
     <string name="prefs_sum_fullscreen_ime_off">Affichage d\'un aperçu du chat au-dessus du clavier s\'il y a de la place</string>
-    <string name="add_acount_from_within_threema">Gérer votre ID Threema à partir de Threema.</string>
+    <string name="add_acount_from_within_threema">Gérer votre ID LeOS-Messenger à partir de Threema.</string>
     <string name="save_image">Enregistrer l\'image</string>
     <string name="share_image">Partager l\'image</string>
     <string name="view_in_gallery">Afficher dans la galerie</string>
-    <string name="file_saved">%d fichier(s) bien enregistré(s).</string>
     <string name="token_register_failed">Échec de mise à jour du jeton Push, veuillez réessayer plus tard.</string>
     <string name="internet_connection_required">Pas de connexion à Internet.</string>
     <string name="prefs_sum_save_media">Enregistrer les médias entrants ainsi que les photos prises avec l\'appareil photo de manière non chiffrée</string>
@@ -389,10 +387,10 @@
     <string name="is_typing">est en train de saisir…</string>
     <string name="push_not_available_title">Push indisponible</string>
     <string name="push_not_available_text1">La messagerie Push ne peut pas être utilisée sur votre appareil parce que les services Google Play ne sont pas installés ou que ce n\'est pas la version actuelle.</string>
-    <string name="push_not_available_text2">%s tentera d\'ouvrir une connexion persistante au serveur en arrière-plan. Cela pourrait ne pas fonctionner de manière fiable si les mécanismes d\'optimisation de la batterie de votre appareil interfèrent avec la connexion en arrière-plan.</string>
+    <string name="push_not_available_text2">%s tentera d’ouvrir une connexion persistante au serveur en arrière-plan. Cela pourrait ne pas fonctionner de manière fiable si les mécanismes d’optimisation de la batterie de votre appareil interfèrent avec la connexion en arrière-plan.</string>
     <string name="backup_in_progress">Sauvegarde en cours</string>
     <string name="backup_or_restore_success_body">Sauvegarde des données réussie</string>
-    <string name="backup_or_restore_error">Threema Backup</string>
+    <string name="backup_or_restore_error">LeOS-Messenger Backup</string>
     <string name="backup_or_restore_error_body">La sauvegarde n\'a pas été finalisée</string>
     <string name="could_not_download_message">Impossible de télécharger le message</string>
     <string name="info">Infos</string>
@@ -415,10 +413,16 @@
     <string name="media_gallery_pictures">Photos</string>
     <string name="media_gallery_videos">Vidéos</string>
     <string name="group_membership_title">Membre de ces groupes</string>
+    <string name="group_description">Description du groupe</string>
+    <string name="change_group_description">Changer la description du groupe</string>
+    <string name="add_group_description">Ajouter une description de groupe</string>
+    <string name="read_more">lire plus</string>
+    <string name="read_less">lire moins</string>
+    <string name="changed_group_desc_date">"Derni\u00e8re modification : "</string>
     <string name="num_items_sected">%s sélectionné(s)</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Voulez-vous vraiment supprimer %d messages médiatiques?</string>
+    <string name="really_delete_media">Voulez-vous vraiment supprimer %d messages médiatiques?</string>
     <string name="check_updates">Vérifier mises à jour</string>
-    <string name="masterkey_lock_explain">Threema garde le mot de passe en mémoire. Si vous avez souvent besoin de saisir à nouveau le mot de passe, assurez-vous que les apps permettant d\'arrêter des processus et d\'économiser de la batterie soient désactivées, car ils risquent d\'arrêter Threema prématurément.</string>
+    <string name="masterkey_lock_explain">LeOS-Messenger garde le mot de passe en mémoire. Si vous avez souvent besoin de saisir à nouveau le mot de passe, assurez-vous que les apps permettant d\'arrêter des processus et d\'économiser de la batterie soient désactivées, car ils risquent d\'arrêter LeOS-Messenger prématurément.</string>
     <string name="identity_already_exists">Cet ID est déjà dans votre liste de contacts</string>
     <string name="share_contact">Partager le contact</string>
     <string name="add_shortcut">Ajouter un raccourci</string>
@@ -431,7 +435,6 @@
     <string name="sending_images">Envoi des images</string>
     <string name="share_conversation_body">Un outil moderne pour les fichiers ZIP avec prise en charge AES est nécessaire pour dézipper l\'archive, ex. : http://www.7-zip.org ou https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Ce chat sera envoyé en tant fichier zip non chiffré. Veuillez choisir un mot de passe :</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d nouveaux messages dans %2$d chats</string>
     <string name="ballot_create">Nouvelle enquête</string>
     <string name="ballot_choice_add">Ajouter un choix</string>
     <string name="ballot_state_closed">Fermé</string>
@@ -449,8 +452,6 @@
     <string name="ballot_overview">Enquêtes</string>
     <string name="ballot_copy">Copier l\'enquête</string>
     <string name="ballot_remove">Retirer l\'enquête</string>
-    <string name="ballot_really_delete">Retirer le(s) enquête(s)</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Voulez-vous vraiment supprimer %1$d enquête(s) ? Vous ne pourrez pas récupérer les votes.</string>
     <string name="ballot_not_exist">L\'enquête n\'existe pas</string>
     <string name="ballot_tap_to_vote">Touchez pour voter</string>
     <string name="ballot_tap_to_view_results">Touchez pour voir les résultats</string>
@@ -468,26 +469,29 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="invalid_cannot_send">Vous ne pouvez pas envoyer de message à un contact erroné</string>
     <string name="ballot_answer_count_error">Veuillez définir au moins deux réponses pour cette enquête.</string>
     <string name="ballot_one_contact_not_supported">Attention : %1$s ne pourra pas participer à votre enquête.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Attention : %1$d contacts ne pourront pas participer à votre enquête.</string>
+    <string name="ballot_x_contact_not_supported">Attention : %1$d contacts ne pourront pas participer à votre enquête.</string>
     <string name="contact_state_inactive">Inactif</string>
     <string name="contact_state_invalid">Erroné</string>
     <string name="back">Retour</string>
     <string name="wearable_reply">Répondre</string>
     <string name="wearable_reply_label">Répondre à %s</string>
     <string name="message_acknowledged">Message bien compris</string>
-    <string name="push_disable_text">Si vous continuez, « Threema Push » sera utilisé au lieu du service Push du système. Cela aide à réduire votre empreinte numérique, mais nécessite une configuration de votre téléphone qui permet à l\'application de fonctionner en arrière-plan. Vous devriez peut-être contacter l\'assistance du fabricant de votre appareil pour obtenir de l\'aide concernant cette configuration si vous ne trouvez pas les options correspondantes dans les paramètres de l\'appareil.</string>
+    <string name="push_disable_text">Si vous continuez, « LeOS-Messenger Push » sera utilisé au lieu du service Push du système. Cela aide à réduire votre empreinte numérique, mais nécessite une configuration de votre téléphone qui permet à l\'application de fonctionner en arrière-plan. Vous devriez peut-être contacter l\'assistance du fabricant de votre appareil pour obtenir de l\'aide concernant cette configuration si vous ne trouvez pas les options correspondantes dans les paramètres de l\'appareil.</string>
     <string name="ballot_intermediate_results_show">Montrer les résultats intermédiaires</string>
     <string name="converting_video">Traitement de la vidéo</string>
     <string name="video_size_small">Élevée (moins de données)</string>
     <string name="video_size_large">Faible (plus de données)</string>
     <string name="video_size_original">Aucun (grosse quantité de données)</string>
     <string name="prefs_video_size">Compression vidéo</string>
+    <string name="menu_video_size_small">Petite taille</string>
+    <string name="menu_video_size_medium">Taille moyenne</string>
+    <string name="menu_video_size_large">Taille originale</string>
     <string name="show_contact">Montrer le contact</string>
     <string name="chat_with">Discuter avec %1$s</string>
     <string name="kick_user_from_group">Éjecter %1$s du groupe</string>
     <string name="show_as_qrcode">Montrer comme code QR</string>
     <string name="qr_code">Code QR</string>
-    <string name="really_leave_id_export">Si vous ne l\'avez pas déjà fait, sauvegardez votre chaîne de texte d\'exportation d\'ID ou le code QR correspondant dans un endroit sûr ou imprimez-la. Votre ID Threema ne peut pas être restauré sans sauvegarde.</string>
+    <string name="really_leave_id_export">Si vous ne l\'avez pas déjà fait, sauvegardez votre chaîne de texte d\'exportation d\'ID ou le code QR correspondant dans un endroit sûr ou imprimez-la. Votre ID LeOS-Messenger ne peut pas être restauré sans sauvegarde.</string>
     <string name="revocation_key_title">Révocation d\'ID</string>
     <string name="revocation_key_not_set">Aucun mot de passe de révocation défini</string>
     <string name="revocation_key_set_at">Mot de passe défini %1$s</string>
@@ -496,12 +500,13 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="really_remove_wallpapers">Voulez-vous vraiment retirer tous les papiers peints ?</string>
     <string name="wallpapers_removed">Papiers peints retirés</string>
     <string name="invalid_backup">Données de sauvegarde invalides. Impossible de restaurer.</string>
+    <string name="invalid_zip_restore_failed">Restauration échouée. Fichier de sauvegarde non valide : %1$s</string>
     <string name="revocation_explain">Le mot de passe que vous saisissez ici vous permet de révoquer votre ID sur https://myid.threema.ch/revoke dans le cas où vous le perdez ou vous le faites voler.</string>
     <string name="no_unread_messages">Aucun message non lu ou verrouillage par NIP activé</string>
     <string name="send_media">Envoyer des médias</string>
     <string name="rotate">Pivoter</string>
     <string name="remove">Retirer</string>
-    <string name="image_already_added">Cette image a déjà été ajoutée</string>
+    <string name="item_already_added">Cet élément a déjà été ajouté.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">(%d caractères min.)</string>
     <string name="mark_read">Marquer comme lu</string>
     <string name="attach_document">Fichier</string>
@@ -509,10 +514,9 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="file_placeholder">Fichier</string>
     <string name="internal_storage">Stockage interne</string>
     <string name="no_activity_for_mime_type">Aucune application trouvée pour ouvrir ce fichier.</string>
-    <string name="message_copied">Message copié</string>
     <string name="open_from">Ouvrir depuis</string>
     <string name="file_one_contact_not_supported">%1$s ne peut pas recevoir de fichiers.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Attention : %1$d contacts ne peuvent pas recevoir votre fichier.</string>
+    <string name="file_x_contact_not_supported">Attention : %1$d contacts ne peuvent pas recevoir votre fichier.</string>
     <string name="mime_android_apk">Pack Android</string>
     <string name="mime_audio">Fichier audio</string>
     <string name="mime_certificate">Certificat numérique</string>
@@ -552,7 +556,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="delete_data">Supprimer données</string>
     <string name="delete_date_confirm_message">Si vous continuez, les fichiers seront supprimés et seules les miniatures seront
  conservées.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">%d fichiers médias supprimés</string>
     <string name="storage_management">Gestion du stockage</string>
     <string name="media">Média</string>
     <string name="prefs_storage_mgmt_title">Vider les médias, fichiers et messages</string>
@@ -566,7 +569,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="invalid_data">Données invalides. Envoi impossible.</string>
     <string name="prefs_emoji_style">Style d\'émoticônes</string>
     <string name="prefs_android_emojis">Émoticônes système</string>
-    <string name="prefs_default_emojis">Émoticônes Threema (par défaut)</string>
+    <string name="prefs_default_emojis">Émoticônes LeOS-Messenger (par défaut)</string>
     <string name="android_emojis_warning">Remarque : le jeu de caractères système peut ne pas être capable d\'afficher toutes les émoticônes prises en charge par Threema.</string>
     <string name="crop">Rogner</string>
     <string name="scan_id_mismatch_title">Différence d\'ID</string>
@@ -583,18 +586,16 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="fontsize_large">Grande</string>
     <string name="fontsize_xlarge">Très grande</string>
     <string name="no_app_for_location">Aucune application de cartographie n\'a été trouvée sur cet appareil</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%d chat(s) supprimé(s)</string>
     <string name="prefs_sendlog">Envoyer le journal</string>
-    <string name="prefs_sendlog_summary">Envoyer le fichier journal à Threema pour une analyse approfondie en cas de problèmes</string>
+    <string name="prefs_sendlog_summary">Envoyer le fichier journal à LeOS-Messenger pour une analyse approfondie en cas de problèmes</string>
     <string name="prefs_exportlog">Exporter le journal</string>
     <string name="prefs_exportlog_summary">Partager le fichier journal avec une autre application</string>
-    <string name="permission_storage_required">Pour envoyer des médias, autorisez Threema à accéder à l\'espace de stockage.</string>
-    <string name="permission_location_required">Pour envoyer un emplacement, autorisez Threema à accéder à votre position.</string>
-    <string name="permission_contacts_required">Pour envoyer des contacts, autorisez Threema à accéder aux contacts.</string>
+    <string name="permission_storage_required">Pour envoyer des médias, autorisez LeOS-Messenger à accéder à l\'espace de stockage.</string>
+    <string name="permission_location_required">Pour envoyer un emplacement, autorisez LeOS-Messenger à accéder à votre position.</string>
+    <string name="permission_contacts_required">Pour envoyer des contacts, autorisez LeOS-Messenger à accéder aux contacts.</string>
     <string name="message_declined">« Désapprouver » envoyé</string>
     <string name="notifications_settings">Réglages des notifications</string>
     <string name="notifications_default">Réglages par défaut</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">Pendant %d heure(s)</string>
     <string name="notifications_until">Jusqu\'à %s</string>
     <string name="notifications_mute">Silencieux</string>
     <string name="notifications_choose_sound">Choisir le son</string>
@@ -611,7 +612,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="new_wizard_welcome">Bienvenue sur Threema</string>
     <string name="new_wizard_move_finger">Déplacez votre doigt sur l\'écran.</string>
     <string name="new_wizard_this_is_your_id">Voici votre ID Threema:</string>
-    <string name="new_wizard_works_like_phone_number">Votre ID Threema fonctionne comme un numéro de téléphone. Vos amis peuvent l\'utiliser pour vous joindre.</string>
+    <string name="new_wizard_works_like_phone_number">Votre ID LeOS-Messenger fonctionne comme un numéro de téléphone. Vos amis peuvent l\'utiliser pour vous joindre.</string>
     <string name="new_wizard_choose_nickname">Choisissez un surnom</string>
     <string name="new_wizard_nickname_explain">Vos amis verront votre surnom quand ils recevront un message.</string>
     <string name="new_wizard_hint_enter_nickname">Saisissez un surnom</string>
@@ -624,18 +625,19 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="new_wizard_sync_contacts_explain">Activez pour découvrir lesquels de vos amis utilisent Threema.</string>
     <string name="new_wizard_done_title">Terminé! Tout est correct ?</string>
     <string name="new_wizard_linked_to">Associé à</string>
-    <string name="new_wizard_need_internet">Une connexion Internet stable est requise pour créer votre ID Threema unique. Veuillez réessayer.</string>
+    <string name="new_wizard_need_internet">Une connexion Internet stable est requise pour créer votre ID LeOS-Messenger unique. Veuillez réessayer.</string>
     <string name="new_wizard_more_information">Plus d\'informations</string>
     <string name="contact_details_id_copied">ID copié dans le presse-papier</string>
     <string name="contact_details_nickname_copied">Surnom copié dans le presse-papier</string>
-    <string name="new_wizard_use_id_as_nickname">Voulez-vous utiliser votre ID Threema comme surnom?</string>
+    <string name="new_wizard_use_id_as_nickname">Voulez-vous utiliser votre ID LeOS-Messenger comme surnom?</string>
     <string name="new_wizard_phone_email_invalid">Le numéro de téléphone ou l\'adresse e-mail que vous avez saisi n\'est pas correct. Veuillez corriger ces informations avant de continuer.</string>
     <string name="new_wizard_phone_invalid">Le numéro de téléphone que vous avez saisi n’est pas correct. Veuillez le corriger avant de continuer.</string>
-    <string name="new_wizard_info_fingerprint">En déplaçant vos doigt, vous créez des données aléatoires (appelées entropie), qui sont utilisées pour générer une paire de clés associées à votre ID Threema unique.</string>
+    <string name="new_wizard_info_fingerprint">En déplaçant vos doigt, vous créez des données aléatoires (appelées entropie), qui sont utilisées pour générer une paire de clés associées à votre ID LeOS-Messenger unique.</string>
     <string name="new_wizard_info_id">Vous avez également créé une paire de clés. La clé publique a été transmise de façon sécurisée à nos serveurs. La clé privée ne quitte jamais votre appareil. Ceci assure que personne d\'autre ne peut lire vos messages.</string>
-    <string name="new_wizard_info_sync_contacts">Si vous activez cette option, Threema chiffrera de façon unidirectionnelle (hachage) les adresses e-mail et les numéros de téléphone avant de les envoyer au serveur pour chercher des contacts correspondants. Nous ne stockons pas les données du carnet d\'adresses.</string>
-    <string name="new_wizard_info_link">En nous donnant votre numéro de téléphone et votre adresse e-mail, nous pouvons aider vos amis à vous trouver automatiquement sur Threema. Ces informations seront stockées de façon sécurisée et anonyme. Si vous ignorez cette étape, vous utiliserez Threema de façon complètement anonyme.</string>
-    <string name="new_wizard_info_link_phone_only">En donnant votre numéro de téléphone, Theema peut aider vos amis à vous trouver automatiquement si vous vous trouvez dans leur carnet d’adresses. Le numéro sera stocké de manière chiffrée (hashée) sur notre serveur. Vous pouvez simplement passer cette étape si vous souhaitez utiliser Threema de manière complètement anonyme.</string>
+    <string name="new_wizard_info_sync_contacts">Si vous activez cette option, LeOS-Messenger chiffrera de façon unidirectionnelle (hachage) les adresses e-mail et les numéros de téléphone avant de les envoyer au serveur pour chercher des contacts correspondants. Nous ne stockons pas les données du carnet d\'adresses.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">La synchronisation des contacts peut vous aider à retrouver automatiquement vos amis. Si vous acceptez, les numéros de téléphone et les adresses e-mail de votre carnet d\'adresses seront chiffrés avant d\'être envoyés à notre serveur pour rechercher des contacts correspondants. Absolument aucune donnée ne sera stockée ou partagée.\n\nVoulez-vous activer la synchronisation des contacts ?</string>
+    <string name="new_wizard_info_link">En nous donnant votre numéro de téléphone et votre adresse e-mail, nous pouvons aider vos amis à vous trouver automatiquement sur Threema. Ces informations seront stockées de façon sécurisée et anonyme. Si vous ignorez cette étape, vous utiliserez LeOS-Messenger de façon complètement anonyme.</string>
+    <string name="new_wizard_info_link_phone_only">En donnant votre numéro de téléphone, Theema peut aider vos amis à vous trouver automatiquement si vous vous trouvez dans leur carnet d’adresses. Le numéro sera stocké de manière chiffrée (hashée) sur notre serveur. Vous pouvez simplement passer cette étape si vous souhaitez utiliser LeOS-Messenger de manière complètement anonyme.</string>
     <string name="new_wizard_info_nickname">Le surnom est utilisé dans les notifications push sur certains appareils, ou comme moyen supplémentaire de vous identifier auprès des utilisateurs dont vous n\'êtes pas encore dans le carnet d\'adresse. Nous vous recommandons de ne donner que votre prénom ou un pseudo. Si vous ne définissez pas de surnom, nous utiliserons par défaut votre ID Threema.</string>
     <string name="not_linked">non lié</string>
     <string name="linked">lié</string>
@@ -648,8 +650,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="status_ballot_user_modified_vote">« %1$s » a changé le vote pour « %2$s »</string>
     <string name="status_ballot_all_votes">Votes pour « %1$s » terminés</string>
     <string name="restore">Restaurer</string>
-    <string name="new_wizard_anonymous_confirm">Vous n\'avez saisi ni numéro de téléphone portable, ni adresse e-mail à associer à votre ID Threema. Vous n\'apparaîtrez pas dans la liste de contacts de vos amis. Voulez-vous vraiment utiliser Threema de façon complètement anonyme?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Vous n’avez saisi de numéro de téléphone portable à associer à votre ID Threema. Vous n’apparaîtrez pas dans les listes de contacts de vos amis. Voulez-vous vraiment utiliser Threema de façon anonyme ?</string>
+    <string name="new_wizard_anonymous_confirm">Vous n\'avez saisi ni numéro de téléphone portable, ni adresse e-mail à associer à votre ID Threema. Vous n\'apparaîtrez pas dans la liste de contacts de vos amis. Voulez-vous vraiment utiliser LeOS-Messenger de façon complètement anonyme?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Vous n’avez saisi de numéro de téléphone portable à associer à votre ID Threema. Vous n’apparaîtrez pas dans les listes de contacts de vos amis. Voulez-vous vraiment utiliser LeOS-Messenger de façon anonyme ?</string>
     <string name="new_wizard_scan_id_backup">Ou scannez le code QR de votre exportation d\'ID</string>
     <string name="error_saving_file">Erreur lors de l\'enregistrement du fichier. Vérifiez les permissions.</string>
     <string name="wait_one_minute">Veuillez patienter au moins 10 minutes que le SMS arrive avant de passer un appel.</string>
@@ -674,7 +676,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="prefs_proximity_sensor_explain">Utiliser l\'oreillette pour lire les messages vocaux si le détecteur de présence est couvert</string>
     <string name="error_creating_group">Erreur lors de la création/mise à jour du groupe</string>
     <string name="no_media_found_generic">Aucun fichier multimédia trouvé dans cette conversation</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Au maximum, %d éléments peuvent être modifiés à la fois</string>
+    <string name="max_images_reached">Au maximum, %d éléments peuvent être modifiés à la fois</string>
     <string name="enter_description">Veuillez décrire le bug/problème ici.</string>
     <string name="add_caption_hint">Ajouter une légende optionnelle</string>
     <string name="disable">Désactiver</string>
@@ -691,7 +693,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="lock_option_none">Aucun</string>
     <string name="lock_option_pin">NIP</string>
     <string name="lock_option_screenlock">Verrouillage d\'écran système</string>
-    <string name="hide_chat_message_explain">Threema vous permet de protéger certains chats avec un NIP et de les cacher temporairement de votre liste des messages. Pour activer les chats privés, veuillez définir un NIP ou activer le verrouillage d\'écran système (Android 6.0 ou supérieur) dans les paramètres.</string>
+    <string name="hide_chat_message_explain">LeOS-Messenger vous permet de protéger certains chats avec un NIP et de les cacher temporairement de votre liste des messages. Pour activer les chats privés, veuillez définir un NIP ou activer le verrouillage d\'écran système (Android 6.0 ou supérieur) dans les paramètres.</string>
     <string name="set_lock">Configurer maintenant</string>
     <string name="prefs_title_access_protection">Protection d\'accès</string>
     <string name="private_chat_subject">Privé</string>
@@ -713,16 +715,14 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="restore_disable_energy_saving">Veuillez brancher votre appareil au chargeur avant d\'engager la restauration. Désactivez toutes les options d\'économies d\'énergie pour empêcher votre appareil d\'interrompre le processus de restauration.</string>
     <string name="draft">Brouillon</string>
     <string name="prefs_bigger_single_emojis">Des émoticônes uniques plus gros</string>
-    <string name="wizard1_sync_work">Synchronisation des données Threema Work...</string>
+    <string name="wizard1_sync_work">Synchronisation des données LeOS-Messenger Work…</string>
     <string name="notification_hidden_text">Contenus masqués</string>
     <string name="really_reset_ringtones">Vraiment réinitialiser les paramètres sonores des notifications ?</string>
     <string name="reset_ringtones_confirm">Les paramètres sonores des notifications ont été réinitialisés.</string>
     <string name="prefs_language_override">Langue</string>
-    <string name="threema_channel_intro">La chaîne Threema vous donne des actualités sur tout ce qui concerne Threema. Voulez-vous ajouter la chaîne Threema à vos contacts ?</string>
+    <string name="threema_channel_intro">La chaîne LeOS-Messenger vous donne des actualités sur tout ce qui concerne Threema. Voulez-vous ajouter la chaîne LeOS-Messenger à vos contacts ?</string>
     <string name="quote">Citation</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Voulez-vous vraiment supprimer %1$d contacts et tous les chats associés ?</string>
     <string name="contacts_deleted">Les contacts ont été supprimés</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d contacts n\'ont pas pu être supprimés car ils font toujours partie d\'un groupe</string>
     <string name="take_photo">Prendre une photo</string>
     <string name="select_from_gallery">Sélectionner depuis la galerie</string>
     <string name="palette">Palette</string>
@@ -739,7 +739,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="battery_optimizations_disable_guide_ctd">Cherchez %s dans la liste et désactivez l\'optimisation</string>
     <string name="battery_optimizations_disable_confirm">Voulez-vous vraiment conserver l\'optimisation de batterie pour %1$s ? %2$s ne fonctionnera pas correctement.</string>
     <string name="enter_text_hint">Saisir du texte</string>
-    <string name="backup_explain_text">Si vous changez d\'appareil ou perdez votre appareil, il sera impossible de restaurer votre ID Threema ou vos conversations si vous n\'avez pas de sauvegarde. Veuillez sauvegarder vos données en utilisant les options de sauvegarde adéquates.</string>
+    <string name="backup_explain_text">Si vous changez d\'appareil ou perdez votre appareil, il sera impossible de restaurer votre ID LeOS-Messenger ou vos conversations si vous n\'avez pas de sauvegarde. Veuillez sauvegarder vos données en utilisant les options de sauvegarde adéquates.</string>
     <string name="data_backup_explain">Les sauvegardes de données contiennent :\n\n&#9679; Votre identifiant et votre paire de clés\n&#9679; Contacts et niveaux de confiance\n&#9679; Adhésions à des groupes\n&#9679; Conversations\n&#9679; Fichiers et fichiers multimédias (facultatif)\n\nLes données seront enregistrées dans un fichier ZIP chiffré. Il est recommandé de retirer le fichier de votre appareil quand la sauvegarde est terminée.</string>
     <string name="draw">Dessin</string>
     <string name="edit">Modifier</string>
@@ -749,8 +749,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="prefs_ipv6_preferred_off">Utiliser des connexions IPv4 uniquement</string>
     <string name="prefs_ipv6_preferred_on">Préférer les connexions IPv6 plutôt que IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 pour les appels et le web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Autoriser IPv6 pour les appels Threema et le web Threema</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Annuler l\'autorisation d\'IPv6 pour les appels Threema et le web Threema</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Autoriser IPv6 pour les appels LeOS-Messenger et le web Threema</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Annuler l\'autorisation d\'IPv6 pour les appels LeOS-Messenger et le web Threema</string>
     <string name="ipv6_requires_restart">Pour appliquer ce paramètre, l\'application doit redémarrer.</string>
     <string name="ipv6_restart_now">Redémarrer maintenant</string>
     <string name="on_cap">Activé</string>
@@ -776,8 +776,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="menu_send_profilpic_off">Retirer des destinataires d\'image de profil</string>
     <string name="menu_send_profilpic_now">Envoyer l\'image de profil maintenant</string>
     <string name="profile_picture_sent">Image de profil envoyée</string>
-    <string name="sending_messages">Envoi...</string>
-    <string name="backup_data_media_confirm">Enregistrer de gros fichiers média dans une sauvegarde ZIP locale peut dépasser les capacités CPU et de mémoire de votre appareil et prendre beaucoup de temps. Threema n\'enverra pas et ne recevra pas de message pendant l\'exécution de la sauvegarde. Continuer ?</string>
+    <string name="sending_messages">Envoi…</string>
+    <string name="backup_data_media_confirm">Enregistrer de gros fichiers média dans une sauvegarde ZIP locale peut dépasser les capacités CPU et de mémoire de votre appareil et prendre beaucoup de temps. LeOS-Messenger n\'enverra pas et ne recevra pas de message pendant l\'exécution de la sauvegarde. Continuer ?</string>
     <string name="backup_data_cancelled">Sauvegarde annulée</string>
     <string name="service_manager_not_available">Base de données endommagée ou données incomplètes. Lancement impossible.</string>
     <string name="message_sent">Message envoyé</string>
@@ -786,24 +786,24 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="threema_call_with">Appeler %s</string>
     <string name="prefs_title_voip">Appel Threema</string>
     <string name="prefs_title_force_turn">Transmettre tous les appels</string>
-    <string name="prefs_summary_force_turn_off">Établir une connexion directe, si possible, et transmettre via les serveurs Threema uniquement les appels vers des contacts non vérifiés. Cela pourrait exposer votre adresse IP.</string>
-    <string name="prefs_summary_force_turn_on">Transmettre tous les appels via les serveurs Threema pour protéger votre adresse IP. Cela peut affecter la qualité de l\'appel.</string>
-    <string name="permission_record_audio_required">Pour passer des appels cryptés et envoyer des messages vocaux, veuillez autoriser Threema à accéder à votre microphone.</string>
+    <string name="prefs_summary_force_turn_off">Établir une connexion directe, si possible, et transmettre via les serveurs LeOS-Messenger uniquement les appels vers des contacts non vérifiés. Cela pourrait exposer votre adresse IP.</string>
+    <string name="prefs_summary_force_turn_on">Transmettre tous les appels via les serveurs LeOS-Messenger pour protéger votre adresse IP. Cela peut affecter la qualité de l\'appel.</string>
+    <string name="permission_record_audio_required">Pour passer des appels cryptés et envoyer des messages vocaux, veuillez autoriser LeOS-Messenger à accéder à votre microphone.</string>
     <string name="prefs_voice_call_notifications">Appels vocaux</string>
     <string name="prefs_voice_call_sound">Sonnerie</string>
-    <string name="prefs_sum_voice_call_sound">Choisissez une sonnerie pour les appels Threema entrants</string>
-    <string name="prefs_sum_voice_call_vibrate">Vibrations en cas d\'appels Threema entrants</string>
+    <string name="prefs_sum_voice_call_sound">Choisissez une sonnerie pour les appels LeOS-Messenger entrants</string>
+    <string name="prefs_sum_voice_call_vibrate">Vibrations en cas d\'appels LeOS-Messenger entrants</string>
     <string name="prefs_title_voip_enable">Activer les appels Threema</string>
     <string name="webclient_invalid_push_token_message">Démarrage manuel requis</string>
-    <string name="threema_work_contact">Contact Threema Work</string>
+    <string name="threema_work_contact">Contact LeOS-Messenger Work</string>
     <string name="permission_phone_required">Autoriser la gestion des appels sur le téléphone lors de l\'utilisation d\'Appel Threema</string>
     <string name="strikethrough">Barré</string>
     <string name="italic">Italique</string>
     <string name="bold">Gras</string>
-    <string name="shortcut_choice_title">Créer un raccourci pour un(e)...</string>
+    <string name="shortcut_choice_title">Créer un raccourci pour un(e)…</string>
     <string name="prefs_title_device_info">Informations de l\'appareil</string>
     <string name="notifications_disabled_title">Notifications désactivées</string>
-    <string name="notifications_disabled_text">Les notifications Threema ont été désactivées dans les paramètres du système. Vous ne recevrez pas de notification en cas de nouveaux messages.</string>
+    <string name="notifications_disabled_text">Les notifications LeOS-Messenger ont été désactivées dans les paramètres du système. Vous ne recevrez pas de notification en cas de nouveaux messages.</string>
     <string name="notifications_disabled_settings">Modifier paramètres du système</string>
     <string name="error_attaching_files">L\'ajout de pièces jointes a échoué</string>
     <string name="prefs_fix_powermanager_problems">Résoudre les problèmes Huawei</string>
@@ -830,7 +830,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="prefs_auto_download_title">Télécharger automatiquement les médias</string>
     <string name="prefs_auto_download_wifi">En Wi-Fi</string>
     <string name="prefs_auto_download_mobile">Avec les données mobiles</string>
-    <string name="rate_intro">Comment noteriez-vous Threema ?</string>
+    <string name="rate_intro">Comment noteriez-vous LeOS-Messenger ?</string>
     <string name="rate_feedback_intro">Merci de nous indiquer ce que nous pourrions faire pour nous améliorer (facultatif).</string>
     <string name="rate_positive">Envoyer l\'avis</string>
     <string name="rate_title">Noter Threema</string>
@@ -844,14 +844,13 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="plus">Plus</string>
     <string name="switched_off">Désactivée</string>
     <string name="switched_on">Activée</string>
-    <string name="title_tab_work_users">Utilisateurs Threema Work</string>
+    <string name="title_tab_work_users">Utilisateurs LeOS-Messenger Work</string>
     <string name="no_matching_work_contacts">Aucun contact Theema Work vérifié par un administrateur n\'a été trouvé</string>
     <string name="all">Tout</string>
     <string name="webclient_session_stop_all">Tout fermer</string>
-    <string name="webclient_running_sessions">%d session(s) active(s)</string>
     <string name="passphrase_service_name">Service de phrase secrète</string>
     <string name="passphrase_service_description">Une notification lorsque la phrase secrète est déverrouillée</string>
-    <string name="webclient_service_description">Une notification lorsqu\'une session Threema Web est active</string>
+    <string name="webclient_service_description">Une notification lorsqu\'une session LeOS-Messenger Web est active</string>
     <string name="prefs_title_accept_privacy_policy">Accepter la Politique de confidentialité</string>
     <string name="privacy_policy_explain">%1$s protège votre vie privée plus rigoureusement que toute autre messagerie. Vous pouvez en savoir plus dans notre %2$s.</string>
     <string name="privacy_policy_check_confirm">Pour utiliser %s, veuillez accepter la Politique de confidentialité.\n\n(Cela est exigé conformément à la réglementation européenne 2016/679)</string>
@@ -866,41 +865,41 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="password_too_short_generic">Mot de passe trop court</string>
     <string name="passwords_dont_match">Mots de passe non identiques</string>
     <string name="test_unsuccessful">Test échoué</string>
-    <string name="preparing_threema_safe">Préparation de Threema Safe</string>
+    <string name="preparing_threema_safe">Préparation de LeOS-Messenger Safe</string>
     <string name="disable_powermanager_title">Restrictions de puissance</string>
     <string name="disable_autostart_title">Lancement auto</string>
     <string name="unchanged">non modifié(e)</string>
     <string name="safe_learn_more_button">En savoir plus</string>
-    <string name="safe_enable_explain">Tout ce qu\'il vous faut pour discuter n\'est stocké que sur votre appareil. Vous n\'avez pas de compte enregistré chez nous et nous ne pouvons pas vous aider si vous perdez votre téléphone ou si vous supprimez vos données par mégarde.\n\nThreema Safe crée des sauvegardes automatiques de toutes les données importantes, y compris vos clés, votre liste de contacts et vos abonnements de groupes (mais aucun contenu de messages), et ce de manière anonyme sur un serveur sécurisé de votre choix.</string>
-    <string name="safe_disable_confirm">Voulez-vous vraiment continuer sans activer Threema Safe ?</string>
-    <string name="safe_configure_choose_password">Veuillez choisir un mot de passe. Celui-ci sera nécessaire pour restaurer votre sauvegarde Threema Safe.</string>
-    <string name="safe_configure_choose_server">Choisir un serveur Threema Safe</string>
-    <string name="safe_configure_server_explain">Vous pouvez utiliser le serveur de Threema ou spécifier un serveur de sauvegarde tiers.</string>
+    <string name="safe_enable_explain">Tout ce qu\'il vous faut pour discuter n\'est stocké que sur votre appareil. Vous n\'avez pas de compte enregistré chez nous et nous ne pouvons pas vous aider si vous perdez votre téléphone ou si vous supprimez vos données par mégarde.\n\nLeOS-Messenger Safe crée des sauvegardes automatiques de toutes les données importantes, y compris vos clés, votre liste de contacts et vos abonnements de groupes (mais aucun contenu de messages), et ce de manière anonyme sur un serveur sécurisé de votre choix.</string>
+    <string name="safe_disable_confirm">Voulez-vous vraiment continuer sans activer LeOS-Messenger Safe ?</string>
+    <string name="safe_configure_choose_password">Veuillez choisir un mot de passe. Celui-ci sera nécessaire pour restaurer votre sauvegarde LeOS-Messenger Safe.</string>
+    <string name="safe_configure_choose_server">Choisir un serveur LeOS-Messenger Safe</string>
+    <string name="safe_configure_server_explain">Vous pouvez utiliser le serveur de LeOS-Messenger ou spécifier un serveur de sauvegarde tiers.</string>
     <string name="safe_use_default_server">Utiliser le serveur par défaut</string>
     <string name="safe_test_server">Serveur de test</string>
     <string name="safe_advanced_options">Paramètres d\'expert</string>
-    <string name="safe_enter_password">Veuillez saisir votre mot de passe Threema Safe</string>
+    <string name="safe_enter_password">Veuillez saisir votre mot de passe LeOS-Messenger Safe</string>
     <string name="safe_threema_id">Votre ID Threema</string>
-    <string name="safe_restore_enter_id">Veuillez saisir l\'ID Threema que vous voudriez récupérer</string>
+    <string name="safe_restore_enter_id">Veuillez saisir l\'ID LeOS-Messenger que vous voudriez récupérer</string>
     <string name="safe_search_id_title">Veuillez saisir le numéro de mobile ou l\'adresse e-mail lié(e) à votre ID</string>
     <string name="safe_id_lookup">Recherche de l\'ID Threema</string>
-    <string name="safe_no_id_found">Aucun ID Threema trouvé</string>
+    <string name="safe_no_id_found">Aucun ID LeOS-Messenger trouvé</string>
     <string name="safe_no_backup_found">Aucune sauvegarde trouvée sur le serveur. Vérifiez l\'ID et le mot de passe.</string>
-    <string name="safe_select_id">Plusieurs ID Threema trouvés. Veuillez sélectionner l\'ID à utiliser :</string>
+    <string name="safe_select_id">Plusieurs ID LeOS-Messenger trouvés. Veuillez sélectionner l\'ID à utiliser :</string>
     <string name="safe_backup_now">Sauvegarder maintenant</string>
-    <string name="safe_enable_explain_short">Activez Threema Safe pour créer des sauvegardes automatiques, sécurisées et anonymes de toutes vos données importantes.</string>
-    <string name="safe_deleting">Suppression de la sauvegarde Threema Safe</string>
+    <string name="safe_enable_explain_short">Activez LeOS-Messenger Safe pour créer des sauvegardes automatiques, sécurisées et anonymes de toutes vos données importantes.</string>
+    <string name="safe_deleting">Suppression de la sauvegarde LeOS-Messenger Safe</string>
     <string name="safe_delete_error">Erreur lors de suppression de la sauvegarde : %s</string>
     <string name="safe_delete_success">Sauvegarde bien supprimée du serveur</string>
-    <string name="safe_error_preparing">Erreur lors de la préparation de la sauvegarde Threema Safe</string>
-    <string name="safe_configure_choose_password_force">Veuillez définir un mot de passe robuste pour sécuriser votre ID Threema avec Threema Safe. N\'oubliez pas ce que vous saisissez ici !</string>
-    <string name="safe_deactivate">Désactiver Threema Safe</string>
-    <string name="safe_deactivate_explain">Si vous désactivez Threema Safe, toute sauvegarde existante sera supprimée du serveur. Continuer ?</string>
+    <string name="safe_error_preparing">Erreur lors de la préparation de la sauvegarde LeOS-Messenger Safe</string>
+    <string name="safe_configure_choose_password_force">Veuillez définir un mot de passe robuste pour sécuriser votre ID LeOS-Messenger avec LeOS-Messenger Safe. N\'oubliez pas ce que vous saisissez ici !</string>
+    <string name="safe_deactivate">Désactiver LeOS-Messenger Safe</string>
+    <string name="safe_deactivate_explain">Si vous désactivez LeOS-Messenger Safe, toute sauvegarde existante sera supprimée du serveur. Continuer ?</string>
     <string name="add_group_members">Nouveau membre</string>
     <string name="contact_add_confirm">Voulez-vous ajouter le nouveau contact « %1$s » à votre liste de contacts ?</string>
     <string name="password_bad">Mot de passe faible</string>
     <string name="prefs_fix_background_data">Activer Données en arrière-plan</string>
-    <string name="prefs_fix_background_data_desc">Pour recevoir des messages lorsque Threema est en arrière-plan, veuillez activer à la fois l\'option Données en arrière-plan et l\'option Conso. données non restreinte</string>
+    <string name="prefs_fix_background_data_desc">Pour recevoir des messages lorsque LeOS-Messenger est en arrière-plan, veuillez activer à la fois l\'option Données en arrière-plan et l\'option Conso. données non restreinte</string>
     <string name="prefs_fix_device">Résoudre les problèmes de configuration de l\'appareil</string>
     <string name="safe_successful">Succès</string>
     <string name="safe_unsuccessful">Échec</string>
@@ -914,10 +913,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="number_of_days">%d jours</string>
     <string name="backup_other_restore_options">Autres options de restauration</string>
     <string name="safe_size">Taille de la sauvegarde</string>
-    <string name="safe_version_mismatch">La version de cette sauvegarde est plus récente que la version prise en charge. Veuillez passer à la dernière version de l\'application.</string>
+    <string name="backup_version_mismatch">La version de cette sauvegarde est plus récente que la version prise en charge. Veuillez passer à la dernière version de l\'application.</string>
     <string name="safe_restore_failed">Échec de restauration</string>
-    <string name="safe_failed_notification">La sauvegarde Threema Safe a échoué pendant %d jours consécutifs. Touchez ici pour vérifier.</string>
-    <string name="safe_restore">Restaurer Threema Safe</string>
+    <string name="safe_failed_notification">La sauvegarde LeOS-Messenger Safe a échoué pendant %d jours consécutifs. Touchez ici pour vérifier.</string>
+    <string name="safe_restore">Restaurer LeOS-Messenger Safe</string>
     <string name="backup_restore_in_progress">Sauvegarde ou restauration en cours. Consultez la notification pour voir les informations d\'état.</string>
     <string name="restore_error_body">La restauration n\'a pas été finalisée</string>
     <string name="forgot_your_id">ID oublié ?</string>
@@ -925,8 +924,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="work_data_sync">Synchronisation des données</string>
     <string name="private_contact">Contact privé</string>
     <string name="ringtone_selection_default">Par défaut (%s)</string>
-    <string name="work_data_sync_desc">Synchronisation Threema Work</string>
-    <string name="ballot_not_connected">Veuillez vous assurer que Threema est en ligne avant de fermer une enquête.</string>
+    <string name="work_data_sync_desc">Synchronisation LeOS-Messenger Work</string>
+    <string name="ballot_not_connected">Veuillez vous assurer que LeOS-Messenger est en ligne avant de fermer une enquête.</string>
     <string name="empty_chat_title">Vider le chat</string>
     <string name="empty_chat_confirm">Tous les messages de ce chat seront supprimés. Continuer ?</string>
     <string name="emptying_chat">Vidange du chat en cours…</string>
@@ -940,21 +939,21 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="notification_channel_notices">Avis</string>
     <string name="chat_updates">Mises à jour de chat</string>
     <string name="backup_or_restore_progress">Progression de la sauvegarde ou de la restauration</string>
-    <string name="tooltip_export_id">Touchez ici pour partager ou imprimer votre ID Threema chiffré maintenant</string>
+    <string name="tooltip_export_id">Touchez ici pour partager ou imprimer votre ID LeOS-Messenger chiffré maintenant</string>
     <string name="downloading">Téléchargement</string>
     <string name="today">Aujourd\'hui</string>
     <string name="restore_data_cancelled">Restauration annulée</string>
     <string name="safe_change_password">Changer le mot de passe</string>
     <string name="safe_configure_choose_password_title">Choisir un mot de passe</string>
-    <string name="password_bad_explain">Le mot de passe sélectionné pour Threema Safe n\'est pas sécurisé et peut facilement être deviné par les pirates. Veuillez en choisir un autre. Astuce : utilisez un mot de passe composé de plusieurs mots individuels.</string>
-    <string name="safe_password_updated">Le mot de passe Threema Safe a été mis à jour.</string>
-    <string name="safe_activated">Threema Safe est maintenant activé.</string>
+    <string name="password_bad_explain">Le mot de passe sélectionné pour LeOS-Messenger Safe n\'est pas sécurisé et peut facilement être deviné par les pirates. Veuillez en choisir un autre. Astuce : utilisez un mot de passe composé de plusieurs mots individuels.</string>
+    <string name="safe_password_updated">Le mot de passe LeOS-Messenger Safe a été mis à jour.</string>
+    <string name="safe_activated">LeOS-Messenger Safe est maintenant activé.</string>
     <string name="restore_zip_invalid_file">Erreur de compression : fichier de sauvegarde invalide ou mot de passe incorrect.</string>
     <string name="push_token_cleared">Le jeton push a été effacé</string>
     <string name="insert_date">Insérer la date</string>
     <string name="add_answer">Ajouter une réponse</string>
     <string name="title_cannot_be_empty">Le titre du sondage ne peut pas être vide</string>
-    <string name="voip_disabled">Les appels Threema sont désactivés</string>
+    <string name="voip_disabled">Les appels LeOS-Messenger sont désactivés</string>
     <string name="hide_chat_enter_message_explain">Ce chat est marqué comme privé. Pour y accéder, veuillez d\'abord configurer la protection d\'accès.</string>
     <string name="unknown">Inconnu</string>
     <string name="miui_notification_title">Avis important sur les notifications sur MIUI</string>
@@ -962,7 +961,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="miui12_notification_body">MIUI 10 désactive par défaut le son, les lumières et les notifications flottantes pour toutes les applications par défaut (à l\'exception de quelques applications populaires considérées comme « importantes » par Xiaomi). Vous allez devoir activer manuellement ces paramètres depuis l\'écran de réglages de notifications spécifiques à l\'app dans votre téléphone et répéter ce processus après chaque mise à jour de l\'application. Contactez Xiaomi pour plus d\'informations.</string>
     <string name="dont_show_again">Ne plus afficher</string>
     <string name="miui_notification_prefs">Réglages MIUI</string>
-    <string name="threema_safe_upload_successful">Sauvegarde Threema Safe bien transférée</string>
+    <string name="threema_safe_upload_successful">Sauvegarde LeOS-Messenger Safe bien transférée</string>
     <string name="time_remaining">Il reste %s</string>
     <string name="safe_configure_server_credentials_title">Authentification (facultatif)</string>
     <string name="username_hint">Nom d\'utilisateur</string>
@@ -971,7 +970,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="biometric_enter_authentication">Pour déverrouiller, veuillez vous authentifier</string>
     <string name="biometric_authentication_failed">Authentification échouée</string>
     <string name="biometric_authentication_successful">Authentification réussie</string>
-    <string name="work_safe_forced_explain">Vous administrateur a activé Threema Safe pour votre appareil.</string>
+    <string name="work_safe_forced_explain">Vous administrateur a activé LeOS-Messenger Safe pour votre appareil.</string>
     <string name="pin_locked_cannot_send">L\'application est verrouillée. Envoi impossible.</string>
     <string name="prefs_summary_hide_screenshots_notice">Remarque : pour des raisons de confidentialité, les vignettes et captures d\'écran sont toujours bloqués lorsque la protection de l\'application est activée.</string>
     <string name="work_select_categories">Sélectionner des catégories</string>
@@ -981,7 +980,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="advanced_options">Options avancées</string>
     <string name="url_warning_body">Le nom de domaine du lien que vous êtes sur le point d\'ouvrir est suspect :\n\nNom de domaine affiché : <b>%s</b>\nNom de domaine réel : <b>%s</b>\n\nIl pourrait s\'agir d\'une tentative d\'incitation à ouvrir un site susceptible d\'être différent de ce qu\'il prétend.\n\nSouhaitez-vous continuer malgré tout ?</string>
     <string name="url_warning_title">Alerte hameçonnage</string>
-    <string name="permission_camera_qr_required">Pour scanner les codes QR, Threema doit accéder à l\'appareil photo</string>
+    <string name="permission_camera_qr_required">Pour scanner les codes QR, LeOS-Messenger doit accéder à l\'appareil photo</string>
     <string name="voice_action_title">Commandes vocales</string>
     <string name="voice_action_body">La commande vocale est en cours de traitement</string>
     <string name="permission_camera_photo_required">Pour prendre une photo, veuillez autoriser l\'accès à l\'appareil photo</string>
@@ -1001,11 +1000,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="data_backup_last_date">Dernière sauvegarde de données réussie</string>
     <string name="archived">Archivé(es)</string>
     <string name="to_archive">Archiver</string>
-    <string name="message_archived">%d chat(s) archivé(s)</string>
     <string name="archived_chats">Chats archivés</string>
     <string name="unarchive">Ne plus archiver</string>
     <string name="no_archived_chats">Aucun chat archivé.\nPour archiver un chat, faites-le glisser vers la gauche dans la liste des messages</string>
-    <string name="add_contact_enter_id_hint">Veuillez entrer l\'ID Threema du contact que vous voudriez ajouter</string>
+    <string name="add_contact_enter_id_hint">Veuillez entrer l\'ID LeOS-Messenger du contact que vous voudriez ajouter</string>
     <string name="notification_channel_new_contact">Nouveaux contacts</string>
     <string name="notification_channel_new_contact_desc">Notification sur les nouveaux contacts</string>
     <string name="notification_contact_has_joined">%1$s a rejoint %2$s. Appuyez ici pour envoyer un message.</string>
@@ -1013,32 +1011,20 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="system_default">Paramètre système par défaut</string>
     <string name="open_in_maps_app">Ouvrir dans l\'app de cartes</string>
     <string name="delete">Supprimer</string>
-    <string name="num_archived_chats">%d chats archivés</string>
     <string name="continue_recording">Continuer l\'enregistrement</string>
-    <string name="whatsnew_title">Bienvenue dans %1$s %2$s</string>
+    <string name="whatsnew_title">Nouveau: Appels de groupe %1$s</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p><b>De nouvelles fonctionnalités dans cette version de %s pour Android :</b></p>
-		<p>
-		&bull; De nouvelles émoticônes conformément au standard Unicode 13.1. 😵‍💫❤️‍🔥
-		</p><p>
-		&bull; Recherchez des émoticônes par nom ou signification (disponible en 17 langues).
-		</p><p>
-		&bull; Des couleurs déterministes pour les contacts et les groupes qui n\'ont pas leurs propres images de profil. Ces nouvelles couleurs fonctionneront sur l\'intégralité des plateformes et des appareils.
-		</p><p>
-		&bull; Une navigation plus fluide dans de nombreuses listes.
-		</p><p>
-		&bull; Une disposition améliorée pour l\'éditeur média. Augmentation du nombre d\'éléments média pouvant être modifiés avant l\'envoi à 256.
-		</p><p>
-		&bull; De nombreuses améliorations mineures et de corrections de bugs.
-		</p>
-		]]></string>
+		<p>Les appels de groupe chiffrés de bout en bout sont désormais disponibles dans %1$s pour Android.</p>
+		<p>Pour lancer un appel, ouvrez un chat de groupe et appuyez sur le bouton de la caméra en haut.</p>
+		<p>Tous les membres du groupe recevront une notification et pourront décider s\'ils veulent se joindre à l\'appel ou non.</p>
+		<p><b>Veuillez noter :</b> pour iOS, la fonctionnalité d\'appel de group call feature sera lancée ultérieurement.</p> ]]></string>
     <string name="tap_to_start">Touchez ici pour lancer %s maintenant.</string>
     <string name="two_years">2 ans</string>
     <string name="invalid_backup_path">Chemin de sauvegarde invalide</string>
     <string name="backup_data_no_permission">Impossible d\'écrire dans ce répertoire. Veuillez en choisir un autre.</string>
     <string name="prefs_sum_show_unread_badge">Afficher un badge indiquant le nombre de messages non lus à côté de l\'icône des messages</string>
     <string name="prefs_title_show_unread_badge">Badge de messages non lus</string>
-    <string name="pinning_not_trusted">Échec du pinning du certificat. Veuillez vérifier si le certificat «Entrust Root Certification Authority - G2» est installé et activé dans l\'espace de stockage des identifiants de votre appareil.</string>
+    <string name="pinning_not_trusted">Échec du pinning du certificat. Veuillez vérifier si le certificat « Entrust Root Certification Authority - G2 » est installé et activé dans l’espace de stockage des identifiants de votre appareil.</string>
     <string name="pinning_failed">Échec du pinning du certificat. Attaque du type Man-in-the-middle possible. Si vous avez installé un bloqueur de publicité, un filtre de contenu ou une application de pare-feu comme « AdGuard », veuillez le désactiver pour Threema.</string>
     <string name="open_myid_popup">Ouvrir la fenêtre popup d\'accès rapide</string>
     <string name="logo">Logo/Défiler vers le haut</string>
@@ -1050,7 +1036,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="and">et</string>
     <string name="edit_type_content_description">Voir ou modifier %1$s %2$s</string>
     <string name="group">Groupe</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Notre politique de confidentialité a été mise à jour pour refléter le changement suivant:</p><p>%1$s ne dépend plus de Google Play et Google Maps pour fournir des cartes et des données de POI.</p>Veuillez vérifier la politique de confidentialité <a href="%2$s"> ici</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Services Play non installés. Impossible de basculer en Google FCM ou HMS push.</string>
     <string name="unable_to_get_current_location">Impossible de déterminer l\'emplacement actuel.</string>
     <string name="lp_search_place_min_chars">Veuillez saisir au moins trois caractères pour rechercher un lieu.</string>
@@ -1063,7 +1048,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="mime_type">Type MIME</string>
     <string name="password_does_not_comply">Le mot de passe ne répond pas aux directives définies par l\'administrateur.</string>
     <string name="audio_mute_due_to_focus_loss">L\'audio a été coupé temporairement à cause d\'une perte d\'exclusivité</string>
-    <string name="restore_data_backup_explain">Pour restaurer une sauvegarde de données, supprimez d\'abord votre ID Threema sur l\'écran \"Mon profil\".\n\nLorsque l\'application se relance, choisissez « Restaurer depuis la sauvegarde », « Autres options de restauration », « Sauvegarde de données » puis sélectionnez le fichier de sauvegarde de données que vous souhaitez restaurer.</string>
+    <string name="restore_data_backup_explain">Pour restaurer une sauvegarde de données, supprimez d’abord votre ID LeOS-Messenger sur l’écran « Mon profil ».\n\nLorsque l’application se relance, choisissez « Restaurer depuis la sauvegarde », « Autres options de restauration », « Sauvegarde de données » puis sélectionnez le fichier de sauvegarde de données que vous souhaitez restaurer.</string>
     <string name="audio_focus_loss_complete">Appel interrompu à cause d\'une perte complète de l\'exclusivité audio.</string>
     <string name="tap_for_picture_hold_for_video">Touchez pour une image, maintenez pour une vidéo</string>
     <string name="sending_media">Envoi des médias</string>
@@ -1088,14 +1073,14 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="safe_backup_tap_to_restart">Tapez sur la notification pour redémarrer l\'application maintenant.</string>
     <string name="send_to_support">Envoyer à l’assistance de Threema</string>
     <string name="menu_legal">Mentions légales</string>
-    <string name="tooltip_work_hint">Ce contact utilise Threema Work.</string>
+    <string name="tooltip_work_hint">Ce contact utilise LeOS-Messenger Work.</string>
     <string name="video_camera_on">Caméra vidéo activée</string>
     <string name="video_camera_off">Caméra vidéo désactivée</string>
     <string name="enable_picture_in_picture">Lancer le mode image incrustée</string>
     <string name="call_with">Appeler %s</string>
     <string name="picture_in_picture_disabled_in_setting">Le mode image incrustée est désactivé pour %s. Veuillez l\'activer depuis les paramètres système.</string>
     <string name="delete_everything">Tout supprimer</string>
-    <string name="prefs_title_voip_video_enable">Activer les appels vidéo Threema</string>
+    <string name="prefs_title_voip_video_enable">Autoriser la vidéo</string>
     <string name="video_calls">Appels vidéo Threema</string>
     <string name="prefs_videocall_profile">Qualité d\'image préférée</string>
     <string name="videocall_profile_auto">Équilibrée (recommandée)</string>
@@ -1113,6 +1098,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="translators_thanks">Un grand merci à nos traducteurs bénévoles :\n%s</string>
     <string name="ballot_window_hide">Masquer les sondage ouverts</string>
     <string name="ballot_window_show">Afficher les sondages ouverts</string>
+    <string name="single_ballot_really_delete">Retirer cette enquête</string>
+    <string name="single_ballot_really_delete_text">Voulez-vous vraiment supprimer cette enquête ? Vous ne pourrez pas récupérer les votes.</string>
     <string name="tooltip_voip_other_party_video_on">L\'autre partie a commencé un appel vidéo. Touchez ici pour activer aussi votre caméra.</string>
     <string name="tooltip_voip_other_party_video_disabled">L\'autre partie n\'a pas une version actuelle de l\'application ou n\'autorise pas les appels vidéo.</string>
     <string name="biometrics_not_enrolled">Aucune donnée biométrique n\'est inscrite dans le système.</string>
@@ -1179,7 +1166,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="transcoder_unsupported_audio_format">Impossible de transcoder l\'audio à cause de l\'absence de prise en charge par le système.</string>
     <string name="transcoder_unknown_audio_error">Erreur inconnue lors du transcodage de l\'audio.</string>
     <string name="video_size_explain">Les vidéos de très grande taille pourraient être compressées indépendamment du paramètre.</string>
-    <string name="status_create_notes">*Vous êtes seul ici* \nUtilisez ce chat comme un carnet de notes sécurisé pour textes, médias ou documents.</string>
+    <string name="status_create_notes">*Vous êtes le seul membre de ce groupe*\nUtilisez ce chat comme un carnet de notes sécurisé pour textes, médias ou documents.</string>
     <string name="status_create_notes_off">*Vous n’êtes plus seul dans ce chat* \nLes nouveaux messages seront envoyés à tous les membres du groupe.</string>
     <string name="note_group_howto">Astuce : si vous n’ajoutez aucun membre à ce groupe, les messages envoyés à ce groupe resteront locaux. C’est idéal pour enregistrer des notes, médias et documents ou pour les transférer vers un ordinateur.</string>
     <string name="mark_unread">Marque comme non lu</string>
@@ -1199,9 +1186,9 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="reject">Refuser</string>
     <string name="group_request_already_sent"><![CDATA[Vous avez déjà envoyé une demande d\'adhésion au groupe <b>%s</b> à travers ce lien. Cliquez sur la demande pour l\'envoyer de nouveau.]]></string>
     <string name="group_link_none">Encore aucun lien généré</string>
-    <string name="group_request_confirm_send"><![CDATA[Vous êtes sur le point d\'envoyer une demande d\'adhésion au groupe <b>%1$s</b> à l\'administrateur <b>%2$s</b>. Si ce lien n\'a pas été désactivé, vous serez automatiquement ajouté au groupe dès que l\'appareil de l\'administrateur aura reçu votre demande.]]></string>
-    <string name="really_delete_outgoing_request">Voulez-vous vraiment supprimer %d demande(s) d\'adhésion à un groupe ? Veuillez garder à l\'esprit que la demande ne sera pas révoquée et que vous pourrez quand même être accepté ou refusé même si la demande n\'a pas encore reçu de réponse.</string>
-    <string name="really_delete_group_request_title">Supprimer vraiment la demande d\'adhésion au groupe</string>
+    <string name="group_request_confirm_send"><![CDATA[Vous êtes sur le point d’envoyer une demande d’adhésion au groupe <b>%1$s</b> à l’administrateur <b>%2$s</b>. Si ce lien n’a pas été désactivé, vous serez automatiquement ajouté au groupe dès que l\'appareil de l’administrateur aura reçu votre demande.]]></string>
+    <string name="really_delete_group_request_title_singular">Supprimer la demande de groupe</string>
+    <string name="really_delete_group_request_title_plural">Supprimer les demandes de groupe</string>
     <string name="sent_to">Envoyé(e) à : %s</string>
     <string name="sent_on">Envoyé(e) le : %s</string>
     <string name="group_response">Réponse d\'adhésion au groupe</string>
@@ -1209,7 +1196,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="group_response_full">Votre demande d\'adhésion au groupe %s a été refusée, car ce groupe est au complet</string>
     <string name="group_response_rejected">Votre demande d\'adhésion au groupe %s a été refusée</string>
     <string name="group_link_expiration_none">Non restreint(e)</string>
-    <string name="group_request_hint">Bonjour ! C\'est moi…</string>
+    <string name="group_request_hint">Bonjour ! C’est moi…</string>
     <string name="group_request_send_title">Envoyer une demande d\'adhésion au groupe</string>
     <string name="group_request_message_empty">Le message de demande d\'adhésion au groupe doit être renseigné</string>
     <string name="group_requests_all_title">Toutes les demandes d\'adhésion au groupe</string>
@@ -1221,7 +1208,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="link_administration_off_explain">Ce lien a déjà été configuré et partagé, toute modification de cette propriété est maintenant impossible. Générez un nouveau lien avec la propriété dont vous avez besoin.</string>
     <string name="group_link_update_success">Lien bien mis à jour</string>
     <string name="no_group_links">Aucun lien de groupe. Pour créer un tel lien, cliquez sur le bouton ajouter en bas à droite ou activez le lien par défaut dans la vue de détails du groupe.</string>
-    <string name="really_delete_group_link">Voulez-vous vraiment supprimer %d demandes d\'adhésion à un groupe ? Les utilisateurs ne pourront plus envoyer des demandes d\'adhésion à travers les liens en question. Cependant, il est toujours possible d\'accepter ou de refuser les demandes reçues précédemment.</string>
     <string name="group_links_overview_title">Liens de groupe pour %s</string>
     <string name="group_link_invalid">Expiré</string>
     <string name="group_link_valid">Valide</string>
@@ -1237,7 +1223,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="open_group_requests_show">Afficher les demandes d\'adhésion</string>
     <string name="open_group_requests_hide">Masquer les demandes d\'adhésion</string>
     <string name="group_request_link_already_deleted">Lien de groupe supprimé entre temps</string>
-    <string name="really_delete_incoming_request">Voulez-vous vraiment supprimer %d demande(s) d\'adhésion à un groupe ? Une fois celles-ci supprimées, vous ne pourrez plus y répondre.</string>
     <string name="incoming_group_request_no_message">Envoyée à travers le lien ouvert… aucun message</string>
     <string name="group_request_received_through">À travers le lien : %s</string>
     <string name="reaccept">Accepter de nouveau</string>
@@ -1246,7 +1231,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="group_link_rename">Renommer</string>
     <string name="group_link_rename_tag">Nouveau nom</string>
     <string name="tap_here_for_more">Touchez ici pour de plus amples informations</string>
-    <string name="another_connection_instructions">Le serveur a détecté deux connexions ou plus provenant d\'appareils différents ayant le même ID Threema.\n\nL\'utilisation simultanée du même ID Threema sur plusieurs appareils n\'est pas possible. Les nouveaux messages sont uniquement transmis sur l\'appareil s\'étant authentifié le plus récemment sur le serveur.\n\nSi vous utilisez un nouvel appareil, veuillez désinstaller ou désactiver %s sur l\'ancien appareil, puis redémarrez le nouveau.</string>
+    <string name="another_connection_instructions">Le serveur a détecté deux connexions ou plus provenant d\'appareils différents ayant le même ID Threema.\n\nL\'utilisation simultanée du même ID LeOS-Messenger sur plusieurs appareils n\'est pas possible. Les nouveaux messages sont uniquement transmis sur l\'appareil s\'étant authentifié le plus récemment sur le serveur.\n\nSi vous utilisez un nouvel appareil, veuillez désinstaller ou désactiver %s sur l\'ancien appareil, puis redémarrez le nouveau.</string>
     <string name="app_store_error_code">Code d\'erreur App Store : %d</string>
     <string name="backup_restore_type"><![CDATA[Quel type de sauvegarde voulez-vous restaurer ? <br/><br/> <a href=%s>En savoir plus sur les sauvegardes dans Threema</a>]]></string>
     <string name="data_backup_info">Restaurer tout y compris les chats</string>
@@ -1254,14 +1239,14 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="back_to_threema">De retour sur %s ?</string>
     <string name="id_backup_info">Ne restaurer que votre ID</string>
     <string name="restore_your_id_contacts_and_groups">Restaurer votre ID, vos contacts et vos groupes</string>
-    <string name="threema_safe_backup">Sauvegarde Threema Safe</string>
+    <string name="threema_safe_backup">Sauvegarde LeOS-Messenger Safe</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Mot de passe oublié ?</a>]]></string>
     <string name="download_failed">Échec de téléchargement. Code d\'erreur : %d</string>
     <string name="edit_answer">Modifier la réponse</string>
     <string name="share_media">Partager avec une autre application…</string>
     <string name="group_link_administered">Administré</string>
     <string name="group_link_open">Ouvert(e)</string>
-    <string name="group_link_share_message">Rejoignez mon groupe Threema à travers le lien suivant ! %s</string>
+    <string name="group_link_share_message">Rejoignez mon groupe LeOS-Messenger à travers le lien suivant ! %s</string>
     <string name="group_link_bottom_sheet_title">Lien de groupe</string>
     <string name="group_link_bottom_sheet_desc">Partagez ce lien avec les personnes que vous voudriez inviter au groupe. Voici les options à examiner.</string>
     <string name="group_link_bottom_sheet_link_title">Lien</string>
@@ -1293,6 +1278,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="group_links_manage_menu">Gérer les liens de groupe</string>
     <string name="group_request_sent_menu">Demandes d\'adhésion à un groupe envoyées</string>
     <string name="really_delete_group_link_title">Supprimer le lien de groupe</string>
+    <string name="really_delete_multiple_group_links_title">Supprimer les liens de groupe</string>
     <string name="qr_scan_result_dialog_title">Résultat du scan QR</string>
     <string name="scan_failure_dialog_title">Échec du scan</string>
     <string name="no_threema_qr_info">Ce code QR n\'est pas spécifique à Threema. Le contenu décodé est :</string>
@@ -1316,14 +1302,14 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="not_voted_user_list">Ces participants n\'ont pas voté : %s</string>
     <string name="contact_update">Mise à jour des états des contacts</string>
     <string name="invalid_onprem_id">Cet ID n\'existe pas (ou plus) ou il n\'est pas compatible avec votre ID.</string>
-    <string name="enable_unknown_sources">Impossible d\'installer. Veuillez vous assurer que le paramètre « Installer les applications de sources inconnues » est activé pour %s.</string>
-    <string name="threema_push">Threema Push</string>
+    <string name="enable_unknown_sources">Impossible d’installer. Veuillez vous assurer que le paramètre « Installer les applications de sources inconnues » est activé pour %s.</string>
+    <string name="threema_push">LeOS-Messenger Push</string>
     <string name="threema_push_notification_text">Touchez pour en savoir plus</string>
-    <string name="threema_push_notification_info_text_1">Threema Push est actif en arrière-plan, vous informant en cas de messages ou d\'appels entrants.</string>
-    <string name="threema_push_notification_info_text_2">Les applications ne peuvent pas fonctionner en arrière-plan sans vous montrer une notification persistante. En vous montrant cette notification, nous veillons à ce que Threema Push reste actif même si vous n\'utilisez pas l\'application de manière active.</string>
+    <string name="threema_push_notification_info_text_1">LeOS-Messenger Push est actif en arrière-plan, vous informant en cas de messages ou d\'appels entrants.</string>
+    <string name="threema_push_notification_info_text_2">Les applications ne peuvent pas fonctionner en arrière-plan sans vous montrer une notification persistante. En vous montrant cette notification, nous veillons à ce que LeOS-Messenger Push reste actif même si vous n\'utilisez pas l’application de manière active.</string>
     <string name="threema_push_notification_info_text_3">Si vous rencontrez des problèmes tels que des notifications retardées ou absentes, veuillez ajuster vos paramètres système pour veiller à ce que l\'application puisse rester active en arrière-plan sans restrictions et que tous les économiseurs de batterie soient désactivés.</string>
-    <string name="threema_push_service_description">Notification persistante affichée si Threema Push est actif</string>
-    <string name="threema_push_activated">Threema Push activé.</string>
+    <string name="threema_push_service_description">Notification persistante affichée si LeOS-Messenger Push est actif</string>
+    <string name="threema_push_activated">LeOS-Messenger Push activé.</string>
     <string name="add_shortcut_success">Raccourci bien créé</string>
     <string name="add_shortcut_error">Erreur lors de l\'ajout du raccourci à l\'écran du lanceur</string>
     <string name="web_link">Lien</string>
@@ -1367,11 +1353,22 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="contact_picture_content_description">Photo du contact</string>
     <string name="prefs_title_use_system_ringtone">Utiliser la sonnerie système</string>
     <string name="organization_type">Organisation</string>
-    <string name="permission_bluetooth_connect_required">Activez l\'autorisation « Appareils à proximité » pour localiser les casaques Bluetooth connectés</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threema Push est actif. Les sessions Threema Web et Desktop doivent donc être lancées manuellement.</string>
+    <string name="permission_bluetooth_connect_required">Activez l’autorisation « Appareils à proximité » pour localiser les casaques Bluetooth connectés</string>
+    <string name="threema_push_start_webclient_sessions_manually">LeOS-Messenger Push est actif. Les sessions LeOS-Messenger Web et Desktop doivent donc être lancées manuellement.</string>
     <string name="tooltip_multiple_recipients_title">Nouveauté : plusieurs destinataires</string>
     <string name="tooltip_multiple_recipients_text">Faites un appui prolongé pour sélectionner plusieurs destinataires auxquels envoyer le même message.</string>
     <string name="synchronizing">Synchronisation…</string>
+    <string name="forward_security">Envoyer des messages avec confidentialité persistante</string>
+    <string name="forward_security_mode">Confidentialité persistante</string>
+    <string name="forward_security_mode_none">non</string>
+    <string name="clear_forward_security">Effacer les sessions de confidentialité persistante</string>
+    <string name="forward_security_cleared">Les sessions de confidentialité persistante avec ce contact ont été effacées</string>
+    <string name="message_without_forward_security">Un message sans confidentialité persistante a été reçu. Vérifiez que l\'émetteur a délibérément désactivé la confidentialité persistante.</string>
+    <string name="forward_security_established">Les messages de ce chat sont maintenant protégés par la confidentialité persistante.</string>
+    <string name="forward_security_established_rx">Les messages reçus dans ce chat sont maintenant protégés par la confidentialité persistante. Activez la confidentialité persistante dans les détails du contact pour protéger également les messages envoyés.</string>
+    <string name="forward_security_reset">La session de confidentialité persistante avec ce contact a été réinitialisée. Cela peut se produire si le contact a changé d\'appareil ou réinstallé l\'application.</string>
+    <string name="forward_security_reset_simple">La session de confidentialité persistante avec ce contact a été réinitialisée.</string>
+    <string name="forward_security_message_out_of_order">Un message a été reçu en désordre et n\'a pas pu être déchiffré.</string>
     <string name="self_updater_installation_failed">Le téléchargement de la mise à jour a échoué. Veuillez télécharger et installer manuellement la mise à jour à partir de <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a>.</string>
     <string name="spam_first_contact">Ce chat provient d\'un contact inconnu</string>
     <string name="spam_report">Signaler un spam</string>
@@ -1381,30 +1378,121 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="spam_successfully_reported">L\'ID a été signalé pour envoi de spam.</string>
     <string name="spam_error_reporting">Une erreur est survenue lors du signalement du spam : %s</string>
     <string name="spam_report_short">Signaler</string>
-    <string name="wizard_incompatible_contact_sync_params">Il y a des paramètres MDM incompatibles définis. Le paramètre Threema MDM th_contact_sync ne peut pas être activé si la restriction d\'utilisateur DISALLOW_MODIFY_ACCOUNTS est définie. Veuillez contacter l\'administrateur de votre appareil.</string>
+    <string name="wizard_incompatible_contact_sync_params">Il y a des paramètres MDM incompatibles définis. Le paramètre LeOS-Messenger MDM th_contact_sync ne peut pas être activé si la restriction d\'utilisateur DISALLOW_MODIFY_ACCOUNTS est définie. Veuillez contacter l\'administrateur de votre appareil.</string>
     <string name="messages_cannot_be_recovered">Vous ne pourrez pas annuler cette action.</string>
     <string name="contact_deleted">Contact supprimé</string>
     <string name="last_added_contact">Dernier ajout</string>
     <string name="directory_explain_text">Recherchez dans le répertoire de l\'entreprise tout employé ne faisant pas encore partie de votre liste de contacts.</string>
     <string name="cannot_display_location">Impossible d\'afficher cet emplacement.</string>
-    <plurals name="contacts_counter_label">
+    <string name="draw_reply">Dessiner la réponse</string>
+    <string name="drawing">Dessin</string>
+    <string name="background_color">Couleur de fond</string>
+    <string name="send_video_muted">Retirer le son de la vidéo</string>
+    <string name="send_without_audio">Retirer l\'audio</string>
+    <string name="edit_filename">Modifier le nom du fichier</string>
+    <string name="unable_to_restore_identity_because">Impossible de restaurer l\'ID. Raison : %s</string>
+    <string name="share_with_app">Partager avec Threema</string>
+    <string name="read_phone_state_dialog_allow">Accorder l\'autorisation</string>
+    <string name="read_phone_state_dialog_disallow">Continuer quand même</string>
+    <string name="read_phone_state_dialog_never_ask_again">Ne plus demander</string>
+    <string name="read_phone_state_dialog_title">Autorisation accordée</string>
+    <string name="read_phone_state_dialog_message">Pour empêcher toute interruption des appels réguliers par les appels Threema, l\'autorisation d\'accès à l\'état du téléphone est nécessaire. Si l\'autorisation n\'est pas accordée, un appel LeOS-Messenger entrant retentira même s\'il y a un appel régulier en cours.</string>
+    <string name="read_phone_state_short_message">Pour vérifier la présence d\'appels entrants, accordez à LeOS-Messenger l\'autorisation d\'accès à l\'état du téléphone.</string>
+    <string name="prefs_title_read_phone_state">Accorder l\'autorisation d\'accès à l\'état du téléphone</string>
+    <string name="prefs_title_hibernation">Paramètres des applications non utililisées</string>
+    <string name="prefs_summary_hibernation_api_32">Pour empêcher que LeOS-Messenger soit mis en pause par le système après une longue période d\'inactivité, veuillez désactiver le paramètre système « Retirer les autorisations et libérer l’espace ».</string>
+    <string name="prefs_summary_hibernation_api">Pour empêcher que LeOS-Messenger soit mis en pause par le système après une longue période d’inactivité, veuillez désactiver le paramètre système « Mettre en pause l’activité des application si inutilisées ».</string>
+    <string name="unable_to_fetch_configuration">Impossible de récupérer les données à partir du serveur de configuration. Réessayez plus tard.</string>
+    <string name="rogue_device_warning">Le serveur a détecté une connexion provenant d’un autre appareil doté du même identifiant Threema.\n\nSi vous n\'avez pas utilisé votre identifiant LeOS-Messenger sur un autre appareil ou avec une version moins récente de l’application entre-temps, veuillez contacter l’assistance et envoyer le fichier journal si possible.</string>
+    <string name="fetch2_failure">La synchronisation avec le serveur de provisionnement a échoué.</string>
+    <string name="no_members_support_group_calls">Il n\'y a plus d\'autres membres dans ce groupe capables de répondre aux appels de groupe</string>
+    <string name="group_calls">Appels de groupe</string>
+    <string name="prefs_title_group_calls_enable">Activer les appels de groupe</string>
+    <string name="group_no_members">Ce groupe ne contient aucun autre membre</string>
+    <string name="group_call">Appel de groupe</string>
+    <string name="checking_compatibility">Vérification de la compatibilité…</string>
+    <string name="group_call_mic_permission_rationale">Pour passer des appels de groupe, vous devez autoriser %s à accéder au microphone sous « Autorisations ».</string>
+    <string name="group_call_camera_permission_rationale">Pour que les autres participants puissent voir votre image, vous devez autoriser %s à accéder à l’appareil photo sous « Autorisations ».</string>
+    <string name="settings">Paramètres</string>
+    <string name="leave">Quitter</string>
+    <string name="fs_key_mismatch">différence de clé</string>
+    <string name="tap_to_resend">Touchez pour envoyer de nouveau</string>
+    <string name="group_calls_tooltip_title">Nouveauté : Appels de groupe</string>
+    <string name="group_calls_tooltip_text">Touchez ici pour inviter tous les membres d\'un groupe à rejoindre un appel. Tous les membres du groupe recevront une notification et pourront décider s\'ils veulent rejoindre l\'appel ou non.</string>
+    <string name="prefs_title_calls">Appels sécurisés</string>
+    <string name="prefs_sum_group_calls_vibration">Activer/désactiver la vibration lors du lancement des appels de groupe</string>
+    <string name="forward_security_mode_4dh">terminé</string>
+    <string name="forward_security_mode_2dh">unilatéral</string>
+    <string name="forward_security_explanation">La Perfect Forward Secrecy (PFS) protège les communications enregistrées contre tout déchiffrement rétroactif, même si la clé de chiffrement à long terme est découverte.\n\nL\'option peut être activée si l\'application des deux côtés prend en charge la PFS.</string>
+    <string name="group_call_inactivity_left">Appel de groupe arrêté pour cause d\'inactivité</string>
+    <string name="missing_permission_external_storage">Impossible de copier le fichier. Essayez les étapes suivantes :\n1. Ouvrez l\'application Paramètres.\n2. Sous « Applications », choisissez « Accès spécial aux applications ».\n3. Touchez « Accès tous fichiers ».\n4. Touchez les trois points dans le coin supérieur droit et sélectionnez « Afficher le système ».\n5. Touchez « Stockage externe » et assurez-vous que « Autoriser l\'accès pour gérer tous les fichiers » est activé.\n6. Essayez à nouveau de restaurer la sauvegarde.</string>
+    <string name="forward_security_downgraded_status_message">Ce contact a commencé à utiliser une version de l\'application ne prenant pas en charge la confidentialité persistante. À partir de maintenant, les messages seront envoyés sans confidentialité persistante.</string>
+    <plurals name="contacts_counter_label" tools:ignore="MissingQuantity">
         <item quantity="one">%d contact</item>
-        <item quantity="many">%d contacts</item>
         <item quantity="other">%d contacts</item>
     </plurals>
-    <plurals name="really_delete_thread_message">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Souhaitez-vous vraiment supprimer ce fil ?</item>
-        <item quantity="many">Souhaitez-vous vraiment supprimer %d fils ?</item>
-        <item quantity="other">Souhaitez-vous vraiment supprimer %d fils ?</item>
+    <plurals name="really_delete_thread_message" tools:ignore="MissingQuantity">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Souhaitez-vous vraiment supprimer ce fil?</item>
+        <item quantity="other">Souhaitez-vous vraiment supprimer %d fils?</item>
     </plurals>
-    <plurals name="sending_message_failed">
+    <plurals name="sending_message_failed" tools:ignore="MissingQuantity">
         <item quantity="one" tools:ignore="ImpliedQuantity">Impossible d\'envoyer un message</item>
-        <item quantity="many">Impossible d\'envoyer %1$d messages</item>
         <item quantity="other">Impossible d\'envoyer %1$d messages</item>
     </plurals>
-    <plurals name="selection_counter_label">
+    <plurals name="selection_counter_label" tools:ignore="MissingQuantity">
         <item quantity="one">%d image sélectionnée</item>
-        <item quantity="many">%d images sélectionnées</item>
         <item quantity="other">%d images sélectionnées</item>
+    </plurals>
+    <plurals name="message_copied" tools:ignore="MissingQuantity">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Message copié</item>
+        <item quantity="other">Messages copiés</item>
+    </plurals>
+    <plurals name="new_messages" tools:ignore="MissingQuantity">
+        <item quantity="one">%d nouveau message</item>
+        <item quantity="other">%d nouveaux messages</item>
+    </plurals>
+    <plurals name="file_saved" tools:ignore="MissingQuantity">
+        <item quantity="one">%d fichier enregistré avec succès.</item>
+        <item quantity="other">%d fichiers enregistrés avec succès.</item>
+    </plurals>
+    <plurals name="ballot_really_delete" tools:ignore="MissingQuantity">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Retirer l\'enquête</item>
+        <item quantity="other">Retirer les enquêtes</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text" tools:ignore="MissingQuantity">
+        <item quantity="one">Voulez-vous vraiment supprimer %1$d enquête ? Vous ne pourrez pas récupérer les votes.</item>
+        <item quantity="other">Voulez-vous vraiment supprimer %1$d enquêtes ? Vous ne pourrez pas récupérer les votes.</item>
+    </plurals>
+    <plurals name="message_deleted" tools:ignore="MissingQuantity">
+        <item quantity="one">%d message supprimé</item>
+        <item quantity="other">%d messages supprimés</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours" tools:ignore="MissingQuantity">
+        <item quantity="one">Pendant %d heure</item>
+        <item quantity="other">Pendant %d heures</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted" tools:ignore="MissingQuantity">
+        <item quantity="one">%d contact n\'a pas pu être supprimé, car il fait encore partie d\'un groupe.</item>
+        <item quantity="other">%d contacts n\'ont pas pu être supprimés, car il font encore partie d\'un groupe.</item>
+    </plurals>
+    <plurals name="message_archived" tools:ignore="MissingQuantity">
+        <item quantity="one">%d chat archivé</item>
+        <item quantity="other">%d chats archivés</item>
+    </plurals>
+    <plurals name="webclient_running_sessions" tools:ignore="MissingQuantity">
+        <item quantity="one">%d session en cours d\'exécution</item>
+        <item quantity="other">%d sessions en cours d\'exécution</item>
+    </plurals>
+    <plurals name="chat_deleted" tools:ignore="MissingQuantity">
+        <item quantity="one">%d chat supprimé.</item>
+        <item quantity="other">%d chats supprimés.</item>
+    </plurals>
+    <plurals name="forward_security_messages_skipped" tools:ignore="MissingQuantity">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Un message a été perdu depuis le dernier message.</item>
+        <item quantity="other">%d messages ont été perdus depuis le dernier message.</item>
+    </plurals>
+    <plurals name="delete_messages" tools:ignore="MissingQuantity">
+        <item quantity="one">Supprimer %d message sur cet appareil ?</item>
+        <item quantity="other">Supprimer %d messages sur cet appareil ?</item>
     </plurals>
 </resources>

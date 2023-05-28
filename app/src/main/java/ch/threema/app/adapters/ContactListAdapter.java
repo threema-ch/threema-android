@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -65,6 +65,7 @@ import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.storage.models.ContactModel;
 
@@ -496,12 +497,12 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 			} else {
 				// perform filtering
 				List<ContactModel> nContactList = new ArrayList<ContactModel>();
-				filterString = LocaleUtil.normalize(constraint.toString());
+				filterString = constraint.toString();
 
 				for (ContactModel contactModel : ovalues) {
 					if (contactModel != null) {
-						if ((LocaleUtil.normalize(NameUtil.getDisplayNameOrNickname(contactModel, false)).contains(filterString)) ||
-							(contactModel.getIdentity().toUpperCase().contains(filterString))) {
+						if ((TestUtil.matchesConversationSearch(filterString, NameUtil.getDisplayNameOrNickname(contactModel, false))) ||
+							(contactModel.getIdentity().toUpperCase().contains(filterString.toUpperCase()))) {
 							nContactList.add(contactModel);
 						}
 					}

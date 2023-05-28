@@ -23,7 +23,7 @@
     <string name="webclient_invalid_qr_code">Nieprawidłowy kod QR</string>
     <string name="webclient_new_connection_toast">Zainicjowano sesję Desktop/Web</string>
     <string name="webclient_protocol_error">Błąd protokołu</string>
-    <string name="webclient_protocol_version_to_old">Twoja aplikacja nie obsługuje tej wersji Web Desktop/klienta sieciowego. Zaktualizuj Threema dla systemu Android do najnowszej wersji.</string>
+    <string name="webclient_protocol_version_to_old">Twoja aplikacja nie obsługuje tej wersji Web Desktop/klienta sieciowego. Zaktualizuj LeOS-Messenger dla systemu Android do najnowszej wersji.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">Twoja aplikacja nie obsługuje tej wersji aplikacji komputerowej/ klienta sieciowego. Pobierz najnowszą wersję aplikacji komputerowej lub poproś administratora klienta sieciowego o zaktualizowanie go do najnowszej wersji.</string>
     <string name="webclient_protocol_version_too_new_threema">Twoja aplikacja nie obsługuje tej wersji aplikacji komputerowej/klienta sieciowego. Użyj aktualnej wersji Web/ Desktop/klienta sieciowego.</string>
     <string name="webclient_session_already_exists">Trwa już sesja dla zeskanowanego kodu QR. uruchom ponownie aplikację komputerową/ przeładuj klienta sieciowego i spróbuj ponownie.</string>

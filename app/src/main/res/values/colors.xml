@@ -34,6 +34,7 @@
 
 	<!-- chat bubbles -->
 	<color name="bubble_status">#fff9d9</color>
+	<color name="bubble_group_status">#e5f8fa</color>
 	<color name="bubble_receive">#F1F3F4</color>
 	<color name="bubble_send">#EFFDE4</color>
 	<color name="bubble_selected_overlay">#4441d68d</color>
@@ -134,6 +135,7 @@
 	<color name="dark_circle_button_stroke">#80B0B0B0</color>
 	<color name="dark_compose_bubble">#33000000</color>
 	<color name="dark_bubble_status">#ede7ca</color>
+	<color name="dark_bubble_group_status">#00838f</color>
 	<color name="dark_bubble_receive">#666666</color>
 	<color name="dark_bubble_send">#303030</color>
 	<color name="dark_bubble_selected_overlay">#44419645</color>
@@ -185,6 +187,7 @@
 	<color name="result_view">#b0000000</color>
 	<color name="viewfinder_laser">@color/accent_regular</color>
 	<color name="viewfinder_mask">#60000000</color>
+	<color name="qrscanner_masking_color">#50000000</color>
 
 	<!-- Location Picker -->
 	<color name="lp_primary">#ff607d8b</color>
@@ -201,6 +204,9 @@
 	<color name="gallery_background">#ff1a1a1a</color>
 	<color name="status_bar_detail">#3000</color>
 	<color name="mediaviewer_caption_background_color">#77000000</color>
+	<color name="group_call_accent">@color/material_cyan</color>
+	<color name="recently_added_background_light">#fff3f3f3</color>
+	<color name="recently_added_background_dark">#ff1b392a</color>
 
 	<!--**********************************************************************************************************-->
 	<!-- material colors for reference -->
@@ -233,7 +239,4 @@
 	<color name="material_indigo_a200">#536dfe</color>
 	<color name="material_teal_secondary">#00ebd5</color>
 	<color name="material_grey_300_alpha">#44e0e0e0</color>
-	<color name="recently_added_background_light">#fff3f3f3</color>
-	<color name="recently_added_background_dark">#ff1b392a</color>
-	<color name="qrscanner_masking_color">#50000000</color>
 </resources>

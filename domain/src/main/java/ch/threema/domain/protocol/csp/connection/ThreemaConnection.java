@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -42,7 +42,6 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -56,6 +55,7 @@ import androidx.annotation.WorkerThread;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceCounter;
 import ch.threema.base.crypto.NonceFactory;
+import ch.threema.base.crypto.ThreemaKDF;
 import ch.threema.base.utils.AsyncResolver;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
@@ -66,6 +66,7 @@ import ch.threema.domain.protocol.Version;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.stores.IdentityStoreInterface;
+import ove.crypto.digest.Blake2b;
 
 @WorkerThread
 public class ThreemaConnection implements Runnable {
@@ -74,9 +75,11 @@ public class ThreemaConnection implements Runnable {
 	private static final int IDENTITY_LEN = 8;
 	private static final int COOKIE_LEN = 16;
 	private static final int SERVER_HELLO_BOXLEN = NaCl.PUBLICKEYBYTES + COOKIE_LEN + NaCl.BOXOVERHEAD;
-	private static final int VOUCH_LEN = NaCl.PUBLICKEYBYTES;
+	private static final int RESERVED1_LEN = 24;
+	private static final int VOUCH_LEN = 32;
+	private static final int RESERVED2_LEN = 16;
 	private static final int VERSION_LEN = 32;
-	private static final int LOGIN_LEN = IDENTITY_LEN + VERSION_LEN + COOKIE_LEN + NaCl.NONCEBYTES + VOUCH_LEN + NaCl.BOXOVERHEAD;
+	private static final int LOGIN_LEN = IDENTITY_LEN + VERSION_LEN + COOKIE_LEN + RESERVED1_LEN + VOUCH_LEN + RESERVED2_LEN;
 	private static final int LOGIN_ACK_RESERVED_LEN = 16;
 	private static final int LOGIN_ACK_LEN = LOGIN_ACK_RESERVED_LEN + NaCl.BOXOVERHEAD;
 
@@ -84,6 +87,7 @@ public class ThreemaConnection implements Runnable {
 	private final IdentityStoreInterface identityStore;
 	private final NonceFactory nonceFactory;
 	private MessageProcessorInterface messageProcessor;
+	private DeviceCookieManager deviceCookieManager;
 
 	/* Server address object */
 	private ServerAddressProvider serverAddressProvider;
@@ -91,8 +95,6 @@ public class ThreemaConnection implements Runnable {
 
 	/* Temporary data for each individual TCP connection */
 	private volatile Socket socket;
-	private byte[] clientTempKeyPub;
-	private byte[] clientTempKeySec;
 	private SenderThread senderThread;
 	private int lastSentEchoSeq;
 	private int lastRcvdEchoSeq;
@@ -109,7 +111,6 @@ public class ThreemaConnection implements Runnable {
 	/* Helper objects */
 	private final SecureRandom random;
 	private final Timer timer;
-	private Date clientTempKeyGenTime;
 	private int pushTokenType;
 	private String pushToken;
 	private final Set<String> lastAlertMessages;
@@ -165,6 +166,10 @@ public class ThreemaConnection implements Runnable {
 
 	public void setServerAddressProvider(ServerAddressProvider serverAddressProvider) {
 		this.serverAddressProvider = serverAddressProvider;
+	}
+
+	public void setDeviceCookieManager(DeviceCookieManager deviceCookieManager) {
+		this.deviceCookieManager = deviceCookieManager;
 	}
 
 	private void getInetAdresses() throws UnknownHostException, ExecutionException, InterruptedException, ThreemaException {
@@ -333,18 +338,15 @@ public class ThreemaConnection implements Runnable {
 
 	@Override
 	public void run() {
-		/* generate a new temporary key pair for the server connection, if necessary */
-		if (clientTempKeyPub == null || clientTempKeySec == null || ((new Date().getTime() - clientTempKeyGenTime.getTime()) / 1000) > ProtocolDefines.CLIENT_TEMPKEY_MAXAGE) {
-			clientTempKeyPub = new byte[NaCl.PUBLICKEYBYTES];
-			clientTempKeySec = new byte[NaCl.SECRETKEYBYTES];
-			NaCl.genkeypair(clientTempKeyPub, clientTempKeySec);
-			clientTempKeyGenTime = new Date();
-		}
-
 		anotherConnectionCount = 0;
 
 		while (running) {
 			TimerTask echoSendTask = null;
+
+			/* generate a new temporary key pair for the server connection */
+			byte[] clientTempKeyPub = new byte[NaCl.PUBLICKEYBYTES];
+			byte[] clientTempKeySec = new byte[NaCl.SECRETKEYBYTES];
+			NaCl.genkeypair(clientTempKeyPub, clientTempKeySec);
 
 			try {
 				getInetAdresses();
@@ -437,12 +439,7 @@ public class ThreemaConnection implements Runnable {
 				byte[] extensionsBox = kclientTempServerTemp.encrypt(makeExtensions(), extensionsNonce);
 
 				/* prepare vouch sub packet */
-				byte[] vouchNonce = new byte[NaCl.NONCEBYTES];
-				random.nextBytes(vouchNonce);
-				byte[] vouchBox = identityStore.encryptData(clientTempKeyPub, vouchNonce, serverPubKeyCur);
-				if (vouchBox == null) {
-					throw new ThreemaException("Vouch box encryption failed");
-				}
+				byte[] vouch = makeVouch(serverPubKeyCur, serverTempKeyPub, serverCookie, clientTempKeyPub);
 
 				/* now prepare login packet */
 				byte[] cleverExtensionVersion = this.makeCleverExtensionVersion(extensionsBox.length);
@@ -454,9 +451,8 @@ public class ThreemaConnection implements Runnable {
 				login_i += VERSION_LEN;
 				System.arraycopy(serverCookie, 0, login, login_i, COOKIE_LEN);
 				login_i += COOKIE_LEN;
-				System.arraycopy(vouchNonce, 0, login, login_i, NaCl.NONCEBYTES);
-				login_i += NaCl.NONCEBYTES;
-				System.arraycopy(vouchBox, 0, login, login_i, VOUCH_LEN + NaCl.BOXOVERHEAD);
+				login_i += RESERVED1_LEN; // all zero
+				System.arraycopy(vouch, 0, login, login_i, VOUCH_LEN);
 
 				/* encrypt login packet */
 				byte[] loginBox = kclientTempServerTemp.encrypt(login, loginNonce);
@@ -717,6 +713,10 @@ public class ThreemaConnection implements Runnable {
 			case ProtocolDefines.PLTYPE_QUEUE_SEND_COMPLETE:
 				notifyQueueSendComplete();
 				break;
+
+			case ProtocolDefines.PLTYPE_DEVICE_COOKIE_CHANGE_INDICATION:
+				processDeviceCookieChangeIndicationPayload();
+				break;
 		}
 	}
 
@@ -791,6 +791,13 @@ public class ThreemaConnection implements Runnable {
 		}
 	}
 
+	private void processDeviceCookieChangeIndicationPayload() {
+		if (deviceCookieManager != null) {
+			deviceCookieManager.changeIndicationReceived();
+			sendClearDeviceCookieChangeIndication();
+		}
+	}
+
 	private void sendAck(MessageId messageId, String identity) {
 		logger.debug("Sending ack for message ID {} from {}", messageId, identity);
 
@@ -860,6 +867,24 @@ public class ThreemaConnection implements Runnable {
 		return false;
 	}
 
+	private boolean sendClearDeviceCookieChangeIndication() {
+		logger.debug("Clearing device cookie change indication");
+		final Payload clearPayload = new Payload(ProtocolDefines.PLTYPE_CLEAR_DEVICE_COOKIE_CHANGE_INDICATION, new byte[0]);
+		return sendPayload(clearPayload);
+	}
+
+	private byte[] makeVouch(byte[] serverPubKeyCur, byte[] serverTempKeyPub, byte[] serverCookie, byte[] clientTempKeyPub) {
+		byte[] sharedSecrets = Utils.concatByteArrays(identityStore.calcSharedSecret(serverPubKeyCur), identityStore.calcSharedSecret(serverTempKeyPub));
+
+		ThreemaKDF kdf = new ThreemaKDF("3ma-csp");
+
+		byte[] input = new byte[COOKIE_LEN + NaCl.PUBLICKEYBYTES];
+		System.arraycopy(serverCookie, 0, input, 0, COOKIE_LEN);
+		System.arraycopy(clientTempKeyPub, 0, input, COOKIE_LEN, NaCl.PUBLICKEYBYTES);
+		byte[] vouchKey = kdf.deriveKey("v2", sharedSecrets);
+		return Blake2b.Mac.newInstance(vouchKey, VOUCH_LEN).digest(input);
+	}
+
 	private byte[] makeCleverExtensionVersion(int extensionsBoxLength) throws IOException {
 		/* "CleVER" extension field */
 		if (extensionsBoxLength > Short.MAX_VALUE) {
@@ -876,9 +901,13 @@ public class ThreemaConnection implements Runnable {
 		ProtocolExtension clientInfo = new ProtocolExtension(ProtocolExtension.CLIENT_INFO_TYPE, version.getFullVersion().getBytes());
 		ProtocolExtension messagePayloadVersion = new ProtocolExtension(ProtocolExtension.MESSAGE_PAYLOAD_VERSION_TYPE, new byte[] {ProtocolExtension.MESSAGE_PAYLOAD_VERSION});
 
+		/* Device cookie extension (0x03) */
+		ProtocolExtension deviceCookie = new ProtocolExtension(ProtocolExtension.DEVICE_COOKIE_TYPE, deviceCookieManager.obtainDeviceCookie());
+
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		bos.write(clientInfo.getBytes());
 		bos.write(messagePayloadVersion.getBytes());
+		bos.write(deviceCookie.getBytes());
 		return bos.toByteArray();
 	}
 

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.webrtc.IceCandidate;
 import org.webrtc.PeerConnection;
-import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.AndroidJUnit4;
-
 import ch.threema.app.voip.util.SdpPatcher;
 
 import static junit.framework.Assert.assertEquals;
@@ -193,7 +191,7 @@ public class SdpTest {
 				"a=ssrc:3148626149 msid:3MACALL 3MACALLa0\r\n" +
 				"a=ssrc:3148626149 mslabel:3MACALL\r\n" +
 				"a=ssrc:3148626149 label:3MACALLa0\r\n" +
-				"m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99 100 101 127 123 125\r\n" +
+				"m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99 100 101 35 36 127 123 125 37\r\n" +
 				"c=IN IP4 0.0.0.0\r\n" +
 				"a=rtcp:9 IN IP4 0.0.0.0\r\n" +
 				"a=ice-ufrag:f30j\r\n" +
@@ -255,10 +253,22 @@ public class SdpTest {
 				"a=fmtp:100 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f\r\n" +
 				"a=rtpmap:101 rtx/90000\r\n" +
 				"a=fmtp:101 apt=100\r\n" +
+				"a=rtpmap:35 AV1/90000\r\n" +
+				"a=rtcp-fb:35 goog-remb\r\n" +
+				"a=rtcp-fb:35 transport-cc\r\n" +
+				"a=rtcp-fb:35 ccm fir\r\n" +
+				"a=rtcp-fb:35 nack\r\n" +
+				"a=rtcp-fb:35 nack pli\r\n" +
+				"a=rtpmap:36 rtx/90000\r\n" +
+				"a=fmtp:36 apt=35\r\n" +
 				"a=rtpmap:127 red/90000\r\n" +
 				"a=rtpmap:123 rtx/90000\r\n" +
 				"a=fmtp:123 apt=127\r\n" +
 				"a=rtpmap:125 ulpfec/90000\r\n" +
+				"a=rtpmap:37 flexfec-03/90000\r\n" +
+				"a=rtcp-fb:37 goog-remb\r\n" +
+				"a=rtcp-fb:37 transport-cc\r\n" +
+				"a=fmtp:37 repair-window=10000000\r\n" +
 				"a=ssrc-group:FID 2961420724 927121398\r\n" +
 				"a=ssrc:2961420724 cname:xmp2nT2LrKeffKAn\r\n" +
 				"a=ssrc:2961420724 msid:3MACALL 3MACALLv0\r\n" +
@@ -334,151 +344,188 @@ public class SdpTest {
 	}
 
 	private void validateDescription(@NonNull SessionDescription sdp, boolean videoEnabled, boolean isOffer) {
-		// Part 1: Header, audio, first part of video (without rtpmap)
-		final List<String> expectedMatchesPart1 = new ArrayList<>();
-		expectedMatchesPart1.add("^v=0$");
-		expectedMatchesPart1.add("^o=- \\d+ \\d IN IP4 127.0.0.1$");
-		expectedMatchesPart1.add("^s=-$");
-		expectedMatchesPart1.add("^t=0 0$");
-		expectedMatchesPart1.add("^a=group:BUNDLE( \\d+)+");
-		if (videoEnabled) {
-			expectedMatchesPart1.add("^a=extmap-allow-mixed$");
-		}
-		expectedMatchesPart1.add("^a=msid-semantic: WMS 3MACALL$");
-		expectedMatchesPart1.add("^m=audio 9 UDP/TLS/RTP/SAVPF \\d+$");
-		expectedMatchesPart1.add("^c=IN IP4 0.0.0.0$");
-		expectedMatchesPart1.add("^a=rtcp:9 IN IP4 0.0.0.0$");
-		expectedMatchesPart1.add("^a=ice-ufrag:[^ ]+$");
-		expectedMatchesPart1.add("^a=ice-pwd:[^ ]+$");
-		expectedMatchesPart1.add("^a=ice-options:trickle renomination$");
-		expectedMatchesPart1.add("^a=fingerprint:sha-256 [^ ]+$");
-		expectedMatchesPart1.add("^a=setup:(actpass|active)");
-		expectedMatchesPart1.add("^a=mid:0");
-		if (videoEnabled) {
-			if (isOffer) {
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
-			} else {
-				expectedMatchesPart1.add("^a=extmap:15 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
-				expectedMatchesPart1.add("^a=extmap:16 urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
-				expectedMatchesPart1.add("^a=extmap:17 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
-			}
-		}
-		expectedMatchesPart1.add("^a=sendrecv$");
-		expectedMatchesPart1.add("^a=msid:3MACALL 3MACALLa0");
-		expectedMatchesPart1.add("^a=rtcp-mux$");
-		expectedMatchesPart1.add("^a=rtpmap:\\d+ opus/48000/2$");
-		expectedMatchesPart1.add("^a=rtcp-fb:\\d+ transport-cc$");
-		expectedMatchesPart1.add("^a=fmtp:\\d+ minptime=10;useinbandfec=1;stereo=0;sprop-stereo=0;cbr=1$");
-		expectedMatchesPart1.add("^a=ssrc:\\d+ cname:[^ ]+$");
-		if (isOffer) {
-			expectedMatchesPart1.add("^a=ssrc:\\d+ msid:3MACALL 3MACALLa0$");
-			expectedMatchesPart1.add("^a=ssrc:\\d+ mslabel:3MACALL$");
-			expectedMatchesPart1.add("^a=ssrc:\\d+ label:3MACALLa0$");
-		}
-		if (videoEnabled) {
-			expectedMatchesPart1.add("^m=video 9 UDP/TLS/RTP/SAVPF( \\d+)+$");
-			expectedMatchesPart1.add("^c=IN IP4 0.0.0.0$");
-			expectedMatchesPart1.add("^a=rtcp:9 IN IP4 0.0.0.0$");
-			expectedMatchesPart1.add("^a=ice-ufrag:[^ ]+$");
-			expectedMatchesPart1.add("^a=ice-pwd:[^ ]+$");
-			expectedMatchesPart1.add("^a=ice-options:trickle renomination$");
-			expectedMatchesPart1.add("^a=fingerprint:sha-256 [^ ]+$");
-			expectedMatchesPart1.add("^a=setup:(actpass|active)");
-			expectedMatchesPart1.add("^a=mid:1$");
-			if (isOffer) {
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:toffset$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:3gpp:video-orientation$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/playout-delay$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-content-type$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-timing$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/color-space$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id$");
-				expectedMatchesPart1.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id$");
-			} else {
-				expectedMatchesPart1.add("^a=extmap:20 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:toffset$");
-				expectedMatchesPart1.add("^a=extmap:15 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
-				expectedMatchesPart1.add("^a=extmap:21 urn:ietf:params:rtp-hdrext:encrypt urn:3gpp:video-orientation$");
-				expectedMatchesPart1.add("^a=extmap:16 urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
-				expectedMatchesPart1.add("^a=extmap:22 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/playout-delay$");
-				expectedMatchesPart1.add("^a=extmap:23 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-content-type$");
-				expectedMatchesPart1.add("^a=extmap:24 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-timing$");
-				expectedMatchesPart1.add("^a=extmap:26 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/color-space$");
-				expectedMatchesPart1.add("^a=extmap:17 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
-				expectedMatchesPart1.add("^a=extmap:18 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id$");
-				expectedMatchesPart1.add("^a=extmap:19 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id$");
-			}
-			// TODO(SE-63): Ehh, dirty hack... it should create a transceiver instead
-			expectedMatchesPart1.add("^a=recvonly");
-//			expectedMatchesPart1.add("^a=sendrecv");
-//			expectedMatchesPart1.add("^a=msid:3MACALL 3MACALLv0");
-			expectedMatchesPart1.add("^a=rtcp-mux$");
-			expectedMatchesPart1.add("^a=rtcp-rsize$");
-		}
-
-		// Part 2: Data channel
-		final List<String> expectedMatchesPart2 = new ArrayList<>();
-		if (isOffer || videoEnabled) {
-			expectedMatchesPart2.add("^m=application 9 UDP/DTLS/SCTP webrtc-datachannel$");
-			expectedMatchesPart2.add("^c=IN IP4 0.0.0.0$");
-			expectedMatchesPart2.add("^a=ice-ufrag:[^ ]+$");
-			expectedMatchesPart2.add("^a=ice-pwd:[^ ]+$");
-			expectedMatchesPart2.add("^a=ice-options:trickle renomination$");
-			expectedMatchesPart2.add("^a=fingerprint:sha-256 [^ ]+$");
-			expectedMatchesPart2.add("^a=setup:(actpass|active)$");
-			expectedMatchesPart2.add("^a=mid:[^ ]+$");
-			expectedMatchesPart2.add("^a=sctp-port:5000$");
-			expectedMatchesPart2.add("^a=max-message-size:262144$");
-		}
-
 		final List<String> actualLines = Arrays.asList(sdp.description.split("\r\n"));
 		Log.d(TAG, "SDP:\n" + sdp.description);
+		final List<String> matches = new ArrayList<>();
+		int lineOffset = 0;
 
-		// Verify part 1
-		int offset = 0;
-		matchEachLine(expectedMatchesPart1, actualLines, offset);
-		offset += expectedMatchesPart1.size();
-
-		// Skip codec lines
+		// Session lines
+		matches.add("^v=0$");
+		matches.add("^o=- \\d+ \\d IN IP4 127.0.0.1$");
+		matches.add("^s=-$");
+		matches.add("^t=0 0$");
+		matches.add("^a=group:BUNDLE( \\d+)+");
 		if (videoEnabled) {
-			do {
-				Log.d(TAG, "Skipping line \"" + actualLines.get(offset) + "\"");
-				offset += 1;
-			} while (isRtpmapLine(actualLines.get(offset)));
+			matches.add("^a=extmap-allow-mixed$");
+		}
+		matches.add("^a=msid-semantic: WMS 3MACALL$");
+		lineOffset += matchEachLine(matches, actualLines, lineOffset);
+
+		// Audio lines
+		matches.add("^m=audio 9 UDP/TLS/RTP/SAVPF \\d+$");
+		matches.add("^c=IN IP4 0.0.0.0$");
+		matches.add("^a=rtcp:9 IN IP4 0.0.0.0$");
+		matches.add("^a=ice-ufrag:[^ ]+$");
+		matches.add("^a=ice-pwd:[^ ]+$");
+		matches.add("^a=ice-options:trickle renomination$");
+		matches.add("^a=fingerprint:sha-256 [^ ]+$");
+		matches.add("^a=setup:(actpass|active)");
+		matches.add("^a=mid:0");
+		if (videoEnabled) {
+			if (isOffer) {
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
+			} else {
+				matches.add("^a=extmap:15 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
+				matches.add("^a=extmap:16 urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
+				matches.add("^a=extmap:17 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
+			}
+		}
+		matches.add("^a=sendrecv$");
+		matches.add("^a=msid:3MACALL 3MACALLa0");
+		matches.add("^a=rtcp-mux$");
+		matches.add("^a=rtpmap:\\d+ opus/48000/2$");
+		matches.add("^a=rtcp-fb:\\d+ transport-cc$");
+		matches.add("^a=fmtp:\\d+ minptime=10;useinbandfec=1;stereo=0;sprop-stereo=0;cbr=1$");
+		matches.add("^a=ssrc:\\d+ cname:[^ ]+$");
+		if (isOffer) {
+			matches.add("^a=ssrc:\\d+ msid:3MACALL 3MACALLa0$");
+		}
+		lineOffset += matchEachLine(matches, actualLines, lineOffset);
+
+		// Video lines
+		if (videoEnabled) {
+			matches.add("^m=video 9 UDP/TLS/RTP/SAVPF( \\d+)+$");
+			matches.add("^c=IN IP4 0.0.0.0$");
+			matches.add("^a=rtcp:9 IN IP4 0.0.0.0$");
+			matches.add("^a=ice-ufrag:[^ ]+$");
+			matches.add("^a=ice-pwd:[^ ]+$");
+			matches.add("^a=ice-options:trickle renomination$");
+			matches.add("^a=fingerprint:sha-256 [^ ]+$");
+			matches.add("^a=setup:(actpass|active)");
+			matches.add("^a=mid:1$");
+			if (isOffer) {
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:toffset$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:3gpp:video-orientation$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/playout-delay$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-content-type$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-timing$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/color-space$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id$");
+				matches.add("^a=extmap:[0-9]+ urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id$");
+			} else {
+				matches.add("^a=extmap:20 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:toffset$");
+				matches.add("^a=extmap:15 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time$");
+				matches.add("^a=extmap:21 urn:ietf:params:rtp-hdrext:encrypt urn:3gpp:video-orientation$");
+				matches.add("^a=extmap:16 urn:ietf:params:rtp-hdrext:encrypt http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01$");
+				matches.add("^a=extmap:22 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/playout-delay$");
+				matches.add("^a=extmap:23 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-content-type$");
+				matches.add("^a=extmap:24 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/video-timing$");
+				matches.add("^a=extmap:26 urn:ietf:params:rtp-hdrext:encrypt http://www.webrtc.org/experiments/rtp-hdrext/color-space$");
+				matches.add("^a=extmap:17 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:mid$");
+				matches.add("^a=extmap:18 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id$");
+				matches.add("^a=extmap:19 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id$");
+			}
+			// TODO(SE-63): Ehh, dirty hack... it should create a transceiver instead
+			matches.add("^a=recvonly");
+//			expectedMatchesPart1.add("^a=sendrecv");
+//			expectedMatchesPart1.add("^a=msid:3MACALL 3MACALLv0");
+			matches.add("^a=rtcp-mux$");
+			matches.add("^a=rtcp-rsize$");
+
+			matches.add("^a=rtpmap:\\d+ VP8/90000$");
+			matches.add("^a=rtcp-fb:\\d+ goog-remb$");
+			matches.add("^a=rtcp-fb:\\d+ transport-cc$");
+			matches.add("^a=rtcp-fb:\\d+ ccm fir$");
+			matches.add("^a=rtcp-fb:\\d+ nack$");
+			matches.add("^a=rtcp-fb:\\d+ nack pli$");
+			matches.add("^a=rtpmap:\\d+ rtx/90000$");
+			matches.add("^a=fmtp:\\d+ apt=\\d+$");
+
+			// Since M110 we will generate a bunch of different VP9 profiles.
+			// For now, we're lenient and just accept these even though it likely makes no sense
+			// for our use case.
+			lineOffset += matchEachLine(matches, actualLines, lineOffset);
+			for (int i = 0; i < 4; ++i) {
+				String line = actualLines.get(lineOffset);
+				if (line == null || !line.matches("^a=rtpmap:\\d+ VP9/90000$")) {
+					assertTrue("At least one VP9 codec profile is expected", i > 0);
+					break;
+				}
+
+				matches.add("^a=rtpmap:\\d+ VP9/90000$");
+				matches.add("^a=rtcp-fb:\\d+ goog-remb$");
+				matches.add("^a=rtcp-fb:\\d+ transport-cc$");
+				matches.add("^a=rtcp-fb:\\d+ ccm fir$");
+				matches.add("^a=rtcp-fb:\\d+ nack$");
+				matches.add("^a=rtcp-fb:\\d+ nack pli$");
+				matches.add("^a=fmtp:\\d+ profile-id=\\d$");
+				matches.add("^a=rtpmap:\\d+ rtx/90000$");
+				matches.add("^a=fmtp:\\d+ apt=\\d+$");
+				lineOffset += matchEachLine(matches, actualLines, lineOffset);
+			}
+
+			// Other video codec lines (dynamically detected HW codec support, e.g. H264)
+			lineOffset += matchEachLine(matches, actualLines, lineOffset);
+			for (;;) {
+				String line = actualLines.get(lineOffset);
+				if (line == null || line.matches("^a=rtpmap:\\d+ red/90000")) {
+					break;
+				}
+				lineOffset++;
+			}
+
+			matches.add("^a=rtpmap:\\d+ red/90000");
+			matches.add("^a=rtpmap:\\d+ rtx/90000");
+			matches.add("^a=fmtp:\\d+ apt=\\d+$");
+
+			matches.add("^a=rtpmap:\\d+ ulpfec/90000");
+
+			matches.add("^a=rtpmap:\\d+ flexfec-03/90000");
+			matches.add("^a=rtcp-fb:\\d+ goog-remb$");
+			matches.add("^a=rtcp-fb:\\d+ transport-cc$");
+			matches.add("^a=fmtp:\\d+ repair-window=\\d+$");
+
+			lineOffset += matchEachLine(matches, actualLines, lineOffset);
 		}
 
-		// Verify part 2
-		matchEachLine(expectedMatchesPart2, actualLines, offset);
-		offset += expectedMatchesPart2.size();
+		if (isOffer || videoEnabled) {
+			// Data channel lines
+			matches.add("^m=application 9 UDP/DTLS/SCTP webrtc-datachannel$");
+			matches.add("^c=IN IP4 0.0.0.0$");
+			matches.add("^a=ice-ufrag:[^ ]+$");
+			matches.add("^a=ice-pwd:[^ ]+$");
+			matches.add("^a=ice-options:trickle renomination$");
+			matches.add("^a=fingerprint:sha-256 [^ ]+$");
+			matches.add("^a=setup:(actpass|active)$");
+			matches.add("^a=mid:[^ ]+$");
+			matches.add("^a=sctp-port:5000$");
+			matches.add("^a=max-message-size:262144$");
+			lineOffset += matchEachLine(matches, actualLines, lineOffset);
+		}
 
 		// Lines must be equal
-		assertEquals(offset, actualLines.size());
+		assertEquals(lineOffset, actualLines.size());
 	}
 
 	/**
 	 * Helper for validateDescription
 	 */
-	private boolean isRtpmapLine(String line) {
-		return line.startsWith("a=rtpmap:")
-			|| line.startsWith("a=rtcp-fb:")
-			|| line.startsWith("a=fmtp:");
-	}
-
-	/**
-	 * Helper for validateDescription
-	 */
-	private void matchEachLine(List<String> expectedMatches, List<String> actualLines, int offset) {
-		for (int i = 0; i < expectedMatches.size(); ++i) {
+	private int matchEachLine(List<String> expectedMatches, List<String> actualLines, int offset) {
+		int expectedLength = expectedMatches.size();
+		for (int i = 0; i < expectedLength; ++i) {
 			final String expected = expectedMatches.get(i);
 			final String actual = i < actualLines.size() ? actualLines.get(i + offset) : null;
 			Log.d(TAG, "Validating \"" + actual + "\" against \"" + expected + "\"");
 			assertNotNull(actual);
 			assertTrue("Line \"" + actual + "\" did not match \"" + expected + "\"", actual.matches(expected));
 		}
+		expectedMatches.clear();
+		return expectedLength;
 	}
 
 	public void testOffer(boolean videoEnabled) throws InterruptedException, ExecutionException {

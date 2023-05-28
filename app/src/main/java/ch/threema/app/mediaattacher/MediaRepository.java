@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2022 Threema GmbH
+ * Copyright (c) 2020-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -32,22 +32,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
+import org.slf4j.Logger;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Query the system media store and return images and videos found on the system.
  */
 public class MediaRepository {
 	private final Context appContext;
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaRepository");
 
 	public MediaRepository(Context appContext) {
 		this.appContext = appContext;
@@ -196,7 +202,11 @@ public class MediaRepository {
 							duration = Integer.parseInt(metaDataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
 						} catch (Exception ignored) {
 						} finally {
-							metaDataRetriever.release();
+							try {
+								metaDataRetriever.release();
+							} catch (IOException e) {
+								logger.debug("Failed to release MediaMetadataRetriever");
+							}
 						}
 					}
 				} else if (MimeUtil.isGifFile(mimeType)) {

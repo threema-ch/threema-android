@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2022 Threema GmbH
+ * Copyright (c) 2016-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -29,6 +29,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.AppRestrictionService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
@@ -105,7 +106,8 @@ public class UpdateWorkInfoRoutine implements Runnable {
 						mdmFirstName,
 						mdmLastName,
 						mdmCSI,
-						mdmCategory
+						mdmCategory,
+						AppRestrictionService.getInstance().getMdmSource()
 				)) {
 					logger.debug("work info successfully updated");
 				}

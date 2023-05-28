@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -29,13 +29,13 @@ import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
-import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.messageplayer.FileMessagePlayer;
 import ch.threema.app.services.messageplayer.MessagePlayer;
@@ -45,7 +45,6 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.ImageViewUtil;
-import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -78,13 +77,23 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 
 		setThumbnail(holder, false);
 
-		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, fileData));
+		RuntimeUtil.runOnUiThread(() -> {
+			setupResendStatus(holder);
+			setControllerState(holder, fileData);
+		});
 
 		setControllerClickListener(holder);
-		setOnClickListener(view -> prepareDownload(fileData, fileMessagePlayer), holder.messageBlockView);
+		setOnClickListener(view -> {
+			if (
+				getMessageModel().getState() != MessageState.FS_KEY_MISMATCH &&
+				getMessageModel().getState() != MessageState.SENDFAILED
+			) {
+				prepareDownload(fileData, fileMessagePlayer);
+			}
+		}, holder.messageBlockView);
 
 		configureFileMessagePlayer(holder, position);
-		configureBodyText(holder);
+		configureBodyText(holder, fileData.getCaption());
 		configureTertiaryText(holder);
 		configureSecondaryText(holder);
 		configureSizeText(holder);
@@ -137,30 +146,12 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 	}
 
-	private void configureBodyText(@NonNull ComposeMessageHolder holder) {
-		if (!TestUtil.empty(fileData.getCaption())) {
-			holder.bodyTextView.setText(formatTextString(fileData.getCaption(), filterString));
-
-			LinkifyUtil.getInstance().linkify(
-				(ComposeMessageFragment) helper.getFragment(),
-				holder.bodyTextView,
-				getMessageModel(),
-				true,
-				actionModeStatus.getActionModeEnabled(),
-				onClickElement);
-
-			showHide(holder.bodyTextView, true);
-		} else {
-			showHide(holder.bodyTextView, false);
-		}
-	}
-
 	private void configureFileMessagePlayer(@NonNull ComposeMessageHolder holder, int position) {
 		fileMessagePlayer
 			.addListener(LISTENER_TAG, new MessagePlayer.PlaybackListener() {
 				@Override
 				public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
-					RuntimeUtil.runOnUiThread(() -> invalidate(holder, position));
+					invalidate(holder, position);
 				}
 
 				@Override
@@ -244,11 +235,6 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 								fileMessagePlayer.cancel();
 							}
 							break;
-						case ControllerView.STATUS_READY_TO_RETRY:
-							if (onClickRetry != null) {
-								onClickRetry.onClick(getMessageModel());
-							}
-							break;
 						default:
 							// no action taken for other statuses
 							break;
@@ -316,7 +302,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 		} else {
 			if (thumbnail == null) {
 				try {
-					thumbnail = getFileService().getDefaultMessageThumbnailBitmap(context, getMessageModel(), null, fileData.getMimeType());
+					thumbnail = getFileService().getDefaultMessageThumbnailBitmap(context, getMessageModel(), null, fileData.getMimeType(), false);
 					if (thumbnail != null) {
 						thumbnail = AvatarConverterUtil.convert(getContext().getResources(), thumbnail, getContext().getResources().getColor(R.color.item_controller_color), Color.WHITE);
 					}
@@ -364,6 +350,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 				holder.controller.setProgressing();
 				break;
 			case SENDFAILED:
+			case FS_KEY_MISMATCH:
 				holder.controller.setRetry();
 				break;
 			case SENT:

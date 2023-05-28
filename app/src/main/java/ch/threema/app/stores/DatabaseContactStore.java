@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -29,8 +29,12 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.services.IdListService;
+import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
@@ -39,11 +43,13 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 
 /**
  * The {@link DatabaseContactStore} is an implementation of the {@link ContactStore} interface
@@ -200,6 +206,17 @@ public class DatabaseContactStore implements ContactStore {
 				logger.debug("do not save unmodified contact");
 				return;
 			}
+			if (ThreemaFeature.canForwardSecurity(existingModel.getFeatureMask()) && !ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask())) {
+				logger.info("Forward security feature has been downgraded for contact {}", contactModel.getIdentity());
+				if (existingModel.isForwardSecurityEnabled()) {
+					// If forward security was enabled for this contact, create a status message that
+					// forward security has been disabled for this contact due to a downgrade.
+					createForwardSecurityDowngradedStatus(contactModel);
+
+					// Disable forward security for this contact
+					contactModel.setForwardSecurityEnabled(false);
+				}
+			}
 		}
 
 		contactModelFactory.createOrUpdate(contactModel);
@@ -209,6 +226,26 @@ public class DatabaseContactStore implements ContactStore {
 			this.fireOnNewContact(contactModel);
 		} else {
 			this.fireOnModifiedContact(contactModel);
+		}
+	}
+
+	private void createForwardSecurityDowngradedStatus(@NonNull ContactModel contactModel) {
+		try {
+			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+			if (serviceManager != null) {
+				MessageService messageService = serviceManager.getMessageService();
+				ContactService contactService = serviceManager.getContactService();
+				messageService.createForwardSecurityStatus(
+					contactService.createReceiver(contactModel),
+					ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE,
+					0,
+					null
+				);
+			} else {
+				logger.error("ServiceManager is null");
+			}
+		} catch (ThreemaException e) {
+			logger.error("Error while creating forward security downgrade status message", e);
 		}
 	}
 

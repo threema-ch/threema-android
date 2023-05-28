@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -30,13 +30,14 @@ import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import ch.threema.app.utils.TestUtil;
 
 public class GenericAlertDialog extends ThreemaDialogFragment {
@@ -189,12 +190,16 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
 		if (TestUtil.empty(titleString)) {
-			builder.setTitle(title);
+			if (title != 0) {
+				builder.setTitle(title);
+			}
 		} else {
 			builder.setTitle(titleString);
 		}
 		if (TextUtils.isEmpty(messageString)) {
-			builder.setMessage(message);
+			if (message != 0) {
+				builder.setMessage(message);
+			}
 		} else {
 			if (isHtml) {
 				builder.setMessage(Html.fromHtml(messageString.toString()));

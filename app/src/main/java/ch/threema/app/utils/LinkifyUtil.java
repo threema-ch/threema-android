@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -33,6 +33,7 @@ import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
@@ -42,16 +43,18 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.util.LinkifyCompat;
+import androidx.core.view.GestureDetectorCompat;
+
 import org.slf4j.Logger;
 
 import java.net.IDN;
 import java.util.regex.Pattern;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.text.util.LinkifyCompat;
-import androidx.core.view.GestureDetectorCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -123,9 +126,18 @@ public class LinkifyUtil {
 
 				if (uri != null) {
 					ClipboardManager clipboard = (ClipboardManager) ThreemaApplication.getAppContext().getSystemService(CLIPBOARD_SERVICE);
-					ClipData clip = ClipData.newPlainText(ThreemaApplication.getAppContext().getString(R.string.web_link), uri.toString());
+					String contents;
+					@StringRes int label;
+					if ("mailto".equalsIgnoreCase(uri.getScheme())) {
+						contents = uri.getSchemeSpecificPart();
+						label = R.string.linked_email;
+					} else {
+						contents = uri.toString();
+						label = R.string.web_link;
+					}
+					ClipData clip = ClipData.newPlainText(ThreemaApplication.getAppContext().getString(label), contents);
 					clipboard.setPrimaryClip(clip);
-					Toast.makeText(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getString(R.string.link_copied, uri.toString()), Toast.LENGTH_SHORT).show();
+					Toast.makeText(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getString(R.string.link_copied, contents), Toast.LENGTH_SHORT).show();
 				}
 			}
 
@@ -226,12 +238,12 @@ public class LinkifyUtil {
 				TextView widget = (TextView) v;
 				Object text = widget.getText();
 
-				// we're only interested in spannables
-				if (!(text instanceof Spannable)) {
+				// we're only interested in spanned texts
+				if (!(text instanceof Spanned)) {
 					return false;
 				}
 
-				Spannable buffer = (Spannable) text;
+				Spanned buffer = (Spanned) text;
 				int action = event.getAction();
 
 				int x = (int) event.getX() - widget.getTotalPaddingLeft() + widget.getScrollX();
@@ -259,8 +271,8 @@ public class LinkifyUtil {
 						logger.debug("ACTION_UP");
 						if (!actionModeEnabled) {
 							if (uri != null) {
-								if (fragment == null) {
-									Selection.removeSelection(buffer);
+								if (fragment == null && buffer instanceof Spannable) {
+									Selection.removeSelection((Spannable) buffer);
 								}
 
 								if (isLongClick) {
@@ -317,8 +329,8 @@ public class LinkifyUtil {
 						return true;
 					case MotionEvent.ACTION_DOWN:
 						logger.debug("ACTION_DOWN");
-						if (fragment == null) {
-							Selection.setSelection(buffer, buffer.getSpanStart(link[0]), buffer.getSpanEnd(link[0]));
+						if (fragment == null && buffer instanceof Spannable) {
+							Selection.setSelection((Spannable) buffer, buffer.getSpanStart(link[0]), buffer.getSpanEnd(link[0]));
 						}
 						return true;
 				}

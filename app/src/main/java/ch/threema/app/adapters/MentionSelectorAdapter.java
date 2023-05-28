@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -41,12 +41,12 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel, RecyclerView.ViewHolder> {
-	private UserService userService;
-	private ContactService contactService;
-	private GroupService groupService;
-	private GroupModel groupModel;
+	private final UserService userService;
+	private final ContactService contactService;
+	private final GroupService groupService;
+	private final GroupModel groupModel;
 	private OnClickListener onClickListener;
-	private Context context;
+	private final Context context;
 
 	public static class ItemHolder extends RecyclerView.ViewHolder {
 		public final View view;

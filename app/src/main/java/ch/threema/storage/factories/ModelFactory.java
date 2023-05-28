@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -42,7 +42,7 @@ public abstract class ModelFactory {
 	ModelFactory(DatabaseServiceNew databaseService, String tableName) {
 		this.databaseService = databaseService;
 		this.tableName = tableName;
-		logger.debug("instantiate " + getClass().toString());
+		logger.debug("instantiate {}", getClass());
 	}
 
 	/**

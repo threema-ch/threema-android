@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2019 Threema GmbH
+  ~ Copyright (c) 2019-2023 LeOS-Messenger GmbH
   ~ All rights reserved.
   -->
 
@@ -10,6 +10,12 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:id="@+id/video_parent">
+
+	<ProgressBar
+		android:id="@+id/video_loading_progress_bar"
+		android:layout_gravity="center"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" />
 
 	<com.google.android.exoplayer2.ui.PlayerView
 		android:id="@+id/video_view"

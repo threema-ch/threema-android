@@ -5,16 +5,16 @@
     <string name="title_compose_message">Start samtale</string>
     <string name="title_choose_recipient">Velg mottaker</string>
     <string name="title_keyfingerprint">Fingeravtrykkindikator</string>
-    <string name="title_mythreemaid">Min Threema ID</string>
-    <string name="title_threemaid">Threema ID</string>
+    <string name="title_mythreemaid">Min LeOS-Messenger ID</string>
+    <string name="title_threemaid">LeOS-Messenger ID</string>
     <string name="title_adduser">Legg til ny kontakt</string>
     <string name="title_enter_id">Legg til ID</string>
     <string name="title_invite_friend">Inviter en venn</string>
     <string name="invite_via">Inviter en venn via...</string>
-    <string name="invite_email_body">Hei,\n\nJeg bruker %1$s, den sikre Instant Messenger appen som beskytter brukernes personvern.\n\nMin Threema ID: https://threema.id/%2$s\n\nLa oss kommunisere via %1$s!\n\nVi ses,\n</string>
-    <string name="invite_sms_body">Hei! La oss bruke %1$s til å kommunisere på en sikker og privat måte! Min Threema ID: https://threema.id/%2$s</string>
+    <string name="invite_email_body">Hei,\n\nJeg bruker %1$s, den sikre Instant Messenger appen som beskytter brukernes personvern.\n\nMin LeOS-Messenger ID: https://threema.id/%2$s\n\nLa oss kommunisere via %1$s!\n\nVi ses,\n</string>
+    <string name="invite_sms_body">Hei! La oss bruke %1$s til å kommunisere på en sikker og privat måte! Min LeOS-Messenger ID: https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema. Den sikre meldingsapplikasjonen som beskytter ditt personvern.</string>
-    <string name="enter_id_hint">Legg til Threema ID</string>
+    <string name="enter_id_hint">Legg til LeOS-Messenger ID</string>
     <string name="account_links">Tilkoblede kontoer</string>
     <string name="menu_settings">Innstillinger</string>
     <string name="menu_about">Om Threema</string>
@@ -69,8 +69,8 @@ når den første meldingen mottas.</string>
     <string name="prefs_troubleshooting">Feilsøking</string>
     <string name="prefs_sum_troubleshooting">Analyser og fiks problemer</string>
     <string name="prefs_workarounds">Løsninger</string>
-    <string name="prefs_title_threema_push_switch">Bruk Threema Push</string>
-    <string name="prefs_sum_threema_push_on">Bruk Threema Push for for å bli varslet om nye meldinger.</string>
+    <string name="prefs_title_threema_push_switch">Bruk LeOS-Messenger Push</string>
+    <string name="prefs_sum_threema_push_on">Bruk LeOS-Messenger Push for for å bli varslet om nye meldinger.</string>
     <string name="prefs_sum_threema_push_off">Sjekk for nye meldinger ved bruk av systemets push-tjeneste</string>
     <string name="prefs_logging">Logging</string>
     <string name="prefs_title_message_log_switch">Logg til fil</string>
@@ -98,7 +98,7 @@ når den første meldingen mottas.</string>
     <string name="next">Neste</string>
     <string name="finish">Ferdig</string>
     <string name="please_wait">Vennligst vent...</string>
-    <string name="wizard_first_create_id">Opprett din Threema ID...</string>
+    <string name="wizard_first_create_id">Opprett din LeOS-Messenger ID...</string>
     <string name="wizard1_sync_contacts">Synkroniser kontakter</string>
     <string name="wizard2_email_hint">Legg til din e-postadresse</string>
     <string name="wizard2_email_linking">Legg til e-post til din ID</string>
@@ -112,7 +112,9 @@ når den første meldingen mottas.</string>
     <string name="cancel">Avbryt</string>
     <string name="copy_message_action">Kopier</string>
     <string name="delete_contact_action">Slett kontakt</string>
+    <string name="delete_multiple_contact_action">Slett kontakter</string>
     <string name="scan_id">Skann ID</string>
+    <string name="id_scanned">ID skannet</string>
     <string name="id_mismatch">Den offentlige nøkkelen du har skannet samsvarer ikke med nøkkelen som er lagret på serveren for denne IDen. Dette betyr at noen har manipulert den skannede koden og at du ikke bør stole på nøkkelen.</string>
     <string name="scan_successful">ID-en har blitt skannet og kontakten er nå verifisert.</string>
     <string name="scan_duplicate">IDen har allerede blitt skannet og verifisert.</string>
@@ -122,21 +124,21 @@ når den første meldingen mottas.</string>
     <string name="share_via">Del via...</string>
     <string name="share_subject">%s samtale</string>
     <string name="message_delete_undo">Angre</string>
-    <string name="message_deleted">Melding(er) slettet</string>
-    <string name="mobile_already_linked">Din Threema ID er allerede koblet til dette telefonnummeret</string>
-    <string name="email_already_linked">Din Threema ID er allerede koblet til denne e-postadressen</string>
+    <string name="mobile_already_linked">Din LeOS-Messenger ID er allerede koblet til dette telefonnummeret</string>
+    <string name="email_already_linked">Din LeOS-Messenger ID er allerede koblet til denne e-postadressen</string>
     <string name="whoaaa">Varsel</string>
     <string name="really_delete_message_title">Slett melding</string>
     <string name="really_delete_thread">Slett samtale</string>
+    <string name="really_delete_multiple_threads">Slett samtaler</string>
     <string name="really_delete_contact">Er du sikker på at du vil slette denne kontakten og alle tilhørende meldinger?</string>
     <string name="image_placeholder">Bilde</string>
-    <string name="invalid_threema_id">Ugyldig Threema ID</string>
+    <string name="invalid_threema_id">Ugyldig LeOS-Messenger ID</string>
     <string name="contact_already_exists">Kontakten finnes allerede</string>
     <string name="close">Lukk</string>
     <string name="creating_contact">Legger til ny kontakt</string>
     <string name="creating_contact_successful">Kontakt lagt til</string>
     <string name="invalid_threema_qr_code">Ugyldig QR-kode</string>
-    <string name="threema_contact">Threema kontakt</string>
+    <string name="threema_contact">LeOS-Messenger kontakt</string>
     <string name="first_name">Fornavn</string>
     <string name="last_name">Etternavn</string>
     <string name="os_licenses">Lisenser</string>
@@ -147,7 +149,7 @@ når den første meldingen mottas.</string>
     <string name="verify_failed_not_linked">Verifisering av telefonnummeret mislyktes. Verifikasjonsprosessen har blitt avbrutt.</string>
     <string name="check_incoming_sms">Sjekker for innkommende SMS</string>
     <string name="backup_title">Eksporter ID</string>
-    <string name="backup_sum">Eksporter din Threema ID</string>
+    <string name="backup_sum">Eksporter din LeOS-Messenger ID</string>
     <string name="backup_and_delete">Sikkerhetskopier og slett</string>
     <string name="delete_id_title">Slett ID</string>
     <string name="delete_id_message">Du vil ikke ha muligheten til å sende eller motta meldinger med denne IDen igjen, med mindre du har tatt en sikkerhetskopi eller eksportert og lagret en kopi av IDen.\n\nOm du ikke har planer om å bruke denne IDen igjen, er det anbefalt å opprette et tilbakekallingspassord og tilbakekalle IDen på myid.threema.ch/revoke før du sletter den.</string>
@@ -161,8 +163,8 @@ når den første meldingen mottas.</string>
     <string name="backup_id_summary">Teksten som er vist ovenfor eller QR-koden, sammen med passordet du har valgt, kan bli brukt til å gjenopprette IDen din på en annen enhet. Du burde kopiere det til et passende sted, del det via e-post eller skann QR-koden med en annen enhet.</string>
     <string name="support">Hjelp</string>
     <string name="support_url">https://threema.ch/android/support/</string>
-    <string name="backup_share_content">Den følgende teksten, sammen med det valgte passordet, kan bli brukt til å gjenopprette din Threema ID.</string>
-    <string name="backup_share_subject">Threema ID eksport for</string>
+    <string name="backup_share_content">Den følgende teksten, sammen med det valgte passordet, kan bli brukt til å gjenopprette din LeOS-Messenger ID.</string>
+    <string name="backup_share_subject">LeOS-Messenger ID eksport for</string>
     <string name="add_attachment">Nytt vedlegg</string>
     <string name="invalid_passphrase">Ugyldig passfrase</string>
     <string name="master_key_locked">Masternøkkel er låst</string>
@@ -183,7 +185,7 @@ når den første meldingen mottas.</string>
     <string name="video_placeholder">Video</string>
     <string name="audio_placeholder">Lyd</string>
     <string name="restoring_backup">Gjenopprett sikkerhetskopi</string>
-    <string name="server_message_title">Melding fra Threema Server</string>
+    <string name="server_message_title">Melding fra LeOS-Messenger Server</string>
     <string name="error">Feil</string>
     <string name="no_contacts"><![CDATA[Du har ingen kontakter enda. Skru på synkronisering (Innstillinger > Personvern) eller legg til kontakter manuelt.]]></string>
     <string name="masterkey_title">Skriv inn passfrase</string>
@@ -256,8 +258,6 @@ når den første meldingen mottas.</string>
     <string name="prefs_masterkey_notification_newmsg_off">Nye meldinger lager ikke et varsel når masternøkkelen er låst</string>
     <string name="prefs_masterkey_notification_newmsg_on">Nye beskjeder viser et generelt varsel når masternøkkelen er låst</string>
     <string name="chat_history_attached">Samtaleloggen er vedlagt.</string>
-    <string name="new_message">1 ny melding</string>
-    <string name="new_messages">Nye meldinger</string>
     <string name="backup_data_title">Sikkerhetskopi</string>
     <string name="backup_data_password_msg">Sikkerhetskopien blir lagret i en ZIP-fil på den interne USB lagringen og kan bli gjenoprettet på en hvilken som helst Android enhet. Vennligst skriv inn et passord for å beskytte din sikkerhetskopi.</string>
     <string name="restore_data_password_msg">Skriv inn passordet du brukte til å lage denne sikkerhetskopien.</string>
@@ -283,7 +283,7 @@ når den første meldingen mottas.</string>
     <string name="prefs_group_notifications">Gruppesamtale</string>
     <string name="add_group_members_list">Gruppemedlemmer</string>
     <string name="group_select_at_least_two">Du må velge minst én medlem for å fortsette</string>
-    <string name="group_select_max" tools:ignore="PluralsCandidate">Du kan ikke velge mer enn %1$d gruppemedlemmer</string>
+    <string name="group_select_max">Du kan ikke velge mer enn %1$d gruppemedlemmer</string>
     <string name="search">Søk</string>
     <string name="hint_search_keyword">Søk etter nøkkelord</string>
     <string name="add_group_owner">Gruppegrunnlegger</string>
@@ -319,7 +319,7 @@ når den første meldingen mottas.</string>
     <string name="updating_group">Oppdaterer gruppe</string>
     <string name="status_create_group">Gruppe opprettet.</string>
     <string name="status_rename_group">Gruppenavn endret til \"%1$s\"</string>
-    <string name="status_group_new_photo">Gruppe oppdatert.</string>
+    <string name="status_group_new_photo">Gruppebilde oppdatert.</string>
     <string name="status_group_new_member">\"%1$s\" ble lagt til gruppen.</string>
     <string name="status_group_member_left">\"%1$s\" forlot gruppen.</string>
     <string name="status_group_member_kicked">\"%1$s\" har blitt fjernet fra gruppen.</string>
@@ -351,14 +351,13 @@ når den første meldingen mottas.</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Vis en multi-farget eksempel-figur om kontaktbilde mangler</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Bruk en grå eksempel-figur om kontaktbilde mangler</string>
     <string name="prefs_sum_show_inactive_contacts_on">Vis alle Threema-IDer i kontaktlisten din</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Skjul inaktive/opphevede Threema IDer</string>
+    <string name="prefs_sum_show_inactive_contacts_off">Skjul inaktive/opphevede LeOS-Messenger IDer</string>
     <string name="contact_sorting_first_name">Fornavn - Etternavn</string>
     <string name="contact_sorting_last_name">Etternavn - Fornavn</string>
     <string name="contact_format_first_name_last_name">Fornavn Etternavn</string>
     <string name="contact_format_last_name_first_name">Etternavn Fornavn</string>
     <string name="block_contact">Blokker kontakt</string>
     <string name="unblock_contact">Fjern kontaktblokkering</string>
-    <string name="unread_messages">%d uleste meldinger</string>
     <string name="one_unread_message">1 ulest melding</string>
     <string name="really_unlink_contact_title">Fjern kontaktkobling</string>
     <string name="really_unlink_contact">Vil du virkelig fjerne koblingen til denne kontakten?</string>
@@ -370,11 +369,10 @@ når den første meldingen mottas.</string>
     <string name="prefs_title_fullscreen_ime">Fullskjerm tastatur</string>
     <string name="prefs_sum_fullscreen_ime_on">Tastaturet kommer til å dekke over applikasjonen om enheten er i landskapsmodus</string>
     <string name="prefs_sum_fullscreen_ime_off">Vis en forhåndsvisning av samtalen over tastaturet om det er plass</string>
-    <string name="add_acount_from_within_threema">Behandle Threema IDen din internt i applikasjonen</string>
+    <string name="add_acount_from_within_threema">Behandle LeOS-Messenger IDen din internt i applikasjonen</string>
     <string name="save_image">Lagre bilde</string>
     <string name="share_image">Del bilde</string>
     <string name="view_in_gallery">Vis i galleri</string>
-    <string name="file_saved">%d fil(er) vellykket lagret.</string>
     <string name="token_register_failed">Push token ble ikke oppdatert, vennligst prøv igjen.</string>
     <string name="internet_connection_required">Ingen tilgang til internett</string>
     <string name="prefs_sum_save_media">Lagre innkommende bilder og videoer, samt utgående bilder i ukryptert format</string>
@@ -393,7 +391,7 @@ når den første meldingen mottas.</string>
     <string name="push_not_available_text2">%s vil prøve å åpne en vedvarende backgrunnstilkobling til serveren. Dette kan være ustabilt om batterioptimalisering på din enhet forstyrrer bakgrunnstilkoblingen.</string>
     <string name="backup_in_progress">Sikkerhetskopi pågår</string>
     <string name="backup_or_restore_success_body">Sikkerhetskopi fullført</string>
-    <string name="backup_or_restore_error">Threema sikkerhetskopi</string>
+    <string name="backup_or_restore_error">LeOS-Messenger sikkerhetskopi</string>
     <string name="backup_or_restore_error_body">Sikkerhetskopi ble ikke skikkelig fullført</string>
     <string name="could_not_download_message">Kunne ikke laste ned melding</string>
     <string name="info">Info</string>
@@ -416,10 +414,16 @@ når den første meldingen mottas.</string>
     <string name="media_gallery_pictures">Bilder</string>
     <string name="media_gallery_videos">Videoer</string>
     <string name="group_membership_title">Medlem av disse gruppene</string>
+    <string name="group_description">Beskrivelse av gruppen</string>
+    <string name="change_group_description">Endre beskrivelse av gruppen</string>
+    <string name="add_group_description">Legg til beskrivelse av gruppen</string>
+    <string name="read_more">les mer</string>
+    <string name="read_less">les mindre</string>
+    <string name="changed_group_desc_date">"Sist endret: "</string>
     <string name="num_items_sected">%s valgt</string>
-    <string name="really_delete_media" tools:ignore="PluralsCandidate">Vil du virkelig slette %d media-meldinger?</string>
+    <string name="really_delete_media">Vil du virkelig slette %d media-meldinger?</string>
     <string name="check_updates">Sjekk for oppdateringer</string>
-    <string name="masterkey_lock_explain">Threema tar vare på passfrasen i minnet. Om du ofte må skrive inn passfrasen på nytt, sørg for at strømsparingsinnstillinger på telefonen ikke stenger ned Threema.</string>
+    <string name="masterkey_lock_explain">LeOS-Messenger tar vare på passfrasen i minnet. Om du ofte må skrive inn passfrasen på nytt, sørg for at strømsparingsinnstillinger på telefonen ikke stenger ned Threema.</string>
     <string name="identity_already_exists">Denne IDen er allerede i kontaktlisten din.</string>
     <string name="share_contact">Del kontakt</string>
     <string name="add_shortcut">Legg til snarvei</string>
@@ -433,7 +437,6 @@ når den første meldingen mottas.</string>
     <string name="share_conversation_body">Du trenger et moderne ZIP-verktøy med AES støtte for å åpne denne .zip filen, for eksempel:
 http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Samtalen vil bli sendt som en kryptert .zip fil. Vennligst skriv et passord:</string>
-    <string name="new_messages_in_chats" tools:ignore="PluralsCandidate">%1$d nye meldinger i %2$d samtaler</string>
     <string name="ballot_create">Lag en avstemning</string>
     <string name="ballot_choice_add">Legg til valg</string>
     <string name="ballot_state_closed">Stengt</string>
@@ -451,8 +454,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="ballot_overview">Alle avstemninger</string>
     <string name="ballot_copy">Kopier avstemning</string>
     <string name="ballot_remove">Fjern avstemning</string>
-    <string name="ballot_really_delete">Fjern avstemning(er)</string>
-    <string name="ballot_really_delete_text" tools:ignore="PluralsCandidate">Vil du virkelig slette %1$d avstemning(er)? Det er ikke mulig å gjenopprette stemmene.</string>
     <string name="ballot_not_exist">Avstemning finnes ikke</string>
     <string name="ballot_tap_to_vote">Stem ved å trykke</string>
     <string name="ballot_tap_to_view_results">Avstemning stengt. Trykk for å vise resultatet</string>
@@ -467,26 +468,29 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="invalid_cannot_send">Du kan ikke sende meldinger til en ugyldig kontakt</string>
     <string name="ballot_answer_count_error">Vennligst skriv minimum to svar til avstemningen.</string>
     <string name="ballot_one_contact_not_supported">Varsel: %1$s vil ikke kunne delta i avstemningen.</string>
-    <string name="ballot_x_contact_not_supported" tools:ignore="PluralsCandidate">Varsel: %1$d kontakter vil ikke kunne delta i avstemningen.</string>
+    <string name="ballot_x_contact_not_supported">Varsel: %1$d kontakter vil ikke kunne delta i avstemningen.</string>
     <string name="contact_state_inactive">Inaktiv</string>
     <string name="contact_state_invalid">Ugyldig</string>
     <string name="back">Tilbake</string>
     <string name="wearable_reply">Svar</string>
     <string name="wearable_reply_label">Svar til %s</string>
     <string name="message_acknowledged">\"Enig\" sendt</string>
-    <string name="push_disable_text">Om du fortsetter, så vil \"Threema Push\" bli brukt istedenfor push-tjenesten til systemet. Dette hjelper til å redusere ditt digitale fotavtrykk, men krever at telefonen er satt opp til å tillate å kjøre i bakgrunnen. Du må kanskje kontakte brukerstøtten til produsenten av din telefon for hjelp til konfigurasjon om du ikke finner denne innstillingen.</string>
+    <string name="push_disable_text">Om du fortsetter, så vil \"LeOS-Messenger Push\" bli brukt istedenfor push-tjenesten til systemet. Dette hjelper til å redusere ditt digitale fotavtrykk, men krever at telefonen er satt opp til å tillate å kjøre i bakgrunnen. Du må kanskje kontakte brukerstøtten til produsenten av din telefon for hjelp til konfigurasjon om du ikke finner denne innstillingen.</string>
     <string name="ballot_intermediate_results_show">Vis midlertidige resultater</string>
     <string name="converting_video">Behandler video</string>
     <string name="video_size_small">Høy (mindre data)</string>
     <string name="video_size_large">Lav (mer data)</string>
     <string name="video_size_original">Ingen (stor mengde data)</string>
     <string name="prefs_video_size">Videokomprimering</string>
+    <string name="menu_video_size_small">Liten størrelse</string>
+    <string name="menu_video_size_medium">Middels størrelse</string>
+    <string name="menu_video_size_large">Original størrelse</string>
     <string name="show_contact">Vis kontakt</string>
     <string name="chat_with">Samtale med %1$s</string>
     <string name="kick_user_from_group">Fjern %1$s fra gruppen</string>
     <string name="show_as_qrcode">Vis som en QR-kode</string>
     <string name="qr_code">QR-kode</string>
-    <string name="really_leave_id_export">Om du ikke allerede har gjort det; vennligst lagre din ID eksport tekst eller den tilsvarende QR-koden på en trygg plass eller skriv den ut. Threema IDen din kan ikke gjenopprettes uten en sikkerhetskopi.</string>
+    <string name="really_leave_id_export">Om du ikke allerede har gjort det; vennligst lagre din ID eksport tekst eller den tilsvarende QR-koden på en trygg plass eller skriv den ut. LeOS-Messenger IDen din kan ikke gjenopprettes uten en sikkerhetskopi.</string>
     <string name="revocation_key_title">ID opphevelse</string>
     <string name="revocation_key_not_set">Ingen passord for ID opphevelse</string>
     <string name="revocation_key_set_at">Passord valgt %1$s</string>
@@ -495,12 +499,13 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="really_remove_wallpapers">Vil du virkelig fjerne alle bakgrunner?</string>
     <string name="wallpapers_removed">Bakgrunner fjernet</string>
     <string name="invalid_backup">Ugyldig sikkerhetskopi-data. Kan ikke gjenopprette.</string>
+    <string name="invalid_zip_restore_failed">Gjenoppretting feilet. Ugyldig gjenopprettingsfil: %1$s</string>
     <string name="revocation_explain">Passordet du skriver inn her gjør at du kan trekke tilbake din ID hos https://myid.threema.ch/revoke i tilfelle du mister det eller det blir stjålet.</string>
     <string name="no_unread_messages">Ingen uleste meldinger eller PIN-lås aktivert.</string>
     <string name="send_media">Send media</string>
     <string name="rotate">Roter</string>
     <string name="remove">Fjern</string>
-    <string name="image_already_added">Dette bildet har allerede blitt lagt til.</string>
+    <string name="item_already_added">Denne gjenstanden har allerede blitt lagt til.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">Minimum %d tegn.</string>
     <string name="mark_read">Merk som lest</string>
     <string name="attach_document">Fil</string>
@@ -508,10 +513,9 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="file_placeholder">Fil</string>
     <string name="internal_storage">Intern lagring</string>
     <string name="no_activity_for_mime_type">Fant ingen app for å åpne denne filen.</string>
-    <string name="message_copied">Melding kopiert</string>
     <string name="open_from">Åpne fra</string>
     <string name="file_one_contact_not_supported">%1$s kan ikke motta filer.</string>
-    <string name="file_x_contact_not_supported" tools:ignore="PluralsCandidate">Varsel: %1$d kontakter kan ikke motta filen.</string>
+    <string name="file_x_contact_not_supported">Varsel: %1$d kontakter kan ikke motta filen.</string>
     <string name="mime_android_apk">Android pakke</string>
     <string name="mime_audio">Lydfil</string>
     <string name="mime_certificate">Digitalt sertifikat</string>
@@ -550,7 +554,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="storage_explain">Om du går tom for lagring, så kan du slette gamle krypterte mediafiler for å frigjøre plass. Miniatyrbilder vil ikke bli slettet. Merk at dette ikke er en automatisk prosess. Med mindre du trykker på noen av knappene nedenfor, så vil ingenting bli slettet.</string>
     <string name="delete_data">Slett data nå</string>
     <string name="delete_date_confirm_message">Om du vil fortsette, så vil filer bli slettet, men miniatyrbilder blir beholdt.</string>
-    <string name="media_files_deleted" tools:ignore="PluralsCandidate">%d mediafiler har blitt slettet</string>
     <string name="storage_management">Behandle lagring</string>
     <string name="media">Media</string>
     <string name="prefs_storage_mgmt_title">Rydd opp i media, filer og meldinger</string>
@@ -563,7 +566,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="invalid_data">Ugyldig data, kan ikke sende.</string>
     <string name="prefs_emoji_style">Emoji stil</string>
     <string name="prefs_android_emojis">System Emojier</string>
-    <string name="prefs_default_emojis">Threema Emojier (standard)</string>
+    <string name="prefs_default_emojis">LeOS-Messenger Emojier (standard)</string>
     <string name="android_emojis_warning">Merk: Systemets tegnsett kan kanskje ikke vise alle Emojier som er støttet av Threema.</string>
     <string name="crop">Beskjær</string>
     <string name="scan_id_mismatch_title">ID samsvarer ikke</string>
@@ -580,18 +583,16 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="fontsize_large">Stor</string>
     <string name="fontsize_xlarge">Ekstra stor</string>
     <string name="no_app_for_location">Ingen kart-applikasjon er funnet på denne enheten</string>
-    <string name="chat_deleted" tools:ignore="PluralsCandidate">%d samtale(r) slettet</string>
     <string name="prefs_sendlog">Send loggfil</string>
-    <string name="prefs_sendlog_summary">Send loggfil til Threema for videre analyse, i tilfelle du har problemer</string>
+    <string name="prefs_sendlog_summary">Send loggfil til LeOS-Messenger for videre analyse, i tilfelle du har problemer</string>
     <string name="prefs_exportlog">Eksport loggfil</string>
     <string name="prefs_exportlog_summary">Del loggfil med en annen app</string>
-    <string name="permission_storage_required">For å lagre eller sende media, gi Threema tilgang til lagring på enheten.</string>
-    <string name="permission_location_required">For å sende en posisjon til andre, gi Threema tilgang til din posisjon.</string>
-    <string name="permission_contacts_required">For å sende en kontakt, gi Threema tilgang til å se kontakter.</string>
+    <string name="permission_storage_required">For å lagre eller sende media, gi LeOS-Messenger tilgang til lagring på enheten.</string>
+    <string name="permission_location_required">For å sende en posisjon til andre, gi LeOS-Messenger tilgang til din posisjon.</string>
+    <string name="permission_contacts_required">For å sende en kontakt, gi LeOS-Messenger tilgang til å se kontakter.</string>
     <string name="message_declined">\"Uenig\" sendt</string>
     <string name="notifications_settings">Varsler</string>
     <string name="notifications_default">Standard innstillinger</string>
-    <string name="notifications_for_x_hours" tools:ignore="PluralsCandidate">For %d time(r)</string>
     <string name="notifications_until">Frem til %s</string>
     <string name="notifications_mute">Dempet</string>
     <string name="notifications_choose_sound">Velg lyd</string>
@@ -606,34 +607,35 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="new_wizard_setup_threema">Sett opp nå</string>
     <string name="new_wizard_restore_id_backup">Gjenopprett eksportert ID</string>
     <string name="new_wizard_welcome">Velkommen til Threema!</string>
-    <string name="new_wizard_move_finger">Beveg fingeren din på skjermen for å generere en ny Threema ID.</string>
-    <string name="new_wizard_this_is_your_id">Dette er din Threema ID.</string>
-    <string name="new_wizard_works_like_phone_number">Din Threema ID fungerer på samme måte som et telefonnummer.\nDine venner kan nå deg gjennom denne ID-en.</string>
+    <string name="new_wizard_move_finger">Beveg fingeren din på skjermen for å generere en ny LeOS-Messenger ID.</string>
+    <string name="new_wizard_this_is_your_id">Dette er din LeOS-Messenger ID.</string>
+    <string name="new_wizard_works_like_phone_number">Din LeOS-Messenger ID fungerer på samme måte som et telefonnummer.\nDine venner kan nå deg gjennom denne ID-en.</string>
     <string name="new_wizard_choose_nickname">Velg et kallenavn</string>
     <string name="new_wizard_nickname_explain">Vennene dine vil se ditt kallenavn i varslene sine.</string>
     <string name="new_wizard_hint_enter_nickname">Skriv ett kallenavn</string>
     <string name="new_wizard_help_your_friends_find_you">Hjelp vennene dine å finne deg!</string>
-    <string name="new_wizard_link_mobile">Koble telefonnummeret ditt og/eller e-postadressen din til din Threema ID.</string>
-    <string name="new_wizard_link_mobile_only">Koble telefonnummeret ditt til din Threema ID.</string>
+    <string name="new_wizard_link_mobile">Koble telefonnummeret ditt og/eller e-postadressen din til din LeOS-Messenger ID.</string>
+    <string name="new_wizard_link_mobile_only">Koble telefonnummeret ditt til din LeOS-Messenger ID.</string>
     <string name="new_wizard_hint_mobile_number">Telefonnummer (valgfritt)</string>
     <string name="new_wizard_hint_email">E-post (valgfritt)</string>
     <string name="new_wizard_find_friends">Finn vennene dine i Threema</string>
     <string name="new_wizard_sync_contacts_explain">Skru på for å se hvilke venner som bruker Threema.</string>
     <string name="new_wizard_done_title">Du er ferdig!\nEr alt korrekt?</string>
     <string name="new_wizard_linked_to">Koblet til</string>
-    <string name="new_wizard_need_internet">En stabil internettilkobling er nødvendig for å lage din unike Threema ID. Vennligst prøv igjen.</string>
+    <string name="new_wizard_need_internet">En stabil internettilkobling er nødvendig for å lage din unike LeOS-Messenger ID. Vennligst prøv igjen.</string>
     <string name="new_wizard_more_information">Mer informasjon</string>
     <string name="contact_details_id_copied">ID ble kopiert til utklippstavlen</string>
     <string name="contact_details_nickname_copied">Kallenavn ble kopiert til utklippstavlen</string>
-    <string name="new_wizard_use_id_as_nickname">Vil du bruke Threema ID-en din som kallenavn?</string>
+    <string name="new_wizard_use_id_as_nickname">Vil du bruke LeOS-Messenger ID-en din som kallenavn?</string>
     <string name="new_wizard_phone_email_invalid">Telefonnummeret eller e-postadressen du har skrevet er ikke gyldig. \nVennligst fiks før du fortsetter.</string>
     <string name="new_wizard_phone_invalid">Telefonnummeret du har skrevet er ikke gyldig. \nVennligst fiks før du fortsetter.</string>
-    <string name="new_wizard_info_fingerprint">Ved å flytte på fingeren din, lager du tilfeldig data (kalt entropi), som blir brukt til å generere nøkkelparet som er knyttet til din nye unike Threema ID. Nøkkelparet består av en <b>offentlig nøkkel</b> som er sendt til dine venner og en <b>privat nøkkel</b> som er trygt lagret på din enhet. Vennene dine krypterer meldinger til deg med din offentlige nøkkel. Bare eieren av den private nøkkelen, og ingen andre, kan dekryptere disse meldingene.</string>
+    <string name="new_wizard_info_fingerprint">Ved å flytte på fingeren din, lager du tilfeldig data (kalt entropi), som blir brukt til å generere nøkkelparet som er knyttet til din nye unike LeOS-Messenger ID. Nøkkelparet består av en <b>offentlig nøkkel</b> som er sendt til dine venner og en <b>privat nøkkel</b> som er trygt lagret på din enhet. Vennene dine krypterer meldinger til deg med din offentlige nøkkel. Bare eieren av den private nøkkelen, og ingen andre, kan dekryptere disse meldingene.</string>
     <string name="new_wizard_info_id">Du har også laget et nøkkelpar. Den offentlige nøkkelen har blitt sendt til våre servere på en sikker måte. Den private nøkkelen forlater aldri din enhet. Dette sørger for at ingen andre kan lese dine meldinger.</string>
-    <string name="new_wizard_info_sync_contacts">Om du aktiverer denne funksjonen, så krypterer Threema e-postadresser og telefonnummer på en sikker måte (en-veis ved hjelp av hash), før det blir sendt til serveren for å sjekke om der finnes matcher. Vi lagrer aldri data fra adresseboken din på våre servere.</string>
-    <string name="new_wizard_info_link">Ved å oppgi ditt telefonnummer og e-postadresse, så kan Threema hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Informasjonen blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke Threema helt anonymt, så kan du hoppe over dette trinnet.</string>
-    <string name="new_wizard_info_link_phone_only">Ved å oppgi ditt telefonnummer, så kan Threema hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Telefonnummeret blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke Threema helt anonymt, så kan du hoppe over dette trinnet.</string>
-    <string name="new_wizard_info_nickname">Kallenavnet blir brukt i push-varsler på noen enheter eller som en ekstra måte å identifisere deg for brukere som ikke enda har deg i sin adressebok. Vi anbefaler å bare oppgi fornavnet ditt eller et pseudonym. Om du ikke velger et kallenavn så blir din Threema ID brukt som standard.</string>
+    <string name="new_wizard_info_sync_contacts">Om du aktiverer denne funksjonen, så krypterer LeOS-Messenger e-postadresser og telefonnummer på en sikker måte (en-veis ved hjelp av hash), før det blir sendt til serveren for å sjekke om der finnes matcher. Vi lagrer aldri data fra adresseboken din på våre servere.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Kontaktsynkronisering kan hjelpe deg å finne vennene dine automatisk. Om du godtar, så vil telefonnummer og e-postadresser fra din kontaktliste bli kryptert og sendt til vår server for å se etter treff. Ingen data vil bli lagret eller delt med noen. \n\nVil du aktivere kontaktsynkronisering?</string>
+    <string name="new_wizard_info_link">Ved å oppgi ditt telefonnummer og e-postadresse, så kan LeOS-Messenger hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Informasjonen blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke LeOS-Messenger helt anonymt, så kan du hoppe over dette trinnet.</string>
+    <string name="new_wizard_info_link_phone_only">Ved å oppgi ditt telefonnummer, så kan LeOS-Messenger hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Telefonnummeret blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke LeOS-Messenger helt anonymt, så kan du hoppe over dette trinnet.</string>
+    <string name="new_wizard_info_nickname">Kallenavnet blir brukt i push-varsler på noen enheter eller som en ekstra måte å identifisere deg for brukere som ikke enda har deg i sin adressebok. Vi anbefaler å bare oppgi fornavnet ditt eller et pseudonym. Om du ikke velger et kallenavn så blir din LeOS-Messenger ID brukt som standard.</string>
     <string name="not_linked">Ikke koblet</string>
     <string name="linked">Koblet</string>
     <string name="pending_sms_verification_notice">Telefonnummeret ditt er ikke bekreftet enda.</string>
@@ -645,8 +647,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="status_ballot_user_modified_vote">\"%1$s\" har endret stemmen sin til \"%2$s\"</string>
     <string name="status_ballot_all_votes">Stemmer for \"%1$s\" er fullført</string>
     <string name="restore">Gjenopprett</string>
-    <string name="new_wizard_anonymous_confirm">Du har ikke skrevet et telefonnummer eller en e-postadresse for å koble til din Threema ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke Threema anonymt?</string>
-    <string name="new_wizard_anonymous_confirm_phone_only">Du har ikke skrevet et telefonnummer for å koble til din Threema ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke Threema anonymt?</string>
+    <string name="new_wizard_anonymous_confirm">Du har ikke skrevet et telefonnummer eller en e-postadresse for å koble til din LeOS-Messenger ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke LeOS-Messenger anonymt?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Du har ikke skrevet et telefonnummer for å koble til din LeOS-Messenger ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke LeOS-Messenger anonymt?</string>
     <string name="new_wizard_scan_id_backup">Eller skann QR-koden av din ID-eksport</string>
     <string name="error_saving_file">Feil ved lagring av fil. Sjekk tillatelser.</string>
     <string name="wait_one_minute">Vennligst vent minst 10 minutter for at SMS-en skal bli mottatt før du spør om en telefonsamtale.</string>
@@ -671,7 +673,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_proximity_sensor_explain">Bruk anropshøyttaler for lydmeldinger når nærhetssensoren er tildekket</string>
     <string name="error_creating_group">Feil ved oppretting/oppdatering av gruppe</string>
     <string name="no_media_found_generic">Ingen medier er funnet i denne samtalen</string>
-    <string name="max_images_reached" tools:ignore="PluralsCandidate">Max. %d elementer kan bli redigert samtidig</string>
+    <string name="max_images_reached">Max. %d elementer kan bli redigert samtidig</string>
     <string name="enter_description">Vennligst beskriv bug/problem her.</string>
     <string name="add_caption_hint">Legg ved ekstra beskrivelse</string>
     <string name="disable">Deaktiver</string>
@@ -688,7 +690,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="lock_option_none">Ingen</string>
     <string name="lock_option_pin">PIN-kode</string>
     <string name="lock_option_screenlock">Skjermlås</string>
-    <string name="hide_chat_message_explain">Threema tillater deg å beskytte enkelte samtaler med en PIN-kode og å gjemme dem midlertidig fra meldingslisten. For å aktivere private samtaler, vennligst lag en PIN-kode eller aktiver Skjermlås (Android 6.0+) i innstillingene.</string>
+    <string name="hide_chat_message_explain">LeOS-Messenger tillater deg å beskytte enkelte samtaler med en PIN-kode og å gjemme dem midlertidig fra meldingslisten. For å aktivere private samtaler, vennligst lag en PIN-kode eller aktiver Skjermlås (Android 6.0+) i innstillingene.</string>
     <string name="set_lock">Lag lås nå</string>
     <string name="prefs_title_access_protection">Adgangsbeskyttelse</string>
     <string name="private_chat_subject">Privat</string>
@@ -710,16 +712,14 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="restore_disable_energy_saving">Vennligst koble enheten din til en lader og skru av alle batterisparings-innstillinger for å forhindre enheten din fra å avbryte sikkerhetskopi- eller gjenopprettingsjobben.</string>
     <string name="draft">Utkast</string>
     <string name="prefs_bigger_single_emojis">Større emojier (når alene)</string>
-    <string name="wizard1_sync_work">Synkroniserer Threema Work data...</string>
+    <string name="wizard1_sync_work">Synkroniserer LeOS-Messenger Work data...</string>
     <string name="notification_hidden_text">Innhold er skjult</string>
     <string name="really_reset_ringtones">Vil du virkelig resette innstillinger for varsellyder til standard?</string>
     <string name="reset_ringtones_confirm">Innstillinger for varsellyder har blitt resatt.</string>
     <string name="prefs_language_override">Språk</string>
-    <string name="threema_channel_intro">Threema Channel gir deg nyheter om alt som omhandler Threema. Vil du abonnere til Threema Channel og legge det til dine kontakter? Det er gratis og du kan avslutte abonnementet når som helst.</string>
+    <string name="threema_channel_intro">LeOS-Messenger Channel gir deg nyheter om alt som omhandler Threema. Vil du abonnere til LeOS-Messenger Channel og legge det til dine kontakter? Det er gratis og du kan avslutte abonnementet når som helst.</string>
     <string name="quote">Sitat</string>
-    <string name="really_delete_contacts_message" tools:ignore="PluralsCandidate">Vil du virkelig slette %1$d kontakter og alle tilhørende samtaler?</string>
     <string name="contacts_deleted">Kontakter har blitt slettet</string>
-    <string name="some_contacts_not_deleted" tools:ignore="PluralsCandidate">%d kontakter kunne ikke slettes fordi de er fortsatt en del av en gruppe</string>
     <string name="take_photo">Ta bilde</string>
     <string name="select_from_gallery">Velg fra galleri</string>
     <string name="palette">Palett</string>
@@ -736,7 +736,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="battery_optimizations_disable_guide_ctd">Søk etter %s i listen og deaktiver optimaliseringen</string>
     <string name="battery_optimizations_disable_confirm">Vil du virkelig beholde batterioptimalisering for %1$s? %2$s vil ikke fungere skikkelig i hvilemodus.</string>
     <string name="enter_text_hint">Skriv inn tekst</string>
-    <string name="backup_explain_text">Om du endrer eller mister enheten din, så kan ingen gjenopprette din Threema ID eller samtalene dine, om det ikke er sikkerhetskopiert. Vennligst lag en sikkerhetskopi.</string>
+    <string name="backup_explain_text">Om du endrer eller mister enheten din, så kan ingen gjenopprette din LeOS-Messenger ID eller samtalene dine, om det ikke er sikkerhetskopiert. Vennligst lag en sikkerhetskopi.</string>
     <string name="data_backup_explain">Sikkerhetskopien inneholder: \n\n&#9679; IDen og nøkkelparet ditt\n&#9679; Kontakter og tillitsnivå\n&#9679; Gruppemedlemskap\n&#9679; Samtaler\n&#9679; Media og filer (valgfritt)\n\nData blir lagret til en kryptert ZIP-fil. Det er anbefalt å flytte filen vekk fra enheten etter at sikkerhetskopien er fullført.</string>
     <string name="draw">Tegn</string>
     <string name="edit">Rediger</string>
@@ -746,8 +746,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_ipv6_preferred_off">Bruk bare IPv4 tilkoblinger</string>
     <string name="prefs_ipv6_preferred_on">Foretrekk IPv6 tilkoblinger fremfor IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 for anrop og web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Tillat IPv6 for Threema anrop og Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Ikke tillat IPv6 for Threema anrop og Threema Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Tillat IPv6 for LeOS-Messenger anrop og LeOS-Messenger Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Ikke tillat IPv6 for LeOS-Messenger anrop og LeOS-Messenger Web</string>
     <string name="ipv6_requires_restart">For å ta i bruk denne innstillingen, så må appen startes på nytt.</string>
     <string name="ipv6_restart_now">Start på nytt nå</string>
     <string name="on_cap">På</string>
@@ -774,37 +774,37 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="menu_send_profilpic_now">Send profilbilde nå</string>
     <string name="profile_picture_sent">Profilbilde sendt</string>
     <string name="sending_messages">Sender...</string>
-    <string name="backup_data_media_confirm">Å lagre store mediafiler til en lokal ZIP-sikkerhetskopi kan overstige kapasiteten til enhetens prosessor og minne, og det kan ta veldig lang tid å fullføre. Threema vil ikke sende eller motta meldinger mens sikkerhetskopieringen kjører. Fortsette likevel?</string>
+    <string name="backup_data_media_confirm">Å lagre store mediafiler til en lokal ZIP-sikkerhetskopi kan overstige kapasiteten til enhetens prosessor og minne, og det kan ta veldig lang tid å fullføre. LeOS-Messenger vil ikke sende eller motta meldinger mens sikkerhetskopieringen kjører. Fortsette likevel?</string>
     <string name="backup_data_cancelled">Sikkerhetskopi avbrutt</string>
     <string name="service_manager_not_available">Klarer ikke å starte Threema. Vennligst skru av enheten din, deretter på igjen.</string>
     <string name="message_sent">Melding er sendt</string>
-    <string name="threema_call">Threema anrop</string>
+    <string name="threema_call">LeOS-Messenger anrop</string>
     <string name="threema_message_to">Melding til %s</string>
     <string name="threema_call_with">Ring %s</string>
-    <string name="prefs_title_voip">Threema anrop</string>
+    <string name="prefs_title_voip">LeOS-Messenger anrop</string>
     <string name="prefs_title_force_turn">Alltid videresend anrop</string>
-    <string name="prefs_summary_force_turn_off">Opprett en direkte tilkobling, om det er mulig, og bare videresend anrop til/fra uverifiserte kontakter gjennom Threema sine servere. Dette kan avdekke din IP adresse.</string>
-    <string name="prefs_summary_force_turn_on">Tving videresending av alle anrop gjennom Threema sine servere, for å beskytte din IP adresse. Dette kan påvirke samtalekvalitet.</string>
+    <string name="prefs_summary_force_turn_off">Opprett en direkte tilkobling, om det er mulig, og bare videresend anrop til/fra uverifiserte kontakter gjennom LeOS-Messenger sine servere. Dette kan avdekke din IP adresse.</string>
+    <string name="prefs_summary_force_turn_on">Tving videresending av alle anrop gjennom LeOS-Messenger sine servere, for å beskytte din IP adresse. Dette kan påvirke samtalekvalitet.</string>
     <string name="permission_record_audio_required">For å ha krypterte anrop og lydmeldinger, vennligst tillat tilgang til mikrofonen.</string>
-    <string name="prefs_voice_call_notifications">Threema anrop</string>
+    <string name="prefs_voice_call_notifications">LeOS-Messenger anrop</string>
     <string name="prefs_voice_call_sound">Ringetone</string>
-    <string name="prefs_sum_voice_call_sound">Velg ringetone for innkommende Threema anrop</string>
-    <string name="prefs_sum_voice_call_vibrate">Vibrer på innkommende Threema anrop</string>
-    <string name="prefs_title_voip_enable">Aktiver Threema anrop</string>
+    <string name="prefs_sum_voice_call_sound">Velg ringetone for innkommende LeOS-Messenger anrop</string>
+    <string name="prefs_sum_voice_call_vibrate">Vibrer på innkommende LeOS-Messenger anrop</string>
+    <string name="prefs_title_voip_enable">Aktiver LeOS-Messenger anrop</string>
     <string name="webclient_invalid_push_token_message">Manuell start er nødvendig</string>
-    <string name="threema_work_contact">Threema Work Kontakt</string>
-    <string name="permission_phone_required">Tillat tilgang for å håndtere anrop når du bruker Threema anrop</string>
+    <string name="threema_work_contact">LeOS-Messenger Work Kontakt</string>
+    <string name="permission_phone_required">Tillat tilgang for å håndtere anrop når du bruker LeOS-Messenger anrop</string>
     <string name="strikethrough">Gjennomstreking</string>
     <string name="italic">Kursiv</string>
     <string name="bold">Fet</string>
     <string name="shortcut_choice_title">Opprett en snarvei for en...</string>
     <string name="prefs_title_device_info">Enhetsinformasjon</string>
     <string name="notifications_disabled_title">Varsler er deaktivert</string>
-    <string name="notifications_disabled_text">Varsler for Threema har blitt dektivert i systeminnstillingene. Du vil ikke får varsler om nye innkommende meldinger.</string>
+    <string name="notifications_disabled_text">Varsler for LeOS-Messenger har blitt dektivert i systeminnstillingene. Du vil ikke får varsler om nye innkommende meldinger.</string>
     <string name="notifications_disabled_settings">Endre systeminnstillinger</string>
     <string name="error_attaching_files">Feil når du legger til vedlegg.</string>
     <string name="prefs_fix_powermanager_problems">Skru av strømbegrensninger</string>
-    <string name="prefs_fix_powermanager_problems_desc">Tillat at Threema kjører i bakgrunnen slik at den kan motta meldinger selv om appen ikke er aktiv.</string>
+    <string name="prefs_fix_powermanager_problems_desc">Tillat at LeOS-Messenger kjører i bakgrunnen slik at den kan motta meldinger selv om appen ikke er aktiv.</string>
     <string name="disable_powermanager_explain">På den neste skjermen, sørg for at \"%s\" er beskyttet eller ekskludert fra strømstyringsinnstillinger på telefonen. Trykk på tilbakeknappen når du er ferdig.</string>
     <string name="disable_autostart_explain">På den neste skjermen, sørg for at \"%s\" er inkludert i listen over apper som kan starte automatisk. Trykk på tilbakeknappen når du er ferdig.</string>
     <string name="notification_priority_default">Lav</string>
@@ -841,11 +841,10 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="plus">Pluss</string>
     <string name="switched_off">Av</string>
     <string name="switched_on">På</string>
-    <string name="title_tab_work_users">Threema Work brukere</string>
-    <string name="no_matching_work_contacts">Ingen admin-verifisert Threema Work kontakter er funnet</string>
+    <string name="title_tab_work_users">LeOS-Messenger Work brukere</string>
+    <string name="no_matching_work_contacts">Ingen admin-verifisert LeOS-Messenger Work kontakter er funnet</string>
     <string name="all">Alle</string>
     <string name="webclient_session_stop_all">Lukk alle</string>
-    <string name="webclient_running_sessions">%d sesjon(er) kjører</string>
     <string name="passphrase_service_name">Passfrase Tjeneste</string>
     <string name="passphrase_service_description">Varsel når passfrase er opplåst</string>
     <string name="webclient_service_description">Varsel når Web-/Skrivebordsøkt er aktiv</string>
@@ -863,41 +862,41 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="password_too_short_generic">Passord er for kort</string>
     <string name="passwords_dont_match">Passordene er ikke like</string>
     <string name="test_unsuccessful">Testen mislyktes</string>
-    <string name="preparing_threema_safe">Forbereder Threema Safe</string>
+    <string name="preparing_threema_safe">Forbereder LeOS-Messenger Safe</string>
     <string name="disable_powermanager_title">Strømbegrensninger</string>
     <string name="disable_autostart_title">Autostart</string>
     <string name="unchanged">uendret</string>
     <string name="safe_learn_more_button">Lær mer</string>
-    <string name="safe_enable_explain">Alt du trenger til å ha en samtale er bare lagret på din enhet. Du har ikke en konto med oss og dermed kan vi ikke hjelpe deg om du mister telefonen din eller sletter data ved en feil.\n\nThreema Safe lager automatiske sikkerhetskopifiler av de viktigste dataene, inkludert dine nøkler, kontaktlisten og dine guppemedlemskap (men ingen meldinger eller innhold). Dette er anonymt på en sikker server som du velger selv.</string>
-    <string name="safe_disable_confirm">Vil du fortsette uten å aktivere Threema Safe? Når du bruker Threema Safe så kan du gjenopprette din Threema ID, kontakter og grupper i tilfelle du mister tilgangen til din enhet.</string>
-    <string name="safe_configure_choose_password">Vennligst velg et sterkt passord. Du kommer til å trenge passordet for å kunne gjenopprette din Threema Safe sikkerhetskopi.</string>
-    <string name="safe_configure_choose_server">Velg en Threema Safe server</string>
+    <string name="safe_enable_explain">Alt du trenger til å ha en samtale er bare lagret på din enhet. Du har ikke en konto med oss og dermed kan vi ikke hjelpe deg om du mister telefonen din eller sletter data ved en feil.\n\nLeOS-Messenger Safe lager automatiske sikkerhetskopifiler av de viktigste dataene, inkludert dine nøkler, kontaktlisten og dine guppemedlemskap (men ingen meldinger eller innhold). Dette er anonymt på en sikker server som du velger selv.</string>
+    <string name="safe_disable_confirm">Vil du fortsette uten å aktivere LeOS-Messenger Safe? Når du bruker LeOS-Messenger Safe så kan du gjenopprette din LeOS-Messenger ID, kontakter og grupper i tilfelle du mister tilgangen til din enhet.</string>
+    <string name="safe_configure_choose_password">Vennligst velg et sterkt passord. Du kommer til å trenge passordet for å kunne gjenopprette din LeOS-Messenger Safe sikkerhetskopi.</string>
+    <string name="safe_configure_choose_server">Velg en LeOS-Messenger Safe server</string>
     <string name="safe_configure_server_explain">Du kan bruke Threemas server eller spesifisere en tredjeparts-server for din sikkerhetskopi.</string>
     <string name="safe_use_default_server">Bruk standard server</string>
     <string name="safe_test_server">Test server</string>
     <string name="safe_advanced_options">Ekspertinnstillinger</string>
-    <string name="safe_enter_password">Vennligst skriv ditt Threema Safe passord</string>
-    <string name="safe_threema_id">Din Threema ID</string>
-    <string name="safe_restore_enter_id">Vennligst skriv Threema IDen du vil gjenopprette</string>
+    <string name="safe_enter_password">Vennligst skriv ditt LeOS-Messenger Safe passord</string>
+    <string name="safe_threema_id">Din LeOS-Messenger ID</string>
+    <string name="safe_restore_enter_id">Vennligst skriv LeOS-Messenger IDen du vil gjenopprette</string>
     <string name="safe_search_id_title">Vennligst skriv mobilnummeret eller e-postadressen som er koblet til din ID</string>
-    <string name="safe_id_lookup">Sjekker Threema ID</string>
-    <string name="safe_no_id_found">Ingen Threema ID funnet</string>
+    <string name="safe_id_lookup">Sjekker LeOS-Messenger ID</string>
+    <string name="safe_no_id_found">Ingen LeOS-Messenger ID funnet</string>
     <string name="safe_no_backup_found">Ingen sikkerhetskopi er funnet på serveren. Sjekk ID og passord.</string>
-    <string name="safe_select_id">Flere Threema IDer er funnet. Vennligst velg ID du vil bruke:</string>
+    <string name="safe_select_id">Flere LeOS-Messenger IDer er funnet. Vennligst velg ID du vil bruke:</string>
     <string name="safe_backup_now">Sikkerhetskopier</string>
-    <string name="safe_enable_explain_short">Aktiver Threema Safe for å opprette automatiske, sikre og anonyme sikkerhetskopier av alle dine viktigste data.</string>
-    <string name="safe_deleting">Sletter Threema Safe sikkerhetskopi</string>
+    <string name="safe_enable_explain_short">Aktiver LeOS-Messenger Safe for å opprette automatiske, sikre og anonyme sikkerhetskopier av alle dine viktigste data.</string>
+    <string name="safe_deleting">Sletter LeOS-Messenger Safe sikkerhetskopi</string>
     <string name="safe_delete_error">Feil ved sletting av sikkerhetsk.: %s</string>
     <string name="safe_delete_success">Sikkerhetskopi er slettet fra serveren</string>
-    <string name="safe_error_preparing">Feil ved oppretting av Threema Safe sikkerhetskopi</string>
-    <string name="safe_configure_choose_password_force">Vennligst velg et sterkt passord for å sikre din Threema ID med Threema Safe. Ikke glem det du skriver inn her!</string>
-    <string name="safe_deactivate">Skru av Threema Safe</string>
-    <string name="safe_deactivate_explain">Om du deaktiverer Threema Safe så blir eksisterende sikkerhetskopier slettet fra serveren. Vil du fortsette?</string>
+    <string name="safe_error_preparing">Feil ved oppretting av LeOS-Messenger Safe sikkerhetskopi</string>
+    <string name="safe_configure_choose_password_force">Vennligst velg et sterkt passord for å sikre din LeOS-Messenger ID med LeOS-Messenger Safe. Ikke glem det du skriver inn her!</string>
+    <string name="safe_deactivate">Skru av LeOS-Messenger Safe</string>
+    <string name="safe_deactivate_explain">Om du deaktiverer LeOS-Messenger Safe så blir eksisterende sikkerhetskopier slettet fra serveren. Vil du fortsette?</string>
     <string name="add_group_members">Ny medlem</string>
     <string name="contact_add_confirm">Vil du legge til den nye kontakten \"%1$s\" til din kontaktliste?</string>
     <string name="password_bad">Svakt passord</string>
     <string name="prefs_fix_background_data">Skru på bakgrunnsdata</string>
-    <string name="prefs_fix_background_data_desc">For å motta meldinger mens Threema er i bakgrunnen, aktiver både bakgrunnsdata og ubegrenset databruk på enheten.</string>
+    <string name="prefs_fix_background_data_desc">For å motta meldinger mens LeOS-Messenger er i bakgrunnen, aktiver både bakgrunnsdata og ubegrenset databruk på enheten.</string>
     <string name="prefs_fix_device">Fiks konfigurasjonsproblemer med enheten</string>
     <string name="safe_successful">Vellykket</string>
     <string name="safe_unsuccessful">Mislykket</string>
@@ -911,10 +910,10 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="number_of_days">%d dager</string>
     <string name="backup_other_restore_options">Andre alternativer for gjenoppr.</string>
     <string name="safe_size">Kopistørrelse</string>
-    <string name="safe_version_mismatch">Versjonen av sikkerhetskopien er høyere enn den støttede versjonen. Vennligst oppdater til den siste versjonen av applikasjonen.</string>
+    <string name="backup_version_mismatch">Versjonen av sikkerhetskopien er høyere enn den støttede versjonen. Vennligst oppdater til den siste versjonen av applikasjonen.</string>
     <string name="safe_restore_failed">Gjenoppret. mislyktes</string>
-    <string name="safe_failed_notification">Threema Safe sikkerhetskopi mislyktes i %d påfølgende dager. Trykk her for å sjekke.</string>
-    <string name="safe_restore">Gjenopprett Threema Safe</string>
+    <string name="safe_failed_notification">LeOS-Messenger Safe sikkerhetskopi mislyktes i %d påfølgende dager. Trykk her for å sjekke.</string>
+    <string name="safe_restore">Gjenopprett LeOS-Messenger Safe</string>
     <string name="backup_restore_in_progress">Sikkerhetskopi eller gjenoppretting pågår nå. Sjekk varsel for status og informasjon.</string>
     <string name="restore_error_body">Gjenoppretting ble ikke fullført skikkelig</string>
     <string name="forgot_your_id">Har du glemt din ID?</string>
@@ -922,8 +921,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="work_data_sync">Data synk.</string>
     <string name="private_contact">Privat kontakt</string>
     <string name="ringtone_selection_default">Standard (%s)</string>
-    <string name="work_data_sync_desc">Threema Work synkronisering</string>
-    <string name="ballot_not_connected">Sørg for at Threema er online før du stenger en avstemning.</string>
+    <string name="work_data_sync_desc">LeOS-Messenger Work synkronisering</string>
+    <string name="ballot_not_connected">Sørg for at LeOS-Messenger er online før du stenger en avstemning.</string>
     <string name="empty_chat_title">Tøm samtale</string>
     <string name="empty_chat_confirm">Alle meldinger i denne samtalen vil bli slettet. Vil du fortsette?</string>
     <string name="emptying_chat">Tømmer samtale</string>
@@ -937,21 +936,21 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="notification_channel_notices">Varsler</string>
     <string name="chat_updates">Samtaleoppdateringer</string>
     <string name="backup_or_restore_progress">Sikkerhetskopi og gjenoppretting - Status</string>
-    <string name="tooltip_export_id">Trykk her for å dele eller skrive ut din krypterte Threema ID</string>
+    <string name="tooltip_export_id">Trykk her for å dele eller skrive ut din krypterte LeOS-Messenger ID</string>
     <string name="downloading">Laster ned</string>
     <string name="today">I dag</string>
     <string name="restore_data_cancelled">Gjenoppretting avbrutt</string>
     <string name="safe_change_password">Endre passord</string>
     <string name="safe_configure_choose_password_title">Velg et passord</string>
-    <string name="password_bad_explain">Det valgte passordet for Threema Safe er ikke sikkert og kan enkelt bli gjettet av en angriper. Vennligst velg et annet passord. Hint: Bruk et passord som består av flere individuelle ord.</string>
-    <string name="safe_password_updated">Threema Safe passordet har blitt oppdatert.</string>
-    <string name="safe_activated">Threema Safe er nå akivert.</string>
+    <string name="password_bad_explain">Det valgte passordet for LeOS-Messenger Safe er ikke sikkert og kan enkelt bli gjettet av en angriper. Vennligst velg et annet passord. Hint: Bruk et passord som består av flere individuelle ord.</string>
+    <string name="safe_password_updated">LeOS-Messenger Safe passordet har blitt oppdatert.</string>
+    <string name="safe_activated">LeOS-Messenger Safe er nå akivert.</string>
     <string name="restore_zip_invalid_file">Gjenopprettingsfil er ugyldig.</string>
     <string name="push_token_cleared">Push token har blitt fjernet</string>
     <string name="insert_date">Legg inn dato</string>
     <string name="add_answer">Legg til svar</string>
     <string name="title_cannot_be_empty">Tittelen kan ikke være tom</string>
-    <string name="voip_disabled">Threema anrop er deaktivert</string>
+    <string name="voip_disabled">LeOS-Messenger anrop er deaktivert</string>
     <string name="hide_chat_enter_message_explain">Denne samtalen er merket som privat samtale. For å åpne, vennligst opprett tilgangsbeskyttelse først.</string>
     <string name="unknown">Ukjent</string>
     <string name="miui_notification_title">Viktig melding om varsler i MIUI</string>
@@ -959,7 +958,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="miui12_notification_body">MIUI lyd, lys og svevende varsler for alle apper som standard (bortsett fra noen veldig populære applikasjoner som Xiaomi har merket som \"viktig\"). Du må manuelt aktivere slike varsler i innstillingene for din mobil. Dette må også gjentas etter hver oppdatering av appen. Kontakt Xiaomi for mer informasjon.</string>
     <string name="dont_show_again">Ikke vis igjen</string>
     <string name="miui_notification_prefs">MIUI innstillinger</string>
-    <string name="threema_safe_upload_successful">Threema Safe sikkerhetskopi er opplastet</string>
+    <string name="threema_safe_upload_successful">LeOS-Messenger Safe sikkerhetskopi er opplastet</string>
     <string name="time_remaining">%s gjenstår</string>
     <string name="safe_configure_server_credentials_title">Autentisering (valgfritt)</string>
     <string name="username_hint">Brukernavn</string>
@@ -968,7 +967,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="biometric_enter_authentication">For å låse opp, vennligst autentiser deg</string>
     <string name="biometric_authentication_failed">Autentisering feilet</string>
     <string name="biometric_authentication_successful">Vellykket autentisering</string>
-    <string name="work_safe_forced_explain">Din administrator har aktivert Threema Safe for din enhet.</string>
+    <string name="work_safe_forced_explain">Din administrator har aktivert LeOS-Messenger Safe for din enhet.</string>
     <string name="pin_locked_cannot_send">Applikasjonen er låst. Kan ikke sende.</string>
     <string name="prefs_summary_hide_screenshots_notice">For personvernsgrunner så er miniatyrbilder og skjermbilder forhindret når \"App lås\" er aktivert i sikkerhetsinnstillingene.</string>
     <string name="work_select_categories">Velg kategorier</string>
@@ -978,7 +977,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="advanced_options">Avanserte valg</string>
     <string name="url_warning_body">Vertsnavnet til linken du er i ferd med å åpne er mistenkelig: \n\nVisningsnavn: <b>%s</b>\nEkte navn: <b>%s</b>\n\nDette kan være et forsøk på å lure deg til å åpne en side som later som den er noe annet.\n\nVil du likevel fortsette?</string>
     <string name="url_warning_title">Phishing-advarsel</string>
-    <string name="permission_camera_qr_required">For å kunne skanne QR-koder så trenger Threema tilgang til kameraet</string>
+    <string name="permission_camera_qr_required">For å kunne skanne QR-koder så trenger LeOS-Messenger tilgang til kameraet</string>
     <string name="voice_action_title">Stemmehandlinger</string>
     <string name="voice_action_body">Stemmehandling blir behandlet</string>
     <string name="permission_camera_photo_required">For å ta et bilde, tillat tilgang til kameraet</string>
@@ -998,11 +997,10 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="data_backup_last_date">Siste vellykkede sikkerhetskopi</string>
     <string name="archived">Arkivert</string>
     <string name="to_archive">Arkivér</string>
-    <string name="message_archived">%d samtaler arkivert</string>
     <string name="archived_chats">Arkiverte samtaler</string>
     <string name="unarchive">Ikke arkivér</string>
     <string name="no_archived_chats">Ingen arkiverte samtaler.\nFor å arkivere en samtale, sveip den til venstre i samtalelisten</string>
-    <string name="add_contact_enter_id_hint">Skriv inn Threema IDen til kontakten du vil legge til</string>
+    <string name="add_contact_enter_id_hint">Skriv inn LeOS-Messenger IDen til kontakten du vil legge til</string>
     <string name="notification_channel_new_contact">Nye kontakter</string>
     <string name="notification_channel_new_contact_desc">Varsel om nye kontakter</string>
     <string name="notification_contact_has_joined">%1$s er ny i %2$s. Trykk her for å sende en melding.</string>
@@ -1010,25 +1008,14 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="system_default">Bruk systemstandard</string>
     <string name="open_in_maps_app">Åpne i kart-app</string>
     <string name="delete">Slett</string>
-    <string name="num_archived_chats">%d arkiverte samtaler</string>
     <string name="continue_recording">Fortsett opptak</string>
-    <string name="whatsnew_title">Velkommen til %1$s %2$s</string>
+    <string name="whatsnew_title">Nytt: %1$s Gruppesamtaler</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p><b>Nye funksjoner i denne versjonen av %s for Android: </b></p>
-		<p>
-		&bull; Mange nye emojier i samsvar med Unicode 13.1 standarden. 😵‍💫❤️‍🔥
-		</p><p>
-		&bull; Søk etter emojier ved bruk av navn eller betydning (tilgjengelig i 17 forskjellige språk).
-		</p><p>
-		&bull; Spesifikke farger for kontakter og grupper som ikke har et profilbilde. De nye fargene vil fungere på tvers av plattformer og enheter.
-		</p><p>
-		&bull; Forbedret ytelsen ved rulling i mange lister.
-		</p><p>
-		&bull; Optimalisert utseende i redigeringsmodus. Økt mengden medier som kan bli redigert før sending, til 256 medier.
-		</p><p>
-		&bull; Mange små forbedringer og feilfikser.
-		</p>
-		]]></string>
+  <p>Ende-til-ende krypterte gruppesamtaler er nå tilgjengelig i %1$s for Android.</p>
+  <p>For å starte en gruppesamtale, åpne en gruppe og trykk på kameraknappen i toppen.</p>
+  <p>Alle gruppemedlemmer får da et varsel og kan velge om de vil bli med i samtalen eller ikke.</p>
+  <p><b>Vennligst merk:</b> for iOS, gruppesamtaler vil bli lansert på et senere tidspunkt.</p>
+  ]]></string>
     <string name="tap_to_start">Trykk her for å starte %s nå.</string>
     <string name="two_years">2 år</string>
     <string name="invalid_backup_path">Ugyldig kopiplassering</string>
@@ -1047,7 +1034,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="and">og</string>
     <string name="edit_type_content_description">Vis eller endre %1$s %2$s</string>
     <string name="group">Gruppe</string>
-    <string name="send_location_privacy_policy_v4_0"><![CDATA[<p>Personvernerklæringen har blitt oppdatert for å reflektere den følgende endringen:</p><p>%1$s er ikke lenger avhengig av Google Play og Google Maps for å skaffe tilgang til kart og POI-data.</p>Vennligst les hele personvernerklæringen <a href="%2$s">her</a>.]]></string>
     <string name="play_services_not_installed_unable_to_use_push">Tjenester er ikke installert. Kan ikke bytte til Google FCM eller HMS push.</string>
     <string name="unable_to_get_current_location">Kan ikke finne posisjon.</string>
     <string name="lp_search_place_min_chars">Skriv inn minst tre tegn for å søke etter en plass.</string>
@@ -1060,7 +1046,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="mime_type">Filtype (MIME)</string>
     <string name="password_does_not_comply">Passordet stemmer ikke overens med retningslinjene som er satt av administratoren.</string>
     <string name="audio_mute_due_to_focus_loss">Lyd har blitt dempet midlertidig på grunn av tap av lyd-fokus.</string>
-    <string name="restore_data_backup_explain">For å gjenopprette en sikkerhetskopi, slett din Threema ID fra \"Min profil\" skjerm, først.\n\nNår appen starter på nytt, velg \"Gjenopprett fra sikkerhetskopi\", Andre gjenopprettings-valg\", \"Sikkerhetskopi\" og deretter velg filen du vil gjenopprette.</string>
+    <string name="restore_data_backup_explain">For å gjenopprette en sikkerhetskopi, slett din LeOS-Messenger ID fra \"Min profil\" skjerm, først.\n\nNår appen starter på nytt, velg \"Gjenopprett fra sikkerhetskopi\", Andre gjenopprettings-valg\", \"Sikkerhetskopi\" og deretter velg filen du vil gjenopprette.</string>
     <string name="audio_focus_loss_complete">Anrop frakoblet på grunn av tap av lyd-fokus.</string>
     <string name="tap_for_picture_hold_for_video">Trykk for bilde, hold for video</string>
     <string name="sending_media">Sender media</string>
@@ -1083,16 +1069,16 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="warning">Varsel</string>
     <string name="password_remember_warning">Husk det du skriver inn her! Fordi %s ikke lagrer passord på serveren, så kan vi ikke hjelpe om du glemmer passord eller PIN-kode.</string>
     <string name="safe_backup_tap_to_restart">Trykk på system-varselet for å restarte appen nå. Om du ikke kan se varselet, vennligst sveip ned fra telefonens varselområde.</string>
-    <string name="send_to_support">Send til Threema Support</string>
+    <string name="send_to_support">Send til LeOS-Messenger Support</string>
     <string name="menu_legal">Lov</string>
-    <string name="tooltip_work_hint">Denne kontakten bruker Threema Work.</string>
+    <string name="tooltip_work_hint">Denne kontakten bruker LeOS-Messenger Work.</string>
     <string name="video_camera_on">Kamera er aktivert</string>
     <string name="video_camera_off">Kamera er deaktivert</string>
     <string name="enable_picture_in_picture">Start bilde-i-bilde-modus (PIP)</string>
     <string name="call_with">Ring %s</string>
     <string name="picture_in_picture_disabled_in_setting">Bilde-i-bilde-modus er deaktivert for %s. Vennligst aktiver det i systeminnstillingene.</string>
     <string name="delete_everything">Slett alt</string>
-    <string name="prefs_title_voip_video_enable">Tillat videoanrop</string>
+    <string name="prefs_title_voip_video_enable">Tillat video</string>
     <string name="video_calls">Videoanrop</string>
     <string name="prefs_videocall_profile">Foretrukket bildekvalitet</string>
     <string name="videocall_profile_auto">Balansert (anbefalt)</string>
@@ -1110,6 +1096,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="translators_thanks">Mange takk til våre frivillige oversettere: \n%s</string>
     <string name="ballot_window_hide">Skjul aktive avstemninger</string>
     <string name="ballot_window_show">Vis aktive avstemninger</string>
+    <string name="single_ballot_really_delete">Fjern avstemningen</string>
+    <string name="single_ballot_really_delete_text">Vil du virkelig fjerne denne avstemningen? Du kan ikke gjenopprette stemmene senere.</string>
     <string name="tooltip_voip_other_party_video_on">Den andre part startet et videoanrop. Trykk her for å skru på ditt kamera.</string>
     <string name="tooltip_voip_other_party_video_disabled">Den andre part bruker ikke en oppdatert versjon av appen eller godtar ikke videoanrop.</string>
     <string name="biometrics_not_enrolled">Det er ikke lagret noe biometri-data på enheten.</string>
@@ -1176,9 +1164,9 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="transcoder_unsupported_audio_format">Lyden kunne ikke bli transkodet på grunn av manglende støtte på enheten.</string>
     <string name="transcoder_unknown_audio_error">Ukjent lydtranskoding feil har oppstått.</string>
     <string name="video_size_explain">Store videofiler kan bli komprimert uavhengig av denne innstillingen.</string>
-    <string name="status_create_notes">*Du er her alene*\nBruk denne samtalen som en sikker notatbok for tekst, media eller dokumenter.</string>
+    <string name="status_create_notes">*Du er den eneste medlemmen i denne gruppen*\nBruk denne samtalen som en sikker notatbok for tekst, media eller dokumenter.</string>
     <string name="status_create_notes_off">*Du er ikke lenger alene i denne samtalen*\nNye meldinger vil bli sendt til alle gruppemedlemmer.</string>
-    <string name="note_group_howto">Tips: Om du ikke legger til andre medlemmer i gruppen, så vil meldinger forbli lokale. Det er ideelt for å lagre notater, media og dokumenter på en sikker måte, eller å overføre til en annen enhet (via Threema Web).</string>
+    <string name="note_group_howto">Tips: Om du ikke legger til andre medlemmer i gruppen, så vil meldinger forbli lokale. Det er ideelt for å lagre notater, media og dokumenter på en sikker måte, eller å overføre til en annen enhet (via LeOS-Messenger Web).</string>
     <string name="mark_unread">Merk som ulest</string>
     <string name="mark_read_short">Merk som lest</string>
     <string name="unread">Ulest</string>
@@ -1197,8 +1185,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_request_already_sent"><![CDATA[Du har allerede aktiv forespørsel for å bli med <b>%s</b> gjennom denne linken og du venter fortsatt på svar fra administratoren. Trykk på forespørselen i listen om du vil prøve å sende på nytt.]]></string>
     <string name="group_link_none">Det er ikke laget en link ennå</string>
     <string name="group_request_confirm_send"><![CDATA[Du er i ferd med å sende en forespørsel for <b>%1$s</b> til administrator <b>%2$s</b>. Om denne linken ikke er ugyldig, så vil du bli lagt til gruppen når administratorens enhet mottar din forespørsel.]]></string>
-    <string name="really_delete_outgoing_request">Vil du virkelig slette %d gruppeforespørselen(e)? Vær oppmerksom på at forespørselen(e) blir ikke tilbakekalt, så du kan fortsatt bli akseptert/avvist om forepørselen(e) ikke har blitt svart av administratoren enda.</string>
-    <string name="really_delete_group_request_title">Sikker på at du vil slette forespørsel?</string>
+    <string name="really_delete_group_request_title_singular">Slett gruppeforespørsel</string>
+    <string name="really_delete_group_request_title_plural">Slett gruppeforespørsler</string>
     <string name="sent_to">Sendt til: %s</string>
     <string name="sent_on">Sent på: %s</string>
     <string name="group_response">Svar på gruppeforespørsel</string>
@@ -1218,7 +1206,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="link_administration_off_explain">Denne linken er allerede opprettet og delt. Endring av egenskapene til linken er derfor umulig. Lag en ny link med egenskapene du trenger.</string>
     <string name="group_link_update_success">Link er oppdatert</string>
     <string name="no_group_links">Ingen gruppelinker. For å opprette en gruppelink, klikk på knappen nederst til høyre eller aktiver standardlinken som du finner i gruppedetaljer-vinduet.</string>
-    <string name="really_delete_group_link">Vil du virkelig slette %d gruppelink(er)? Ingen vil ha muligheten til å sende forespørsler gjennom den lenger. Forespørsler som allerede er mottatt kan fortsatt aksepteres/avvises.</string>
     <string name="group_links_overview_title">Gruppelinker for %s</string>
     <string name="group_link_invalid">Ugyldig</string>
     <string name="group_link_valid">Gyldig</string>
@@ -1234,7 +1221,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="open_group_requests_show">Vis forespørsler</string>
     <string name="open_group_requests_hide">Skjul forespørsler</string>
     <string name="group_request_link_already_deleted">Gruppelinken har blitt slettet</string>
-    <string name="really_delete_incoming_request">Vil du virkelig slette %d forespørsler? Du kan ikke svare på forespørsler etter at de har blitt slettet.</string>
     <string name="incoming_group_request_no_message">Sendt via åpen link... ingen melding</string>
     <string name="group_request_received_through">Gjennom link: %s</string>
     <string name="reaccept">Reaksepter</string>
@@ -1243,7 +1229,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_link_rename">Endre navn</string>
     <string name="group_link_rename_tag">Nytt navn</string>
     <string name="tap_here_for_more">Trykk her for mer informasjon</string>
-    <string name="another_connection_instructions">Serveren har oppdaget to eller flere tilkoblinger fra forskjellige enheter med samme Threema ID.\n\nDet er ikke mulig å bruke den samme Threema ID-en på flere enheter samtidig. Nye meldinger blir bare sendt til enheten som ble logget på sist. \n\nOm du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den gamle enheten og deretter restart den nye enheten.</string>
+    <string name="another_connection_instructions">Serveren har oppdaget to eller flere tilkoblinger fra forskjellige enheter med samme LeOS-Messenger ID.\n\nDet er ikke mulig å bruke den samme LeOS-Messenger ID-en på flere enheter samtidig. Nye meldinger blir bare sendt til enheten som ble logget på sist. \n\nOm du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den gamle enheten og deretter restart den nye enheten.</string>
     <string name="app_store_error_code">App Store feilkode: %d</string>
     <string name="backup_restore_type"><![CDATA[Hvilken type sikkerhetskopi vil du gjenopprette? <br/><br/> <a href=%s>Lær mer om sikkerhetskopier i Threema</a>]]></string>
     <string name="data_backup_info">Gjenopprett alt, inkludert samtaler</string>
@@ -1251,7 +1237,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="back_to_threema">Tilbake til %s?</string>
     <string name="id_backup_info">Bare gjenopprett IDen din</string>
     <string name="restore_your_id_contacts_and_groups">Gjenopprett din ID, kontakter og grupper</string>
-    <string name="threema_safe_backup">Threema Safe Backup</string>
+    <string name="threema_safe_backup">LeOS-Messenger Safe Backup</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Glemt passordet?</a>]]></string>
     <string name="download_failed">Nedlasting feilet. Feilkode: %d</string>
     <string name="edit_answer">Rediger svar</string>
@@ -1290,6 +1276,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_links_manage_menu">Administrer gruppelinker</string>
     <string name="group_request_sent_menu">Sendte gruppeforespørsler</string>
     <string name="really_delete_group_link_title">Slett gruppelink</string>
+    <string name="really_delete_multiple_group_links_title">Slett gruppelinker</string>
     <string name="qr_scan_result_dialog_title">QR-skann resultat</string>
     <string name="scan_failure_dialog_title">Skann feilet</string>
     <string name="no_threema_qr_info">Dette er ikke en QR-kode som hører til Threema. Det dekodede innholdet av koden er:</string>
@@ -1314,13 +1301,13 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="contact_update">Oppdaterer kontakt-tilstander</string>
     <string name="invalid_onprem_id">Enten så eksisterer ikke denne ID-en (lenger), eller så er den ikke kompatibel med din ID.</string>
     <string name="enable_unknown_sources">Ikke mulig å installere. Vennligst sørg for at \"Installer ukjente apper\" er aktivert for %s.</string>
-    <string name="threema_push">Threema Push</string>
+    <string name="threema_push">LeOS-Messenger Push</string>
     <string name="threema_push_notification_text">Trykk for å vite mer.</string>
-    <string name="threema_push_notification_info_text_1">Threema Push er aktiv i bakgrunnen, for å kunne varsle deg om innkommende meldinger og anrop.</string>
-    <string name="threema_push_notification_info_text_2">Apper kan ikke kjøre i bakgrunnen uten å vise en vedvarende varsel. Ved å vise dette varselet så kan vi sørge for at Threema Push vil forbli aktiv, selv om du ikke aktivt bruker appen.</string>
+    <string name="threema_push_notification_info_text_1">LeOS-Messenger Push er aktiv i bakgrunnen, for å kunne varsle deg om innkommende meldinger og anrop.</string>
+    <string name="threema_push_notification_info_text_2">Apper kan ikke kjøre i bakgrunnen uten å vise en vedvarende varsel. Ved å vise dette varselet så kan vi sørge for at LeOS-Messenger Push vil forbli aktiv, selv om du ikke aktivt bruker appen.</string>
     <string name="threema_push_notification_info_text_3">Om du fortsatt får problemer med forsinket eller manglende varsler, vennligst endre systeminnstillinger for å sørge for at appen kan være aktiv i bakgrunnen uten noen begrensninger og all batterisparing er deaktivert for Threema.</string>
-    <string name="threema_push_service_description">Vedvarende varsel blir vist når Threema er aktiv</string>
-    <string name="threema_push_activated">Threema Push aktivert.</string>
+    <string name="threema_push_service_description">Vedvarende varsel blir vist når LeOS-Messenger er aktiv</string>
+    <string name="threema_push_activated">LeOS-Messenger Push aktivert.</string>
     <string name="add_shortcut_success">Snarvei opprettet</string>
     <string name="add_shortcut_error">Feil ved å legge til snarvei på hjemskjerm</string>
     <string name="web_link">Link</string>
@@ -1365,25 +1352,79 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_title_use_system_ringtone">Bruk systemringetone</string>
     <string name="organization_type">Organisasjon</string>
     <string name="permission_bluetooth_connect_required">Aktiver \"Enheter i nærheten\" tillatelse for å finne tilkoblede Blåtann hodetelefoner</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threema Push er aktiv. Threema Web- og Skrivebordsøkter må derfor bli startet manuelt.</string>
+    <string name="threema_push_start_webclient_sessions_manually">LeOS-Messenger Push er aktiv. LeOS-Messenger Web- og Skrivebordsøkter må derfor bli startet manuelt.</string>
     <string name="tooltip_multiple_recipients_title">Nyhet: Flere mottakere</string>
     <string name="tooltip_multiple_recipients_text">Langt trykk for å velge flere mottakere å sende den samme meldingen til.</string>
     <string name="synchronizing">Synkroniserer...</string>
+    <string name="forward_security">Send meldinger med Perfect Forward Secrecy</string>
+    <string name="forward_security_mode">Perfect Forward Secrecy</string>
+    <string name="forward_security_mode_none">Ingen</string>
+    <string name="clear_forward_security">Fjern Perfect Forward Secrecy-økter</string>
+    <string name="forward_security_cleared">Perfect Forward Secrecy-økt med denne kontakten har blitt fjernet</string>
+    <string name="message_without_forward_security">En melding uten Perfect Forward Secrecy er mottatt. Verifiser at avsender har skrudd av Perfect Forward Secrecy med vilje.</string>
+    <string name="forward_security_established">Meldinger i denne samtalen er nå beskyttet av Perfect Forward Secrecy.</string>
+    <string name="forward_security_established_rx">Meldinger mottatt i denne samtalen blir nå beskyttet av Perfect Forward Secrecy. Skru på Perfect Forward Secrecy i kontaktdetaljer for å beskytte sendte medlinger også.</string>
+    <string name="forward_security_reset">Perfect Forward Secrecy-økten med denne kontakten har blitt resatt. Dette kan skje om kontakten har byttet enhet eller reinstallert appen.</string>
+    <string name="forward_security_reset_simple">Økten med Perfect Forward Secrecy som du har med denne kontakten har blitt resatt.</string>
+    <string name="forward_security_message_out_of_order">En melding ble mottatt ute av rekkefølge og kunne derfor ikke bli dekryptert.</string>
     <string name="self_updater_installation_failed">Det skjedde en feil under nedlasting av oppdateringen. Vennligst last ned oppdateringen fra <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuelt.</string>
     <string name="spam_first_contact">Denne samtalen er fra en ukjent kontakt</string>
     <string name="spam_report">Rapporter spam</string>
-    <string name="spam_report_dialog_explain">Om du fortsetter så vil IDen og kallenavnet til denne kontakten bli videresendt til Threema sammen med din ID. Ingen innhold eller personlig data blir sendt. Kontakten vil ikke bli varlet om dette.</string>
+    <string name="spam_report_dialog_explain">Om du fortsetter så vil IDen og kallenavnet til denne kontakten bli videresendt til LeOS-Messenger sammen med din ID. Ingen innhold eller personlig data blir sendt. Kontakten vil ikke bli varlet om dette.</string>
     <string name="spam_report_dialog_block_checkbox">Blokker og slett samtalen også</string>
     <string name="spam_report_dialog_title">Rapporter %s</string>
     <string name="spam_successfully_reported">Denne IDen har blitt rapportert for å sende spam.</string>
     <string name="spam_error_reporting">En feil skjedde under rapporteringen av spam: %s</string>
     <string name="spam_report_short">Rapporter</string>
-    <string name="wizard_incompatible_contact_sync_params">Det er valgt inkompatible MDM parametre. Threema MDM parameter th_contact_sync kan ikke bli satt til \"True\" om brukerbegrensning DISALLOW_MODIFY_ACCOUNTS er valgt. Vennligst kontakt enhetens administrator.</string>
+    <string name="wizard_incompatible_contact_sync_params">Det er valgt inkompatible MDM parametre. LeOS-Messenger MDM parameter th_contact_sync kan ikke bli satt til \"True\" om brukerbegrensning DISALLOW_MODIFY_ACCOUNTS er valgt. Vennligst kontakt enhetens administrator.</string>
     <string name="messages_cannot_be_recovered">Du har ikke muligheten til å gjenopprette meldingene.</string>
     <string name="contact_deleted">Kontakt slettet</string>
     <string name="last_added_contact">Sist lagt til</string>
     <string name="directory_explain_text">Søk i firmaets oppføringsliste etter ansatte som ikke er lagt til i din kontaktliste.</string>
     <string name="cannot_display_location">Denne posisjonen kan ikke vises.</string>
+    <string name="draw_reply">Tegn et svar</string>
+    <string name="drawing">Tegning</string>
+    <string name="background_color">Bakgrunnsfarge</string>
+    <string name="send_video_muted">Fjern lyd fra video</string>
+    <string name="send_without_audio">Fjern lyd</string>
+    <string name="edit_filename">Endre filnavn</string>
+    <string name="unable_to_restore_identity_because">Ikke mulig å gjenopprette IDen. Årsak: %s</string>
+    <string name="share_with_app">Del med Threema</string>
+    <string name="read_phone_state_dialog_allow">Gi tilgang</string>
+    <string name="read_phone_state_dialog_disallow">Fortsett uansett</string>
+    <string name="read_phone_state_dialog_never_ask_again">Ikke spør igjen</string>
+    <string name="read_phone_state_dialog_title">Tilgang er nødvendig</string>
+    <string name="read_phone_state_dialog_message">For å unngå at Threema-anrop avbryter vanlige anrop, så trenger vi Telefon-tilgang. Om denne tilgangen ikke blir gitt, så vil et anrop til LeOS-Messenger ringe, selv om det allerede er et aktivt anrop på telefonen.</string>
+    <string name="read_phone_state_short_message">For at LeOS-Messenger skal kunne se om der er pågående samtaler, gi tilgang til Telefon.</string>
+    <string name="prefs_title_read_phone_state">Gi tilgang til Telefon</string>
+    <string name="prefs_title_hibernation">Ubrukte apper-innstilling</string>
+    <string name="prefs_summary_hibernation_api_32">For å unngå at LeOS-Messenger blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Fjern tillatelser og frigjør plass\".</string>
+    <string name="prefs_summary_hibernation_api">For å unngå at LeOS-Messenger blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Sett en app i dvale om den er ubrukt\"</string>
+    <string name="unable_to_fetch_configuration">Ute av stand til å hente data fra konfigurasjonsserver. Prøv igjen senere.</string>
+    <string name="rogue_device_warning">Serveren har oppdaget en tilkobling med den samme LeOS-Messenger IDen, men fra en annen enhet.\n\nOm du ikke har brukt din LeOS-Messenger ID på en annen enhet eller brukt en eldre versjon av Threema, vennligst kontakt brukerstøtte og send en loggfil om det er mulig.</string>
+    <string name="fetch2_failure">Synkronisering med server mislyktes.</string>
+    <string name="no_members_support_group_calls">Det er ingen andre medlemmer i denne gruppen som er i stand til å svare på gruppesamtale</string>
+    <string name="group_calls">Gruppesamtaler</string>
+    <string name="prefs_title_group_calls_enable">Aktiver gruppesamtaler</string>
+    <string name="group_no_members">Denne gruppen har ikke andre medlemmer</string>
+    <string name="group_call">Gruppesamtale</string>
+    <string name="checking_compatibility">Sjekker kompatibilitet...</string>
+    <string name="group_call_mic_permission_rationale">For å starte gruppesamtaler så må du tillate %s å få tilgang til mikrofon under \"Tillatelser\".</string>
+    <string name="group_call_camera_permission_rationale">For at andre deltakere skal kunne se bildet ditt, så må du tillate %s å få tilgang til kamera under \"Tillatelser\".</string>
+    <string name="settings">Innstillinger</string>
+    <string name="leave">Forlat</string>
+    <string name="fs_key_mismatch">Nøkler er ikke lik</string>
+    <string name="tap_to_resend">Trykk for å resende</string>
+    <string name="group_calls_tooltip_title">Nytt: Gruppesamtaler</string>
+    <string name="group_calls_tooltip_text">Trykk her for å invitere alle gruppemedlemmer til et anrop. Alle medlemmer vil motta et varsel og kan velge om de vil bli med eller ikke.</string>
+    <string name="prefs_title_calls">Sikre anrop</string>
+    <string name="prefs_sum_group_calls_vibration">Velg om mobilen skal vibrere når en gruppesamtale har startet</string>
+    <string name="forward_security_mode_4dh">Sikret</string>
+    <string name="forward_security_mode_2dh">En-veis</string>
+    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beskytter kommunikasjonen fra å kunne bli dekryptert i fremtiden, selv om den langsiktige krypteringsnøkkelen er kompromittert.\n\nDette kan skrus på om appen på begge sider av kommunikasjonen støtter PFS.</string>
+    <string name="group_call_inactivity_left">Gruppesamtale avsluttet på grunn av inaktivitet</string>
+    <string name="missing_permission_external_storage">Ikke mulig å kopiere filen. Prøv følgende: \n1. Åpne innstillinger på enheten.\n2. Gå til \"Apper\" og velg \"Spesiell tilgang\" på menyen med tre prikker eller en nedtrekksmeny.\n3. Trykk på \"Lagring\" eller \"Tilgang til filer\".\n4. Trykk på de tre prikkene oppe i høyre hjørne og velg \"Vis systemet\". \n5. Trykk på \"Ekstern lagring\" og sørg for at \"Tilgang til alle filer\" er gitt.\n6. Prøv igjen å gjenopprette sikkerhetskopien.</string>
+    <string name="forward_security_downgraded_status_message">Denne kontakten har begynt å bruke en app-versjon som ikke støtter \"Perfect Forward Secrecy\". Meldinger blir sendt uten PFS fra nå av.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1399,5 +1440,83 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <plurals name="selection_counter_label">
         <item quantity="one">%d bilde valgt</item>
         <item quantity="other">%d bilder valgt</item>
+    </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Melding kopiert</item>
+        <item quantity="other">Meldinger kopiert</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="one">%d ny melding</item>
+        <item quantity="other">%d nye meldinger</item>
+    </plurals>
+    <plurals name="file_saved">
+        <item quantity="one">%d fil lagret vellykket</item>
+        <item quantity="other">%d filer lagret vellykket</item>
+    </plurals>
+    <plurals name="ballot_really_delete">
+        <item quantity="one">Fjern avstemning</item>
+        <item quantity="other">Fjern avstemninger</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="one">Vil du virkelig slette %1$d avstemning? Du kan ikke hente frem stemmene igjen.</item>
+        <item quantity="other">Vil du virkelig slette %1$d avstemninger? Du kan ikke hente frem stemmene igjen.</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="one">%d melding slettet</item>
+        <item quantity="other">%d meldinger slettet</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="one">I %d time</item>
+        <item quantity="other">I %d timer</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="one">%d kontakt kunne ikke bli slettet fordi den er fortsatt en del av en gruppe.</item>
+        <item quantity="other">%d kontakter kunne ikke bli slettet fordi de er fortsatt en del av en gruppe.</item>
+    </plurals>
+    <plurals name="message_archived">
+        <item quantity="one">%d samtale arkivert</item>
+        <item quantity="other">%d samtaler arkivert</item>
+    </plurals>
+    <plurals name="new_messages_in_chats">
+        <item quantity="one">%1$d ny melding i %2$d samtale</item>
+        <item quantity="other">%1$d nye meldinger i %2$d samtale</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="one">%d økt kjører</item>
+        <item quantity="other">%d økter kjører</item>
+    </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="one">Vil du virkelig slette %d gruppeforespørsel?
+Merk at forespørselen ikke trekkes tilbake og du kan
+fortsatt bli akseptert eller forespurt dersom forespørselen ennå ikke er besvart.</item>
+        <item quantity="other">Er du sikker på at du vil slette %d gruppeforespørsler?
+Merk at forespørslene ikke trekkes tilbake og du kan
+heller ikke bli akseptert eller forespurt dersom forespørslene ennå ikke er besvart.</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="one">Vil du virkelig slette %d gruppeforespørsel?
+Du kan ikke svare på forespørselen etter at den er slettet.</item>
+        <item quantity="other">Vil du virkelig slette %d gruppeforespørsler?
+Du kan ikke svare på forespørselene etter at de er slettet.</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="one">Vil du virkelig slette %d gruppelink?
+Andre brukere kan ikke sende forespørsler gjennom den lenger.
+Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</item>
+        <item quantity="other">Vil du virkelig slette %d gruppelinker?
+Andre brukere kan ikke sende forespørsler gjennom den lenger.
+Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="one">%d samtale slettet.</item>
+        <item quantity="other">%d samtaler slettet.</item>
+    </plurals>
+    <plurals name="forward_security_messages_skipped">
+        <item quantity="one">En melding har blitt tapt siden den forrige meldingen.</item>
+        <item quantity="other">%d meldinger har blitt tapt siden den forrige meldingen.</item>
+    </plurals>
+    <plurals name="delete_messages">
+        <item quantity="one">Slett %d melding på denne enheten?</item>
+        <item quantity="other">Slett %d meldinger på denne enheten?</item>
     </plurals>
 </resources>

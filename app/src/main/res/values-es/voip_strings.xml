@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources>
-    <string name="voip_title">Threema Voz</string>
+    <string name="voip_title">LeOS-Messenger Voz</string>
     <string name="voip_hangup">Hang up</string>
     <string name="voip_toggle_mic">Micrófono sí/no</string>
     <string name="voip_toggle_speaker">Altavoz sí/no</string>
@@ -11,7 +11,7 @@
     <string name="voip_call_confirm">¿Quiere llamar a %1$s?</string>
     <string name="voip_error_call">Error durante la llamada de Threema</string>
     <string name="voip_error_init_call">Error al inicializar la llamada</string>
-    <string name="voip_notification_title">Llamada Threema Voz entrante</string>
+    <string name="voip_notification_title">Llamada LeOS-Messenger Voz entrante</string>
     <string name="voip_notification_text">%1$s llamando</string>
     <!-- Shown when starting a call, before the peer device is ringing -->
     <string name="voip_status_initializing">Inicializar</string>
@@ -29,7 +29,7 @@
     <string name="voip_call_status_rejected">Llamada rechazada</string>
     <string name="voip_call_status_busy">Destinatario de llamada ocupado</string>
     <string name="voip_call_status_busy_short">Ocupado</string>
-    <string name="voip_call_status_disabled">Llamadas de Threema desactivadas por el destinatario</string>
+    <string name="voip_call_status_disabled">Llamadas de LeOS-Messenger desactivadas por el destinatario</string>
     <string name="voip_call_status_missed">Llamada perdida</string>
     <string name="voip_call_finished_outbox">Llamada saliente</string>
     <string name="voip_call_finished_inbox">Llamada entrante</string>
@@ -42,8 +42,8 @@
     <string name="voip_earpiece">Teléfono</string>
     <string name="voip_bluetooth">Bluetooth</string>
     <string name="voip_none">No disponible</string>
-    <string name="voip_call_finished">Llamada Threema terminada</string>
-    <string name="voip_another_call">No se puede conectar. Hay otra llamada Threema Voz en curso.</string>
+    <string name="voip_call_finished">Llamada LeOS-Messenger terminada</string>
+    <string name="voip_another_call">No se puede conectar. Hay otra llamada LeOS-Messenger Voz en curso.</string>
     <string name="voip_prefs_title_aec">Cancelación del eco</string>
     <string name="voip_prefs_aec_sw">Cancelación del eco por software</string>
     <string name="voip_prefs_aec_hw">Cancelación del eco por hardware</string>
@@ -55,11 +55,12 @@
     <string name="voip_connection_failed">No se ha podido establecer la conexión.</string>
     <string name="voip_connection_lost">Conexión perdida</string>
     <string name="prefs_voip_reject_incoming_calls_title">Rechazar llamadas del móvil</string>
-    <string name="prefs_voip_reject_incoming_calls_summary">Rechazar llamadas entrantes del móvil cuando Threema Voz está activo.</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Rechazar llamadas entrantes del móvil cuando LeOS-Messenger Voz está activo.</string>
     <string name="voip_contact_not_found">Este número no es de ningún contacto Threema.</string>
     <string name="voip_another_pstn_call">No se puede iniciar la llamada porque hay una llamada normal en curso.</string>
     <string name="voip_call_status_off_hours">Llamada fuera de horario</string>
     <string name="voip_peer_video_disabled">La otra parte ha desactivado las videollamadas</string>
+    <string name="voip_reject_channel_name">Cambio en el estado de la llamada</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnóstico de WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Inicia esta herramienta para depurar problemas al establecer una conexión de llamada de voz.</string>
@@ -69,4 +70,36 @@
     <string name="voip_webrtc_debug_done">Hecho. Si tienes problemas con el establecimiento de conexión de llamada, envía el resultado al servicio de asistencia de Threema.</string>
     <string name="voip_webrtc_debug_copied">Copiar al portapapeles completado.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Copiar al portapapeles</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Se ha notificado a todos los miembros del grupo</string>
+    <string name="voip_gc_notification_channel_description">Llamadas grupales</string>
+    <string name="voip_gc_notification_title">Llamada grupal</string>
+    <string name="voip_gc_notification_call_started">%1$s ha iniciado una llamada grupal en %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s ha iniciado una llamada grupal</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Has iniciado una llamada grupal</string>
+    <string name="voip_gc_dismiss_call">Ignorar</string>
+    <string name="voip_gc_join_call">Unirme</string>
+    <string name="voip_gc_ongoing_call">Llamada grupal en curso</string>
+    <string name="voip_gc_waiting_for_participants">Esperando a los participantes</string>
+    <string name="voip_gc_participant_avatar_description">Foto de perfil del participante</string>
+    <string name="voip_gc_participant_mute_status_description">Estado silenciado del participante</string>
+    <string name="voip_gc_notification_new_call_public">Se ha iniciado una nueva llamada grupal</string>
+    <string name="voip_gc_open_call">Abrir</string>
+    <string name="voip_gc_call_started">La llamada grupal ha comenzado</string>
+    <string name="voip_gc_call_ended">La llamada grupal ha terminado</string>
+    <string name="voip_gc_in_call">En llamada grupal</string>
+    <string name="voip_gc_sfu_not_available">Servidor no disponible. Inténtalo de nuevo más tarde.</string>
+    <string name="voip_gc_call_error">Llamada detenida debido a un error</string>
+    <string name="voip_gc_call_start_error">No ha podido iniciarse la llamada grupal</string>
+    <string name="voip_gc_call_already_ended">La llamada grupal ha finalizado</string>
+    <string name="voip_gc_call_full_generic">Máximo alcanzado: no pueden unirse más participantes a esta llamada grupal.</string>
+    <string name="voip_gc_call_full_n">Se ha alcanzado el máximo de %1$d participantes. No puedes unirte a esta llamada grupal.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d participante</item>
+        <item quantity="other">%d participantes</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Aviso: un miembro no puede participar en llamadas grupales.</item>
+        <item quantity="other">Aviso: %d miembros no pueden participar en llamadas grupales.</item>
+    </plurals>
 </resources>

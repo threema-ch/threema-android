@@ -14,17 +14,25 @@
 		android:layout_centerVertical="true"
 		android:layout_gravity="center"/>
 
-	<SeekBar
+	<ch.threema.app.ui.AudioProgressBarView
+		style="@style/SeekBar.Audio"
 		android:id="@+id/seek"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:paddingLeft="12dp"
-		android:paddingRight="10dp"
+		android:layout_height="48dp"
+		android:layout_marginLeft="50dp"
+		android:layout_marginRight="10dp"
 		android:layout_centerVertical="true"
-		android:layout_marginLeft="@dimen/avatar_size_small"
+		android:paddingLeft="6dp"
+		android:paddingRight="6dp"
 		android:layout_toLeftOf="@+id/document_size_view"
 		android:enabled="false"
-		android:visibility="visible"/>
+		android:visibility="visible"
+		app:barColor="?attr/textColorTertiary"
+		app:barColorActivated="?attr/colorAccent"
+		app:barWidth="3dp"
+		app:spaceWidth="2dp"
+		app:barMinHeight="2dp"
+		app:barHeight="48dp"/>
 
 	<TextView
 		android:id="@+id/document_size_view"

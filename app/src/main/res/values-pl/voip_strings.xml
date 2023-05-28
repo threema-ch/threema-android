@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources>
-    <string name="voip_title">Threema Call</string>
+    <string name="voip_title">LeOS-Messenger Call</string>
     <string name="voip_hangup">Rozłącz</string>
     <string name="voip_toggle_mic">Przełącz mikrofon</string>
     <string name="voip_toggle_speaker">Przełącz głośnik</string>
@@ -42,9 +42,9 @@
     <string name="voip_earpiece">Telefon</string>
     <string name="voip_bluetooth">Bluetooth</string>
     <string name="voip_none">Niedostępne</string>
-    <string name="voip_call_finished">"Połączenie Threema zostało zakończone
+    <string name="voip_call_finished">"Połączenie LeOS-Messenger zostało zakończone
 "</string>
-    <string name="voip_another_call">Nie można połączyć. Inne połączenie Threema jest obecnie aktywne.</string>
+    <string name="voip_another_call">Nie można połączyć. Inne połączenie LeOS-Messenger jest obecnie aktywne.</string>
     <string name="voip_prefs_title_aec">Eliminacja echa</string>
     <string name="voip_prefs_aec_sw">Programowa eliminacja echa</string>
     <string name="voip_prefs_aec_hw">Sprzętowa eliminacja echa</string>
@@ -57,10 +57,11 @@
     <string name="voip_connection_lost">Utracono połączenie</string>
     <string name="prefs_voip_reject_incoming_calls_title">Odrzucaj połączenia komórkowe</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Odrzucaj połączenia komórkowe, gdy aktywne jest połączenie Threema.</string>
-    <string name="voip_contact_not_found">Nie znaleziono kontaktu Threema o tym numerze.</string>
+    <string name="voip_contact_not_found">Nie znaleziono kontaktu LeOS-Messenger o tym numerze.</string>
     <string name="voip_another_pstn_call">Nie można zainicjować połączenia. Zwyczajne połączenie telefoniczne jest nadal aktywne.</string>
     <string name="voip_call_status_off_hours">Połączenie po godz.</string>
     <string name="voip_peer_video_disabled">Druga strona wyłączyła połączenia wideo</string>
+    <string name="voip_reject_channel_name">Zmiana stanu połączenia</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnostyka WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Uruchom to narzędzie, aby rozpoznać problemy z konfiguracją połączenia głosowego</string>
@@ -70,4 +71,40 @@
     <string name="voip_webrtc_debug_done">Gotowe. Jeśli masz problemy z ustanowieniem połączenia, wyślij ten wyniki do działu wsparcia Threema.</string>
     <string name="voip_webrtc_debug_copied">Skopiowano do schowka.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Skopiuj do schowka</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Powiadomiono wszystkich członków grupy</string>
+    <string name="voip_gc_notification_channel_description">Poł. grupowe</string>
+    <string name="voip_gc_notification_title">Poł. grupowe</string>
+    <string name="voip_gc_notification_call_started">%1$s rozpoczął/ęła połączenie grupowe w %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s rozpoczął/ęła połączenie grupowe</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Rozpoczęto połączenie grupowe</string>
+    <string name="voip_gc_dismiss_call">Ignoruj</string>
+    <string name="voip_gc_join_call">Dołącz</string>
+    <string name="voip_gc_ongoing_call">Trwa połączenie grupowe</string>
+    <string name="voip_gc_waiting_for_participants">Oczekiwanie na uczestników</string>
+    <string name="voip_gc_participant_avatar_description">Zdjęcie profilowe uczestnika</string>
+    <string name="voip_gc_participant_mute_status_description">Stan wyciszenia uczestnika</string>
+    <string name="voip_gc_notification_new_call_public">Rozpoczęto nowe połączenie grupowe</string>
+    <string name="voip_gc_open_call">Otwórz</string>
+    <string name="voip_gc_call_started">Rozpoczęto połączenie grupowe</string>
+    <string name="voip_gc_call_ended">Zakończono połączenie grupowe</string>
+    <string name="voip_gc_in_call">W poł. grupowym</string>
+    <string name="voip_gc_sfu_not_available">Serwer niedostępny, spróbuj ponownie później</string>
+    <string name="voip_gc_call_error">Nie można rozpocząć poł. grupowego</string>
+    <string name="voip_gc_call_start_error">Rozpoczęcie rozmowy grupowej nieudane</string>
+    <string name="voip_gc_call_already_ended">Połączenie grupowe już zostało zakończone</string>
+    <string name="voip_gc_call_full_generic">Osiągnięto maksimum: inni uczestnicy nie mogą dołączyć do tego połączenia grupowego.</string>
+    <string name="voip_gc_call_full_n">Osiągnięto maks. %1$d uczestników, nie możesz dołączyć do tego połączenia grupowego.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d uczestnik</item>
+        <item quantity="other">%d uczestników</item>
+        <item quantity="few">%d uczestnicy</item>
+        <item quantity="many">%d uczestników</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Uwaga: jeden uczestnik nie może brać udziału w połączeniach grupowych.</item>
+        <item quantity="other">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
+        <item quantity="few">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
+        <item quantity="many">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
+    </plurals>
 </resources>

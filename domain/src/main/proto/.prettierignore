@@ -1,3 +1,5 @@
-/node_modules/
+/.gitlab/
+/.gitlab-ci.yml
 /build/
+/node_modules/
 /package-lock.json

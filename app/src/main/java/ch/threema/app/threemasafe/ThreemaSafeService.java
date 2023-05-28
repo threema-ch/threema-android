@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -45,6 +45,28 @@ public interface ThreemaSafeService {
 
 	int BACKUP_ID_LENGTH = 32;
 
+	/**
+	 * This exception is thrown if creating and uploading the Threema Safe backup fails.
+	 */
+	class ThreemaSafeUploadException extends ThreemaException {
+		private final boolean uploadNeeded;
+
+		public ThreemaSafeUploadException(String msg, boolean uploadNeeded) {
+			super(msg);
+			this.uploadNeeded = uploadNeeded;
+		}
+
+		/**
+		 * Check whether the backup potentially should have been uploaded to the server.
+		 *
+		 * @return {@code false} if the backup should not be uploaded, {@code true} if it
+		 * potentially should be uploaded.
+		 */
+		public boolean isUploadNeeded() {
+			return uploadNeeded;
+		}
+	}
+
 	@Nullable
 	byte[] deriveMasterKey(String password, String identity);
 
@@ -68,13 +90,25 @@ public interface ThreemaSafeService {
 
 	void uploadNow(Context context, boolean force);
 
-	void createBackup(boolean force) throws ThreemaException;
+	void createBackup(boolean force) throws ThreemaSafeUploadException;
 
 	void deleteBackup() throws ThreemaException;
 
 	void restoreBackup(String identity, String password, ThreemaSafeServerInfo serverInfo) throws ThreemaException, IOException;
 
-	@Nullable ArrayList<String> searchID(String phone, String email);
+	/**
+	 * Search a Threema ID by phone number and/or email address.
+	 *
+	 * @return ArrayList of matching Threema IDs, null if none was found
+	 */
+	@Nullable
+	ArrayList<String> searchID(String phone, String email);
 
-	void launchForcedPasswordDialog(Activity activity);
+	/**
+	 * Launch the password dialog to setup Threema Safe.
+	 *
+	 * @param activity         the activity that starts the threema safe config activity
+	 * @param openHomeActivity if set to true, the home activity is started after successfully choosing a password
+	 */
+	void launchForcedPasswordDialog(Activity activity, boolean openHomeActivity);
 }

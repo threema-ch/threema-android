@@ -4,6 +4,9 @@
           android:installLocation="internalOnly"
           android:testOnly="false">
 
+	<!-- Google play license check -->
+	<uses-permission android:name="com.android.vending.CHECK_LICENSE"/>
+
 	<application tools:ignore="GoogleAppIndexingWarning">
 
 		<meta-data

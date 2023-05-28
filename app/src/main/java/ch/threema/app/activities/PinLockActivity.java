@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -34,11 +34,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 
 import java.security.MessageDigest;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -60,11 +61,9 @@ public class PinLockActivity extends ThreemaActivity {
 	private static final int DEFAULT_LOCKOUT_TIMEOUT = 30 * 1000;
 
 	private TextView passwordEntry;
-	private TextView headerTextView;
-	private TextView detailsTextView;
 	private TextView errorTextView;
 	private int numWrongConfirmAttempts;
-	private Handler handler = new Handler();
+	private final Handler handler = new Handler();
 	private CountDownTimer countDownTimer;
 	private boolean isCheckOnly;
 	private String pinPreset;
@@ -98,33 +97,26 @@ public class PinLockActivity extends ThreemaActivity {
 			finish();
 		}
 
-		if (savedInstanceState != null) {
-			numWrongConfirmAttempts = savedInstanceState.getInt(
-					KEY_NUM_WRONG_CONFIRM_ATTEMPTS, 0);
-		}
+		numWrongConfirmAttempts = preferenceService.getLockoutAttempts();
 
 		setContentView(R.layout.activity_pin_lock);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
 		passwordEntry = findViewById(R.id.password_entry);
-		passwordEntry.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				// Check if this was the result of hitting the enter or "done" key
-				if (actionId == EditorInfo.IME_NULL
-						|| actionId == EditorInfo.IME_ACTION_DONE
-						|| actionId == EditorInfo.IME_ACTION_NEXT) {
-					handleNext();
-					return true;
-				}
-				return false;
+		passwordEntry.setOnEditorActionListener((v, actionId, event) -> {
+			// Check if this was the result of hitting the enter or "done" key
+			if (actionId == EditorInfo.IME_NULL
+					|| actionId == EditorInfo.IME_ACTION_DONE
+					|| actionId == EditorInfo.IME_ACTION_NEXT) {
+				handleNext();
+				return true;
 			}
+			return false;
 		});
 		passwordEntry.setFilters(new InputFilter[]{new InputFilter.LengthFilter(ThreemaApplication.MAX_PIN_LENGTH)});
 
-
-		headerTextView = findViewById(R.id.headerText);
-		detailsTextView = findViewById(R.id.detailsText);
+		TextView headerTextView = findViewById(R.id.headerText);
+		TextView detailsTextView = findViewById(R.id.detailsText);
 		errorTextView = findViewById(R.id.errorText);
 
 		headerTextView.setText(R.string.confirm_your_pin);
@@ -138,11 +130,6 @@ public class PinLockActivity extends ThreemaActivity {
 	@Override
 	protected boolean isPinLockable() {
 		return false;
-	}
-
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
 	}
 
 	@Override
@@ -170,12 +157,6 @@ public class PinLockActivity extends ThreemaActivity {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putInt(KEY_NUM_WRONG_CONFIRM_ATTEMPTS, numWrongConfirmAttempts);
-	}
-
-	@Override
 	public void onBackPressed() {
 		quit();
 	}
@@ -198,18 +179,20 @@ public class PinLockActivity extends ThreemaActivity {
 			EditTextUtil.hideSoftKeyboard(passwordEntry);
 
 			setResult(RESULT_OK);
+			numWrongConfirmAttempts = 0;
 			finish();
 		} else {
-			if (isCheckOnly) {
-				passwordEntry.setEnabled(false);
-
-				handler.postDelayed(() -> RuntimeUtil.runOnUiThread(this::finish), 1000);
-			}
 			if (++numWrongConfirmAttempts >= FAILED_ATTEMPTS_BEFORE_TIMEOUT) {
-				long deadline = setLockoutAttemptDeadline(DEFAULT_LOCKOUT_TIMEOUT); // TODO default value
+				long deadline = setLockoutAttemptDeadline(DEFAULT_LOCKOUT_TIMEOUT);
 				handleAttemptLockout(deadline);
 			} else {
 				showError(R.string.pinentry_wrong_pin);
+			}
+
+			if (isCheckOnly) {
+				passwordEntry.setEnabled(false);
+
+				handler.postDelayed(() -> RuntimeUtil.runOnUiThread(this::quit), 1000);
 			}
 		}
 	}
@@ -280,10 +263,6 @@ public class PinLockActivity extends ThreemaActivity {
 	 * enter a pattern.
 	 */
 	public long getLockoutAttemptDeadline() {
-		if (isCheckOnly) {
-			return 0L;
-		}
-
 		final long deadline = preferenceService.getLockoutDeadline();
 		final long timeoutMs = preferenceService.getLockoutTimeout();
 
@@ -292,5 +271,13 @@ public class PinLockActivity extends ThreemaActivity {
 			return 0L;
 		}
 		return deadline;
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (preferenceService != null) {
+			preferenceService.setLockoutAttempts(numWrongConfirmAttempts);
+		}
+		super.onDestroy();
 	}
 }

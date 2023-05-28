@@ -23,7 +23,7 @@
     <string name="webclient_invalid_qr_code">Ugyldig QR-kode</string>
     <string name="webclient_new_connection_toast">Skrivebord-/Webøkt startet</string>
     <string name="webclient_protocol_error">Protokollfeil</string>
-    <string name="webclient_protocol_version_to_old">Din app støtter ikke denne versjonen av skrivebordsappen / webklienten. Vennligst oppdater Threema til den nyeste versjonen.</string>
+    <string name="webclient_protocol_version_to_old">Din app støtter ikke denne versjonen av skrivebordsappen / webklienten. Vennligst oppdater LeOS-Messenger til den nyeste versjonen.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">Din app støtter ikke denne versjonen av skrivebordsappen / webklienten. Vennligst last ned den siste versjonen av skrivebordsappen eller spør administrator av webklienten til å oppgradere til den nyeste versjonen.</string>
     <string name="webclient_protocol_version_too_new_threema">Din app støtter ikke denne versjonen av skrivebordsappen / webklienten. Vennligst bruk den siste versjonen av skrivebordsappen / webklienten.</string>
     <string name="webclient_session_already_exists">Økten til QR-koden du skannet eksisterer allerede. Start skrivebordsappen / webklienten på nytt og prøv igjen.</string>
@@ -33,9 +33,10 @@
     <string name="webclient_cannot_start">Kan ikke starte økt</string>
     <string name="webclient_constrained_by_mdm">Server er ikke godkjent av administrator.</string>
     <string name="webclient_clear_all_sessions">Fjern alle økter</string>
+    <string name="webclient_clear_all_sessions_confirm">Er du sikker på at du vil stoppe, og fjerne alle økter?</string>
     <string name="webclient_prefs_debug_tool_summary">Start dette verktøyet for feilsøking av problem med å etablere en tilkobling til skrivebordsapp eller webklient</string>
     <string name="webclient_diagnostics">Skrivebord/Web feilsøking</string>
     <string name="webclient_diagnostics_start">Start</string>
     <string name="webclient_diagnostics_intro">Trykk på «Start» for å starte test.</string>
-    <string name="webclient_diagnostics_done">Ferdig. Om du opplever problemer med tilkoblingen til skrivebordsapp eller webklient, vennligst send denne loggen til Threema brukerstøtte.</string>
+    <string name="webclient_diagnostics_done">Ferdig. Om du opplever problemer med tilkoblingen til skrivebordsapp eller webklient, vennligst send denne loggen til LeOS-Messenger brukerstøtte.</string>
 </resources>

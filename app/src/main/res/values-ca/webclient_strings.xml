@@ -23,7 +23,7 @@
     <string name="webclient_invalid_qr_code">Codi QR no vàlid</string>
     <string name="webclient_new_connection_toast">Sessió d\'Escriptori/Web iniciada</string>
     <string name="webclient_protocol_error">Error de protocol</string>
-    <string name="webclient_protocol_version_to_old">La vostra aplicació no admet aquesta versió d\'aplicació d\'escriptori / client web. Actualitzeu Threema per Android a la darrera versió.</string>
+    <string name="webclient_protocol_version_to_old">La vostra aplicació no admet aquesta versió d\'aplicació d\'escriptori / client web. Actualitzeu LeOS-Messenger per Android a la darrera versió.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">La vostra aplicació no admet aquesta versió d\'aplicació d\'escriptori / client web. Descarregueu la darrera versió de l\'aplicació d\'escriptori, o pregunteu a l\'administrador del vostre client web per actualitzar a la darrera versió.</string>
     <string name="webclient_protocol_version_too_new_threema">La vostra aplicació no admet aquesta versió d\'aplicació d\'escriptori / client web. Utilitzeu la versió actual de l\'aplicació d\'escriptori / client web.</string>
     <string name="webclient_session_already_exists">La sessió del codi QR que heu escanejat ja existeix. Torneu llançar l\'aplicació d\'escriptori / torneu a carregar el client web, i intenteu-ho una altra vegada.</string>

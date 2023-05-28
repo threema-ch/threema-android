@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -39,7 +39,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  *
  * Video:     0x000000000000000000000000000000000000000000000001
  * Thumbnail: 0x000000000000000000000000000000000000000000000002
+ *
+ *  @Deprecated Use FileMessage instead
  */
+@Deprecated
 public class BoxVideoMessage extends AbstractMessage {
 
 	private int duration;
@@ -64,7 +67,7 @@ public class BoxVideoMessage extends AbstractMessage {
 	}
 
 	@Override
-	public boolean allowSendingProfile() {
+	public boolean allowUserProfileDistribution() {
 		return true;
 	}
 

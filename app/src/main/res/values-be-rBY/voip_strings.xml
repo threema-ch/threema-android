@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="voip_title">Званок Threema</string>
     <string name="voip_hangup">Завяршыць</string>
     <string name="voip_toggle_mic">Пераключыць мікрафон</string>
@@ -8,7 +8,7 @@
     <string name="voip_switch_cam_front">Пераключана на пярэднюю камеру</string>
     <string name="voip_switch_cam_rear">Пераключана на заднюю камеру</string>
     <string name="voip_toggle_video">Пераключыць рэжым відэа</string>
-    <string name="voip_call_confirm">Жадаеце патэлефанаваць карыстачу %1$s?</string>
+    <string name="voip_call_confirm">Хочаце патэлефанаваць карыстачу %1$s?</string>
     <string name="voip_error_call">Памылка падчас званка Threema</string>
     <string name="voip_error_init_call">Памылка ініцыялізацыі званка</string>
     <string name="voip_notification_title">Уваходны званок Threema</string>
@@ -23,13 +23,13 @@
     <string name="voip_status_ringing">Я званю</string>
     <string name="voip_mic_enable">Уключыць мікрафон</string>
     <string name="voip_mic_disable">Адключыць мікрафон</string>
-    <string name="voip_checking_compatibility">Праверка магчымасці прыёму званкоў Threema кантактам...</string>
+    <string name="voip_checking_compatibility">Праверка магчымасці прыёму званкоў LeOS-Messenger кантактам…</string>
     <string name="voip_incompatible">Гэты кантакт пакуль не можа прымаць званкі Threema.</string>
     <string name="voip_call_status_unavailable">Адрасат званка недаступны</string>
     <string name="voip_call_status_rejected">Званок адхілены</string>
     <string name="voip_call_status_busy">Адрасат званка заняты</string>
     <string name="voip_call_status_busy_short">Занята</string>
-    <string name="voip_call_status_disabled">Званкі Threema адключаныя адрасатам</string>
+    <string name="voip_call_status_disabled">Званкі LeOS-Messenger адключаныя адрасатам</string>
     <string name="voip_call_status_missed">Прапушч. званок</string>
     <string name="voip_call_finished_outbox">Выходны званок</string>
     <string name="voip_call_finished_inbox">Уваходны званок</string>
@@ -42,7 +42,7 @@
     <string name="voip_earpiece">Тэлефон</string>
     <string name="voip_bluetooth">Bluetooth</string>
     <string name="voip_none">Недаступна</string>
-    <string name="voip_call_finished">Званок Threema завершаны</string>
+    <string name="voip_call_finished">Званок LeOS-Messenger завершаны</string>
     <string name="voip_another_call">Не ўдаецца злучыцца. Здзяйсняецца іншы званок Threema.</string>
     <string name="voip_prefs_title_aec">Рэхакампенсацыя</string>
     <string name="voip_prefs_aec_sw">Праграмная рэхакампенсацыя</string>
@@ -60,6 +60,7 @@
     <string name="voip_another_pstn_call">Не ўдаецца запусціць званок. Выконваецца звычайны тэлефонны званок.</string>
     <string name="voip_call_status_off_hours">Званок у непрац. час</string>
     <string name="voip_peer_video_disabled">Відэазванкі адключаны субяседнікам.</string>
+    <string name="voip_reject_channel_name">Змена стану выкліку</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Дыягностыка WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Запусціце гэты сродак для адладкі непаладак з наладай злучэння для галасавой сувязі</string>
@@ -69,4 +70,40 @@
     <string name="voip_webrtc_debug_done">Гатова. Калі ў вас узнікаюць непаладкі з наладамі злучэння для званкоў, адпраўце даныя ў службу падтрымкі Threema.</string>
     <string name="voip_webrtc_debug_copied">Даныя скапіяваны ў буфер абмену.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Капіяваць у буфер абмену</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">Усе ўдзельнікі суполкі былі апавешчаныя</string>
+    <string name="voip_gc_notification_channel_description">Супольныя званкі</string>
+    <string name="voip_gc_notification_title">Супольны званок</string>
+    <string name="voip_gc_notification_call_started">%1$s пачаў супольны выклік у %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s пачаў супольны выклік</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Вы пачалі супольны выклік</string>
+    <string name="voip_gc_dismiss_call">Ігнараваць</string>
+    <string name="voip_gc_join_call">Далучыцца</string>
+    <string name="voip_gc_ongoing_call">Ідзе супольны выклік</string>
+    <string name="voip_gc_waiting_for_participants">Чакаем удзельнікаў</string>
+    <string name="voip_gc_participant_avatar_description">Відарыс профілю ўдзельніка</string>
+    <string name="voip_gc_participant_mute_status_description">Статус адключэння гуку ўдзельніка</string>
+    <string name="voip_gc_notification_new_call_public">Пачаты новы супольны выклік</string>
+    <string name="voip_gc_open_call">Адкрыты</string>
+    <string name="voip_gc_call_started">Пачаўся супольны выклік</string>
+    <string name="voip_gc_call_ended">Супольны выклік скончыўся</string>
+    <string name="voip_gc_in_call">У супольным выкліку</string>
+    <string name="voip_gc_sfu_not_available">Сервер недаступны, паўтарыце спробу пазней</string>
+    <string name="voip_gc_call_error">Не атрымалася пачаць супольны выклік</string>
+    <string name="voip_gc_call_start_error">Не атрымалася пачаць супольны выклік</string>
+    <string name="voip_gc_call_already_ended">Супольны выклік ужо скончыўся</string>
+    <string name="voip_gc_call_full_generic">Дасягнуты максімум: больш удзельнікаў не можа далучыцца да гэтага супольнага выкліку.</string>
+    <string name="voip_gc_call_full_n">Дасягнута максімальная колькасць удзельнікаў: %1$d, вы не можаце далучыцца да гэтага супольнага выкліку.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="one">%d удзельнік</item>
+        <item quantity="other">%d удзельнікі</item>
+        <item quantity="few">удзельнікаў</item>
+        <item quantity="many">удзельнікаў</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Заўвага: адзін удзельнік не можа ўдзельнічаць у супольных выкліках.</item>
+        <item quantity="other">Заўвага: %d удзельнікі не могуць удзельнічаць у супольных выкліках.</item>
+        <item quantity="few">Заўвага: некалькі удзельнікаў не можа ўдзельнічаць у супольных выкліках.</item>
+        <item quantity="many">Заўвага: некалькі удзельнікаў не можа ўдзельнічаць у супольных выкліках.</item>
+    </plurals>
 </resources>

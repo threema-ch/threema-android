@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,8 +21,7 @@
 
 package ch.threema.app.utils;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.threema.domain.protocol.ThreemaFeature;
@@ -56,8 +55,10 @@ public class ThreemaFeatureTest {
 			.ballot(true)
 			.file(true)
 			.voip(true)
+			.videocalls(true)
+			.forwardSecurity(true)
 			.build();
-		Assert.assertEquals(31, maskAllFeatures);
+		Assert.assertEquals(127, maskAllFeatures);
 
 		final int maskPartialFeatures = new ThreemaFeature.Builder()
 			.audio(true)

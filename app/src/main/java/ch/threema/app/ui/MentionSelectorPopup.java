@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -36,11 +36,14 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.Collections;
 import java.util.List;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.adapters.MentionSelectorAdapter;
 import ch.threema.app.collections.Functional;
@@ -52,29 +55,28 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 public class MentionSelectorPopup extends PopupWindow implements MentionSelectorAdapter.OnClickListener {
 
-	private Context context;
-	private LinearLayout popupLayout;
+	private final Context context;
 	private MentionSelectorAdapter mentionAdapter;
-	private GroupService groupService;
-	private ContactService contactService;
-	private UserService userService;
-	private PreferenceService preferenceService;
+	private final GroupService groupService;
+	private final ContactService contactService;
+	private final UserService userService;
+	private final PreferenceService preferenceService;
 	private String filterText;
 	private int filterStart;
-	private GroupModel groupModel;
-	private RecyclerView recyclerView;
-	private ContactModel allContactModel;
-	private MentionSelectorListener mentionSelectorListener;
+	private final GroupModel groupModel;
+	private final RecyclerView recyclerView;
+	private final ContactModel allContactModel;
+	private final MentionSelectorListener mentionSelectorListener;
 	private ComposeEditText editText;
 	private int dividersHeight, viewableSpaceHeight;
-	private int popupY, popupX;
-	private TextWatcher textWatcher = new TextWatcher() {
+	private final TextWatcher textWatcher = new TextWatcher() {
 		private void run() {
 			dismiss();
 		}
@@ -156,7 +158,7 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 		this.allContactModel.setState(ContactModel.State.ACTIVE);
 
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.popupLayout = (LinearLayout) layoutInflater.inflate(R.layout.popup_mention_selector, null, false);
+		LinearLayout popupLayout = (LinearLayout) layoutInflater.inflate(R.layout.popup_mention_selector, null, false);
 
 		setContentView(popupLayout);
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -166,7 +168,7 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 		setOutsideTouchable(false);
 		setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-		this.recyclerView = this.popupLayout.findViewById(R.id.group_members_list);
+		this.recyclerView = popupLayout.findViewById(R.id.group_members_list);
 
 		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
 		linearLayoutManager.setStackFromEnd(true);
@@ -184,35 +186,30 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 		}
 	}
 
-	public void show(Activity activity, final ComposeEditText editText, final int originXOffset) {
+	public void show(@NonNull Activity activity, @NonNull final ComposeEditText editText, @Nullable View boundary) {
 		if (this.mentionAdapter == null) {
 			dismiss();
 			return;
 		}
 
-		int[] originLocation = {0, 0};
+		int[] coordinates = getPositionCoordinates(activity, boundary != null ? boundary : editText);
+
+		int popupX = 0;
+		int popupY = coordinates[1];
+
 		this.editText = editText;
 		editText.setLocked(true);
-		editText.getLocationInWindow(originLocation);
 		editText.addTextChangedListener(textWatcher);
 		this.filterStart = editText.getSelectionStart();
-		int screenHeight = activity.getWindowManager().getDefaultDisplay().getHeight();
-		this.popupX = originLocation[0];
-		this.popupY = screenHeight - originLocation[1] + ConfigUtils.getNavigationBarHeight(activity);
 
-		this.viewableSpaceHeight = originLocation[1] - ConfigUtils.getStatusBarHeight(context) - ConfigUtils.getActionBarSize(context);
+		this.viewableSpaceHeight = coordinates[2];
 		this.dividersHeight = 2 * context.getResources().getDimensionPixelSize(R.dimen.list_divider_height);
 
-		if (this.popupX > originXOffset) {
-			this.setWidth(activity.getWindowManager().getDefaultDisplay().getWidth() - this.popupX + originXOffset);
-			this.popupX -= originXOffset;
-		} else {
-			this.setWidth(activity.getWindowManager().getDefaultDisplay().getWidth());
-		}
+		this.setWidth(activity.getWindowManager().getDefaultDisplay().getWidth());
 		this.setHeight(this.viewableSpaceHeight);
 
 		try {
-			showAtLocation(editText, Gravity.LEFT | Gravity.BOTTOM, this.popupX, this.popupY);
+			showAtLocation(editText, Gravity.LEFT | Gravity.BOTTOM, popupX, popupY);
 
 			getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 				@Override
@@ -244,7 +241,13 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 		groupContacts.add(allContactModel);
 
 		if (!init && filterText.length() - filterStart > 0) {
-			groupContacts = Functional.filter(groupContacts, (IPredicateNonNull<ContactModel>) contactModel -> ContactUtil.getSafeNameString(contactModel, isSortingFirstName).toLowerCase().contains(filterText.substring(filterStart).toLowerCase()));
+			groupContacts = Functional.filter(groupContacts, (IPredicateNonNull<ContactModel>) contactModel -> {
+				String lowercaseName = filterText.substring(filterStart).toLowerCase();
+				if (userService.isMe(contactModel.getIdentity()) && NameUtil.getQuoteName(contactModel, userService).toLowerCase().contains(lowercaseName)) {
+					return true;
+				}
+				return ContactUtil.getSafeNameString(contactModel, isSortingFirstName).toLowerCase().contains(lowercaseName);
+			});
 		}
 
 		if (groupContacts.isEmpty()) {// just show all selector as default placeholder if there are no more specific results
@@ -286,4 +289,37 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 	public interface MentionSelectorListener {
 		void onContactSelected(String identity, int length, int insertPosition);
 	}
+
+	@SuppressWarnings("deprecation")
+	private int[] getPositionCoordinates(@NonNull Activity activity, @NonNull View view) {
+		int[] windowLocation = {0, 0};
+		int[] screenLocation = {0, 0};
+		view.getLocationInWindow(windowLocation);
+		view.getLocationOnScreen(screenLocation);
+
+		// In the ExpandableTextEntryDialog we need the values from the screen location
+		boolean useLocationInWindow = windowLocation[1] == screenLocation[1];
+		int location;
+		if (useLocationInWindow) {
+			location = windowLocation[1];
+		} else {
+			location = screenLocation[1] - view.getMeasuredHeight() / 2;
+		}
+
+		int screenHeight = activity.getWindowManager().getDefaultDisplay().getHeight();
+
+		int x = useLocationInWindow ? windowLocation[0] : screenLocation[0];
+		x += view.getPaddingLeft();
+		int y = screenHeight - location;
+
+		if (useLocationInWindow) {
+			y += ConfigUtils.getNavigationBarHeight(activity);
+		}
+
+		// Status and action bar size is only included in window location
+		int height = location - (useLocationInWindow ? ConfigUtils.getStatusBarHeight(context) + ConfigUtils.getActionBarSize(context) : 0);
+
+		return new int[]{x, y, height};
+	}
+
 }

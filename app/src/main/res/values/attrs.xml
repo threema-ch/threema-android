@@ -55,6 +55,7 @@
 	<attr name="bubble_selected" format="reference|color"/>
 	<attr name="bubble_pressed" format="reference|color"/>
 	<attr name="bubble_status" format="reference|color"/>
+	<attr name="bubble_group_status" format="reference|color"/>
 	<attr name="bubble_recv" format="reference|color"/>
 	<attr name="bubble_send" format="reference|color"/>
 	<attr name="bubble_pressed_overlay" format="reference|color"/>
@@ -187,6 +188,16 @@
 		<attr name="fillColor" format="color" />
 		<attr name="foregroundColor" format="color" />
 		<attr name="fillColorAlpha" format="integer" />
+	</declare-styleable>
+
+	<!-- Audio Progress Bar -->
+	<declare-styleable name="AudioProgressBarView">
+		<attr name="barHeight" format="dimension" />
+		<attr name="barMinHeight" format="dimension" />
+		<attr name="barWidth" format="dimension" />
+		<attr name="spaceWidth" format="dimension" />
+		<attr name="barColor" format="color"/>
+		<attr name="barColorActivated" format="color"/>
 	</declare-styleable>
 
 </resources>

@@ -80,6 +80,29 @@
 			android:title="@string/prefs_vibrate"/>
 	</PreferenceCategory>
 	<PreferenceCategory
+		android:key="pref_key_groupcall_noti"
+		android:title="@string/group_calls">
+		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
+			android:key="@string/preferences__group_calls_use_system_ringtone"
+			android:title="@string/prefs_title_use_system_ringtone"
+			android:defaultValue="false"
+			android:disableDependentsState="true"/>
+		<ch.threema.app.preference.RingtonePreference
+			android:defaultValue="@string/default_ringtone"
+			android:key="@string/preferences__group_calls_ringtone"
+			android:summary="@string/prefs_sum_notification_sound"
+			android:icon="@drawable/ic_notifications_active_outline"
+			android:dependency="@string/preferences__group_calls_use_system_ringtone"
+			android:title="@string/prefs_voice_call_sound"/>
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="@string/preferences__group_calls_vibration"
+			android:summary="@string/prefs_sum_group_calls_vibration"
+			android:icon="@drawable/ic_vibration_outline"
+			android:title="@string/prefs_vibrate"/>
+	</PreferenceCategory>
+	<PreferenceCategory
 		android:key="pref_key_inapp"
 		android:title="@string/prefs_inapp">
 		<CheckBoxPreference

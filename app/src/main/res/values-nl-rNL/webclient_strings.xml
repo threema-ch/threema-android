@@ -23,7 +23,7 @@
     <string name="webclient_invalid_qr_code">Ongeldige QR-code</string>
     <string name="webclient_new_connection_toast">Desktop-/Websessie gestart</string>
     <string name="webclient_protocol_error">Protocolfout</string>
-    <string name="webclient_protocol_version_to_old">Uw app ondersteunt deze versie van de desktop-app/webclient niet. Werk Threema voor Android a.u.b. bij naar de laatste versie.</string>
+    <string name="webclient_protocol_version_to_old">Uw app ondersteunt deze versie van de desktop-app/webclient niet. Werk LeOS-Messenger voor Android a.u.b. bij naar de laatste versie.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">Uw app ondersteunt deze versie van de desktop-app/webclient niet. Download de laatste versie van de desktop-app of vraag uw administrator om uw webclient naar de laatste versie op te waarderen.</string>
     <string name="webclient_protocol_version_too_new_threema">Uw app ondersteunt deze versie van de desktop-app/webclient niet. Gebruik de nieuwste versie van de desktop-app/webclient.</string>
     <string name="webclient_session_already_exists">De sessie van de gescande QR-code bestaat al. Herlaad de desktop-app/de webclient en probeer het opnieuw.</string>

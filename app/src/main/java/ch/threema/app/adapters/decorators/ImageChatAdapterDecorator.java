@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -28,13 +28,13 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.activities.ThreemaActivity;
-import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.DebouncedOnClickListener;
@@ -42,7 +42,6 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -68,7 +67,14 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 
 		holder.messagePlayer = imageMessagePlayer;
 
-		setOnClickListener(view -> viewImage(getMessageModel(), holder.attachmentImage), holder.messageBlockView);
+		setOnClickListener(view -> {
+			if (
+				getMessageModel().getState() != MessageState.FS_KEY_MISMATCH &&
+				getMessageModel().getState() != MessageState.SENDFAILED
+			) {
+				viewImage(getMessageModel(), holder.attachmentImage);
+			}
+		}, holder.messageBlockView);
 
 		setControllerClickListener(holder, imageMessagePlayer);
 
@@ -78,9 +84,12 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 			holder.attachmentImage.setContentDescription(getContext().getString(R.string.image_placeholder));
 		}
 
-		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, getMessageModel().getImageData()));
+		RuntimeUtil.runOnUiThread(() -> {
+			setupResendStatus(holder);
+			setControllerState(holder, getMessageModel().getImageData());
+		});
 
-		configureBodyText(holder);
+		configureBodyText(holder, getMessageModel().getCaption());
 
 		configureMessagePlayer(holder, imageMessagePlayer);
 	}
@@ -115,24 +124,6 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 				});
 	}
 
-	private void configureBodyText(@NonNull ComposeMessageHolder holder) {
-		if (!TestUtil.empty(getMessageModel().getCaption())) {
-			holder.bodyTextView.setText(formatTextString(getMessageModel().getCaption(), filterString));
-
-			LinkifyUtil.getInstance().linkify(
-				(ComposeMessageFragment) helper.getFragment(),
-				holder.bodyTextView,
-				getMessageModel(),
-				true,
-				actionModeStatus.getActionModeEnabled(),
-				onClickElement);
-
-			showHide(holder.bodyTextView, true);
-		} else {
-			showHide(holder.bodyTextView, false);
-		}
-	}
-
 	private void setControllerClickListener(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer imageMessagePlayer) {
 		if (holder.controller != null) {
 			holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
@@ -149,9 +140,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 							}
 							break;
 						case ControllerView.STATUS_READY_TO_RETRY:
-							if (onClickRetry != null) {
-								onClickRetry.onClick(getMessageModel());
-							}
+							// ignore (retries will be handled by click listener for messageView)
 							break;
 						case ControllerView.STATUS_READY_TO_DOWNLOAD:
 							imageMessagePlayer.open();
@@ -247,6 +236,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 				holder.controller.setProgressing();
 				break;
 			case SENDFAILED:
+			case FS_KEY_MISMATCH:
 				holder.controller.setRetry();
 				break;
 			default:

@@ -32,7 +32,6 @@
 
 		<TextView
 				android:id="@+id/text_view"
-				android:text="@string/unread_messages"
 				android:singleLine="true"
 				android:autoLink="none"
 				android:layout_gravity="center"

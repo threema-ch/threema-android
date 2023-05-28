@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -28,42 +28,81 @@ import org.webrtc.IceCandidate;
 import org.webrtc.Logging;
 import org.webrtc.PeerConnectionFactory;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.logging.WebRTCLoggable;
+import ch.threema.logging.WebRTCLogger;
 
 /**
  * This util handles WebRTC initialization.
  */
 public class WebRTCUtil {
+	public enum Scope {
+		/**
+		 * 'Diagnostic' scope is exclusive.
+		 */
+		DIAGNOSTIC,
+		/**
+		 * 'Call', 'Group Call' and 'Web Client' scope are shared with each
+		 * other but may not be shared with any other scope.
+		 */
+		CALL_OR_GROUP_CALL_OR_WEB_CLIENT,
+	}
+
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WebRTCUtil");
 
-	private static boolean initialized = false;
+	private static @Nullable Scope initialized = null;
+
+	private static Logging.Severity scopeToSeverity(final WebRTCUtil.Scope scope) {
+		switch (scope) {
+			case DIAGNOSTIC:
+				return Logging.Severity.LS_VERBOSE;
+			case CALL_OR_GROUP_CALL_OR_WEB_CLIENT:
+				return Logging.Severity.LS_INFO;
+			default:
+				throw new IllegalStateException("Unknown WebRTC scope");
+		}
+	}
 
 	/**
-	 * If the WebRTC Android globals haven't been initialized yet, initialize them.
+	 * Initialise WebRTC peer connection factory globals for a specific scope.
 	 *
 	 * @param appContext The Android context to use. Make sure to use the application context!
+	 * @param scope The scope (i.e. the use case for WebRTC).
 	 */
-	public static void initializeAndroidGlobals(final Context appContext) {
-		if (!initialized) {
-			logger.debug("Initializing Android globals");
+	@AnyThread
+	public static synchronized void initializePeerConnectionFactory(final Context appContext, final Scope scope) {
+		if (initialized == null) {
+			logger.debug("Initializing peer connection factory globals");
 
 			// Enable this to allow WebRTC trace logging. Note: Since this logs a lot of data,
 			// it should only be enabled temporarily.
 			final boolean enableVerboseInternalTracing = false;
 
+			// Create WebRTC logger
+			final WebRTCLogger webRtcLogger = new WebRTCLogger(scopeToSeverity(scope));
+
 			// Initialize peer connection factory
 			PeerConnectionFactory.initialize(
 				PeerConnectionFactory.InitializationOptions.builder(appContext)
 					.setEnableInternalTracer(enableVerboseInternalTracing)
-					.setInjectableLogger(new WebRTCLoggable(), Logging.Severity.LS_INFO)
+					.setInjectableLogger(webRtcLogger, webRtcLogger.severity)
 					.createInitializationOptions()
 			);
+			initialized = scope;
+			logger.debug("Initialized peer connection factory globals");
+		}
 
-			initialized = true;
-		} else {
-			logger.debug("Android globals already initialized");
+		// TODO(Post multi device): Change this, so the scopes are exclusive. Rationale is that the diagnostics
+		//  scope may need to do more verbose logging and the logging should not be influenced
+		//  by another scope running at the same time. This requires us to signal
+		//  closure of a peer connection and its factory from the outside here in case
+		//  the scope changes.
+		//  Do not approach this before removing the web client code (because the web client
+		//  will attempt to reinitialise itself in the background)!
+		if (initialized != scope) {
+			logger.warn("Changing scope from '{}' to '{}' without reinitialising libwebrtc", initialized, scope);
 		}
 	}
 

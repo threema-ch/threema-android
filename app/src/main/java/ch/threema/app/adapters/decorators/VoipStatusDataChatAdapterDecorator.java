@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -86,7 +86,7 @@ public class VoipStatusDataChatAdapterDecorator extends ChatAdapterDecorator {
 			@Override
 			public void onClick(View view) {
 				// load the the contact
-				if (ConfigUtils.isCallsEnabled(getContext(), getPreferenceService(), getLicenseService())) {
+				if (ConfigUtils.isCallsEnabled()) {
 					ContactModel contactModel = helper.getContactService().getByIdentity(getMessageModel().getIdentity());
 					if (contactModel != null) {
 						String name = NameUtil.getDisplayNameOrNickname(contactModel, false);

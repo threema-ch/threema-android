@@ -23,7 +23,7 @@
     <string name="webclient_invalid_qr_code">Neplatný QR kód</string>
     <string name="webclient_new_connection_toast">Desktopová/webová relace byla spuštěna</string>
     <string name="webclient_protocol_error">Chyba protokolu</string>
-    <string name="webclient_protocol_version_to_old">Vaše aplikace nepodporuje tuto verzi aplikace pro desktop / webového klienta. Aktualizujte prosím aplikaci Threema pro Android na nejnovější verzi.</string>
+    <string name="webclient_protocol_version_to_old">Vaše aplikace nepodporuje tuto verzi aplikace pro desktop / webového klienta. Aktualizujte prosím aplikaci LeOS-Messenger pro Android na nejnovější verzi.</string>
     <string name="webclient_protocol_version_too_new_selfhosted">Vaše aplikace nepodporuje tuto verzi aplikace pro desktop / webového klienta. Stáhněte prosím nejnovější verzi aplikace pro desktop nebo požádejte správce webového klienta o upgrade na nejnovější verzi.</string>
     <string name="webclient_protocol_version_too_new_threema">Vaše aplikace nepodporuje tuto verzi aplikace pro desktop / webového klienta. Použijte prosím aktuální verzi aplikace pro desktop / webového klienta.</string>
     <string name="webclient_session_already_exists">Relace vámi naskenovaného QR kódu již existuje. Spusťte prosím aplikaci pro desktop / znovu načtěte webového klienta a zkuste to ještě jednou.</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2019 Threema GmbH
+  ~ Copyright (c) 2019-2023 LeOS-Messenger GmbH
   ~ All rights reserved.
   -->
 <network-security-config>
@@ -22,6 +22,21 @@
 			<pin digest="SHA-256">2Vpy8qUQCqc2+Lg6BgRO8G6e6vh7NmvVHTljfwP/Pfk=</pin>
 			<pin digest="SHA-256">vGQZ8hm2h+km+q7rnJ7kF9S17BwSY0rbhwjz6nIupf0=</pin>
 			<pin digest="SHA-256">jsQHAHKQ2oOf3rvMn9GJVIKslkhLpODGOMPSxgLeIyo=</pin>
+		</pin-set>
+		<!-- TrustKit Android API -->
+		<!-- Enforce pinning validation -->
+		<trustkit-config enforcePinning="true" disableDefaultReportUri="true">
+			<!-- Reporting URL for pin validation reports -->
+			<report-uri>https://3ma.ch/pinreport</report-uri>
+		</trustkit-config>
+	</domain-config>
+	<domain-config cleartextTrafficPermitted="false">
+		<domain includeSubdomains="true">sfu.threema.ch</domain>
+		<pin-set>
+			<pin digest="SHA-256">useMPV2qPBEgxVucMPuqexG27L64zFAksHh9BehZpY0=</pin>
+			<pin digest="SHA-256">88JttF0tDWrGT6g8H9uEZ0T8xosvZtZwWlsZuD4NvHA=</pin>
+			<pin digest="SHA-256">F82gDLif130AsVx454ZsMxPGl9EpzB5LqY39CzVKWDQ=</pin>
+			<pin digest="SHA-256">Jo4Re5X+mksn/Ankgrnov07caZwkkT8NezJMQf1i8cI=</pin>
 		</pin-set>
 		<!-- TrustKit Android API -->
 		<!-- Enforce pinning validation -->

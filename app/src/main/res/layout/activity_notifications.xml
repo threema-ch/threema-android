@@ -198,9 +198,7 @@
 						android:id="@+id/radio_silent_limited"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_marginRight="84dp"
-						android:text="@string/notifications_for_x_hours"/>
-
+						android:layout_marginRight="84dp"/>
 				</RadioGroup>
 
 				<LinearLayout

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -107,13 +107,17 @@ public class AudioNullTranscoder extends AbstractAudioTranscoder {
 		if (sampleSize >= 0) {
 			this.stats.incrementExtractedFrameCount(this.component);
 
-			if (this.bufferInfo.presentationTimeUs >= this.previousSampleTime) {
-				this.previousSampleTime = this.bufferInfo.presentationTimeUs;
-				this.muxer.writeSampleData(this.muxerTrack.get(), this.buffer, this.bufferInfo);
+			if (bufferInfo.presentationTimeUs >= trimStartTimeUs) {
+				if (this.bufferInfo.presentationTimeUs >= this.previousSampleTime) {
+					this.previousSampleTime = this.bufferInfo.presentationTimeUs;
+					this.muxer.writeSampleData(this.muxerTrack.get(), this.buffer, this.bufferInfo);
+				} else {
+					// skip old audio, as this only results in quality reduction.
+					logger.debug("audio muxer: presentationTimeUs {} < previousPresentationTime {}",
+						this.bufferInfo.presentationTimeUs, this.previousSampleTime);
+				}
 			} else {
-				// skip old audio, as this only results in quality reduction.
-				logger.debug("audio muxer: presentationTimeUs {} < previousPresentationTime {}",
-					this.bufferInfo.presentationTimeUs, this.previousSampleTime);
+				logger.trace("audio extractor: sample time {} <= trim start time {}", bufferInfo.presentationTimeUs, trimStartTimeUs);
 			}
 		}
 

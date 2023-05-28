@@ -271,4 +271,11 @@
 		android:restrictionType="string"
 		android:title="@string/restriction_safe_password_message"/>
 
+	<restriction
+		android:defaultValue="false"
+		android:description="@string/restriction_disable_group_calls_desc"
+		android:key="th_disable_group_calls"
+		android:restrictionType="bool"
+		android:title="@string/restriction_disable_group_calls"/>
+
 </restrictions>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -26,14 +26,15 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.Person;
+
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.Person;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.BitmapUtil;
@@ -54,27 +55,34 @@ public interface NotificationService {
 
 	String NOTIFICATION_CHANNEL_PASSPHRASE = "ps";
 	String NOTIFICATION_CHANNEL_WEBCLIENT =  "wc";
-	String NOTIFICATION_CHANNEL_CHAT =  "cc";
-	String NOTIFICATION_CHANNEL_CALL =  "ca";
+	String NOTIFICATION_CHANNEL_CHAT =  "cc"; // virtual notification channel used by wrapper
+	String NOTIFICATION_CHANNEL_CALL =  "ca"; // virtual notification channel used by wrapper
 	String NOTIFICATION_CHANNEL_IN_CALL =  "ic";
 	String NOTIFICATION_CHANNEL_ALERT =  "al";
 	String NOTIFICATION_CHANNEL_NOTICE =  "no";
 	String NOTIFICATION_CHANNEL_WORK_SYNC =  "ws";
 	String NOTIFICATION_CHANNEL_IDENTITY_SYNC =  "is";
 	String NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS =  "bk";
-	String NOTIFICATION_CHANNEL_CHAT_UPDATE =  "cu";
+	String NOTIFICATION_CHANNEL_CHAT_UPDATE =  "cu"; // virtual notification channel used by wrapper
 	String NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS = "nc";
 	String NOTIFICATION_CHANNEL_GROUP_JOIN_RESPONSE = "jres";
 	String NOTIFICATION_CHANNEL_GROUP_JOIN_REQUEST = "jreq";
 	String NOTIFICATION_CHANNEL_THREEMA_PUSH = "tpush";
+	String NOTIFICATION_CHANNEL_GROUP_CALL = "gcall"; // virtual notification channel used by wrapper
+
+	// TODO(ANDR-2065): temporary - remove after beta
+	String NOTIFICATION_CHANNEL_GROUP_CALL_OLD = "gca";
 
 	String NOTIFICATION_CHANNELGROUP_CHAT = "group";
 	String NOTIFICATION_CHANNELGROUP_VOIP = "vgroup";
 	String NOTIFICATION_CHANNELGROUP_CHAT_UPDATE = "ugroup";
+	String NOTIFICATION_CHANNELGROUP_GROUP_CALLS = "group_calls";
 
 	String NOTIFICATION_CHANNEL_CHAT_ID_PREFIX = "ch";
 	String NOTIFICATION_CHANNEL_VOIP_ID_PREFIX = "voip";
 	String NOTIFICATION_CHANNEL_CHAT_UPDATE_ID_PREFIX = "chu";
+	String NOTIFICATION_CHANNEL_GROUP_CALLS_ID_PREFIX = "gc";
+
 	String NOTIFICATION_CHANNEL_REJECT_SERVICE = "reject";
 
 	interface NotificationSchema {
@@ -282,6 +290,9 @@ public interface NotificationService {
 	 */
 	void setVisibleReceiver(MessageReceiver receiver);
 
+	void addGroupCallNotification(@NonNull GroupModel group, @NonNull ContactModel contactModel);
+	void cancelGroupCallNotification(int groupId);
+
 	/**
 	 * add a new conversation notification
 	 * @param conversationNotification
@@ -344,11 +355,10 @@ public interface NotificationService {
 	 */
 	void showNotEnoughDiskSpace(long availableSpace, long requiredSpace);
 
-	void showUnsentMessageNotification(ArrayList<AbstractMessageModel> failedMessages);
+	void showUnsentMessageNotification(@NonNull List<AbstractMessageModel> failedMessages);
 
 	void showSafeBackupFailed(int numDays);
 
-	void showWorkSyncProgress();
 	void cancelWorkSyncProgress();
 
 	void showIdentityStatesSyncProgress();

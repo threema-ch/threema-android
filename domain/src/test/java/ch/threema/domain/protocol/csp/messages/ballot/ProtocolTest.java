@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2022 Threema GmbH
+ * Copyright (c) 2013-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,9 +21,11 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot;
 
-import ch.threema.base.crypto.NonceFactory;
-import ch.threema.domain.stores.TestHelpers;
+import org.junit.Assert;
+import org.junit.Test;
+
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.NonceFactory;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
@@ -33,9 +35,7 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.IdentityStoreInterface;
-
-import org.junit.Assert;
-import org.junit.Test;
+import ch.threema.domain.testhelpers.TestHelpers;
 
 public class ProtocolTest {
 
@@ -54,7 +54,7 @@ public class ProtocolTest {
 		GroupBallotCreateMessage b = new GroupBallotCreateMessage();
 		b.setFromIdentity(ballotCreator);
 		b.setToIdentity(myIdentity);
-		b.setGroupId(groupId);
+		b.setApiGroupId(groupId);
 		b.setGroupCreator(groupCreator);
 		b.setBallotId(ballotId);
 		b.setBallotCreator(ballotCreator);

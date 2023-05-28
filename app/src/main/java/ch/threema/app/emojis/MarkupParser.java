@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2022 Threema GmbH
+ * Copyright (c) 2018-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -266,7 +266,7 @@ public class MarkupParser {
 			} else {
 				if (span.textStart > 0 && span.textEnd < s.length()) {
 					if (span.textStart != span.textEnd) {
-						s.setSpan(getCharacterStyle(span.kind), span.textStart, span.textEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+						s.setSpan(getCharacterStyle(span.kind), span.textStart, span.textEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 						s.setSpan(new ForegroundColorSpan(markerColor), span.markerStart, span.markerStart + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 						s.setSpan(new ForegroundColorSpan(markerColor), span.markerEnd, span.markerEnd + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 					}

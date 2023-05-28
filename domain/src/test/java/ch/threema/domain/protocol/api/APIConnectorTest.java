@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,12 +21,14 @@
 
 package ch.threema.domain.protocol.api;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import androidx.annotation.NonNull;
-import ch.threema.base.ThreemaException;
-import ch.threema.domain.stores.IdentityStoreInterface;
-import ch.threema.domain.protocol.ServerAddressProvider;
-import ch.threema.domain.protocol.api.work.*;
-import ch.threema.testutils.ToStringEqualityArgumentMatcher;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,15 +36,21 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.internal.util.reflection.FieldSetter;
 
+import java.lang.reflect.Field;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import ch.threema.base.ThreemaException;
+import ch.threema.domain.protocol.ServerAddressProvider;
+import ch.threema.domain.protocol.api.work.WorkContact;
+import ch.threema.domain.protocol.api.work.WorkData;
+import ch.threema.domain.protocol.api.work.WorkDirectory;
+import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
+import ch.threema.domain.protocol.api.work.WorkDirectoryFilter;
+import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.testutils.ToStringEqualityArgumentMatcher;
 
 public class APIConnectorTest {
 	private @NonNull
@@ -52,14 +60,24 @@ public class APIConnectorTest {
 		when(addressProvider.getDirectoryServerUrl(anyBoolean())).thenReturn("https://server.url/");
 		when(addressProvider.getWorkServerUrl(anyBoolean())).thenReturn("https://api-work.threema.ch/");
 
-		FieldSetter.setField(connector, APIConnector.class.getDeclaredField("serverAddressProvider"), addressProvider);
-		FieldSetter.setField(connector, APIConnector.class.getDeclaredField("random"), new SecureRandom());
+		setField(connector, APIConnector.class.getDeclaredField("serverAddressProvider"), addressProvider);
+		setField(connector, APIConnector.class.getDeclaredField("random"), new SecureRandom());
 		return connector;
 	}
 
 	private @NonNull
 	IdentityStoreInterface getIdentityStoreInterfaceMock() {
 		return mock(IdentityStoreInterface.class);
+	}
+
+	private void setField(Object object, @NonNull Field field, Object value) {
+		try {
+			field.setAccessible(true);
+			field.set(object, value);
+		} catch (IllegalAccessException e) {
+			String fieldName = field.getName();
+			throw new RuntimeException("Failed to set " + fieldName + " of object", e);
+		}
 	}
 
 	@Test
@@ -71,10 +89,10 @@ public class APIConnectorTest {
 			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
 
 		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
-		when(connector.postJson(
+		when(connector.postJsonWithResult(
 			eq("https://api-work.threema.ch/fetch2"),
 			argThat(new ToStringEqualityArgumentMatcher<>(requiredObject))
-		)).thenReturn("{\"support\":\"the-support-url\"}");
+		)).thenReturn(new PostJsonResult("{\"support\":\"the-support-url\"}", 0));
 		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
 			"identity1",
 			"identity2"
@@ -101,10 +119,10 @@ public class APIConnectorTest {
 			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
 
 		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
-		when(connector.postJson(
+		when(connector.postJsonWithResult(
 			eq("https://api-work.threema.ch/fetch2"),
 			argThat(new ToStringEqualityArgumentMatcher<>(requiredObject))
-		)).thenReturn("{\"logo\":{\"dark\": \"the-dark-logo\"}}");
+		)).thenReturn(new PostJsonResult("{\"logo\":{\"dark\": \"the-dark-logo\"}}", 0));
 		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
 			"identity1",
 			"identity2"
@@ -129,10 +147,10 @@ public class APIConnectorTest {
 			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
 
 		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
-		when(connector.postJson(
+		when(connector.postJsonWithResult(
 			eq("https://api-work.threema.ch/fetch2"),
 			argThat(new ToStringEqualityArgumentMatcher<>(requiredObject))
-		)).thenReturn("{\"logo\":{\"light\": \"the-light-logo\"}}");
+		)).thenReturn(new PostJsonResult("{\"logo\":{\"light\": \"the-light-logo\"}}", 0));
 		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
 			"identity1",
 			"identity2"
@@ -157,15 +175,17 @@ public class APIConnectorTest {
 			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
 
 		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
-		when(connector.postJson(
+		when(connector.postJsonWithResult(
 			eq("https://api-work.threema.ch/fetch2"),
 			argThat(new ToStringEqualityArgumentMatcher<>(requiredObject))
-		)).thenReturn("{\"contacts\":[" +
+		)).thenReturn(
+			new PostJsonResult(
+			"{\"contacts\":[" +
 			"{\"id\":\"id1\",\"pk\":\"AQ==\"}," +
 			"{\"id\":\"id2\",\"pk\":\"Aq==\",\"first\":\"id2-firstname\"}," +
 			"{\"id\":\"id3\",\"pk\":\"Aw==\",\"last\":\"id3-lastname\"}," +
 			"{\"id\":\"id4\",\"pk\":\"BA==\",\"first\": \"id4-firstname\", \"last\":\"id4-lastname\"}" +
-			"]}");
+			"]}", 0));
 		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
 			"identity1",
 			"identity2"
@@ -211,16 +231,16 @@ public class APIConnectorTest {
 			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
 
 		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
-		when(connector.postJson(
+		when(connector.postJsonWithResult(
 			eq("https://api-work.threema.ch/fetch2"),
 			argThat(new ToStringEqualityArgumentMatcher<>(requiredObject))
-		)).thenReturn("{\"mdm\":{" +
+		)).thenReturn(new PostJsonResult("{\"mdm\":{" +
 			"\"override\": true," +
 			"\"params\":{" +
 				"\"param-string\": \"string-param\"," +
 				"\"param-bool\": true," +
 				"\"param-int\": 123" +
-			"}}}");
+			"}}}", 0));
 		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
 			"identity1",
 			"identity2"
@@ -339,7 +359,7 @@ public class APIConnectorTest {
 		final IdentityStoreInterface identityStore = getIdentityStoreInterfaceMock();
 
 		when(identityStore.getIdentity()).thenReturn("FOOBAR12");
-		when(identityStore.encryptData(any(), any(), any())).thenReturn(new byte[1]);
+		when(identityStore.calcSharedSecret(any())).thenReturn(new byte[32]);
 		System.out.println(identityStore.getIdentity());
 		when(connector.obtainTurnServers(eq(identityStore), eq("voip"))).thenCallRealMethod();
 		when(connector.postJson(eq("https://server.url/identity/turn_cred"), ArgumentMatchers.any()))
@@ -375,12 +395,12 @@ public class APIConnectorTest {
 			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
 
 		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
-		when(connector.postJson(
+		when(connector.postJsonWithResult(
 			eq("https://api-work.threema.ch/fetch2"),
 			argThat(new ToStringEqualityArgumentMatcher<>(requiredObject))
-		)).thenReturn("{\"org\":{" +
+		)).thenReturn(new PostJsonResult("{\"org\":{" +
 			"\"name\": \"monkeybusiness\"" +
-			"}}");
+			"}}", 0));
 		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
 			"identity1",
 			"identity2"
@@ -399,10 +419,10 @@ public class APIConnectorTest {
 			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
 
 		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
-		when(connector.postJson(
+		when(connector.postJsonWithResult(
 			eq("https://api-work.threema.ch/fetch2"),
 			argThat(new ToStringEqualityArgumentMatcher<>(requiredObject))
-		)).thenReturn("{}");
+		)).thenReturn(new PostJsonResult("{}", 0));
 		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
 			"identity1",
 			"identity2"
@@ -421,17 +441,17 @@ public class APIConnectorTest {
 			.put("contacts", (new JSONArray()).put("identity1").put("identity2"));
 
 		when(connector.fetchWorkData(any(), any(), any())).thenCallRealMethod();
-		when(connector.postJson(
+		when(connector.postJsonWithResult(
 			eq("https://api-work.threema.ch/fetch2"),
 			argThat(new ToStringEqualityArgumentMatcher<>(requiredObject))
-		)).thenReturn("{" +
+		)).thenReturn(new PostJsonResult("{" +
 			"directory:{" +
 			"enabled: true," +
 			"cat: {" +
 			"\"c1\": \"Category 1\"," +
 			"\"c2\": \"Category 2\"," +
 			"\"c3\": \"Category 3\"" +
-			"}}}");
+			"}}}", 0));
 		WorkData result = connector.fetchWorkData("u", "eric", new String[]{
 			"identity1",
 			"identity2"

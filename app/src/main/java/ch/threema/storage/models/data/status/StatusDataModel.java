@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,6 +25,8 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
 
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -40,7 +42,7 @@ public abstract class StatusDataModel {
 	public interface StatusDataModelInterface extends MessageDataInterface {
 		int getType();
 		void readData(String key, String value);
-		void readData(String key, int value);
+		void readData(String key, long value);
 		void readData(String key, boolean value);
 		void readDataNull(String key);
 		void writeData(JsonWriter j) throws IOException;
@@ -49,9 +51,10 @@ public abstract class StatusDataModel {
 	/**
 	 * convert a json string to a data model
 	 */
+	@Nullable
 	public static StatusDataModelInterface convert(String s) {
 		StatusDataModelInterface data = null;
-		if(s != null) {
+		if (s != null) {
 			JsonReader r = new JsonReader(new StringReader(s));
 
 			try {
@@ -61,6 +64,12 @@ public abstract class StatusDataModel {
 				switch (type) {
 					case VoipStatusDataModel.TYPE:
 						data = new VoipStatusDataModel();
+						break;
+					case GroupCallStatusDataModel.TYPE:
+						data = new GroupCallStatusDataModel();
+						break;
+					case ForwardSecurityStatusDataModel.TYPE:
+						data = new ForwardSecurityStatusDataModel();
 						break;
 				}
 
@@ -74,7 +83,7 @@ public abstract class StatusDataModel {
 						} else if (r.peek() == JsonToken.STRING) {
 							data.readData(key, r.nextString());
 						} else if (r.peek() == JsonToken.NUMBER) {
-							data.readData(key, r.nextInt());
+							data.readData(key, r.nextLong());
 						} else if (r.peek() == JsonToken.BOOLEAN) {
 							data.readData(key, r.nextBoolean());
 						}

@@ -257,7 +257,7 @@
 💤|comic|good night|sleep|zzz
 👋|hand|wave|waving
 🤚|backhand|raised back of hand
-🖐|finger|hand with fingers splayed|splayed
+🖐️|finger|hand with fingers splayed|splayed
 ✋|hand|high 5|high five|raised hand
 🖖|finger|hand|spock|vulcan salute
 👌|hand|ok|perfect
@@ -403,7 +403,7 @@
 👮|cop|officer|police
 👮‍♂️|cop|man|officer|police|male
 👮‍♀️|cop|officer|police|woman|female
-🕵|detective|sleuth|spy|investigator
+🕵️|detective|sleuth|spy|investigator
 🕵️‍♂️|detective|man|sleuth|spy|investigator|male
 🕵️‍♀️|detective|sleuth|spy|woman|investigator|female
 💂|guard
@@ -505,7 +505,7 @@
 🏇|horse|jockey|racehorse|racing
 ⛷️|skier|snow
 🏂|ski|snowboarder
-🏌|ball|person golfing|golfer
+🏌️|ball|person golfing|golfer
 🏌️‍♂️|man golfing|golfer|male
 🏌️‍♀️|woman golfing|golfer|female
 🏄|person surfing|surfing|surfer
@@ -517,10 +517,10 @@
 🏊|person swimming|swimmer
 🏊‍♂️|man swimming|swimmer
 🏊‍♀️|woman swimming|swimmer
-⛹|ball|person bouncing ball
+⛹️|ball|person bouncing ball
 ⛹️‍♂️|ball|man bouncing ball|male
 ⛹️‍♀️|ball|woman bouncing ball|female
-🏋|lifter|person lifting weights|weightlifter
+🏋️|lifter|person lifting weights|weightlifter
 🏋️‍♂️|man lifting weights|weight lifter|male
 🏋️‍♀️|weight lifter|woman lifting weights|female
 🚴|bicycle|biking|cyclist|person biking|person riding a bike
@@ -1430,7 +1430,7 @@
 📶|antenna bars|bar|cell|mobile|phone
 📳|cell|mobile|mode|phone|telephone|vibration|vibrate
 📴|cell|mobile|off|phone|telephone
-⚧|transgender symbol
+⚧️|transgender symbol
 ♾️|forever|infinity|unbounded|universal|eternal
 ‼️|!!|bangbang|double exclamation mark|exclamation|mark|punctuation
 💱|bank|currency|exchange|money

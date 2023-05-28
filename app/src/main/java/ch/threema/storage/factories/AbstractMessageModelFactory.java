@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2015-2022 Threema GmbH
+ * Copyright (c) 2015-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -33,6 +33,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
@@ -56,6 +57,12 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		cursorFactory.current(new CursorHelper.Callback() {
 			@Override
 			public boolean next(CursorHelper cursorFactory) {
+				ForwardSecurityMode forwardSecurityMode = ForwardSecurityMode.NONE;
+				Integer fsmValue = cursorFactory.getInt(AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE);
+				if (fsmValue != null) {
+					forwardSecurityMode = ForwardSecurityMode.getByValue(fsmValue);
+				}
+
 				messageModel
 						.setId(cursorFactory.getInt(AbstractMessageModel.COLUMN_ID))
 						.setUid(cursorFactory.getString(AbstractMessageModel.COLUMN_UID))
@@ -77,6 +84,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 						.setMessageFlags(cursorFactory.getInt(AbstractMessageModel.COLUMN_MESSAGE_FLAGS))
 						.setDeliveredAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_DELIVERED_AT))
 						.setReadAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_READ_AT))
+						.setForwardSecurityMode(forwardSecurityMode)
 				;
 				String stateString = cursorFactory.getString(AbstractMessageModel.COLUMN_STATE);
 				if (!TestUtil.empty(stateString)) {
@@ -121,6 +129,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		contentValues.put(AbstractMessageModel.COLUMN_MESSAGE_FLAGS, messageModel.getMessageFlags());
 		contentValues.put(AbstractMessageModel.COLUMN_DELIVERED_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getDeliveredAt()));
 		contentValues.put(AbstractMessageModel.COLUMN_READ_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getReadAt()));
+		contentValues.put(AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE, messageModel.getForwardSecurityMode() != null ? messageModel.getForwardSecurityMode().getValue() : null);
 
 		return contentValues;
 	}

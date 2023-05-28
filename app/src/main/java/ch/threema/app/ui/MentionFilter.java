@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2022 Threema GmbH
+ * Copyright (c) 2017-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -26,6 +26,7 @@ import android.text.InputFilter;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.StrikethroughSpan;
 
 import ch.threema.app.emojis.EmojiMarkupUtil;
 
@@ -44,7 +45,16 @@ public class MentionFilter implements InputFilter {
 
 		String insertText = new String(buffer);
 
-		Spannable spannable = (Spannable) EmojiMarkupUtil.getInstance().addMentionMarkup(context, insertText);
+		// Check whether a mention is inserted within a strikethrough span
+		boolean isStrikeThrough = false;
+		    for (StrikethroughSpan s : dest.getSpans(0, source.length(), StrikethroughSpan.class)) {
+				if (dest.getSpanStart(s) <= dstart && dest.getSpanEnd(s) >= dend) {
+					isStrikeThrough = true;
+					break;
+				}
+			}
+
+		Spannable spannable = (Spannable) EmojiMarkupUtil.getInstance().addMentionMarkup(context, insertText, isStrikeThrough);
 		if (source instanceof Spanned && spannable != null) {
 			TextUtils.copySpansFrom((Spanned) source, start, end, null, spannable, 0);
 		}

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2022 Threema GmbH
+ * Copyright (c) 2014-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,7 +21,7 @@
 
 package ch.threema.app.fragments.mediaviews;
 
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,9 +31,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import androidx.annotation.UiThread;
-import androidx.core.view.ViewCompat;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -51,6 +48,9 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.lang.ref.WeakReference;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.ui.ZoomableExoPlayerView;
@@ -79,7 +79,7 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 		this.isImmediatePlay = getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
 
 		try {
-			this.videoPlayer = VideoUtil.getExoPlayer(getContext());
+			this.videoPlayer = VideoUtil.getExoPlayer(requireContext());
 			this.videoPlayer.addListener(this);
 		} catch (OutOfMemoryError e) {
 			logger.error("Exception", e);
@@ -100,19 +100,12 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	@Override
-	protected void showThumbnail(Bitmap thumbnail, boolean isGeneric, String filename) {
+	protected void showThumbnail(@NonNull Drawable thumbnail) {
 		logger.debug("showThumbnail");
 
 		if(TestUtil.required(this.previewImageViewRef, this.previewImageViewRef.get(), thumbnail)) {
-			if (!thumbnail.isRecycled()) {
-				this.previewImageViewRef.get().setImageBitmap(thumbnail);
-			}
+			this.previewImageViewRef.get().setImageDrawable(thumbnail);
 		}
-	}
-
-	@Override
-	protected void hideThumbnail() {
-		logger.debug("hideThumbnail");
 	}
 
 	@Override
@@ -243,6 +236,8 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 		} else {
 			abandonFocus();
 		}
+
+		keepScreenOn(isPlaying);
 	}
 
 	@Override
@@ -261,8 +256,6 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 			this.videoPlayer.seekTo(0);
 			this.videoViewRef.get().showController();
 		}
-
-		keepScreenOn(playbackState != Player.STATE_IDLE);
 	}
 
 	@Override

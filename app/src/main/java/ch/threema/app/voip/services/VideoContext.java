@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2022 Threema GmbH
+ * Copyright (c) 2019-2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -65,8 +65,12 @@ public class VideoContext {
 	//region 0 Setup, teardown
 
 	public VideoContext() {
+		this(EglBase.create());
+	}
+
+	public VideoContext(@Nullable EglBase eglBase) {
 		logger.trace("Constructor");
-		this.eglBase = EglBase.create();
+		this.eglBase = eglBase;
 		this.localVideoSink = new ProxyVideoSink("Local");
 		this.remoteVideoSink = new ProxyVideoSink("Remote");
 	}

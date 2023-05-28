@@ -257,7 +257,7 @@
 💤|følelse|snorker|sover|soving|tegneserie|zzz
 👋|hånd|vinkende hånd|vinking
 🤚|håndbak|løftet
-🖐|finger|flat hånd med spredte fingre|hånd|spredt
+🖐️|finger|flat hånd med spredte fingre|hånd|spredt
 ✋|flat hånd|håndflate|hevet hånd
 🖖|finger|hånd|spock|vulcan-hilsen
 👌|hånd|ok-hånd|tegn
@@ -403,7 +403,7 @@
 👮|betjent|menneske|politibetjent
 👮‍♂️|betjent|mannlig politibetjent|politibetjent
 👮‍♀️|betjent|kvinnelig politibetjent|politibetjent
-🕵|detektiv|spion
+🕵️|detektiv|spion
 🕵️‍♂️|etterforske|forbrytelse|mannlig detektiv|privatdetektiv
 🕵️‍♀️|etterforske|forbrytelse|kvinnelig detektiv|privatdetektiv
 💂|gardist|menneske|vakt
@@ -505,7 +505,7 @@
 🏇|galopp|hesteveddeløp|jockey|løp|sport|veddeløpshest
 ⛷️|skiløper|snø
 🏂|snøbrettkjøring|snowboarder|snowboarding|vintersport
-🏌|ball|golfspiller
+🏌️|ball|golfspiller
 🏌️‍♂️|golfspiller|mannlig golfspiller
 🏌️‍♀️|golfspiller|kvinnelig golfspiller
 🏄|sport|surfer|surfing
@@ -517,10 +517,10 @@
 🏊|sport|svømmer|svømming
 🏊‍♂️|mannlig svømmer|svømme|svømming
 🏊‍♀️|kvinnelig svømmer|svømme|svømming
-⛹|ballsport|person med ball
+⛹️|ballsport|person med ball
 ⛹️‍♂️|ballsport|mann med ball
 ⛹️‍♀️|ballsport|kvinne med ball
-🏋|løfter|vektløfter
+🏋️|løfter|vektløfter
 🏋️‍♂️|bodybuilding|mannlig vektløfter|vektløfter
 🏋️‍♀️|bodybuilding|kvinnelig vektløfter|vektløfting
 🚴|sykkel|sykle|syklist
@@ -1430,7 +1430,7 @@
 📶|antenne|mobilsignaler|signalstyrke|telefon
 📳|mobiltelefon|modus|vibrasjon|vibreringsmodus
 📴|av|mobiltelefon
-⚧|transperson-symbol
+⚧️|transperson-symbol
 ♾️|for alltid|grenseløs|uendelig|universal|universell
 ‼️|!!|bangbang|dobbelt utropstegn|tegnsetting|utropstegn
 💱|bank|penger|valutaveksling|veksling
