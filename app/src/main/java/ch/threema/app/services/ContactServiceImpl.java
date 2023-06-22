@@ -31,14 +31,6 @@ import android.provider.ContactsContract;
 import android.text.format.DateUtils;
 import android.widget.ImageView;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
-import androidx.core.content.ContextCompat;
-
 import com.neilalexander.jnacl.NaCl;
 
 import net.sqlcipher.Cursor;
@@ -61,6 +53,13 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
+import androidx.core.content.ContextCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -242,21 +241,21 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public List<ContactModel> getAll() {
-		return getAll(false, true);
-	}
-
-	@Override
-	public List<ContactModel> getAll(final boolean includeHiddenContacts, final boolean includeInvalid) {
+	@NonNull
+	public List<ContactModel> getAllDisplayed(@NonNull ContactSelection contactSelection) {
 		return this.find(new Filter() {
 			@Override
 			public ContactModel.State[] states() {
 				if (preferenceService.showInactiveContacts()) {
-					if (includeInvalid) {
-						return null;
-					} else {
-						// do not show contacts with INVALID state
-						return new ContactModel.State[]{ContactModel.State.ACTIVE, ContactModel.State.INACTIVE};
+					switch (contactSelection) {
+						case EXCLUDE_INVALID:
+							return new ContactModel.State[]{
+								ContactModel.State.ACTIVE,
+								ContactModel.State.INACTIVE,
+							};
+						case INCLUDE_INVALID:
+						default:
+							return null;
 					}
 				} else {
 					return new ContactModel.State[]{ContactModel.State.ACTIVE};
@@ -280,7 +279,7 @@ public class ContactServiceImpl implements ContactService {
 
 			@Override
 			public Boolean includeHidden() {
-				return includeHiddenContacts;
+				return false;
 			}
 
 			@Override
@@ -291,6 +290,13 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
+	@NonNull
+	public List<ContactModel> getAll() {
+		return find(null);
+	}
+
+	@Override
+	@NonNull
 	public List<ContactModel> find(Filter filter) {
 		ContactModelFactory contactModelFactory = this.databaseServiceNew.getContactModelFactory();
 		//TODO: move this to database factory!
@@ -465,13 +471,15 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public List<ContactModel> getIsWork() {
-		return Functional.filter(this.find(null), new IPredicateNonNull<ContactModel>() {
-			@Override
-			public boolean apply(@NonNull ContactModel type) {
-				return type.isWork();
-			}
-		});
+	@NonNull
+	public List<ContactModel> getAllDisplayedWork(@NonNull ContactSelection selection) {
+		return Functional.filter(this.getAllDisplayed(selection), (IPredicateNonNull<ContactModel>) ContactModel::isWork);
+	}
+
+	@Override
+	@NonNull
+	public List<ContactModel> getAllWork() {
+		return Functional.filter(this.getAll(), (IPredicateNonNull<ContactModel>) ContactModel::isWork);
 	}
 
 	@Override
@@ -1024,18 +1032,16 @@ public class ContactServiceImpl implements ContactService {
 			return false;
 		}
 
-		List<ContactModel> contactModels = this.getAll(true, true);
-		if(contactModels != null) {
-			for(ContactModel contactModel: contactModels) {
-				if(!TestUtil.empty(contactModel.getAndroidContactLookupKey())) {
-					try {
-						AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel);
-					} catch (ThreemaException e) {
-						contactModel.setAndroidContactLookupKey(null);
-						logger.error("Unable to update contact name", e);
-					}
-					this.save(contactModel);
+		List<ContactModel> contactModels = this.getAll();
+		for (ContactModel contactModel: contactModels) {
+			if (!TestUtil.empty(contactModel.getAndroidContactLookupKey())) {
+				try {
+					AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel);
+				} catch (ThreemaException e) {
+					contactModel.setAndroidContactLookupKey(null);
+					logger.error("Unable to update contact name", e);
 				}
+				this.save(contactModel);
 			}
 		}
 		return true;

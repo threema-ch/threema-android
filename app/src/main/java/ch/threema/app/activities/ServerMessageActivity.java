@@ -22,6 +22,7 @@
 package ch.threema.app.activities;
 
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.ViewModelProvider;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -68,7 +70,8 @@ public class ServerMessageActivity extends ThreemaActivity {
 			return;
 		}
 
-		this.serverMessageTextView = findViewById(R.id.server_message_text);
+		serverMessageTextView = findViewById(R.id.server_message_text);
+		serverMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
 		notificationService = serviceManager.getNotificationService();
 
@@ -99,11 +102,17 @@ public class ServerMessageActivity extends ThreemaActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public void onBackPressed() {
+		viewModel.markServerMessageAsRead();
+	}
+
 	private void showServerMessage(@NonNull String message) {
 		if (message.startsWith("Another connection")) {
 			message = getString(R.string.another_connection_instructions, getString(R.string.app_name));
 		}
-		serverMessageTextView.setText(message);
+
+		serverMessageTextView.setText(HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_COMPACT));
 	}
 
 	private void cancelServerMessageNotification() {

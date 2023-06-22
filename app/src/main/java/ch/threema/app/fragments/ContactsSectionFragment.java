@@ -451,13 +451,13 @@ public class ContactsSectionFragment
 				results.workCount = contactService.countIsWork();
 				if (selectedTab == TAB_WORK_ONLY) {
 					if (results.workCount > 0 || forceWork) {
-						allContacts = contactService.getIsWork();
+						allContacts = contactService.getAllDisplayedWork(ContactService.ContactSelection.INCLUDE_INVALID);
 					}
 				}
 			}
 
 			if (allContacts == null) {
-				allContacts = contactService.getAll();
+				allContacts = contactService.getAllDisplayed(ContactService.ContactSelection.INCLUDE_INVALID);
 			}
 
 			if (!ConfigUtils.isWorkBuild()) {

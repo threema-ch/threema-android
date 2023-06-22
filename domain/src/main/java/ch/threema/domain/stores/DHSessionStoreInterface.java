@@ -86,4 +86,6 @@ public interface DHSessionStoreInterface {
 	 * @return number of deleted sessions
 	 */
 	int deleteAllSessionsExcept(String myIdentity, String peerIdentity, DHSessionId excludeSessionId, boolean fourDhOnly) throws DHSessionStoreException;
+
+	void executeNull();
 }

@@ -83,11 +83,13 @@ public class DeviceCookieManagerImpl implements DeviceCookieManager {
 		}
 
 		logger.info("Device cookie change indication received, showing warning message");
+
+		ServerMessageModel serverMessageModel = new ServerMessageModel(ThreemaApplication.getAppContext().getString(R.string.rogue_device_warning), ServerMessageModel.TYPE_ALERT);
+		DatabaseServiceNew databaseService = serviceManager.getDatabaseServiceNew();
+		databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
+
 		NotificationService n = serviceManager.getNotificationService();
 		if (n != null) {
-			ServerMessageModel serverMessageModel = new ServerMessageModel(ThreemaApplication.getAppContext().getString(R.string.rogue_device_warning), ServerMessageModel.TYPE_ALERT);
-			DatabaseServiceNew databaseService = serviceManager.getDatabaseServiceNew();
-			databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
 			n.showServerMessage(serverMessageModel);
 		}
 	}

@@ -33,8 +33,8 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.listeners.ServerMessageListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.services.IdListService;
@@ -45,6 +45,7 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ServerMessageModel;
 
@@ -134,39 +135,42 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
 						String[] pieces = text.split("\\s+");
 						if (pieces.length >= 2) {
 
-							String alertMessageTmp = "";
-							for(int n = 2; n < pieces.length; n++) {
-								alertMessageTmp += pieces[n] + (n > 2 ? " " : "");
+							StringBuilder alertMessageTmp = new StringBuilder();
+							for (int n = 2; n < pieces.length; n++) {
+								alertMessageTmp.append(pieces[n]).append(n == pieces.length -1 ? "" : " ");
+							}
+							ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+							DatabaseServiceNew databaseService = null;
+							if (serviceManager != null) {
+								databaseService = serviceManager.getDatabaseServiceNew();
 							}
 							final String alertMessage;
+							ServerMessageModel serverMessageModel;
 							switch (pieces[1]) {
 								case "error":
-									if(alertMessageTmp.length() == 0) {
+									if (alertMessageTmp.length() == 0) {
 										alertMessage = "test error message";
+									} else {
+										alertMessage = alertMessageTmp.toString();
 									}
-									else {
-										alertMessage = alertMessageTmp;
+									// Store server message into database
+									serverMessageModel = new ServerMessageModel(alertMessage, ServerMessageModel.TYPE_ERROR);
+									if (databaseService != null) {
+										databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
 									}
-									ListenerManager.serverMessageListeners.handle(new ListenerManager.HandleListener<ServerMessageListener>() {
-										@Override
-										public void handle(ServerMessageListener listener) {
-											listener.onError(new ServerMessageModel(alertMessage, ServerMessageModel.TYPE_ERROR));
-										}
-									});
+									ListenerManager.serverMessageListeners.handle(listener -> listener.onError(serverMessageModel));
 									break;
 								case "alert":
-									if(alertMessageTmp.length() == 0) {
+									if (alertMessageTmp.length() == 0) {
 										alertMessage = "test alert message";
+									} else {
+										alertMessage = alertMessageTmp.toString();
 									}
-									else {
-										alertMessage = alertMessageTmp;
+									serverMessageModel = new ServerMessageModel(alertMessage, ServerMessageModel.TYPE_ALERT);
+									if (databaseService != null) {
+										databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
 									}
-									ListenerManager.serverMessageListeners.handle(new ListenerManager.HandleListener<ServerMessageListener>() {
-										@Override
-										public void handle(ServerMessageListener listener) {
-											listener.onError(new ServerMessageModel(alertMessage, ServerMessageModel.TYPE_ALERT));
-										}
-									});
+									ListenerManager.serverMessageListeners.handle(listener -> listener.onError(serverMessageModel));
 									break;
 							}
 						}

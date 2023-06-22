@@ -121,4 +121,9 @@ public class InMemoryDHSessionStore implements DHSessionStoreInterface {
 		}
 		return numDeleted;
 	}
+
+	@Override
+	public void executeNull() {
+		// nothing to do
+	}
 }

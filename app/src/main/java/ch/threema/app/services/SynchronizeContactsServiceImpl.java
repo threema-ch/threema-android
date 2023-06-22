@@ -132,7 +132,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 								ListenerManager.contactListeners.enabled(false);
 							}
 
-							for (ContactModel contactModel : contactService.getAll(true, true)) {
+							for (ContactModel contactModel : contactService.getAll()) {
 								if (ContactUtil.isChannelContact(contactModel)) {
 									UpdateBusinessAvatarRoutine.start(contactModel, fileService, contactService, apiService, true);
 								}

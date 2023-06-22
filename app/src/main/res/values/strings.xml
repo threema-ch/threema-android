@@ -1280,7 +1280,7 @@
 	<string name="group_link_rename">Rename</string>
 	<string name="group_link_rename_tag">New name</string>
 	<string name="tap_here_for_more">Tap here for more information</string>
-	<string name="another_connection_instructions">The server has detected two or more connections from different devices with the same Threema ID.\n\nIt is not possible to use the same Threema ID on several devices simultaneously. New messages are only transmitted to the device that last logged in to the server.\n\nIf you’re switching to a new device, please uninstall or disable %s on the old device and then reboot the new one.</string>
+	<string name="another_connection_instructions"><![CDATA[The server has detected two or more connections from different devices with the same Threema ID.<br><br>It is not possible to use the same Threema ID on several devices simultaneously. New messages are only transmitted to the device that last logged in to the server.<br><br>If you’re switching to a new device, please uninstall or disable %s on the old device and then reboot the new one.]]></string>
 	<string name="app_store_error_code">App store error code: %d</string>
 	<string name="backup_restore_type"><![CDATA[What kind of backup do you want to restore? <br/><br/> <a href=%s>Learn more about backups in Threema</a>]]></string>
 	<string name="data_backup_info">Restore everything incl. chats</string>
@@ -1452,7 +1452,7 @@
 	<string name="prefs_summary_hibernation_api_32">To prevent that Threema gets paused by the system after longer inactivity, please disable the system setting “Remove permissions and free up space”.</string>
 	<string name="prefs_summary_hibernation_api">To prevent that Threema gets paused by the system after longer inactivity, please disable the system setting “Pause app activity if unused”.</string>
 	<string name="unable_to_fetch_configuration">Unable to fetch data from configuration server. Try again later.</string>
-	<string name="rogue_device_warning">The server has detected a connection from a different device with the same Threema ID.\n\nIf you haven’t used your Threema ID on another device or with an older app version in the meantime, then please contact support and send the log file if possible.</string>
+	<string name="rogue_device_warning"><![CDATA[A connection from a different device with the same Threema ID has been detected. Have you recently used your Threema ID on another device? <br><br> If you have, you can ignore this message. <br><br> If you haven\'t, your private key may be compromised. Please <a href="https://threema.ch/en/faq/another_connection">follow our suggestions</a> to protect your device and data before creating a new ID.]]></string>
     <string name="fetch2_failure">Synchronization with the provisioning server failed.</string>
 	<string name="no_members_support_group_calls">There are no other members in this group that are able to answer group calls</string>
 	<string name="group_calls">Group calls</string>

@@ -1338,7 +1338,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="group_link_rename">Link umbenennen</string>
 	<string name="group_link_rename_tag">Neuer Name</string>
 	<string name="tap_here_for_more">Hier tippen für mehr Informationen</string>
-	<string name="another_connection_instructions">Der Server hat zwei oder mehr Verbindungen von verschiedenen Geräten mit der gleichen Threema-ID erkannt.\n\nEs ist nicht möglich, eine Threema-ID auf mehreren Geräten gleichzeitig zu verwenden. Neue Nachrichten werden nur an das Gerät übermittelt, welches sich zuletzt beim Server angemeldet hat.\n\nFalls Sie auf ein neues Gerät wechseln, deinstallieren oder deaktivieren Sie bitte %s auf dem alten Gerät und starten Sie anschliessend das neue Gerät neu.</string>
+	<string name="another_connection_instructions"><![CDATA[Der Server hat zwei oder mehr Verbindungen von verschiedenen Geräten mit der gleichen Threema-ID erkannt.<br><br>Es ist nicht möglich, eine Threema-ID auf mehreren Geräten gleichzeitig zu verwenden. Neue Nachrichten werden nur an das Gerät übermittelt, welches sich zuletzt beim Server angemeldet hat.<br><br>Falls Sie auf ein neues Gerät wechseln, deinstallieren oder deaktivieren Sie bitte %s auf dem alten Gerät und starten Sie anschliessend das neue Gerät neu.]]></string>
 	<string name="app_store_error_code">App Store Fehlercode: %d</string>
 	<string name="backup_restore_type"><![CDATA[Welche Art von Backup möchten Sie wiederherstellen? <br/><br/> <a href=%s>Mehr über Backups in Threema erfahren</a>]]></string>
 	<string name="data_backup_info">Alles wiederherstellen inkl. Chats</string>
@@ -1506,7 +1506,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_summary_hibernation_api_32">Um zu verhindern, dass Threema bei längerer Inaktivität nicht mehr funktioniert, deaktivieren Sie «Berechtigungen löschen und Speicherplatz freigeben» in den Systemeinstellungen.</string>
 	<string name="prefs_summary_hibernation_api">Um zu verhindern, dass Threema bei längerer Inaktivität nicht mehr funktioniert, deaktivieren Sie «App-Aktivität bei Nichtnutzung stoppen» in den Systemeinstellungen.</string>
 	<string name="unable_to_fetch_configuration">Konfiguration kann nicht vom Server geladen werden. Versuchen Sie es später erneut.</string>
-	<string name="rogue_device_warning">Der Server hat eine Verbindung von einem anderen Gerät mit derselben Threema-ID erkannt.\n\nWenn Sie Ihre Threema-ID in der Zwischenzeit nicht auf einem anderen Gerät oder mit einer älteren App-Version genutzt haben, kontaktieren Sie bitte den Support und senden Sie falls möglich die Logdatei mit.</string>
+	<string name="rogue_device_warning"><![CDATA[Eine Verbindung von einem anderen Gerät mit dieser Threema-ID wurde erkannt. Haben Sie Ihre Threema-ID kürzlich auf einem anderen Gerät verwendet? <br><br> Wenn ja, können Sie diese Nachricht ignorieren. <br><br> Wenn nein, ist Ihr privater Schlüssel möglicherweise kompromittiert. Bitte <a href="https://threema.ch/de/faq/another_connection">befolgen Sie unsere Empfehlungen</a> zum Schutz Ihres Geräts und Ihrer Daten, bevor Sie eine neue ID erstellen.]]></string>
     <string name="fetch2_failure">Der Abgleich mit dem Bereitstellungsserver ist fehlgeschlagen.</string>
     <string name="no_members_support_group_calls">Keines der anderen Gruppenmitglieder kann an Gruppenanrufen teilnehmen</string>
 	<string name="group_calls">Gruppenanrufe</string>

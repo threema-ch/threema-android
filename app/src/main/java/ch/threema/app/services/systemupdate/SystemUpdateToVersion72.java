@@ -70,11 +70,9 @@ public class SystemUpdateToVersion72 implements UpdateSystemService.SystemUpdate
 		if (s != null) {
 			try {
 				ContactService contactService = s.getContactService();
-				if (contactService != null) {
-					for (ContactModel contact : contactService.getAll(true, true)) {
-						contact.initializeIdColor();
-						contactService.save(contact);
-					}
+				for (ContactModel contact : contactService.getAll()) {
+					contact.initializeIdColor();
+					contactService.save(contact);
 				}
 			} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 				logger.error("Exception", e);

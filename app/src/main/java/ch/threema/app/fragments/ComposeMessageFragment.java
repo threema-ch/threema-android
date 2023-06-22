@@ -543,7 +543,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		@Override
 		public void onStarted(String peerIdentity, boolean outgoing) {
-			logger.debug("VoipCallEventListener onStarted");
+			logger.info("VoipCallEventListener onStarted"); // TODO(ANDR-2441): re-set to debug level
 			updateVoipCallMenuItem(false);
 			if (messagePlayerService != null) {
 				messagePlayerService.pauseAll(SOURCE_VOIP);
@@ -552,28 +552,28 @@ public class ComposeMessageFragment extends Fragment implements
 
 		@Override
 		public void onFinished(long callId, @NonNull String peerIdentity, boolean outgoing, int duration) {
-			logger.debug("VoipCallEventListener onFinished");
+			logger.info("VoipCallEventListener onFinished"); // TODO(ANDR-2441): re-set to debug level
 			updateVoipCallMenuItem(true);
 			hideOngoingVoipCallNotice();
 		}
 
 		@Override
 		public void onRejected(long callId, String peerIdentity, boolean outgoing, byte reason) {
-			logger.debug("VoipCallEventListener onRejected");
+			logger.info("VoipCallEventListener onRejected"); // TODO(ANDR-2441): re-set to debug level
 			updateVoipCallMenuItem(true);
 			hideOngoingVoipCallNotice();
 		}
 
 		@Override
 		public void onMissed(long callId, String peerIdentity, boolean accepted, @Nullable Date date) {
-			logger.debug("VoipCallEventListener onMissed");
+			logger.info("VoipCallEventListener onMissed"); // TODO(ANDR-2441): re-set to debug level
 			updateVoipCallMenuItem(true);
 			hideOngoingVoipCallNotice();
 		}
 
 		@Override
 		public void onAborted(long callId, String peerIdentity) {
-			logger.debug("VoipCallEventListener onAborted");
+			logger.info("VoipCallEventListener onAborted"); // TODO(ANDR-2441): re-set to debug level
 			updateVoipCallMenuItem(true);
 			hideOngoingVoipCallNotice();
 		}
@@ -1141,6 +1141,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@AnyThread
 	private void showOngoingVoipCallNotice() {
+		logger.info("Show ongoing voip call notice (notice set: {})", ongoingCallNotice != null); // TODO(ANDR-2441): remove eventually
 		if (ongoingCallNotice != null) {
 			ongoingCallNotice.showVoip();
 		}
@@ -1148,6 +1149,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@AnyThread
 	private void hideOngoingVoipCallNotice() {
+		logger.info("Hide ongoing voip call notice (notice set: {})", ongoingCallNotice != null); // TODO(ANDR-2441): remove eventually
 		if (ongoingCallNotice != null) {
 			ongoingCallNotice.hideVoip();
 		}
@@ -1155,6 +1157,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@AnyThread
 	private void hideOngoingCallNotice() {
+		logger.info("Hide ongoing call notice (notice set: {})", ongoingCallNotice != null);  // TODO(ANDR-2441): remove eventually
 		if (ongoingCallNotice != null) {
 			ongoingCallNotice.hide();
 		}
@@ -1165,6 +1168,7 @@ public class ComposeMessageFragment extends Fragment implements
 		removeGroupCallObserver();
 		if (groupModel != null && groupCallManager != null) {
 			groupCallObserver = call -> updateOngoingCallNotice();
+			logger.info("Add group call observer for group {}", groupModel.getId());
 			groupCallManager.addGroupCallObserver(groupModel, groupCallObserver);
 		}
 	}
@@ -1277,7 +1281,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@Override
 	public void onResume(@NonNull LifecycleOwner owner) {
-		logger.debug("onResume");
+		logger.info("onResume"); // TODO(ANDR-2441): Re-set to debug level
 
 		//set visible receiver
 		if (this.messageReceiver != null) {
@@ -1811,6 +1815,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	private void removeGroupCallObserver() {
 		if (groupModel != null && groupCallObserver != null && groupCallManager != null) {
+			logger.info("Remove group call observer for group {}", groupModel.getId());
 			groupCallManager.removeGroupCallObserver(groupModel, groupCallObserver);
 			groupCallObserver = null;
 		}

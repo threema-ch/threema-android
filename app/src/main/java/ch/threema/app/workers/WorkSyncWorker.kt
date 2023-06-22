@@ -168,7 +168,7 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         if (!updateRestrictionsOnly) {
             val workData: WorkData?
             try {
-                val allContacts: List<ContactModel> = contactService.getAll(true, true)
+                val allContacts: List<ContactModel> = contactService.all
                 val identities = arrayOfNulls<String>(allContacts.size)
                 for (n in allContacts.indices) {
                     identities[n] = allContacts[n].identity
@@ -195,7 +195,7 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 return Result.failure()
             }
 
-            val existingWorkContacts: List<ContactModel> = contactService.isWork
+            val existingWorkContacts: List<ContactModel> = contactService.allWork
             for (workContact in workData.workContacts) {
                 contactService.addWorkContact(workContact, existingWorkContacts)
             }

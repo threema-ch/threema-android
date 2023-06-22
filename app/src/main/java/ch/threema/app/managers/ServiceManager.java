@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.util.Date;
 import java.util.Locale;
 
@@ -127,6 +128,7 @@ import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DeviceIdUtil;
+import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.ForwardSecurityStatusSender;
 import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.groupcall.GroupCallManagerImpl;
@@ -1003,6 +1005,20 @@ public class ServiceManager {
 	public DHSessionStoreInterface getDHSessionStore() throws MasterKeyLockedException {
 		if (this.dhSessionStore == null) {
 			this.dhSessionStore = new SQLDHSessionStore(this.getContext(), this.masterKey.getKey());
+			try {
+				dhSessionStore.executeNull();
+			} catch (Exception e) {
+				logger.error("Could not execute a statement on the fs database", e);
+				Context context = ThreemaApplication.getAppContext();
+				if (context != null) {
+					// The database file seems to be corrupt, therefore we delete the file
+					File databaseFile = context.getDatabasePath(SQLDHSessionStore.DATABASE_NAME);
+					if (databaseFile.exists()) {
+						FileUtil.deleteFileOrWarn(databaseFile, "sql dh session database", logger);
+					}
+					dhSessionStore = new SQLDHSessionStore(context, masterKey.getKey());
+				}
+			}
 		}
 		return this.dhSessionStore;
 	}

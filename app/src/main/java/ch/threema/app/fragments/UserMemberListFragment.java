@@ -105,7 +105,8 @@ public class UserMemberListFragment extends MemberListFragment {
 				} else if (profilePics) {
 					contactModels = contactService.getCanReceiveProfilePics();
 				} else {
-					contactModels = contactService.getAll();
+					// Don't include invalid contacts because they should not be added to groups
+					contactModels = contactService.getAllDisplayed(ContactService.ContactSelection.EXCLUDE_INVALID);
 				}
 
 				if (ConfigUtils.isWorkBuild()) {

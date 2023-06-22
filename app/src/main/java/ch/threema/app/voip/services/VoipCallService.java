@@ -1463,6 +1463,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			this.transportConnected, this.isError, message
 		);
 
+		logger.info("Notify about finishing if call is still connected"); // TODO(ANDR-2441): remove eventually
 		// If the call is still connected, notify listeners about the finishing
 		if (this.voipStateService != null) {
 			if (callState.isCalling() && contact != null) {
@@ -1470,12 +1471,15 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				final String contactIdentity = contact.getIdentity();
 				final Boolean isInitiator = this.voipStateService.isInitiator();
 				final Integer duration = this.voipStateService.getCallDuration();
+
+				logger.info("Call is still connected, notify event listeners"); // TODO(ANDR-2441): remove eventually
 				VoipListenerManager.callEventListener.handle(listener -> {
 					if (isInitiator == null) {
 						logger.error("isInitiator is null in disconnect()");
 					} else if (duration == null) {
 						logger.error("duration is null in disconnect()");
 					} else {
+						logger.info("Notify call event listener: onFinished"); // TODO(ANDR-2441): remove eventually
 						listener.onFinished(callId, contactIdentity, isInitiator, duration);
 					}
 				});

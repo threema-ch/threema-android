@@ -45,6 +45,9 @@ import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.app.voip.services.VoipCallService
 import com.google.android.material.chip.Chip
+import ch.threema.base.utils.LoggingUtil
+
+private val logger = LoggingUtil.getThreemaLogger("OngoingCallNoticeView")
 
 enum class OngoingCallNoticeMode {
 	MODE_VOIP,
@@ -87,6 +90,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 	 */
 	@AnyThread
 	fun hideVoip() {
+		logger.info("Hide voip in operation mode `{}`", operationMode) // TODO(ANDR-2441): remove eventually
 		if (operationMode == OngoingCallNoticeMode.MODE_VOIP) {
 			hide()
 		}
@@ -205,6 +209,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 	}
 
 	private fun voipContainerAction() {
+		logger.info("Run voip container action") // TODO(ANDR-2441): remove eventually
 		if (VoipCallService.isRunning()) {
 			val openIntent = Intent(context, CallActivity::class.java)
 			openIntent.putExtra(VoipCallService.EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL)
@@ -218,6 +223,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 	}
 
 	private fun voipButtonAction() {
+		logger.info("Run voip button action") // TODO(ANDR-2441): remove eventually
 		val hangupIntent = Intent(context, VoipCallService::class.java)
 		hangupIntent.action = VoipCallService.ACTION_HANGUP
 		context.startService(hangupIntent)

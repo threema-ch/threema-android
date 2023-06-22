@@ -34,6 +34,7 @@ import ch.threema.app.activities.AddContactActivity;
 import ch.threema.app.adapters.UserListAdapter;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.storage.models.ContactModel;
 
@@ -78,14 +79,16 @@ public class UserListFragment extends RecipientListFragment {
 			@Override
 			protected List<ContactModel> doInBackground(Void... voids) {
 				if (ConfigUtils.isWorkBuild()) {
-					return Functional.filter(contactService.getAll(false, false), new IPredicateNonNull<ContactModel>() {
-						@Override
-						public boolean apply(@NonNull ContactModel type) {
-							return !type.isWork();
-						}
-					});
+					// Only show non-work contacts here, because the work contacts are shown in the
+					// work tab. Note that we exclude invalid contacts, as they cannot receive
+					// messages anyways.
+					return Functional.filter(
+						contactService.getAllDisplayed(ContactService.ContactSelection.EXCLUDE_INVALID),
+						(IPredicateNonNull<ContactModel>) value -> !value.isWork()
+					);
 				} else {
-					return contactService.getAll(false, false);
+					// Exclude invalid contacts because they cannot receive messages anyways
+					return contactService.getAllDisplayed(ContactService.ContactSelection.EXCLUDE_INVALID);
 				}
 			}
 

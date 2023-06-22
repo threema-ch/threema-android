@@ -40,7 +40,7 @@ import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
 
 public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStoreInterface {
-	private static final String DATABASE_NAME = "threema-fs.db";
+	public static final String DATABASE_NAME = "threema-fs.db";
 	private static final int DATABASE_VERSION = 1;
 	private static final String SESSION_TABLE = "session";
 
@@ -218,6 +218,10 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 		} catch (SQLException e) {
 			throw new DHSessionStoreException("Cannot delete record", e);
 		}
+	}
+
+	public void executeNull() {
+		getWritableDatabase().rawQuery("SELECT NULL", null).close();
 	}
 
 	private DHSession dhSessionFromCursor(Cursor cursor) throws DHSessionStoreException {

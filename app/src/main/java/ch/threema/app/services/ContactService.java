@@ -97,9 +97,59 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	ContactModel getMe();
 
-	List<ContactModel> getAll();
-	List<ContactModel> getAll(boolean includeHidden, boolean includeInvalid);
+	/**
+	 * The contact selection to include or exclude invalid contacts.
+	 */
+	enum ContactSelection {
+		/**
+		 * Includes invalid contacts. Note that in the methods {@link #getAllDisplayed(ContactSelection)}
+		 * and {@link #getAllDisplayedWork(ContactSelection)}, this may be overridden by the
+		 * preferences.
+		 */
+		INCLUDE_INVALID,
+		/**
+		 * Don't include invalid contacts.
+		 */
+		EXCLUDE_INVALID,
+	}
 
+	/**
+	 * Get all contacts (including work contacts) depending on the preference to display inactive
+	 * contacts. If inactive contacts are hidden by the preference, then invalid contacts are not
+	 * included in this list neither. If inactive contacts should be shown according to the
+	 * preference, then depending on the argument, inactive and invalid contacts may be included.
+	 *
+	 * Note that the result does not include hidden contacts.
+	 *
+	 * This list also includes work contacts.
+	 *
+	 * If a list of contacts is sought without depending on the inactive contacts preference, the
+	 * method {@link #find(Filter)} can be used.
+	 *
+	 * @param contactSelection the option to include or exclude invalid contacts
+	 * @return a list of the contact models
+	 */
+	@NonNull
+	List<ContactModel> getAllDisplayed(@NonNull ContactSelection contactSelection);
+
+	/**
+	 * Get all contacts. This does not depend on any user preferences. Invalid and hidden contacts
+	 * are included as well.
+	 *
+	 * @return a list of all contact models
+	 */
+	@NonNull
+	List<ContactModel> getAll();
+
+	/**
+	 * Get a list of contact models based on the given filter.
+	 *
+	 * @param filter the filter that is applied to the result
+	 * @return a list of contact models
+	 * @see #getAllDisplayed
+	 * @see #getAllDisplayedWork
+	 */
+	@NonNull
 	List<ContactModel> find(Filter filter);
 
 	@Nullable
@@ -116,10 +166,35 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 */
 	@NonNull
 	ContactModel getOrCreateByIdentity(String identity, boolean force) throws EntryAlreadyExistsException, InvalidEntryException, PolicyViolationException;
-	List<ContactModel> getByIdentities(String identities[]);
+	List<ContactModel> getByIdentities(String[] identities);
 	List<ContactModel> getByIdentities(List<String> identities);
 
-	List<ContactModel> getIsWork();
+	/**
+	 * Get all work contacts depending on the preference to display inactive contacts. If inactive
+	 * contacts are hidden by the preference, then invalid contacts are not included in this list
+	 * neither. If inactive contacts should be shown according to the preference, then depending on
+	 * the contact selection argument, invalid contacts may be included.
+	 *
+	 * Note that this does not include hidden contacts.
+	 *
+	 * If a list of contacts is sought without depending on the inactive contacts preference, the
+	 * method {@link #find(Filter)} can be used.
+	 *
+	 * @param contactSelection the states that should be included (if enabled in preferences)
+	 * @return a list of the contact models
+	 */
+	@NonNull
+	List<ContactModel> getAllDisplayedWork(ContactSelection contactSelection);
+
+	/**
+	 * Get all work contacts. This does not depend on any user preferences. Invalid and hidden
+	 * contacts are also included.
+	 *
+	 * @return a list of the work contact models
+	 */
+	@NonNull
+	List<ContactModel> getAllWork();
+
 	int countIsWork();
 
 	List<ContactModel> getCanReceiveProfilePics();
