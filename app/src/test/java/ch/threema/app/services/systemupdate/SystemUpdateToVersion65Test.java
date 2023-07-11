@@ -21,12 +21,16 @@
 
 package ch.threema.app.services.systemupdate;
 
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 
@@ -35,6 +39,8 @@ import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
 import ch.threema.storage.factories.OutgoingGroupJoinRequestModelFactory;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({SQLiteDatabase.class, DatabaseServiceNew.class})
 public class SystemUpdateToVersion65Test {
 
 	private DatabaseServiceNew databaseServiceMock;
@@ -42,8 +48,8 @@ public class SystemUpdateToVersion65Test {
 
 	@Before
 	public void createMocks() {
-		this.databaseServiceMock = Mockito.mock(DatabaseServiceNew.class);
-		this.sqLiteDatabaseMock = Mockito.mock(SQLiteDatabase.class);
+		this.databaseServiceMock = PowerMockito.mock(DatabaseServiceNew.class);
+		this.sqLiteDatabaseMock = PowerMockito.mock(SQLiteDatabase.class);
 	}
 
 	@Test
@@ -65,18 +71,18 @@ public class SystemUpdateToVersion65Test {
 	public void runDirectly() {
 		SystemUpdateToVersion65 update = new SystemUpdateToVersion65(this.databaseServiceMock, this.sqLiteDatabaseMock);
 
-		Mockito.when(this.databaseServiceMock.getGroupInviteModelFactory())
-			.thenReturn(Mockito.mock(GroupInviteModelFactory.class));
-		Mockito.when(this.databaseServiceMock.getOutgoingGroupJoinRequestModelFactory())
-			.thenReturn(Mockito.mock(OutgoingGroupJoinRequestModelFactory.class));
-		Mockito.when(this.databaseServiceMock.getIncomingGroupJoinRequestModelFactory())
-			.thenReturn(Mockito.mock(IncomingGroupJoinRequestModelFactory.class));
+		PowerMockito.when(this.databaseServiceMock.getGroupInviteModelFactory())
+			.thenReturn(PowerMockito.mock(GroupInviteModelFactory.class));
+		PowerMockito.when(this.databaseServiceMock.getOutgoingGroupJoinRequestModelFactory())
+			.thenReturn(PowerMockito.mock(OutgoingGroupJoinRequestModelFactory.class));
+		PowerMockito.when(this.databaseServiceMock.getIncomingGroupJoinRequestModelFactory())
+			.thenReturn(PowerMockito.mock(IncomingGroupJoinRequestModelFactory.class));
 
-		Mockito.when(this.databaseServiceMock.getGroupInviteModelFactory().getStatements())
+		PowerMockito.when(this.databaseServiceMock.getGroupInviteModelFactory().getStatements())
 			.thenReturn(new String[]{"invite1", "invite2"});
-		Mockito.when(this.databaseServiceMock.getOutgoingGroupJoinRequestModelFactory().getStatements())
+		PowerMockito.when(this.databaseServiceMock.getOutgoingGroupJoinRequestModelFactory().getStatements())
 			.thenReturn(new String[]{"request1"});
-		Mockito.when(this.databaseServiceMock.getIncomingGroupJoinRequestModelFactory().getStatements())
+		PowerMockito.when(this.databaseServiceMock.getIncomingGroupJoinRequestModelFactory().getStatements())
 			.thenReturn(new String[]{"incomming1"});
 
 		update.runDirectly();

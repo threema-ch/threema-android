@@ -42,7 +42,7 @@
 			app:layout_constraintTop_toTopOf="@+id/name"
 			app:srcCompat="@drawable/ic_map_marker_outline"
 			tools:ignore="ContentDescription"
-			app:tint="?android:textColorSecondary" />
+			app:tint="?attr/colorOnSurface" />
 
 		<TextView
 			android:id="@+id/name"
@@ -51,7 +51,7 @@
 			android:layout_marginTop="@dimen/lp_default_margin"
 			android:ellipsize="end"
 			android:maxLines="1"
-			android:textAppearance="@style/Threema.TextAppearance.Body1"
+			android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
 			app:layout_constraintEnd_toEndOf="@id/gdMarginEnd"
 			app:layout_constraintStart_toStartOf="@id/gdContent"
 			app:layout_constraintTop_toTopOf="parent"
@@ -75,8 +75,8 @@
 				android:layout_toLeftOf="@+id/distance"
 				android:ellipsize="end"
 				android:maxLines="1"
-				android:textAppearance="@style/Threema.TextAppearance.Body2"
-				android:textColor="?android:textColorSecondary"
+				android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+				android:textColor="?attr/colorOnSurface"
 				tools:text="address"/>
 
 			<TextView
@@ -86,8 +86,8 @@
 				android:layout_alignParentRight="true"
 				android:ellipsize="none"
 				android:singleLine="true"
-				android:textAppearance="@style/Threema.TextAppearance.Body2"
-				android:textColor="?android:textColorSecondary"
+				android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+				android:textColor="?attr/colorOnSurface"
 				tools:text="distance"/>
 
 		</RelativeLayout>

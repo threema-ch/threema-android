@@ -87,5 +87,10 @@ public interface DHSessionStoreInterface {
 	 */
 	int deleteAllSessionsExcept(String myIdentity, String peerIdentity, DHSessionId excludeSessionId, boolean fourDhOnly) throws DHSessionStoreException;
 
+	/**
+	 * This executes a statement on the database that has no effect. This is used to detect database
+	 * downgrades at the app start and not when using the database the next time. Note that this
+	 * also forces the database upgrades to run.
+	 */
 	void executeNull();
 }

@@ -30,6 +30,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
@@ -54,6 +55,37 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 		args.putInt("message", message);
 		args.putInt("positive", positive);
 		args.putInt("negative", negative);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
+												 @StringRes int positive, @StringRes int negative,
+												 @StringRes int neutral, @DrawableRes int icon) {
+		GenericAlertDialog dialog = new GenericAlertDialog();
+		Bundle args = new Bundle();
+		args.putInt("title", title);
+		args.putInt("message", message);
+		args.putInt("positive", positive);
+		args.putInt("negative", negative);
+		args.putInt("neutral", neutral);
+		args.putInt("icon", icon);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
+												 @StringRes int positive, @StringRes int negative,
+												 @DrawableRes int icon) {
+		GenericAlertDialog dialog = new GenericAlertDialog();
+		Bundle args = new Bundle();
+		args.putInt("title", title);
+		args.putInt("message", message);
+		args.putInt("positive", positive);
+		args.putInt("negative", negative);
+		args.putInt("icon", icon);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -130,7 +162,10 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 
 	public interface DialogClickListener {
 		void onYes(String tag, Object data);
-		void onNo(String tag, Object data);
+		default void onNo(String tag, Object data) {};
+		default void onNeutral(String tag, Object data) {
+			// optional interface
+		}
 	}
 
 	@Override
@@ -183,6 +218,8 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 		CharSequence messageString = getArguments().getCharSequence("messageString");
 		int positive = getArguments().getInt("positive");
 		int negative = getArguments().getInt("negative");
+		int neutral = getArguments().getInt("neutral");
+		@DrawableRes int icon = getArguments().getInt("icon", 0);
 		boolean cancelable = getArguments().getBoolean("cancelable", true);
 		isHtml = getArguments().getBoolean("html", false);
 
@@ -211,8 +248,16 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 		builder.setPositiveButton(getString(positive), (dialog, whichButton) -> callback.onYes(tag, object)
 		);
 		if (negative != 0) {
-			builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo(tag, object)
-			);
+			builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo(tag, object));
+		}
+
+		if (neutral != 0) {
+			builder.setNeutralButton(getString(neutral), (dialog, whichButton) -> callback.onNeutral(tag, object));
+			cancelable = false;
+		}
+
+		if (icon != 0) {
+			builder.setIcon(icon);
 		}
 
 		alertDialog = builder.create();
@@ -241,10 +286,6 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 	 */
 	public void setCallback(DialogClickListener dialogClickListener) {
 		callback = dialogClickListener;
-	}
-
-	public void showInActivity() {
-		alertDialog.show();
 	}
 }
 

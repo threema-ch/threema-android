@@ -36,12 +36,13 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
-import java.util.Objects;
-
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatEditText;
+
+import java.util.Objects;
+
 import ch.threema.app.R;
 import ch.threema.app.motionviews.widget.TextEntity;
 import ch.threema.app.utils.ConfigUtils;
@@ -69,7 +70,7 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
 		}
 
 		Drawable checkDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_check);
-		Objects.requireNonNull(checkDrawable).setColorFilter(ConfigUtils.getColorFromAttribute(this, R.attr.textColorPrimary), PorterDuff.Mode.SRC_IN);
+		Objects.requireNonNull(checkDrawable).setColorFilter(ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground), PorterDuff.Mode.SRC_IN);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeAsUpIndicator(checkDrawable);
 		actionBar.setTitle("");

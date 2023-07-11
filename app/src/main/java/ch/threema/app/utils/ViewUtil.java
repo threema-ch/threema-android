@@ -131,28 +131,6 @@ public class ViewUtil {
 		return true;
 	}
 
-
-	/**
-	 * Determine if the supplied coordinates are within the boundaries of the view
-	 * @param view View to check
-	 * @param x x coordinates
-	 * @param y y coordinates
-	 * @return true if coordinates are on the view, false if outside or if the view does not exist
-	 */
-	public static boolean isClickOnView(@Nullable View view, float x, float y) {
-		if (view == null) {
-			return false;
-		}
-
-		int[] locationOnScreen = new int[2];
-		view.getLocationOnScreen(locationOnScreen);
-
-		return (y >= locationOnScreen[1]
-			&& y <= (locationOnScreen[1] + view.getHeight())
-			&& x >= locationOnScreen[0]
-			&& x < (locationOnScreen[0] + view.getWidth()));
-	}
-
 	/**
 	 * Set touchModal flag of PopupWindow which is hidden on API<29
 	 * @param popupWindow PopupWindow

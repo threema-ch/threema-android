@@ -50,7 +50,9 @@ public class MultiChoiceSelectorDialog extends ThreemaDialogFragment {
 
 	public interface SelectorDialogClickListener {
 		void onYes(String tag, boolean[] checkedItems);
-		void onCancel(String tag);
+		default void onCancel(String tag) {
+			// optional interface
+		};
 	}
 
 	@Override

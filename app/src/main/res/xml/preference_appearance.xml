@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-				  android:key="pref_key_appearance"
-				  android:title="@string/prefs_header_appearance"
-				  android:persistent="true">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:key="pref_key_appearance"
+	android:title="@string/prefs_header_appearance"
+	android:persistent="true">
 
 	<PreferenceCategory
 			android:title="@string/prefs_header_appearance"
@@ -15,6 +16,13 @@
 				android:entries="@array/list_theme"
 				android:entryValues="@array/list_theme_values"
 				android:defaultValue=""/>
+
+		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
+			android:key="@string/preferences__dynamic_color"
+			android:title="@string/prefs_dynamic_colors"
+			android:summary="@string/prefs_dynamic_colors_sum"
+			android:defaultValue="false"/>
 
 		<DropDownPreference
 			android:key="@string/preferences__language_override"
@@ -33,11 +41,13 @@
 				android:defaultValue="0"/>
 
 		<CheckBoxPreference
+				android:widgetLayout="@layout/preference_switch_layout"
 				android:key="@string/preferences__bigger_single_emojis"
 				android:title="@string/prefs_bigger_single_emojis"
 				android:defaultValue="true"/>
 
 		<CheckBoxPreference
+				android:widgetLayout="@layout/preference_switch_layout"
 				android:key="@string/preferences__default_contact_picture_colored"
 				android:title="@string/prefs_default_contact_picture_colored"
 				android:summaryOn="@string/prefs_sum_default_contact_picture_colored_on"
@@ -45,6 +55,7 @@
 				android:defaultValue="true"/>
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__receive_profilepics"
 			android:summaryOff="@string/prefs_sum_receive_profilepics_off"
@@ -53,6 +64,7 @@
 			android:title="@string/prefs_title_receive_profilepics"/>
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__show_unread_badge"
 			android:summary="@string/prefs_sum_show_unread_badge"
@@ -75,7 +87,7 @@
 				android:icon="@drawable/ic_format_size_outline"
 				android:entries="@array/list_fontstyle"
 				android:entryValues="@array/list_fontstyle_values"
-				android:summary="%s"
+				app:useSimpleSummaryProvider="true"
 				android:defaultValue="0"/>
 
 	</PreferenceCategory>
@@ -86,7 +98,7 @@
 
 		<DropDownPreference
 				android:key="@string/preferences__contact_sorting"
-				android:summary="%s"
+				app:useSimpleSummaryProvider="true"
 				android:icon="@drawable/ic_sort_by_alpha_outline"
 				android:title="@string/prefs_contact_soring"
 				android:entries="@array/list_contact_sorting"
@@ -95,13 +107,14 @@
 
 		<DropDownPreference
 				android:key="@string/preferences__contact_format"
-				android:summary="%s"
+				app:useSimpleSummaryProvider="true"
 				android:title="@string/prefs_contact_format"
 				android:entries="@array/list_contact_format"
 				android:entryValues="@array/list_contact_format_values"
 				android:defaultValue="@string/contact_format__first_name_last_name"/>
 
 		<CheckBoxPreference
+				android:widgetLayout="@layout/preference_switch_layout"
 				android:key="@string/preferences__show_inactive_contacts"
 				android:title="@string/prefs_show_inactive_contacts"
 				android:summaryOn="@string/prefs_sum_show_inactive_contacts_on"

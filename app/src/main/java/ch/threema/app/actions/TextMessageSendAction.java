@@ -105,7 +105,6 @@ public class TextMessageSendAction extends SendAction {
 				}
 			}
 			actionHandler.onCompleted();
-			messageService.sendProfilePicture(resolvedReceivers);
 			return true;
 		}
 		return false;

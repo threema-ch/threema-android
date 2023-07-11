@@ -29,7 +29,8 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:text="@string/safe_configure_choose_password"
-					android:textSize="16sp"/>
+					android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+					/>
 
 				<com.google.android.material.textfield.TextInputLayout
 					android:id="@+id/password1layout"
@@ -100,7 +101,7 @@
 			android:weightSum="13">
 
 			<com.google.android.material.button.MaterialButton
-				style="@style/Threema.OutlinedButton"
+				style="@style/Threema.MaterialButton.Action.Outline"
 				android:id="@+id/advanced_options"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -117,6 +118,7 @@
 			</android.widget.Space>
 
 			<com.google.android.material.button.MaterialButton
+				style="@style/Threema.MaterialButton.Action"
 				android:id="@+id/next"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"

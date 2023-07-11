@@ -24,10 +24,11 @@ package ch.threema.app.utils;
 import android.app.Activity;
 import android.content.Intent;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.camera.QRScannerActivity;
@@ -72,7 +73,6 @@ public class QRScannerUtil {
 		}
 		if (activity != null) {
 			activity.startActivity(intent);
-			activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 		}
 	}
 

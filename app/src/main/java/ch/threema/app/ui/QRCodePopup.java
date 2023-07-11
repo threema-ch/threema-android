@@ -37,11 +37,14 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
+
+import com.google.android.material.card.MaterialCardView;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.QRCodeServiceImpl;
@@ -55,6 +58,7 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 	private ImageView imageView;
 	private View topLayout;
 	private View parentView;
+	private MaterialCardView containerView;
 
 	private final int[] location = new int[2];
 
@@ -74,6 +78,7 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		topLayout =  layoutInflater.inflate(R.layout.popup_qrcode, null, true);
 
+		this.containerView = topLayout.findViewById(R.id.qr_popup_container);
 		this.imageView = topLayout.findViewById(R.id.image_view);
 
 		// border around popup contents
@@ -92,7 +97,7 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 		}
 		setBackgroundDrawable(new BitmapDrawable());
 		setAnimationStyle(0);
-		setElevation(10);
+		setElevation(0);
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
 	}
 
@@ -120,13 +125,14 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 		bitmapDrawable.setFilterBitmap(false);
 
 		this.imageView.setImageDrawable(bitmapDrawable);
+		this.containerView.setStrokeColor(borderColor);
 		showAtLocation(parentView, Gravity.CENTER, 0, 0);
 		dimBackground();
 
 		getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {
-				getContentView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
 				AnimationUtil.getViewCenter(sourceView, getContentView(), location);
 
@@ -143,22 +149,12 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 			}
 		});
 
-		topLayout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dismiss();
-			}
-		});
+		topLayout.setOnClickListener(v -> dismiss());
 	}
 
 	@Override
 	public void dismiss() {
-		AnimationUtil.popupAnimateOut(getContentView(), new Runnable() {
-			@Override
-			public void run() {
-				QRCodePopup.super.dismiss();
-			}
-		});
+		AnimationUtil.popupAnimateOut(getContentView(), QRCodePopup.super::dismiss);
 	}
 
 	/**

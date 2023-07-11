@@ -22,17 +22,17 @@
 package ch.threema.storage.factories;
 
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.SQLException;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.SQLException;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.base.Result;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;

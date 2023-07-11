@@ -98,7 +98,7 @@ public class Utils {
 		return byteArrayToHexString(sha256bytes);
 	}
 
-	public static @NonNull byte[] intToByteArray(int value) {
+	public static @NonNull byte[] intToByteArrayBigEndian(int value) {
 		return new byte[] {
 				(byte)(value >>> 24),
 				(byte)(value >>> 16),
@@ -107,11 +107,11 @@ public class Utils {
 		};
 	}
 
-	public static int byteArrayToInt(@NonNull byte[] bytes) {
+	public static int byteArrayToIntBigEndian(@NonNull byte[] bytes) {
 		 return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
 	}
 
-	public static @NonNull byte[] longToByteArray(long value) {
+	public static @NonNull byte[] longToByteArrayBigEndian(long value) {
 		byte[] result = new byte[8];
 		for (int i = 7; i >= 0; i--) {
 			result[i] = (byte)(value & 0xFF);
@@ -120,7 +120,7 @@ public class Utils {
 		return result;
 	}
 
-	public static long byteArrayToLong(final @NonNull byte[] bytes) {
+	public static long byteArrayToLongBigEndian(final @NonNull byte[] bytes) {
 		long result = 0;
 		for (int i = 0; i < 8; i++) {
 			result <<= 8;

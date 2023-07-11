@@ -25,8 +25,10 @@ import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * This message is sent by a group creator to the group members to request the group picture to be removed.
@@ -42,6 +44,12 @@ public class GroupDeletePhotoMessage extends AbstractGroupMessage {
 	@Override
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_GROUP_DELETE_PHOTO;
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 
 	@Override

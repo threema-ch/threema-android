@@ -27,12 +27,12 @@
 				android:layout_width="@dimen/ackdec_emoji_size"
 				android:layout_height="@dimen/ackdec_emoji_size"
 				android:padding="@dimen/ackdec_popup_content_margin"
-				android:src="@drawable/ic_delete"
+				android:src="@drawable/ic_delete_outline"
 				android:contentDescription="@string/delete"
 				android:background="?attr/selectableItemBackgroundBorderless"
 				android:clickable="true"
 				android:focusable="true"
-				app:tint="?attr/textColorSecondary" />
+				app:tint="?attr/colorOnSurface" />
 
 			<View
 				android:id="@+id/flip_separator"
@@ -40,7 +40,7 @@
 				android:layout_height="match_parent"
 				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
 				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
-				android:background="?divider_color"
+				android:background="@color/file_picker_divider_color"
 				/>
 
 			<ImageView
@@ -53,7 +53,7 @@
 				android:background="?attr/selectableItemBackgroundBorderless"
 				android:clickable="true"
 				android:focusable="true"
-				app:tint="?attr/textColorSecondary" />
+				app:tint="?attr/colorOnSurface" />
 
 			<View
 				android:id="@+id/bring_to_front_separator"
@@ -61,7 +61,7 @@
 				android:layout_height="match_parent"
 				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
 				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
-				android:background="?divider_color"
+				android:background="@color/file_picker_divider_color"
 				/>
 
 			<ImageView
@@ -74,7 +74,7 @@
 				android:background="?attr/selectableItemBackgroundBorderless"
 				android:clickable="true"
 				android:focusable="true"
-				app:tint="?attr/textColorSecondary" />
+				app:tint="?attr/colorOnSurface" />
 
 			<View
 				android:id="@+id/color_separator"
@@ -82,7 +82,7 @@
 				android:layout_height="match_parent"
 				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
 				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
-				android:background="?divider_color"
+				android:background="@color/file_picker_divider_color"
 				/>
 
 			<ImageView
@@ -95,7 +95,7 @@
 				android:background="?attr/selectableItemBackgroundBorderless"
 				android:clickable="true"
 				android:focusable="true"
-				app:tint="?attr/textColorSecondary" />
+				app:tint="?attr/colorOnSurface" />
 
 		</LinearLayout>
 

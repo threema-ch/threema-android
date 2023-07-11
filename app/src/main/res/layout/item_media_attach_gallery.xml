@@ -5,7 +5,8 @@
 	android:padding="@dimen/media_gallery_grid_item_padding"
 	android:background="@android:color/transparent"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
+	android:layout_height="wrap_content"
+	android:contentDescription="@string/attach_picture">
 
 	<FrameLayout
 		android:id="@+id/media_frame"
@@ -29,7 +30,7 @@
 			android:layout_gravity="center"
 			android:visibility="gone"
 			app:srcCompat="@drawable/ic_baseline_broken_image_24"
-			app:tint="?attr/textColorSecondary"
+			app:tint="?attr/colorOnSurface"
 			/>
 
 		<LinearLayout
@@ -46,6 +47,7 @@
 				android:id="@+id/gif_icon"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:contentDescription="@string/attach_gif"
 				app:srcCompat="@drawable/ic_gif_24dp"
 				app:tint="@android:color/white" />
 
@@ -68,6 +70,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginRight="4dp"
+				android:contentDescription="@string/attach_video"
 				app:srcCompat="@drawable/ic_videocam_black_24dp"
 				app:tint="@android:color/white" />
 

@@ -21,7 +21,9 @@
 
 package ch.threema.app.activities;
 
-import android.Manifest;
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -33,20 +35,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
@@ -57,6 +56,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import org.slf4j.Logger;
@@ -64,10 +64,10 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.GroupDetailAdapter;
@@ -113,9 +113,6 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
-import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
-import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
-
 public class GroupDetailActivity extends GroupEditActivity implements SelectorDialog.SelectorDialogClickListener,
 	GenericAlertDialog.DialogClickListener,
 	TextEntryDialog.TextEntryDialogClickListener,
@@ -143,8 +140,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private static final int SELECTOR_OPTION_CALL = 2;
 	private static final int SELECTOR_OPTION_REMOVE = 3;
 
-	// services
-	private LicenseService licenseService;
 	private GroupInviteService groupInviteService;
 	private DeviceService deviceService;
 	private IdListService blackListIdentityService;
@@ -155,22 +150,14 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private GroupDetailAdapter groupDetailAdapter;
 
 	private EmojiEditText groupNameEditText;
-	private CollapsingToolbarLayout collapsingToolbar;
 	private ResumePauseHandler resumePauseHandler;
 	private AvatarEditView avatarEditView;
 	private ExtendedFloatingActionButton floatingActionButton;
 
-	private final ActivityResultLauncher<String> readPhoneStatePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-		if (!isGranted && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
-			ConfigUtils.showPermissionRationale(this, findViewById(R.id.main_content), R.string.read_phone_state_short_message);
-		}
-		// Note that the call cannot be started from here if the permission has just been granted.
-	});
-
 	private String myIdentity;
 	private int operationMode;
 	private int groupId;
-	private boolean hasMemberChanges = false;
+	private boolean hasMemberChanges = false, hasAvatarChanges = false;
 
 	private final ResumePauseHandler.RunIfActive runIfActiveUpdate = new ResumePauseHandler.RunIfActive() {
 		@Override
@@ -188,6 +175,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		public void onAvatarSet(File avatarFile1) {
 			groupDetailViewModel.setAvatarFile(avatarFile1);
 			groupDetailViewModel.setIsAvatarRemoved(false);
+			hasAvatarChanges = true;
+			updateFloatingActionButton();
 		}
 
 		@Override
@@ -195,6 +184,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			groupDetailViewModel.setAvatarFile(null);
 			groupDetailViewModel.setIsAvatarRemoved(true);
 			avatarEditView.setDefaultAvatar(null, groupModel);
+			hasAvatarChanges = true;
+			updateFloatingActionButton();
 		}
 	};
 
@@ -269,7 +260,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		@Override
 		public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
 			if (identity.equals(myIdentity)) {
-				finishUp();
+				finish();
 			} else {
 				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
 			}
@@ -278,7 +269,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		@Override
 		public void onMemberKicked(GroupModel group, String identity, int previousMemberCount) {
 			if (identity.equals(myIdentity)) {
-				finishUp();
+				finish();
 			} else {
 				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
 			}
@@ -303,7 +294,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar == null) {
-			finishUp();
+			finish();
 			return;
 		}
 
@@ -312,35 +303,36 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		this.resumePauseHandler = ResumePauseHandler.getByActivity(this, this);
 		this.groupDetailViewModel = new ViewModelProvider(this).get(GroupDetailViewModel.class);
 
-		final Toolbar toolbar = findViewById(R.id.toolbar);
-		LinearLayout doneButton = toolbar.findViewById(R.id.action_done);
+		final MaterialToolbar toolbar = findViewById(R.id.toolbar);
 		this.avatarEditView = findViewById(R.id.avatar_edit_view);
-		this.collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+		CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.collapsing_toolbar);
 		this.floatingActionButton = findViewById(R.id.floating);
 		RecyclerView groupDetailRecyclerView = findViewById(R.id.group_members_list);
-		this.collapsingToolbar.setTitle(" ");
+		collapsingToolbar.setTitle(" ");
 		this.groupNameEditText = findViewById(R.id.group_title);
 
+		// services
+		LicenseService<?> licenseService;
 		try {
 			this.deviceService = serviceManager.getDeviceService();
 			this.blackListIdentityService = serviceManager.getBlackListService();
-			this.licenseService = serviceManager.getLicenseService();
+			licenseService = serviceManager.getLicenseService();
 			this.groupInviteService = serviceManager.getGroupInviteService();
 			this.groupCallManager = serviceManager.getGroupCallManager();
 		} catch (ThreemaException e) {
 			logger.error("Exception, could not get required services", e);
-			finishUp();
+			finish();
 			return;
 		}
 
-		if (this.deviceService == null || this.blackListIdentityService == null || this.licenseService == null) {
-			finishUp();
+		if (this.deviceService == null || this.blackListIdentityService == null || licenseService == null) {
+			finish();
 			return;
 		}
 
 		groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
 		if (this.groupId == 0) {
-			finishUp();
+			finish();
 		}
 		this.groupModel = groupService.getById(this.groupId);
 
@@ -387,28 +379,41 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 		this.sortGroupMembers();
 		setTitle();
+		setHasMemberChanges(false);
 
 		if (this.groupService.isGroupOwner(this.groupModel)) {
 			operationMode = MODE_EDIT;
-			doneButton.setOnClickListener(v -> saveGroupSettings());
+			actionBar.setHomeButtonEnabled(false);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+
 			floatingActionButton.setOnClickListener(v -> {
-				Intent intent = new Intent(GroupDetailActivity.this, GroupAddActivity.class);
-				IntentDataUtil.append(groupModel, intent);
-				IntentDataUtil.append(groupDetailViewModel.getGroupContacts(), intent);
-				startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_GROUP_ADD);
+				saveGroupSettings();
 			});
 			groupNameEditText.setMaxByteSize(GroupModel.GROUP_NAME_MAX_LENGTH_BYTES);
+			groupNameEditText.addTextChangedListener(new TextWatcher() {
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					updateFloatingActionButton();
+				}
+			});
 		} else {
 			operationMode = MODE_READONLY;
-			doneButton.setVisibility(View.GONE);
+			actionBar.setHomeButtonEnabled(false);
+			actionBar.setDisplayHomeAsUpEnabled(true);
 
 			groupNameEditText.setFocusable(false);
 			groupNameEditText.setClickable(false);
 			groupNameEditText.setFocusableInTouchMode(false);
 			groupNameEditText.setBackground(null);
+			groupNameEditText.setPadding(0, 0, 0, 0);
 
-			floatingActionButton.hide();
-			actionBar.setDisplayHomeAsUpEnabled(true);
+			floatingActionButton.setVisibility(View.GONE);
 		}
 
 		groupDetailRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -426,12 +431,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 		groupDetailRecyclerView.setAdapter(this.groupDetailAdapter);
 
-		final Observer<List<ContactModel>> groupMemberObserver = new Observer<List<ContactModel>>() {
-			@Override
-			public void onChanged(List<ContactModel> groupMembers) {
-				// Update the UI
-				groupDetailAdapter.setContactModels(groupMembers);
-			}
+		final Observer<List<ContactModel>> groupMemberObserver = groupMembers -> {
+			// Update the UI
+			groupDetailAdapter.setContactModels(groupMembers);
 		};
 
 		// Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
@@ -487,17 +489,38 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private void sortGroupMembers() {
 		final boolean isSortingFirstName = preferenceService.isContactListSortingFirstName();
 		List<ContactModel> contactModels = groupDetailViewModel.getGroupContacts();
-		Collections.sort(contactModels, (model1, model2) -> ContactUtil.getSafeNameString(model1, isSortingFirstName).compareTo(
-			ContactUtil.getSafeNameString(model2, isSortingFirstName)
-		));
+		Collections.sort(contactModels, new Comparator<ContactModel>() {
+			@Override
+			public int compare(ContactModel model1, ContactModel model2) {
+				return ContactUtil.getSafeNameString(model1, isSortingFirstName).compareTo(
+					ContactUtil.getSafeNameString(model2, isSortingFirstName)
+				);
+			}
+		});
+
+		if (contactModels.size() > 1 && groupModel.getCreatorIdentity() != null) {
+			for (ContactModel currentMember : contactModels) {
+				if (groupModel.getCreatorIdentity().equals(currentMember.getIdentity())) {
+					contactModels.remove(currentMember);
+					contactModels.add(0, currentMember);
+					break;
+				}
+			}
+		}
+
 		groupDetailViewModel.setGroupContacts(contactModels);
 	}
 
 	private void removeMemberFromGroup(final ContactModel contactModel) {
 		if (contactModel != null) {
 			this.groupDetailViewModel.removeGroupContact(contactModel);
-			this.hasMemberChanges = true;
+			setHasMemberChanges(true);
 		}
+	}
+
+	private void setHasMemberChanges(boolean hasChanges) {
+		this.hasMemberChanges = hasChanges;
+		updateFloatingActionButton();
 	}
 
 	@Override
@@ -571,14 +594,13 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int itemId = item.getItemId();
 		if (itemId == android.R.id.home) {
-			finishUp();
+			onBackPressed();
 			return true;
 		}
 		else if (itemId == R.id.menu_group_links_manage) {
 			Intent groupLinkOverviewIntent = new Intent(this, GroupLinkOverviewActivity.class);
 			groupLinkOverviewIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
 			startActivityForResult(groupLinkOverviewIntent, ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS);
-
 		}
 		else if (itemId == R.id.action_send_message) {
 			if (groupModel != null) {
@@ -632,7 +654,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	}
 
 	private void leaveGroupAndQuit() {
-		new LeaveGroupAsyncTask(groupModel, groupService, this, null, this::finishUp).execute();
+		new LeaveGroupAsyncTask(groupModel, groupService, this, null, this::finish).execute();
 	}
 
 	private void deleteGroupAndQuit() {
@@ -681,7 +703,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, newModel.getId());
 					startActivity(intent);
-					finishUp();
+					finish();
 				} else {
 					Toast.makeText(GroupDetailActivity.this, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required), Toast.LENGTH_LONG).show();
 				}
@@ -694,6 +716,13 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
 		startActivity(intent);
+	}
+
+	private void addNewMembers() {
+		Intent intent = new Intent(GroupDetailActivity.this, GroupAddActivity.class);
+		IntentDataUtil.append(groupModel, intent);
+		IntentDataUtil.append(groupDetailViewModel.getGroupContacts(), intent);
+		startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_GROUP_ADD);
 	}
 
 	private void syncGroup() {
@@ -747,7 +776,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				}
 
 				@NonNull String newGroupName = groupDetailViewModel.getGroupName() != null ?
-					groupDetailViewModel.getGroupName() : "";
+					groupDetailViewModel.getGroupName().trim() : "";
 				@NonNull String oldGroupName = groupModel.getName() != null ?
 					groupModel.getName() : "";
 
@@ -775,7 +804,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_UPDATE_GROUP, true);
 
 				if (newModel != null) {
-					finishUp();
+					finish();
 				} else {
 					SimpleStringAlertDialog.newInstance(R.string.updating_group, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required)).show(getSupportFragmentManager(), "er");
 				}
@@ -790,7 +819,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				// some users were added
 				groupDetailViewModel.addGroupContacts(IntentDataUtil.getContactIdentities(data));
 				sortGroupMembers();
-				this.hasMemberChanges = true;
+				setHasMemberChanges(true);
 			}
 			else if (this.groupService.isGroupOwner(this.groupModel) && requestCode == ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS) {
 				// make sure we reset the default link switch if the default link was deleted
@@ -835,13 +864,13 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 					break;
 				case SELECTOR_OPTION_CHAT:
 					showConversation(selectorInfo.contactModel.getIdentity());
-					finishUp();
+					finish();
 					break;
 				case SELECTOR_OPTION_REMOVE:
 					removeMemberFromGroup(selectorInfo.contactModel);
 					break;
 				case SELECTOR_OPTION_CALL:
-					VoipUtil.initiateCall(this, selectorInfo.contactModel, false, null, readPhoneStatePermissionLauncher);
+					VoipUtil.initiateCall(this, selectorInfo.contactModel, false, null);
 					break;
 				default:
 					break;
@@ -891,10 +920,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		// do nothing
 	}
 
-
-	@Override
-	public void onNeutral(String tag) {}
-
 	@Override
 	public void onYes(String tag, Object data) {
 		switch(tag) {
@@ -927,14 +952,15 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	public void onBackPressed() {
 		if (this.operationMode == MODE_EDIT && hasChanges()) {
 			GenericAlertDialog.newInstance(
-					R.string.save_changes,
+					R.string.leave,
 					R.string.save_group_changes,
 					R.string.yes,
 					R.string.no,
-				false)
+					R.string.cancel,
+				0)
 					.show(getSupportFragmentManager(), DIALOG_TAG_QUIT);
 		} else {
-			finishUp();
+			finish();
 		}
 	}
 
@@ -942,7 +968,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	public void onNo(String tag, Object data) {
 		switch(tag) {
 			case DIALOG_TAG_QUIT:
-				finishUp();
+				finish();
 				break;
 			default:
 				break;
@@ -950,7 +976,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	}
 
 	private boolean hasChanges() {
-		return hasMemberChanges || hasGroupNameChanges();
+		return hasMemberChanges || hasGroupNameChanges() || hasAvatarChanges;
 	}
 
 	private boolean hasGroupNameChanges() {
@@ -963,24 +989,21 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	}
 
 	private void updateFloatingActionButton() {
-		if (this.floatingActionButton == null ||
-			this.groupService == null ||
+		if (this.groupService == null ||
 			this.groupDetailAdapter == null) {
-			logger.error("Exception, could not update floating actions button, required instances not available");
+			logger.error("Required instances not available");
 			return;
 		}
 
-		if (this.groupService.isGroupOwner(this.groupModel)) {
-			if (this.groupDetailAdapter.getItemCount() > BuildConfig.MAX_GROUP_SIZE) {
-				this.floatingActionButton.hide();
-			} else {
-				this.floatingActionButton.show();
-			}
+		if (this.floatingActionButton == null) {
+			return;
 		}
-	}
 
-	private void finishUp() {
-		finish();
+		if (this.groupService.isGroupOwner(this.groupModel) && hasChanges()) {
+			this.floatingActionButton.show();
+		} else {
+			this.floatingActionButton.hide();
+		}
 	}
 
 	private void navigateHome() {
@@ -1065,6 +1088,11 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	@Override
 	public void onGroupDescriptionEditClick() {
 		showGroupDescEditDialog();
+	}
+
+	@Override
+	public void onAddMembersClick(View v) {
+		addNewMembers();
 	}
 
 	// hide keyboard on older devices after ok clicked when group description changed

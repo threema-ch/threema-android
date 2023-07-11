@@ -21,6 +21,7 @@
 
 package ch.threema.app.fragments.mediaviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -28,44 +29,46 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.ui.PlayerControlView;
-import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSource;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import com.google.android.exoplayer2.util.Util;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.media3.common.AudioAttributes;
+import androidx.media3.common.C;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
+import androidx.media3.common.util.Util;
+import androidx.media3.datasource.DataSource;
+import androidx.media3.datasource.DefaultDataSource;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.ui.PlayerControlView;
+import androidx.media3.ui.PlayerView;
+
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.OnApplyWindowInsetsListener;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.mediaattacher.PreviewFragmentInterface;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment implements Player.Listener, PreviewFragmentInterface {
+@SuppressLint("UnsafeOptInUsageError")
+public class AudioViewFragment extends MediaViewFragment implements Player.Listener, PreviewFragmentInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioViewFragment");
 
-	private WeakReference<ProgressBar> progressBarRef;
+	private WeakReference<CircularProgressIndicator> progressBarRef;
 	private WeakReference<PlayerView> audioView;
 	private ExoPlayer audioPlayer;
 	private boolean isImmediatePlay, isPreparing;
@@ -75,11 +78,19 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.isImmediatePlay = getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
+		boolean isVoiceMessage = getArguments().getBoolean(MediaViewerActivity.EXTRA_IS_VOICEMESSAGE, false);
+
+		AudioAttributes audioAttributes = new AudioAttributes.Builder()
+			.setUsage(C.USAGE_MEDIA)
+			.setContentType(isVoiceMessage ? C.AUDIO_CONTENT_TYPE_SPEECH : C.AUDIO_CONTENT_TYPE_MUSIC)
+			.setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_NONE)
+			.build();
 
 		try {
 			this.audioPlayer = VideoUtil.getExoPlayer(getContext());
+			this.audioPlayer.setAudioAttributes(audioAttributes, true);
 			this.audioPlayer.addListener(this);
 		} catch (OutOfMemoryError e) {
 			logger.error("Exception", e);
@@ -132,18 +143,7 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 			audioView.setControllerShowTimeoutMs(-1);
 			audioView.setControllerAutoShow(true);
 			audioView.setDefaultArtwork(ResourcesCompat.getDrawable(getResources(), IconUtil.getMimeCategoryIcon(MimeUtil.MimeCategory.AUDIO), ThreemaApplication.getAppContext().getTheme()));
-			View controllerView = audioView.findViewById(R.id.position_container);
-			ViewCompat.setOnApplyWindowInsetsListener(controllerView, new OnApplyWindowInsetsListener() {
-				@NonNull
-				@Override
-				public WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
-					ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-					params.leftMargin = insets.getSystemWindowInsetLeft();
-					params.rightMargin = insets.getSystemWindowInsetRight();
-					params.bottomMargin = insets.getSystemWindowInsetBottom();
-					return insets;
-				}
-			});
+			ConfigUtils.adjustExoPlayerControllerMargins(getContext(), audioView);
 		}
 
 		this.progressBarRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.progress_bar));
@@ -206,15 +206,6 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	@Override
-	public void onIsPlayingChanged(boolean isPlaying) {
-		if (isPlaying) {
-			requestFocus();
-		} else {
-			abandonFocus();
-		}
-	}
-
-	@Override
 	public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 		if (isPreparing && playbackState == Player.STATE_READY) {
 			// this is accurate
@@ -233,8 +224,6 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 
 	@Override
 	public void onDestroyView() {
-		abandonFocus();
-
 		if (this.audioPlayer != null) {
 			this.audioPlayer.release();
 			this.audioPlayer = null;
@@ -247,17 +236,9 @@ public class AudioViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		// stop player if fragment comes out of view
 		if (!isVisibleToUser && this.audioPlayer != null &&
-				(this.audioPlayer.isLoading() ||
-				this.audioPlayer.getPlaybackState() != ExoPlayer.STATE_IDLE)) {
+				(this.audioPlayer.isLoading() || this.audioPlayer.isPlaying())) {
 			this.audioPlayer.setPlayWhenReady(false);
-		}
-	}
-
-	@Override
-	public void setVolume(float volume) {
-		// ducking
-		if (this.audioPlayer != null) {
-			this.audioPlayer.setVolume(volume);
+			this.audioPlayer.pause();
 		}
 	}
 }

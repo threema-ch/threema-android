@@ -24,7 +24,6 @@ package ch.threema.app.activities;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -34,16 +33,17 @@ import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.slf4j.Logger;
 
 import java.util.Arrays;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -69,11 +69,13 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 	// Views
 	private ThreemaTextInputEditText passphraseText;
 	private TextInputLayout passphraseLayout;
-	private ImageView unlockButton;
+	private MaterialButton unlockButton;
 
 	private final MasterKey masterKey = ThreemaApplication.getMasterKey();
 
 	public void onCreate(Bundle savedInstanceState) {
+		ConfigUtils.configureSystemBars(this);
+
 		super.onCreate(savedInstanceState);
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -81,7 +83,7 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 		setContentView(R.layout.activity_unlock_masterkey);
 
 		TextView infoText = findViewById(R.id.unlock_info);
-		TypedArray array = getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColorSecondary});
+		TypedArray array = getTheme().obtainStyledAttributes(new int[]{R.attr.colorOnSurface});
 		infoText.getCompoundDrawables()[0].setColorFilter(array.getColor(0, -1), PorterDuff.Mode.SRC_IN);
 		array.recycle();
 
@@ -112,15 +114,6 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 		unlockButton.setOnClickListener(v -> doUnlock());
 		unlockButton.setClickable(false);
 		unlockButton.setEnabled(false);
-	}
-
-	@Override
-	protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			theme.applyStyle(R.style.Theme_Threema_WithToolbar_Dark, true);
-		} else {
-			super.onApplyThemeResource(theme, resid, first);
-		}
 	}
 
 	@Override
@@ -201,14 +194,6 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 						RuntimeUtil.runOnUiThread(() -> {
 							ThreemaApplication.reset();
 
-							new Thread(() -> {
-								// Trigger a connection now, as there was no identity before the master key was unlocked
-								final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-								if (serviceManager != null) {
-									final LifetimeService lifetimeService = serviceManager.getLifetimeService();
-									lifetimeService.ensureConnection();
-								}
-							}).start();
 
 							// Cancel all notifications...if any
 							NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -216,6 +201,22 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 
 							// Show persistent notification
 							PassphraseService.start(UnlockMasterKeyActivity.this.getApplicationContext());
+
+							// ServiceManager (and thus LifetimeService) are now available
+							// Trigger a connection
+							new Thread(() -> {
+								final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+								if (serviceManager != null) {
+									final LifetimeService lifetimeService = serviceManager.getLifetimeService();
+									if (lifetimeService != null) {
+										if (ThreemaApplication.isResumed) {
+											lifetimeService.acquireConnection(ThreemaApplication.ACTIVITY_CONNECTION_TAG);
+										} else {
+											lifetimeService.ensureConnection();
+										}
+									}
+								}
+							}).start();
 
 							// Start ThreemaPush service (which could not be started without an unlocked passphrase)
 							ThreemaPushService.tryStart(logger, getApplicationContext());

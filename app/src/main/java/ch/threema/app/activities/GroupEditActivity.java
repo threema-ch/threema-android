@@ -69,7 +69,7 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
 		final int inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME;
 		ContactEditDialog.newInstance(
 					R.string.edit_name,
-					R.string.name,
+					R.string.group_name,
 					-1,
 					inputType,
 					avatarFile,

@@ -22,23 +22,25 @@
 package ch.threema.storage.factories;
 
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseServiceNew;
-import ch.threema.storage.models.GroupCallModel;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteException;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.storage.CursorHelper;
+import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.models.GroupCallModel;
 
 public class GroupCallModelFactory extends ModelFactory {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupCallModelFactory");
@@ -56,7 +58,8 @@ public class GroupCallModelFactory extends ModelFactory {
 				"`" + GroupCallModel.COLUMN_SFU_BASE_URL + "` TEXT NOT NULL, " +
 				"`" + GroupCallModel.COLUMN_GCK + "` TEXT NOT NULL, " +
 				"`" + GroupCallModel.COLUMN_PROTOCOL_VERSION + "` INTEGER DEFAULT 0," +
-				"`" + GroupCallModel.COLUMN_STARTED_AT + "` BIGINT NOT NULL)"
+				"`" + GroupCallModel.COLUMN_STARTED_AT + "` BIGINT NOT NULL," +
+				"`" + GroupCallModel.COLUMN_PROCESSED_AT + "` BIGINT NOT NULL)"
 		};
 	}
 
@@ -68,7 +71,8 @@ public class GroupCallModelFactory extends ModelFactory {
 			GroupCallModel.COLUMN_SFU_BASE_URL,
 			GroupCallModel.COLUMN_GCK,
 			GroupCallModel.COLUMN_PROTOCOL_VERSION,
-			GroupCallModel.COLUMN_STARTED_AT
+			GroupCallModel.COLUMN_STARTED_AT,
+			GroupCallModel.COLUMN_PROCESSED_AT,
 		};
 		Cursor cursor = databaseService.getReadableDatabase()
 			.query(getTableName(), columns, null, null, null, null, null);
@@ -90,6 +94,7 @@ public class GroupCallModelFactory extends ModelFactory {
 		contentValues.put(GroupCallModel.COLUMN_GCK, call.getGck());
 		contentValues.put(GroupCallModel.COLUMN_PROTOCOL_VERSION, call.getProtocolVersion());
 		contentValues.put(GroupCallModel.COLUMN_STARTED_AT, call.getStartedAt());
+		contentValues.put(GroupCallModel.COLUMN_PROCESSED_AT, call.getProcessedAt());
 
 		try {
 			long id = databaseService.getWritableDatabase()
@@ -136,9 +141,17 @@ public class GroupCallModelFactory extends ModelFactory {
 			String baseUrl = cursorHelper.getString(GroupCallModel.COLUMN_SFU_BASE_URL);
 			String gck = cursorHelper.getString(GroupCallModel.COLUMN_GCK);
 			Long startedAt = cursorHelper.getLong(GroupCallModel.COLUMN_STARTED_AT);
+			Long processedAt = cursorHelper.getLong(GroupCallModel.COLUMN_PROCESSED_AT);
+			if (startedAt == null) {
+				startedAt = new Date().getTime();
+			}
+			if (processedAt == null) {
+				processedAt = new Date().getTime();
+			}
+
 			return protocolVersion == null || groupId == null || baseUrl == null || callId == null || gck == null
 				? null
-				: new GroupCallModel(protocolVersion, callId, groupId, baseUrl, gck, startedAt);
+				: new GroupCallModel(protocolVersion, callId, groupId, baseUrl, gck, startedAt, processedAt);
 		};
 		return new CursorHelper(cursor, columnIndexCache).current(converter);
 	}

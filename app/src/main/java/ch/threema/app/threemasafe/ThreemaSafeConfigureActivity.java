@@ -253,7 +253,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 		threemaSafeService.storeMasterKey(masterkey);
 		preferenceService.setThreemaSafeServerInfo(serverInfo);
 		threemaSafeService.setEnabled(true);
-		threemaSafeService.uploadNow(this, true);
+		threemaSafeService.uploadNow(true);
 
 		if (updatePasswordOnly) {
 			Toast.makeText(ThreemaApplication.getAppContext(), R.string.safe_password_updated, Toast.LENGTH_LONG).show();

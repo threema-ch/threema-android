@@ -32,13 +32,16 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.view.ActionMode;
+
+import com.google.android.material.appbar.AppBarLayout;
+
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.view.ActionMode;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
@@ -78,7 +81,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 	private GroupService groupService;
 	private String myIdentity;
 
-	private MessageReceiver messageReceiver;
+	private MessageReceiver<?> messageReceiver;
 	private BallotOverviewListAdapter listAdapter = null;
 	private List<BallotModel> ballots;
 	private ListView listView;
@@ -168,6 +171,19 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 		emptyView.setup(getString(R.string.ballot_no_ballots_yet));
 		((ViewGroup) listView.getParent()).addView(emptyView);
 		listView.setEmptyView(emptyView);
+
+		final AppBarLayout appBarLayout = findViewById(R.id.appbar);
+		appBarLayout.setLiftable(true);
+		listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {}
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				boolean isAtTop = firstVisibleItem == 0 && (view.getChildCount() == 0 || view.getChildAt(0).getTop() == 0);
+				appBarLayout.setLifted(!isAtTop);
+			}
+		});
 
 		Intent receivedIntent = getIntent();
 
@@ -465,9 +481,6 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			mode.getMenuInflater().inflate(R.menu.action_ballot_overview, menu);
-
-			ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(BallotOverviewActivity.this, R.attr.colorAccent));
-
 			return true;
 		}
 
@@ -492,13 +505,12 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 				return false;
 			}
 
-			switch (item.getItemId()) {
-				case R.id.menu_ballot_remove:
-					removeSelectedBallots();
-					return true;
-				default:
-					return false;
+			if (item.getItemId() == R.id.menu_ballot_remove) {
+				removeSelectedBallots();
+				return true;
 			}
+
+			return false;
 		}
 
 		@Override

@@ -27,7 +27,8 @@ class GroupCallModel internal constructor(
     val groupId: Int,
     val sfuBaseUrl: String,
     val gck: String,
-    val startedAt: Long
+    val startedAt: Long,
+    val processedAt: Long,
 ) {
     companion object {
         const val TABLE = "group_call"
@@ -38,9 +39,12 @@ class GroupCallModel internal constructor(
         const val COLUMN_GCK = "gck"
         const val COLUMN_PROTOCOL_VERSION = "protocolVersion"
         const val COLUMN_STARTED_AT = "startedAt"
+        const val COLUMN_PROCESSED_AT = "processedAt"
     }
 
     fun getProtocolVersionUnsigned(): UInt = protocolVersion.toUInt()
 
     fun getStartedAtUnsigned(): ULong = startedAt.toULong()
+
+    fun getProcessedAtUnsigned(): ULong = processedAt.toULong()
 }

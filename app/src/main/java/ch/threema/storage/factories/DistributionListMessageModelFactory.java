@@ -23,7 +23,7 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
-import net.sqlcipher.Cursor;
+import android.database.Cursor;
 
 import org.slf4j.Logger;
 
@@ -61,14 +61,6 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 				DistributionListMessageModel.COLUMN_ID + "=?",
 				new String[]{
 						String.valueOf(id)
-				});
-	}
-
-	public DistributionListMessageModel getByApiMessageId(String apiMessageId) {
-		return getFirst(
-				DistributionListMessageModel.COLUMN_API_MESSAGE_ID + "=?",
-				new String[]{
-						apiMessageId
 				});
 	}
 

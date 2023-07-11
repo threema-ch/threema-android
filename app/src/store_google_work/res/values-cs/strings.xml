@@ -17,8 +17,6 @@
     <string name="new_wizard_info_link">Poskytnete‑li svoje telefonní číslo a e‑mailovou adresu, Threema Work může vašim kontaktům zajistit automatické přidání vašeho ID do jejich adresářů. Data budou uložena jednosměrně šifrovaná (hashovaná) na našem serveru. Tento krok můžete přeskočit, pokud chcete používat funkci Threema Work zcela anonymně. Toto nastavení lze později změnit.</string>
     <string name="threema_contact">Threema Work kontakt</string>
     <string name="menu_about">O aplikaci Threema Work</string>
-    <string name="list_theme_light">Světlý</string>
-    <string name="list_theme_dark">Tmavý (výchozí)</string>
     <string name="private_threema_download"><![CDATA[ <a href=%1$s>Zjistěte více o Threema Work</a> <br/><br/> Pro osobní použití prosím <a href=%2$s>klepněte sem</a> pro stažení aplikace Threema.]]></string>
     <string name="directory_search">Hledat v adresáři</string>
     <string name="directory_title">Adresář společnosti</string>

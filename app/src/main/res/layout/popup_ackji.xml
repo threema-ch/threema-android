@@ -13,7 +13,8 @@
 		android:layout_marginTop="@dimen/emoji_popup_cardview_margin_top"
 		android:layout_marginLeft="@dimen/emoji_popup_cardview_margin_horizontal"
 		android:layout_marginRight="@dimen/emoji_popup_cardview_margin_horizontal"
-		app:cardCornerRadius="6dp"
+		app:strokeWidth="0dp"
+		app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerMedium"
 		app:cardElevation="4dp">
 
 		<LinearLayout
@@ -52,7 +53,7 @@
 				android:layout_height="match_parent"
 				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
 				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
-				android:background="?divider_color"
+				android:background="@color/file_picker_divider_color"
 				/>
 
 			<ImageView
@@ -61,7 +62,7 @@
 				android:layout_height="@dimen/ackdec_emoji_size"
 				android:padding="@dimen/ackdec_popup_content_margin"
 				android:src="@drawable/ic_draw_reply"
-				app:tint="?attr/textColorSecondary"
+				app:tint="?attr/colorOnSurface"
 				android:contentDescription="@string/draw_reply"
 				android:background="?attr/selectableItemBackgroundBorderless"
 				android:clickable="true"
@@ -73,7 +74,7 @@
 				android:layout_height="match_parent"
 				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
 				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
-				android:background="?divider_color"
+				android:background="@color/file_picker_divider_color"
 				/>
 
 			<ImageView
@@ -82,7 +83,7 @@
 				android:layout_height="@dimen/ackdec_emoji_size"
 				android:padding="@dimen/ackdec_popup_content_margin"
 				android:src="@drawable/ic_info_outline"
-				app:tint="?attr/textColorSecondary"
+				app:tint="?attr/colorOnSurface"
 				android:contentDescription="@string/message_log_title"
 				android:background="?attr/selectableItemBackgroundBorderless"
 				android:clickable="true"

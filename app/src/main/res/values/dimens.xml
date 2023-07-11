@@ -8,7 +8,6 @@
 	<dimen name="messagelist_avatar_padding">16dp</dimen>
     <dimen name="messagelist_item_height">64dp</dimen>
 	<!-- margin between items in list -->
-    <dimen name="messagelist_content_margin_right">5dp</dimen>
 	<dimen name="messagelist_card_corner_radius">8dp</dimen>
 
 	<dimen name="list_divider_height">1dp</dimen>
@@ -16,42 +15,34 @@
     <!-- conversation item (message bubbles) -->
 	<dimen name="conversation_controller_icon_size">32dp</dimen>
 	<dimen name="conversation_controller_progress_stroke_width">3dp</dimen>
-	<dimen name="conversation_controller_progress_border_width">3dp</dimen>
 	<dimen name="conversation_controller_progress_size">34dp</dimen>
 
 	<dimen name="media_thumbnail_min_width">200dp</dimen>
     <dimen name="media_thumbnail_min_height">100dp</dimen>
-	<dimen name="chat_bubble_minheight">48dip</dimen>
-    <dimen name="chat_bubble_minwidth">80dip</dimen>
-	<dimen name="chat_bubble_container_padding_left_right">8dip</dimen>
-	<dimen name="chat_bubble_container_padding_bottom">8dip</dimen>
-	<dimen name="chat_bubble_container_padding_bottom_grouped">1dip</dimen>
+	<dimen name="chat_bubble_minheight">48dp</dimen>
+    <dimen name="chat_bubble_minwidth">80dp</dimen>
+	<dimen name="chat_bubble_container_padding_left_right">8dp</dimen>
+	<dimen name="chat_bubble_container_padding_bottom">8dp</dimen>
+	<dimen name="chat_bubble_container_padding_bottom_grouped">1dp</dimen>
 	<!-- chat bubble contents margins -->
-	<dimen name="chat_bubble_margin_start">8dip</dimen>
-	<dimen name="chat_bubble_margin_end">8dip</dimen>
+	<dimen name="chat_bubble_margin_start">8dp</dimen>
+	<dimen name="chat_bubble_margin_end">8dp</dimen>
 	<dimen name="chat_bubble_arrow_width">8dp</dimen>
-	<dimen name="chat_bubble_arrow_width_shadow">8dp</dimen>
-	<dimen name="chat_bubble_arrow_size">18dp</dimen>
 	<dimen name="chat_bubble_border_padding">4dp</dimen>
-	<dimen name="chat_bubble_border_padding_arrow">12dp</dimen>
-	<dimen name="chat_bubble_border_radius">14dp</dimen>
-	<dimen name="chat_bubble_border_radius_inside">12dp</dimen>
-	<dimen name="chat_bubble_offset_pos">1.5dp</dimen>
-	<dimen name="chat_bubble_offset_neg">-1dp</dimen>
+	<dimen name="chat_bubble_border_radius">16dp</dimen>
+	<dimen name="chat_bubble_border_radius_inside">13dp</dimen>
+	<dimen name="chat_bubble_border_radius_sharp">3dp</dimen>
 	<dimen name="chat_bubble_opposite_inset">32dp</dimen>
 
-	<dimen name="message_status_padding_top">3dip</dimen>
-    <dimen name="message_status_padding_bottom">5dip</dimen>
-    <dimen name="unread_messages_padding_top">2dip</dimen>
-    <dimen name="unread_messages_padding_bottom">2dip</dimen>
-    <dimen name="unread_messages_margin_top">0dip</dimen>
-    <dimen name="input_text_height">48dip</dimen>
+	<dimen name="message_status_padding_top">5dp</dimen>
+    <dimen name="message_status_padding_bottom">5dp</dimen>
+    <dimen name="input_text_height">48dp</dimen>
 	<dimen name="emoji_button_width">40dp</dimen>
 	<dimen name="no_emoji_button_padding_left">12dp</dimen>
 
 	<!-- padding in alertdialogs -->
-    <dimen name="edittext_padding">21dip</dimen>
-	<dimen name="dialog_margin_below_title">16dip</dimen>
+    <dimen name="edittext_padding">21dp</dimen>
+	<dimen name="dialog_margin_below_title">16dp</dimen>
 	<dimen name="dialog_margin_top">5dp</dimen>
 	<dimen name="dialog_corner_radius">8dp</dimen>
 	<dimen name="dialog_inset_top_bottom">8dp</dimen>
@@ -81,11 +72,8 @@
 	<dimen name="tablet_standard_padding_left_right">16dp</dimen>
 	<dimen name="listitem_contact_height">64dp</dimen>
     <dimen name="tablet_additional_padding_left_right">0dp</dimen>
-	<dimen name="expanded_title_padding_right">64dp</dimen>
-    <dimen name="count_box_padding">5dp</dimen>
-	<dimen name="navigation_drawer_horizontal_margin">16dp</dimen>
 
-    <!-- new ballot wizard -->
+	<!-- new ballot wizard -->
 	<dimen name="wizard_footer_height">48dp</dimen>
 
 	<dimen name="contact_detail_avatar_height">220dp</dimen>
@@ -95,11 +83,9 @@
 	<dimen name="floating_button_margin">16dp</dimen>
 	<dimen name="floating_button_translation_z_pressed">4dp</dimen>
 
-	<dimen name="toolbar_elevation">6dp</dimen>
 	<dimen name="appbar_elevation">4dp</dimen>
 
 	<!-- contact/group detail items -->
-	<dimen name="small_listitem_text_height">16sp</dimen>
 	<dimen name="group_detail_list_item_size">48dp</dimen>
 
 	<!-- old wizard dimens -->
@@ -109,13 +95,6 @@
 	<dimen name="message_fragment_width">0dp</dimen>
 
 	<dimen name="ballot_matrix_label_maxwidth">150dp</dimen>
-
-	<!-- image preview activity -->
-	<dimen name="preview_gridview_padding_left">3dp</dimen>
-	<dimen name="preview_gridview_padding_right">3dp</dimen>
-
-	<!-- draggable gridview -->
-	<dimen name="dgv_overlap_if_switch_straight_line">16dp</dimen>
 
 	<!-- for keyboard aware layout -->
 	<dimen name="min_keyboard_height">60dp</dimen> <!-- minimum height to be considered a soft keyboard -->
@@ -133,7 +112,6 @@
 	<dimen name="emoji_popup_remove_image_size">36dp</dimen>
 	<dimen name="emoji_picker_tab_width">42dp</dimen>
 	<dimen name="min_emoji_keyboard_height">110dp</dimen>
-	<dimen name="min_emoji_keyboard_top_margin">170dp</dimen>
 	<dimen name="emoji_search_corner_radius">15dp</dimen>
 	<dimen name="emoji_search_padding">8dp</dimen>
 	<dimen name="emoji_search_input_padding">5dp</dimen>
@@ -143,22 +121,13 @@
 
 	<!-- image/media attach popup -->
 	<dimen name="control_panel_height">100dp</dimen> <!-- media_attach_button_size + 8 -->
-	<dimen name="image_attach_thumbnail_size">180dp</dimen>
-	<dimen name="image_attach_popup_maxwidth">600dp</dimen>
 	<dimen name="image_attach_popup_action_icon_size">48dp</dimen>
 	<dimen name="image_popup_screen_border_width">32dp</dimen>
-	<dimen name="image_popup_topbottom_margin">24dp</dimen>
-	<dimen name="image_popup_leftright_margin">4dp</dimen>
-	<dimen name="image_popup_text_size">12sp</dimen>
-	<dimen name="image_popup_text_margin_bottom">6dp</dimen>
 	<dimen name="qrcode_min_margin">8dp</dimen>
 	<dimen name="grid_spacing">2dp</dimen>
-	<dimen name="drag_handle_height">4dp</dimen>
-	<dimen name="drag_handle_topbottom_margin">10dp</dimen>
-	<dimen name="gallery_drawer_corner_radius">15dp</dimen>
+	<dimen name="drag_handle_height">24dp</dimen>
 	<dimen name="broken_image_icon_size">32dp</dimen>
 	<dimen name="send_items_grid_icon_margin">4dp</dimen>
-	<dimen name="send_items_grid_margin_top">9dp</dimen>
 
 	<!-- media attacher button dimensions -->
 	<dimen name="media_attach_button_radius">10dp</dimen>
@@ -206,8 +175,10 @@
 	<dimen name="imagepaint_overlay_select_dash_size">3dp</dimen>
 	<dimen name="imagepaint_default_font_size">36dp</dimen>
 	<dimen name="imagepaint_overlay_select_stroke_width">1dp</dimen>
-	<dimen name="web_sessions_switch_frame_height">49dp</dimen>
-	<dimen name="header_navdrawer_height">147dp</dimen>
+	<dimen name="web_sessions_switch_frame_height">56dp</dimen>
+	<!-- Pin unlock screen -->
+	<dimen name="pin_lock_side_margin">32dp</dimen>
+	<dimen name="pin_lock_top_margin">32dp</dimen>
 
 	<!-- voip -->
 	<!-- Circle size for incoming call widget's each item. -->
@@ -215,7 +186,8 @@
 	<dimen name="incoming_call_slider_height">74dp</dimen>
 	<dimen name="incoming_call_slider_margin_bottom">64dp</dimen>
 	<dimen name="call_shortcut_shadow_offset">1dp</dimen>
-	<dimen name="mediaviewer_caption_border_bottom">32dp</dimen>
+	<dimen name="mediaviewer_caption_border_bottom">72dp</dimen>
+	<dimen name="mediaviewer_caption_border_horizontal">16dp</dimen>
 	<dimen name="mediaviewer_caption_background_radius">12dp</dimen>
 
 	<!-- message list item swipe background -->
@@ -229,70 +201,53 @@
 
 	<!-- tooltip -->
 	<dimen name="tooltip_max_width">350dp</dimen>
-	<dimen name="tooltip_margin_right">40dp</dimen>
+	<dimen name="tooltip_margin_on_other_edge">40dp</dimen>
+	<dimen name="tooltip_popup_arrow_inset">10dp</dimen>
+	<dimen name="tooltip_layout_margin_left">2dp</dimen>
+	<dimen name="tooltip_layout_margin_right">8dp</dimen>
 	<dimen name="tooltip_text_size">15sp</dimen>
-	<dimen name="tooltip_arrow_offset">8dp</dimen>
-	<dimen name="tooltip_arrow_size">12dp</dimen>
-	<dimen name="tooltip_border_radius">4dp</dimen>
-	<dimen name="myid_qrcode_size">72dp</dimen>
+
 	<dimen name="compose_title_avatar_size">40dp</dimen>
 	<dimen name="compose_bottom_panel_height">56dp</dimen>
+	<dimen name="compose_bottom_panel_padding_vertical">4dp</dimen>
 
 	<!-- material dialogs -->
-	<dimen name="dialogutil_material_padding">6dp</dimen>
-	<dimen name="dialogutil_old_padding">4dp</dimen>
-	<dimen name="dialogutil_material_margin">14dp</dimen>
 	<dimen name="directory_header_height">24dp</dimen>
 	<dimen name="directory_search_bar_height">58dp</dimen>
-	<dimen name="ballot_matrix_appbar_size">160dp</dimen>
-
-	<!-- work category span -->
-	<dimen name="work_category_padding">10dp</dimen>
-	<dimen name="work_category_radius">12dp</dimen>
-	<dimen name="work_category_padding_vertical">1dp</dimen>
-	<dimen name="work_category_close_button_dimension">8dp</dimen>
-	<dimen name="work_category_close_button_stroke_width">2dp</dimen>
 
 	<!-- edittext bubble used in compose and others -->
 	<dimen name="edittext_bubble_border_radius">24dp</dimen>
-	<dimen name="edittext_bubble_shadow_radius">25dp</dimen>
 	<dimen name="shortcut_overlay_size">24dp</dimen>
 	<dimen name="emoji_and_photo_button_width">80dp</dimen>
 
 	<!-- navigation icon in toolbar on top of home screen -->
 	<dimen name="navigation_icon_padding">8dp</dimen>
 	<dimen name="navigation_icon_size">@dimen/avatar_size_mini</dimen>
-	<dimen name="identity_popup_arrow_margin_left">20dp</dimen>
-	<dimen name="identity_popup_arrow_width">32dp</dimen>
+	<dimen name="identity_popup_arrow_inset_left">20dp</dimen>
+	<dimen name="identity_popup_arrow_width">28dp</dimen>
+	<dimen name="identity_popup_arrow_height">14dp</dimen>
 
 	<!-- location picker -->
 	<dimen name="lp_icon_size_small">24dp</dimen>
-	<dimen name="lp_icon_size_medium">32dp</dimen>
-	<dimen name="lp_button_my_location_size">48dp</dimen>
-	<dimen name="lp_place_confirm_images_height">140dp</dimen>
 	<dimen name="lp_default_margin">16dp</dimen>
 	<dimen name="lp_guide_start_margin">16dp</dimen>
-	<dimen name="lp_guide_content_margin">70dp</dimen>
+	<dimen name="lp_guide_content_margin">60dp</dimen>
 	<dimen name="lp_guide_end_margin">16dp</dimen>
-	<dimen name="lp_selector_margin">20dp</dimen>
 	<dimen name="lp_card_search_height">48dp</dimen>
 	<dimen name="lp_card_search_margin_top">@dimen/lp_default_margin</dimen>
 	<dimen name="lp_card_search_margin_horizontal">8dp</dimen>
 	<dimen name="lp_card_search_content_start_margin">16dp</dimen>
-	<dimen name="lp_card_search_content_margin">62dp</dimen>
+	<dimen name="lp_card_search_content_margin">52dp</dimen>
 	<dimen name="lp_dialog_margin">24dp</dimen>
 	<dimen name="lp_marker_inner_icon_size">12dp</dimen>
+	<dimen name="send_location_container_height">64dp</dimen>
 
 	<!-- cardview settings -->
 	<dimen name="cardview_border_radius">15dp</dimen>
-	<dimen name="cardview_elevation">4dp</dimen>
 
 	<!-- MapActivity compass location -->
 	<dimen name="map_compass_margin_top">16dp</dimen>
 	<dimen name="map_compass_margin_right">16dp</dimen>
-
-	<!-- TextEntry dialog fix -->
-	<dimen name="edittext_delete_button_width">50dp</dimen>
 
 	<!-- Video timeline -->
 	<dimen name="video_timeline_item_size">40dp</dimen>
@@ -312,7 +267,6 @@
 	<dimen name="call_video_button_margin_top">4dp</dimen>
 	<dimen name="call_activity_small_button_size">56dp</dimen>
 	<dimen name="call_activity_margin">16dp</dimen>
-	<dimen name="call_title_text_size">32sp</dimen>
 	<dimen name="call_status_text_size">24sp</dimen>
 
 	<!-- Group calls -->
@@ -326,10 +280,7 @@
 
 	<!-- chip defaults -->
 	<dimen name="chip_start_padding">10dp</dimen>
-	<dimen name="chip_stroke_width">1dp</dimen>
-	<dimen name="chip_min_padding">0dp</dimen>
 	<dimen name="chip_end_padding_text_only">4dp</dimen>
-	<dimen name="chip_start_padding_text_only">9dp</dimen>
 	<dimen name="chip_text_size">14sp</dimen>
 
 	<!-- reduced size of scrollbars -->
@@ -351,4 +302,21 @@
 	<dimen name="ackdec_popup_content_margin">8dp</dimen>
 	<dimen name="ackdec_emoji_size">40dp</dimen>
 	<dimen name="ackdec_popup_content_margin_horizontal">4dp</dimen>
+
+	<!-- gesture exclusion -->
+    <dimen name="gesture_exclusion_border_width">16dp</dimen>
+    <dimen name="gesture_exclusion_max_height">200dp</dimen> <!-- Android does not allow more than 200dp to be excluded in vertical height -->
+
+	<!-- SearchView -->
+	<dimen name="search_bar_text_view_margin">8dp</dimen>
+
+	<!-- date popup next to thumbscroller -->
+    <dimen name="thumb_date_popup_padding_start">12dp</dimen>
+	<dimen name="thumb_date_popup_padding_end">20dp</dimen>
+	<dimen name="thumb_date_popup_padding_top_bottom">6dp</dimen>
+
+	<dimen name="quickscroll_badge_offset">6dp</dimen>
+	<dimen name="notice_views_elevation">3dp</dimen>
+	<dimen name="notice_views_vertical_margin">2dp</dimen>
+    <dimen name="media_gallery_container_radius">3dp</dimen>
 </resources>

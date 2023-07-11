@@ -31,7 +31,7 @@
 		android:layout_gravity="center_horizontal"
 		android:text="@string/safe_configure_server_explain"/>
 
-	<androidx.appcompat.widget.SwitchCompat
+	<com.google.android.material.materialswitch.MaterialSwitch
 		android:id="@+id/safe_switch_server"
 		style="@style/WizardSwitch"
 		android:layout_width="match_parent"
@@ -75,7 +75,7 @@
 			android:id="@+id/safe_credentials_title"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:textColor="?attr/textColorPrimary"
+			android:textColor="?attr/colorOnBackground"
 			android:layout_marginTop="8dp"
 			android:text="@string/safe_configure_server_credentials_title"
 			android:textSize="16sp"/>

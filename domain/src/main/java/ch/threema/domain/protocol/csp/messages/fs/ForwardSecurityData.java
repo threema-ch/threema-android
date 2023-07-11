@@ -29,9 +29,14 @@ import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.protobuf.ProtobufDataInterface;
-import ch.threema.protobuf.csp.e2e.fs.ForwardSecurityEnvelope;
+import ch.threema.protobuf.csp.e2e.fs.Accept;
+import ch.threema.protobuf.csp.e2e.fs.Encapsulated;
+import ch.threema.protobuf.csp.e2e.fs.Envelope;
+import ch.threema.protobuf.csp.e2e.fs.Init;
+import ch.threema.protobuf.csp.e2e.fs.Reject;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
-public abstract class ForwardSecurityData implements ProtobufDataInterface<ForwardSecurityEnvelope> {
+public abstract class ForwardSecurityData implements ProtobufDataInterface<Envelope> {
 
 	private final @NonNull DHSessionId sessionId;
 
@@ -47,33 +52,50 @@ public abstract class ForwardSecurityData implements ProtobufDataInterface<Forwa
 	@NonNull
 	public static ForwardSecurityData fromProtobuf(@NonNull byte[] rawProtobufMessage) throws BadMessageException {
 		try {
-			ForwardSecurityEnvelope protobufMessage = ForwardSecurityEnvelope.parseFrom(rawProtobufMessage);
+			Envelope protobufMessage = Envelope.parseFrom(rawProtobufMessage);
 
 			DHSessionId sessionId = new DHSessionId(protobufMessage.getSessionId().toByteArray());
 
 			switch (protobufMessage.getContentCase()) {
-				case INIT:
-					return new ForwardSecurityDataInit(sessionId, protobufMessage.getInit().getEphemeralPublicKey().toByteArray());
-				case ACCEPT:
-					return new ForwardSecurityDataAccept(sessionId, protobufMessage.getAccept().getEphemeralPublicKey().toByteArray());
-				case REJECT:
-					return new ForwardSecurityDataReject(sessionId, new MessageId(protobufMessage.getReject().getRejectedMessageId()), protobufMessage.getReject().getCause());
+				case INIT: {
+					final Init init = protobufMessage.getInit();
+					return new ForwardSecurityDataInit(sessionId, init.getSupportedVersion(), init.getFssk().toByteArray());
+				}
+				case ACCEPT: {
+					final Accept accept = protobufMessage.getAccept();
+					return new ForwardSecurityDataAccept(sessionId, accept.getSupportedVersion(), accept.getFssk().toByteArray());
+				}
+				case REJECT: {
+					final Reject reject = protobufMessage.getReject();
+					return new ForwardSecurityDataReject(
+						sessionId,
+						new MessageId(reject.getRejectedEncapsulatedMessageId()),
+						reject.getCause()
+					);
+				}
 				case TERMINATE:
-					return new ForwardSecurityDataTerminate(sessionId);
-				case MESSAGE:
+					return new ForwardSecurityDataTerminate(sessionId, protobufMessage.getTerminate().getCause());
+				case ENCAPSULATED: {
+					final Encapsulated encapsulated = protobufMessage.getEncapsulated();
+					int appliedVersion = encapsulated.getAppliedVersion();
+					if (appliedVersion == Version.UNSPECIFIED_VALUE) {
+						appliedVersion = Version.V1_0_VALUE;
+					}
 					return new ForwardSecurityDataMessage(sessionId,
-						protobufMessage.getMessage().getDhType(),
-						protobufMessage.getMessage().getCounter(),
-						protobufMessage.getMessage().getMessage().toByteArray());
+						encapsulated.getDhType(),
+						encapsulated.getCounter(),
+						appliedVersion,
+						encapsulated.getEncryptedInner().toByteArray());
+				}
 				default:
 					throw new BadMessageException("Unknown forward security message type");
 			}
 		} catch (InvalidProtocolBufferException e) {
-			throw new BadMessageException("Invalid forward security message protobuf data", true);
+			throw new BadMessageException("Invalid forward security message protobuf data");
 		} catch (DHSessionId.InvalidDHSessionIdException e) {
-			throw new BadMessageException("Bad forward security session ID length", true);
+			throw new BadMessageException("Bad forward security session ID length");
 		} catch (InvalidEphemeralPublicKeyException e) {
-			throw new BadMessageException("Bad ephemeral public key length", true);
+			throw new BadMessageException("Bad ephemeral public key length");
 		}
 	}
 

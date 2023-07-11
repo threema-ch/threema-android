@@ -24,12 +24,12 @@ package ch.threema.app.utils;
 import android.app.Activity;
 import android.content.Intent;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.NavUtils;
 import androidx.core.app.TaskStackBuilder;
-import ch.threema.app.R;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.activities.PinLockActivity;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -44,11 +44,9 @@ public class NavigationUtil {
 			TaskStackBuilder.create(activity)
 					.addNextIntentWithParentStack(upIntent)
 					.startActivities();
-			activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 		} else {
 			try {
 				NavUtils.navigateUpFromSameTask(activity);
-				activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 			} catch (IllegalArgumentException e) {
 				logger.info("Missing parent activity entry in manifest for " + activity.getComponentName());
 				logger.error("Exception", e);

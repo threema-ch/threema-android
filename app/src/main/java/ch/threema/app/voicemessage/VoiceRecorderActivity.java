@@ -21,8 +21,7 @@
 
 package ch.threema.app.voicemessage;
 
-import static android.Manifest.permission.BLUETOOTH_CONNECT;
-
+import android.animation.LayoutTransition;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothHeadset;
 import android.content.BroadcastReceiver;
@@ -30,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,8 +52,11 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.WindowCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.slf4j.Logger;
 
@@ -79,6 +83,8 @@ import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+import static android.Manifest.permission.BLUETOOTH_CONNECT;
+
 public class VoiceRecorderActivity extends AppCompatActivity implements DefaultLifecycleObserver, View.OnClickListener, AudioRecorder.OnStopListener, AudioManager.OnAudioFocusChangeListener, GenericAlertDialog.DialogClickListener, SensorListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VoiceRecorderActivity");
 
@@ -88,7 +94,6 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	public static final int MAX_VOICE_MESSAGE_LENGTH_MILLIS = (int) DateUtils.HOUR_IN_MILLIS;
 	private static final String SENSOR_TAG_VOICE_RECORDER = "voice";
 
-	public static final int DEFAULT_SAMPLING_RATE_HZ = 44100;
 	public static final int BLUETOOTH_SAMPLING_RATE_HZ = 8000;
 
 	public static final String VOICEMESSAGE_FILE_EXTENSION = ".aac";
@@ -121,7 +126,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	private AudioManager audioManager;
 	private BroadcastReceiver audioStateChangedReceiver;
 	private static int scoAudioState;
-	private MessageReceiver messageReceiver;
+	private MessageReceiver<?> messageReceiver;
 
 	private PreferenceService preferenceService;
 	private SensorService sensorService;
@@ -146,7 +151,11 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	protected void onCreate(Bundle savedInstanceState) {
 		getLifecycle().addObserver(this);
 
-		ConfigUtils.configureActivityTheme(this);
+		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			getWindow().setStatusBarColor(Color.TRANSPARENT);
+			getWindow().setNavigationBarColor(Color.TRANSPARENT);
+		}
 
 		super.onCreate(savedInstanceState);
 
@@ -167,6 +176,8 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 			this.finish();
 			return;
 		}
+
+		getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
 
 		if (preferenceService == null || sensorService == null || messageService == null || fileService == null) {
 			logger.info("Services missing.");
@@ -204,9 +215,12 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 				this.finish();
 			}
 
+			LinearLayout buttonLayout = findViewById(R.id.button_layout);
+			buttonLayout.getLayoutTransition().enableTransitionType(LayoutTransition.APPEARING|LayoutTransition.DISAPPEARING);
+
 			timerTextView = findViewById(R.id.timer_text);
 
-			ImageView sendButton = findViewById(R.id.send_button);
+			MaterialButton sendButton = findViewById(R.id.send_button);
 			sendButton.setOnClickListener(new DebouncedOnClickListener(1000) {
 				@Override
 				public void onDebouncedClick(View v) {
@@ -481,9 +495,9 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 		logger.info("new audioRecorder instance {}", audioRecorder);
 		try {
 			mediaRecorder = audioRecorder.prepare(uri, MAX_VOICE_MESSAGE_LENGTH_MILLIS,
-			scoAudioState == AudioManager.SCO_AUDIO_STATE_CONNECTED ?
-			BLUETOOTH_SAMPLING_RATE_HZ :
-			DEFAULT_SAMPLING_RATE_HZ );
+				scoAudioState == AudioManager.SCO_AUDIO_STATE_CONNECTED ?
+				BLUETOOTH_SAMPLING_RATE_HZ :
+				getDefaultSamplingRate());
 			logger.info("Started recording with mediaRecorder instance {}", this.mediaRecorder);
 			if (mediaRecorder != null) {
 				startTimestamp = System.nanoTime();
@@ -504,12 +518,16 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 		return true;
 	}
 
+	public static int getDefaultSamplingRate() {
+		return ConfigUtils.hasBrokenAudioRecorder() ? 44000 : 44100;
+	}
+
 	private int getRecordingDuration() {
 		long timeDiff = System.nanoTime() - startTimestamp - pauseDuration;
 		return (int) (timeDiff / 1000 / 1000 / 1000); // convert nanoseconds to seconds
 	}
 
-	private int stopRecording() {
+	private void stopRecording() {
 		if (status == MediaState.STATE_RECORDING || status == MediaState.STATE_PAUSED) {
 			recordingDuration = 0;
 
@@ -527,8 +545,6 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 			stopTimer();
 		}
 		updateMediaState(MediaState.STATE_NONE);
-
-		return recordingDuration;
 	}
 
 	private void pausePlayback(){
@@ -605,9 +621,13 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 		MediaPlayer durationCheckMediaPlayer = MediaPlayer.create(this, uri);
 		if (durationCheckMediaPlayer != null) {
 			int duration = durationCheckMediaPlayer.getDuration();
+			if (duration == 0) {
+				logger.info("Duration check returned 0");
+			}
 			durationCheckMediaPlayer.release();
 			return duration;
 		}
+		logger.info("Unable to create a media player for checking size. File already deleted by OS?");
 		return 0;
 	}
 
@@ -637,7 +657,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	@Override
 	public void finish() {
 		super.finish();
-		overridePendingTransition(0, R.anim.slide_out_left_short);
+		overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 	}
 
 	private void reallyCancelRecording() {
@@ -672,60 +692,53 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.discard_button:
-				stopAndReleaseMediaPlayer(mediaPlayer);
-				if (status == MediaState.STATE_RECORDING && getRecordingDuration() >= DISCARD_CONFIRMATION_THRESHOLD_SECONDS) {
+		final int id = v.getId();
+		if (id == R.id.discard_button) {
+			stopAndReleaseMediaPlayer(mediaPlayer);
+			if (status == MediaState.STATE_RECORDING && getRecordingDuration() >= DISCARD_CONFIRMATION_THRESHOLD_SECONDS) {
+				stopRecording();
+				cancelRecording();
+			} else {
+				reallyCancelRecording();
+			}
+		} else if (id == R.id.play_button) {
+			switch (status) {
+				case STATE_NONE:
+					playRecording();
+					break;
+				case STATE_RECORDING:
 					stopRecording();
-					cancelRecording();
+					resetTimerDisplay();
+				case STATE_PAUSED:
+					stopRecording();
+					resetTimerDisplay();
+					break;
+				case STATE_PLAYING:
+					pausePlayback();
+					break;
+				case STATE_PLAYING_PAUSED: {
+					startPlayback();
+				}
+			}
+		} else if (id == R.id.pause_button) {
+			switch (status) {
+				case STATE_PAUSED:
+					resumeRecording();
+					break;
+				case STATE_RECORDING:
+					pauseMedia();
+					break;
+			}
+		} else if (id == R.id.bluetooth_toggle) {
+			try {
+				if (audioManager.isBluetoothScoOn()) {
+					audioManager.stopBluetoothSco();
 				} else {
-					reallyCancelRecording();
+					audioManager.startBluetoothSco();
 				}
-				break;
-			case R.id.play_button:
-				switch (status) {
-					case STATE_NONE:
-						playRecording();
-						break;
-					case STATE_RECORDING:
-						stopRecording();
-						resetTimerDisplay();
-					case STATE_PAUSED:
-						stopRecording();
-						resetTimerDisplay();
-						break;
-					case STATE_PLAYING:
-						pausePlayback();
-						break;
-					case STATE_PLAYING_PAUSED:{
-						startPlayback();
-					}
-				}
-				break;
-			case R.id.pause_button:
-				switch (status) {
-					case STATE_PAUSED:
-						resumeRecording();
-						break;
-					case STATE_RECORDING:
-						pauseMedia();
-						break;
-				}
-				break;
-			case R.id.bluetooth_toggle:
-				try {
-					if (audioManager.isBluetoothScoOn()) {
-						audioManager.stopBluetoothSco();
-					} else {
-						audioManager.startBluetoothSco();
-					}
-				} catch (Exception ignored) {
-				}
-				updateBluetoothButton();
-				break;
-			default:
-				break;
-
+			} catch (Exception ignored) {
+			}
+			updateBluetoothButton();
 		}
 	}
 
@@ -805,9 +818,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 				playButton.setImageResource(R.drawable.ic_pause);
 				playButton.setContentDescription(getString(R.string.stop));
 				recordImage.setImageResource(R.drawable.ic_play);
-				if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-					recordImage.setColorFilter(getResources().getColor(R.color.dark_text_color_primary), PorterDuff.Mode.SRC_IN);
-				}
+				recordImage.setColorFilter(ConfigUtils.getColorFromAttribute(this, R.attr.colorOnSurface), PorterDuff.Mode.SRC_IN);
 				recordImage.setVisibility(View.VISIBLE);
 				startBlinking();
 				startTimer();
@@ -932,9 +943,15 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	@Override
 	protected void onDestroy() {
 		logger.debug("onDestroy");
-		timeDisplayHandler.removeCallbacksAndMessages(null);
-		blinkingHandler.removeCallbacksAndMessages(null);
-		seekBarHandler.removeCallbacksAndMessages(null);
+		if (timeDisplayHandler != null) {
+			timeDisplayHandler.removeCallbacksAndMessages(null);
+		}
+		if (blinkingHandler != null) {
+			blinkingHandler.removeCallbacksAndMessages(null);
+		}
+		if (seekBarHandler != null) {
+			seekBarHandler.removeCallbacksAndMessages(null);
+		}
 		activateSensors(false);
 
 		if (isBluetoothEnabled()) {

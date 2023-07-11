@@ -53,7 +53,6 @@ public abstract class WizardFragment extends Fragment {
 	protected PreferenceService preferenceService;
 	protected UserService userService;
 	protected LocaleService localeService;
-	protected AppBarLayout appBarLayout;
 	protected ViewStub contentViewStub;
 
 	@Override
@@ -73,7 +72,6 @@ public abstract class WizardFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_wizard, container, false);
 
 		contentViewStub = rootView.findViewById(R.id.stub_content);
-		appBarLayout = rootView.findViewById(R.id.appbar_layout);
 
 		ImageView infoIcon = rootView.findViewById(R.id.wizard_icon_info);
 		infoIcon.setOnClickListener(v -> showAdditionalInfo());

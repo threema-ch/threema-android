@@ -4,7 +4,7 @@
                                       android:id="@+id/layout_wizard0"
                                       android:layout_width="match_parent"
                                       android:layout_height="match_parent"
-                                      android:background="?attr/background_secondary"
+                                      android:background="?android:attr/colorBackground"
                                       android:paddingBottom="@dimen/wizard_footer_height"
                                       android:paddingLeft="@dimen/tablet_additional_padding_left_right"
                                       android:paddingRight="@dimen/tablet_additional_padding_left_right">
@@ -18,22 +18,20 @@
 		android:paddingTop="16dp">
 
 		<TextView
+			style="@style/Threema.TextAppearance.Headline"
 			android:id="@+id/wizard_title"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:fontFamily="sans-serif-medium"
 			android:text="@string/ballot_create"
-			android:textColor="?attr/textColorPrimary"
-			android:textSize="24sp"/>
+			android:textColor="?attr/colorPrimary" />
 
 		<TextView
+			style="@style/Threema.TextAppearance.BodyLarge"
 			android:id="@+id/wizard_body"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="16dp"
-			android:text="@string/ballot_wizard0_explain"
-			android:textColor="?attr/textColorPrimary"
-			android:textSize="16sp"/>
+			android:text="@string/ballot_wizard0_explain" />
 
 		<com.google.android.material.textfield.TextInputLayout
 			android:id="@+id/wizard_edittext_layout"

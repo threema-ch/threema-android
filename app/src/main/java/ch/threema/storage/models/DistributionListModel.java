@@ -23,6 +23,9 @@ package ch.threema.storage.models;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.security.MessageDigest;
@@ -30,8 +33,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Objects;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.NonNull;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
@@ -102,7 +103,7 @@ public class DistributionListModel implements ReceiverModel {
 	}
 
 	public int getThemedColor(@NonNull Context context) {
-		if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
+		if (ConfigUtils.isTheDarkSide(context)) {
 			return getColorDark();
 		} else {
 			return getColorLight();

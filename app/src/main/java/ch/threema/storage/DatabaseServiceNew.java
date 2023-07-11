@@ -22,24 +22,19 @@
 package ch.threema.storage;
 
 import android.content.Context;
-import android.text.format.DateUtils;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.widget.Toast;
 
-import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteDatabaseHook;
-import net.sqlcipher.database.SQLiteException;
-import net.sqlcipher.database.SQLiteOpenHelper;
+import net.zetetic.database.sqlcipher.SQLiteConnection;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabaseHook;
+import net.zetetic.database.sqlcipher.SQLiteOpenHelper;
 
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
-
-import androidx.annotation.NonNull;
-import ch.threema.app.exceptions.DatabaseMigrationFailedException;
-import ch.threema.app.exceptions.DatabaseMigrationLockedException;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion10;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion11;
@@ -110,8 +105,10 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion79;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion8;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion80;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion81;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion82;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion83;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion84;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion9;
-import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -142,13 +139,11 @@ import ch.threema.storage.factories.WebClientSessionModelFactory;
 public class DatabaseServiceNew extends SQLiteOpenHelper {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseServiceNew");
 
-	public static final String DATABASE_NAME = "threema.db";
 	public static final String DATABASE_NAME_V4 = "threema4.db";
 	public static final String DATABASE_BACKUP_EXT = ".backup";
-	private static final int DATABASE_VERSION = SystemUpdateToVersion81.VERSION;
+	private static final int DATABASE_VERSION = SystemUpdateToVersion83.VERSION;
 
 	private final Context context;
-	private final String key;
 	private final UpdateSystemService updateSystemService;
 
 	private ContactModelFactory contactModelFactory;
@@ -176,61 +171,47 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 
 	public DatabaseServiceNew(final Context context,
 	                          final String databaseKey,
-	                          UpdateSystemService updateSystemService,
-	                          int sqlcipherVersion) {
+	                          UpdateSystemService updateSystemService) {
 		super(
-				context,
-				sqlcipherVersion == 4 ? DATABASE_NAME_V4 : DATABASE_NAME,
-				null,
-				DATABASE_VERSION,
-				new SQLiteDatabaseHook() {
-					@Override
-					public void preKey(SQLiteDatabase sqLiteDatabase) {
-						if (sqlcipherVersion == 4) {
-							sqLiteDatabase.rawExecSQL("PRAGMA cipher_default_kdf_iter = 1;");
-						} else {
-							sqLiteDatabase.rawExecSQL(
-								"PRAGMA cipher_default_page_size = 1024;" +
-								"PRAGMA cipher_default_kdf_iter = 4000;" +
-								"PRAGMA cipher_default_hmac_algorithm = HMAC_SHA1;" +
-								"PRAGMA cipher_default_kdf_algorithm = PBKDF2_HMAC_SHA1;");
-						}
-					}
-
-					@Override
-					public void postKey(SQLiteDatabase sqLiteDatabase) {
-						if (sqlcipherVersion == 4) {
-							sqLiteDatabase.rawExecSQL("PRAGMA kdf_iter = 1;");
-							// turn off memory wiping for now due to https://github.com/sqlcipher/android-database-sqlcipher/issues/411
-							sqLiteDatabase.rawExecSQL("PRAGMA cipher_memory_security = OFF;");
-						} else {
-							sqLiteDatabase.rawExecSQL(
-								"PRAGMA cipher_page_size = 1024;" +
-								"PRAGMA kdf_iter = 4000;" +
-								"PRAGMA cipher_hmac_algorithm = HMAC_SHA1;" +
-								"PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA1;");
-						}
-					}
-				}
-				,
+			context,
+			DATABASE_NAME_V4,
+			databaseKey,
+			null,
+			DATABASE_VERSION,
+			0,
 			sqLiteDatabase -> {
-				logger.error("Database corrupted");
-				RuntimeUtil.runOnUiThread(() -> {
-					if (context != null) {
-						Toast.makeText(context, "Database corrupted. Please save all data!", Toast.LENGTH_LONG).show();
-					}
-				});
+					logger.error("Database corrupted");
+					RuntimeUtil.runOnUiThread(() -> {
+						if (context != null) {
+							Toast.makeText(context, "Database corrupted. Please save all data!", Toast.LENGTH_LONG).show();
+						}
+					});
 
-				// close database
-				if (sqLiteDatabase.isOpen()) {
-					try {
-						sqLiteDatabase.close();
-					} catch (Exception e) {
-						logger.error("Exception while closing database", e);
+					// close database
+					if (sqLiteDatabase.isOpen()) {
+						try {
+							sqLiteDatabase.close();
+						} catch (Exception e) {
+							logger.error("Exception while closing database", e);
+						}
 					}
+					System.exit(2);
+			},
+			new SQLiteDatabaseHook() {
+				@Override
+				public void preKey(SQLiteConnection connection) {
+					connection.execute("PRAGMA cipher_default_kdf_iter = 1;", new Object[]{}, null);
 				}
-				System.exit(2);
+
+				@Override
+				public void postKey(SQLiteConnection connection) {
+					connection.execute("PRAGMA kdf_iter = 1;", new Object[]{}, null);
+					// turn off memory wiping for now due to https://github.com/sqlcipher/android-database-sqlcipher/issues/411
+					connection.execute("PRAGMA cipher_memory_security = OFF;", new Object[]{}, null);
+				}
 			}
+			,
+			true
 		);
 
 		logger.info("instantiated");
@@ -238,16 +219,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		this.updateSystemService = updateSystemService;
 		this.context = context;
 
-		SQLiteDatabase.loadLibs(context);
-
-		this.key = databaseKey;
-	}
-
-	public synchronized SQLiteDatabase getWritableDatabase() throws SQLiteException {
-		return super.getWritableDatabase(this.key);
-	}
-	public synchronized SQLiteDatabase getReadableDatabase()  {
-		return super.getReadableDatabase(this.key);
+		System.loadLibrary("sqlcipher");
 	}
 
 	@Override
@@ -703,180 +675,18 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		if (oldVersion < SystemUpdateToVersion81.VERSION) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion81(sqLiteDatabase));
 		}
+		if (oldVersion < SystemUpdateToVersion82.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion82(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion83.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion83(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion84.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion84(sqLiteDatabase));
+		}
 	}
 
 	public void executeNull() throws SQLiteException {
-		this.getWritableDatabase().rawExecSQL("SELECT NULL");
-	}
-
-	@MainThread
-	public static synchronized void tryMigrateToV4(Context context, final String databaseKey) throws DatabaseMigrationFailedException, DatabaseMigrationLockedException  {
-		File oldDatabaseFile = context.getDatabasePath(DATABASE_NAME);
-		File newDatabaseFile = context.getDatabasePath(DATABASE_NAME_V4);
-		final boolean[] migrateSuccess = {false};
-
-		logger.info("check if v4 database migration is necessary");
-
-		if (oldDatabaseFile.exists()) {
-			File lockfile = new File(context.getFilesDir(), ".dbv4-lock");
-			if (lockfile.exists()) {
-				long lastModified = lockfile.lastModified();
-				long now = System.currentTimeMillis();
-
-				if ((now - lastModified) > (5 * DateUtils.MINUTE_IN_MILLIS)) {
-					FileUtil.deleteFileOrWarn(lockfile, "Lockfile", logger);
-					if (newDatabaseFile.exists()) {
-						FileUtil.deleteFileOrWarn(newDatabaseFile, "New Database File", logger);
-					}
-				} else {
-					logger.info("Lockfile exists...exiting");
-					throw new DatabaseMigrationLockedException();
-				}
-			}
-
-			try {
-				FileUtil.createNewFileOrLog(lockfile, logger);
-			} catch (IOException e) {
-				logger.error("IOException when creating lockfile", e);
-			}
-
-			if (!newDatabaseFile.exists()) {
-				logger.info("Database migration to v4 required");
-
-				long usableSpace = oldDatabaseFile.getUsableSpace();
-				long fileSize = oldDatabaseFile.length();
-
-				if (usableSpace < (fileSize * 2)) {
-					FileUtil.deleteFileOrWarn(lockfile, "Lockfile", logger);
-					throw new DatabaseMigrationFailedException("Not enough space left on device");
-				}
-
-				Thread migrateThread = new Thread(new Runnable() {
-					@Override
-					public void run() {
-
-						try {
-							// migrate
-							SQLiteDatabase.loadLibs(context);
-							SQLiteDatabaseHook hook = new SQLiteDatabaseHook() {
-								@Override
-								public void preKey(SQLiteDatabase sqLiteDatabase) {}
-
-								@Override
-								public void postKey(SQLiteDatabase sqLiteDatabase) {
-									// old settings
-									sqLiteDatabase.rawExecSQL(
-											"PRAGMA cipher_page_size = 1024;" +
-													"PRAGMA kdf_iter = 4000;" +
-													"PRAGMA cipher_hmac_algorithm = HMAC_SHA1;" +
-													"PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA1;");
-								}
-							};
-
-							final int databaseVersion;
-							try (SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(oldDatabaseFile.getAbsolutePath(), databaseKey, null, hook)) {
-								if (database.isOpen()) {
-									databaseVersion = database.getVersion();
-									logger.info("Original database version: {}", databaseVersion);
-
-									database.rawExecSQL(
-										"PRAGMA key = '" + databaseKey + "';" +
-											"PRAGMA cipher_page_size = 1024;" +
-											"PRAGMA kdf_iter = 4000;" +
-											"PRAGMA cipher_hmac_algorithm = HMAC_SHA1;" +
-											"PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA1;" +
-											"ATTACH DATABASE '" + newDatabaseFile.getAbsolutePath() + "' AS threema4 KEY '" + databaseKey + "';" +
-											"PRAGMA threema4.kdf_iter = 1;" +
-											"PRAGMA threema4.cipher_memory_security = OFF;" +
-											"SELECT sqlcipher_export('threema4');" +
-											"PRAGMA threema4.user_version = " + databaseVersion + ";" +
-											"DETACH DATABASE threema4;");
-									database.close();
-
-									logger.info("Database successfully migrated");
-
-									if (checkNewDatabase(newDatabaseFile, databaseKey, databaseVersion)) {
-										migrateSuccess[0] = true;
-									}
-								}
-							}
-						} catch (Exception e) {
-							logger.info("Database migration FAILED");
-							logger.error("Exception while migrating", e);
-							FileUtil.deleteFileOrWarn(newDatabaseFile, "New Database File", logger);
-						}
-					}
-				});
-
-				migrateThread.start();
-				try {
-					migrateThread.join();
-				} catch (InterruptedException e) {
-					logger.error("InterruptedException while waiting for migrateThread", e);
-					migrateSuccess[0] = false;
-				}
-
-				if (migrateSuccess[0]) {
-					Toast.makeText(context, "Database successfully migrated", Toast.LENGTH_LONG).show();
-					logger.info("Migration finished");
-				} else {
-					logger.info("Migration failed");
-					FileUtil.deleteFileOrWarn(newDatabaseFile, "New Database File", logger);
-					FileUtil.deleteFileOrWarn(lockfile, "New Database File", logger);
-					throw new DatabaseMigrationFailedException();
-				}
-			} else {
-				try {
-					SQLiteDatabase.loadLibs(context);
-
-					if (checkNewDatabase(newDatabaseFile, databaseKey, DATABASE_VERSION)) {
-						logger.info("Delete old format database");
-						FileUtil.deleteFileOrWarn(oldDatabaseFile, "Old Database File", logger);
-					} else {
-						throw new Exception();
-					}
-				} catch (Exception e) {
-					logger.info("Database checking FAILED");
-					FileUtil.deleteFileOrWarn(newDatabaseFile, "New Database File", logger);
-					FileUtil.deleteFileOrWarn(lockfile, "Lockfile", logger);
-					throw new DatabaseMigrationFailedException();
-				}
-			}
-			FileUtil.deleteFileOrWarn(lockfile, "Lockfile", logger);
-		} else {
-			logger.info("No old database file found. No migration necessary");
-			logger.info("New database file exists = {}", newDatabaseFile.exists());
-		}
-	}
-
-	private static boolean checkNewDatabase(File newDatabaseFile, String databaseKey, int databaseVersion) {
-		// test new database
-
-		try (SQLiteDatabase newDatabase = SQLiteDatabase.openDatabase(newDatabaseFile.getAbsolutePath(), databaseKey, null, 0, new SQLiteDatabaseHook() {
-			@Override
-			public void preKey(SQLiteDatabase sqLiteDatabase) {
-				sqLiteDatabase.rawExecSQL("PRAGMA cipher_default_kdf_iter = 1;");
-			}
-
-			@Override
-			public void postKey(SQLiteDatabase sqLiteDatabase) {
-				sqLiteDatabase.rawExecSQL(
-					"PRAGMA kdf_iter = 1;" +
-						"PRAGMA cipher_memory_security = OFF;");
-			}
-		})) {
-			if (newDatabase.isOpen()) {
-				if (newDatabase.getVersion() == databaseVersion) {
-					newDatabase.rawExecSQL("SELECT NULL;");
-					logger.info("New database successfully checked. Version set to {}", databaseVersion);
-					return true;
-				} else {
-					logger.info("Database version mismatch. old = {} new = {}", databaseVersion, newDatabase.getVersion());
-				}
-			} else {
-				logger.info("Could not open new database");
-			}
-		}
-		return false;
+		try (Cursor cursor = this.getWritableDatabase().rawQuery("SELECT NULL")) {}
 	}
 }

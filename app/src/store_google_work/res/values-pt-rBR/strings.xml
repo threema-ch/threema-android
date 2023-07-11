@@ -20,8 +20,6 @@
     <string name="new_wizard_info_link">Ao nos dar o seu número de telefone e endereço de e-mail, o Threema Work pode ajudar os seus amigos a encontrarem você automaticamente se tiverem os seus dados na agenda do telefone. Essas informações serão armazenadas de forma criptografada no nosso servidor. Você pode pular essa etapa se preferir usar o Threema Work de forma anônima.</string>
     <string name="threema_contact">Contato do Threema Work</string>
     <string name="menu_about">Sobre o Threema Work</string>
-    <string name="list_theme_light">Claro</string>
-    <string name="list_theme_dark">Escuro (padrão)</string>
     <string name="private_threema_download"><![CDATA[ <a href=%1$s>Saiba mais sobre o Threema Work</a> <br/><br/> Se você é um usuário privado, <a href=%2$s>toque aqui</a> para baixar o Threema.]]></string>
     <string name="directory_search">Pesquisar no diretório</string>
     <string name="directory_title">Diretório da empresa</string>

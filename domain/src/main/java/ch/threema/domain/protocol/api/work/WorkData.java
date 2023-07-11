@@ -24,8 +24,12 @@ package ch.threema.domain.protocol.api.work;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 public class WorkData {
 	public final List<WorkContact> workContacts = new ArrayList<>();
+
+	@NonNull
 	public final WorkMDMSettings mdm = new WorkMDMSettings();
 	public final WorkDirectorySettings directory = new WorkDirectorySettings();
 	public final WorkOrganization organization = new WorkOrganization();

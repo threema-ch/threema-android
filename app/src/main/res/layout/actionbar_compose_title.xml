@@ -32,7 +32,7 @@
 			android:layout_gravity="left"
 			android:ellipsize="end"
 			android:singleLine="true"
-			android:textAppearance="@style/TextAppearance.Toolbar.Title"
+			android:textAppearance="@style/Threema.TextAppearance.Toolbar.Title"
 			android:text="Title"
 			android:includeFontPadding="false"/>
 
@@ -50,14 +50,14 @@
 				app:srcCompat="@drawable/ic_verification_none"
 				android:visibility="gone"/>
 
-			<TextView
+			<ch.threema.app.emojis.EmojiTextView
 				android:id="@+id/subtitle_text"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:ellipsize="end"
 				android:singleLine="true"
 				android:text="Subtitle"
-				android:textAppearance="@style/TextAppearance.Toolbar.SubTitle"
+				android:textAppearance="@style/Threema.TextAppearance.Toolbar.SubTitle"
 				android:visibility="gone"/>
 
 		</FrameLayout>

@@ -4,7 +4,6 @@
 	android:persistent="true"
 	android:title="@string/menu_about">
 
-
 	<PreferenceCategory
 		android:key="pref_key_legal"
 		android:title="@string/menu_legal">

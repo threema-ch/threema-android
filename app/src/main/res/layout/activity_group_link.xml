@@ -15,12 +15,11 @@
 		app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
 		<ImageView
+			style="@style/Threema.BottomSheet.DragHandle"
 			android:id="@+id/drag_handle"
-			android:layout_width="28dp"
-			android:layout_height="4dp"
-			android:layout_marginTop="12dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
 			android:importantForAccessibility="no"
-			android:src="@drawable/bottomsheet_grapple"
 			app:layout_constraintLeft_toLeftOf="parent"
 			app:layout_constraintRight_toRightOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
@@ -130,7 +129,7 @@
 						android:clickable="true"
 						android:focusable="true"
 						app:fillColor="@android:color/transparent"
-						app:strokeColor="@color/accent_light"
+						app:strokeColor="@color/md_theme_light_primary"
 						android:layout_gravity="center_vertical"
 						app:labelIcon="@drawable/ic_qr_code"
 						app:labelText="@string/qr_code" />
@@ -142,7 +141,7 @@
 						android:clickable="true"
 						android:focusable="true"
 						app:fillColor="@android:color/transparent"
-						app:strokeColor="@color/accent_light"
+						app:strokeColor="@color/md_theme_light_primary"
 						android:layout_gravity="center_vertical"
 						app:labelIcon="@drawable/ic_share_outline"
 						app:labelText="@string/share_via" />

@@ -21,9 +21,6 @@
 
 package ch.threema.domain.protocol.csp.fs;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.neilalexander.jnacl.NaCl;
 
 import org.slf4j.Logger;
@@ -31,14 +28,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.fs.DHSession;
+import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.fs.KDFRatchet;
 import ch.threema.domain.models.Contact;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
@@ -55,11 +53,14 @@ import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
 import ch.threema.domain.stores.IdentityStoreInterface;
-import ch.threema.protobuf.csp.e2e.fs.ForwardSecurityEnvelope;
+import ch.threema.protobuf.csp.e2e.fs.Encapsulated;
+import ch.threema.protobuf.csp.e2e.fs.Reject;
+import ch.threema.protobuf.csp.e2e.fs.Terminate;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 public class ForwardSecurityMessageProcessor {
 
-	private static final Logger logger = LoggerFactory.getLogger(ForwardSecurityMessageProcessor.class);
+	private static final @NonNull Logger logger = LoggerFactory.getLogger(ForwardSecurityMessageProcessor.class);
 
 	private final @NonNull DHSessionStoreInterface dhSessionStoreInterface;
 	private final @NonNull ContactStore contactStore;
@@ -67,19 +68,154 @@ public class ForwardSecurityMessageProcessor {
 	private final @NonNull MessageQueue messageQueue;
 	private final @NonNull ForwardSecurityFailureListener failureListener;
 
-	private final List<ForwardSecurityStatusListener> statusListeners;
+	private interface ForwardSecurityStatusWrapper extends ForwardSecurityStatusListener {
+		void setStatusListener(ForwardSecurityStatusListener forwardSecurityStatusListener);
+	}
 
-	public ForwardSecurityMessageProcessor(@NonNull DHSessionStoreInterface dhSessionStoreInterface,
-	                                       @NonNull ContactStore contactStore,
-	                                       @NonNull IdentityStoreInterface identityStoreInterface,
-	                                       @NonNull MessageQueue messageQueue,
-	                                       @NonNull ForwardSecurityFailureListener failureListener) {
+	private final @NonNull ForwardSecurityStatusWrapper statusListener = new ForwardSecurityStatusWrapper() {
+		private @Nullable ForwardSecurityStatusListener listener;
+
+		@Override
+		public void setStatusListener(ForwardSecurityStatusListener forwardSecurityStatusListener) {
+			this.listener = forwardSecurityStatusListener;
+		}
+
+		@Override
+		public void newSessionInitiated(@NonNull DHSession session, @NonNull Contact contact) {
+			if (listener != null) {
+				listener.newSessionInitiated(session, contact);
+			}
+		}
+
+		@Override
+		public void responderSessionEstablished(@NonNull DHSession session, @NonNull Contact contact, boolean existingSessionPreempted) {
+			if (listener != null) {
+				listener.responderSessionEstablished(session, contact, existingSessionPreempted);
+			}
+		}
+
+		@Override
+		public void initiatorSessionEstablished(@NonNull DHSession session, @NonNull Contact contact) {
+			if (listener != null) {
+				listener.initiatorSessionEstablished(session, contact);
+			}
+		}
+
+		@Override
+		public void rejectReceived(@NonNull ForwardSecurityDataReject rejectData, @NonNull Contact contact, boolean sessionUnknown) {
+			if (listener != null) {
+				listener.rejectReceived(rejectData, contact, sessionUnknown);
+			}
+		}
+
+		@Override
+		public void sessionNotFound(@NonNull DHSessionId sessionId, @NonNull Contact contact) {
+			if (listener != null) {
+				listener.sessionNotFound(sessionId, contact);
+			}
+		}
+
+		@Override
+		public void sessionForMessageNotFound(@NonNull DHSessionId sessionId, @Nullable MessageId messageId, @NonNull Contact contact) {
+			if (listener != null) {
+				listener.sessionForMessageNotFound(sessionId, messageId, contact);
+			}
+		}
+
+		@Override
+		public void sessionBadState(@NonNull DHSessionId sessionId, @NonNull Contact contact) {
+			if (listener != null) {
+				listener.sessionBadState(sessionId, contact);
+			}
+		}
+
+		@Override
+		public void sessionTerminated(@NonNull DHSessionId sessionId, @NonNull Contact contact) {
+			if (listener != null) {
+				listener.sessionTerminated(sessionId, contact);
+			}
+		}
+
+		@Override
+		public void messagesSkipped(@NonNull DHSessionId sessionId, @NonNull Contact contact, int numSkipped) {
+			if (listener != null) {
+				listener.messagesSkipped(sessionId, contact, numSkipped);
+			}
+		}
+
+		@Override
+		public void messageOutOfOrder(@NonNull DHSessionId sessionId, @NonNull Contact contact, @Nullable MessageId messageId) {
+			if (listener != null) {
+				listener.messageOutOfOrder(sessionId, contact, messageId);
+			}
+		}
+
+		@Override
+		public void messageDecryptionFailed(@NonNull DHSessionId sessionId, @NonNull Contact contact, @Nullable MessageId failedMessageId) {
+			if (listener != null) {
+				listener.messageDecryptionFailed(sessionId, contact, failedMessageId);
+			}
+		}
+
+		@Override
+		public void first4DhMessageReceived(@NonNull DHSession session, @NonNull Contact contact) {
+			if (listener != null) {
+				listener.first4DhMessageReceived(session, contact);
+			}
+		}
+
+		@Override
+		public void unexpectedAppliedVersion(@NonNull DHSession session, int appliedVersion, @NonNull Contact contact) {
+			if (listener != null) {
+				listener.unexpectedAppliedVersion(session, appliedVersion, contact);
+			}
+		}
+
+		@Override
+		public void negotiatedVersionUpdated(@NonNull DHSession session, @NonNull Version updatedNegotiatedVersion, @NonNull Contact contact) {
+			if (listener != null) {
+				listener.negotiatedVersionUpdated(session, updatedNegotiatedVersion, contact);
+			}
+		}
+
+		@Override
+		public void messageWithoutFSReceived(@NonNull Contact contact, @NonNull DHSession session, @NonNull AbstractMessage message) {
+			if (listener != null) {
+				listener.messageWithoutFSReceived(contact, session, message);
+			}
+		}
+
+		@Override
+		public boolean hasForwardSecuritySupport(@NonNull Contact contact) {
+			if (listener != null) {
+				return listener.hasForwardSecuritySupport(contact);
+			}
+			// In case the listener is not set, which should never happen, we return true as this
+			// is more likely. In case of a false positive, a session might not have been deleted,
+			// which may result in another unsuccessful attempt to initiate a session.
+			return true;
+		}
+
+		@Override
+		public void updateFeatureMask(@NonNull Contact contact) {
+			if (listener != null) {
+				listener.updateFeatureMask(contact);
+			}
+		}
+	};
+
+	public ForwardSecurityMessageProcessor(
+		@NonNull DHSessionStoreInterface dhSessionStoreInterface,
+		@NonNull ContactStore contactStore,
+		@NonNull IdentityStoreInterface identityStoreInterface,
+		@NonNull MessageQueue messageQueue,
+		@NonNull ForwardSecurityFailureListener failureListener
+	) {
 		this.dhSessionStoreInterface = dhSessionStoreInterface;
 		this.contactStore = contactStore;
 		this.identityStoreInterface = identityStoreInterface;
 		this.messageQueue = messageQueue;
 		this.failureListener = failureListener;
-		this.statusListeners = new ArrayList<>();
 	}
 
 	/**
@@ -87,12 +223,13 @@ public class ForwardSecurityMessageProcessor {
 	 *
 	 * @param sender Sender contact
 	 * @param envelopeMessage The envelope with the encapsulated message
-	 * @return Decapsulated message, if any, or null
-	 * @throws ThreemaException
-	 * @throws BadMessageException
+	 *
+	 * @return Decapsulated message, if any, or null in case of a control message that has been consumed and does not need further processing
 	 */
-	public synchronized AbstractMessage processEnvelopeMessage(Contact sender,
-	                                              ForwardSecurityEnvelopeMessage envelopeMessage) throws ThreemaException, BadMessageException {
+	public synchronized @Nullable AbstractMessage processEnvelopeMessage(
+		@NonNull Contact sender,
+		@NonNull ForwardSecurityEnvelopeMessage envelopeMessage
+	) throws ThreemaException, BadMessageException {
 		ForwardSecurityData data = envelopeMessage.getData();
 
 		if (data instanceof ForwardSecurityDataInit) {
@@ -106,13 +243,17 @@ public class ForwardSecurityMessageProcessor {
 		} else if (data instanceof ForwardSecurityDataMessage) {
 			return processMessage(sender, envelopeMessage);
 		} else {
+			// Unreachable if variant handling is in alignment with ForwardSecurityData.fromProtobuf
 			throw new UnknownMessageTypeException("Unsupported message type");
 		}
 
 		return null;
 	}
 
-	public synchronized ForwardSecurityEnvelopeMessage makeMessage(Contact contact, AbstractMessage innerMessage) throws ThreemaException {
+	public synchronized @NonNull ForwardSecurityEnvelopeMessage makeMessage(
+		@NonNull Contact contact,
+		@NonNull AbstractMessage innerMessage
+	) throws ThreemaException, MessageTypeNotSupportedInSession {
 		// Check if we already have a session with this contact
 		DHSession session = dhSessionStoreInterface.getBestDHSession(identityStoreInterface.getIdentity(), contact.getIdentity());
 		if (session == null) {
@@ -120,23 +261,37 @@ public class ForwardSecurityMessageProcessor {
 			session = new DHSession(contact, identityStoreInterface);
 			dhSessionStoreInterface.storeDHSession(session);
 			logger.debug("Starting new DH session ID {} with {}", session.getId(), contact.getIdentity());
-			for (ForwardSecurityStatusListener listener : statusListeners) {
-				listener.newSessionInitiated(session, contact);
-			}
+			statusListener.newSessionInitiated(session, contact);
 
 			// Send init message
-			ForwardSecurityDataInit init = new ForwardSecurityDataInit(session.getId(), session.getMyEphemeralPublicKey());
+			ForwardSecurityDataInit init = new ForwardSecurityDataInit(
+				session.getId(),
+				DHSession.SUPPORTED_VERSION_RANGE,
+				session.getMyEphemeralPublicKey()
+			);
 			sendMessageToContact(contact, init);
+
+			// Check that the message type is supported in the new session
+			Version requiredVersion = innerMessage.getMinimumRequiredForwardSecurityVersion();
+			if (requiredVersion == null || requiredVersion.getNumber() > DHSession.SUPPORTED_VERSION_MIN.getNumber()) {
+				throw new MessageTypeNotSupportedInSession("Message does not support initial DH session version", DHSession.SUPPORTED_VERSION_MIN);
+			}
+		}
+
+		// Check that the message type is supported in the current session
+		Version requiredVersion = innerMessage.getMinimumRequiredForwardSecurityVersion();
+		if (requiredVersion == null || requiredVersion.getNumber() > session.getNegotiatedVersion().getNumber()) {
+			throw new MessageTypeNotSupportedInSession("Message type is not supported in this session", session.getNegotiatedVersion());
 		}
 
 		// Obtain encryption key from ratchet
 		KDFRatchet ratchet = session.getMyRatchet4DH();
-		ForwardSecurityEnvelope.Message.DHType dhType = ForwardSecurityEnvelope.Message.DHType.FOURDH;
+		Encapsulated.DHType dhType = Encapsulated.DHType.FOURDH;
 		ForwardSecurityMode forwardSecurityMode = ForwardSecurityMode.FOURDH;
 		if (ratchet == null) {
 			// 2DH mode
 			ratchet = session.getMyRatchet2DH();
-			dhType = ForwardSecurityEnvelope.Message.DHType.TWODH;
+			dhType = Encapsulated.DHType.TWODH;
 			forwardSecurityMode = ForwardSecurityMode.TWODH;
 			if (ratchet == null) {
 				throw new BadDHStateException("No DH mode negotiated");
@@ -164,7 +319,7 @@ public class ForwardSecurityMessageProcessor {
 		byte[] nonce = new byte[NaCl.NONCEBYTES];
 		byte[] ciphertext = NaCl.symmetricEncryptData(plaintext, currentKey, nonce);
 
-		ForwardSecurityDataMessage dataMessage = new ForwardSecurityDataMessage(session.getId(), dhType, counter, ciphertext);
+		ForwardSecurityDataMessage dataMessage = new ForwardSecurityDataMessage(session.getId(), dhType, counter, session.getAnnouncedVersion().getNumber(), ciphertext);
 		ForwardSecurityEnvelopeMessage envelope = new ForwardSecurityEnvelopeMessage(dataMessage);
 
 		// Copy attributes from inner message
@@ -172,23 +327,7 @@ public class ForwardSecurityMessageProcessor {
 		envelope.setToIdentity(innerMessage.getToIdentity());
 		envelope.setMessageId(innerMessage.getMessageId());
 		envelope.setDate(innerMessage.getDate());
-		int flags = innerMessage.getMessageFlags();
-		if (innerMessage.flagSendPush()) {
-			flags |= ProtocolDefines.MESSAGE_FLAG_SEND_PUSH;
-		}
-		if (innerMessage.flagNoServerQueuing()) {
-			flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_QUEUING;
-		}
-		if (innerMessage.flagNoServerAck()) {
-			flags |= ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK;
-		}
-		if (innerMessage.flagGroupMessage()) {
-			flags |= ProtocolDefines.MESSAGE_FLAG_GROUP;
-		}
-		if (innerMessage.flagShortLivedServerQueuing()) {
-			flags |= ProtocolDefines.MESSAGE_FLAG_SHORT_LIVED;
-		}
-		envelope.setMessageFlags(flags);
+		envelope.setMessageFlags(innerMessage.getMessageFlags() | innerMessage.getMessageTypeDefaultFlags());
 		envelope.setPushFromName(innerMessage.getPushFromName());
 		envelope.setForwardSecurityMode(forwardSecurityMode);
 		envelope.setAllowSendingProfile(innerMessage.allowUserProfileDistribution());
@@ -196,37 +335,84 @@ public class ForwardSecurityMessageProcessor {
 		return envelope;
 	}
 
-	public void addStatusListener(ForwardSecurityStatusListener listener) {
-		this.statusListeners.add(listener);
+	public void setStatusListener(@NonNull ForwardSecurityStatusListener listener) {
+		this.statusListener.setStatusListener(listener);
 	}
 
-	public void removeStatusListener(ForwardSecurityStatusListener listener) {
-		this.statusListeners.remove(listener);
-	}
-
-	/**
-	 * Check if this contact has sent forward security messages before.
-	 * @param contact the desired contact
-	 */
-	public boolean hasContactUsedForwardSecurity(Contact contact) {
+	public void warnIfMessageWithoutForwardSecurityReceived(@NonNull AbstractMessage message) {
+		Contact contact = contactStore.getContactForIdentity(message.getFromIdentity());
+		if (contact == null) {
+			return;
+		}
+		DHSession bestSession;
 		try {
-			DHSession bestSession = dhSessionStoreInterface.getBestDHSession(identityStoreInterface.getIdentity(), contact.getIdentity());
-			if (bestSession != null) {
-				// Check if any 2DH or 4DH messages have been received by looking at the ratchet count
-				if (bestSession.getPeerRatchet4DH() != null && bestSession.getPeerRatchet4DH().getCounter() > 1) {
-					return true;
-				} else if (bestSession.getPeerRatchet2DH() != null && bestSession.getPeerRatchet2DH().getCounter() > 1) {
-					return true;
+			bestSession = dhSessionStoreInterface.getBestDHSession(identityStoreInterface.getIdentity(), message.getFromIdentity());
+		} catch (DHSessionStoreException e) {
+			logger.error("Could not get best session", e);
+			return;
+		}
+
+		if (bestSession != null) {
+			// The assumed version for incoming messages depends on the forward security state
+			DHSession.State sessionState = bestSession.getState();
+			Version assumedVersion;
+			if (sessionState == DHSession.State.R20 || sessionState == DHSession.State.R24) {
+				// In states R20 and R24, we still receive messages with 2DH and the min supported
+				// version.
+				assumedVersion = DHSession.SUPPORTED_VERSION_MIN;
+			} else {
+				// In the other states, we expect the incoming messages to be sent with the
+				// negotiated version.
+				assumedVersion = bestSession.getNegotiatedVersion();
+			}
+
+			Version minimumVersion = message.getMinimumRequiredForwardSecurityVersion();
+			if (minimumVersion != null
+				&& minimumVersion.getNumber() <= assumedVersion.getNumber()
+			) {
+				// TODO(ANDR-2452): Remove this feature mask update when enough clients have updated
+				// Check whether this contact still supports forward security when receiving a
+				// message without forward security.
+				if (statusListener.hasForwardSecuritySupport(contact)) {
+					statusListener.updateFeatureMask(contact);
+				}
+
+				// Warn only if the contact still has forward security support, otherwise a status
+				// message that the contact has downgraded is shown to the user
+				if (statusListener.hasForwardSecuritySupport(contact)) {
+					statusListener.messageWithoutFSReceived(contact, bestSession, message);
 				}
 			}
-			return false;
-		} catch (DHSessionStoreException e) {
-			logger.error("Could not get best DH session", e);
-			return false;
 		}
 	}
 
-	private void processInit(Contact contact, ForwardSecurityDataInit init) throws ThreemaException {
+	/**
+	 * Clear all sessions with the peer contact and send a terminate message for each of those.
+	 *
+	 * @param contact the peer contact
+	 */
+	public void clearAndTerminateAllSessions(@NonNull Contact contact, @NonNull Terminate.Cause cause) {
+		try {
+			String myIdentity = identityStoreInterface.getIdentity();
+			String peerIdentity = contact.getIdentity();
+			DHSession session = dhSessionStoreInterface.getBestDHSession(myIdentity, peerIdentity);
+			while (session != null) {
+				// First delete session locally, then send terminate to contact
+				dhSessionStoreInterface.deleteDHSession(myIdentity, peerIdentity, session.getId());
+				sendMessageToContact(
+					contact,
+					new ForwardSecurityDataTerminate(session.getId(), cause)
+				);
+				session = dhSessionStoreInterface.getBestDHSession(myIdentity, peerIdentity);
+			}
+		} catch (DHSessionStoreException e) {
+			logger.error("Could not delete DH sessions", e);
+		} catch (ThreemaException e) {
+			logger.error("Could not send DH session terminate", e);
+		}
+	}
+
+	private void processInit(@NonNull Contact contact, @NonNull ForwardSecurityDataInit init) throws ThreemaException, BadMessageException {
 		// Is there already a session with this ID?
 		if (dhSessionStoreInterface.getDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), init.getSessionId()) != null) {
 			// Silently discard init message for existing session
@@ -242,45 +428,50 @@ public class ForwardSecurityMessageProcessor {
 			existingSessionPreempted = true;
 		}
 
-		DHSession session = new DHSession(init.getSessionId(), init.getEphemeralPublicKey(), contact, identityStoreInterface);
+		DHSession session = new DHSession(init.getSessionId(), init.getVersionRange(), init.getEphemeralPublicKey(), contact, identityStoreInterface);
 		dhSessionStoreInterface.storeDHSession(session);
 		logger.debug("Responding to new DH session ID {} request from {}", session.getId(), contact.getIdentity());
-		for (ForwardSecurityStatusListener listener : statusListeners) {
-			listener.responderSessionEstablished(session, contact, existingSessionPreempted);
+		statusListener.responderSessionEstablished(session, contact, existingSessionPreempted);
+
+		// TODO(ANDR-2452): Remove this check when enough clients have updated
+		if (!statusListener.hasForwardSecuritySupport(contact)) {
+			statusListener.updateFeatureMask(contact);
 		}
 
-		// Create and send accept
-		ForwardSecurityDataAccept accept = new ForwardSecurityDataAccept(init.getSessionId(), session.getMyEphemeralPublicKey());
-		sendMessageToContact(contact, accept);
+		if (statusListener.hasForwardSecuritySupport(contact)) {
+			// Create and send accept in case the contact supports forward security
+			ForwardSecurityDataAccept accept = new ForwardSecurityDataAccept(init.getSessionId(), DHSession.SUPPORTED_VERSION_RANGE, session.getMyEphemeralPublicKey());
+			sendMessageToContact(contact, accept);
+		} else {
+			// If the contact does not have the feature mask set correctly, we terminate and clear
+			// the session.
+			clearAndTerminateAllSessions(contact, Terminate.Cause.DISABLED_BY_REMOTE);
+		}
 	}
 
-	private void processAccept(Contact contact, ForwardSecurityDataAccept accept) throws ThreemaException {
+	private void processAccept(@NonNull Contact contact, @NonNull ForwardSecurityDataAccept accept) throws ThreemaException, BadMessageException {
 		DHSession session = dhSessionStoreInterface.getDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), accept.getSessionId());
 		if (session == null) {
 			// Session not found, probably lost local data or old accept
 			logger.warn("No DH session found for accepted session ID {} from {}", accept.getSessionId(), contact.getIdentity());
 
 			// Send "terminate" message for this session ID
-			ForwardSecurityDataTerminate terminate = new ForwardSecurityDataTerminate(accept.getSessionId());
+			ForwardSecurityDataTerminate terminate = new ForwardSecurityDataTerminate(accept.getSessionId(), Terminate.Cause.UNKNOWN_SESSION);
 			sendMessageToContact(contact, terminate);
 
-			for (ForwardSecurityStatusListener listener : statusListeners) {
-				listener.sessionNotFound(accept.getSessionId(), contact);
-			}
+			statusListener.sessionNotFound(accept.getSessionId(), contact);
 
 			return;
 		}
 
-		session.processAccept(accept.getEphemeralPublicKey(), contact, identityStoreInterface);
+		session.processAccept(accept.getVersionRange(), accept.getEphemeralPublicKey(), contact, identityStoreInterface);
 		dhSessionStoreInterface.storeDHSession(session);
-		logger.debug("Established 4DH session ID {} with {}", session.getId(), contact.getIdentity());
-		for (ForwardSecurityStatusListener listener : statusListeners) {
-			listener.initiatorSessionEstablished(session, contact);
-		}
+		logger.info("Established 4DH session ID {} with {}, negotiated version: {}", session.getId(), contact.getIdentity(), session.getNegotiatedVersion());
+		statusListener.initiatorSessionEstablished(session, contact);
 	}
 
-	private void processReject(Contact contact, ForwardSecurityDataReject reject) throws DHSessionStoreException {
-		logger.warn("Received reject for DH session ID {} from {}", reject.getSessionId(), contact.getIdentity());
+	private void processReject(@NonNull Contact contact, @NonNull ForwardSecurityDataReject reject) throws DHSessionStoreException {
+		logger.warn("Received reject for DH session ID {} from {}, cause: {}", reject.getSessionId(), contact.getIdentity(), reject.getCause());
 		DHSession session = dhSessionStoreInterface.getDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), reject.getSessionId());
 		if (session != null) {
 			// Discard session
@@ -290,14 +481,15 @@ public class ForwardSecurityMessageProcessor {
 			logger.info("No DH session found for rejected session ID {} from {}", reject.getSessionId(), contact.getIdentity());
 		}
 
-		for (ForwardSecurityStatusListener listener : statusListeners) {
-			listener.rejectReceived(reject.getSessionId(), contact, reject.getRejectedApiMessageId());
-		}
+		statusListener.rejectReceived(reject, contact, session == null);
+
+		// Refresh feature mask now, in case contact downgraded to a build without PFS
+		statusListener.updateFeatureMask(contact);
 
 		failureListener.notifyRejectReceived(contact, reject.getRejectedApiMessageId());
 	}
 
-	private @Nullable AbstractMessage processMessage(Contact contact, ForwardSecurityEnvelopeMessage envelopeMessage)
+	private @Nullable AbstractMessage processMessage(@NonNull Contact contact, @NonNull ForwardSecurityEnvelopeMessage envelopeMessage)
 		throws ThreemaException, BadMessageException {
 
 		ForwardSecurityDataMessage message = (ForwardSecurityDataMessage)envelopeMessage.getData();
@@ -305,17 +497,30 @@ public class ForwardSecurityMessageProcessor {
 		DHSession session = dhSessionStoreInterface.getDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), message.getSessionId());
 		if (session == null) {
 			// Session not found, probably lost local data or old message
-			logger.warn("No DH session found for message in session ID {} from {}", message.getSessionId(), contact.getIdentity());
+			logger.warn("No DH session found for message {} in session ID {} from {}", envelopeMessage.getMessageId(), message.getSessionId(), contact.getIdentity());
 
 			// Send reject message
-			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), ForwardSecurityEnvelope.Reject.Cause.UNKNOWN_SESSION);
+			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), Reject.Cause.UNKNOWN_SESSION);
 			sendMessageToContact(contact, reject);
 
-			for (ForwardSecurityStatusListener listener : statusListeners) {
-				listener.sessionNotFound(message.getSessionId(), contact);
-			}
+			statusListener.sessionForMessageNotFound(message.getSessionId(), envelopeMessage.getMessageId(), contact);
 
 			return null;
+		}
+
+		// Validate the applied version
+		final Version updatedNegotiatedVersion = session.validateAppliedVersion(message.getAppliedVersion());
+		if (updatedNegotiatedVersion == null) {
+			// Note that the applied version of a received message is set to V1_0 while decoding the
+			// message when the applied version is unknown (e.g. newer than supported)
+			logger.warn("Unexpected major version in applied version, negotiated={}, applied={}", session.getNegotiatedVersion(), message.getAppliedVersion());
+			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), Reject.Cause.STATE_MISMATCH);
+			sendMessageToContact(contact, reject);
+			statusListener.unexpectedAppliedVersion(session, message.getAppliedVersion(), contact);
+			return null;
+		}
+		if (updatedNegotiatedVersion.getNumber() > session.getNegotiatedVersion().getNumber()) {
+			statusListener.negotiatedVersionUpdated(session, updatedNegotiatedVersion, contact);
 		}
 
 		// Obtain appropriate ratchet and turn to match the message's counter value
@@ -335,11 +540,9 @@ public class ForwardSecurityMessageProcessor {
 		if (ratchet == null) {
 			// This can happen if the Accept message from our peer has been lost. In that case
 			// they will think they are in 4DH mode, but we are still in 2DH.
-			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), ForwardSecurityEnvelope.Reject.Cause.STATE_MISMATCH);
+			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), Reject.Cause.STATE_MISMATCH);
 			sendMessageToContact(contact, reject);
-			for (ForwardSecurityStatusListener listener : statusListeners) {
-				listener.sessionBadDhState(message.getSessionId(), contact);
-			}
+			statusListener.sessionBadState(message.getSessionId(), contact);
 			return null;
 		}
 
@@ -348,15 +551,11 @@ public class ForwardSecurityMessageProcessor {
 		try {
 			int numTurns = ratchet.turnUntil(message.getCounter());
 			if (numTurns > 0) {
-				for (ForwardSecurityStatusListener listener : statusListeners) {
-					listener.messagesSkipped(message.getSessionId(), contact, numTurns);
-				}
+				statusListener.messagesSkipped(message.getSessionId(), contact, numTurns);
 			}
 		} catch (KDFRatchet.RatchetRotationException e) {
-			for (ForwardSecurityStatusListener listener : statusListeners) {
-				listener.messageOutOfOrder(message.getSessionId(), contact, envelopeMessage.getMessageId());
-			}
-			throw new BadMessageException("Out of order FS message, cannot decrypt", true);
+			statusListener.messageOutOfOrder(message.getSessionId(), contact, envelopeMessage.getMessageId());
+			throw new BadMessageException("Out of order FS message, cannot decrypt");
 		}
 
 		// Symmetrically decrypt message
@@ -365,15 +564,22 @@ public class ForwardSecurityMessageProcessor {
 		byte[] nonce = new byte[NaCl.NONCEBYTES];
 		byte[] plaintext = NaCl.symmetricDecryptData(ciphertext, ratchet.getCurrentEncryptionKey(), nonce);
 		if (plaintext == null) {
-			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), ForwardSecurityEnvelope.Reject.Cause.STATE_MISMATCH);
+			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), Reject.Cause.STATE_MISMATCH);
 			sendMessageToContact(contact, reject);
-			for (ForwardSecurityStatusListener listener : statusListeners) {
-				listener.messageDecryptionFailed(message.getSessionId(), contact, envelopeMessage.getMessageId());
-			}
+			statusListener.messageDecryptionFailed(message.getSessionId(), contact, envelopeMessage.getMessageId());
 			return null;
 		}
 
-		logger.debug("Decrypted {} message ID {} from {} in session {}", mode, envelopeMessage.getMessageId(), contact.getIdentity(), session.getId());
+		logger.debug("Decrypted {} message ID {} from {} in session {} with applied version {}",
+			mode,
+			envelopeMessage.getMessageId(),
+			contact.getIdentity(),
+			session.toDebugString(),
+			message.getAppliedVersion()
+		);
+
+		// Commit the updated negotiated version
+		session.commitNegotiatedVersion(updatedNegotiatedVersion);
 
 		// Turn the ratchet once, as we will not need the current encryption key anymore and the
 		// next message from the peer must have a ratchet count of at least one higher
@@ -381,7 +587,8 @@ public class ForwardSecurityMessageProcessor {
 
 		if (mode == ForwardSecurityMode.FOURDH) {
 			// If this was a 4DH message, then we should erase the 2DH peer ratchet, as we shall not
-			// receive (or send) any further 2DH messages in this session
+			// receive (or send) any further 2DH messages in this session. Note that this is also
+			// necessary to determine the correct session state.
 			if (session.getPeerRatchet2DH() != null) {
 				session.discardPeerRatchet2DH();
 			}
@@ -393,47 +600,67 @@ public class ForwardSecurityMessageProcessor {
 				dhSessionStoreInterface.deleteAllSessionsExcept(identityStoreInterface.getIdentity(), contact.getIdentity(), session.getId(), false);
 			}
 
-			// If this was the first 4DH message in this session, inform the user
+			// If this was the first 4DH message in this session, inform the user (only required in
+			// version 1.0)
 			if (ratchet.getCounter() == 2) {
-				for (ForwardSecurityStatusListener listener : statusListeners) {
-					listener.first4DhMessageReceived(message.getSessionId(), contact);
-				}
+				statusListener.first4DhMessageReceived(session, contact);
 			}
 		}
 
-		// Save session, as ratchets have changed
+		// Save session, as ratchets and negotiated version may have changed
 		dhSessionStoreInterface.storeDHSession(session);
 
 		// Decode inner message and pass it to processor
-		AbstractMessage innerMsg = new MessageCoder(contactStore, identityStoreInterface).decodeEncapsulated(plaintext, envelopeMessage, contact);
+		AbstractMessage innerMsg = new MessageCoder(contactStore, identityStoreInterface).decodeEncapsulated(plaintext, envelopeMessage, updatedNegotiatedVersion, contact);
 		innerMsg.setForwardSecurityMode(mode);
 		return innerMsg;
 	}
 
-	private void processTerminate(Contact contact, ForwardSecurityDataTerminate message) throws DHSessionStoreException {
-		logger.debug("Terminating DH session ID {} with {}", message.getSessionId(), contact.getIdentity());
+	private void processTerminate(@NonNull Contact contact, @NonNull ForwardSecurityDataTerminate message) throws DHSessionStoreException {
+		logger.debug("Terminating DH session ID {} with {}, cause: {}", message.getSessionId(), contact.getIdentity(), message.getCause());
 		dhSessionStoreInterface.deleteDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), message.getSessionId());
 
-		for (ForwardSecurityStatusListener listener : statusListeners) {
-			listener.sessionTerminated(message.getSessionId(), contact);
-		}
+		statusListener.sessionTerminated(message.getSessionId(), contact);
+
+		// Refresh feature mask now, in case contact downgraded to a build without PFS
+		statusListener.updateFeatureMask(contact);
 	}
 
-	private void sendMessageToContact(Contact contact, ForwardSecurityData data) throws ThreemaException {
+	private void sendMessageToContact(@NonNull Contact contact, @NonNull ForwardSecurityData data) throws ThreemaException {
 		ForwardSecurityEnvelopeMessage message = new ForwardSecurityEnvelopeMessage(data);
 		message.setToIdentity(contact.getIdentity());
 		this.messageQueue.enqueue(message);
 	}
 
 	public static class UnknownMessageTypeException extends ThreemaException {
-		public UnknownMessageTypeException(String msg) {
+		public UnknownMessageTypeException(@NonNull String msg) {
 			super(msg);
 		}
 	}
 
 	public static class BadDHStateException extends ThreemaException {
-		public BadDHStateException(final String msg) {
+		public BadDHStateException(@NonNull String msg) {
 			super(msg);
+		}
+	}
+
+	/**
+	 * This exception is thrown, if a message can not be encapsulated because the given session does
+	 * not support this message types.
+	 */
+	public static class MessageTypeNotSupportedInSession extends Exception {
+		@NonNull
+		private final Version negotiatedVersion;
+
+		public MessageTypeNotSupportedInSession(@NonNull String msg, @NonNull Version negotiatedVersion) {
+			super(msg);
+
+			this.negotiatedVersion = negotiatedVersion;
+		}
+
+		@NonNull
+		public Version getNegotiatedVersion() {
+			return negotiatedVersion;
 		}
 	}
 }

@@ -9,7 +9,7 @@
 	android:id="@+id/parent_layout"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="?attr/background_primary">
+	android:background="?android:attr/colorBackground">
 
 	<LinearLayout
 		android:id="@+id/initial_layout"
@@ -18,59 +18,13 @@
 		android:orientation="vertical"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-		<androidx.constraintlayout.widget.ConstraintLayout
-			android:id="@+id/search_container"
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/directory_search_bar_height"
-			android:layout_gravity="top"
-			android:layout_marginTop="32dp"
-			android:layout_marginBottom="32dp"
-			android:layout_marginLeft="16dp"
-			android:layout_marginRight="16dp"
-			android:background="?attr/compose_edittext_bubble"
-			android:clickable="true"
-			android:focusable="true"
-			android:paddingBottom="16dp"
-			android:paddingLeft="16dp"
-			android:paddingRight="16dp"
-			android:paddingTop="16dp" >
-
-			<ImageView
-				android:id="@+id/search_image"
-				android:layout_width="24dp"
-				android:layout_height="24dp"
-				android:clickable="false"
-				android:focusable="false"
-				android:src="@drawable/ic_search_outline"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintTop_toTopOf="parent"
-				app:tint="?attr/textColorPrimary" />
-
-			<TextView
-				android:id="@+id/search_text"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="16dp"
-				android:layout_marginBottom="4dp"
-				android:clickable="false"
-				android:focusable="false"
-				android:text="@string/directory_search"
-				android:textColor="?attr/textColorSecondary"
-				android:textSize="20dp"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintLeft_toRightOf="@id/search_image"
-				app:layout_constraintRight_toRightOf="parent"
-				app:layout_constraintTop_toTopOf="parent" />
-
-		</androidx.constraintlayout.widget.ConstraintLayout>
-
 		<ImageView
 			android:layout_width="48dp"
 			android:layout_height="48dp"
+			android:layout_marginTop="32dp"
 			android:layout_marginBottom="32dp"
 			android:src="@drawable/ic_contacts_outline"
-			app:tint="?attr/textColorSecondary"
+			app:tint="?attr/colorOnSurface"
 			android:layout_gravity="center_horizontal" />
 
 		<TextView
@@ -92,27 +46,30 @@
 		android:layout_height="match_parent"
 		android:orientation="vertical"
 		android:visibility="gone"
-		android:background="?android:windowBackground"
+		android:background="?android:attr/colorBackground"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 		<HorizontalScrollView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:scrollbarSize="0dp"
-			android:scrollbars="none">
+			android:scrollbars="none"
+			android:requiresFadingEdge="horizontal"
+			android:fadingEdgeLength="40dp">
 
 			<com.google.android.material.chip.ChipGroup
 				android:id="@+id/chip_group"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:paddingBottom="-1dp"
+				android:paddingBottom="10dp"
 				android:paddingLeft="16dp"
 				android:paddingRight="16dp"
-				android:paddingTop="4dp"
+				android:paddingTop="14dp"
 				android:visibility="gone"
 				app:chipSpacingHorizontal="4dp"
 				app:chipSpacingVertical="0dp"
-				app:singleLine="true" />
+				app:singleLine="true"
+				android:animateLayoutChanges="true"/>
 
 		</HorizontalScrollView>
 
@@ -145,7 +102,31 @@
 
 	</LinearLayout>
 
-	<include layout="@layout/toolbar_view" />
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/appbar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:liftOnScroll="true"
+		app:liftOnScrollTargetViewId="@+id/recycler">
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<com.google.android.material.search.SearchBar
+				android:id="@+id/toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="16dp"
+				android:layout_marginRight="16dp"
+				app:defaultMarginsEnabled="true"
+				app:navigationIcon="@drawable/ic_arrow_left" />
+
+			<include layout="@layout/connection_indicator"/>
+
+		</FrameLayout>
+
+	</com.google.android.material.appbar.AppBarLayout>
 
 	<com.google.android.material.progressindicator.LinearProgressIndicator
 		android:id="@+id/progress_bar"

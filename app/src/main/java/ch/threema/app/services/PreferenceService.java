@@ -37,13 +37,13 @@ import java.util.List;
 import java.util.Set;
 
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
-import ch.threema.app.utils.ConfigUtils.AppTheme;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public interface PreferenceService {
 
-    @Retention(RetentionPolicy.SOURCE)
+	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({ImageScale_DEFAULT, ImageScale_SMALL, ImageScale_MEDIUM, ImageScale_LARGE, ImageScale_XLARGE, ImageScale_ORIGINAL, ImageScale_SEND_AS_FILE})
 	@interface ImageScale {}
 	int ImageScale_DEFAULT = -1;
@@ -61,9 +61,6 @@ public interface PreferenceService {
 	int VideoSize_MEDIUM = 1;
 	int VideoSize_ORIGINAL = 2;
 	int VideoSize_SEND_AS_FILE = 3;
-
-	int Theme_LIGHT = 0;
-	int Theme_DARK = 1;
 
 	int EmojiStyle_DEFAULT = 0;
 	int EmojiStyle_ANDROID = 1;
@@ -272,7 +269,7 @@ public interface PreferenceService {
 
 	void setFileSendInfoShown(boolean shown);
 
-	int getTheme();
+	int getAppThemeValue();
 
 	int getEmojiStyle();
 
@@ -298,9 +295,9 @@ public interface PreferenceService {
 
 	void setBlockUnkown(Boolean booleanPreset);
 
-	void setAppLogoExpiresAt(Date expiresAt, int theme);
+	void setAppLogoExpiresAt(Date expiresAt, @ConfigUtils.AppThemeSetting String theme);
 
-	Date getAppLogoExpiresAt(int theme);
+	Date getAppLogoExpiresAt(@ConfigUtils.AppThemeSetting String theme);
 
 	boolean isPrivateChatsHidden();
 
@@ -336,10 +333,10 @@ public interface PreferenceService {
 
 	HashMap<String,String> getQuoteDrafts();
 
-	void setAppLogo(@NonNull String url, @AppTheme int theme);
-	void clearAppLogo(@AppTheme int theme);
+	void setAppLogo(@NonNull String url, @ConfigUtils.AppThemeSetting String theme);
+	void clearAppLogo(@ConfigUtils.AppThemeSetting String theme);
 	void clearAppLogos();
-	@Nullable String getAppLogo(@AppTheme int theme);
+	@Nullable String getAppLogo(@ConfigUtils.AppThemeSetting String theme);
 
 	void setCustomSupportUrl(String supportUrl);
 	String getCustomSupportUrl();
@@ -360,17 +357,21 @@ public interface PreferenceService {
 
 	void setProfilePicRelease(int value);
 
-	Date getProfilePicLastUpdate();
-
-	void setProfilePicLastUpdate(Date date);
-
 	long getProfilePicUploadDate();
 
 	void setProfilePicUploadDate(Date date);
 
-	void setProfilePicUploadData(ContactServiceImpl.ContactPhotoUploadResult result);
+	void setProfilePicUploadData(@Nullable ContactService.ProfilePictureUploadData data);
 
-	ContactServiceImpl.ContactPhotoUploadResult getProfilePicUploadData(ContactServiceImpl.ContactPhotoUploadResult result);
+	/**
+	 * Get the stored profile picture upload data. Note that the returned data does not include the
+	 * bitmap array of the profile picture.
+	 *
+	 * @return the stored profile picture upload data or null if there is no stored data or an error
+	 * occurred while reading the data
+	 */
+	@Nullable
+	ContactService.ProfilePictureUploadData getProfilePicUploadData();
 
 	boolean getProfilePicReceive();
 
@@ -558,4 +559,7 @@ public interface PreferenceService {
 
 	boolean isGroupCallSendInitEnabled();
 	boolean skipGroupCallCreateDelay();
+
+	long getBackupWarningDismissedTime();
+	void setBackupWarningDismissedTime(long time);
 }

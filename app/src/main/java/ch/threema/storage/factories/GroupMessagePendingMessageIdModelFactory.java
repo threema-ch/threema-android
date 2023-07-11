@@ -23,7 +23,7 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
-import net.sqlcipher.Cursor;
+import android.database.Cursor;
 
 import org.slf4j.Logger;
 
@@ -69,7 +69,7 @@ public class GroupMessagePendingMessageIdModelFactory extends ModelFactory {
 		ContentValues contentValues = buildContentValues(groupMessagePendingMessageIdModel);
 		this.databaseService.getWritableDatabase()
 				.insertOrThrow(this.getTableName(), null, contentValues);
-		logger.debug("created " + groupMessagePendingMessageIdModel.getApiMessageId());
+		logger.debug("created {}", groupMessagePendingMessageIdModel.getApiMessageId());
 		return true;
 	}
 
@@ -113,13 +113,10 @@ public class GroupMessagePendingMessageIdModelFactory extends ModelFactory {
 		);
 
 		if(cursor != null) {
-			try {
+			try (cursor) {
 				if (cursor.moveToFirst()) {
 					return convert(cursor);
 				}
-			}
-			finally {
-				cursor.close();
 			}
 		}
 

@@ -4,7 +4,7 @@
     <item
             android:id="@+id/menu_search_messages"
             android:icon="@drawable/ic_outline_filter_alt_24"
-            app:iconTint="?android:textColorSecondary"
+            app:iconTint="?attr/colorOnSurface"
             android:title="@string/filter_list"
             app:showAsAction="never|collapseActionView"
             app:actionViewClass="ch.threema.app.ui.ThreemaSearchView"/>

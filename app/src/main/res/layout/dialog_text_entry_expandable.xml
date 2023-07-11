@@ -17,7 +17,7 @@
 		android:layout_marginLeft="2dp"
 		android:layout_marginRight="2dp"
 		android:layout_marginBottom="8dp"
-		android:textColor="?attr/textColorPrimary"
+		android:textColor="?attr/colorOnBackground"
 		android:textSize="16sp"
 		android:clickable="false"
 		android:text="@string/add_caption_hint"/>
@@ -41,14 +41,14 @@
 				android:layout_marginRight="8dp"
 				android:clickable="false"
 				android:contentDescription="@string/switched_on"
-				app:tint="?attr/textColorPrimary"
+				app:tint="?attr/colorOnBackground"
 				android:src="@drawable/ic_arrow_right_dark"/>
 
 		<TextView
 				android:id="@+id/add_caption_text"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textColor="?attr/textColorPrimary"
+				android:textColor="?attr/colorOnBackground"
 				android:textSize="16sp"
 				android:clickable="false"
 				android:text="@string/add_caption_hint"/>

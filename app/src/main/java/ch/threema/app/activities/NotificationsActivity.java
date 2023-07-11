@@ -24,7 +24,6 @@ package ch.threema.app.activities;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -42,6 +40,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatRadioButton;
+
+import com.google.android.material.button.MaterialButton;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.RingtoneSelectorDialog;
@@ -75,7 +76,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 			radioSilentExceptMentions,
 			radioSoundCustom,
 			radioSoundNone;
-	private ImageButton plusButton, minusButton, settingsButton;
+	private MaterialButton settingsButton, plusButton, minusButton;
 	private ScrollView parentLayout;
 	protected RingtoneService ringtoneService;
 	protected ContactService contactService;
@@ -108,10 +109,6 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 	public void onCreate(Bundle savedInstanceState) {
 		if (!this.requiredInstances()) {
 			return;
-		}
-
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			setTheme(R.style.Theme_Threema_CircularReveal_Dark);
 		}
 
 		super.onCreate(savedInstanceState);
@@ -150,16 +147,6 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 			}
 		} else {
 			animCenterLocation = savedInstanceState.getIntArray(BUNDLE_ANIMATION_CENTER);
-		}
-
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			plusButton.setImageDrawable(ConfigUtils.getThemedDrawable(this, R.drawable.ic_add_circle_black_24dp));
-			minusButton.setImageDrawable(ConfigUtils.getThemedDrawable(this, R.drawable.ic_remove_circle_black_24dp));
-			settingsButton.setImageDrawable(ConfigUtils.getThemedDrawable(this, R.drawable.ic_settings_outline_24dp));
-		} else {
-			plusButton.setColorFilter(getResources().getColor(R.color.text_color_secondary), PorterDuff.Mode.SRC_IN);
-			minusButton.setColorFilter(getResources().getColor(R.color.text_color_secondary), PorterDuff.Mode.SRC_IN);
-			settingsButton.setColorFilter(getResources().getColor(R.color.text_color_secondary), PorterDuff.Mode.SRC_IN);
 		}
 
 		parentLayout.setOnClickListener(v -> {
@@ -227,16 +214,6 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 	abstract void notifySettingsChanged();
 
 	protected void enablePlusMinus(boolean enable) {
-		int filter;
-
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			filter = enable ? ConfigUtils.getPrimaryColor() : getResources().getColor(R.color.material_grey_600);
-		} else {
-			filter = enable ? getResources().getColor(R.color.text_color_secondary) : getResources().getColor(R.color.material_grey_300);
-		}
-
-		plusButton.setColorFilter(filter, PorterDuff.Mode.SRC_IN);
-		minusButton.setColorFilter(filter, PorterDuff.Mode.SRC_IN);
 		plusButton.setEnabled(enable);
 		minusButton.setEnabled(enable);
 	}
@@ -310,52 +287,38 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.radio_sound_default:
-				ringtoneService.removeCustomRingtone(this.uid);
-				break;
-			case R.id.radio_sound_custom:
-			case R.id.text_sound:
-				pickRingtone(this.uid);
-				break;
-			case R.id.radio_sound_none:
-				ringtoneService.setRingtone(this.uid, null);
-				break;
-			case R.id.radio_silent_off:
-				mutedChatsListService.remove(this.uid);
-				mentionOnlyChatListService.remove(this.uid);
-				break;
-			case R.id.radio_silent_unlimited:
-				mutedChatsListService.add(this.uid, DeadlineListService.DEADLINE_INDEFINITE);
-				mentionOnlyChatListService.remove(this.uid);
-				break;
-			case R.id.radio_silent_limited:
-				if (mutedIndex < 0) {
-					mutedIndex = 0;
-				}
-				mutedChatsListService.add(this.uid, muteValues[mutedIndex] * DateUtils.HOUR_IN_MILLIS + System.currentTimeMillis());
-				mentionOnlyChatListService.remove(this.uid);
-				break;
-			case R.id.radio_silent_except_mentions:
-				mentionOnlyChatListService.add(uid, DeadlineListService.DEADLINE_INDEFINITE);
-				mutedChatsListService.remove(uid);
-				break;
-			case R.id.duration_plus:
-				mutedIndex = Math.min(mutedIndex + 1, muteValues.length - 1);
-				mutedChatsListService.add(this.uid, muteValues[mutedIndex] * DateUtils.HOUR_IN_MILLIS + System.currentTimeMillis());
-				break;
-			case R.id.duration_minus:
-				mutedIndex = Math.max(mutedIndex - 1, 0);
-				mutedChatsListService.add(this.uid, muteValues[mutedIndex] * DateUtils.HOUR_IN_MILLIS + System.currentTimeMillis());
-				break;
-			case R.id.prefs_button:
-				Intent intent = new Intent(this, SettingsActivity.class);
-				intent.putExtra(SettingsActivity.EXTRA_SHOW_NOTIFICATION_FRAGMENT, true);
-				ringtoneSettingsLauncher.launch(intent);
-				overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
-				break;
-			default:
-				break;
+		final int id = v.getId();
+		if (id == R.id.radio_sound_default) {
+			ringtoneService.removeCustomRingtone(this.uid);
+		} else if (id == R.id.radio_sound_custom || id == R.id.text_sound) {
+			pickRingtone(this.uid);
+		} else if (id == R.id.radio_sound_none) {
+			ringtoneService.setRingtone(this.uid, null);
+		} else if (id == R.id.radio_silent_off) {
+			mutedChatsListService.remove(this.uid);
+			mentionOnlyChatListService.remove(this.uid);
+		} else if (id == R.id.radio_silent_unlimited) {
+			mutedChatsListService.add(this.uid, DeadlineListService.DEADLINE_INDEFINITE);
+			mentionOnlyChatListService.remove(this.uid);
+		} else if (id == R.id.radio_silent_limited) {
+			if (mutedIndex < 0) {
+				mutedIndex = 0;
+			}
+			mutedChatsListService.add(this.uid, muteValues[mutedIndex] * DateUtils.HOUR_IN_MILLIS + System.currentTimeMillis());
+			mentionOnlyChatListService.remove(this.uid);
+		} else if (id == R.id.radio_silent_except_mentions) {
+			mentionOnlyChatListService.add(uid, DeadlineListService.DEADLINE_INDEFINITE);
+			mutedChatsListService.remove(uid);
+		} else if (id == R.id.duration_plus) {
+			mutedIndex = Math.min(mutedIndex + 1, muteValues.length - 1);
+			mutedChatsListService.add(this.uid, muteValues[mutedIndex] * DateUtils.HOUR_IN_MILLIS + System.currentTimeMillis());
+		} else if (id == R.id.duration_minus) {
+			mutedIndex = Math.max(mutedIndex - 1, 0);
+			mutedChatsListService.add(this.uid, muteValues[mutedIndex] * DateUtils.HOUR_IN_MILLIS + System.currentTimeMillis());
+		} else if (id == R.id.prefs_button) {
+			Intent intent = new Intent(this, SettingsActivity.class);
+			intent.putExtra(SettingsActivity.EXTRA_SHOW_NOTIFICATION_FRAGMENT, true);
+			ringtoneSettingsLauncher.launch(intent);
 		}
 		refreshSettings();
 		notifySettingsChanged();

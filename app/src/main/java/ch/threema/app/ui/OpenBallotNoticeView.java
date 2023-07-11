@@ -49,7 +49,6 @@ import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -93,7 +92,7 @@ import ch.threema.storage.models.ballot.BallotModel;
 public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLifecycleObserver {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("OpenBallotNoticeView");
 	private static final int MAX_BALLOTS_SHOWN = 20;
-	private static final int MAX_BALLOT_TITLE_LENGTH = 25;
+	private static final int MAX_BALLOT_TITLE_LENGTH = 20;
 	private ChipGroup chipGroup;
 	private final List<BallotChipHolder> shownBallots = new LinkedList<>();
 	private BallotService ballotService;
@@ -101,8 +100,9 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 	private PreferenceService preferenceService;
 	private ContactService contactService;
 	private String identity;
-	private MessageReceiver messageReceiver;
+	private MessageReceiver<?> messageReceiver;
 	private int numOpenBallots;
+	private OnCloseClickedListener onCloseClickedListener;
 
 	private final BallotVoteListener ballotVoteListener = new BallotVoteListener() {
 		@Override
@@ -203,7 +203,13 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		}
 
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.view_open_ballots, this);
+		inflater.inflate(R.layout.notice_open_ballots, this);
+
+		findViewById(R.id.button_cancel).setOnClickListener(v -> {
+			if (onCloseClickedListener != null) {
+				onCloseClickedListener.onCloseClicked();
+			}
+		});
 
 		identity = userService.getIdentity();
 	}
@@ -251,7 +257,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 				try {
 					return ballotService.getBallots(new BallotService.BallotFilter() {
 						@Override
-						public MessageReceiver getReceiver() {
+						public MessageReceiver<?> getReceiver() {
 							return messageReceiver;
 						}
 
@@ -282,12 +288,6 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 				if (ballotModels.isEmpty()) {
 					hide(false);
 					return;
-				}
-
-				// If there aren't any chips, then add the first chip that explains that this view
-				// shows open ballots
-				if (shownBallots.isEmpty()) {
-					chipGroup.addView(createFirstChip());
 				}
 
 				int numBallotsShown = 0;
@@ -325,7 +325,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		}.execute();
 	}
 
-	public void setMessageReceiver(@NonNull MessageReceiver messageReceiver) {
+	public void setMessageReceiver(@NonNull MessageReceiver<?> messageReceiver) {
 		this.messageReceiver = messageReceiver;
 		updateBallotDisplay();
 	}
@@ -353,33 +353,13 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		ListenerManager.ballotListeners.remove(this.ballotListener);
 	}
 
-	@NonNull
-	private Chip createFirstChip() {
-		Chip firstChip = new Chip(getContext());
-		ChipDrawable firstChipDrawable = ChipDrawable.createFromAttributes(getContext(),
-			null,
-			0,
-			R.style.Chip_ChatNotice_Overview_Intro);
-		firstChip.setChipDrawable(firstChipDrawable);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			firstChip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
-		} else {
-			firstChip.setTextSize(14);
-		}
-		firstChip.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.text_color_openNotice));
-		firstChip.setChipBackgroundColor(ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.background_openNotice)));
-		firstChip.setText(R.string.ballot_open);
-		firstChip.setClickable(false);
-		return firstChip;
-	}
-
 	@SuppressLint("RestrictedApi")
 	public void onChipClick(@NonNull View v, @Nullable BallotModel ballotModel, boolean isVoteComplete) {
 		if (ballotModel != null) {
 			MenuBuilder menuBuilder = new MenuBuilder(getContext());
 			new MenuInflater(getContext()).inflate(R.menu.chip_open_ballots, menuBuilder);
 
-			ConfigUtils.themeMenu(menuBuilder, ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorSecondary));
+			ConfigUtils.tintMenu(menuBuilder, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface));
 
 			if (BallotUtil.canViewMatrix(ballotModel, identity)) {
 				menuBuilder.findItem(R.id.menu_ballot_results).setTitle(ballotModel.getState() == BallotModel.State.CLOSED ? R.string.ballot_result_final : R.string.ballot_result_intermediate);
@@ -397,12 +377,12 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 				} else {
 					highlightItem = menuBuilder.findItem(R.id.menu_ballot_vote);
 				}
-				highlightColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent);
+				highlightColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary);
 			}
 			SpannableString s = new SpannableString(highlightItem.getTitle());
 			s.setSpan(new ForegroundColorSpan(highlightColor), 0, s.length(), 0);
 			highlightItem.setTitle(s);
-			ConfigUtils.themeMenuItem(highlightItem, highlightColor);
+			ConfigUtils.tintMenuItem(highlightItem, highlightColor);
 
 			menuBuilder.setCallback(new MenuBuilder.Callback() {
 				@Override
@@ -434,7 +414,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 				menuBuilder.removeItem(R.id.menu_ballot_close);
 			}
 
-			Context wrapper = new ContextThemeWrapper(getContext(), ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK ? R.style.AppBaseTheme_Dark : R.style.AppBaseTheme);
+			Context wrapper = new ContextThemeWrapper(getContext(), R.style.AppBaseTheme);
 			MenuPopupHelper optionsMenu = new MenuPopupHelper(wrapper, menuBuilder, v);
 			optionsMenu.setForceShowIcon(true);
 			optionsMenu.show();
@@ -487,6 +467,10 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		return (AppCompatActivity) getContext();
 	}
 
+	public void setOnCloseClickedListener(OnCloseClickedListener listener) {
+		onCloseClickedListener = listener;
+	}
+
 	private class BallotChipHolder {
 		@NonNull
 		private BallotModel ballot;
@@ -535,11 +519,11 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 			ChipDrawable chipDrawable = ChipDrawable.createFromAttributes(getContext(),
 				null,
 				0,
-				R.style.Chip_ChatNotice_Overview);
+				R.style.Threema_Chip_ChatNotice_Overview);
 			ballotChip.setChipDrawable(chipDrawable);
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				ballotChip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
+				ballotChip.setTextAppearance(R.style.Threema_TextAppearance_Chip_ChatNotice);
 			} else {
 				ballotChip.setTextSize(14);
 			}
@@ -644,21 +628,11 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 
 			if (isMine && voters == participants) {
 				// all votes are in
-				if (ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK) {
-					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorSecondary));
-					backgroundColor = ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.material_red));
-				} else {
-					foregroundColor = ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.material_red));
-					backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
-				}
+				foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondaryContainer));
+				backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorSecondaryContainer));
 			} else {
-				if (ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK) {
-					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorPrimary));
-					backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
-				} else {
-					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
-					backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
-				}
+				foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnPrimaryContainer));
+				backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimaryContainer));
 			}
 
 			chip.setTextColor(foregroundColor);
@@ -666,4 +640,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		}
 	}
 
+	public interface OnCloseClickedListener {
+		void onCloseClicked();
+	}
 }

@@ -29,22 +29,23 @@ import org.junit.Test;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.protobuf.csp.e2e.fs.ForwardSecurityEnvelope;
+import ch.threema.protobuf.csp.e2e.fs.Envelope;
+import ch.threema.protobuf.csp.e2e.fs.Reject;
 
 public class ForwardSecurityDataRejectTest {
-	static final DHSessionId TEST_SESSION_ID = new DHSessionId();
-	static final MessageId TEST_REJECTED_MESSAGE_ID = new MessageId();
-	static final ForwardSecurityEnvelope.Reject.Cause TEST_CAUSE = ForwardSecurityEnvelope.Reject.Cause.UNKNOWN_SESSION;
+	private static final DHSessionId TEST_SESSION_ID = new DHSessionId();
+	private static final MessageId TEST_REJECTED_MESSAGE_ID = new MessageId();
+	private static final Reject.Cause TEST_CAUSE = Reject.Cause.UNKNOWN_SESSION;
 
-	static final ForwardSecurityEnvelope TEST_PROTOBUF_MESSAGE = ForwardSecurityEnvelope.newBuilder()
+	private static final Envelope TEST_PROTOBUF_MESSAGE = Envelope.newBuilder()
 		.setSessionId(ByteString.copyFrom(TEST_SESSION_ID.get()))
-		.setReject(ForwardSecurityEnvelope.Reject.newBuilder()
-			.setRejectedMessageId(TEST_REJECTED_MESSAGE_ID.getMessageIdLong())
+		.setReject(Reject.newBuilder()
+			.setRejectedEncapsulatedMessageId(TEST_REJECTED_MESSAGE_ID.getMessageIdLong())
 			.setCause(TEST_CAUSE)
 			.build())
 		.build();
 
-	static void assertEqualsTestProperties(ForwardSecurityDataReject data) {
+	private static void assertEqualsTestProperties(ForwardSecurityDataReject data) {
 		Assert.assertEquals(TEST_SESSION_ID, data.getSessionId());
 		Assert.assertEquals(TEST_REJECTED_MESSAGE_ID, data.getRejectedApiMessageId());
 		Assert.assertEquals(TEST_CAUSE, data.getCause());
@@ -66,7 +67,7 @@ public class ForwardSecurityDataRejectTest {
 	@Test
 	public void testToProtobufMessage() {
 		final ForwardSecurityDataReject data = new ForwardSecurityDataReject(TEST_SESSION_ID, TEST_REJECTED_MESSAGE_ID, TEST_CAUSE);
-		final ForwardSecurityEnvelope generatedProtobufMessage = data.toProtobufMessage();
+		final Envelope generatedProtobufMessage = data.toProtobufMessage();
 
 		Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
 	}

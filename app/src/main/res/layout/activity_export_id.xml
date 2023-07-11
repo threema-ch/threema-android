@@ -1,86 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/main_content"
-			  android:layout_width="match_parent"
-			  android:layout_height="match_parent"
-			  android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-	<include layout="@layout/toolbar_view"/>
+    <include layout="@layout/toolbar_view"/>
 
-	<ScrollView
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:paddingLeft="@dimen/tablet_additional_padding_left_right"
-				android:paddingRight="@dimen/tablet_additional_padding_left_right"
-				android:fillViewport="true"
-				android:visibility="visible"
-				android:id="@+id/qr_container_backup">
+    <ScrollView
+        android:id="@+id/qr_container_backup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:paddingLeft="@dimen/tablet_additional_padding_left_right"
+        android:paddingRight="@dimen/tablet_additional_padding_left_right">
 
-		<LinearLayout
-				android:orientation="vertical"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:paddingRight="16dp"
-				android:paddingLeft="16dp"
-				android:paddingBottom="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp">
 
-			<FrameLayout
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="10dp"
-					android:padding="1dp"
-					android:background="@drawable/qrcode_border">
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="?attr/colorOnSurfaceInverse"
+                app:contentPadding="8dp">
 
-				<FrameLayout
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:padding="7dp"
-						android:background="?attr/background_secondary">
+                <TextView
+                    android:id="@+id/threemaid"
+                    style="@style/Threema.TextAppearance.Monospace.Large"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:hyphenationFrequency="none"
+                    android:textIsSelectable="true"
+                    tools:ignore="TouchTargetSizeCheck" />
 
-					<TextView
-							android:id="@+id/threemaid"
-							android:layout_width="match_parent"
-							android:layout_height="wrap_content"
-							android:layout_margin="8dp"
-							android:textColor="?attr/textColorPrimary"
-							android:textStyle="normal"
-							android:textSize="19sp"
-							android:text=""
-							android:textIsSelectable="true"/>
+            </com.google.android.material.card.MaterialCardView>
 
-				</FrameLayout>
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/qr_container"
+                android:layout_width="208dp"
+                android:layout_height="208dp"
+                android:layout_margin="15dp"
+                android:layout_gravity="center_horizontal"
+                app:strokeColor="@color/material_yellow"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeWidth="2dp"
+                app:cardElevation="-8dp"
+                app:contentPadding="4dp">
 
-			</FrameLayout>
+                <ImageView
+                    android:id="@+id/qrcode_backup"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:adjustViewBounds="false"
+                    android:clickable="true"
+                    android:contentDescription="@string/qr_code"
+                    android:layout_gravity="center"
+                    android:focusable="true"
+                    android:foreground="?selectableItemBackground"
+                    android:scaleType="fitCenter" />
 
-			<FrameLayout
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_margin="15dp"
-					android:layout_gravity="center"
-					android:background="@drawable/qrcode_border">
+            </com.google.android.material.card.MaterialCardView>
 
-				<ch.threema.app.ui.SquareImageView
-						android:id="@+id/qrcode_backup"
-						android:layout_margin="4dp"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_gravity="center_horizontal"
-						/>
+            <TextView
+                style="@style/Threema.TextAppearance.BodyLarge"
+                android:id="@+id/keyfingerprint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:text="@string/backup_id_summary" />
 
-			</FrameLayout>
-
-			<TextView
-					android:id="@+id/keyfingerprint"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:textColor="?attr/textColorPrimary"
-					android:paddingTop="2dp"
-					android:textStyle="normal"
-					android:textSize="16sp"
-					android:text="@string/backup_id_summary"/>
-
-
-		</LinearLayout>
-
-	</ScrollView>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

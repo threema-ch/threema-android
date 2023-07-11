@@ -21,17 +21,17 @@
 
 package ch.threema.app.asynctasks;
 
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 
-import net.sqlcipher.database.SQLiteException;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.managers.ListenerManager;

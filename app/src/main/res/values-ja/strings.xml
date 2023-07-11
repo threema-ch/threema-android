@@ -288,7 +288,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="title_select_contacts">メンバーを選択</string>
     <string name="pin_invalid_not_set">PINが無効です。設定されていません。</string>
     <string name="prefs_group_notifications">グループトーク</string>
-    <string name="add_group_members_list">グループのメンバー</string>
     <string name="group_select_at_least_two">継続するためには、少なくとも1名のメンバーを選択する必要があります。</string>
     <string name="group_select_max">グループメンバーを %1$d 人以上選択することはできません</string>
     <string name="search">検索</string>
@@ -543,7 +542,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="send_as_files">ファイルとして送信</string>
     <string name="send_as_files_warning">未圧縮のファイルや画像を送信することで大きなデータ通信量が使用され、場合によっては追加料金が発生することがあります。そのため、ファイルをアップロードやダウンロードをする場合は Wi-Fi のみで行うことを推奨します。</string>
     <string name="prefs_theme">デザインテーマ</string>
-    <string name="list_theme_light">ライト (デフォルト)</string>
+    <string name="list_theme_light">ライト</string>
     <string name="list_theme_dark">ダーク</string>
     <string name="prefs_header_appearance">外観</string>
     <string name="prefs_sum_passphrase">端末に保存されるデータの復号化にパスフレーズを要求します</string>
@@ -1019,12 +1018,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="open_in_maps_app">マップアプリで開く</string>
     <string name="delete">削除</string>
     <string name="continue_recording">録音を続ける</string>
-    <string name="whatsnew_title">新機能: %1$s グループ通話</string>
-    <string name="whatsnew_headline"><![CDATA[
-<p>エンド・ツー・エンドで暗号化されたグループ通話が、Android向け%1$sで利用できるようになりました。</p>
-<p>通話を開始するには、グループトークを開き、上部にあるカメラボタンをタップします。</p>
-<p>グループメンバー全員に通知が届き、通話に参加するかどうかを決めることができます。</p>
-<p><b>注意:</b> iOS向けのグループ通話機能は後日リリースされる予定です。</p> ]]></string>
     <string name="tap_to_start">タップして %s を始めましょう</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">バックアップのパスが無効です</string>
@@ -1167,7 +1160,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="no_faces_detected">顔が検出されません</string>
     <string name="smiley">絵文字</string>
     <string name="blur">ぼかし</string>
-    <string name="face_blur_tooltip_title">新機能: 顔認識</string>
+    <string name="face_blur_tooltip_title">顔認識</string>
     <string name="face_blur_tooltip_text">画像の中から顔を見つけてぼかしたり、絵文字をかぶせたりします。</string>
     <string name="listened_to">聞いた</string>
     <string name="transcoder_unsupported_audio_format">システムで対応していないため、オーディオをトランスコードできませんでした。</string>
@@ -1362,7 +1355,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="organization_type">組織</string>
     <string name="permission_bluetooth_connect_required">接続済みBluetoothヘッドセットを検出するために、「付近のデバイス」権限を許可してください。</string>
     <string name="threema_push_start_webclient_sessions_manually">Threemaプッシュが有効になっています。そのため、Threema WebおよびDesktopセッションは手動で起動する必要があります。</string>
-    <string name="tooltip_multiple_recipients_title">新機能: 受信者の複数選択</string>
+    <string name="tooltip_multiple_recipients_title">受信者の複数選択</string>
     <string name="tooltip_multiple_recipients_text">長押しすると、同じメッセージを送る複数の受信者を選択できます。</string>
     <string name="synchronizing">同期中…</string>
     <string name="forward_security">Perfect Forward Secrecyを使用してメッセージを送信</string>
@@ -1424,7 +1417,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="leave">退出</string>
     <string name="fs_key_mismatch">キーが一致しません</string>
     <string name="tap_to_resend">タップで再送</string>
-    <string name="group_calls_tooltip_title">新機能: グループ通話</string>
+    <string name="group_calls_tooltip_title">グループ通話</string>
     <string name="group_calls_tooltip_text">ここをタップすると、すべてのグループメンバーを通話に招待できます。すべてのグループメンバーは通知を受け取り、通話に参加するかどうかを決定できます。</string>
     <string name="prefs_title_calls">セキュアな通話</string>
     <string name="prefs_sum_group_calls_vibration">グループ通話の開始時にバイブレーションを鳴らすかどうかを選択します</string>

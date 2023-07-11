@@ -21,8 +21,8 @@
 
 package ch.threema.storage.factories;
 
-import net.sqlcipher.DatabaseUtils;
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.DatabaseUtils;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import org.slf4j.Logger;
 

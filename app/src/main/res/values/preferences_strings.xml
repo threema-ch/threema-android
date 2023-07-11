@@ -188,6 +188,7 @@
 	<string name="preferences__tooltip_multi_recipients" translatable="false">pref_tooltip_multi_recipients</string>
 	<string name="preferences__quote_drafts" translatable="false">pref_quote_drafts</string>
 	<string name="preferences__enable_read_phone_state_permission_request" translatable="false">pref_read_phone_state_permission_request</string>
+	<string name="preferences__ignore_read_phone_state_permission_request" translatable="false">pref_ignore_read_phone_state_permission_request</string>
 	<string name="preferences__grant_read_phone_state_permission" translatable="false">pref_read_phone_state</string>
 	<string name="preferences__hibernation_mode" translatable="false">pref_hibernation_mode</string>
 	<string name="preferences__group_calls_enable" translatable="false">pref_group_calls_enable</string>
@@ -199,4 +200,8 @@
 	<string name="preferences__group_calls_vibration" translatable="false">pref_gc_vibration</string>
     <string name="preferences__group_calls_use_system_ringtone" translatable="false">pref_gc_use_system_ringtone</string>
 	<string name="preferences__device_cookie" translatable="false">device_cookie</string>
+	<string name="preferences__dynamic_color" translatable="false">pref_dynamic_color</string>
+	<string name="preferences__backup_warning_dismissed_time" translatable="false">pref_backup_warning_dismissed_time</string>
+	<string name="preferences__ignore_bluetooth_permission_request" translatable="false">pref_ignore_bluetooth_permission_request</string>
+	<string name="preferences__grant_bluetooth_permission" translatable="false">pref_grant_bluetooth_permission</string>
 </resources>

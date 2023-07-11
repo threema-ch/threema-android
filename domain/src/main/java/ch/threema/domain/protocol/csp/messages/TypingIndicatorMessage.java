@@ -21,7 +21,9 @@
 
 package ch.threema.domain.protocol.csp.messages;
 
+import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A "throw-away" message that signals that the sender is currently typing a message or has
@@ -38,6 +40,12 @@ public class TypingIndicatorMessage extends AbstractMessage {
 	@Override
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_TYPING_INDICATOR;
+	}
+
+	@Nullable
+	@Override
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return Version.V1_1;
 	}
 
 	@Override

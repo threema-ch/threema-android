@@ -21,7 +21,10 @@
 
 package ch.threema.app.utils
 
+import android.app.Activity
 import android.content.Context
+import android.os.SystemClock
+import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -35,6 +38,7 @@ import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.UserService
 import ch.threema.app.voip.activities.GroupCallActivity
+import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.protocol.api.APIConnector
@@ -43,8 +47,33 @@ import ch.threema.storage.models.GroupModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallUtil")
+
+/**
+ * Get the time since the group call is running. If the time on the phone is potentially wrong as it
+ * is not synchronized or the given context is null, the time since the group call start message has
+ * been processed is displayed.
+ *
+ * If the device time is synchronized and the context is not null, we assume that the time is
+ * correct and return [GroupCallDescription.getRunningSince]. Otherwise we assume a wrong device
+ * time and return [GroupCallDescription.getRunningSinceProcessed].
+ *
+ * The running time is relative to [SystemClock.elapsedRealtime].
+ *
+ * @param call    the group call description
+ * @param context the context
+ * @return the time in milliseconds since the group call has been started or processed
+ */
+fun getRunningSince(call: GroupCallDescription, context: Context?): Long {
+    val isAutoTime = context != null && Settings.Global.getInt(context.contentResolver, Settings.Global.AUTO_TIME, 0) == 1
+    return if (isAutoTime) {
+        call.getRunningSince() ?: call.getRunningSinceProcessed()
+    } else {
+        call.getRunningSinceProcessed()
+    }
+}
 
 /**
  * Initiate a group call. If necessary, fetch the feature mask of the specified contact.
@@ -143,6 +172,9 @@ private fun launchActivity(context: Context, groupModel: GroupModel, otherMember
         ).show()
     }
     ContextCompat.startActivity(context, GroupCallActivity.getStartCallIntent(context, groupModel.id), null)
+    if (context is Activity) {
+        context.overridePendingTransition(R.anim.activity_open_enter, R.anim.activity_close_exit)
+    }
 }
 
 fun qualifiesForGroupCalls(groupService: GroupService, groupModel: GroupModel): Boolean {

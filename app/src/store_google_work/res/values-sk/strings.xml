@@ -17,8 +17,6 @@
     <string name="new_wizard_info_link">Poskytnutím svojho telefónneho čísla a e-mailovej adresy môže Threema Work pomôcť vašim kontaktom automaticky pridať vaše ID do ich adresára, ak vás majú v zozname. Údaje budú jednosmerne šifrované (hashované) a uložené na našom serveri. Tento krok môžete preskočiť, ak chcete používať Threemu Work výlučne anonymne.</string>
     <string name="threema_contact">Kontakt Threema Work</string>
     <string name="menu_about">O aplikácii Threema Work</string>
-    <string name="list_theme_light">Svetlý</string>
-    <string name="list_theme_dark">Tmavý (predvolený)</string>
     <string name="private_threema_download"><![CDATA[Ak ste súkromný používateľ, prosím <a href="https://play.google.com/store/apps/details?id=ch.threema.app">kliknite sem</a> na stiahnutie aplikácie Threema.]]></string>
     <string name="directory_search">Hľadať v adresári</string>
     <string name="directory_title">Adresár spoločnosti</string>

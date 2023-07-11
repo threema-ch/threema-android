@@ -14,8 +14,8 @@
 			android:layout_width="wrap_content"
 			android:layout_gravity="start"
 			android:fitsSystemWindows="true"
-			app:itemIconTint="?attr/textColorPrimary"
-			app:itemTextColor="?attr/textColorPrimary"
+			app:itemIconTint="?attr/colorOnBackground"
+			app:itemTextColor="?attr/colorOnBackground"
 			app:headerLayout="@layout/header_filepicker"
 			app:menu="@menu/navdrawer_filepicker"/>
 

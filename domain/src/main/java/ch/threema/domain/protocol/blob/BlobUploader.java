@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -59,7 +60,7 @@ public class BlobUploader {
 	private final ServerAddressProvider serverAddressProvider;
 	private final boolean ipv6;
 
-	private final InputStream blobInputStream;
+	private final @NonNull InputStream blobInputStream;
 	private final int blobLength;
 	private String authToken;
 	private boolean persist = false;
@@ -72,9 +73,9 @@ public class BlobUploader {
 		this(factory, new ByteArrayInputStream(blobData), blobData.length, ipv6, serverAddressProvider, progressListener);
 	}
 
-	public BlobUploader(
+	private BlobUploader(
 		@NonNull SSLSocketFactoryFactory factory,
-		InputStream blobInputStream,
+		@NonNull InputStream blobInputStream,
 		int blobLength,
 		boolean ipv6,
 		ServerAddressProvider serverAddressProvider,
@@ -143,7 +144,6 @@ public class BlobUploader {
 				if (progressListener != null && blobLength > 0)
 					progressListener.updateProgress(100 * ndone / blobLength);
 			}
-			blobInputStream.close();
 
 			if (cancel) {
 				try {
@@ -159,11 +159,11 @@ public class BlobUploader {
 			}
 
 			bos.write(footerBytes);
-			bos.close();
+			bos.flush();
 
 			String blobIdHex;
 			try (InputStream blobIdInputStream = urlConnection.getInputStream()) {
-				blobIdHex = IOUtils.toString(blobIdInputStream);
+				blobIdHex = IOUtils.toString(blobIdInputStream, StandardCharsets.UTF_8);
 			}
 
 			if (blobIdHex == null) {
@@ -190,11 +190,9 @@ public class BlobUploader {
 			return blobId;
 		} finally {
 			urlConnection.disconnect();
-			if (blobInputStream != null) {
-				try {
-					blobInputStream.close();
-				} catch (IOException ignored) {}
-			}
+			try {
+				blobInputStream.close();
+			} catch (IOException ignored) {}
 		}
 	}
 

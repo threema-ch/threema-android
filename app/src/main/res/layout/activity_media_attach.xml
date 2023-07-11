@@ -6,6 +6,7 @@
 	android:id="@+id/coordinator"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:elevation="1dp"
 	android:fitsSystemWindows="true">
 
 	<androidx.constraintlayout.widget.ConstraintLayout
@@ -43,7 +44,7 @@
 
 		<com.google.android.material.button.MaterialButton
 			android:id="@+id/permission_button"
-			style="@style/Threema.Chip.Action"
+			style="@style/Threema.MaterialButton.Elevated"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:gravity="center"
@@ -71,6 +72,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			style="?attr/bottomSheetStyle"
+			android:elevation="1dp"
 			app:behavior_hideable="true"
 			app:behavior_saveFlags="all"
 			android:clipToPadding="false"
@@ -78,13 +80,11 @@
 			app:layout_behavior="@string/bottom_sheet_behavior">
 
 			<ImageView
+				style="@style/Threema.BottomSheet.DragHandle"
 				android:id="@+id/drag_handle"
-				android:layout_width="28dp"
-				android:layout_height="@dimen/drag_handle_height"
-				android:layout_marginTop="@dimen/drag_handle_topbottom_margin"
-				android:layout_marginBottom="@dimen/drag_handle_topbottom_margin"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
 				android:importantForAccessibility="no"
-				android:src="@drawable/bottomsheet_grapple"
 				app:layout_constraintLeft_toLeftOf="parent"
 				app:layout_constraintRight_toRightOf="parent"
 				app:layout_constraintTop_toTopOf="parent"
@@ -109,7 +109,8 @@
 		android:id="@+id/appbar_layout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:background="@android:color/transparent"
+		android:background="?attr/colorSurface"
+		android:visibility="invisible"
 		app:elevation="0dp">
 
 		<com.google.android.material.appbar.MaterialToolbar
@@ -117,10 +118,9 @@
 			style="@style/Threema.ToolbarStyle"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
-			android:visibility="invisible"
 			app:menu="@menu/activity_media_attach"
 			app:navigationIcon="@drawable/ic_chevron_down_slightly_bigger"
-			app:navigationIconTint="?attr/textColorSecondary">
+			app:navigationIconTint="?attr/colorOnSurface">
 
 			<LinearLayout
 				android:id="@+id/toolbar_title"
@@ -132,11 +132,12 @@
 				android:background="?attr/selectableItemBackgroundBorderless">
 
 				<TextView
+					style="@style/Threema.TextAppearance.Toolbar.Title"
 					android:id="@+id/toolbar_title_textview"
 					android:layout_width="wrap_content"
 					android:layout_height="match_parent"
-					android:textColor="?android:textColorPrimary"
-					android:textSize="18sp"
+					android:textColor="?attr/colorOnBackground"
+					android:textSize="20sp"
 					android:ellipsize="middle"/>
 
 				<ImageView
@@ -144,7 +145,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="match_parent"
 					app:srcCompat="@drawable/ic_arrow_down_filled"
-					app:tint="?attr/image_tint_default"
+					app:tint="?attr/colorOnBackground"
 					android:visibility="invisible"
 					android:contentDescription="@string/filter_by_album"/>
 
@@ -159,22 +160,6 @@
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/control_panel_height"
 		android:layout_gravity="bottom"/>
-
-	<FrameLayout
-		android:id="@+id/date_separator_container"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:gravity="top|center_horizontal"
-		android:paddingTop="5dp"
-		android:paddingBottom="3dp"
-		android:paddingLeft="3dp"
-		android:paddingRight="3dp"
-		android:layout_marginTop="?attr/actionBarSize"
-		android:visibility="invisible"
-		android:clipToPadding="false">
-
-		<include layout="@layout/date_separator" />
-	</FrameLayout>
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -191,7 +176,7 @@
 			android:background="@color/gallery_background" />
 
 		<com.google.android.material.appbar.AppBarLayout
-			android:id="@id/appbar_layout"
+			android:id="@+id/appbar"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:background="@color/preview_navigation_area_bg"
@@ -204,7 +189,7 @@
 				android:layout_height="?attr/actionBarSize"
 				android:background="@android:color/transparent"
 				app:navigationIcon="@drawable/ic_arrow_left"
-				app:navigationIconTint="@color/dark_text_color_secondary">
+				app:navigationIconTint="@android:color/white">
 
 				<ch.threema.app.ui.CheckableView
 					android:id="@+id/check_box"

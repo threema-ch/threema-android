@@ -23,13 +23,16 @@ package ch.threema.app.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -43,58 +46,25 @@ import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
 
 public class ImagePopup extends DimmingPopupWindow {
-
 	private ImageView imageView;
-	private TextView filenameTextView, dateTextView;
 	private View topLayout;
 	private View parentView;
-
 	final int[] location = new int[2];
 
-
-	public ImagePopup(Context context, View parentView, int screenWidth, int screenHeight) {
+	public ImagePopup(Context context, @NonNull View parentView) {
 		super(context);
-		init(context, parentView, screenWidth, screenHeight, 0, 0);
+		init(context, parentView, parentView.getWidth(), parentView.getHeight());
 	}
 
-	public ImagePopup(Context context, View parentView, int screenWidth, int screenHeight, int innerBorder) {
-		super(context);
-		init(context, parentView, screenWidth, screenHeight, innerBorder, 0);
-	}
-
-	public ImagePopup(Context context, @NonNull View parentView, @LayoutRes int layout) {
-		super(context);
-		init(context, parentView, parentView.getWidth(), parentView.getHeight(), 0, layout);
-	}
-
-	private void init(Context context, View parentView, int screenWidth, int screenHeight, int innerBorder, @LayoutRes int layout) {
+	private void init(Context context, View parentView, int screenWidth, int screenHeight) {
 		this.parentView = parentView;
 
-		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		if (layout == 0) {
-			topLayout = layoutInflater.inflate(R.layout.popup_image, null, true);
-		} else {
-			topLayout = layoutInflater.inflate(layout, null, true);
-		}
+		topLayout = LayoutInflater.from(context).inflate(R.layout.popup_image_nomargin, null, true);
 
 		this.imageView = topLayout.findViewById(R.id.image_view);
-		this.filenameTextView = topLayout.findViewById(R.id.filename_view);
-		this.dateTextView = topLayout.findViewById(R.id.date_view);
 
 		int borderSize = context.getResources().getDimensionPixelSize(R.dimen.image_popup_screen_border_width);
 		setContentView(topLayout);
-
-		if (innerBorder != 0) {
-			ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) imageView.getLayoutParams();
-			marginParams.setMargins(innerBorder, innerBorder, innerBorder, innerBorder);
-			imageView.setLayoutParams(marginParams);
-
-			marginParams = (ViewGroup.MarginLayoutParams) filenameTextView.getLayoutParams();
-			marginParams.setMargins(innerBorder, innerBorder -
-					context.getResources().getDimensionPixelSize(R.dimen.image_popup_text_size) -
-					context.getResources().getDimensionPixelSize(R.dimen.image_popup_text_margin_bottom), 0, 0);
-			filenameTextView.setLayoutParams(marginParams);
-		}
 
 		if (screenHeight > screenWidth) {
 			// portrait
@@ -107,65 +77,39 @@ public class ImagePopup extends DimmingPopupWindow {
 		}
 		setBackgroundDrawable(new BitmapDrawable());
 		setAnimationStyle(0);
-		if (!(this.topLayout instanceof MaterialCardView)) {
-			setElevation(10);
-		}
+		setElevation(0);
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
 	}
 
-	public void show(final View view, Bitmap bitmap, String title) {
+	public void show(@NonNull final View sourceView, @NonNull Bitmap bitmap) {
 		this.imageView.setImageBitmap(bitmap);
-		show(view, title, true);
-	}
-
-	public void show(final View view, BitmapDrawable bitmapDrawable, String title, boolean animated) {
-		this.imageView.setImageDrawable(bitmapDrawable);
-		show(view, title, animated);
-	}
-
-	private void show(final View view, String title, final boolean animated) {
-		if (this.filenameTextView != null) {
-			this.filenameTextView.setText(title != null ? title : "");
-		}
-		if (this.dateTextView != null) {
-			this.dateTextView.setText("");
-		}
 
 		showAtLocation(parentView, Gravity.CENTER, 0, 0);
 		dimBackground();
-		if (animated) {
-			getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+		getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {
-				getContentView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+				AnimationUtil.getViewCenter(sourceView, getContentView(), location);
 
-					AnimationUtil.getViewCenter(view, getContentView(), location);
-					AnimationUtil.popupAnimateIn(getContentView());
-				}
-			});
-		}
+				AnimationSet animation = new AnimationSet(true);
+				Animation scale = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.ABSOLUTE, location[0], Animation.ABSOLUTE, location[1]);
+				Animation fade = new AlphaAnimation(0.0f, 1.0f);
 
-		topLayout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dismiss();
+				animation.addAnimation(scale);
+				animation.addAnimation(fade);
+				animation.setInterpolator(new DecelerateInterpolator());
+				animation.setDuration(150);
+
+				getContentView().startAnimation(animation);
 			}
 		});
+
+		topLayout.setOnClickListener(v -> dismiss());
 	}
 
 	@Override
 	public void dismiss() {
-		AnimationUtil.popupAnimateOut(getContentView(), new Runnable() {
-			@Override
-			public void run() {
-				ImagePopup.super.dismiss();
-			}
-		});
-	}
-
-	private Bitmap rotateBitmap(Bitmap source, float angle) {
-		Matrix matrix = new Matrix();
-		matrix.postRotate(angle);
-		return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+		AnimationUtil.popupAnimateOut(getContentView(), ImagePopup.super::dismiss);
 	}
 }

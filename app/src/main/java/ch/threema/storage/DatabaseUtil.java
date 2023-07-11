@@ -22,7 +22,7 @@
 package ch.threema.storage;
 
 
-import net.sqlcipher.Cursor;
+import android.database.Cursor;
 
 import java.util.Date;
 import java.util.List;

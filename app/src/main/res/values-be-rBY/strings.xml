@@ -280,7 +280,6 @@
     <string name="title_select_contacts">Выбар удзельнікаў</string>
     <string name="pin_invalid_not_set">Няправільны PIN-код.</string>
     <string name="prefs_group_notifications">Супольны чат</string>
-    <string name="add_group_members_list">Удзельнікі суполкі</string>
     <string name="group_select_at_least_two">Каб працягнуць, трэба абраць як мінімум аднаго ўдзельніка</string>
     <string name="group_select_max">Вы не можаце абраць больш за %1$d удзельнікаў суполкі</string>
     <string name="search">Пошук</string>
@@ -534,7 +533,7 @@
     <string name="send_as_files">Адправіць як файл</string>
     <string name="send_as_files_warning">Перадача несціснутых файлаў і відарысаў можа ствараць значны аб\'ём трафіку і прывесці да дадатковых выдаткаў на сувязь. Мы рэкамендуем загружаць і спампоўваць файлы толькі ў сетках WiFi.</string>
     <string name="prefs_theme">Тэма</string>
-    <string name="list_theme_light">Светлая (па змаўчанні)</string>
+    <string name="list_theme_light">Светлая</string>
     <string name="list_theme_dark">Цёмная</string>
     <string name="prefs_header_appearance">Выгляд</string>
     <string name="prefs_sum_passphrase">Патрабаваць кодавую фразу для разблакавання лакальнага шыфравання</string>
@@ -1011,11 +1010,6 @@
     <string name="open_in_maps_app">Адк-ць у праграме \"Мапы\"</string>
     <string name="delete">Выдаліць</string>
     <string name="continue_recording">Працягнуць запіс</string>
-    <string name="whatsnew_title">Навінка: супольныя званкі %1$s</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Супольныя званкі са скразным шыфраваннем цяпер даступныя ў %1$s для Android.</p>
- <p>Каб пачаць званок, адкрыйце супольны чат і краніце значок камеры ўверсе.</p>
- <p>Усе ўдзельнікі суполкі атрымаюць апавяшчэнне і змогуць самі вырашыць, ці жадаюць яны далучыцца да званка.</p>
- <p><b>Звярніце ўвагу:</b> для iOS-дадатку функцыя супольнага званка будзе рэалізавана пазней.</p>]]></string>
     <string name="tap_to_start">Націсьніце тут, каб запусціць %s.</string>
     <string name="two_years">2 года</string>
     <string name="invalid_backup_path">Нядзейнічае.шлях да рэз.копіі</string>
@@ -1158,7 +1152,7 @@
     <string name="no_faces_detected">Твары не распазнаныя</string>
     <string name="smiley">Смайл</string>
     <string name="blur">Размыццё</string>
-    <string name="face_blur_tooltip_title">Навінка: распазнанне твараў</string>
+    <string name="face_blur_tooltip_title">распазнанне твараў</string>
     <string name="face_blur_tooltip_text">Выяўляйце твары на відарысе і размывайце іх або закрывайце смайламі.</string>
     <string name="listened_to">праслухана</string>
     <string name="transcoder_unsupported_audio_format">Не атрымалася перакадаваць аўдыё, прычына - адсутнасць падтрымкі сістэмы.</string>
@@ -1353,7 +1347,7 @@
     <string name="organization_type">Арганізацыя</string>
     <string name="permission_bluetooth_connect_required">Актывуйце дазвол \"Прылады паблізу\" для пошуку падлучаных гарнітур Bluetooth</string>
     <string name="threema_push_start_webclient_sessions_manually">Функцыя Threema Push актыўная. Такім чынам, сеансы вэб-версіі і версіі для ПК трэба запускаць уручную.</string>
-    <string name="tooltip_multiple_recipients_title">Навінка: некалькі атрымальнікаў</string>
+    <string name="tooltip_multiple_recipients_title">Некалькі атрымальнікаў</string>
     <string name="tooltip_multiple_recipients_text">Зацісніце кнопку, каб выбраць некалькі атрымальнікаў для адпраўкі ім аднаго і таго ж паведамлення.</string>
     <string name="synchronizing">Сінхранізацыя…</string>
     <string name="forward_security">Адпраўляйце паведамленні ў рэжыме PFS</string>
@@ -1415,7 +1409,7 @@
     <string name="leave">Пакінуць</string>
     <string name="fs_key_mismatch">несупадзенне ключоў</string>
     <string name="tap_to_resend">Націсніце, каб адправіць яшчэ раз</string>
-    <string name="group_calls_tooltip_title">Новае: супольныя званкі</string>
+    <string name="group_calls_tooltip_title">супольныя званкі</string>
     <string name="group_calls_tooltip_text">Націсніце тут, каб запрасіць усіх удзельнікаў суполкі далучыцца да размовы. Усе удзельнікі суполкі атрымаюць апавяшчэнне і змогуць вырашыць, жадаюць яны далучыцца да размовы ці не.</string>
     <string name="prefs_title_calls">Бяспечныя званкі</string>
     <string name="prefs_sum_group_calls_vibration">Выберыце, ці трэба вібраваць пры пачатку супольнага выкліку</string>
@@ -1425,6 +1419,20 @@
     <string name="group_call_inactivity_left">Суполкавы выклік пакінуты з-за бяздзейнасці</string>
     <string name="missing_permission_external_storage">Немагчыма скапіяваць файл. Паспрабуйце наступныя крокі:\n 1. Адкрыйце праграму налад.\n 2. Перайдзіце ў раздзел «Праграмы» і абярыце «Доступ да спецыяльных праграм».\n 3. Націсніце на «Доступ да ўсіх файлаў».\n 4. Націсніце на тры кропкі ў правым верхнім куце і абярыце «Паказаць сістэму».\n 5. Націсніце на «Знешняе сховішча» і пераканайцеся, што «Дазволены доступ для кіравання ўсімі файламі».\n 6. Паспрабуйце яшчэ раз аднавіць рэзервовую копію.</string>
     <string name="forward_security_downgraded_status_message">Гэты кантакт пачаў выкарыстоўваць версію праграмы, якая не падтрымлівае Perfect Forward Secrecy.  З гэтага часу паведамленні будуць адпраўляцца без PFS.</string>
+    <string name="crop_image_title">Абрэзаць відарыс</string>
+    <string name="scroll_to_bottom">Пракруціце ўніз</string>
+    <string name="scroll_to_top">Пракруціце ўверх</string>
+    <string name="contact_sync_mdm_rationale">Ваш адміністратар уключыў сінхранізацыю кантактаў для вашай прылады.  Таму патрабуецца дазвол на доступ да кантактаў.</string>
+    <string name="welcome_back">З вяртаннем!</string>
+    <string name="id_restored_successfully">Ваш Threema ID быў паспяхова адноўлены</string>
+    <string name="prefs_dynamic_colors">Дынамічны колер</string>
+    <string name="prefs_dynamic_colors_sum">Выкарыстоўваць сіст. колеры</string>
+    <string name="apply_changes">Прымяніць змены</string>
+    <string name="prefs_threema_work_summary">Ці ведаеце вы, што Threema таксама прапануе прафесійнае камунікацыйнае рашэнне для бізнесу?  Націсніце тут, каб даведацца больш пра Threema Work.</string>
+    <string name="notification_channel_voice_message_player">Плэер галасавых паведамленняў</string>
+    <string name="voice_message_from">Галасавое паведамленне ад %s</string>
+    <string name="vm_fg_service_not_allowed">Памылка прайграв. галасавога паведамлення</string>
+    <string name="vm_fg_service_not_allowed_explain">Націсніце кнопку прайгравання ў медыяапавяшчэнні, калі яно ўсё яшчэ прысутнічае, у адваротным выпадку адкрыйце праграму, каб пачаць прайграванне з чата.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d кантактаў</item>
         <item quantity="many">%d кантакты</item>
@@ -1474,10 +1482,10 @@
         <item quantity="other">Выдаліць апытанні</item>
     </plurals>
     <plurals name="ballot_really_delete_text">
-        <item quantity="few">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
-        <item quantity="many">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
-        <item quantity="one">Вы сапраўды хочаце выдаліць %1$d апытанне? Вы не зможаце аднавіць галасы.</item>
-        <item quantity="other">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
+        <item quantity="few">Вы сапраўды хочаце выдаліць %1$d апытанні?  Вы не зможаце аднавіць галасы.</item>
+        <item quantity="many">Вы сапраўды хочаце выдаліць %1$d апытанні?  Вы не зможаце аднавіць галасы.</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %1$d апытанне?  Вы не зможаце аднавіць галасы.</item>
+        <item quantity="other">Вы сапраўды хочаце выдаліць %1$d апытанні?  Вы не зможаце аднавіць галасы.</item>
     </plurals>
     <plurals name="message_deleted">
         <item quantity="few">%d паведамленні выдалены</item>
@@ -1556,5 +1564,11 @@
         <item quantity="many">Выдаліць %d паведамленні на гэтай прыладзе?</item>
         <item quantity="one">Выдаліць %d паведамленне на гэтай прыладзе?</item>
         <item quantity="other">Выдаліць %d паведамленняў на гэтай прыладзе?</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="few">%d удзельнікаў суполкі</item>
+        <item quantity="many">%d удзельнікаў суполкі</item>
+        <item quantity="one">%d удзельнік суполкі</item>
+        <item quantity="other">%d удзельнікаў суполкі</item>
     </plurals>
 </resources>

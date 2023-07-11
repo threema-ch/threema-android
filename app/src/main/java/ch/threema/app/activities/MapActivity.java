@@ -21,11 +21,6 @@
 
 package ch.threema.app.activities;
 
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_PROVIDER;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
@@ -40,7 +35,6 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.provider.Settings;
 import android.view.View;
 import android.view.WindowManager;
@@ -55,7 +49,7 @@ import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.chip.Chip;
+import com.google.android.material.button.MaterialButton;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdate;
@@ -92,6 +86,11 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.data.LocationDataModel;
 
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_PROVIDER;
+
 public class MapActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MapActivity");
 
@@ -126,16 +125,11 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (BuildConfig.DEBUG) {
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll()
-					.penaltyLog()
-					.build());
-		}
-
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 
 		setContentView(R.layout.activity_map);
+
+		ConfigUtils.configureTransparentStatusBar(this);
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -209,14 +203,14 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 	private void initUi() {
 		findViewById(R.id.coordinator).setVisibility(View.VISIBLE);
 		findViewById(R.id.center_map).setOnClickListener((it -> zoomToCenter()));
-		Chip openChip = findViewById(R.id.open_chip);
-		Chip shareChip = findViewById(R.id.share_chip);
+		MaterialButton openButton = findViewById(R.id.open_button);
+		MaterialButton shareButton = findViewById(R.id.share_location_button);
 		if (isShowingExternalLocation) {
-			shareChip.setOnClickListener((it -> shareLocation()));
-			openChip.setVisibility(View.GONE);
+			shareButton.setOnClickListener((it -> shareLocation()));
+			openButton.setVisibility(View.GONE);
 		} else {
-			openChip.setOnClickListener((it -> openExternal()));
-			shareChip.setVisibility(View.GONE);
+			openButton.setOnClickListener((it -> openExternal()));
+			shareButton.setVisibility(View.GONE);
 		}
 		TextView locationName = findViewById(R.id.location_name);
 		TextView locationCoordinates = findViewById(R.id.location_coordinates);

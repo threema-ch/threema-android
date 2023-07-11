@@ -1,4 +1,4 @@
-// # Group Calls
+// # Group Call Protocol
 //
 // Note that group calls are not necessarily bound to a Threema group. _Group_
 // refers to a group of call participants and is a way to distinguish from 1:1
@@ -18,20 +18,20 @@
 //
 // ## Terminology
 //
-// - GCK: Group Call Key, only used for key derivation
-// - GCKH: Group Call Key Hash
-// - GCNHAK: Group Call Normal Handshake Authentication Key
-// - GCHK: Group Call Handshake Key
-// - GCSK: Group Call State Key
-// - GCAK: Group Call Administrator Key, only used for key derivation
-// - GCAMK: Group Call Administrator Message Key
-// - PCK: Participant Call Key
-// - PCMK: Participant Call Media Key, only used for key derivation
-// - PCMK': Ratchet iteration of PCMK
-// - PCMFK: Participant Call Media Frame Key
-// - PCCK: Participant Call Cookie
-// - PCSN: Participant Call Sequence Number
-// - MFSN: Media Frame Sequence Number
+// - `GCK`: Group Call Key, only used for key derivation
+// - `GCKH`: Group Call Key Hash
+// - `GCNHAK`: Group Call Normal Handshake Authentication Key
+// - `GCHK`: Group Call Handshake Key
+// - `GCSK`: Group Call State Key
+// - `GCAK`: Group Call Administrator Key, only used for key derivation
+// - `GCAMK`: Group Call Administrator Message Key
+// - `PCK`: Participant Call Key
+// - `PCMK`: Participant Call Media Key, only used for key derivation
+// - `PCMK`': Ratchet iteration of PCMK
+// - `PCMFK`: Participant Call Media Frame Key
+// - `PCCK`: Participant Call Cookie
+// - `PCSN`: Participant Call Sequence Number
+// - `MFSN`: Media Frame Sequence Number
 //
 // ## Key Derivation
 //
@@ -53,7 +53,7 @@
 //
 // Endianness: All integers use little-endian encoding.
 //
-// Encryption format: An NaCl box with a 24 byte nonce.
+// Encryption cipher: XSalsa20-Poly1305, unless otherwise specified.
 //
 // Nonce format:
 //
@@ -104,12 +104,12 @@
 //
 // ### Scoped to Group
 //
-// For group calls scoped to groups, the organiser of the call sends a
-// `GroupCallStart` to the desired group.
+// #### Periodic Refresh
 //
 // The following steps are defined as the _Group Call Refresh Steps_ and will be
 // applied to update the group calls that are currently considered running
-// within a group and determining which one of them is the chosen call:
+// within a group, determining which one of them is the chosen call and
+// potentially join the chosen call:
 //
 // 1. Let `running` be the list of group calls that are currently considered
 //    running within the group.
@@ -120,9 +120,9 @@
 //    concurrently and wait for them to return:
 //    1. If the user is currently participating in `call`, abort the _peek-call_
 //       sub-steps.
-//    2. _Peek_ the `call` via `SfuHttpRequest.Peek`. If this does not result in
-//       a response within 5s, remove `call` from `calls` and abort the
-//       _peek-call_ sub-steps.
+//    2. _Peek_ the `call` via a `SfuHttpRequest.Peek` request. If this does not
+//       result in a response within 5s, remove `call` from `calls` and abort
+//       the _peek-call_ sub-steps.
 //    3. If the received status code for `call` is `401` and `call` is not
 //       marked with _token-refreshed_:
 //       1. Refresh the _SFU Token_. If the _SFU Token_ refresh fails or does
@@ -151,16 +151,16 @@
 // 5. Let `chosen-call` be any call of `calls` with the highest `started_at`
 //    value (i.e. the most recently created call) as provided by the _peek_
 //    result.
-// 6. If `chosen-call` is not defined, display that no group call is currently
+// 6. If `chosen-call` is not defined, signal that no group call is currently
 //    running within the group, abort these steps and return `chosen-call`.
-// 7. Display `chosen-call` as the currently running group call within the
-//    group.
-// 8. If the user is currently in the process of starting a new group call
-//    within the group, prior to sending a `GroupCallStart` message (see the
-//    associated creation steps), cancel that process and join `chosen-call`
-//    instead.
-// 9. If the user is currently participating in a group call of this group which
-//    does not match `chosen-call`, exit the call immediately and join
+// 7. Signal `chosen-call` as the currently running group call within the group.
+// 8. If the _Group Call Join Steps_ are currently running with a different (or
+//    new) group call than `chosen-call`, cancel and restart the _Group Call
+//    Join Steps_ asynchronously with the same `intent` but with the
+//    `chosen-call`.
+// 9. If the user is currently participating in a group call of this group that
+//    is different to `chosen-call`, exit the running group call and run the
+//    _Group Call Join Steps_ asynchronously with the `intent` to _only join_
 //    `chosen-call`.
 // 10. Return `chosen-call`.
 //
@@ -170,17 +170,75 @@
 // When the Threema app is active, run the _Group Call Refresh Steps_ for each
 // group. This will start a timer to refresh any group call status.
 //
-// When the user leaves a group call, run the _Group Call Refresh Steps_.
+// When the user leaves a group call, run the _Group Call Refresh Steps_ for the
+// respective group.
 //
 // The above described timer may be cancelled when the Threema app is inactive.
 // The timer interval may be increased to 30s in case the group conversation is
 // currently not visible to the user.
 //
-// ### Common
+// #### Create or Join
 //
-// Any participant may join the call by connecting to the SFU with the Call ID
-// (and the _SFU Token_ for authentication). When a participant joins the call,
-// the following protocol flows happen in parallel.
+// The following steps are to be run when a user wants to join a group call of a
+// group where a group call is currently considered running (e.g. the user hits
+// _join_ in the UI) or when the user intents to create a group call for a group
+// where no group call is currently considered running (e.g. the user hits the
+// _call_ button in the UI):
+//
+// 1. Let `intent` be the user's intent, i.e. to either _only join_ or _create
+//    or join_ a group call.
+// 2. Refresh the _SFU Token_ if necessary. If the _SFU Token_ refresh fails
+//    within 10s, abort these steps and notify the user.
+// 3. Run the _Group Call Refresh Steps_ for the respective group and let `call`
+//    be the result.
+// 4. If `call` is undefined and `intent` is to _only join_, abort these steps
+//    and notify the user that no group call is running / the group call is no
+//    longer running.
+// 5. If `call` is undefined, create (but don't send) a `GroupCallStart`
+//    message, apply it to `call` and mark `call` as _new_.
+// 6. Run the _Group Call Join Steps_ with the `intent` and `call`.
+//
+// The following steps are defined as the _Group Call Join Steps_ (also applied
+// for creating a group call).:
+//
+// 1. Let `intent` be either _only join_ or _create or join_. Let `call` be the
+//    given group call to be joined (or created).
+// 2.  _Join_ (or implicitly create) the group call via a `SfuHttpRequest.Join`
+//    request. If this does not result in a response within 10s, abort these
+//    steps and notify the user.
+// 3. If the received status code is `503`, notify the user that the group call
+//    is full and abort these steps.
+// 4. If the server could not be reached or the received status code is not
+//    `200` or if the _Join_ response could not be decoded, abort these steps
+//    and notify the user.
+// 5. Establish a WebRTC connection to the SFU with the information provided in
+//    the _Join_ response. Wait until the SFU sent the initial
+//    `SfuToParticipant.Hello` message via the associated data channel. Let
+//    `hello` be that message.
+// 6. If the `hello.participants` contains less than 4 items, set the initial
+//    capture state of the microphone to _on_.
+// 7. If `call` is marked as _new_:
+//    1. Optionally add an artificial wait period of 2s minus the time elapsed
+//       since step 1.[^1]
+//    2. Announce (the previously created but not yet sent) `call` in the
+//       associated group by sending it as a `GroupCallStart` message.
+//    3. Add the created `call` to the list of group calls that are currently
+//       considered running.
+//    4. Asynchronously run the _Group Call Refresh Steps_.[^2]
+// 8. The group call is now considered established and should asynchronously
+//    invoke the SFU to Participant and Participant to Participant flows.
+//
+// [^1]: This prevents butter-fingered user from accidentally starting a group
+// call.
+//
+// [^2]: This will initiate the refresh timer for a newly created call and
+// signal it to the UI.
+//
+// Note: Implementations need to ensure that only one group call can be active
+// at the same time in the application. This means that only one invocation of
+// the _Create or Join_ flow and only one invocation of the _Group Call Join
+// Steps_ can be active. Be aware that these steps can be cancelled by the user
+// and by the _Group Call Refresh Steps_.
 //
 // ### SFU to Participant Flow
 //
@@ -269,7 +327,7 @@
 //    other participant for each device (camera, microphone, ...) that is
 //    currently activated (`Mode` is `ON`).
 //
-// #### Join/Leave
+// #### Join/Leave of Other Participants
 //
 // When a new participant joins, all other participants run the following steps:
 //
@@ -371,8 +429,7 @@ message CallState {
 
   // Information for a single participant.
   message Participant {
-    // The participant's assigned ID.
-    uint32 participant_id = 1;
+    reserved 1;
 
     // A _normal_ participant, i.e. a Threema client.
     message Normal {
@@ -810,28 +867,31 @@ message ParticipantToParticipant {
     // 1. Let `inner-nonce` be a random nonce.
     // 2. Let `inner-data` be encrypted by:
     //
-    //        S = SharedSecret(<sender.CK>.secret, <receiver.CK>.public)
+    //        S = X25519HSalsa20(<sender.CK>.secret, <receiver.CK>.public)
     //        GCNHAK = Blake2b(
     //          key=S, salt='nha', personal='3ma-call', input=GCKH)
-    //
-    //        Box(GCNHAK)
-    //          .encrypt(
-    //            data=<AuthEnvelope(Auth)>, nonce=<inner-nonce>)
+    //        XSalsa20-Poly1305(
+    //          key=GCNHAK,
+    //          nonce=<inner-nonce>,
+    //          data=<AuthEnvelope(Auth)>,
+    //        )
     // 3. Let `outer-data` be encrypted by:
     //
-    //       Box(<sender.PCK>.secret, <receiver.PCK>.public)
-    //         .encrypt(
-    //           data=<inner-nonce><inner-data>,
-    //           nonce=<sender.PCCK><sender.PCSN+>)
+    //        XSalsa20-Poly1305(
+    //          key=X25519HSalsa20(<sender.PCK>.secret, <receiver.PCK>.public),
+    //          nonce=<sender.PCCK> || <sender.PCSN+>,
+    //          data=<inner-nonce> || <inner-data>,
+    //        )
     // 4. Return `outer-data`.
     //
     // If either side started the guest handshake, the second message is
     // encrypted by:
     //
-    //   Box(<sender.PCK>.secret, <receiver.PCK>.public)
-    //     .encrypt(
+    //     XSalsa20-Poly1305(
+    //       key=X25519HSalsa20(<sender.PCK>.secret, <receiver.PCK>.public),
+    //       nonce=<sender.PCCK> || <sender.PCSN+>,
     //       data=<AuthEnvelope(GuestAuth)>,
-    //       nonce=<sender.PCCK><sender.PCSN+>)
+    //     )
     //
     // When receiving this message:
     //
@@ -1015,17 +1075,18 @@ message ParticipantToParticipant {
   // After fulfilling either the (normal) handshake or the guest handshake, all
   // following messages are encoded in `Envelope` and encrypted by:
   //
-  //   Box(<sender.PCK>.secret, <receiver.PCK>.public)
-  //     .encrypt(data=<message>, nonce=<sender.PCCK><sender.PCSN+>)
+  //     XSalsa20-Poly1305(
+  //       key=X25519HSalsa20(<sender.PCK>.secret, <receiver.PCK>.public),
+  //       nonce=<sender.PCCK> || <sender.PCSN+>,
+  //     )
   //
   // Note: Since the guest handshake is TOFU, an attacker knowing `GCK` having
-  //       control over the SFU may apply a MITM attack between a guest
-  //       participant and another participant. The attacker would be able to
-  //       silently eavesdrop all media traffic between the two participants.
-  //       This is repeatable for all other participants and means the attacker
-  //       is able to silently eavesdrop the whole call. Therefore, if a call is
-  //       not open for guests, `GuestHello` (and `GuestAuth`) **must not** be
-  //       accepted.
+  // control over the SFU may apply a MITM attack between a guest participant
+  // and another participant. The attacker would be able to silently eavesdrop
+  // all media traffic between the two participants. This is repeatable for all
+  // other participants and means the attacker is able to silently eavesdrop the
+  // whole call. Therefore, if a call is not open for guests, `GuestHello` (and
+  // `GuestAuth`) **must not** be accepted.
   //
   // When receiving this message:
   //
@@ -1055,13 +1116,15 @@ message ParticipantToParticipant {
   message Admin {
     // Message from an administrator, encrypted by:
     //
-    //   Box(GCAMK.secret, <receiver.PCK>.public)
-    //     .encrypt(data=<Envelope>, nonce=<sender.PCCK><sender.PCSN+>)
+    //     XSalsa20-Poly1305(
+    //       key=X25519HSalsa20(GCAMK.secret, <receiver.PCK>.public),
+    //       nonce=<sender.PCCK> || <sender.PCSN+>,
+    //     )
     //
     // IMPORTANT: The `ParticipantToParticipant.Envelope` that encapsulates this
-    //            message shall be encrypted by the same `PCSN` as used for this
-    //            `Envelope`. The only difference is that the sender uses
-    //            `GCAMK` instead of its ephemeral `PCK`.
+    // message shall be encrypted by the same `PCSN` as used for this
+    // `Envelope`. The only difference is that the sender uses `GCAMK` instead
+    // of its ephemeral `PCK`.
     message Envelope {
       oneof content {
         ReportAsAdmin report_as_admin = 1;

@@ -14,7 +14,7 @@
 		android:layout_marginRight="16dp"
 		android:layout_gravity="left|center_vertical"
 		android:src="@mipmap/ic_launcher"
-		android:tint="?attr/textColorSecondary"/>
+		android:tint="?attr/colorOnSurface"/>
 
 	<TextView
 		android:id="@+id/text"
@@ -25,7 +25,7 @@
 		android:layout_marginLeft="16dp"
 		android:layout_marginRight="16dp"
 		android:textSize="16sp"
-		android:textColor="?attr/textColorSecondary"
+		android:textColor="?attr/colorOnSurface"
 		android:layout_gravity="center_vertical|left"
 		android:maxLines="1"/>
 

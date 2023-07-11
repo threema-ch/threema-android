@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,14 +70,14 @@ public class DownloadServiceImpl implements DownloadService {
 		}
 	}
 
-	private @Nullable ArrayList<Download> getDownloadsByMessageModelId(int messageModelId) {
+	private @NonNull List<Download> getDownloadsByMessageModelId(int messageModelId) {
 		ArrayList<Download> matchingDownloads = new ArrayList<>();
 		for (Download download: this.downloads) {
 			if (download.messageModelId == messageModelId) {
 				matchingDownloads.add(download);
 			}
 		}
-		return matchingDownloads.size() > 0 ? matchingDownloads : null;
+		return matchingDownloads;
 	}
 
 	private @Nullable Download getDownloadByBlobId(@NonNull byte[] blobId) {
@@ -100,8 +101,8 @@ public class DownloadServiceImpl implements DownloadService {
 
 	private boolean removeDownloadByMessageModelId(int messageModelId, boolean cancel) {
 		synchronized (this.downloads) {
-			ArrayList<Download> matchingDownloads = getDownloadsByMessageModelId(messageModelId);
-			if (matchingDownloads != null) {
+			List<Download> matchingDownloads = getDownloadsByMessageModelId(messageModelId);
+			if (!matchingDownloads.isEmpty()) {
 				for (Download download: matchingDownloads) {
 					logger.info("Blob {} remove downloader for message {}. Cancel = {}",
 						Utils.byteArrayToHexString(download.blobId),
@@ -201,14 +202,15 @@ public class DownloadServiceImpl implements DownloadService {
 										logger.info("Blob {} scheduled for marking as downloaded", blobIdHex);
 										try {
 											new Thread(() -> {
+												Download download;
 												synchronized (this.downloads) {
-													Download download = getDownloadByBlobId(blobId);
-													if (download != null) {
-														if (download.blobLoader != null) {
-															download.blobLoader.markAsDone(download.blobId);
-														}
-														logger.info("Blob {} marked as downloaded", blobIdHex);
+													download = getDownloadByBlobId(blobId);
+												}
+												if (download != null) {
+													if (download.blobLoader != null) {
+														download.blobLoader.markAsDone(download.blobId);
 													}
+													logger.info("Blob {} marked as downloaded", blobIdHex);
 												}
 											}, "MarkAsDownThread").start();
 										} catch (Exception ignored) {
@@ -277,7 +279,7 @@ public class DownloadServiceImpl implements DownloadService {
 	@Override
 	public boolean isDownloading(int messageModelId) {
 		synchronized (this.downloads) {
-			return getDownloadsByMessageModelId(messageModelId) != null;
+			return !getDownloadsByMessageModelId(messageModelId).isEmpty();
 		}
 	}
 

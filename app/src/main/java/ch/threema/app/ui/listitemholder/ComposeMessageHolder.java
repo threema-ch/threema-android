@@ -27,7 +27,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 
 import ch.threema.app.services.messageplayer.MessagePlayer;
@@ -43,9 +43,9 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 	public TextView senderName;
 	public TextView dateView;
 	public View senderView;
-	public ImageView deliveredIndicator;
+	public ImageView deliveredIndicator, datePrefixIcon;
 	public ImageView attachmentImage;
-	public ViewGroup messageBlockView;
+	public MaterialCardView messageBlockView;
 	public ViewGroup contentView;
 	public AudioProgressBarView seekBar;
 	public View quoteBar;
@@ -53,7 +53,7 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 	public TranscoderView transcoderView;
 	public FrameLayout readOnContainer;
 	public Chip readOnButton;
-	public MaterialButton messageTypeButton;
+	public View messageTypeButton;
 	public View groupAckContainer;
 	public ImageView groupAckThumbsUpImage, groupAckThumbsDownImage;
 	public TextView groupAckThumbsUpCount, groupAckThumbsDownCount;

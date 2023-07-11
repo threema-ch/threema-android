@@ -7,19 +7,29 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:id="@+id/parent_layout"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+	android:background="?android:attr/colorBackground">
 
 	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/appbar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
 		<com.google.android.material.appbar.MaterialToolbar
-			android:id="@+id/toolbar"
+			android:id="@+id/material_toolbar"
 			style="@style/Threema.ToolbarStyle"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			app:navigationIcon="?attr/homeAsUpIndicator"
 			app:menu="@menu/activity_text_chat_bubble"/>
+
+		<include layout="@layout/connection_indicator"/>
+
+		</FrameLayout>
 
 	</com.google.android.material.appbar.AppBarLayout>
 
@@ -37,10 +47,11 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_margin="16dp"
-			app:cardBackgroundColor="?attr/bubble_send"
+			app:cardBackgroundColor="?attr/colorSecondaryContainer"
 			app:cardCornerRadius="16dp"
 			app:cardElevation="0dp"
 			app:contentPadding="4dp"
+			app:strokeWidth="0dp"
 			app:layout_constraintLeft_toLeftOf="parent"
 			app:layout_constraintRight_toRightOf="parent"
 			app:layout_constraintTop_toTopOf="parent">
@@ -52,12 +63,11 @@
 				android:layout_marginRight="12dp">
 
 				<ch.threema.app.emojis.EmojiConversationTextView
+					style="@style/Threema.Bubble.Text.Body"
 					android:id="@+id/text_view"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:linksClickable="true"
-					android:textColor="?android:textColorPrimary"
-					android:textSize="?attr/font_large"
 					android:textIsSelectable="true"
 					app:layout_constraintBottom_toTopOf="@+id/footer"
 					app:layout_constraintLeft_toLeftOf="parent"
@@ -81,9 +91,9 @@
 
 		</com.google.android.material.card.MaterialCardView>
 
-		<com.google.android.material.chip.Chip
+		<com.google.android.material.button.MaterialButton
 			android:id="@+id/back_button"
-			style="@style/Threema.Chip.VideoTranscoder"
+			style="@style/Threema.MaterialButton.Borderless.Flush"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginRight="16dp"

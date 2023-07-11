@@ -26,7 +26,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -43,6 +42,7 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.Rotate
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import pl.droidsonroids.gif.GifImageView
 
 private val logger = LoggingUtil.getThreemaLogger("BigMediaFragment")
@@ -54,7 +54,7 @@ class BigMediaFragment : Fragment() {
     private lateinit var bigImageView: ImageView
     private lateinit var bigGifImageView: GifImageView
     private lateinit var videoEditView: VideoEditView
-    private lateinit var bigProgressBar: ProgressBar
+    private lateinit var bigProgressBar: CircularProgressIndicator
     private var bottomElemHeight: Int = 0
     private var isVideo = false
 

@@ -10,31 +10,33 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	app:behavior_peekHeight="0dp"
-	app:layout_behavior="@string/bottom_sheet_behavior"
+	app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
 	android:clickable="true"
-	android:focusable="true">
+	android:focusable="true"
+	android:elevation="2dp">
 
 	<ImageView
+		style="@style/Threema.BottomSheet.DragHandle"
 		android:id="@+id/preview_drag_handle"
-		android:layout_width="28dp"
-		android:layout_height="@dimen/drag_handle_height"
-		android:layout_marginTop="@dimen/drag_handle_topbottom_margin"
-		android:layout_marginBottom="@dimen/drag_handle_topbottom_margin"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:importantForAccessibility="no"
-		android:src="@drawable/bottomsheet_grapple"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintRight_toRightOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintBottom_toTopOf="@+id/filename_view" />
+		app:layout_constraintBottom_toTopOf="@+id/filename_view"
+		app:tint="@color/md_theme_dark_onSurface"
+		/>
 
 	<TextView
+		style="@style/Threema.TextAppearance.BodyMedium"
 		android:id="@+id/filename_view"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="4dp"
 		android:layout_marginLeft="16dp"
 		android:layout_marginRight="16dp"
-		android:textColor="@color/dark_text_color_secondary"
+		android:textColor="@color/md_theme_dark_onSurface"
 		android:singleLine="true"
 		android:ellipsize="middle"
 		app:layout_constraintLeft_toLeftOf="parent"
@@ -44,6 +46,7 @@
 		app:layout_constraintHorizontal_bias="0.0"/>
 
 	<TextView
+		style="@style/Threema.TextAppearance.BodyMedium"
 		android:id="@+id/date_view"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -51,7 +54,7 @@
 		android:layout_marginBottom="8dp"
 		android:layout_marginLeft="16dp"
 		android:layout_marginRight="16dp"
-		android:textColor="@color/dark_text_color_secondary"
+		android:textColor="@color/md_theme_dark_onSurface"
 		android:singleLine="true"
 		android:ellipsize="middle"
 		app:layout_constraintLeft_toLeftOf="parent"

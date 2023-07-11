@@ -30,6 +30,11 @@ import android.text.format.DateUtils;
 import android.util.SparseArray;
 import android.widget.ImageView;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.IOUtils;
@@ -52,10 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -392,20 +393,65 @@ public class GroupServiceImpl implements GroupService {
 		return model;
 	}
 
+	@Override
+	public CommonGroupReceiveStepsResult runCommonGroupReceiveSteps(AbstractGroupMessage message) {
+		// 1. Look up the group
+		final GroupModel groupModel = getGroup(message);
+
+		// 2. Check if the group could be found
+		if (groupModel == null) {
+			if (TestUtil.compare(message.getGroupCreator(), userService.getIdentity())) {
+				// 1. If the user is the creator of the group (as alleged by received message),
+				// discard the received message and abort these steps
+				logger.info("Could not find group with me as creator");
+				return CommonGroupReceiveStepsResult.DISCARD_MESSAGE;
+			}
+			// 2. Send a group-sync-request to the group creator and cache the received message for
+			// processing after receiving the group-sync.
+			boolean syncSent = requestSync(message);
+			if (!syncSent) {
+				logger.warn("Got message for an unknown group and sync could not be sent");
+				return CommonGroupReceiveStepsResult.DISCARD_MESSAGE;
+			}
+			return CommonGroupReceiveStepsResult.SYNC_REQUEST_SENT;
+		}
+
+		// 3. Check if the group is left
+		if (!isGroupMember(groupModel)) {
+			if (isGroupOwner(groupModel)) {
+				// 1. If the user is the creator, send a group-setup with an empty
+				// members list back to the sender and discard the received message.
+				sendEmptySync(groupModel, message.getFromIdentity());
+				logger.info("Got a message in a left group where I am the creator");
+				return CommonGroupReceiveStepsResult.DISCARD_MESSAGE;
+			}
+			// 2. Send a group leave to the sender and discard the received message
+			sendLeaveToSender(message);
+			logger.info("Got a message in a left group");
+			return CommonGroupReceiveStepsResult.DISCARD_MESSAGE;
+		}
+
+		// 4. If the sender is not a member of the group and the user is the creator of the group,
+		// send a group-setup with an empty members list back to the sender and discard the received
+		// message.
+		if (!isGroupMember(groupModel, message.getFromIdentity())) {
+			if (isGroupOwner(groupModel)) {
+				sendEmptySync(groupModel, message.getFromIdentity());
+			}
+			logger.info("Got a message in a group from a sender that is not a member");
+			return CommonGroupReceiveStepsResult.DISCARD_MESSAGE;
+		}
+
+		return CommonGroupReceiveStepsResult.SUCCESS;
+	}
 
 	@Override
-	public boolean requestSync(AbstractGroupMessage msg, boolean leaveIfMine) {
+	public boolean requestSync(AbstractGroupMessage msg) {
 		if(msg != null) {
 
-			//do not send a request to myself
+			// Do not send a request to myself
 			if(TestUtil.compare(msg.getGroupCreator(), this.userService.getIdentity())) {
-				if(leaveIfMine) {
-					//auto leave
-					this.sendLeave(msg);
-				}
-				else {
-					return false;
-				}
+				return false;
 			}
 
 			try {
@@ -481,15 +527,13 @@ public class GroupServiceImpl implements GroupService {
 		);
 	}
 
-	@Override
-	public boolean sendLeave(AbstractGroupMessage msg) {
-		if(msg != null) {
+	private void sendLeaveToSender(AbstractGroupMessage msg) {
+		if (msg != null) {
 			try {
-				//send a leave to the creator!!
 				this.groupMessagingService.sendMessage(
 					msg.getApiGroupId(),
 					msg.getGroupCreator(),
-					new String[]{ msg.getFromIdentity(), msg.getGroupCreator() },
+					new String[]{msg.getFromIdentity()},
 					messageId -> {
 						final GroupLeaveMessage groupLeaveMessage = new GroupLeaveMessage();
 						groupLeaveMessage.setMessageId(messageId);
@@ -497,14 +541,10 @@ public class GroupServiceImpl implements GroupService {
 					},
 					null
 				);
-
-				return true;
 			} catch (ThreemaException e) {
 				logger.error("Exception", e);
 			}
-
 		}
-		return false;
 	}
 
 	@Override
@@ -629,7 +669,7 @@ public class GroupServiceImpl implements GroupService {
 		if (isNewGroup && this.blackListService != null && this.blackListService.has(groupCreateMessage.getFromIdentity())) {
 			logger.info("GroupCreateMessage {}: Received group create from blocked ID. Sending leave.", groupCreateMessage.getMessageId());
 
-			sendLeave(groupCreateMessage);
+			sendLeaveToSender(groupCreateMessage);
 
 			result.success = true;
 			return result;
@@ -1198,6 +1238,9 @@ public class GroupServiceImpl implements GroupService {
 
 		// Send rename message to group members if group owner
 		sendGroupRenameToIdentitiesIfOwner(group, getGroupIdentities(group));
+
+		// delete share target shortcut as name is different
+		ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(group.getId()));
 	}
 
 	private void sendGroupRenameToIdentitiesIfOwner(@NonNull GroupModel groupModel, @NonNull String[] identities) throws ThreemaException {
@@ -1344,7 +1387,7 @@ public class GroupServiceImpl implements GroupService {
 
 	@NonNull
 	@Override
-	public String[] getGroupIdentities(GroupModel groupModel) {
+	public String[] getGroupIdentities(@NonNull GroupModel groupModel) {
 		synchronized (this.groupIdentityCache) {
 			String[] existingIdentities = this.groupIdentityCache.get(groupModel.getId());
 			if(existingIdentities != null) {
@@ -1363,7 +1406,7 @@ public class GroupServiceImpl implements GroupService {
 		}
 	}
 
-	private boolean isGroupMember(GroupModel groupModel, String identity) {
+	private boolean isGroupMember(@NonNull GroupModel groupModel, String identity) {
 		if (!TestUtil.empty(identity)) {
 			for (String existingIdentity : this.getGroupIdentities(groupModel)) {
 				if (TestUtil.compare(existingIdentity, identity)) {
@@ -1375,7 +1418,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public boolean isGroupMember(GroupModel groupModel) {
+	public boolean isGroupMember(@NonNull GroupModel groupModel) {
 		return isGroupMember(groupModel, userService.getIdentity());
 	}
 

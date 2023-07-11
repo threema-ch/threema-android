@@ -24,6 +24,9 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,8 +34,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -162,17 +163,17 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	}
 
 	@Override
-	public boolean createBoxedBallotMessage(
+	public void createBoxedBallotMessage(
 											BallotData ballotData,
 											BallotModel ballotModel,
 											final String[] filteredIdentities,
 											DistributionListMessageModel abstractMessageModel) {
-		return false;
+		// Not supported in distribution lists
 	}
 
 	@Override
-	public boolean createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) {
-		return false;
+	public void createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) {
+		// Not supported in distribution lists
 	}
 
 	@Override
@@ -222,6 +223,11 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	@Override
 	public Bitmap getNotificationAvatar() {
 		return distributionListService.getAvatar(distributionListModel, false);
+	}
+
+	@Override
+	public Bitmap getAvatar() {
+		return distributionListService.getAvatar(distributionListModel, true, true);
 	}
 
 	@Deprecated

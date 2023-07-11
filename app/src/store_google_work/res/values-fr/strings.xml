@@ -18,8 +18,6 @@ La paire de clés comprend une <b>clé publie</b> distribuée à vos contacts et
     <string name="new_wizard_info_link">En donnant votre numéro de téléphone et votre adresse e-mail, Theema Work peut aider vos amis à vous trouver automatiquement si vous vous trouvez dans leur carnet d\'adresses. Les adresses e-mail seront stockées de manière chiffrée sur notre serveur. Vous pouvez passer cette étape si vous souhaitez utiliser Threema Work de manière anonyme.</string>
     <string name="threema_contact">Contact Threema Work</string>
     <string name="menu_about">À propos de Threema Work</string>
-    <string name="list_theme_light">Clair</string>
-    <string name="list_theme_dark">Foncé (par défaut)</string>
     <string name="private_threema_download"><![CDATA[ <a href=%1$s>En savoir plus sur Threema Work</a> <br/><br/>Si vous êtes un utilisateur privé, <a href=%2$s>touchez ici</a> pour télécharger Threema.]]></string>
     <string name="directory_search">Rechercher dans le répertoire</string>
     <string name="directory_title">Répertoire de l\'entreprise</string>

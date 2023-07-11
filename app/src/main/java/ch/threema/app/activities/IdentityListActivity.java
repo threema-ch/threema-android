@@ -29,12 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.DialogFragment;
@@ -42,6 +36,13 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.IdentityListAdapter;
@@ -53,7 +54,6 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
@@ -266,8 +266,6 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			mode.getMenuInflater().inflate(R.menu.action_identity_list, menu);
-			ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(IdentityListActivity.this, R.attr.colorAccent));
-
 			return true;
 		}
 
@@ -279,17 +277,15 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			switch (item.getItemId()) {
-				case R.id.menu_identity_remove:
-					IdentityListAdapter.Entity selectedEntity = adapter.getSelected();
-					if (selectedEntity != null) {
-						removeIdentity(selectedEntity.getText());
-					}
-					mode.finish();
-					return true;
-				default:
-					return false;
+			if (item.getItemId() == R.id.menu_identity_remove) {
+				IdentityListAdapter.Entity selectedEntity = adapter.getSelected();
+				if (selectedEntity != null) {
+					removeIdentity(selectedEntity.getText());
+				}
+				mode.finish();
+				return true;
 			}
+			return false;
 		}
 
 		@Override

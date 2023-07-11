@@ -35,14 +35,15 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialog;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.msgpack.core.annotations.Nullable;
 import org.slf4j.Logger;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -158,8 +159,8 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
 			} while (cursor.moveToNext());
 		}
 
-		final TypedArray a = getContext().obtainStyledAttributes(null, androidx.appcompat.R.styleable.AlertDialog,
-				androidx.appcompat.R.attr.alertDialogStyle, 0);
+		final TypedArray a = getContext().obtainStyledAttributes(null, R.styleable.AlertDialog,
+				R.attr.alertDialogStyle, 0);
 		int itemLayout = a.getResourceId(com.google.android.material.R.styleable.AlertDialog_singleChoiceItemLayout, 0);
 		RingtoneListItemAdapter adapter = new RingtoneListItemAdapter(getContext(), itemLayout, android.R.id.text1, labels);
 

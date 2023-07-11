@@ -18,6 +18,7 @@
 	android:paddingBottom="8dp">
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/created_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -29,19 +30,19 @@
 		app:layout_constraintHorizontal_bias="0"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/created_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		app:layout_constraintBaseline_toBaselineOf="@id/created_text"
 		app:layout_constraintRight_toRightOf="parent"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/posted_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -54,21 +55,21 @@
 		app:layout_constraintHorizontal_bias="0"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/posted_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		app:layout_constraintBaseline_toBaselineOf="@id/posted_text"
 		app:layout_constraintRight_toRightOf="parent"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/delivered_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -81,21 +82,21 @@
 		app:layout_constraintHorizontal_bias="0"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/delivered_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		app:layout_constraintBaseline_toBaselineOf="@id/delivered_text"
 		app:layout_constraintRight_toRightOf="parent"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/read_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -108,21 +109,21 @@
 		app:layout_constraintHorizontal_bias="0"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/read_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		app:layout_constraintBaseline_toBaselineOf="@id/read_text"
 		app:layout_constraintRight_toRightOf="parent"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/modified_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -135,21 +136,21 @@
 		app:layout_constraintHorizontal_bias="0"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/modified_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		app:layout_constraintBaseline_toBaselineOf="@id/modified_text"
 		app:layout_constraintRight_toRightOf="parent"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/messageid_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -162,11 +163,11 @@
 		app:layout_constraintHorizontal_bias="0"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/messageid_date"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -176,11 +177,11 @@
 		android:textIsSelectable="true"
 		android:focusable="true"
 		android:longClickable="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/filetype_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -191,11 +192,11 @@
 		app:layout_constraintLeft_toLeftOf="parent"
 		android:ellipsize="none"
 		android:maxLines="1"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/filetype_mime"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -206,7 +207,6 @@
 		app:layout_constrainedWidth="true"
 		app:layout_constraintHorizontal_bias="0"
 		android:textAlignment="viewEnd"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		android:maxLines="2"
 		android:ellipsize="end"
@@ -215,6 +215,7 @@
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/filesize_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -227,22 +228,22 @@
 		app:layout_constraintHorizontal_bias="0"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/filesize_data"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text=""
 		app:layout_constraintBaseline_toBaselineOf="@id/filesize_text"
 		app:layout_constraintRight_toRightOf="parent"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/forward_security_mode_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -255,11 +256,11 @@
 		app:layout_constraintHorizontal_bias="0"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/forward_security_mode_data"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -270,7 +271,6 @@
 		android:textIsSelectable="true"
 		android:focusable="true"
 		android:longClickable="true"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:visibility="gone"
 		/>
 
@@ -319,13 +319,14 @@
 			app:chipSpacingVertical="2dp"
 			android:layout_gravity="center_vertical"/>
 
-		<ch.threema.app.ui.CountBoxView
+		<com.google.android.material.button.MaterialButton
+			style="@style/Threema.MaterialButton.CountView"
 			android:id="@+id/ack_count"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_height="20dp"
 			android:layout_marginTop="6dp"
 			android:layout_gravity="top|right"
-			app:backgroundOverride="@drawable/count_box_background_green"
+			app:backgroundTint="@color/material_green"
 			/>
 
 	</com.google.android.material.card.MaterialCardView>
@@ -365,14 +366,14 @@
 			app:chipSpacingVertical="2dp"
 			android:layout_gravity="center_vertical"/>
 
-		<ch.threema.app.ui.CountBoxView
+		<com.google.android.material.button.MaterialButton
+			style="@style/Threema.MaterialButton.CountView"
 			android:id="@+id/dec_count"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_height="20dp"
 			android:layout_marginTop="6dp"
 			android:layout_gravity="top|right"
-			app:backgroundOverride="@drawable/count_box_background_orange"
-			/>
+			app:backgroundTint="@color/material_orange" />
 
 	</com.google.android.material.card.MaterialCardView>
 

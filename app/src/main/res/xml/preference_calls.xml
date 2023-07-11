@@ -30,6 +30,7 @@
 			android:widgetLayout="@layout/preference_switch_layout" />
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="false"
 			android:key="@string/preferences__voip_force_turn"
 			android:summaryOn="@string/prefs_summary_force_turn_on"
@@ -38,6 +39,7 @@
 			android:title="@string/prefs_title_force_turn"/>
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="false"
 			android:key="@string/preferences__voip_reject_mobile_calls"
 			android:title="@string/prefs_voip_reject_incoming_calls_title"

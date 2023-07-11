@@ -114,7 +114,6 @@ public class LocationMessageSendAction extends SendAction {
 					sendSingleMessage(resolvedReceivers[receiverIndex], location, poiName, this);
 				} else {
 					actionHandler.onCompleted();
-					messageService.sendProfilePicture(resolvedReceivers);
 				}
 			}
 		});

@@ -21,9 +21,16 @@
 
 package ch.threema.app.services.messageplayer;
 
+import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_MEDIA;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import org.slf4j.Logger;
 
@@ -34,10 +41,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
@@ -45,13 +48,11 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.base.ProgressListener;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
-
-import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_MEDIA;
 
 public abstract class MessagePlayer {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MessagePlayer");
@@ -70,16 +71,16 @@ public abstract class MessagePlayer {
 	private int transcodeProgress = 0;
 
 	protected WeakReference<Activity> currentActivityRef;
-	protected MessageReceiver currentMessageReceiver;
+	protected MessageReceiver<?> currentMessageReceiver;
 
 	public final static int State_NONE = 0;
 	public final static int State_DOWNLOADING = 1;
 	public final static int State_DOWNLOADED = 2;
 	public final static int State_DECRYPTING = 3;
 	public final static int State_DECRYPTED = 4;
+	public final static int State_STOPPED = 4;
 	public final static int State_PLAYING = 5;
 	public final static int State_PAUSE = 6;
-	public final static int State_INTERRUPTED_PLAY = 7; // eg. when call comes in or phone rotates
 
 	public interface DownloadListener {
 		@AnyThread default void onStart(AbstractMessageModel messageModel) { }
@@ -117,12 +118,12 @@ public abstract class MessagePlayer {
 	private final Map<String, PlayerListener> playerListeners = new HashMap<>();
 	private final Map<String, DownloadListener> downloadListeners = new HashMap<>();
 	private final Map<String, DecryptionListener> decryptingListeners = new HashMap<>();
-	private final Map<String, PlaybackListener> playbackListeners = new HashMap<>();
+	protected final Map<String, PlaybackListener> playbackListeners = new HashMap<>();
 	private final Map<String, TranscodeListener> transcodeListeners = new HashMap<>();
 	private final MessageService messageService;
 	private final FileService fileService;
 	private final AbstractMessageModel messageModel;
-	private final MessageReceiver messageReceiver;
+	private final MessageReceiver<?> messageReceiver;
 	protected int state = State_NONE;
 
 	private class DecryptTask extends AsyncTask<Boolean, Void, File> {
@@ -164,7 +165,7 @@ public abstract class MessagePlayer {
 			File file = null;
 			autoPlay = params[0];
 
-			logger.debug("decrypt doInBackground");
+			logger.debug("decrypt doInBackground {}", messageModel.getId());
 
 			try {
 				file = fileService.getDecryptedMessageFile(messageModel);
@@ -181,11 +182,11 @@ public abstract class MessagePlayer {
 			if (file != null && file.exists() && !isCancelled()) {
 				state = State_DECRYPTED;
 				decryptedFile = file;
-				logger.debug("decrypt end");
+				logger.debug("decrypt end {}", messageModel.getId());
 			} else {
 				state = State_DOWNLOADED;
 				decryptedFile = null;
-				logger.debug("decrypt failed");
+				logger.debug("decrypt failed {}", messageModel.getId());
 			}
 
 			synchronized (decryptingListeners) {
@@ -196,7 +197,7 @@ public abstract class MessagePlayer {
 			}
 
 			if (state == State_DECRYPTED) {
-				logger.debug("open");
+				logger.debug("open after decrypt {}", messageModel.getId());
 
 				if (currentActivityRef != null && currentActivityRef.get() != null && isReceiverMatch(currentMessageReceiver) && !isCancelled()) {
 					state = State_PLAYING;
@@ -266,7 +267,7 @@ public abstract class MessagePlayer {
 
 	public boolean stop() {
 		logger.debug("stop");
-		if(this.state == State_PLAYING || this.state == State_INTERRUPTED_PLAY) {
+		if(this.state == State_PLAYING) {
 			this.state = State_DECRYPTED;
 			synchronized (this.playbackListeners) {
 				for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
@@ -294,19 +295,19 @@ public abstract class MessagePlayer {
 
 		boolean result = this.stop();
 		if(this.state == State_DOWNLOADING) {
-			this.messageService.cancelMessageDownload(this.getMessageModel());
+			RuntimeUtil.runOnWorkerThread(() -> this.messageService.cancelMessageDownload(this.getMessageModel()));
 			this.state = State_NONE;
 		}
 
 		return result;
 	}
 
-	public boolean toggle() {
-		logger.debug("toggle");
+	public boolean togglePlayPause() {
+		logger.debug("togglePlayPause");
 
 		switch (this.state) {
 			case State_PLAYING:
-				this.pause(false, SOURCE_UI_TOGGLE);
+				this.pause(SOURCE_UI_TOGGLE);
 				break;
 			case State_DOWNLOADING:
 			case State_DECRYPTING:
@@ -318,14 +319,14 @@ public abstract class MessagePlayer {
 		return true;
 	}
 
-	public void pause(boolean forced) {
-		pause(forced, SOURCE_UNDEFINED);
+	public void pause() {
+		pause(SOURCE_UNDEFINED);
 	}
 
-	public void pause(boolean forced, int source) {
+	public void pause(int source) {
 		logger.debug("pause. source = " + source + " state = " + this.state);
-		if(this.state == State_PLAYING || this.state == State_INTERRUPTED_PLAY) {
-			this.state = forced ? State_INTERRUPTED_PLAY : State_PAUSE;
+		if(this.state == State_PLAYING) {
+			this.state = State_PAUSE;
 			this.makePause(source);
 			synchronized (this.playbackListeners) {
 				for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
@@ -371,7 +372,7 @@ public abstract class MessagePlayer {
 		return false;
 	}
 
-	public float togglePlaybackSpeed() {
+	public float togglePlaybackSpeed(float currentSpeed) {
 		return 1f;
 	}
 
@@ -436,7 +437,7 @@ public abstract class MessagePlayer {
 
 	public void removeListeners() {
 		synchronized (this.playbackListeners) {
-			Iterator iterator = this.playbackListeners.entrySet().iterator();
+			Iterator<Map.Entry<String, PlaybackListener>> iterator = this.playbackListeners.entrySet().iterator();
 			while (iterator.hasNext()) {
 				iterator.next();
 				iterator.remove();
@@ -444,7 +445,7 @@ public abstract class MessagePlayer {
 		}
 
 		synchronized (this.playerListeners) {
-			Iterator iterator = this.playerListeners.entrySet().iterator();
+			Iterator<Map.Entry<String, PlayerListener>> iterator = this.playerListeners.entrySet().iterator();
 			while (iterator.hasNext()) {
 				iterator.next();
 				iterator.remove();
@@ -452,7 +453,7 @@ public abstract class MessagePlayer {
 		}
 
 		synchronized (this.downloadListeners) {
-			Iterator iterator = this.downloadListeners.entrySet().iterator();
+			Iterator<Map.Entry<String, DownloadListener>> iterator = this.downloadListeners.entrySet().iterator();
 			while (iterator.hasNext()) {
 				iterator.next();
 				iterator.remove();
@@ -460,7 +461,7 @@ public abstract class MessagePlayer {
 		}
 
 		synchronized (this.decryptingListeners) {
-			Iterator iterator = this.decryptingListeners.entrySet().iterator();
+			Iterator<Map.Entry<String, DecryptionListener>> iterator = this.decryptingListeners.entrySet().iterator();
 			while (iterator.hasNext()) {
 				iterator.next();
 				iterator.remove();
@@ -468,7 +469,7 @@ public abstract class MessagePlayer {
 		}
 
 		synchronized (this.transcodeListeners) {
-			Iterator iterator = this.transcodeListeners.entrySet().iterator();
+			Iterator<Map.Entry<String, TranscodeListener>> iterator = this.transcodeListeners.entrySet().iterator();
 			while (iterator.hasNext()) {
 				iterator.next();
 				iterator.remove();
@@ -482,10 +483,18 @@ public abstract class MessagePlayer {
 	abstract protected void makePause(int source);
 	abstract protected void makeResume(int source);
 	abstract public void seekTo(int pos);
+	/**
+	 * Get duration of media that is currently loaded/playing
+	 * @return duration in milliseconds
+	 */
 	abstract public int getDuration();
+	/**
+	 * Get current position of media that is currently playing
+	 * @return position in milliseconds
+	 */
 	abstract public int getPosition();
 
-	final public int getState() {
+	public int getState() {
 		return this.state;
 	}
 
@@ -499,22 +508,11 @@ public abstract class MessagePlayer {
 
 	public void resume(int source) {
 		logger.debug("resume");
-
-		if(this.state == State_INTERRUPTED_PLAY) {
-			this.state = State_PLAYING;
-			this.makeResume(source);
-
-			synchronized (this.playbackListeners) {
-				for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
-					l.getValue().onPlay(messageModel, this.isAutoPlayed);
-				}
-			}
-		}
 	}
 
 	protected void play(final boolean autoPlay) {
 		logger.debug("play");
-		if(this.state == State_PAUSE || this.state == State_INTERRUPTED_PLAY) {
+		if(this.state == State_PAUSE) {
 			this.state = State_PLAYING;
 			this.makeResume(SOURCE_UI_TOGGLE);
 
@@ -613,7 +611,7 @@ public abstract class MessagePlayer {
 			for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
 				l.getValue().onStatusUpdate(
 						this.messageModel,
-						getPosition()
+					(int) getPosition()
 				);
 			}
 		}

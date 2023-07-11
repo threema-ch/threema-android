@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
@@ -61,6 +62,8 @@ public class MessageQueue implements MessageAckListener, ConnectionStateListener
 
 	private final LinkedList<MessageBox> queue;
 
+	private MessageEnqueueListener messageEnqueueListener = null;
+
 	public MessageQueue(ContactStore contactStore, IdentityStoreInterface identityStore, ThreemaConnection con) {
 		this.contactStore = contactStore;
 		this.identityStore = identityStore;
@@ -73,11 +76,27 @@ public class MessageQueue implements MessageAckListener, ConnectionStateListener
 		con.addConnectionStateListener(this);
 	}
 
-	public synchronized MessageBox enqueue(AbstractMessage message) throws ThreemaException {
-		if (message == null) {
-			return null;
-		}
+	/**
+	 * A listener that can be set to listen to message enqueue events.
+	 */
+	public interface MessageEnqueueListener {
+		void onMessageEnqueued(@NonNull AbstractMessage message);
+	}
 
+	public void setMessageEnqueueListener(@Nullable MessageEnqueueListener messageEnqueueListener) {
+		this.messageEnqueueListener = messageEnqueueListener;
+	}
+
+	/**
+	 * Send a message if there is a connection. If there is no connection, the message is added to
+	 * the queue and sent later - except the no server queuing flag is set.
+	 *
+	 * @param message the message that should be sent
+	 * @return the message box of the enqueued message
+	 * @throws ThreemaException if creating the message box failed
+	 */
+	@NonNull
+	public synchronized MessageBox enqueue(@NonNull AbstractMessage message) throws ThreemaException {
 		logger.debug("Enqueue message");
 
 		/* add missing attributes, if necessary */
@@ -111,6 +130,10 @@ public class MessageQueue implements MessageAckListener, ConnectionStateListener
 			} else {
 				queue.add(boxmsg);
 			}
+		}
+
+		if (messageEnqueueListener != null) {
+			messageEnqueueListener.onMessageEnqueued(message);
 		}
 
 		return boxmsg;

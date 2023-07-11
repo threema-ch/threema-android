@@ -22,7 +22,7 @@
 package ch.threema.app.services.systemupdate
 
 import ch.threema.app.services.UpdateSystemService
-import net.sqlcipher.database.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class SystemUpdateToVersion80(
     private val sqLiteDatabase: SQLiteDatabase

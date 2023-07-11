@@ -36,7 +36,7 @@ import ch.threema.app.motionviews.utils.MathUtils;
 import ch.threema.app.motionviews.viewmodel.Layer;
 
 @SuppressWarnings({"WeakerAccess"})
-public abstract class MotionEntity {
+public abstract class MotionEntity implements ActionEntity {
 
 	/**
 	 * data

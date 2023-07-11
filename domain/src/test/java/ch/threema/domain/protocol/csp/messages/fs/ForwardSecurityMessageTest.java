@@ -36,11 +36,11 @@ import static ch.threema.domain.testhelpers.TestHelpers.setMessageDefaults;
 
 public class ForwardSecurityMessageTest {
 
-	static ForwardSecurityData getDataTestInstance() {
+	private static ForwardSecurityData getDataTestInstance() {
 		return new ForwardSecurityDataMessageTest().makeForwardSecurityDataMessage();
 	}
 
-	static ForwardSecurityEnvelopeMessage getEnvelopeMessageTestInstance() {
+	private static ForwardSecurityEnvelopeMessage getEnvelopeMessageTestInstance() {
 		final ForwardSecurityEnvelopeMessage msg = new ForwardSecurityEnvelopeMessage(getDataTestInstance());
 		setMessageDefaults(msg);
 		return msg;
@@ -59,6 +59,6 @@ public class ForwardSecurityMessageTest {
 		final AbstractMessage decodedMessage = decodeMessageFromBox(boxedMessage);
 		Assert.assertTrue(decodedMessage instanceof ForwardSecurityEnvelopeMessage);
 		final ForwardSecurityEnvelopeMessage msg = (ForwardSecurityEnvelopeMessage) decodedMessage;
-		Assert.assertEquals(msg.getData(), getDataTestInstance());
+		Assert.assertArrayEquals(msg.getData().toProtobufBytes(), getDataTestInstance().toProtobufBytes());
 	}
 }

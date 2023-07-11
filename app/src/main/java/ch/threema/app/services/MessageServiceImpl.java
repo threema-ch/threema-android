@@ -71,11 +71,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.crypto.CipherInputStream;
@@ -90,6 +88,7 @@ import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.exceptions.TranscodeCanceledException;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.processors.MessageAckProcessor;
@@ -130,7 +129,6 @@ import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
@@ -142,9 +140,6 @@ import ch.threema.domain.protocol.csp.messages.BoxImageMessage;
 import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
 import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
 import ch.threema.domain.protocol.csp.messages.BoxVideoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
 import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage;
@@ -421,7 +416,7 @@ public class MessageServiceImpl implements MessageService {
 
 		final AbstractMessageModel model = receiver.createLocalModel(
 			MessageType.FORWARD_SECURITY_STATUS,
-			MessageContentsType.GROUP_CALL_STATUS,
+			MessageContentsType.FORWARD_SECURITY_STATUS,
 			new Date()
 		);
 		model.setOutbox(false);
@@ -567,161 +562,137 @@ public class MessageServiceImpl implements MessageService {
 		return messageModel;
 	}
 
-	/**
-	 * Add provided contact to a list of contacts
-	 * - if it never received our profile picture
-	 * - if our profile pic was updated since it last received it
-	 *
-	 * @param contacts List of contacts to add "contact" to if it should receive the profile picture
-	 * @param contact ContactModel to examine
-	 * @param lastUpdated Date our profile pic was last updated
-	 * @return updated contacts
-	 */
-	private Set<ContactModel> addProfilePicRecipient(Set<ContactModel> contacts, ContactModel contact, UserService userService, @Nullable Date lastUpdated) {
-		if (contact != null && lastUpdated != null) {
-			String identity = contact.getIdentity();
-			if (!userService.getIdentity().equals(identity)) {
-				if (preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_EVERYONE ||
-						(preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_SOME &&
-						profilePicRecipientsService.has(identity))) {
-					Date profilePicSentDate = contact.getProfilePicSentDate();
+	@Override
+	public void executeProfilePictureDistribution(@NonNull AbstractMessage message) {
+		// Step 1: abort if message does not allow user profile distribution
+		if (!message.allowUserProfileDistribution()) {
+			return;
+		}
 
-					if (profilePicSentDate == null || lastUpdated.after(profilePicSentDate)) {
-						contacts.add(contact);
-					}
-				}
+		String toIdentity = message.getToIdentity();
+
+		ContactModel contactModel = contactService.getByIdentity(toIdentity);
+		if (contactModel == null) {
+			logger.warn("Cannot send profile picture: ");
+			return;
+		}
+
+		// Step 2: abort if the contact's id is ECHOECHO or a Gateway ID
+		if (ContactUtil.isEchoEchoOrChannelContact(contactModel)) {
+			logger.info("Contact {} should not receive the profile picture", toIdentity);
+			return;
+		}
+
+		// If the contact has been restored, send a photo request message and mark contact as not
+		// restored if successful. Don't do this for ECHOECHO or channel IDs.
+		if (contactModel.isRestored()) {
+			if (sendContactRequestPhotoMessage(contactModel)) {
+				contactModel.setIsRestored(false);
+				contactService.save(contactModel);
 			}
 		}
-		return contacts;
+
+		// Step 3: abort the contact should not receive the profile picture according to settings
+		if (!contactService.isContactAllowedToReceiveProfilePicture(contactModel)) {
+			logger.info("Contact {} should not receive the profile picture", toIdentity);
+			return;
+		}
+
+		// Step 4: upload profile picture to blob server if no valid cached blob id exists
+		ContactService.ProfilePictureUploadData data = contactService.getUpdatedProfilePictureUploadData();
+		if (data.blobId == null) {
+			logger.warn("Blob ID is null; abort profile picture distribution");
+			return;
+		}
+
+		// Step 5: If the currently cached blob ID equals the blob ID that was most recently
+		// distributed to the contact, abort these steps
+		if (Arrays.equals(data.blobId, contactModel.getProfilePicBlobID())) {
+			logger.debug("Contact {} already has the latest profile picture", toIdentity);
+			return;
+		}
+
+		// Step 6 and 7: Send a set-profile-picture message to the contact using the cached blob ID
+		// and store the blob ID as the most recently used blob ID for this contact
+		if (data.blobId != ContactModel.NO_PROFILE_PICTURE_BLOB_ID) {
+			if (!sendContactSetProfilePictureMessage(data, contactModel)) {
+				logger.warn("Could not enqueue set profile picture message");
+				return;
+			}
+		} else {
+			if (!sendContactDeleteProfilePictureMessage(contactModel)) {
+				logger.warn("Could not enqueue delete profile picture message");
+				return;
+			}
+		}
+
+		logger.info("Profile picture successfully sent to {}", toIdentity);
 	}
 
 	@Override
-	public boolean sendProfilePicture(MessageReceiver[] messageReceivers) {
-		if (messageReceivers.length > 0) {
-			UserService userService;
-			try {
-				userService = ThreemaApplication.requireServiceManager().getUserService();
-				if (userService == null) {
-					return false;
-				}
-			} catch (Exception e) {
-				return false;
-			}
-
-			Date lastUpdated = preferenceService.getProfilePicLastUpdate();
-
-			// create array of receivers that need an update
-			Set<ContactModel> outdatedContacts = new HashSet<>();
-			Set<ContactModel> restoredContacts = new HashSet<>();
-
-			for (MessageReceiver messageReceiver : messageReceivers) {
-				if (messageReceiver instanceof ContactMessageReceiver) {
-					ContactModel contactModel = ((ContactMessageReceiver) messageReceiver).getContact();
-					if (contactModel.isRestored()) {
-						restoredContacts.add(contactModel);
-					}
-
-					if (!ContactUtil.canReceiveProfilePics(contactModel)) {
-						continue;
-					}
-					outdatedContacts = addProfilePicRecipient(outdatedContacts, contactModel, userService, lastUpdated);
-				} else if (messageReceiver instanceof GroupMessageReceiver) {
-					GroupModel groupModel = ((GroupMessageReceiver) messageReceiver).getGroup();
-					if (groupModel != null) {
-						for (ContactModel contactModel : groupService.getMembers(groupModel)) {
-							if (contactModel.isRestored()) {
-								restoredContacts.add(contactModel);
-							}
-							outdatedContacts = addProfilePicRecipient(outdatedContacts, contactModel, userService, lastUpdated);
-						}
-					}
-				}
-			}
-
-			if (restoredContacts.size() > 0) {
-				/* as the other party doesn't know that we restored his contact from a backup we send him a request profile photo
-				 * message causing him to re-send the profile pic at his earliest convenience, i.e. accompanying a regular message
-				 * */
-				for (ContactModel contactModel : restoredContacts) {
-					final String identity = contactModel.getIdentity();
-					final boolean isEchoecho = ThreemaApplication.ECHO_USER_IDENTITY.equals(identity);
-					final boolean isGatewayId = ContactUtil.isChannelContact(identity);
-					if (isEchoecho || isGatewayId) {
-						// Don't send profile picture requests to ECHOECHO or to gateway IDs
-						continue;
-					}
-					ContactRequestPhotoMessage msg = new ContactRequestPhotoMessage();
-					msg.setToIdentity(identity);
-
-					logger.info("Enqueue request profile picture message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-					MessageBox messageBox = null;
-					try {
-						messageBox = messageQueue.enqueue(msg);
-					} catch (ThreemaException e) {
-						logger.error("Failed to enqueue profile picture request message", e);
-					}
-
-					if (messageBox != null) {
-						contactModel.setIsRestored(false);
-						contactService.save(contactModel);
-					}
-				}
-			}
-
-			if (preferenceService.getProfilePicRelease() != PreferenceService.PROFILEPIC_RELEASE_NOBODY) {
-				if (outdatedContacts.size() > 0) {
-					String tag = "sendProfileImageMessage";
-					logger.info(tag + ": start");
-
-					ContactModel myContactModel = contactService.getByIdentity(userService.getIdentity());
-					Bitmap image = contactService.getAvatar(myContactModel, true, false);
-
-					if (image != null) {
-						try {
-							ContactServiceImpl.ContactPhotoUploadResult result = contactService.uploadContactPhoto(image);
-
-							for (ContactModel contactModel : outdatedContacts) {
-								ContactSetPhotoMessage msg = new ContactSetPhotoMessage();
-								msg.setBlobId(result.blobId);
-								msg.setEncryptionKey(result.encryptionKey);
-								msg.setSize(result.size);
-								msg.setToIdentity(contactModel.getIdentity());
-
-								logger.info("Enqueue profile picture message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-								MessageBox messageBox = messageQueue.enqueue(msg);
-
-								if (messageBox != null) {
-									contactModel.setProfilePicSentDate(new Date());
-									contactService.save(contactModel);
-								}
-							}
-						} catch (Exception e) {
-							logger.error("Exception", e);
-						}
-					} else {
-						// local avatar has been removed - send a Delete Photo message
-						for (ContactModel contactModel : outdatedContacts) {
-							ContactDeletePhotoMessage msg = new ContactDeletePhotoMessage();
-							msg.setToIdentity(contactModel.getIdentity());
-
-							logger.info("Enqueue remove profile picture message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-							try {
-								MessageBox messageBox = messageQueue.enqueue(msg);
-								if (messageBox != null) {
-									contactModel.setProfilePicSentDate(new Date());
-									contactService.save(contactModel);
-								}
-							} catch (ThreemaException e) {
-								logger.error("Exception", e);
-							}
-						}
-					}
-				}
-			}
+	public boolean sendProfilePicture(@NonNull ContactModel contactModel) {
+		ContactService.ProfilePictureUploadData data = contactService.getUpdatedProfilePictureUploadData();
+		if (data.blobId == null) {
+			logger.warn("Blob ID is null; cannot send profile picture");
+			return false;
 		}
 
-		//invalid image
+		if (Arrays.equals(data.blobId, ContactModel.NO_PROFILE_PICTURE_BLOB_ID)) {
+			return sendContactDeleteProfilePictureMessage(contactModel);
+		} else {
+			return sendContactSetProfilePictureMessage(data, contactModel);
+		}
+	}
+
+	/**
+	 * Send a set-profile-picture message to the given contact using the given upload data. This
+	 * method also updates the most recently used blob ID for the contact.
+	 *
+	 * @return true if the set-profile-picture message has been sent successfully, false otherwise
+	 */
+	private boolean sendContactSetProfilePictureMessage(@NonNull ContactService.ProfilePictureUploadData data, @NonNull ContactModel contactModel) {
+		try {
+			contactService.createReceiver(contactModel).sendSetProfilePictureMessage(data);
+			// Store blob ID to contact
+			contactModel.setProfilePicBlobID(data.blobId);
+			contactService.save(contactModel);
+			return true;
+		} catch (ThreemaException e) {
+			logger.error("Could not enqueue profile picture message", e);
+		}
 		return false;
+	}
+
+	/**
+	 * Send a delete-profile-picture message to the given contact using the given upload data. This
+	 * method also updates the most recently used blob ID for the contact.
+	 *
+	 * @return true if the delete-profile-picture message has been sent successfully, false otherwise
+	 */
+	private boolean sendContactDeleteProfilePictureMessage(@NonNull ContactModel contactModel) {
+		logger.info("Send delete profile picture message to {}", contactModel.getIdentity());
+		try {
+			contactService.createReceiver(contactModel).sendDeleteProfilePictureMessage();
+			// If the delete photo message was sent successfully, store empty byte array as the
+			// most recently sent blob ID.
+			contactModel.setProfilePicBlobID(ContactModel.NO_PROFILE_PICTURE_BLOB_ID);
+			contactService.save(contactModel);
+			return true;
+		} catch (ThreemaException e) {
+			logger.error("Exception", e);
+		}
+		return false;
+	}
+
+	private boolean sendContactRequestPhotoMessage(@NonNull ContactModel contactModel) {
+		logger.info("Send request profile picture message to {}", contactModel.getIdentity());
+		try {
+			contactService.createReceiver(contactModel).sendRequestProfilePictureMessage();
+			return true;
+		} catch (ThreemaException e) {
+			logger.error("Failed to enqueue profile picture request message", e);
+			return false;
+		}
 	}
 
 	@Override
@@ -983,24 +954,26 @@ public class MessageServiceImpl implements MessageService {
 		return false;
 	}
 
-	private void sendDeliveryReceipts(@NonNull AbstractMessageModel messageModel, int type) throws ThreemaException {
+	private boolean sendDeliveryReceipts(@NonNull AbstractMessageModel messageModel, int type) throws ThreemaException {
 		if (messageModel instanceof GroupMessageModel) {
-			sendGroupDeliveryReceipt((GroupMessageModel) messageModel, type);
+			return sendGroupDeliveryReceipt((GroupMessageModel) messageModel, type);
 		} else {
-			sendDeliveryReceipt(messageModel, type);
+			return sendDeliveryReceipt(messageModel, type);
 		}
 	}
 
-	private void sendDeliveryReceipt(@NonNull AbstractMessageModel messageModel, int type) throws ThreemaException {
-		DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
-		receipt.setReceiptType(type);
+	private boolean sendDeliveryReceipt(@NonNull AbstractMessageModel messageModel, int type) throws ThreemaException {
+		ContactModel contactModel = contactService.getByIdentity(messageModel.getIdentity());
+		if (contactModel == null) {
+			logger.error("Cannot get contact {} for sending the delivery receipt", messageModel.getIdentity());
+			return false;
+		}
 
-		receipt.setReceiptMessageIds(new MessageId[]{MessageId.fromString(messageModel.getApiMessageId())});
-		receipt.setFromIdentity(identityStore.getIdentity());
-		receipt.setToIdentity(messageModel.getIdentity());
-		logger.info("Enqueue delivery receipt ({}) message ID {} to {} for message ID {}",
-			type, receipt.getMessageId(), receipt.getToIdentity(), receipt.getReceiptMessageIds()[0]);
-		messageQueue.enqueue(receipt);
+		contactService.createReceiver(contactModel).sendDeliveryReceipt(
+			type,
+			new MessageId[]{MessageId.fromString(messageModel.getApiMessageId())}
+		);
+		return true;
 	}
 
 	/**
@@ -1009,11 +982,11 @@ public class MessageServiceImpl implements MessageService {
 	 * @param receiptType Type of receipt (currently only ACK and DEC are supported for groups)
 	 * @throws ThreemaException
 	 */
-	private void sendGroupDeliveryReceipt(@NonNull GroupMessageModel messageModel, int receiptType) throws ThreemaException {
+	private boolean sendGroupDeliveryReceipt(@NonNull GroupMessageModel messageModel, int receiptType) throws ThreemaException {
 		GroupModel groupModel = groupService.getById(messageModel.getGroupId());
 		if (groupModel == null) {
 			logger.info("Unable to find group for message ID {}", messageModel.getApiMessageId());
-			return;
+			return false;
 		}
 
 		String[] memberIdentities = groupService.getGroupIdentities(groupModel);
@@ -1031,6 +1004,7 @@ public class MessageServiceImpl implements MessageService {
 				messageQueue.enqueue(receipt);
 			}
 		}
+		return true;
 	}
 
 	private boolean sendQuickReaction(@NonNull AbstractMessageModel messageModel, boolean markAsRead, int receiptType, @NonNull MessageState newMessageState) {
@@ -1039,7 +1013,10 @@ public class MessageServiceImpl implements MessageService {
 				markAsRead(messageModel, true);
 			}
 
-			sendDeliveryReceipts(messageModel, receiptType);
+			if (!sendDeliveryReceipts(messageModel, receiptType)) {
+				logger.error("Failed to send delivery receipt");
+				return false;
+			}
 			messageModel.setState(newMessageState);
 
 			if (messageModel instanceof GroupMessageModel && identityStore != null && identityStore.getIdentity() != null) {
@@ -1117,13 +1094,14 @@ public class MessageServiceImpl implements MessageService {
 		return null;
 	}
 
-	private AbstractMessageModel getAbstractMessageModelByApiIdAndOutbox(final MessageId apiMessageId) {
+	private AbstractMessageModel getAbstractMessageModelByApiIdAndOutbox(final MessageId apiMessageId, @NonNull String recipientIdentity) {
 		//contact message cache
 		synchronized (contactMessageCache) {
 			AbstractMessageModel messageModel = Functional.select(contactMessageCache, m -> m.getApiMessageId() != null
-					&& m.getApiMessageId().equals(apiMessageId.toString())
-					&& m.isOutbox());
-			if(messageModel != null) {
+				&& m.getApiMessageId().equals(apiMessageId.toString())
+				&& recipientIdentity.equals(m.getIdentity())
+				&& m.isOutbox());
+			if (messageModel != null) {
 				return messageModel;
 			}
 		}
@@ -1131,24 +1109,27 @@ public class MessageServiceImpl implements MessageService {
 		//group message cache
 		synchronized (groupMessageCache) {
 			AbstractMessageModel messageModel = Functional.select(groupMessageCache, m -> m.getApiMessageId() != null
-					&& m.getApiMessageId().equals(apiMessageId.toString())
-					&& m.isOutbox());
+				&& m.getApiMessageId().equals(apiMessageId.toString())
+				&& recipientIdentity.equals(m.getIdentity())
+				&& m.isOutbox());
 
-			if(messageModel != null) {
+			if (messageModel != null) {
 				return messageModel;
 			}
 		}
 
-		MessageModel contactMessageModel = databaseServiceNew.getMessageModelFactory().getByApiMessageIdAndIsOutbox(
+		MessageModel contactMessageModel = databaseServiceNew.getMessageModelFactory().getByApiMessageIdAndIdentityAndIsOutbox(
 				apiMessageId,
+				recipientIdentity,
 				true);
 		if(contactMessageModel != null) {
 			cache(contactMessageModel);
 			return contactMessageModel;
 		}
 
-		GroupMessageModel groupMessageModel = databaseServiceNew.getGroupMessageModelFactory().getByApiMessageIdAndIsOutbox(
+		GroupMessageModel groupMessageModel = databaseServiceNew.getGroupMessageModelFactory().getByApiMessageIdAndIdentityAndIsOutbox(
 				apiMessageId,
+				recipientIdentity,
 				true);
 		if(groupMessageModel != null) {
 			cache(groupMessageModel);
@@ -1204,14 +1185,17 @@ public class MessageServiceImpl implements MessageService {
 	 * @param apiMessageId API Message ID of message to update
 	 * @param state New state
 	 * @param stateDate Date of state change
+	 * @param recipientIdentity the identity of the message's recipient
+	 * @return the message that was updated, if any
 	 */
 	@Override
-	public void updateMessageStateForOutgoingMessage(
+	public @Nullable AbstractMessageModel updateMessageStateForOutgoingMessage(
 		@NonNull MessageId apiMessageId,
 		@NonNull MessageState state,
-		@Nullable Date stateDate
+		@Nullable Date stateDate,
+		@NonNull String recipientIdentity
 	) {
-		final AbstractMessageModel messageModel = getAbstractMessageModelByApiIdAndOutbox(apiMessageId);
+		final AbstractMessageModel messageModel = getAbstractMessageModelByApiIdAndOutbox(apiMessageId, recipientIdentity);
 		if (messageModel == null) {
 			//try to select a group message
 			GroupMessagePendingMessageIdModel groupMessagePendingMessageIdModel = databaseServiceNew
@@ -1223,6 +1207,7 @@ public class MessageServiceImpl implements MessageService {
 		} else {
 			updateMessageState(messageModel, state, stateDate);
 		}
+		return messageModel;
 	}
 
 	private void updateMessageState(
@@ -1342,16 +1327,14 @@ public class MessageServiceImpl implements MessageService {
 
 			saved = true;
 
-			if (sendDeliveryReceipt) {
-				DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
-				receipt.setReceiptType(ProtocolDefines.DELIVERYRECEIPT_MSGREAD);
+			if (sendDeliveryReceipt && contactModel != null) {
+				contactService.createReceiver(contactModel).sendDeliveryReceipt(
+					ProtocolDefines.DELIVERYRECEIPT_MSGREAD,
+					new MessageId[]{MessageId.fromString(message.getApiMessageId())}
+				);
 
-				receipt.setReceiptMessageIds(new MessageId[]{MessageId.fromString(message.getApiMessageId())});
-				receipt.setFromIdentity(identityStore.getIdentity());
-				receipt.setToIdentity(message.getIdentity());
-				logger.info("Enqueue delivery receipt (read) message ID {} for message ID {} from {}",
-					receipt.getMessageId(), receipt.getReceiptMessageIds()[0], receipt.getToIdentity());
-				messageQueue.enqueue(receipt);
+				logger.info("Enqueue delivery receipt (read) message for message ID {} from {}",
+					message.getApiMessageId(), contactModel.getIdentity());
 			}
 		}
 
@@ -1374,18 +1357,20 @@ public class MessageServiceImpl implements MessageService {
 			saved = true;
 
 			if (BuildConfig.SEND_CONSUMED_DELIVERY_RECEIPTS) {
+				ContactModel contactModel = contactService.getByIdentity(message.getIdentity());
 				if (preferenceService.isReadReceipts()
 					&& message instanceof MessageModel
-					&& !((message.getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) == ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)) {
-					DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
-					receipt.setReceiptType(ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED);
-
-					receipt.setReceiptMessageIds(new MessageId[]{MessageId.fromString(message.getApiMessageId())});
-					receipt.setFromIdentity(identityStore.getIdentity());
-					receipt.setToIdentity(message.getIdentity());
-					logger.info("Enqueue delivery receipt (consumed) message ID {} for message ID {} from {}",
-						receipt.getMessageId(), receipt.getReceiptMessageIds()[0], receipt.getToIdentity());
-					messageQueue.enqueue(receipt);
+					&& (message.getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) != ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS
+					&& contactModel != null
+				) {
+					contactService.createReceiver(contactModel).sendDeliveryReceipt(
+						ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED,
+						new MessageId[]{MessageId.fromString(message.getApiMessageId())}
+					);
+					logger.info("Enqueue delivery receipt (consumed) message for message ID {} from {}",
+						message.getApiMessageId(),
+						contactModel.getIdentity()
+					);
 				}
 			}
 
@@ -1518,40 +1503,6 @@ public class MessageServiceImpl implements MessageService {
 			}
 		}
 
-		if (ConfigUtils.isForwardSecurityEnabled() && !(message instanceof DeliveryReceiptMessage)) {
-			ContactModel senderContact = contactService.getByIdentity(message.getFromIdentity());
-			if (senderContact != null) {
-				ContactMessageReceiver receiver = contactService.createReceiver(senderContact);
-
-				if (message.getForwardSecurityMode() == null || message.getForwardSecurityMode() == ForwardSecurityMode.NONE) {
-					// Check if this contact has sent FS messages before. Warn the user if this is the case.
-					if (fsmp.hasContactUsedForwardSecurity(senderContact)) {
-						if (senderContact.getForwardSecurityState() == ContactModel.FS_ON) {
-							contactService.setForwardSecurityState(senderContact, ContactModel.FS_OFF);
-							createForwardSecurityStatus(
-								receiver,
-								MESSAGE_WITHOUT_FORWARD_SECURITY,
-								0,
-								null
-							);
-						}
-					}
-				} else if (message.getForwardSecurityMode() == ForwardSecurityMode.FOURDH) {
-					if (senderContact.getForwardSecurityState() == ContactModel.FS_OFF) {
-						contactService.setForwardSecurityState(senderContact, ContactModel.FS_ON);
-						createForwardSecurityStatus(
-							receiver,
-							senderContact.isForwardSecurityEnabled() ?
-							ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED:
-							ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX,
-							0,
-							null
-						);
-					}
-				}
-			}
-		}
-
 		// Handle message depending on subtype
 		final Class<? extends AbstractMessage> messageClass = message.getClass();
 		if (messageClass.equals(BoxTextMessage.class)) {
@@ -1592,14 +1543,15 @@ public class MessageServiceImpl implements MessageService {
 
 			//send msgreceived
 			if (!message.flagNoDeliveryReceipts()) {
-				DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
-				receipt.setReceiptType(ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED);
-				receipt.setReceiptMessageIds(new MessageId[]{message.getMessageId()});
-				receipt.setFromIdentity(identityStore.getIdentity());
-				receipt.setToIdentity(message.getFromIdentity());
-				logger.info("Enqueue delivery receipt (delivered) message ID {} for message ID {} from {}",
-					receipt.getMessageId(), receipt.getReceiptMessageIds()[0], receipt.getToIdentity());
-				messageQueue.enqueue(receipt);
+				ContactModel contactModel = contactService.getByIdentity(message.getFromIdentity());
+				if (contactModel != null) {
+					contactService.createReceiver(contactModel).sendDeliveryReceipt(
+						ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED,
+						new MessageId[]{message.getMessageId()}
+					);
+					logger.info("Enqueue delivery receipt (delivered) message for message ID {} from {}",
+						message.getMessageId(), contactModel.getIdentity());
+				}
 			}
 
 			logger.info("processIncomingContactMessage: {} SUCCESS - Message ID = {}", message.getMessageId(), messageModel.getId());
@@ -1635,20 +1587,6 @@ public class MessageServiceImpl implements MessageService {
 		if (blackListService != null && blackListService.has(message.getFromIdentity())) {
 			//set success to true (remove from server)
 			logger.info("GroupMessage {}: Sender is blocked, ignoring", message.getMessageId());
-			return true;
-		}
-
-		if(groupService.getGroupMember(groupModel, message.getFromIdentity()) == null) {
-			// we received a group message from a user that is not or no longer part of the group
-			if(groupService.isGroupOwner(groupModel)) {
-				// send empty group create to the user if i am the group administrator
-				groupService.sendEmptySync(groupModel, message.getFromIdentity());
-			}
-			else {
-				// otherwise request a sync
-				groupService.requestSync(message, false);
-			}
-			logger.error("GroupMessage {}: error: contact is not in my group list", message.getMessageId());
 			return true;
 		}
 
@@ -1697,6 +1635,10 @@ public class MessageServiceImpl implements MessageService {
 		}
 		else if (message.getClass().equals(GroupBallotCreateMessage.class)) {
 			messageModel = saveGroupMessage((GroupBallotCreateMessage) message, messageModel);
+			// This is only used for debugging
+			if (ConfigUtils.isTestBuild()) {
+				logger.info("Processed GroupBallotCreateMessage {}", ((GroupBallotCreateMessage) message).getRawBallotData());
+			}
 		}
 		else if(message.getClass().equals(GroupFileMessage.class)) {
 			messageModel = saveGroupMessage((GroupFileMessage) message, messageModel);
@@ -2810,14 +2752,24 @@ public class MessageServiceImpl implements MessageService {
 		return model;
 	}
 
-	private @Nullable MessageModel getContactMessageModel(@NonNull final String apiMessageId) {
+	private @Nullable MessageModel getContactMessageModel(
+		@NonNull final String apiMessageId,
+		@NonNull ContactMessageReceiver messageReceiver
+	) {
 		MessageModel model;
 		synchronized (contactMessageCache) {
-			model = Functional.select(contactMessageCache, messageModel -> apiMessageId.equals(messageModel.getApiMessageId()));
+			model = Functional.select(
+				contactMessageCache,
+				messageModel -> apiMessageId.equals(messageModel.getApiMessageId())
+					&& messageReceiver.getContact().getIdentity().equals(messageModel.getIdentity())
+			);
 		}
 		if (model == null) {
 			try {
-				model = databaseServiceNew.getMessageModelFactory().getByApiMessageId(new MessageId(Utils.hexStringToByteArray(apiMessageId)));
+				model = databaseServiceNew.getMessageModelFactory().getByApiMessageIdAndIdentity(
+					new MessageId(Utils.hexStringToByteArray(apiMessageId)),
+					messageReceiver.getContact().getIdentity()
+				);
 				if (model != null) {
 					synchronized (contactMessageCache) {
 						contactMessageCache.add(model);
@@ -2844,13 +2796,21 @@ public class MessageServiceImpl implements MessageService {
 		}
 	}
 
-	private GroupMessageModel getGroupMessageModel(@NonNull final String apiMessageId) {
+	private GroupMessageModel getGroupMessageModel(
+		@NonNull final String apiMessageId,
+		@NonNull GroupMessageReceiver messageReceiver
+	) {
+		int groupId = messageReceiver.getGroup().getId();
 		synchronized (groupMessageCache) {
-			GroupMessageModel model = Functional.select(groupMessageCache, messageModel -> apiMessageId.equals(messageModel.getApiMessageId()));
+			GroupMessageModel model = Functional.select(
+				groupMessageCache,
+				messageModel -> apiMessageId.equals(messageModel.getApiMessageId())
+					&& groupId == messageModel.getGroupId()
+			);
 
 			if (model == null) {
 				try {
-					model = databaseServiceNew.getGroupMessageModelFactory().getByApiMessageId(new MessageId(Utils.hexStringToByteArray(apiMessageId)));
+					model = databaseServiceNew.getGroupMessageModelFactory().getByApiMessageIdAndGroupId(new MessageId(Utils.hexStringToByteArray(apiMessageId)), groupId);
 					if (model != null) {
 						groupMessageCache.add(model);
 					}
@@ -2865,12 +2825,6 @@ public class MessageServiceImpl implements MessageService {
 	public DistributionListMessageModel getDistributionListMessageModel(Integer id, boolean lazy) {
 		return databaseServiceNew.getDistributionListMessageModelFactory().getById(
 				id
-		);
-	}
-
-	private DistributionListMessageModel getDistributionListMessageModel(String apiMessageId) {
-		return databaseServiceNew.getDistributionListMessageModelFactory().getByApiMessageId(
-				apiMessageId
 		);
 	}
 
@@ -3515,19 +3469,12 @@ public class MessageServiceImpl implements MessageService {
 
 			if (unreadMessages != null && unreadMessages.size() > 0) {
 				//do not run on a own thread, create a new thread outside!
-				(new ReadMessagesRoutine(unreadMessages, this, notificationService)).run();
+				new ReadMessagesRoutine(unreadMessages, this, notificationService).run();
 			}
+			notificationService.cancel(messageReceiver);
 		} catch (SQLException e) {
 			logger.error("Exception", e);
 		}
-	}
-
-	@Override
-	public void markMessageAsRead(AbstractMessageModel abstractMessageModel, NotificationService notificationService) {
-		List<AbstractMessageModel> messages = new ArrayList<>();
-		messages.add(abstractMessageModel);
-
-		new Thread(new ReadMessagesRoutine(messages, this, notificationService)).start();
 	}
 
 	@Override
@@ -3546,14 +3493,19 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	@Nullable
-	public AbstractMessageModel getMessageModelByApiMessageId(String apiMessageId, @MessageReceiver.MessageReceiverType int type) {
+	public AbstractMessageModel getMessageModelByApiMessageIdAndReceiver(
+		@Nullable String apiMessageId,
+		@NonNull MessageReceiver messageReceiver
+	) {
 		if (apiMessageId != null) {
-			if (type == MessageReceiver.Type_CONTACT) {
-				return getContactMessageModel(apiMessageId);
-			} else if (type == MessageReceiver.Type_GROUP) {
-				return getGroupMessageModel(apiMessageId);
-			} else if (type == MessageReceiver.Type_DISTRIBUTION_LIST) {
-				return getDistributionListMessageModel(apiMessageId);
+			if (messageReceiver instanceof ContactMessageReceiver) {
+				return getContactMessageModel(apiMessageId, (ContactMessageReceiver) messageReceiver);
+			} else if (messageReceiver instanceof  GroupMessageReceiver) {
+				return getGroupMessageModel(apiMessageId, (GroupMessageReceiver) messageReceiver);
+			} else if (messageReceiver instanceof DistributionListMessageReceiver) {
+				// We cannot return a message model with a certain api message id for distribution
+				// lists, because the api message id is null for all distribution list messages
+				return null;
 			}
 		}
 		return null;
@@ -3944,7 +3896,6 @@ public class MessageServiceImpl implements MessageService {
 
 		if (failedCounter == 0) {
 			logger.info("sendMedia: Successfully queued.");
-			sendProfilePicture(resolvedReceivers);
 			if (sendResultListener != null) {
 				sendResultListener.onCompleted();
 			}
@@ -4586,7 +4537,7 @@ public class MessageServiceImpl implements MessageService {
 
 			File outputFile;
 			try {
-				outputFile = fileService.createTempFile(".trans", ".mp4", !ConfigUtils.useContentUris());
+				outputFile = fileService.createTempFile(".trans", ".mp4", false);
 			} catch (IOException e) {
 				logger.error("Unable to open temp file");
 				// skip this MediaItem

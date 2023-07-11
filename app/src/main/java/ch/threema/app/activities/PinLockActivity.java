@@ -21,20 +21,16 @@
 
 package ch.threema.app.activities;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 
 import org.slf4j.Logger;
 
@@ -53,8 +49,6 @@ import ch.threema.base.utils.LoggingUtil;
 
 public class PinLockActivity extends ThreemaActivity {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockActivity");
-
-	private static final String KEY_NUM_WRONG_CONFIRM_ATTEMPTS = "num_wrong_attempts";
 	private static final long ERROR_MESSAGE_TIMEOUT = 3000;
 	private static final int FAILED_ATTEMPTS_BEFORE_TIMEOUT = 3;
 	private static final long FAILED_ATTEMPT_COUNTDOWN_INTERVAL_MS = 1000L;
@@ -79,7 +73,7 @@ public class PinLockActivity extends ThreemaActivity {
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 
 		isCheckOnly = getIntent().getBooleanExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, false);
 		pinPreset = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_PIN);

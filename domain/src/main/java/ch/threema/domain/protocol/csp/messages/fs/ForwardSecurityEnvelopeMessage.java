@@ -21,8 +21,10 @@
 
 package ch.threema.domain.protocol.csp.messages.fs;
 
+import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufMessage;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 public class ForwardSecurityEnvelopeMessage extends AbstractProtobufMessage<ForwardSecurityData> {
 
@@ -32,6 +34,13 @@ public class ForwardSecurityEnvelopeMessage extends AbstractProtobufMessage<Forw
 		super(ProtocolDefines.MSGTYPE_FS_ENVELOPE, payloadData);
 	}
 
+	@Nullable
+	@Override
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		// Do not allow encapsulating forward security envelope messages
+		return null;
+	}
+
 	@Override
 	public boolean allowUserProfileDistribution() {
 		return allowSendingProfile;
@@ -39,5 +48,35 @@ public class ForwardSecurityEnvelopeMessage extends AbstractProtobufMessage<Forw
 
 	public void setAllowSendingProfile(boolean allowSendingProfile) {
 		this.allowSendingProfile = allowSendingProfile;
+	}
+
+	@Override
+	public boolean flagSendPush() {
+		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_SEND_PUSH) != 0;
+	}
+
+	@Override
+	public boolean flagNoServerQueuing() {
+		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_SERVER_QUEUING) != 0;
+	}
+
+	@Override
+	public boolean flagNoServerAck() {
+		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK) != 0;
+	}
+
+	@Override
+	public boolean flagGroupMessage() {
+		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_GROUP) != 0;
+	}
+
+	@Override
+	public boolean flagShortLivedServerQueuing() {
+		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_SHORT_LIVED) != 0;
+	}
+
+	@Override
+	public boolean flagNoDeliveryReceipts() {
+		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) != 0;
 	}
 }

@@ -43,8 +43,7 @@
 				android:paddingLeft="@dimen/qrcode_min_margin"
 				android:paddingRight="@dimen/qrcode_min_margin"
 				android:paddingTop="@dimen/qrcode_min_margin"
-				android:paddingBottom="@dimen/qrcode_min_margin"
-				android:background="@drawable/shape_rounded_corner_popup_bg">
+				android:paddingBottom="@dimen/qrcode_min_margin">
 
 				<ch.threema.app.ui.SquareImageView
 					android:id="@+id/image_view"
@@ -65,7 +64,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginTop="16dp"
 				android:paddingTop="2dp"
-				android:textColor="?attr/textColorPrimary"
+				android:textColor="?attr/colorOnBackground"
 				android:textSize="16sp"
 				android:textStyle="normal" />
 

@@ -1,0 +1,287 @@
+// ## History Exchange Protocol
+//
+// This protocol specifies how to transfer the conversation history from one
+// device to another.
+//
+// ### Terminology
+//
+// - `SD`: Source device
+// - `DD`: Destination device
+// - `DGHEK`: Device Group History Exchange Key
+//
+// ### Key Derivation
+//
+//     DGHEK = BLAKE2b(key=DGK, salt='he', personal='3ma-mdev')
+//
+// ### Protocol Flow
+//
+// SD or DD may choose to start the protocol. If DD starts the protocol it is
+// _requesting to receive conversation history data_. If SD starts the
+// protocol it is _offering to send conversation history data_.
+//
+// If SD started the protocol:
+//
+// - `purpose` must be set to _offer to send history data_.
+// - SD takes the role of RID
+// - DD takes the role of RRD
+//
+// If DD started the protocol:
+//
+// - `purpose` must be set to _request to receive history data_.
+// - DD takes the role of RID
+// - SD takes the role of RRD
+//
+// If the protocol was transitioned into from the Device Join Protocol:
+//
+// - ED becomes SD
+// - ND becomes DD
+// - the Connection Setup part is to be skipped since we already have a
+//   connection
+//
+// #### Connection Setup
+//
+// RID creates an `rendezvous.RendezvousInit` by following the Connection
+// Rendezvous Protocol. It encrypts the created `rendezvous.RendezvousInit`
+// with `DGHEK`, wraps it in a `url.HistoryExchangeRequestOrOffer` and offers
+// it in form of a URL or a QR code.
+//
+// RRD scans the QR code and parses the `url.HistoryExchangeRequestOrOffer`.
+// It will then decrypt the contained `rendezvous.RendezvousInit`. Once
+// decrypted, the enclosed `rendezvous.RendezvousInit` must be handled
+// according to the Connection Rendezvous Protocol.
+//
+// Once the Connection Rendezvous Protocol has established at least one
+// connection path, DD waits another 3s or until all connection paths have
+// been established. Nomination is then done by DD following the Connection
+// Rendezvous Protocol.
+//
+// Note that all messages on the nominated connection path must be end-to-end
+// encrypted as defined by the Connection Rendezvous Protocol. All transmitted
+// messages are to be wrapped in:
+//
+// - `FromDestinationDeviceEnvelope` when sending from DD to SD, and
+// - `FromSourceDeviceEnvelope` when sending from SD to DD.
+//
+// #### History Transfer Flow
+//
+// If invoked by the Device Join Protocol or as soon as one of the connection
+// paths has been nominated, DD should show ask the user for which timespan
+// the user wants to transfer the conversation history from SD to DD.
+//
+// Once the user made a timespan selection, DD sends a `GetSummary` message
+// and SD responds with a `Summary` message. This may be repeated.
+//
+//     DD ----- GetSummary ---> SD
+//     DD <------ Summary ----- SD
+//
+// Once the user chooses to transmit the conversation history of a selected
+// timespan, DD sends a `BeginTransfer` message.
+//
+//     DD --- BeginTransfer --> SD
+//
+// SD will now send `Data` (with `common.BlobData` ahead) repetitively until
+// the conversation history of the selected timespan has been fully
+// transmitted.
+//
+//     DD <- common.BlobData -- SD   [0..N]
+//     DD <- common.Data     -- SD   [1]
+//
+// SD may now close the connection once all buffered data has been written. DD
+// may close the connection when it received the last `Data` message.
+
+syntax = "proto3";
+
+package history;
+
+option java_package = "ch.threema.protobuf.d2d.history";
+
+import "common.proto";
+import "md-d2d.proto";
+
+// Root message envelope for messages from the destination device (DD) to the
+// source device (SD).
+message DdToSd {
+  // The enveloped message
+  oneof content {
+    GetSummary get_summary = 1;
+    BeginTransfer begin_transfer = 2;
+  }
+}
+
+// Root message envelope for messages from the source device (SD) to the
+// destination device (DD).
+message SdToDd {
+  // The enveloped message
+  oneof content {
+    Summary summary = 1;
+    common.BlobData blob_data = 2;
+    Data data = 3;
+  }
+}
+
+// Media type to transfer
+enum MediaType {
+  // All media should be transferred
+  ALL = 0;
+}
+
+// Sent by DD to get a summary of the conversation history available on SD.
+//
+// When receiving this message:
+//
+// 1. If `BeginTransfer` has been received before, close the connection and
+//    abort these steps.
+// 2. If summary data is currently being retrieved for a previous `GetSummary`
+//    message, abort that process.
+// 3. If cached properties from a previous `GetSummary` message exist, discard
+//    those properties.
+// 4. Filter `media` in the following way:
+//    1. If the special media type _all_ is present, discard any other
+//       entries.
+//    2. Remove duplicate entries.
+// 5. Cache the requested properties, including the `id`.
+// 4. Retrieve the summary data for the given timespan and send a `Summary`
+//    message with the same `id` back to DD. For outgoing messages, the
+//    timespan refers to the time the message was created. For incoming
+//    messages, the timespan refers to the time the message was received.
+message GetSummary {
+  // Unique identifier of the summary request
+  uint32 id = 1;
+
+  // Timespan to get a summary for
+  common.Timespan timespan = 2;
+
+  // Which types of media should be included
+  repeated MediaType media = 3;
+}
+
+// Summary data for a given timespan as requested by DD.
+//
+// When receiving this message:
+//
+// 1. If `BeginTransfer` has been sent in the meantime, discard this message
+//    and abort these steps.
+// 2. If `id` matches the id sent in the most recently sent `GetSummary`
+//    message, display the summary data to the user. The user may change the
+//    properties (timespan, media types, etc.) which will trigger another
+//    `GetSummary` message. When the user commits to the currently selected
+//    properties, it sends a `BeginTransfer` message.
+message Summary {
+  // Refers to the unique identifier of the summary request
+  uint32 id = 1;
+
+  // Amount of messages that would be transferred
+  uint32 messages = 2;
+
+  // Estimated size in bytes of the messages including only the requested
+  // media types
+  uint64 size = 3;
+}
+
+// Sent by DD to initiate the conversation history transfer for a given
+// timespan.
+//
+// When receiving this message:
+//
+// 1. If `BeginTransfer` has been received before, close the connection and
+//    abort these steps.
+// 2. Lookup the cached requested properties for the given `id`. If none could
+//    be found, close the connection and abort these steps.
+// 3. Let `messages` an empty list. Let `size` be `0`.
+// 4. For each remaining message to be sent for the requested timespan:
+//    1. If the media types match this message, send the blob as a
+//       `common.BlobData` message and update `size` with the byte size of
+//       the media.
+//    2. Append the current message to `messages` and update `size` with the
+//       byte size of the message (without media).
+//    3. If `messages` contains 100+ items or `size` is greater 100 MiB, abort
+//       the loop.
+// 5. Send a `Data` message with the included `messages`.
+// 6. If there are remaining messages, restart these steps from the beginning.
+// 7. Wait until all buffered data on the connection has been written. Then,
+//    close the connection.
+message BeginTransfer {
+  // Refers to the unique identifier of the summary request
+  uint32 id = 1;
+}
+
+// One or more messages of the conversation history sent by SD.
+//
+// When receiving this message:
+//
+// 1. Let `blobs` be the previously received set of `common.BlobData` prior to
+//    this message.
+// 2. For each message of `messages`:
+//    1. If the message is not in the expected timespan, close the connection
+//       and abort these steps.
+//    2. If the message type is unknown or cannot be parsed, discard the
+//       message and abort these steps.
+//    3. Store the message. If the message already exists, overwrite it.
+//    4. If the message refers to a Blob ID, lookup the Blob in `blobs`. If
+//       the Blob could be found, store it persistently and remove it from
+//       `blobs`.
+// 3. Log a warning for each remaining Blob in `blobs` and discard them.
+// 4. If `remaining` is `0`, close the connection and consider the
+//    conversation history transfer successfully completed.
+message Data {
+  // Past messages
+  repeated PastMessage messages = 1;
+
+  // Amount of messages remaining to be transferred **after** this message
+  uint64 remaining = 2;
+}
+
+// Contains a past incoming or outgoing message.
+message PastMessage {
+  oneof message {
+    PastIncomingMessage incoming = 1;
+    PastOutgoingMessage outgoing = 2;
+  }
+}
+
+// A reaction to a message
+message Reaction {
+  // Unix-ish timestamp in milliseconds when the reaction happened.
+  uint64 at = 1;
+
+  // The reaction type.
+  enum Type {
+    // Message explicitly acknowledged
+    ACKNOWLEDGE = 0;
+    // Message explicitly declined
+    DECLINE = 1;
+  }
+  Type type = 2;
+}
+
+// A past outgoing message
+message PastOutgoingMessage {
+  // Enclosed outgoing message
+  d2d.OutgoingMessage message = 1;
+
+  // Unix-ish timestamp in milliseconds for when the message has been sent
+  uint64 sent_at = 2;
+
+  // Optional Unix-ish timestamp in milliseconds for when the message has been
+  // marked as read
+  optional uint64 read_at = 3;
+
+  // Optional last reaction to the message
+  Reaction last_reaction_at = 4;
+}
+
+// A past incoming message
+message PastIncomingMessage {
+  // Enclosed incoming message
+  d2d.IncomingMessage message = 1;
+
+  // Unix-ish timestamp in milliseconds for when the message has been received
+  uint64 received_at = 2;
+
+  // Optional Unix-ish timestamp in milliseconds for when the message has been
+  // marked as read
+  optional uint64 read_at = 3;
+
+  // Optional last reaction to the message
+  Reaction last_reaction_at = 4;
+}

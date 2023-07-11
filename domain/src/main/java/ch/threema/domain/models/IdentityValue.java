@@ -54,7 +54,7 @@ public class IdentityValue {
 	 * @throws InvalidIdentityException if the long value is not a valid Threema ID
 	 */
 	public static @NonNull IdentityValue fromLong(long value) throws InvalidIdentityException {
-		return new IdentityValue(Utils.longToByteArray(value));
+		return new IdentityValue(Utils.longToByteArrayBigEndian(value));
 	}
 
 	public static @NonNull IdentityValue fromHexString(@NonNull String value) throws InvalidIdentityException {

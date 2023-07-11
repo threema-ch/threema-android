@@ -42,7 +42,8 @@
 			android:layout_marginBottom="6dp"
 			android:layout_marginLeft="5dp"
 			android:layout_marginRight="5dp"
-			app:cardElevation="4dp">
+			app:cardElevation="4dp"
+			app:strokeWidth="0dp">
 
 			<LinearLayout
 				android:layout_width="match_parent"
@@ -68,41 +69,30 @@
 					android:text="Coordinates"
 					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
 
-				<com.google.android.material.chip.Chip
-					android:id="@+id/open_chip"
-					style="@style/Widget.MaterialComponents.Chip.Action"
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/open_button"
+					style="@style/Threema.MaterialButton.Action"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="4dp"
 					android:text="@string/open_in_maps_app"
-					android:textColor="@android:color/white"
-					app:chipBackgroundColor="?attr/colorAccent"
-					app:chipIcon="@drawable/ic_location_on_filled"
-					app:chipIconTint="@android:color/white"
-					app:chipMinHeight="36dp"
-					app:chipCornerRadius="18dp"
-					app:chipStartPadding="8dp"/>
+					app:icon="@drawable/ic_location_on_filled" />
 
-				<com.google.android.material.chip.Chip
-					android:id="@+id/share_chip"
-					style="@style/Widget.MaterialComponents.Chip.Action"
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/share_location_button"
+					style="@style/Threema.MaterialButton.Action"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="4dp"
 					android:text="@string/forward_location"
-					android:textColor="@android:color/white"
-					app:chipBackgroundColor="?attr/colorAccent"
-					app:chipIcon="@drawable/ic_forward_outline"
-					app:chipIconTint="@android:color/white"
-					app:chipMinHeight="36dp"
-					app:chipCornerRadius="18dp"
-					app:chipStartPadding="8dp" />
+					app:icon="@drawable/ic_forward_outline" />
 
 			</LinearLayout>
 
 		</com.google.android.material.card.MaterialCardView>
 
 		<ch.threema.app.ui.VerticalTextView
+			style="@style/Threema.TextAppearance.BodyMedium"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_above="@+id/cardview"
@@ -118,19 +108,19 @@
 			android:textColor="#FF111111"
 			android:textSize="11dp"/>
 
-		<ImageButton
+		<com.google.android.material.button.MaterialButton
+			style="@style/Threema.MaterialButton.Icon.Circle.Filled"
 			android:id="@+id/center_map"
-			android:layout_width="@dimen/lp_button_my_location_size"
-			android:layout_height="@dimen/lp_button_my_location_size"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
 			android:layout_above="@+id/cardview"
 			android:layout_alignParentRight="true"
 			android:layout_marginBottom="@dimen/lp_default_margin"
 			android:layout_marginRight="@dimen/lp_default_margin"
-			android:background="@drawable/circle_white"
-			android:elevation="4dp"
-			app:srcCompat="@drawable/ic_gps_fixed"
-			tools:ignore="ContentDescription"
-			app:tint="@color/text_color_secondary" />
+			app:icon="@drawable/ic_gps_fixed"
+			app:backgroundTint="?attr/colorSurface"
+			app:iconTint="?attr/colorOnSurface"
+			tools:ignore="ContentDescription" />
 
 	</RelativeLayout>
 

@@ -23,7 +23,7 @@
 		android:id="@+id/action_share_contact"
 		android:enabled="true"
 		android:icon="@drawable/ic_share_outline"
-		app:iconTint="?attr/textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		android:orderInCategory="7"
 		android:title="@string/share_contact"
 		android:visible="true"
@@ -35,7 +35,7 @@
 		android:orderInCategory="10"
 		android:title="@string/block_contact"
 		android:icon="@drawable/ic_block"
-		app:iconTint="?attr/textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		android:visible="true"
 		app:showAsAction="never"/>
 
@@ -43,7 +43,7 @@
 		android:id="@+id/action_remove_contact"
 		android:enabled="true"
 		android:icon="@drawable/ic_delete_outline"
-		app:iconTint="?attr/textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		android:orderInCategory="20"
 		android:title="@string/delete_contact_action"
 		android:visible="true"
@@ -55,7 +55,7 @@
 		android:orderInCategory="23"
 		android:title="@string/menu_send_profilpic"
 		android:icon="@drawable/ic_person_add_outline"
-		app:iconTint="?attr/textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		android:visible="true"
 		app:showAsAction="never"/>
 
@@ -65,7 +65,7 @@
 		android:orderInCategory="25"
 		android:title="@string/menu_send_profilpic_now"
 		android:icon="@drawable/ic_profile"
-		app:iconTint="?attr/textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		android:visible="true"
 		app:showAsAction="never"/>
 

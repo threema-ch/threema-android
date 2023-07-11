@@ -12,18 +12,21 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/recently_added_background"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="76dp"
+        android:layout_marginTop="4dp"
         android:layout_marginLeft="8dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardBackgroundColor="?attr/recently_added_background"
+        app:cardBackgroundColor="?attr/colorSurface"
         app:cardCornerRadius="@dimen/recently_added_background_corner_size"
-        app:cardElevation="0dp"
+        app:cardElevation="2dp"
         app:cardPreventCornerOverlap="false"
         app:cardUseCompatPadding="false"
+        app:strokeWidth="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        android:outlineProvider="none">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/card_layout"
@@ -57,12 +60,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/last_added_contact"
                 android:textAppearance="@style/Threema.Text.Overline"
-                android:textColor="?attr/colorAccent"
+                android:textSize="13sp"
+                android:textColor="?attr/colorPrimary"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/shapeable_avatar_view"
                 app:layout_constraintRight_toRightOf="@+id/subject"
@@ -72,7 +76,7 @@
 
             <ch.threema.app.emojis.EmojiTextView
                 android:id="@+id/name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:ellipsize="end"
@@ -86,17 +90,15 @@
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constrainedWidth="false" />
-            <!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
 
             <ImageView
                 android:id="@+id/blocked_contact"
                 android:layout_width="22dp"
                 android:layout_height="18dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginRight="6dp"
                 android:layout_marginBottom="2dp"
                 android:baselineAlignBottom="true"
                 android:contentDescription="@string/blocked"
-                android:paddingLeft="4dp"
                 android:visibility="visible"
                 app:srcCompat="@drawable/ic_block"
                 app:layout_constraintBottom_toBottomOf="@id/name"
@@ -121,7 +123,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constrainedWidth="true" />
-            <!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>

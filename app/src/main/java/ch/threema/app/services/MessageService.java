@@ -162,7 +162,22 @@ public interface MessageService {
 	@WorkerThread
 	boolean sendUserAcknowledgement(@NonNull AbstractMessageModel messageModel, boolean markAsRead);
 
-	boolean sendProfilePicture(MessageReceiver[] messageReceivers);
+	/**
+	 * Send the profile picture to the receiver of the message if the conditions are met to send it.
+	 *
+	 * @param message the message that may trigger sending the profile picture
+	 */
+	void executeProfilePictureDistribution(@NonNull AbstractMessage message);
+
+	/**
+	 * Send the profile picture to the given contact. This method does not check if it should send
+	 * the profile picture according to the user profile distribution rules. If there is no profile
+	 * picture set, then a contact delete photo message is sent.
+	 *
+	 * @param contactModel the contact the photo is sent to
+	 * @return true if the profile picture has been sent successfully, false otherwise
+	 */
+	boolean sendProfilePicture(@NonNull ContactModel contactModel);
 
 	void resendMessage(AbstractMessageModel messageModel, MessageReceiver receiver, CompletionHandler completionHandler) throws Exception;
 
@@ -173,7 +188,7 @@ public interface MessageService {
 
 	void updateMessageState(@NonNull final MessageId apiMessageId, MessageState state, @NonNull DeliveryReceiptMessage stateMessage);
 	void updateGroupMessageState(@NonNull final MessageId apiMessageId, @NonNull MessageState state, @NonNull GroupDeliveryReceiptMessage stateMessage);
-	void updateMessageStateForOutgoingMessage(final MessageId apiMessageId, MessageState state, Date stateDate);
+	@Nullable AbstractMessageModel updateMessageStateForOutgoingMessage(@NonNull final MessageId apiMessageId, @NonNull MessageState state, @Nullable Date stateDate, @NonNull String recipientIdentity);
 	boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException;
 
 	@WorkerThread
@@ -219,7 +234,6 @@ public interface MessageService {
 	void save(AbstractMessageModel messageModel);
 
 	void markConversationAsRead(MessageReceiver messageReceiver, NotificationService notificationService);
-	void markMessageAsRead(AbstractMessageModel abstractMessageModel, NotificationService notificationService);
 
 	/**
 	 * count all message records (normal, group and distribution lists)
@@ -230,7 +244,7 @@ public interface MessageService {
 	boolean viewMediaMessage(Context context, AbstractMessageModel model, Uri uri);
 	boolean shareTextMessage(Context context, AbstractMessageModel model);
 	AbstractMessageModel getMessageModelFromId(int id, String type);
-	@Nullable AbstractMessageModel getMessageModelByApiMessageId(String id, @MessageReceiver.MessageReceiverType int type);
+	@Nullable AbstractMessageModel getMessageModelByApiMessageIdAndReceiver(@Nullable String id, @NonNull MessageReceiver messageReceiver);
 
 	void cancelVideoTranscoding(AbstractMessageModel messageModel);
 

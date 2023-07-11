@@ -32,7 +32,7 @@ import ch.threema.app.R
 import ch.threema.app.dialogs.TextWithCheckboxDialog
 import ch.threema.app.utils.NameUtil
 import ch.threema.storage.models.ContactModel
-import com.google.android.material.chip.Chip
+import com.google.android.material.button.MaterialButton
 
 class ReportSpamView : ConstraintLayout, DefaultLifecycleObserver {
     private var listener: OnReportButtonClickListener? = null
@@ -56,7 +56,7 @@ class ReportSpamView : ConstraintLayout, DefaultLifecycleObserver {
         }
         activity.lifecycle.addObserver(this)
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        inflater.inflate(R.layout.view_report_spam, this)
+        inflater.inflate(R.layout.notice_report_spam, this)
     }
 
     fun setListener(listener: OnReportButtonClickListener?) {
@@ -80,8 +80,8 @@ class ReportSpamView : ConstraintLayout, DefaultLifecycleObserver {
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        val reportChip: Chip = findViewById(R.id.chip_report_spam)
-        reportChip.setOnClickListener {
+        val reportButton: MaterialButton = findViewById(R.id.button_report_spam)
+        reportButton.setOnClickListener {
             val dialog = TextWithCheckboxDialog.newInstance(context.getString(R.string.spam_report_dialog_title, NameUtil.getDisplayNameOrNickname(contactModel, true)), R.string.spam_report_dialog_explain,
                     R.string.spam_report_dialog_block_checkbox, R.string.spam_report_short, R.string.cancel)
             dialog.setCallback { _: String?, _: Any?, checked: Boolean -> listener!!.onReportSpamClicked(contactModel!!, checked) }

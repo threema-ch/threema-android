@@ -25,8 +25,6 @@
 	</string>
 	<string name="threema_contact">Threema Work Contact</string>
 	<string name="menu_about">About Threema Red</string>
-	<string name="list_theme_light">Light</string>
-	<string name="list_theme_dark">Dark (default)</string>
 	<string name="private_threema_download"><![CDATA[If you are a private user, please <a href=%s>tap here</a> to download Threema.]]></string>
 	<string name="directory_search">Search in the directory</string>
 	<string name="directory_title">Company directory</string>

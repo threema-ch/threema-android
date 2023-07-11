@@ -7,13 +7,11 @@
 	android:paddingBottom="12dp"
 	android:paddingTop="8dp">
 
-	<com.google.android.material.chip.Chip
+	<com.google.android.material.button.MaterialButton
 		android:id="@+id/contact_counter_text"
-		style="@style/Threema.Chip.Inactive"
+		style="@style/Threema.MaterialButton.Action.Outline.Info"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_gravity="center_horizontal"
-		android:clickable="false"
-		/>
+		android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

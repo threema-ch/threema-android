@@ -3,8 +3,8 @@
   ~ All rights reserved.
   -->
 
-<vector android:height="20dp" android:viewportHeight="252"
-    android:viewportWidth="252" android:width="20dp" xmlns:android="http://schemas.android.com/apk/res/android">
+<vector android:height="24dp" android:viewportHeight="252"
+    android:viewportWidth="252" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
     <path android:fillColor="#ffffc107" android:fillType="nonZero"
         android:pathData="M126,252c-69.588,0 -126,-56.412 -126,-126v0c0,-69.588 56.412,-126 126,-126v0c69.588,0 126,56.412 126,126v0c0,69.588 -56.412,126 -126,126z"/>
     <path android:fillColor="#ffffff" android:fillType="nonZero"

@@ -21,9 +21,12 @@
 
 package ch.threema.domain.protocol.csp.messages.file;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
+
 import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -42,6 +45,12 @@ public class FileMessage extends AbstractMessage
 	@Override
 	public boolean flagSendPush() {
 		return true;
+	}
+
+	@Nullable
+	@Override
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return Version.V1_0;
 	}
 
 	@Override

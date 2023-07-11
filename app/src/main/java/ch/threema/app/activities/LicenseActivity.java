@@ -28,32 +28,19 @@ import android.webkit.WebView;
 
 import ch.threema.app.R;
 
-public class LicenseActivity extends ThreemaToolbarActivity {
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.os_licenses);
-		}
-
-		final WebView webView = findViewById(R.id.license_webview);
-		webView.loadUrl("file:///android_asset/license.html");
+public class LicenseActivity extends SimpleWebViewActivity {
+	@Override
+	protected int getWebViewTitle() {
+		return R.string.os_licenses;
 	}
 
 	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_license;
+	protected String getWebViewUrl() {
+		return "file:///android_asset/license.html";
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-		}
+	protected boolean requiresConnection() {
 		return false;
 	}
 }

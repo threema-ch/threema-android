@@ -1,30 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-	  xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<item
-		android:id="@+id/menu_message_discard"
-		app:showAsAction="always"
-		android:icon="@drawable/ic_delete_outline"
-		app:iconTint="@android:color/white"
-		android:title="@string/really_delete_message_title"
-		android:orderInCategory="15"/>
+    <item
+        android:id="@+id/menu_message_discard"
+        android:icon="@drawable/ic_delete_outline"
+        android:orderInCategory="15"
+        android:title="@string/really_delete_message_title"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="always" />
 
-	<item
-			android:id="@+id/menu_message_save"
-			app:showAsAction="always"
-			android:icon="@drawable/ic_save_outline"
-			app:iconTint="@android:color/white"
-			android:title="@string/save_message_action"
-			android:orderInCategory="30"/>
+    <item
+        android:id="@+id/menu_message_save"
+        android:icon="@drawable/ic_save_outline"
+        android:orderInCategory="30"
+        android:title="@string/save_message_action"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="always" />
 
-	<item
-		android:id="@+id/menu_show_in_chat"
-		android:icon="@drawable/ic_outline_chat_bubble_outline"
-		android:orderInCategory="70"
-		android:title="@string/show_in_chat"
-		app:iconTint="@android:color/white"
-		app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@drawable/ic_share_outline"
+        android:orderInCategory="50"
+        android:title="@string/share_via"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_show_in_chat"
+        android:icon="@drawable/ic_outline_chat_bubble_outline"
+        android:orderInCategory="70"
+        android:title="@string/show_in_chat"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_select_all"
+        android:icon="@drawable/ic_select_all_outline"
+        android:orderInCategory="80"
+        android:title="@string/select_all"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom" />
 
 </menu>

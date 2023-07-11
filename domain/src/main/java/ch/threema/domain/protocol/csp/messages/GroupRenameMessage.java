@@ -26,8 +26,10 @@ import org.slf4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A group message send by the group creator that causes the group to be renamed.
@@ -45,6 +47,12 @@ public class GroupRenameMessage extends AbstractGroupMessage {
 	@Override
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_GROUP_RENAME;
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 
 	@Override

@@ -6,15 +6,15 @@
               android:layout_height="match_parent"
               android:background="#eaeaea">
 
+	<!-- absolutely do not use attr references for colors in this file! -->
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="48dp"
-		android:background="@color/accent_light"
+		android:background="@color/md_theme_light_primary"
 		android:paddingLeft="16dp"
 		android:paddingRight="0dp">
 
 		<!-- do not use app:tint here! -->
-
 		<ImageView
 			android:id="@+id/widget_edit"
 			android:layout_width="56dp"
@@ -23,7 +23,7 @@
 			android:layout_centerVertical="true"
 			android:scaleType="centerInside"
 			android:src="@drawable/ic_chat_bubble_bitmap_24dp"
-			android:tint="@android:color/white" />
+			android:tint="@color/md_theme_light_onPrimary" />
 
 		<TextView
 			android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
 			android:layout_centerVertical="true"
 			android:layout_toEndOf="@+id/widget_edit"
 			android:text="@string/app_name"
-			android:textColor="@color/material_primary"
+			android:textColor="@color/md_theme_light_onPrimary"
 			android:textSize="20sp" />
 
 	</RelativeLayout>
@@ -46,15 +46,15 @@
 			  android:id="@+id/widget_list" />
 
 	<TextView
+			  style="@style/Threema.TextAppearance.Emptyview"
 			  android:id="@+id/empty_view"
 			  android:layout_width="match_parent"
 			  android:layout_height="match_parent"
 			  android:paddingLeft="16dp"
 			  android:paddingRight="16dp"
 			  android:gravity="center"
-			  android:textColor="@color/text_color_secondary"
-			  android:text="@string/no_unread_messages"
-			  android:textSize="14sp" />
+			  android:textColor="@color/md_theme_light_onSurface"
+			  android:text="@string/no_unread_messages" />
 
 	</FrameLayout>
 

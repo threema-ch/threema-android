@@ -23,7 +23,9 @@ package ch.threema.domain.protocol.csp.messages;
 
 import java.nio.charset.StandardCharsets;
 
+import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A message that has plain text as its contents.
@@ -44,6 +46,12 @@ public class BoxTextMessage extends AbstractMessage {
 	@Override
 	public boolean flagSendPush() {
 		return true;
+	}
+
+	@Nullable
+	@Override
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return Version.V1_0;
 	}
 
 	@Override

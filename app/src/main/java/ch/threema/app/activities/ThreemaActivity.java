@@ -21,19 +21,15 @@
 
 package ch.threema.app.activities;
 
-import android.content.Intent;
-import android.os.Handler;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
 
-import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.base.utils.LoggingUtil;
 
 public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
@@ -157,23 +153,5 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 			}
 		}
 		return this.myIdentity;
-	}
-
-	@Override
-	public void startActivityForResult(Intent intent, int requestCode) {
-		super.startActivityForResult(intent, requestCode);
-		overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
-	}
-
-	@Override
-	public void startActivity(Intent intent) {
-		super.startActivity(intent);
-		overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
-	}
-
-	@Override
-	public void finish() {
-		super.finish();
-		overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 	}
 }

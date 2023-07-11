@@ -56,7 +56,7 @@ public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel
 		public ItemHolder(View view) {
 			super(view);
 			this.view = view;
-			this.nameView = itemView.findViewById(R.id.group_name);
+			this.nameView = itemView.findViewById(R.id.contact_name);
 			this.avatarView = itemView.findViewById(R.id.avatar_view);
 			this.idView = itemView.findViewById(R.id.threemaid);
 		}
@@ -73,7 +73,7 @@ public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel
 	@NonNull
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View v = LayoutInflater.from(context).inflate(R.layout.item_group_detail, parent, false);
+		View v = LayoutInflater.from(context).inflate(R.layout.item_mention_selector, parent, false);
 		return new ItemHolder(v);
 	}
 

@@ -30,12 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.slf4j.Logger;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.ActionMode;
@@ -44,6 +38,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
@@ -60,7 +61,6 @@ import ch.threema.app.services.group.OutgoingGroupJoinRequestService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.SelectorDialogItem;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
@@ -184,10 +184,6 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 			logger.error("Exception", e);
 			finish();
 			return;
-		}
-
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			setTheme(R.style.Theme_Threema_Translucent_Dark);
 		}
 
 		ActionBar actionBar = getSupportActionBar();
@@ -390,7 +386,7 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 	private void forwardToGroup(int groupId) {
 		Intent intent = new Intent(this, ComposeMessageActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
-		AnimationUtil.startActivity(this, null, intent);
+		startActivity(intent);
 	}
 
 	private void confirmSend(String admin, String groupName) {
@@ -527,7 +523,6 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			mode.getMenuInflater().inflate(R.menu.action_group_request, menu);
-			ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(OutgoingGroupRequestActivity.this, R.attr.colorAccent));
 			return true;
 		}
 

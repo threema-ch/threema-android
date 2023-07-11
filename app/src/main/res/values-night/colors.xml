@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- chat bubbles -->
+	<color name="bubble_receive">#666666</color>
+	<color name="bubble_pressed">@color/material_grey_600</color>
+	<color name="bubble_thumbnail_placeholder_tint">#666666</color>
+	<color name="bubble_thumbnail_placeholder_background">#555555</color>
+
+	<!-- status messages -->
+	<color name="date_separator_bg_color">#ff404040</color>
+	<color name="date_separator_text_color">@android:color/white</color>
+
+	<color name="file_picker_divider_color">#1fffffff</color>
+
+	<color name="ballot_detail_highlight_text_color">#E2E3DD</color>
+	<color name="ballot_detail_highlight_bg_color">#555555</color>
+	<color name="text_color_open_ballots">#C5C5C5</color>
+	<color name="list_item_background_checked">#ff4a4a4a</color>
+	<color name="attach_status_bar_expanded">#272727</color>
+	<color name="attach_status_bar_collapsed">#FF131313</color>
+	<color name="attach_button_background">@color/dark_surface</color>
+    <color name="markup_marker_color">#FF888888</color>
+	<color name="settings_multipane_selection_bg">#39ffffff</color>
+	<color name="background_dim">#77000000</color>
+
+	<color name="mention_background">@color/material_grey_550</color>
+	<color name="mention_background_inverted">@color/material_grey_400</color>
+	<color name="mention_text_color">@color/md_theme_light_onBackground</color>
+	<color name="mention_text_color_inverted">@color/md_theme_light_background</color>
+
+	<color name="voice_recorder_counter_background">@color/dark_surface</color>
+</resources>

@@ -32,7 +32,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +51,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
+
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
@@ -85,7 +87,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 	@NonNull private ContactService contactService;
 
 	// Views
-	@NonNull private ProgressBar progressBar;
+	@NonNull private CircularProgressIndicator progressBar;
 	@NonNull private TextView introText;
 	@NonNull private TextView doneText;
 	@Nullable private Button copyButton;

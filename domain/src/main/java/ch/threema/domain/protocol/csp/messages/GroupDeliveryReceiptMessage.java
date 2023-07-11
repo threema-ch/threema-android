@@ -26,9 +26,11 @@ import org.slf4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A message that confirms delivery of one or multiple other messages, listed with their
@@ -53,6 +55,12 @@ public class GroupDeliveryReceiptMessage extends AbstractGroupMessage {
 
 	private boolean isReaction() {
 		return DeliveryReceiptUtils.isReaction(this.receiptType);
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 
 	@Override

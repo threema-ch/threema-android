@@ -355,14 +355,14 @@ public class BallotServiceImpl implements BallotService {
 
 		if (existingModel != null) {
 			if (data.getDisplayType().ordinal() != existingModel.getDisplayType().ordinal()) {
-				throw new BadMessageException("Ballot display mode not allowed to change. Discarding message", true);
+				throw new BadMessageException("Ballot display mode not allowed to change. Discarding message");
 			}
 			if (data.getState() == BallotData.State.CLOSED) {
 				ballotModel = existingModel;
 				toState = BallotModel.State.CLOSED;
 			}
 			else {
-				throw new BadMessageException("Ballot with same ID already exists. Discarding message.", true);
+				throw new BadMessageException("Ballot with same ID already exists. Discarding message.");
 			}
 		} else {
 			if (data.getState() != BallotData.State.CLOSED) {
@@ -373,7 +373,7 @@ public class BallotServiceImpl implements BallotService {
 				ballotModel.setLastViewedAt(null);
 				toState = BallotModel.State.OPEN;
 			} else {
-				throw new BadMessageException("New ballot with closed state requested. Discarding message.", true);
+				throw new BadMessageException("New ballot with closed state requested. Discarding message.");
 			}
 		}
 

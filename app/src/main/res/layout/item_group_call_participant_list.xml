@@ -4,6 +4,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	xmlns:tools="http://schemas.android.com/tools"
+	app:strokeWidth="0dp"
 	app:shapeAppearanceOverlay="@style/Threema.GroupCallParticipantRoundedCorner">
 
 	<ch.threema.app.voip.groupcall.ParticipantSurfaceViewRenderer
@@ -56,7 +57,7 @@
 			android:id="@+id/participant_name"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:textColor="@color/dark_text_color_primary"
+			android:textColor="#ffffff"
 			android:textSize="@dimen/group_call_participant_text_size"
 			android:layout_marginBottom="@dimen/group_call_participant_margin"
 			android:maxLines="1"

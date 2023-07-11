@@ -20,8 +20,6 @@
 資料將以單向加密（雜湊）形式儲存在我們的伺服器上。 如果您想完全匿名使用 Threema Work，則可以跳過此步驟。</string>
     <string name="threema_contact">Threema Work 聯絡人</string>
     <string name="menu_about">關於 Threema Work</string>
-    <string name="list_theme_light">淺色</string>
-    <string name="list_theme_dark">深色（預設）</string>
     <string name="private_threema_download"><![CDATA[<a href=%1$s>了解更多關於 Threema Work 的資訊</a> <br/><br/>如果您是私人使用者，請<a href=%2$s>點擊這裡</a> 下載 Threema。]]></string>
     <string name="directory_search">在目錄中搜尋</string>
     <string name="directory_title">公司目錄</string>

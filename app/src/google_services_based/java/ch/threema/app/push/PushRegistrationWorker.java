@@ -23,16 +23,16 @@ package ch.threema.app.push;
 
 import android.content.Context;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-
-import org.slf4j.Logger;
-
-import java.io.IOException;
-
 import androidx.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.utils.PushUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
@@ -61,23 +61,25 @@ public class PushRegistrationWorker extends Worker {
 		final boolean withCallback = workerFlags.getBoolean(PushService.EXTRA_WITH_CALLBACK, false);
 		logger.debug("doWork FCM registration clear {} withCallback {}", clearToken, withCallback);
 
-		if (clearToken) {
-			String error = null;
-			try {
-				FirebaseInstanceId.getInstance().deleteInstanceId();
-				PushUtil.sendTokenToServer(appContext, "", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
-			} catch (IOException | ThreemaException e) {
-				logger.error("Exception", e);
-				error = e.getMessage();
-			}
+		FirebaseApp.initializeApp(appContext);
 
+		if (clearToken) {
+			String error = PushService.deleteToken(appContext);
 			if (withCallback) {
 				PushUtil.signalRegistrationFinished(error, true);
 			}
 		} else {
-			FirebaseInstanceId.getInstance().getInstanceId()
-				.addOnSuccessListener(instanceIdResult -> {
-					String token = instanceIdResult.getToken();
+			FirebaseMessaging.getInstance().getToken()
+				.addOnCompleteListener(task -> {
+					if (!task.isSuccessful()) {
+						logger.error("Unable to get token", task.getException());
+						if (withCallback) {
+							PushUtil.signalRegistrationFinished(task.getException() != null ? task.getException().getMessage() : "unknown", clearToken);
+						}
+						return;
+					}
+
+					String token = task.getResult();
 					logger.info("Received FCM registration token");
 					String error = null;
 					try {
@@ -89,11 +91,7 @@ public class PushRegistrationWorker extends Worker {
 					if (withCallback) {
 						PushUtil.signalRegistrationFinished(error, clearToken);
 					}
-				}).addOnFailureListener(e -> {
-				if (withCallback) {
-					PushUtil.signalRegistrationFinished(e.getMessage(), clearToken);
-				}
-			});
+				});
 		}
 		// required by the Worker interface but is not used for any error handling in the push registration process
 		return Result.success();

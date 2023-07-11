@@ -33,7 +33,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_marginTop="@dimen/media_attach_control_panel_shadow_size"
-		android:background="?attr/background_secondary"
+		android:background="?attr/colorSurface"
 		android:importantForAccessibility="no"
 		android:clickable="false">
 
@@ -45,12 +45,15 @@
 			android:fillViewport="true"
 			android:clickable="false"
 			android:importantForAccessibility="no"
-			android:scrollbars="none">
+			android:scrollbars="none"
+			android:requiresFadingEdge="horizontal"
+			android:fadingEdgeLength="40dp">
 
 			<LinearLayout
 				android:id="@+id/attach_options_container"
 				android:layout_width="wrap_content"
-				android:layout_height="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
 				android:paddingLeft="2dp"
 				android:paddingRight="2dp"
 				android:orientation="horizontal"
@@ -61,8 +64,8 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/attach_gallery"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
-					android:layout_gravity="center_vertical"
+					android:layout_height="wrap_content"
+					android:layout_gravity="top"
 					app:labelIcon="@drawable/ic_image_outline"
 					app:fillColor="@color/material_teal"
 					app:foregroundColor="@color/material_teal"
@@ -72,8 +75,8 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/attach_file"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
-					android:layout_gravity="center_vertical"
+					android:layout_height="wrap_content"
+					android:layout_gravity="top"
 					app:labelIcon="@drawable/ic_file_outline"
 					app:fillColor="@color/material_indigo"
 					app:foregroundColor="@color/material_indigo"
@@ -83,8 +86,8 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/attach_location"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
-					android:layout_gravity="center_vertical"
+					android:layout_height="wrap_content"
+					android:layout_gravity="top"
 					app:labelIcon="@drawable/ic_map_marker_outline"
 					app:fillColor="@color/material_purple"
 					app:foregroundColor="@color/material_deep_purple"
@@ -94,8 +97,8 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/attach_poll"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
-					android:layout_gravity="center_vertical"
+					android:layout_height="wrap_content"
+					android:layout_gravity="top"
 					app:labelIcon="@drawable/ic_outline_rule"
 					app:foregroundColor="@color/material_red"
 					app:fillColor="@color/material_red"
@@ -105,8 +108,8 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/attach_contact"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
-					android:layout_gravity="center_vertical"
+					android:layout_height="wrap_content"
+					android:layout_gravity="top"
 					app:labelIcon="@drawable/ic_person_outline"
 					app:fillColor="@color/material_orange"
 					app:foregroundColor="@color/material_orange"
@@ -116,8 +119,8 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/attach_drawing"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
-					android:layout_gravity="center_vertical"
+					android:layout_height="wrap_content"
+					android:layout_gravity="top"
 					app:fillColor="@color/material_amber"
 					app:foregroundColor="@color/material_amber"
 					app:fillColorAlpha="@integer/button_alpha"
@@ -127,8 +130,8 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/attach_qr_code"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
-					android:layout_gravity="center_vertical"
+					android:layout_height="wrap_content"
+					android:layout_gravity="top"
 					app:fillColor="@color/material_green"
 					app:foregroundColor="@color/material_green"
 					app:fillColorAlpha="@integer/button_alpha"
@@ -138,8 +141,8 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/attach_system_camera"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
-					android:layout_gravity="center_vertical"
+					android:layout_height="wrap_content"
+					android:layout_gravity="top"
 					app:fillColor="@color/material_brown"
 					app:foregroundColor="@color/material_brown"
 					app:fillColorAlpha="@integer/button_alpha"
@@ -163,7 +166,8 @@
 		<androidx.constraintlayout.widget.ConstraintLayout
 			android:id="@+id/send_panel"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
 			android:importantForAccessibility="no"
 			android:visibility="gone">
 
@@ -183,7 +187,7 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/cancel"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
+					android:layout_height="wrap_content"
 					android:clickable="true"
 					android:focusable="true"
 					app:fillColor="@color/media_attach_button_background_default"
@@ -193,7 +197,7 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/edit"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
+					android:layout_height="wrap_content"
 					android:clickable="true"
 					android:focusable="true"
 					app:fillColor="@color/media_attach_button_background_default"
@@ -203,14 +207,14 @@
 				<ch.threema.app.mediaattacher.ControlPanelButton
 					android:id="@+id/send"
 					android:layout_width="@dimen/media_attach_button_width"
-					android:layout_height="@dimen/media_attach_button_height"
+					android:layout_height="wrap_content"
 					android:clickable="true"
 					android:focusable="true"
 					app:labelIcon="@drawable/ic_send_outline"
 					app:labelText="@string/send"
-					app:fillColor="?attr/colorAccent"
+					app:fillColor="?attr/colorPrimary"
 					app:fillColorAlpha="@integer/chip_alpha"
-					app:foregroundColor="?attr/colorAccent" />
+					app:foregroundColor="?attr/colorPrimary" />
 
 			</LinearLayout>
 

@@ -19,8 +19,6 @@
 数据将以单向加密（散列）形式存储在我们的服务器上。如果您想完全匿名使用 Threema Work，则可以跳过此步骤。</string>
     <string name="threema_contact">Threema Work 联系人</string>
     <string name="menu_about">关于 Threema Work</string>
-    <string name="list_theme_light">浅色</string>
-    <string name="list_theme_dark">深色（默认）</string>
     <string name="private_threema_download"><![CDATA[<a href=%1$s>了解更多关于 Threema Work 的信息</a> <br/><br/>如果您是私人用户，请<a href=%2$s>点击这里</a> 下载 Threema。]]></string>
     <string name="directory_search">在目录中搜索</string>
     <string name="directory_title">公司目录</string>

@@ -24,22 +24,32 @@ package ch.threema.domain.protocol.csp.messages.fs;
 import com.google.protobuf.ByteString;
 import com.neilalexander.jnacl.NaCl;
 
-import java.util.Arrays;
-
 import androidx.annotation.NonNull;
 import ch.threema.domain.fs.DHSessionId;
-import ch.threema.protobuf.csp.e2e.fs.ForwardSecurityEnvelope;
+import ch.threema.protobuf.csp.e2e.fs.Envelope;
+import ch.threema.protobuf.csp.e2e.fs.Init;
+import ch.threema.protobuf.csp.e2e.fs.VersionRange;
 
 public class ForwardSecurityDataInit extends ForwardSecurityData {
-
+	private final @NonNull VersionRange versionRange;
 	private final @NonNull byte[] ephemeralPublicKey;
 
-	public ForwardSecurityDataInit(@NonNull DHSessionId sessionId, @NonNull byte[] ephemeralPublicKey) throws InvalidEphemeralPublicKeyException {
+	public ForwardSecurityDataInit(
+		@NonNull DHSessionId sessionId,
+		@NonNull VersionRange versionRange,
+		@NonNull byte[] ephemeralPublicKey
+	) throws InvalidEphemeralPublicKeyException {
 		super(sessionId);
+		this.versionRange = versionRange;
 		if (ephemeralPublicKey.length != NaCl.PUBLICKEYBYTES) {
 			throw new InvalidEphemeralPublicKeyException("Bad ephemeral public key length");
 		}
 		this.ephemeralPublicKey = ephemeralPublicKey;
+	}
+
+	@NonNull
+	public VersionRange getVersionRange() {
+		return versionRange;
 	}
 
 	@NonNull
@@ -49,25 +59,13 @@ public class ForwardSecurityDataInit extends ForwardSecurityData {
 
 	@NonNull
 	@Override
-	public ForwardSecurityEnvelope toProtobufMessage() {
-		return ForwardSecurityEnvelope.newBuilder()
+	public Envelope toProtobufMessage() {
+		return Envelope.newBuilder()
 			.setSessionId(ByteString.copyFrom(this.getSessionId().get()))
-			.setInit(ForwardSecurityEnvelope.Init.newBuilder()
-				.setEphemeralPublicKey(ByteString.copyFrom(this.ephemeralPublicKey))
+			.setInit(Init.newBuilder()
+				.setSupportedVersion(this.versionRange)
+				.setFssk(ByteString.copyFrom(this.ephemeralPublicKey))
 				.build())
 			.build();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		ForwardSecurityDataInit that = (ForwardSecurityDataInit) o;
-		return Arrays.equals(getEphemeralPublicKey(), that.getEphemeralPublicKey());
-	}
-
-	@Override
-	public int hashCode() {
-		return Arrays.hashCode(getEphemeralPublicKey());
 	}
 }

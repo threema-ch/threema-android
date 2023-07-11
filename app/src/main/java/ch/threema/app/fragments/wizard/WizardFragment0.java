@@ -30,6 +30,7 @@ import android.widget.TextView;
 import java.util.Objects;
 
 import ch.threema.app.R;
+import ch.threema.app.activities.wizard.WizardBaseActivity;
 
 public class WizardFragment0 extends WizardFragment {
 	public static final int PAGE_ID = 0;
@@ -40,7 +41,6 @@ public class WizardFragment0 extends WizardFragment {
 		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
 
 		TextView title = rootView.findViewById(R.id.wizard_title);
-		title.setText(R.string.new_wizard_welcome);
 
 		// inflate content layout
 		contentViewStub.setLayoutResource(R.layout.fragment_wizard0);
@@ -48,6 +48,14 @@ public class WizardFragment0 extends WizardFragment {
 
 		TextView idTitle = rootView.findViewById(R.id.wizard_id_title);
 		idTitle.setText(this.userService.getIdentity());
+
+		if (((WizardBaseActivity) getActivity()).isNewIdentity()) {
+			title.setText(R.string.new_wizard_welcome);
+		} else {
+			title.setText(R.string.welcome_back);
+			((TextView) rootView.findViewById(R.id.scooter)).setText(R.string.id_restored_successfully);
+			rootView.findViewById(R.id.wizard_id_explain).setVisibility(View.GONE);
+		}
 
 		return rootView;
 	}

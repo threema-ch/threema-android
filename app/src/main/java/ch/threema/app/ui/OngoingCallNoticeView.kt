@@ -23,8 +23,6 @@ package ch.threema.app.ui
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
-import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -39,13 +37,14 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.DefaultLifecycleObserver
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.getRunningSince
 import ch.threema.app.voip.activities.CallActivity
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.app.voip.services.VoipCallService
-import com.google.android.material.chip.Chip
 import ch.threema.base.utils.LoggingUtil
+import com.google.android.material.button.MaterialButton
 
 private val logger = LoggingUtil.getThreemaLogger("OngoingCallNoticeView")
 
@@ -58,12 +57,12 @@ enum class OngoingCallNoticeMode {
 class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 	private var operationMode: OngoingCallNoticeMode? = null
 	private var groupId: LocalGroupId? = null
-	private lateinit var actionButton: Chip
+	private lateinit var actionButton: MaterialButton
 	private lateinit var callContainer: RelativeLayout
 	private lateinit var chronometer: Chronometer
 	private lateinit var callText: TextView
 	private lateinit var participantsText: TextView
-	private lateinit var callDurationDivider: TextView
+	private lateinit var ongoingCallDivider: View
 
 	constructor(context: Context) : super(context) {
 		init()
@@ -101,7 +100,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 		post {
 			val participantsCount = call.callState?.participants?.size ?: 0
 			setupGroupCallActions(call)
-			show(call.getRunningSince(), mode, participantsCount)
+			show(getRunningSince(call, context), mode, participantsCount)
 		}
 	}
 
@@ -117,43 +116,32 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 	}
 
 	@UiThread
-	private fun show(startTime: Long?, mode: OngoingCallNoticeMode, participantCount: Int = 0) {
+	private fun show(startTime: Long, mode: OngoingCallNoticeMode, participantCount: Int = 0) {
 		setOperationMode(mode, participantCount)
-		startTime?.let {
-			chronometer.base = it
-			chronometer.start()
-		}
+		chronometer.visibility = VISIBLE
+		chronometer.base = startTime
+		chronometer.start()
 		visibility = View.VISIBLE
 	}
 
 	private fun setOperationMode(mode: OngoingCallNoticeMode, participantCount: Int) {
 		operationMode = mode
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			actionButton.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice)
-		}
-
 		when (mode) {
 			OngoingCallNoticeMode.MODE_VOIP -> {
 				callContainer.isClickable = true
 				callContainer.isFocusable = true
 				actionButton.text = context.getString(R.string.voip_hangup)
-				actionButton.chipBackgroundColor = getDangerousBackgroundColor()
-				actionButton.setTextColor(getDangerousTextColor())
-				actionButton.chipIcon = AppCompatResources.getDrawable(context, R.drawable.ic_call_end_outline)
-				actionButton.chipIconTint = getDangerousTextColor()
+				actionButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_call_end_outline)
 				callText.setText(R.string.call_ongoing)
 				participantsText.visibility = GONE
-				callDurationDivider.visibility = GONE
+				ongoingCallDivider.visibility = GONE
 			}
 			OngoingCallNoticeMode.MODE_GROUP_CALL_JOINED -> {
 				callContainer.isClickable = false
 				callContainer.isFocusable = false
 				actionButton.text = context.getString(R.string.voip_gc_open_call)
-				actionButton.chipBackgroundColor = getBackgroundColorGroupCall()
-				actionButton.setTextColor(getTextColorGroupCall())
-				actionButton.chipIcon = AppCompatResources.getDrawable(context, R.drawable.ic_group_call)
-				actionButton.chipIconTint = getTextColorGroupCall()
+				actionButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_group_call)
 				callText.setText(R.string.voip_gc_in_call)
 				setParticipantsText(participantCount)
 			}
@@ -161,10 +149,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 				callContainer.isClickable = false
 				callContainer.isFocusable = false
 				actionButton.text = context.getString(R.string.voip_gc_join_call)
-				actionButton.chipBackgroundColor = getBackgroundColorGroupCall()
-				actionButton.setTextColor(getTextColorGroupCall())
-				actionButton.chipIcon = AppCompatResources.getDrawable(context, R.drawable.ic_outline_login_24)
-				actionButton.chipIconTint = getTextColorGroupCall()
+				actionButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_outline_login_24)
 				callText.setText(R.string.voip_gc_ongoing_call)
 				setParticipantsText(participantCount)
 			}
@@ -178,7 +163,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 		callText = findViewById(R.id.call_text)
 		chronometer = findViewById(R.id.call_duration)
 		participantsText = findViewById(R.id.participants_count)
-		callDurationDivider = findViewById(R.id.ongoing_call_divider)
+		ongoingCallDivider = findViewById(R.id.ongoing_call_divider)
 	}
 
 	private fun init() {
@@ -187,25 +172,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 		}
 		(context as AppCompatActivity).lifecycle.addObserver(this)
 		val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-		inflater.inflate(R.layout.view_ongoing_call_notice, this)
-	}
-
-	private fun getBackgroundColorGroupCall(): ColorStateList {
-		val backgroundColor = ColorStateList.valueOf(resources.getColor(R.color.group_call_accent))
-		return backgroundColor.withAlpha(0x1a)
-	}
-
-	private fun getTextColorGroupCall(): ColorStateList {
-		return ColorStateList.valueOf(resources.getColor(R.color.group_call_accent))
-	}
-
-	private fun getDangerousTextColor(): ColorStateList {
-		return ColorStateList.valueOf(resources.getColor(R.color.material_red))
-	}
-
-	private fun getDangerousBackgroundColor(): ColorStateList {
-		val backgroundColor = ColorStateList.valueOf(resources.getColor(R.color.material_red))
-		return backgroundColor.withAlpha(0x1a)
+		inflater.inflate(R.layout.notice_ongoing_call, this)
 	}
 
 	private fun voipContainerAction() {
@@ -273,10 +240,10 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 				participantCount
 			)
 			participantsText.visibility = VISIBLE
-			callDurationDivider.visibility = VISIBLE
+			ongoingCallDivider.visibility = VISIBLE
 		} else {
 			participantsText.visibility = GONE
-			callDurationDivider.visibility = GONE
+			ongoingCallDivider.visibility = GONE
 		}
 	}
 }

@@ -37,22 +37,19 @@
 				android:text="@string/new_wizard_welcome"
 				android:gravity="center_horizontal"
 				android:layout_centerHorizontal="true"
-				android:textColor="?attr/textColorPrimary"
 				android:layout_marginTop="8dp"
 				/>
 
 		<TextView
-			android:id="@+id/layout_top"
 			style="@style/WizardMediumText"
+			android:id="@+id/layout_top"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@id/enter_serial_welcome_title"
 			android:layout_centerHorizontal="true"
 			android:layout_marginBottom="5dp"
 			android:layout_marginTop="@dimen/wizard_paragraph_height"
-			android:gravity="center_horizontal"
-			android:textColor="?attr/textColorPrimary"
-			android:textColorLink="@color/wizard_color_accent" />
+			android:gravity="center_horizontal" />
 
 		<LinearLayout android:id="@+id/unlock_layout"
 					  android:layout_width="match_parent"
@@ -92,19 +89,18 @@
 				<requestFocus />
 			</com.google.android.material.textfield.TextInputLayout>
 
-			<ImageView
+			<com.google.android.material.button.MaterialButton
 				android:id="@+id/unlock_button"
-				android:layout_width="36dp"
-				android:layout_height="36dp"
+				style="@style/Threema.MaterialButton.Icon.Circle.Filled"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:layout_marginLeft="6dp"
-				android:background="@drawable/circle_transparent"
 				android:contentDescription="@string/send"
+				app:icon="@drawable/ic_arrow_left"
 				android:rotation="180"
-				android:scaleType="center"
-				app:srcCompat="@drawable/ic_arrow_left"
 				android:enabled="false"
 				android:clickable="false"
-				app:tint="@color/wizard_color_accent" />
+				/>
 
 		</LinearLayout>
 
@@ -119,6 +115,7 @@
 				android:id="@+id/unlock_state"/>
 
 		<TextView
+			style="@style/WizardMediumText"
 			android:id="@+id/private_explain"
 			android:visibility="visible"
 			android:layout_width="0dp"

@@ -27,16 +27,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
-import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
+
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 
@@ -46,7 +48,6 @@ import ch.threema.app.ThreemaApplication;
  *  Make sure to use a unique tag for this dialog in the show() method
  */
 public class ShowOnceDialog extends ThreemaDialogFragment {
-	private AlertDialog alertDialog;
 	private Activity activity;
 
 	private static final String PREF_PREFIX = "dialog_";
@@ -54,11 +55,20 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 	public static final String ARG_TITLE = "title";
 	public static final String ARG_MESSAGE_STRING = "messageString";
 	public static final String ARG_MESSAGE_INT = "messageInt";
+	public static final String ARG_ICON = "icon";
 
 	public static ShowOnceDialog newInstance(@StringRes int title, @StringRes int message) {
 		final Bundle args = new Bundle();
 		args.putInt(ARG_TITLE, title);
 		args.putInt(ARG_MESSAGE_INT, message);
+		return newInstance(args);
+	}
+
+	public static ShowOnceDialog newInstance(@StringRes int title, @StringRes int message, @DrawableRes int icon) {
+		final Bundle args = new Bundle();
+		args.putInt(ARG_TITLE, title);
+		args.putInt(ARG_MESSAGE_INT, message);
+		args.putInt(ARG_ICON, icon);
 		return newInstance(args);
 	}
 
@@ -100,6 +110,7 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 		return sharedPreferences.getBoolean(PREF_PREFIX + tag, false);
 	}
 
+	@NonNull
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
@@ -111,10 +122,11 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 		if (messageInt == 0) {
 			messageString = arguments.getString(ARG_MESSAGE_STRING);
 		}
+		@DrawableRes int icon = arguments.getInt(ARG_ICON, 0);
 
 		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_show_once, null);
 		final TextView textView = dialogView.findViewById(R.id.message);
-		final AppCompatCheckBox checkbox = dialogView.findViewById(R.id.checkbox);
+		final MaterialCheckBox checkbox = dialogView.findViewById(R.id.checkbox);
 		checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> sharedPreferences.edit().putBoolean(PREF_PREFIX + getTag(), isChecked).apply());
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
@@ -123,6 +135,10 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 
 		if (title != -1) {
 			builder.setTitle(title);
+		}
+
+		if (icon != 0) {
+			builder.setIcon(icon);
 		}
 
 		builder.setPositiveButton(getString(R.string.ok), null);
@@ -134,7 +150,7 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 
 		setCancelable(false);
 
-		alertDialog = builder.create();
+		AlertDialog alertDialog = builder.create();
 		return alertDialog;
 	}
 }

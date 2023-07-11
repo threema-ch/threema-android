@@ -31,15 +31,18 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.preference.PreferenceManager;
+
+import com.google.android.material.card.MaterialCardView;
 
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiTextView;
@@ -53,12 +56,15 @@ public class TooltipPopup extends PopupWindow implements DefaultLifecycleObserve
 	public static final int ALIGN_ABOVE_ANCHOR_ARROW_RIGHT = 4;
 
 	private final Context context;
+	private View popupLayout;
 	private EmojiTextView textView;
 	private final String preferenceString;
 	private Handler timeoutHandler;
 	private final Runnable dismissRunnable = () -> dismiss(false);
 
-	public TooltipPopup(Context context, int preferenceKey, @LayoutRes int layoutResource, LifecycleOwner lifecycleOwner) {
+	private @DrawableRes int icon = 0;
+
+	public TooltipPopup(Context context, int preferenceKey, LifecycleOwner lifecycleOwner) {
 		super(context);
 
 		if (lifecycleOwner != null) {
@@ -72,10 +78,10 @@ public class TooltipPopup extends PopupWindow implements DefaultLifecycleObserve
 		}
 		this.context = context;
 
-		init(context, layoutResource, null);
+		init(context, null);
 	}
 
-	public TooltipPopup(Context context, int preferenceKey, @LayoutRes int layoutResource, LifecycleOwner lifecycleOwner, Intent launchIntent) {
+	public TooltipPopup(Context context, int preferenceKey, LifecycleOwner lifecycleOwner, Intent launchIntent, @DrawableRes int icon) {
 		super(context);
 
 		if (lifecycleOwner != null) {
@@ -88,26 +94,15 @@ public class TooltipPopup extends PopupWindow implements DefaultLifecycleObserve
 			this.preferenceString = context.getString(preferenceKey);
 		}
 		this.context = context;
+		this.icon = icon;
 
-		init(context, layoutResource, launchIntent);
+		init(context, launchIntent);
 	}
 
-	public TooltipPopup(Context context, String preferenceString, @LayoutRes int layoutResource) {
-		super(context);
-		this.preferenceString = preferenceString;
-		this.context = context;
-
-		if (isDismissed(context, preferenceString)) {
-			return;
-		}
-
-		init(context, layoutResource, null);
-	}
-
-	private void init(Context context, int layoutResource, Intent launchIntent) {
+	private void init(Context context, Intent launchIntent) {
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		LinearLayout popupLayout = (LinearLayout) layoutInflater.inflate(layoutResource, null, false);
 
+		this.popupLayout = layoutInflater.inflate(R.layout.popup_tooltip, null, false);
 		this.textView = popupLayout.findViewById(R.id.label);
 
 		setContentView(popupLayout);
@@ -129,7 +124,7 @@ public class TooltipPopup extends PopupWindow implements DefaultLifecycleObserve
 			}
 		});
 
-		ImageView closeButton = popupLayout.findViewById(R.id.close_button);
+		View closeButton = popupLayout.findViewById(R.id.close_button);
 		if (closeButton != null) {
 			if (preferenceString == null) {
 				closeButton.setVisibility(View.GONE);
@@ -175,89 +170,83 @@ public class TooltipPopup extends PopupWindow implements DefaultLifecycleObserve
 		this.dismiss();
 	}
 
-	public void show(Activity activity, final View anchor, String text, int align) {
-		show(activity, anchor, text, align, 0);
-	}
-
-	public void show(Activity activity, final View anchor, String text, int align, int timeoutMs) {
-		if (isDismissed(context, preferenceString)) {
-			return;
-		}
-
-		int[] originLocation = {0, 0};
-		anchor.getLocationInWindow(originLocation);
-
-		show(activity, anchor, text, align, originLocation, timeoutMs);
-	}
-
+	/**
+	 * Show a tooltip at the specified location pointing to a specified anchor view
+	 * @param activity Activity context
+	 * @param anchor Anchor / parent view to of this tooltip
+	 * @param text Text to show in tooltip
+	 * @param align Where to align the tooltip and where the arrow should be shown
+	 * @param originLocation The location on screen where the tip of the arrow should point to
+	 * @param timeoutMs How long the tooltip should be shown until it fades out
+	 */
 	public void show(Activity activity, final View anchor, String text, int align, int[] originLocation, int timeoutMs) {
 		if (isDismissed(context, preferenceString)) {
 			return;
 		}
-
-		int popupX;
-		int popupY;
 
 		this.textView.setText(text);
 
 		int screenHeight = activity.getWindowManager().getDefaultDisplay().getHeight();
 		int screenWidth = activity.getWindowManager().getDefaultDisplay().getWidth();
 		int maxWidth = context.getResources().getDimensionPixelSize(R.dimen.tooltip_max_width);
+		int arrowInset = context.getResources().getDimensionPixelSize(R.dimen.tooltip_popup_arrow_inset);
+		int marginOnOtherEdge = context.getResources().getDimensionPixelSize(R.dimen.tooltip_margin_on_other_edge);
+		int arrowOffset = (context.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_width) / 2) + arrowInset;
+		int popupX, popupY, popupWidth, anchorGravity, contentGravity;
 
 		if (align == ALIGN_ABOVE_ANCHOR_ARROW_LEFT) {
-			popupX = originLocation[0];
+			this.popupLayout.findViewById(R.id.arrow_bottom_left).setVisibility(View.VISIBLE);
+			popupX = Math.max(0, originLocation[0] - arrowOffset); // left edge of popup
 			popupY = screenHeight - originLocation[1] + ConfigUtils.getNavigationBarHeight(activity);
-			int marginRight = context.getResources().getDimensionPixelSize(R.dimen.tooltip_margin_right);
-			this.setWidth(Math.min(screenWidth - marginRight - popupX, maxWidth));
-			if (activity.isFinishing() || activity.isDestroyed()) {
-				return;
-			}
-			try {
-				showAtLocation(anchor, Gravity.LEFT | Gravity.BOTTOM, popupX, popupY);
-			} catch (WindowManager.BadTokenException e) {
-				return;
-			}
+			popupWidth = Math.min(screenWidth - popupX - marginOnOtherEdge, maxWidth);
+			anchorGravity = Gravity.LEFT | Gravity.BOTTOM;
+			contentGravity = Gravity.LEFT;
 		} else if (align == ALIGN_ABOVE_ANCHOR_ARROW_RIGHT) {
-			popupX = originLocation[0] + anchor.getWidth();
+			this.popupLayout.findViewById(R.id.arrow_bottom_right).setVisibility(View.VISIBLE);
+			popupX = Math.min(screenWidth, originLocation[0] + arrowOffset);
 			popupY = screenHeight - originLocation[1] + ConfigUtils.getNavigationBarHeight(activity);
-			int marginLeft = context.getResources().getDimensionPixelSize(R.dimen.tooltip_margin_right);
-			int popupWidth = Math.min(popupX - marginLeft, maxWidth);
-			this.setWidth(popupWidth);
-			if (activity.isFinishing() || activity.isDestroyed()) {
-				return;
-			}
-			try {
-				showAtLocation(anchor, Gravity.LEFT | Gravity.BOTTOM, popupX - popupWidth, popupY);
-			} catch (WindowManager.BadTokenException e) {
-				return;
-			}
-		} else {
-			int marginOnOtherEdge = context.getResources().getDimensionPixelSize(R.dimen.tooltip_margin_right);
-			int arrowOffset = context.getResources().getDimensionPixelSize(R.dimen.tooltip_arrow_offset);
-			int popupWidth;
+			popupWidth = Math.min(popupX - marginOnOtherEdge, maxWidth);
+			popupX -= popupWidth;
+			anchorGravity = Gravity.LEFT | Gravity.BOTTOM;
+			contentGravity = Gravity.RIGHT;
+		} else if (align == ALIGN_BELOW_ANCHOR_ARROW_LEFT) {
+			this.popupLayout.findViewById(R.id.arrow_top_left).setVisibility(View.VISIBLE);
+			popupX = Math.max(0, originLocation[0] - arrowOffset); // left edge of popup
+			popupY = originLocation[1];
+			popupWidth = Math.min(screenWidth - popupX - marginOnOtherEdge, maxWidth);
+			anchorGravity = Gravity.LEFT | Gravity.TOP;
+			contentGravity = Gravity.LEFT;
+		} else { // arrow right
+			this.popupLayout.findViewById(R.id.arrow_top_right).setVisibility(View.VISIBLE);
+			popupX = Math.min(screenWidth, originLocation[0] + arrowOffset); // right edge of popup
+			popupY = originLocation[1];
+			popupWidth = Math.min(popupX - marginOnOtherEdge, maxWidth);
+			popupX -= popupWidth;
+			anchorGravity = Gravity.LEFT | Gravity.TOP;
+			contentGravity = Gravity.RIGHT;
+		}
 
-			if (align == ALIGN_BELOW_ANCHOR_ARROW_LEFT) {
-				popupX = originLocation[0] - arrowOffset;
-				popupY = originLocation[1];
-				popupWidth = Math.min(screenWidth - popupX - marginOnOtherEdge, maxWidth);
-			} else {
-				popupX = originLocation[0] + anchor.getWidth() - arrowOffset;
-				popupY = originLocation[1] + anchor.getHeight();
-				popupWidth = Math.min(popupX - marginOnOtherEdge, maxWidth);
-			}
-			this.setWidth(popupWidth);
-			if (activity.isFinishing() || activity.isDestroyed()) {
-				return;
-			}
-			try {
-				if (align == ALIGN_BELOW_ANCHOR_ARROW_LEFT) {
-					showAtLocation(anchor, Gravity.LEFT | Gravity.TOP, popupX, popupY);
-				} else {
-					showAtLocation(anchor, Gravity.LEFT | Gravity.TOP, popupX - popupWidth, popupY);
-				}
-			} catch (WindowManager.BadTokenException e) {
-				return;
-			}
+		this.setWidth(popupWidth);
+		MaterialCardView contentLayout = this.popupLayout.findViewById(R.id.content);
+		FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) contentLayout.getLayoutParams();
+		params.gravity = contentGravity;
+		contentLayout.setLayoutParams(params);
+
+		if (activity.isFinishing() || activity.isDestroyed()) {
+			return;
+		}
+		try {
+			showAtLocation(anchor, anchorGravity, popupX, popupY);
+		} catch (WindowManager.BadTokenException e) {
+			return;
+		}
+
+		ImageView iconView = this.popupLayout.findViewById(R.id.icon);
+		if (icon != 0) {
+			iconView.setImageResource(icon);
+			iconView.setVisibility(View.VISIBLE);
+		} else {
+			iconView.setVisibility(View.GONE);
 		}
 
 		if (timeoutMs > 0) {

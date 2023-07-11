@@ -33,7 +33,7 @@ import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.app.utils.TestUtil;
 
 public class RingtoneServiceImpl implements RingtoneService {
-	private PreferenceService preferenceService;
+	private final PreferenceService preferenceService;
 	private HashMap<String, String> ringtones;
 
 	public RingtoneServiceImpl(PreferenceService preferenceService) {
@@ -56,9 +56,7 @@ public class RingtoneServiceImpl implements RingtoneService {
 		}
 
 		if (ringtoneUri != null && RingtoneManager.isDefault(ringtoneUri)) {
-			if (ringtones.containsKey(uniqueId)) {
-				ringtones.remove(uniqueId);
-			}
+			ringtones.remove(uniqueId);
 		} else {
 			ringtones.put(uniqueId, ringtone);
 		}
@@ -139,7 +137,7 @@ public class RingtoneServiceImpl implements RingtoneService {
 
 	private boolean hasNoRingtone(String uniqueId) {
 		Uri ringtone = getRingtoneFromUniqueId(uniqueId);
-		return (ringtone == null || ringtone.toString() == null || ringtone.toString().equals("null"));
+		return (ringtone == null || ringtone.toString().equals("null"));
 	}
 
 	@Override
@@ -154,7 +152,7 @@ public class RingtoneServiceImpl implements RingtoneService {
 				defaultRingtone = getDefaultContactRingtone();
 				selectedRingtone = getContactRingtone(uniqueId);
 			}
-			return !(defaultRingtone != null && selectedRingtone != null && defaultRingtone.equals(selectedRingtone)) && hasNoRingtone(uniqueId);
+			return !(defaultRingtone != null && defaultRingtone.equals(selectedRingtone)) && hasNoRingtone(uniqueId);
 		}
 		return false;
 	}

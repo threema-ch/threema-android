@@ -90,21 +90,21 @@ public class VoipCallOfferData extends VoipCallData<VoipCallOfferData> {
 				offerData.sdpType = JSONUtil.getStringOrNull(o, KEY_SDP_TYPE);
 				if (offerData.sdpType == null) {
 					logger.error("Bad VoipCallOfferData: " + KEY_SDP_TYPE + " must be defined");
-					throw new BadMessageException("TM060", true);
+					throw new BadMessageException("TM060");
 				} else if (offerData.sdpType.equals("answer") || offerData.sdpType.equals("pranswer")) {
 					logger.error("Bad VoipCallOfferData: " + KEY_SDP_TYPE + " may not be \"answer\" or \"pranswer\"");
-					throw new BadMessageException("TM060", true);
+					throw new BadMessageException("TM060");
 				}
 
 				offerData.sdp = JSONUtil.getStringOrNull(o, KEY_SDP);
 				if (offerData.sdp == null && !offerData.sdpType.equals("rollback")) {
 					logger.error("Bad VoipCallOfferData: " + KEY_SDP + " may only be null if " + KEY_SDP_TYPE + "=rollback");
-					throw new BadMessageException("TM060", true);
+					throw new BadMessageException("TM060");
 				}
 
 				return offerData;
 			} catch (Exception e) {
-				throw new BadMessageException("TM060", true);
+				throw new BadMessageException("TM060");
 			}
 		}
 
@@ -151,7 +151,7 @@ public class VoipCallOfferData extends VoipCallData<VoipCallOfferData> {
 			o = new JSONObject(jsonObjectString);
 		} catch (JSONException e) {
 			logger.error("Bad VoipCallOfferData: Invalid JSON string", e);
-			throw new BadMessageException("TM060", true);
+			throw new BadMessageException("TM060");
 		}
 
 		final VoipCallOfferData callOfferData = new VoipCallOfferData();
@@ -163,7 +163,7 @@ public class VoipCallOfferData extends VoipCallData<VoipCallOfferData> {
 			}
 		} catch (Exception e) {
 			logger.error("Bad VoipCallOfferData: Invalid Call ID", e);
-			throw new BadMessageException("TM060", true);
+			throw new BadMessageException("TM060");
 		}
 
 		try {
@@ -171,7 +171,7 @@ public class VoipCallOfferData extends VoipCallData<VoipCallOfferData> {
 			callOfferData.offerData = OfferData.parse(offerObj);
 		} catch (Exception e) {
 			logger.error("Bad VoipCallOfferData: Offer could not be parsed", e);
-			throw new BadMessageException("TM060", true);
+			throw new BadMessageException("TM060");
 		}
 
 		try {
@@ -181,7 +181,7 @@ public class VoipCallOfferData extends VoipCallData<VoipCallOfferData> {
 			}
 		} catch (Exception e) {
 			logger.error("Bad VoipCallOfferData: Feature list could not be parsed", e);
-			throw new BadMessageException("TM060", true);
+			throw new BadMessageException("TM060");
 		}
 
 		return callOfferData;
@@ -198,11 +198,11 @@ public class VoipCallOfferData extends VoipCallData<VoipCallOfferData> {
 		try {
 			if (this.offerData == null) {
 				logger.error("Bad VoipCallOfferData: Missing offer data");
-				throw new BadMessageException("TM060", true);
+				throw new BadMessageException("TM060");
 			}
 			o.put(KEY_OFFER, this.offerData.toJSON());
 		} catch (Exception e) {
-			throw new BadMessageException("TM060", true);
+			throw new BadMessageException("TM060");
 		}
 
 		// Add feature list
@@ -211,7 +211,7 @@ public class VoipCallOfferData extends VoipCallData<VoipCallOfferData> {
 				o.put("features", this.features.toJSON());
 			} catch (JSONException e) {
 				logger.error("Could not add features", e);
-				throw new BadMessageException("TM060", true);
+				throw new BadMessageException("TM060");
 			}
 		}
 

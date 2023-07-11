@@ -79,7 +79,6 @@ import ch.threema.storage.models.GroupModel
 import kotlinx.coroutines.*
 import java.lang.Runnable
 import java.util.*
-import kotlin.concurrent.schedule
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallActivity")!!
 
@@ -133,13 +132,13 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 		}
 	}
 
-	private val audioSettingsLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()
-	) {
-		if (ConfigUtils.isPermissionGranted(this, RECORD_AUDIO)) {
-			checkPhoneStateAndJoinCall()
-		} else {
-			setResult(RESULT_CANCELED)
-			finish()
+	private val permissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+		when (it.resultCode) {
+			RESULT_OK -> checkPhoneStateAndJoinCall()
+			else -> {
+				setResult(RESULT_CANCELED)
+				finish()
+			}
 		}
 	}
 
@@ -147,16 +146,6 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 	) {
 		if (ConfigUtils.isPermissionGranted(this, CAMERA)) {
 			checkCameraPermissionAndStartCapturing()
-		}
-	}
-
-	private val readPhoneStateSettingsLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-		if (!it && !ActivityCompat.shouldShowRequestPermissionRationale(this, READ_PHONE_STATE)) {
-			ConfigUtils.showPermissionRationale(this, findViewById(R.id.group_call_layout), R.string.read_phone_state_short_message)
-			// Finish activity when snack bar disappears (after 2750ms)
-			Timer().schedule(2750) { finish() }
-		} else {
-			joinCall()
 		}
 	}
 
@@ -255,11 +244,11 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 						&& views.buttonFlipCamera.visibility != View.VISIBLE) {
 						val location = IntArray(2)
 						views.buttonToggleCamera.getLocationInWindow(location)
-						location[1] -= views.buttonToggleCamera.height / 5
+						location[0] += (views.buttonToggleCamera.width / 2)
+						location[1] += views.buttonToggleCamera.height
 						TooltipPopup(
 							this,
 							R.string.preferences__tooltip_gc_camera,
-							R.layout.popup_tooltip_top_right,
 							this
 						).show(
 							this,
@@ -357,10 +346,6 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 	}
 
-	private suspend fun requestMicrophonePermission(): Boolean = permissionRegistry.requestMicrophonePermissions().granted
-
-	private suspend fun requestBluetoothPermission(): Boolean = permissionRegistry.requestBluetoothPermission(true).granted
-
 	private fun handleIntent(intent: Intent) {
 		logger.debug("handleIntent")
 
@@ -374,7 +359,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 			val groupModel = groupService.getById(groupId.id)
 
 			if (groupModel != null && groupService.isGroupMember(groupModel)) {
-				checkPhoneStateAndJoinCall()
+				joinCall()
 			} else {
 				Toast.makeText(this, R.string.you_are_not_a_member_of_this_group, Toast.LENGTH_LONG).show()
 				finish()
@@ -393,51 +378,24 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 
 	private fun checkPhoneStateAndJoinCall() {
 		try {
-			if (VoipUtil.isPSTNCallOngoingRespectPreference(this, this::joinCall, readPhoneStateSettingsLauncher)) {
+			if (VoipUtil.isPSTNCallOngoing(this)) {
 				// A PSTN call is ongoing
 				SimpleStringAlertDialog.newInstance(R.string.group_call, R.string.voip_another_pstn_call)
 						.setOnDismissRunnable { finish() }
 						.show(supportFragmentManager, "err")
 			} else {
-				joinCall()
+				viewModel.joinCall(intention)
 			}
 		} catch (exception: SecurityException) {
-			logger.info("Permission not granted: {}", exception)
+			logger.error("Phone permission not granted. Starting group call anyway.", exception)
+			viewModel.joinCall(intention)
 		}
 	}
 
 	private fun joinCall() {
 		logger.debug("Joining call")
-		CoroutineScope(Dispatchers.Default).launch {
-			if (requestMicrophonePermission()) {
-				if (!requestBluetoothPermission()) {
-					withContext(Dispatchers.Main) {
-						showToast(R.string.permission_bluetooth_connect_required)
-					}
-					logger.warn("BLUETOOTH_CONNECT permission not granted")
-					// continue without bluetooth support
-				}
-				withContext(Dispatchers.Main) {
-					viewModel.joinCall(intention)
-				}
-			} else {
-				logger.info("Microphone permission denied")
-				if (!ActivityCompat.shouldShowRequestPermissionRationale(this@GroupCallActivity, RECORD_AUDIO)) {
-					// permission was permanently denied
-					withContext(Dispatchers.Main) {
-						val alert : ThreemaDialogFragment = GenericAlertDialog.newInstance(
-								R.string.group_call,
-								getString(R.string.group_call_mic_permission_rationale,
-										getString(R.string.app_name)),
-								R.string.settings,
-								R.string.cancel)
-						alert.show(this@GroupCallActivity.supportFragmentManager, DIALOG_TAG_MIC_PERMISSION_DENIED)
-					}
-				} else {
-					setResult(RESULT_CANCELED)
-					finish()
-				}
-			}
+		requestGroupCallPermissions(this, permissionLauncher) {
+			checkPhoneStateAndJoinCall()
 		}
 	}
 
@@ -922,10 +880,6 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 	override fun onYes(tag: String?, addData: Any?) {
 		if (DIALOG_TAG_CAMERA_PERMISSION_DENIED == tag) {
 			cameraSettingsLauncher.launch(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-				data = Uri.fromParts("package", packageName, null)
-			})
-		} else if (DIALOG_TAG_MIC_PERMISSION_DENIED == tag) {
-			audioSettingsLauncher.launch(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
 				data = Uri.fromParts("package", packageName, null)
 			})
 		}

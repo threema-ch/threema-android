@@ -17,8 +17,6 @@
     <string name="new_wizard_info_link">Podając swój numer telefonu i adres e-mail, umożliwisz swoim znajomym, którzy mają Cię w książce kontaktów w telefonie, odnalezienie Cię automatycznie w Threema Work. Adresy e-mail przechowywane są na naszym serwerze w formie zaszyfrowanej jednokierunkowo. Możesz oczywiście pominąć ten krok, jeśli wolisz korzystać z Threema Work anonimowo.</string>
     <string name="threema_contact">Kontakt Threema Work</string>
     <string name="menu_about">O Threema Work</string>
-    <string name="list_theme_light">Jasny</string>
-    <string name="list_theme_dark">Ciemny (domyślny)</string>
     <string name="private_threema_download"><![CDATA[ <a href=%1$s>Dowiedz się więcej o Threema Work</a> <br/><br/> Jeśli jesteś użytkownikiem prywatnym, <a href=%2$s>kliknij tutaj</a>, aby pobrać Threema.]]></string>
     <string name="directory_search">Szukaj w książce telefonicznej</string>
     <string name="directory_title">Firmowa książka telefoniczna</string>

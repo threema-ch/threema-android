@@ -18,10 +18,9 @@
 		android:layout_marginBottom="8dp"
 		android:clickable="false"
 		android:focusable="false"
-		app:cardBackgroundColor="?attr/cardview_background"
-		app:cardCornerRadius="@dimen/cardview_border_radius"
-		app:strokeColor="?attr/circle_button_stroke_color"
-		app:strokeWidth="1dp"
+		app:cardBackgroundColor="?attr/colorSurface"
+		app:strokeWidth="0dp"
+		app:cardElevation="4dp"
 		android:outlineProvider="none"
 		app:contentPaddingBottom="16dp"
 		app:contentPaddingLeft="15dp"
@@ -141,10 +140,10 @@
 			android:layout_marginBottom="16dp"
 			android:clickable="false"
 			android:focusable="false"
-			app:strokeColor="?attr/circle_button_stroke_color"
-			app:strokeWidth="1dp"
+			app:strokeWidth="0dp"
 			android:outlineProvider="none"
-			app:cardBackgroundColor="?attr/cardview_background"
+			app:cardBackgroundColor="?attr/colorSurface"
+			app:cardElevation="4dp"
 			app:cardCornerRadius="@dimen/cardview_border_radius"
 			app:contentPaddingBottom="16dp"
 			app:contentPaddingLeft="15dp"
@@ -156,11 +155,11 @@
 			app:layout_constraintTop_toBottomOf="@id/horizontalScrollView1">
 
 			<TextView
+				style="@style/Threema.TextAppearance.BodyMedium"
 				android:id="@+id/not_voted"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:gravity="left"
-				android:textAppearance="@style/Threema.TextAppearance.Body1" />
+				android:gravity="left" />
 
 		</com.google.android.material.card.MaterialCardView>
 

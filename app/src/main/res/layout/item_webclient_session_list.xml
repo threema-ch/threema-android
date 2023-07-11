@@ -37,8 +37,9 @@
 				android:src="@drawable/ic_error_red_24dp"
 				android:visibility="gone"/>
 
-			<ProgressBar
+			<com.google.android.material.progressindicator.CircularProgressIndicator
 				android:id="@+id/session_loading"
+				android:indeterminate="true"
 				android:layout_width="@dimen/avatar_size_small"
 				android:layout_height="@dimen/avatar_size_small"
 				android:visibility="gone"/>

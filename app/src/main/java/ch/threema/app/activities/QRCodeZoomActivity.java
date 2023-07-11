@@ -26,14 +26,14 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
-import ch.threema.app.R;
+
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.ui.QRCodePopup;
 
 import static ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ANY;
 
 /***
- * Activity displaying QR Code popup. Used by Launcher shortcut
+ * Activity displaying QR Code popup
  */
 public class QRCodeZoomActivity extends AppCompatActivity {
 	QRCodePopup qrPopup = null;
@@ -72,13 +72,5 @@ public class QRCodeZoomActivity extends AppCompatActivity {
 		}
 
 		super.onDestroy();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		if (isFinishing()) {
-			overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
-		}
 	}
 }

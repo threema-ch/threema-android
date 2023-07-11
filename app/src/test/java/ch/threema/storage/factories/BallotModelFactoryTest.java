@@ -24,13 +24,14 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
+import android.database.Cursor;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -44,7 +45,6 @@ import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ballot.BallotService;
-import ch.threema.app.webclient.converter.Group;
 import ch.threema.storage.ColumnIndexCache;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.ContactModel;
@@ -52,26 +52,22 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyVararg;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.doCallRealMethod;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({BallotModelFactory.class, ContentValues.class, DatabaseUtil.class})
+@PrepareForTest({BallotModelFactory.class, ContentValues.class, DatabaseUtil.class, SQLiteDatabase.class})
 public class BallotModelFactoryTest {
-	final SQLiteDatabase readableDatabaseMock = mock(SQLiteDatabase.class);
-	final SQLiteDatabase writeableDatabaseMock = mock(SQLiteDatabase.class);
-	final ColumnIndexCache columnIndexCacheMock = mock(ColumnIndexCache.class);
+	final SQLiteDatabase readableDatabaseMock = PowerMockito.mock(SQLiteDatabase.class);
+	final SQLiteDatabase writeableDatabaseMock = PowerMockito.mock(SQLiteDatabase.class);
+	final ColumnIndexCache columnIndexCacheMock = PowerMockito.mock(ColumnIndexCache.class);
 
 	BallotModelFactory factory = mock(BallotModelFactory.class);
 
@@ -442,7 +438,8 @@ public class BallotModelFactoryTest {
 		String[] convertedArgumentsMock = new String[]{"a", "b", "c"};
 		Cursor cursorMock = mock(Cursor.class);
 
-		when(filterMock.getReceiver()).thenReturn(receiverMock);
+		//noinspection unchecked,rawtypes
+		when(filterMock.getReceiver()).thenReturn((MessageReceiver) receiverMock);
 		when(filterMock.createdOrNotVotedByIdentity()).thenReturn(null);
 		when(filterMock.getStates()).thenReturn(new BallotModel.State[]{BallotModel.State.OPEN, BallotModel.State.TEMPORARY});
 		when(receiverMock.getType()).thenReturn(MessageReceiver.Type_GROUP);
@@ -485,7 +482,8 @@ public class BallotModelFactoryTest {
 		String[] convertedArgumentsMock = new String[]{"a", "b", "c"};
 		Cursor cursorMock = mock(Cursor.class);
 
-		when(filterMock.getReceiver()).thenReturn(receiverMock);
+		//noinspection unchecked,rawtypes
+		when(filterMock.getReceiver()).thenReturn((MessageReceiver) receiverMock);
 		when(filterMock.createdOrNotVotedByIdentity()).thenReturn(null);
 		when(filterMock.getStates()).thenReturn(new BallotModel.State[]{BallotModel.State.OPEN, BallotModel.State.TEMPORARY});
 		when(receiverMock.getType()).thenReturn(MessageReceiver.Type_CONTACT);
@@ -532,7 +530,8 @@ public class BallotModelFactoryTest {
 		String[] convertedArgumentsMock = new String[]{"a", "b", "c"};
 		Cursor cursorMock = mock(Cursor.class);
 
-		when(filterMock.getReceiver()).thenReturn(receiverMock);
+		//noinspection unchecked,rawtypes
+		when(filterMock.getReceiver()).thenReturn((MessageReceiver) receiverMock);
 		when(filterMock.createdOrNotVotedByIdentity()).thenReturn("FILTER-ID");
 		when(filterMock.getStates()).thenReturn(new BallotModel.State[]{BallotModel.State.OPEN, BallotModel.State.TEMPORARY});
 		when(receiverMock.getType()).thenReturn(MessageReceiver.Type_GROUP);
@@ -572,7 +571,8 @@ public class BallotModelFactoryTest {
 		String[] convertedArgumentsMock = new String[]{"a", "b", "c"};
 		Cursor cursorMock = mock(Cursor.class);
 
-		when(filterMock.getReceiver()).thenReturn(receiverMock);
+		//noinspection unchecked,rawtypes
+		when(filterMock.getReceiver()).thenReturn((MessageReceiver) receiverMock);
 		when(filterMock.createdOrNotVotedByIdentity()).thenReturn(null);
 		when(filterMock.getStates()).thenReturn(null);
 		when(receiverMock.getType()).thenReturn(MessageReceiver.Type_CONTACT);
@@ -605,7 +605,8 @@ public class BallotModelFactoryTest {
 		BallotService.BallotFilter filterMock = mock(BallotService.BallotFilter.class);
 		DistributionListMessageReceiver receiverMock = mock(DistributionListMessageReceiver.class);
 
-		when(filterMock.getReceiver()).thenReturn(receiverMock);
+		//noinspection unchecked,rawtypes
+		when(filterMock.getReceiver()).thenReturn((MessageReceiver) receiverMock);
 		when(filterMock.createdOrNotVotedByIdentity()).thenReturn(null);
 		when(filterMock.getStates()).thenReturn(null);
 		when(receiverMock.getType()).thenReturn(MessageReceiver.Type_DISTRIBUTION_LIST);

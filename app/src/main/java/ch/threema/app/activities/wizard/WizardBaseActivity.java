@@ -22,11 +22,12 @@
 package ch.threema.app.activities.wizard;
 
 import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
-import static ch.threema.app.ThreemaApplication.WORKER_WORK_SYNC;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,8 +36,6 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,11 +44,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.viewpager.widget.ViewPager;
-import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
@@ -111,12 +109,14 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBaseActivity");
 
+	public static final String EXTRA_NEW_IDENTITY_CREATED = "newIdentity";
 	private static final String DIALOG_TAG_USE_ID_AS_NICKNAME = "nd";
 	private static final String DIALOG_TAG_INVALID_ENTRY = "ie";
 	private static final String DIALOG_TAG_USE_ANONYMOUSLY = "ano";
 	private static final String DIALOG_TAG_THREEMA_SAFE = "sd";
 	private static final String DIALOG_TAG_PASSWORD_BAD = "pwb";
 	private static final String DIALOG_TAG_SYNC_CONTACTS_ENABLE = "scen";
+	private static final String DIALOG_TAG_SYNC_CONTACTS_MDM_ENABLE_RATIONALE = "scmer";
 
 	private static final int PERMISSION_REQUEST_READ_CONTACTS = 2;
 	private static final int NUM_PAGES = 5;
@@ -128,9 +128,8 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 
 	private static int lastPage = 0;
 	private ParallaxViewPager viewPager;
-	private ImageView prevButton, nextButton;
+	private MaterialButton prevButton, nextButton;
 	private Button finishButton;
-	private TextView nextText;
 	private StepPagerStrip stepPagerStrip;
 	private String nickname, email, number, prefix, presetMobile, presetEmail, safePassword;
 	private ThreemaSafeServerInfo safeServerInfo = new ThreemaSafeServerInfo();
@@ -141,7 +140,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	private LocaleService localeService;
 	private PreferenceService preferenceService;
 	private ThreemaSafeService threemaSafeService;
-	private boolean errorRaised = false;
+	private boolean errorRaised = false, isNewIdentity = false;
 	private WizardFragment4 fragment4;
 
 	private final Handler finishHandler = new Handler();
@@ -224,10 +223,12 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 				threemaSafeService = serviceManager.getThreemaSafeService();
 			}
 		} catch (Exception e) {
+			logger.error("Exception", e);
 			finish();
 			return;
 		}
 		if (userService == null || localeService == null || preferenceService == null) {
+			logger.error("Required services not available.");
 			finish();
 			return;
 		}
@@ -251,9 +252,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 			}
 		});
 
-		nextText = findViewById(R.id.next_text);
-		nextText.setOnClickListener(this);
-
 		stepPagerStrip = findViewById(R.id.strip);
 		stepPagerStrip.setPageCount(NUM_PAGES);
 		stepPagerStrip.setCurrentPage(WizardFragment0.PAGE_ID);
@@ -261,6 +259,11 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 		viewPager = findViewById(R.id.pager);
 		viewPager.addLayer(findViewById(R.id.layer0));
 		viewPager.addLayer(findViewById(R.id.layer1));
+
+		Intent intent = getIntent();
+		if (intent != null) {
+			isNewIdentity = intent.getBooleanExtra(EXTRA_NEW_IDENTITY_CREATED, false);
+		}
 
 		if (ConfigUtils.isWorkBuild()) {
 			performWorkSync();
@@ -413,7 +416,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	public void onPageSelected(int position) {
 		prevButton.setVisibility(position == WizardFragment0.PAGE_ID ? View.GONE : View.VISIBLE);
 		nextButton.setVisibility(position == NUM_PAGES - 1 ? View.GONE : View.VISIBLE);
-		nextText.setVisibility(View.GONE);
 
 		stepPagerStrip.setCurrentPage(position);
 
@@ -511,7 +513,15 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 
 		if (this.userCannotChangeContactSync) {
 			if (this.isSyncContacts) {
-				requestContactSyncPermission();
+				if (ConfigUtils.isPermissionGranted(this, Manifest.permission.READ_CONTACTS)) {
+					// Permission already granted, therefore continue by linking the phone
+					linkPhone();
+				} else {
+					// If permission is not yet granted, show a dialog to inform that contact sync
+					// has been force enabled by the administrator
+					WizardDialog wizardDialog = WizardDialog.newInstance(R.string.contact_sync_mdm_rationale, R.string.ok);
+					wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_SYNC_CONTACTS_MDM_ENABLE_RATIONALE);
+				}
 			} else {
 				linkPhone();
 			}
@@ -645,6 +655,14 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 		return this.skipWizard;
 	}
 
+	/**
+	 * Return wether the identity was just created
+	 * @return true if it's a new identity, false if the identity was restored
+	 */
+	public boolean isNewIdentity() {
+		return isNewIdentity;
+	}
+
 	@Override
 	public void onYes(String tag, Object data) {
 		switch (tag) {
@@ -658,6 +676,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 			case DIALOG_TAG_THREEMA_SAFE:
 				break;
 			case DIALOG_TAG_SYNC_CONTACTS_ENABLE:
+			case DIALOG_TAG_SYNC_CONTACTS_MDM_ENABLE_RATIONALE:
 				requestContactSyncPermission();
 				break;
 		}
@@ -979,7 +998,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 						threemaSafeService.storeMasterKey(masterkey);
 						preferenceService.setThreemaSafeServerInfo(safeServerInfo);
 						threemaSafeService.setEnabled(true);
-						threemaSafeService.uploadNow(WizardBaseActivity.this, true);
+						threemaSafeService.uploadNow(true);
 					} else {
 						Toast.makeText(WizardBaseActivity.this, R.string.safe_error_preparing, Toast.LENGTH_LONG).show();
 					}

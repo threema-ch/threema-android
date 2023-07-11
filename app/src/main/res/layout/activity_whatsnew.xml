@@ -7,7 +7,8 @@
              android:id="@+id/root_view"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:fillViewport="true">
+             android:fillViewport="true"
+			android:background="?android:attr/colorBackground">
 
 	<ImageView
 		android:layout_width="match_parent"
@@ -40,24 +41,20 @@
 				android:paddingTop="16dp">
 
 				<TextView
-					style="@style/WizardTitleText"
+					style="@style/Threema.TextAppearance.Title"
 					android:id="@+id/whatsnew_title"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="16dp"
-					android:fontFamily="sans-serif-bold"
-					android:text="@string/whatsnew_title"
-					android:textSize="24dp"/>
+					android:text="@string/whatsnew_title" />
 
 				<ch.threema.app.emojis.EmojiTextView
+					style="@style/Threema.TextAppearance.BodyLarge"
 					android:id="@+id/whatsnew_body"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="16dp"
-					android:fontFamily="sans-serif-light"
-					android:lineSpacingExtra="1sp"
-					android:text="@string/whatsnew_headline"
-					android:textSize="18dp"/>
+					android:text="@string/whatsnew_headline" />
 
 			</LinearLayout>
 
@@ -74,8 +71,10 @@
 			android:orientation="vertical">
 
 			<com.google.android.material.button.MaterialButton
+				style="@style/Threema.MaterialButton.Action"
 				android:id="@+id/next_text"
-				android:layout_width="match_parent"
+				android:layout_gravity="center_horizontal"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/ok"
 				/>

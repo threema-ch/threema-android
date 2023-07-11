@@ -1,0 +1,299 @@
+// ## Device to Mediator Protocol (Supplementary)
+//
+// This is a supplementary section to the corresponding structbuf section
+// with complementary messages that use protobuf instead of structbuf. All
+// defined messages here follow the same logic.
+//
+// Note that all messages defined here, with the exception of `ClientUrlInfo`,
+// are wrapped by `payload.container`.
+
+syntax = "proto3";
+
+package d2m;
+
+option java_package = "ch.threema.protobuf.d2m";
+
+// D2M protocol versions (32 bit).
+enum ProtocolVersion {
+  // Initial D2M protocol version (alpha, may break).
+  INITIAL = 0;
+}
+
+// Send along client information when connecting to the mediator server.
+//
+// This message is serialized, hex-encoded (lowercase) and then used as the
+// WebSocket path.
+//
+// Type: n/a
+// Direction: Client -> Server
+message ClientUrlInfo {
+  reserved 2;
+
+  // 32 byte device group id (`DGPK.public`)
+  bytes device_group_id = 1;
+
+  // Server group, as assigned by the server when the Threema identity has been
+  // created. Must consist of only digits or ASCII letters (`^[0-9a-zA-Z]+$`).
+  string server_group = 3;
+}
+
+// Initial message from the server, containing an authentication challenge.
+//
+// Type: 0x10
+// Direction: Client <-- Server
+message ServerHello {
+  // Highest protocol version (`ProtocolVersion`) the server supports.
+  uint32 version = 1;
+
+  // 32 byte ephemeral server key (`ESK.public`)
+  bytes esk = 2;
+
+  // 32 byte random challenge
+  bytes challenge = 3;
+}
+
+// Policy determining the device slot's lifetime.
+enum DeviceSlotExpirationPolicy {
+  // The device slot should be removed shortly after the device
+  // disconnected. However, there should be a delay of several minutes to
+  // ensure that the device can reconnect if it disconnected unintentionally.
+  VOLATILE = 0;
+  // The device slot should be kept as long as possible
+  PERSISTENT = 1;
+}
+
+// Device registration state on the mediator server.
+enum DeviceSlotState {
+  // A new device slot has been allocated for the device (i.e. the device's
+  // id was not registered on the server).
+  NEW = 0;
+  // An existing device slot has been reused for the device (i.e. the
+  // device's id is already registered on the server).
+  EXISTING = 1;
+}
+
+// Initial message from the client, containing the authentication challenge
+// response and additional login information.
+//
+// Type: 0x11
+// Direction: Client --> Server
+message ClientHello {
+  // Protocol version (`ProtocolVersion`) which the client has selected.
+  uint32 version = 1;
+
+  // Challenge response (72 bytes) for authentication.
+  //
+  // The response is created by encrypting the server's challenge in the
+  // following way:
+  //
+  //     XSalsa20-Poly1305(
+  //       key=X25519HSalsa20(DGPK.secret, ESK.public),
+  //       nonce=<random>,
+  //     )
+  //
+  // The nonce is then prefixed to the encrypted challenge.
+  bytes response = 2;
+
+  // Unique device id
+  fixed64 device_id = 3;
+
+  // Policy to be applied in case the device id is not registered on the server
+  // and all device slots have been exhausted.
+  enum DeviceSlotsExhaustedPolicy {
+    // Terminate the connection
+    REJECT = 0;
+    // Drop the least recently used device
+    DROP_LEAST_RECENT = 1;
+  }
+  DeviceSlotsExhaustedPolicy device_slots_exhausted_policy = 4;
+
+  // Policy determining the device slot's lifetime
+  DeviceSlotExpirationPolicy device_slot_expiration_policy = 5;
+
+  // The expected device slot state on the server.
+  //
+  // If set, and if the expected device slot state does not match the actual
+  // device slot state, the device will be dropped by the mediator server with
+  // the close code `4115` before being registered.
+  optional DeviceSlotState expected_device_slot_state = 7;
+
+  // Device info (`d2d.DeviceInfo`), encrypted by `DGDIK.secret` and prefixed
+  // with a random nonce.
+  bytes encrypted_device_info = 6;
+}
+
+// Parts of the server's configuration and the device slot state.
+//
+// Type: 0x12
+// Direction: Client <-- Server
+message ServerInfo {
+  // Current Unix-ish timestamp in milliseconds of the server.
+  //
+  // If the client's current timestamp deviates by more than 20 minutes, the
+  // client should disconnect and prompt the user to synchronise its clock.
+  // The user should also have an option to _connect anyway_ which should be
+  // cached for a reasonable amount of time.
+  uint64 current_time = 4;
+
+  // Maximum number of device slots
+  uint32 max_device_slots = 1;
+
+  // Informs the device about its device slot state on the server
+  DeviceSlotState device_slot_state = 2;
+
+  // Device data shared among devices (`SharedDeviceData`), encrypted by
+  // `DGSDDK.secret` and prefixed with a random nonce.
+  bytes encrypted_shared_device_data = 3;
+}
+
+
+
+// The device's reflection queue on the server has been fully transmitted to
+// the device.
+//
+// Note: This does not mean that reflected messages have already been
+//       acknowledged by the device!
+//
+// Type: 0x20
+// Direction: Client <-- Server
+message ReflectionQueueDry {}
+
+// The device's role has been promoted to leader, indicating that the device
+// should now request to receive and reflect messages from the chat server.
+//
+// Type: 0x21
+// Direction: Client <-- Server
+message RolePromotedToLeader {}
+
+
+
+// Request device information of all devices.
+//
+// Type: 0x30
+// Direction: Client --> Server
+message GetDevicesInfo {}
+
+// Device information of all devices.
+//
+// Type: 0x31
+// Direction: Client <-- Server
+message DevicesInfo {
+  // Device id to (augmented) device info map of all devices.
+  message AugmentedDeviceInfo {
+    // Device info (`d2d.DeviceInfo`), encrypted by `DGDIK.secret` and prefixed
+    // with a random nonce.
+    bytes encrypted_device_info = 1;
+
+    // Unix-ish timestamp in milliseconds containing the most recent login
+    // time of the device.
+    uint64 last_login_at = 2;
+
+    // Expiration policy of the device.
+    DeviceSlotExpirationPolicy device_slot_expiration_policy = 3;
+  }
+  map<fixed64, AugmentedDeviceInfo> augmented_device_info = 1;
+}
+
+// Request to drop a device and free its device slot.
+//
+// Type: 0x32
+// Direction: Client --> Server
+message DropDevice {
+  // Unique device id
+  fixed64 device_id = 1;
+}
+
+// Acknowledges that a device has been dropped and the device slot has been
+// free'd.
+//
+// Type: 0x33
+// Direction: Client <-- Server
+message DropDeviceAck {
+  // Unique device id
+  fixed64 device_id = 1;
+}
+
+// Set the shared device data which is being sent to each device during login.
+//
+// Type: 0x34
+// Direction: Client --> Server
+message SetSharedDeviceData {
+  // Device data shared among devices (`d2d.SharedDeviceData`), encrypted by
+  // `DGSDDK.secret` and prefixed with a random nonce.
+  bytes encrypted_shared_device_data = 1;
+}
+
+
+
+// Acquires a device group lock for an atomic operation shared across the
+// device group.
+//
+// Reflection messages from the device to the mediator server will only be
+// reflected once the transaction is committed.
+//
+// Type: 0x40
+// Direction: Client --> Server
+message BeginTransaction {
+  // The transaction scope (`d2d.TransactionScope`), encrypted by
+  // `DGTSK.secret` and prefixed with a random nonce.
+  bytes encrypted_scope = 1;
+
+  // Time-to-live in seconds for this transaction. Once the TTL is reached, the
+  // mediator server will abort the transaction and disconnect the client. When
+  // set to `0`, the server's maximum transaction TTL will be used.
+  uint32 ttl = 2;
+}
+
+// Acknowledges that the device group lock has been acquired and that the
+// transaction has been started.
+//
+// Type: 0x41
+// Direction: Client <-- Server
+message BeginTransactionAck {}
+
+// Commits a transaction, releases a device group lock.
+//
+// Type: 0x42
+// Direction: Client --> Server
+message CommitTransaction {}
+
+// Acknowledges that the transaction has been committed and that the device
+// group lock has been released.
+//
+// Type: 0x43
+// Direction: Client <-- Server
+message CommitTransactionAck {}
+
+// A `BeginTransaction` request is rejected because another transaction is
+// already in process.
+//
+// Type: 0x44
+// Direction: Client <-- Server
+message TransactionRejected {
+  // The device that currently holds the lock
+  fixed64 device_id = 1;
+
+  // The encrypted transaction scope (`d2d.TransactionScope`) associated with
+  // the currently locked transaction, encrypted by `DGTSK.secret` and prefixed
+  // with a random nonce.
+  bytes encrypted_scope = 2;
+}
+
+// When a transaction ends (either because it was committed or because the
+// device disconnected), this message is sent to all connected devices except
+// for the device that committed the transaction.
+//
+// This can be used by the other devices as a "retry signal" if a previous
+// "BeginTransaction" attempt was unsuccessful.
+//
+// Type: 0x45
+// Direction: Client <-- Server
+message TransactionEnded {
+  // The device that held the lock up until now
+  fixed64 device_id = 1;
+
+  // The encrypted transaction scope (`d2d.TransactionScope`) associated with
+  // the transaction that just ended, encrypted by `DGTSK.secret` and prefixed
+  // with a random nonce.
+  bytes encrypted_scope = 2;
+}

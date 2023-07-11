@@ -39,7 +39,6 @@ import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -62,7 +61,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
 		final MessagePlayer imageMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
-				(Activity) getContext(), helper.getMessageReceiver());
+				(Activity) getContext(), helper.getMessageReceiver(), null);
 		logger.debug("configureChatMessage Image");
 
 		holder.messagePlayer = imageMessagePlayer;
@@ -132,15 +131,15 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 					int status = holder.controller.getStatus();
 
 					switch (status) {
+						case ControllerView.STATUS_READY_TO_RETRY:
+							propagateControllerRetryClickToParent();
+							break;
 						case ControllerView.STATUS_PROGRESSING:
 							if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.PENDING || getMessageModel().getState() == MessageState.SENDING)) {
 								getMessageService().cancelMessageUpload(getMessageModel());
 							} else {
 								imageMessagePlayer.cancel();
 							}
-							break;
-						case ControllerView.STATUS_READY_TO_RETRY:
-							// ignore (retries will be handled by click listener for messageView)
 							break;
 						case ControllerView.STATUS_READY_TO_DOWNLOAD:
 							imageMessagePlayer.open();
@@ -184,7 +183,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 			Intent intent = new Intent(getContext(), MediaViewerActivity.class);
 			IntentDataUtil.append(m, intent);
 			intent.putExtra(MediaViewerActivity.EXTRA_ID_REVERSE_ORDER, true);
-			AnimationUtil.startActivityForResult((Activity) getContext(), v, intent, ThreemaActivity.ACTIVITY_ID_MEDIA_VIEWER);
+			((Activity) getContext()).startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_MEDIA_VIEWER);
 		}
 	}
 

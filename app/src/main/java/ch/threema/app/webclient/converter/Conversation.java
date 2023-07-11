@@ -113,7 +113,7 @@ public class Conversation extends Converter {
 	) throws ConversionException {
 		AbstractMessageModel message = conversation.getLatestMessage();
 		if (message != null) {
-			builder.put(field, Message.convert(message, conversation.getReceiverType(), false, Message.DETAILS_NO_QUOTE));
+			builder.put(field, Message.convert(message, conversation.getReceiver(), false, Message.DETAILS_NO_QUOTE));
 		}
 	}
 }

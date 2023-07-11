@@ -18,40 +18,32 @@
 				android:layout_height="wrap_content">
 
 			<TextView
+					style="@style/Threema.TextAppearance.Title"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:text="@string/server_message_title"
-					android:textSize="24sp"
-					android:textColor="?attr/colorAccent"
-					android:fontFamily="sans-serif"
 					/>
 
 			<TextView
+					style="@style/Threema.TextAppearance.BodyLarge"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="16dp"
 					android:text="[server message]"
 					android:id="@+id/server_message_text"
-					android:textAppearance="@style/Threema.TextAppearance.Emptyview"
 					/>
 
 		</LinearLayout>
+
 	</ScrollView>
 
-	<LinearLayout
-			android:id="@+id/button_bar_layout"
-			style="?android:attr/buttonBarStyle"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="right"
-			android:orientation="horizontal">
-
 	<com.google.android.material.button.MaterialButton
+				style="@style/Threema.MaterialButton.Action"
 				android:id="@+id/close_button"
-				android:layout_width="0dp"
-				android:layout_weight="1"
+				android:layout_marginTop="16dp"
 				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="right"
 				android:text="@string/close"/>
 
-	</LinearLayout>
 </LinearLayout>

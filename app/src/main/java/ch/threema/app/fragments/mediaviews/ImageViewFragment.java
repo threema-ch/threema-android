@@ -36,22 +36,20 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.utils.BitmapUtil;
-import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
-import pl.droidsonroids.gif.GifDrawable;
-import pl.droidsonroids.gif.GifImageView;
 
+/**
+ * This fragment is used to show images. Note that GIFs must be shown with the GifViewFragment.
+ */
 public class ImageViewFragment extends MediaViewFragment {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ImageViewFragment");
 
-	private WeakReference<GifImageView> gifImageViewRef;
 	private WeakReference<SubsamplingScaleImageView> imageViewReference;
 	private WeakReference<ImageView> previewViewReference;
 
@@ -74,7 +72,6 @@ public class ImageViewFragment extends MediaViewFragment {
 		if (TestUtil.required(imageViewReference.get(), thumbnail)) {
 			previewViewReference.get().setVisibility(View.VISIBLE);
 			previewViewReference.get().setImageDrawable(thumbnail);
-			logger.debug("invisible");
 			imageViewReference.get().setVisibility(View.INVISIBLE);
 		}
 	}
@@ -88,7 +85,6 @@ public class ImageViewFragment extends MediaViewFragment {
 		SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
 
 		if (rootViewReference != null && rootViewReference.get() != null) {
-			gifImageViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.gif_view));
 			imageViewReference = new WeakReference<>(rootViewReference.get().findViewById(R.id.subsampling_image));
 			previewViewReference = new WeakReference<>(rootViewReference.get().findViewById(R.id.preview_image));
 
@@ -139,11 +135,7 @@ public class ImageViewFragment extends MediaViewFragment {
 	protected void handleDecryptedFile(File file) {
 		if (this.isAdded()) {
 			try {
-				if (FileUtil.isAnimGif(requireContext().getContentResolver(), Uri.fromFile(file))) {
-					showGif(file);
-				} else {
-					showImage(file);
-				}
+				showImage(file);
 			} catch (Exception e) {
 				logger.error("Exception", e);
 			}
@@ -166,26 +158,6 @@ public class ImageViewFragment extends MediaViewFragment {
 					}
 				}
 			});
-		}
-	}
-
-	/**
-	 * Show gif and hide the image view.
-	 *
-	 * @param file the gif file
-	 */
-	private void showGif(@NonNull File file) {
-		try {
-			GifDrawable gifDrawable = new GifDrawable(requireContext().getContentResolver(), Uri.fromFile(file));
-			this.gifImageViewRef.get().setImageDrawable(gifDrawable);
-			this.gifImageViewRef.get().setVisibility(View.VISIBLE);
-			gifDrawable.start();
-
-			this.imageViewReference.get().setVisibility(View.INVISIBLE);
-			// Don't show thumbnail for GIFs. This is important especially for transparent GIFs.
-			hideThumbnail();
-		} catch (IOException ignored) {
-			// nothing to do
 		}
 	}
 
@@ -215,7 +187,5 @@ public class ImageViewFragment extends MediaViewFragment {
 		if (exifOrientation.getRotation() != 0F) {
 			imageViewReference.get().setOrientation(rotation);
 		}
-
-		gifImageViewRef.get().setVisibility(View.INVISIBLE);
 	}
 }

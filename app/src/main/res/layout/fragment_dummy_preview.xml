@@ -13,7 +13,7 @@
 		android:layout_height="64dp"
 		android:layout_gravity="center"
 		app:srcCompat="@drawable/ic_baseline_broken_image_24"
-		app:tint="?attr/textColorSecondary"
+		app:tint="?attr/colorOnSurface"
 		android:adjustViewBounds="true"
 		android:scaleType="fitCenter"/>
 

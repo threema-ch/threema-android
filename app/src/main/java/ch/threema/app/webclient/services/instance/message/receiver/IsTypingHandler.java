@@ -22,6 +22,7 @@
 package ch.threema.app.webclient.services.instance.message.receiver;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import org.msgpack.core.MessagePackException;
@@ -30,7 +31,7 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 
-import ch.threema.app.services.UserService;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
@@ -39,12 +40,13 @@ import ch.threema.base.utils.LoggingUtil;
 public class IsTypingHandler extends MessageReceiver {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("IsTypingHandler");
 
-	private final UserService userService;
+	@NonNull
+	private final ContactService contactService;
 
 	@AnyThread
-	public IsTypingHandler(UserService userService) {
+	public IsTypingHandler(@NonNull ContactService userService) {
 		super(Protocol.SUB_TYPE_TYPING);
-		this.userService = userService;
+		this.contactService = userService;
 	}
 
 	@Override
@@ -63,8 +65,7 @@ public class IsTypingHandler extends MessageReceiver {
 		});
 		boolean isTyping = data.get(Protocol.ARGUMENT_IS_TYPING).asBooleanValue().getBoolean();
 
-		// Notify user service
-		this.userService.isTyping(identity, isTyping);
+		this.contactService.sendTypingIndicator(identity, isTyping);
 	}
 
 	@Override

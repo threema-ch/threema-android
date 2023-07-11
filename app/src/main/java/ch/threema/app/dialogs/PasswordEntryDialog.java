@@ -38,16 +38,17 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.android.material.checkbox.MaterialCheckBox;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.core.text.util.LinkifyCompat;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
 import ch.threema.app.R;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -61,7 +62,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 	protected boolean isLinkify = false;
 	protected boolean isLengthCheck = true;
 	protected int minLength, maxLength;
-	protected MaterialCheckBox checkBox;
+	protected MaterialSwitch checkBox;
 	public enum ForgotHintType {
 		NONE,
 		SAFE,
@@ -283,6 +284,9 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 			}
 		});
 		builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo(tag));
+
+		builder.setBackgroundInsetTop(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
+		builder.setBackgroundInsetBottom(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
 
 		builder.setBackgroundInsetTop(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
 		builder.setBackgroundInsetBottom(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));

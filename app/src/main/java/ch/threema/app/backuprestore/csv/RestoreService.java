@@ -92,6 +92,7 @@ import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
+import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -135,6 +136,7 @@ public class RestoreService extends Service {
 	private PreferenceService preferenceService;
 	private PowerManager.WakeLock wakeLock;
 	private NotificationManager notificationManager;
+	private DatabaseNonceStore databaseNonceStore;
 
 	private NotificationCompat.Builder notificationBuilder;
 
@@ -280,6 +282,7 @@ public class RestoreService extends Service {
 			userService = serviceManager.getUserService();
 			groupService = serviceManager.getGroupService();
 			preferenceService = serviceManager.getPreferenceService();
+			databaseNonceStore = new DatabaseNonceStore(this, serviceManager.getIdentityStore());
 		} catch (Exception e) {
 			logger.error("Could not instantiate all required services", e);
 			stopSelf();
@@ -469,6 +472,12 @@ public class RestoreService extends Service {
 						if (!userService.restoreIdentity(identityContent, this.password)) {
 							throw new ThreemaException(getString(R.string.unable_to_restore_identity_because, "n/a"));
 						}
+						// If the backup is older than version 19, the contact avatar file has the
+						// id as suffix and is not "me". Therefore we need to include the identity
+						// in the id map, so that restoring this id's avatar file works.
+						if (restoreSettings.getVersion() < 19) {
+							identityIdMap.put(userService.getIdentity(), userService.getIdentity());
+						}
 					} catch (UnknownHostException e) {
 						throw e;
 					} catch (Exception e) {
@@ -476,6 +485,13 @@ public class RestoreService extends Service {
 					}
 
 					updateProgress(STEP_SIZE_IDENTITY);
+				}
+
+				// Restore nonces
+				logger.info("Restoring nonces");
+				if (!restoreNonces(fileHeaders)) {
+					logger.error("Restoring nonces failed");
+					//continue anyway!
 				}
 
 				//contacts, groups and distribution lists
@@ -517,6 +533,10 @@ public class RestoreService extends Service {
 					logger.error("restore contact avatar files failed");
 					//continue anyway!
 				}
+
+				// Reset the profile pic upload so that the own profile picture is redistributed
+				preferenceService.setProfilePicUploadDate(new Date(0));
+				preferenceService.setProfilePicUploadData(null);
 
 				if (!writeToDb) {
 					stepSizeTotal += (messageCount * STEP_SIZE_MESSAGES)  + ((long) mediaCount * STEP_SIZE_MEDIA);
@@ -608,6 +628,46 @@ public class RestoreService extends Service {
 
 		if (TestUtil.required(ballotMain, ballotChoice, ballotVote)) {
 			this.restoreBallotFile(ballotMain, ballotChoice, ballotVote);
+		}
+
+		return true;
+	}
+
+	private boolean restoreNonces(List<FileHeader> fileHeaders) throws IOException {
+		FileHeader nonceFileHeader = null;
+		for (FileHeader fileHeader : fileHeaders) {
+			String fileName = fileHeader.getFileName();
+			if (fileName != null && fileName.startsWith(Tags.NONCE_FILE_NAME)) {
+				nonceFileHeader = fileHeader;
+				break;
+			}
+		}
+		if (nonceFileHeader == null) {
+			logger.info("Nonce file header is null");
+			return false;
+		}
+
+		if (this.writeToDb) {
+			try (ZipInputStream inputStream = this.zipFile.getInputStream(nonceFileHeader);
+			     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+			     CSVReader csvReader = new CSVReader(inputStreamReader, false)
+			) {
+				boolean success = true;
+				CSVRow row;
+				while ((row = csvReader.readNextRow()) != null) {
+					try {
+						// Note that currently there is only one nonce per row, and therefore we do
+						// not need to read them as array. However, this gives us the flexibility to
+						// backup several nonces in one row (as we have done in 5.1-alpha3)
+						String[] nonces = row.getStrings(Tags.TAG_NONCES);
+						success &= databaseNonceStore.insertHashedNonces(nonces);
+					} catch (ThreemaException e) {
+						logger.error("Could not insert nonces");
+						return false;
+					}
+				}
+				return success;
+			}
 		}
 
 		return true;
@@ -860,14 +920,10 @@ public class RestoreService extends Service {
 
 		// Set contact avatar
 		try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
-			boolean success = fileService.writeContactAvatar(
+			return fileService.writeContactAvatar(
 				contactModel,
 				IOUtils.toByteArray(inputStream)
 			);
-			if (contactModel.getIdentity().equals(contactService.getMe().getIdentity())) {
-				preferenceService.setProfilePicLastUpdate(new Date());
-			}
-			return success;
 		} catch (Exception e) {
 			logger.error("Exception while writing contact avatar", e);
 			return false;
@@ -1417,9 +1473,6 @@ public class RestoreService extends Service {
 		}
 		if(restoreSettings.getVersion() >= 14) {
 			contactModel.setArchived(row.getBoolean(Tags.TAG_CONTACT_ARCHIVED));
-		}
-		if(restoreSettings.getVersion() >= 18) {
-			contactModel.setForwardSecurityEnabled(row.getBoolean(Tags.TAG_CONTACT_FORWARD_SECURITY));
 		}
 		if (restoreSettings.getVersion() >= 19) {
 			identityIdMap.put(row.getString(Tags.TAG_CONTACT_IDENTITY_ID), contactModel.getIdentity());

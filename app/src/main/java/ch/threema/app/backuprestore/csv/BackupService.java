@@ -93,6 +93,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.identitybackup.IdentityBackupGenerator;
+import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -150,6 +151,7 @@ public class BackupService extends Service {
 	private PreferenceService preferenceService;
 	private PowerManager.WakeLock wakeLock;
 	private NotificationManager notificationManager;
+	private DatabaseNonceStore databaseNonceStore;
 
 	private NotificationCompat.Builder notificationBuilder;
 
@@ -303,7 +305,7 @@ public class BackupService extends Service {
 		}
 
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
+		databaseNonceStore = new DatabaseNonceStore(this, serviceManager.getIdentityStore());
 	}
 
 	@Override
@@ -394,6 +396,11 @@ public class BackupService extends Service {
 					logger.error("Exception", x);
 				}
 			}
+
+			if (this.config.backupNonces()) {
+				progress += 1;
+			}
+
 			logger.debug("Calculated steps " + progress);
 			this.initProgress(progress);
 
@@ -434,6 +441,13 @@ public class BackupService extends Service {
 
 			if (this.config.backupBallots()) {
 				if (!this.backupBallots(config, zipOutputStream)) {
+					return this.cancelBackup(backupFile);
+				}
+			}
+
+			// Backup nonces
+			if (this.config.backupNonces()) {
+				if (!this.backupNonces(zipOutputStream)) {
 					return this.cancelBackup(backupFile);
 				}
 			}
@@ -529,7 +543,6 @@ public class BackupService extends Service {
 			Tags.TAG_CONTACT_NICK_NAME,
 			Tags.TAG_CONTACT_HIDDEN,
 			Tags.TAG_CONTACT_ARCHIVED,
-			Tags.TAG_CONTACT_FORWARD_SECURITY,
 			Tags.TAG_CONTACT_IDENTITY_ID
 		};
 		final String[] messageCsvHeader = {
@@ -575,7 +588,6 @@ public class BackupService extends Service {
 						.write(Tags.TAG_CONTACT_NICK_NAME, contactModel.getPublicNickName())
 						.write(Tags.TAG_CONTACT_HIDDEN, contactModel.isHidden())
 						.write(Tags.TAG_CONTACT_ARCHIVED, contactModel.isArchived())
-						.write(Tags.TAG_CONTACT_FORWARD_SECURITY, contactModel.isForwardSecurityEnabled())
 						.write(Tags.TAG_CONTACT_IDENTITY_ID, identityId)
 						.write();
 
@@ -1042,6 +1054,44 @@ public class BackupService extends Service {
         }
 
 		return true;
+	}
+
+	private boolean backupNonces(@NonNull ZipOutputStream zipOutputStream) {
+		logger.info("Backing up nonces");
+
+		if (!next("Backup nonces")) {
+			return false;
+		}
+
+		try (ByteArrayOutputStream outputStreamBuffer = new ByteArrayOutputStream()) {
+			writeNonces(outputStreamBuffer, zipOutputStream);
+		} catch (IOException | ThreemaException e) {
+			logger.error("Error with byte array output stream", e);
+			return false;
+		}
+
+		return true;
+	}
+
+	private void writeNonces(
+		@NonNull ByteArrayOutputStream outputStream,
+		@NonNull ZipOutputStream zipOutputStream
+	) throws ThreemaException, IOException {
+		final String[] nonceHeader = new String[]{Tags.TAG_NONCES};
+		try (
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+			CSVWriter csvWriter = new CSVWriter(outputStreamWriter, nonceHeader)
+		) {
+			for (String nonce : databaseNonceStore.getAllHashedNonces()) {
+				csvWriter.createRow().write(Tags.TAG_NONCES, nonce).write();
+			}
+		}
+		ZipUtil.addZipStream(
+			zipOutputStream,
+			new ByteArrayInputStream(outputStream.toByteArray()),
+			Tags.NONCE_FILE_NAME + Tags.CSV_FILE_POSTFIX,
+			true
+		);
 	}
 
 	/**

@@ -23,9 +23,13 @@ package ch.threema.domain.protocol.csp.fs;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.powermock.reflect.Whitebox;
 
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.fs.DHSession;
@@ -36,17 +40,37 @@ import ch.threema.domain.protocol.csp.coders.MessageCoder;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
+import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
 import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
+import ch.threema.domain.protocol.csp.messages.ContactDeleteProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactSetProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
+import ch.threema.domain.protocol.csp.messages.GroupCreateMessage;
+import ch.threema.domain.protocol.csp.messages.GroupRequestSyncMessage;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
+import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteMessage;
+import ch.threema.domain.protocol.csp.messages.file.FileMessage;
+import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage;
+import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataMessage;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
 import ch.threema.domain.stores.DummyContactStore;
-import ch.threema.domain.stores.InMemoryDHSessionStore;
 import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.InMemoryDHSessionStore;
 import ch.threema.domain.testhelpers.TestHelpers;
+import ch.threema.protobuf.csp.e2e.fs.Version;
+import ch.threema.protobuf.csp.e2e.fs.VersionRange;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -69,7 +93,7 @@ public class ForwardSecurityMessageProcessorTest {
 	private UserContext aliceContext;
 	private UserContext bobContext;
 
-	private void startNegotiationAlice() throws ThreemaException {
+	private void startNegotiationAlice() throws ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		aliceContext = makeTestUserContext(DummyUsers.ALICE);
 		bobContext = makeTestUserContext(DummyUsers.BOB);
 
@@ -99,7 +123,7 @@ public class ForwardSecurityMessageProcessorTest {
 	}
 
 	@Test
-	public void testNegotiationAnd2DH() throws ThreemaException, MissingPublicKeyException, BadMessageException {
+	public void testNegotiationAnd2DH() throws ThreemaException, MissingPublicKeyException, BadMessageException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		// Start the negotiation on Alice's side, up to the point where the Init and Message are
 		// on the way to Bob, but have not been received by him yet
 		startNegotiationAlice();
@@ -152,7 +176,7 @@ public class ForwardSecurityMessageProcessorTest {
 	}
 
 	@Test
-	public void test4DH() throws MissingPublicKeyException, BadMessageException, ThreemaException {
+	public void test4DH() throws MissingPublicKeyException, BadMessageException, ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		testNegotiationAnd2DH();
 
 		// Check that we're in 4DH mode from the previous exchange
@@ -188,7 +212,7 @@ public class ForwardSecurityMessageProcessorTest {
 	}
 
 	@Test
-	public void testMissingMessage() throws BadMessageException, MissingPublicKeyException, ThreemaException {
+	public void testMissingMessage() throws BadMessageException, MissingPublicKeyException, ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		test4DH();
 
 		// Alice now sends Bob another message, but it never arrives
@@ -208,7 +232,7 @@ public class ForwardSecurityMessageProcessorTest {
 	}
 
 	@Test
-	public void testDataLoss() throws ThreemaException, MissingPublicKeyException, BadMessageException {
+	public void testDataLoss() throws ThreemaException, MissingPublicKeyException, BadMessageException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		// Repeat the tests several times, as random session IDs are involved
 		for (int i = 0; i < NUM_RANDOM_RUNS; i++) {
 			testDataLoss1();
@@ -216,7 +240,7 @@ public class ForwardSecurityMessageProcessorTest {
 		}
 	}
 
-	private void setupDataLoss() throws MissingPublicKeyException, BadMessageException, ThreemaException {
+	private void setupDataLoss() throws MissingPublicKeyException, BadMessageException, ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		test4DH();
 
 		// Check that Bob has a responder DH session that matches Alice's initiator session.
@@ -240,7 +264,7 @@ public class ForwardSecurityMessageProcessorTest {
 		);
 	}
 
-	private void testDataLoss1() throws BadMessageException, MissingPublicKeyException, ThreemaException {
+	private void testDataLoss1() throws BadMessageException, MissingPublicKeyException, ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		// Data loss scenario 1: Bob loses his data, but does not send any messages until Alice
 		// sends her first message after the data loss. This message gets rejected by Bob, and eventually
 		// both agree on a new 4DH session.
@@ -287,7 +311,7 @@ public class ForwardSecurityMessageProcessorTest {
 		verify(aliceContext.failureListener).notifyRejectReceived(DummyUsers.getContactForUser(DummyUsers.BOB), encapMessage.getMessageId());
 	}
 
-	private void testDataLoss2() throws BadMessageException, MissingPublicKeyException, ThreemaException {
+	private void testDataLoss2() throws BadMessageException, MissingPublicKeyException, ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		// Data loss scenario 2: Bob loses his data and sends a message in a new session before
 		// Alice gets a chance to send one. Alice should take the Init from Bob as a hint that he
 		// has lost his session data, and she should discard the existing (4DH) session.
@@ -324,7 +348,7 @@ public class ForwardSecurityMessageProcessorTest {
 	}
 
 	@Test
-	public void testDowngrade() throws BadMessageException, MissingPublicKeyException, ThreemaException {
+	public void testDowngrade() throws BadMessageException, MissingPublicKeyException, ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		test4DH();
 
 		// Bob has received a 4DH message from Alice, and thus both parties should
@@ -347,7 +371,275 @@ public class ForwardSecurityMessageProcessorTest {
 		Assert.assertNull(bobsSession.getPeerRatchet2DH());
 	}
 
-	private void setupRaceCondition() throws ThreemaException {
+	@Test
+	public void testMinorVersionUpgrade() throws ThreemaException, MissingPublicKeyException, BadMessageException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
+		// Alice supports version 1.0 and 1.1. Bob only supports version 1.0. Later he will upgrade
+		// his version to 1.1.
+
+		// Alice starts negotiation with supported version 1.1
+		startNegotiationAlice();
+
+		// Bob handles the init while only supporting version 1.0
+		setSupportedVersionRange(
+			VersionRange.newBuilder()
+				.setMin(Version.V1_0.getNumber())
+				.setMax(Version.V1_0.getNumber())
+				.build()
+		);
+		Assert.assertEquals(Version.V1_0.getNumber(), DHSession.SUPPORTED_VERSION_RANGE.getMax());
+		// Note that Bob only processes one message, i.e. the init message. He does not yet process
+		// the text message
+		processOneReceivedMessage(aliceContext.messageQueue, bobContext);
+
+		// Alice should process the accept message now (while supporting version 1.1)
+		setSupportedVersionRange(
+			VersionRange.newBuilder()
+				.setMin(Version.V1_0.getNumber())
+				.setMax(Version.V1_1.getNumber())
+				.build()
+		);
+		processReceivedMessages(bobContext.messageQueue, aliceContext);
+
+		// Alice should now have initiated a session with negotiated version 1.0
+		DHSession aliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentity(), bobContext.identityStore.getIdentity());
+		Assert.assertNotNull(aliceSession);
+		Assert.assertEquals(Version.V1_0, aliceSession.getNegotiatedVersion());
+
+		// Bob also has initiated a session with negotiated version 1.0
+		DHSession bobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentity(), aliceContext.identityStore.getIdentity());
+		Assert.assertNotNull(bobSession);
+		Assert.assertEquals(Version.V1_0, bobSession.getNegotiatedVersion());
+
+		// Now Bob processes the text message from Alice. Note that this already triggers a minor
+		// version upgrade.
+		receiveAndAssertSingleMessage(aliceContext.messageQueue, bobContext, ALICE_MESSAGE_1, ForwardSecurityMode.TWODH);
+
+		// Assert that the session has received a minor version upgrade
+		DHSession updatedBobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentity(), aliceContext.identityStore.getIdentity());
+		Assert.assertNotNull(updatedBobSession);
+		Assert.assertEquals(Version.V1_1, updatedBobSession.getNegotiatedVersion());
+
+		// Now bob sends a message with announced version 1.1
+		sendTextMessage(BOB_MESSAGE_1, bobContext, DummyUsers.ALICE);
+
+		// Alice processes Bob's message (where 1.1 is announced)
+		receiveAndAssertSingleMessage(bobContext.messageQueue, aliceContext, BOB_MESSAGE_1, ForwardSecurityMode.FOURDH);
+
+		// Assert that the session has been upgraded to 1.1
+		DHSession updatedAliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentity(), bobContext.identityStore.getIdentity());
+		Assert.assertNotNull(updatedAliceSession);
+		Assert.assertEquals(Version.V1_1, updatedAliceSession.getNegotiatedVersion());
+	}
+
+	@Test
+	public void testMinorVersionUpgradeToUnknownVersion() throws ThreemaException, MissingPublicKeyException, BadMessageException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession, NoSuchFieldException, IllegalAccessException {
+		// Alice and Bob support versions 1.x. Bob will later upgrade his version to 1.255.
+
+		// Alice starts negotiation
+		startNegotiationAlice();
+
+		// Bob processes the init and the text message of alice
+		processReceivedMessages(aliceContext.messageQueue, bobContext);
+
+		// Alice should process the accept message now
+		processReceivedMessages(bobContext.messageQueue, aliceContext);
+
+		// Alice should now have initiated a session with the maximum supported version
+		DHSession aliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentity(), bobContext.identityStore.getIdentity());
+		Assert.assertNotNull(aliceSession);
+		Assert.assertEquals(DHSession.SUPPORTED_VERSION_MAX, aliceSession.getNegotiatedVersion());
+
+		// Bob also has initiated a session with the maximum supported version
+		DHSession bobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentity(), aliceContext.identityStore.getIdentity());
+		Assert.assertNotNull(bobSession);
+		Assert.assertEquals(DHSession.SUPPORTED_VERSION_MAX, bobSession.getNegotiatedVersion());
+
+		// Send message with applied version 0x01FF (1.255)
+		ForwardSecurityEnvelopeMessage message = makeEncapTextMessage(ALICE_MESSAGE_2, aliceContext, DummyUsers.BOB);
+		ForwardSecurityDataMessage data = (ForwardSecurityDataMessage) message.getData();
+		Field appliedVersionField = ForwardSecurityDataMessage.class.getDeclaredField("appliedVersion");
+		appliedVersionField.setAccessible(true);
+		appliedVersionField.setInt(data, 0x01FF);
+		aliceContext.messageQueue.enqueue(message);
+
+		// Now Bob processes the text message from Alice. This should not fail, even if the applied
+		// version is not known.
+		receiveAndAssertSingleMessage(aliceContext.messageQueue, bobContext, ALICE_MESSAGE_2, ForwardSecurityMode.FOURDH);
+
+		// Assert that Alice did not receive session reject
+		Assert.assertEquals(0, bobContext.messageQueue.getQueueSize());
+	}
+
+	@Test
+	public void testMinorVersionDowngrade() throws ThreemaException, MissingPublicKeyException, BadMessageException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession, NoSuchFieldException, IllegalAccessException {
+		// Alice and Bob support versions 1.x. Bob will later send a message with 1.0.
+
+		// Alice starts negotiation
+		startNegotiationAlice();
+
+		// Bob processes the init and the text message of alice
+		processReceivedMessages(aliceContext.messageQueue, bobContext);
+
+		// Alice should process the accept message now
+		processReceivedMessages(bobContext.messageQueue, aliceContext);
+
+		// Alice should now have initiated a session with the maximum supported version
+		DHSession aliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentity(), bobContext.identityStore.getIdentity());
+		Assert.assertNotNull(aliceSession);
+		Assert.assertEquals(DHSession.SUPPORTED_VERSION_MAX, aliceSession.getNegotiatedVersion());
+
+		// Bob also has initiated a session with the maximum supported version
+		DHSession bobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentity(), aliceContext.identityStore.getIdentity());
+		Assert.assertNotNull(bobSession);
+		Assert.assertEquals(DHSession.SUPPORTED_VERSION_MAX, bobSession.getNegotiatedVersion());
+
+		// Send message with applied version 0x0100 (1.0)
+		ForwardSecurityEnvelopeMessage message = makeEncapTextMessage(ALICE_MESSAGE_2, aliceContext, DummyUsers.BOB);
+		ForwardSecurityDataMessage data = (ForwardSecurityDataMessage) message.getData();
+		Field appliedVersionField = ForwardSecurityDataMessage.class.getDeclaredField("appliedVersion");
+		appliedVersionField.setAccessible(true);
+		appliedVersionField.setInt(data, 0x0100);
+		aliceContext.messageQueue.enqueue(message);
+
+		// Now Bob processes the text message from Alice. Note that the message should be rejected
+		// and therefore return an empty list.
+		Assert.assertEquals(0, processReceivedMessages(aliceContext.messageQueue, bobContext).size());
+
+		// Assert that alice did receive a session reject
+		Assert.assertEquals(1, bobContext.messageQueue.getQueueSize());
+		Assert.assertNull(processOneReceivedMessage(bobContext.messageQueue, aliceContext));
+		Assert.assertNull(aliceContext.dhSessionStore.getBestDHSession(
+			DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity()
+		));
+	}
+
+	@Test
+	public void testDHSessionStates() throws ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession, ThreemaException, MissingPublicKeyException, BadMessageException {
+		startNegotiationAlice();
+
+		// Assert that Alice has a session with state L20
+		DHSession aliceInitialSession = aliceContext.dhSessionStore.getBestDHSession(
+			DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity()
+		);
+		Assert.assertNotNull(aliceInitialSession);
+		Assert.assertEquals(DHSession.State.L20, aliceInitialSession.getState());
+
+		// Bob processes the init and should now have a session in state R24
+		processOneReceivedMessage(aliceContext.messageQueue, bobContext);
+
+		DHSession bobInitialSession = bobContext.dhSessionStore.getBestDHSession(
+			DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity()
+		);
+		Assert.assertNotNull(bobInitialSession);
+		Assert.assertEquals(DHSession.State.R24, bobInitialSession.getState());
+
+		// Bob processes the text message
+		receiveAndAssertSingleMessage(aliceContext.messageQueue, bobContext, ALICE_MESSAGE_1, ForwardSecurityMode.TWODH);
+
+		// Alice should now process the accept from Bob and update the state to L44
+		processOneReceivedMessage(bobContext.messageQueue, aliceContext);
+
+		DHSession aliceFinalSession = aliceContext.dhSessionStore.getBestDHSession(
+			DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity()
+		);
+		Assert.assertNotNull(aliceFinalSession);
+		Assert.assertEquals(DHSession.State.RL44, aliceFinalSession.getState());
+
+		// Alice sends now again a message to Bob (with 4DH)
+		sendTextMessage(ALICE_MESSAGE_2, aliceContext, DummyUsers.BOB);
+
+		// Bob processes the text message and should update the state to R44
+		receiveAndAssertSingleMessage(aliceContext.messageQueue, bobContext, ALICE_MESSAGE_2, ForwardSecurityMode.FOURDH);
+
+		DHSession bobFinalSession = bobContext.dhSessionStore.getBestDHSession(
+			DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity()
+		);
+		Assert.assertNotNull(bobFinalSession);
+		Assert.assertEquals(DHSession.State.RL44, bobFinalSession.getState());
+	}
+
+	@Test
+	public void testRequiredVersionForMessageTypes() throws ThreemaException, MissingPublicKeyException, BadMessageException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
+		// Alice starts negotiation with supported version 1.1
+		startNegotiationAlice();
+
+		// Bob handles the init while only supporting version 1.0
+		setSupportedVersionRange(
+			VersionRange.newBuilder()
+				.setMin(Version.V1_0.getNumber())
+				.setMax(Version.V1_0.getNumber())
+				.build()
+		);
+		Assert.assertEquals(Version.V1_0.getNumber(), DHSession.SUPPORTED_VERSION_RANGE.getMax());
+		// Bob processes the messages now. First he processes the init message, and sends back an
+		// accept with support for only v1.0. Then he processes Alice's text message and upgrades
+		// to V1.1 (because we did not mock the announced version).
+		receiveAndAssertSingleMessage(aliceContext.messageQueue, bobContext, ALICE_MESSAGE_1, ForwardSecurityMode.TWODH);
+
+		// Alice should process the accept message now (while supporting version 1.1)
+		setSupportedVersionRange(
+			VersionRange.newBuilder()
+				.setMin(Version.V1_0.getNumber())
+				.setMax(Version.V1_1.getNumber())
+				.build()
+		);
+		processReceivedMessages(bobContext.messageQueue, aliceContext);
+
+		// At this point, Alice has a session with negotiated version 1.0, whereas Bob has
+		// negotiated version 1.1. This does not change, as long as Alice does not process any
+		// message of Bob (which now all would announce version 1.1).
+
+		// Now we check that messages that are not supported in version 1.0 are rejected by the forward security message processor
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipCallOfferMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipCallRingingMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipCallAnswerMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipCallHangupMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipICECandidatesMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new DeliveryReceiptMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new TypingIndicatorMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new ContactSetProfilePictureMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new ContactDeleteProfilePictureMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new ContactRequestProfilePictureMessage(), aliceContext, DummyUsers.BOB);
+	}
+
+	@Test
+	public void testInitialNegotiationVersion() throws ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
+		// We do not have an initiated session, therefore we expect version 1.0. Therefore all
+		// messages that require version 1.1 or higher should be denied by the forward security
+		// message processor.
+		aliceContext = makeTestUserContext(DummyUsers.ALICE);
+		bobContext = makeTestUserContext(DummyUsers.BOB);
+
+		// Add mutual contacts
+		aliceContext.contactStore.addContact(DummyUsers.getContactForUser(DummyUsers.BOB));
+		bobContext.contactStore.addContact(DummyUsers.getContactForUser(DummyUsers.ALICE));
+
+		// Check that messages that require version 1.1 are rejected
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipCallOfferMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipCallRingingMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipCallAnswerMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipCallHangupMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new VoipICECandidatesMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new DeliveryReceiptMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new TypingIndicatorMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new ContactSetProfilePictureMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new ContactDeleteProfilePictureMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new ContactRequestProfilePictureMessage(), aliceContext, DummyUsers.BOB);
+
+		// Check that messages that are currently not supported to send with forward security are rejected
+		assertMessageTypeNotSupportedForForwardSecurity(new GroupCreateMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new GroupFileMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeNotSupportedForForwardSecurity(new GroupRequestSyncMessage(), aliceContext, DummyUsers.BOB);
+
+		// Check that messages that are supported starting with version 1.0 are not rejected initially
+		assertMessageTypeSupportedForForwardSecurity(new BoxTextMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeSupportedForForwardSecurity(new BoxLocationMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeSupportedForForwardSecurity(new FileMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeSupportedForForwardSecurity(new BallotCreateMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageTypeSupportedForForwardSecurity(new BallotVoteMessage(), aliceContext, DummyUsers.BOB);
+	}
+
+	private void setupRaceCondition() throws ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		// Start the negotiation on Alice's side, up to the point where the Init and Message are
 		// on the way to Bob, but have not been received by him yet
 		startNegotiationAlice();
@@ -374,7 +666,7 @@ public class ForwardSecurityMessageProcessorTest {
 	}
 
 	@Test
-	public void testRaceConditions() throws ThreemaException, MissingPublicKeyException, BadMessageException {
+	public void testRaceConditions() throws ThreemaException, MissingPublicKeyException, BadMessageException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		// Repeat the tests several times, as random session IDs are involved
 		for (int i = 0; i < NUM_RANDOM_RUNS; i++) {
 			testRaceCondition1();
@@ -382,7 +674,7 @@ public class ForwardSecurityMessageProcessorTest {
 		}
 	}
 
-	private void testRaceCondition1() throws ThreemaException, MissingPublicKeyException, BadMessageException {
+	private void testRaceCondition1() throws ThreemaException, MissingPublicKeyException, BadMessageException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		// Set up a race condition: both sides have a 2DH session, but their mutual messages have not arrived yet
 		setupRaceCondition();
 
@@ -410,7 +702,7 @@ public class ForwardSecurityMessageProcessorTest {
 		assertSameBestSession();
 	}
 
-	private void testRaceCondition2() throws ThreemaException, MissingPublicKeyException, BadMessageException {
+	private void testRaceCondition2() throws ThreemaException, MissingPublicKeyException, BadMessageException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		// Set up a race condition: both sides have a 2DH session, but their mutual messages have not arrived yet
 		setupRaceCondition();
 
@@ -448,22 +740,29 @@ public class ForwardSecurityMessageProcessorTest {
 
 	private List<AbstractMessage> processReceivedMessages(MessageQueue sourceQueue, UserContext recipientContext) throws BadMessageException, ThreemaException, MissingPublicKeyException {
 		List<AbstractMessage> decapsulatedMessages = new LinkedList<>();
-		for (MessageBox box : sourceQueue.getQueue()) {
-			MessageCoder messageCoder = new MessageCoder(recipientContext.contactStore, recipientContext.identityStore);
-			AbstractMessage msg = messageCoder.decode(box, false);
-
-			AbstractMessage decapMsg = recipientContext.fsmp.processEnvelopeMessage(recipientContext.contactStore.getContactForIdentity(msg.getFromIdentity()),
-				(ForwardSecurityEnvelopeMessage) msg);
-
+		while (sourceQueue.getQueueSize() > 0) {
+			AbstractMessage decapMsg = processOneReceivedMessage(sourceQueue, recipientContext);
 			if (decapMsg != null) {
 				decapsulatedMessages.add(decapMsg);
 			}
 		}
-		sourceQueue.flushQueue();
 		return decapsulatedMessages;
 	}
 
-	private AbstractMessage sendTextMessage(String message, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException {
+	private AbstractMessage processOneReceivedMessage(MessageQueue sourceQueue, UserContext recipientContext) throws BadMessageException, ThreemaException, MissingPublicKeyException {
+		MessageBox messageBox = sourceQueue.getQueue().remove(0);
+		Assert.assertNotNull(messageBox);
+
+		MessageCoder messageCoder = new MessageCoder(recipientContext.contactStore, recipientContext.identityStore);
+		AbstractMessage msg = messageCoder.decode(messageBox, false);
+
+		return recipientContext.fsmp.processEnvelopeMessage(
+			Objects.requireNonNull(recipientContext.contactStore.getContactForIdentity(msg.getFromIdentity())),
+			(ForwardSecurityEnvelopeMessage) msg
+		);
+	}
+
+	private AbstractMessage sendTextMessage(String message, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		AbstractMessage encapMessage = makeEncapTextMessage(message, senderContext, recipient);
 		senderContext.messageQueue.enqueue(encapMessage);
 		return encapMessage;
@@ -492,11 +791,33 @@ public class ForwardSecurityMessageProcessorTest {
 		Assert.assertEquals(alicesInitiatorSession.getId(), bobsInitiatorSession.getId());
 	}
 
-	private AbstractMessage makeEncapTextMessage(String text, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException {
+	private ForwardSecurityEnvelopeMessage makeEncapTextMessage(String text, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
 		BoxTextMessage textMessage = new BoxTextMessage();
 		textMessage.setText(text);
 		textMessage.setToIdentity(recipient.getIdentity());
 		return senderContext.fsmp.makeMessage(DummyUsers.getContactForUser(recipient), textMessage);
+	}
+
+	private void assertMessageTypeSupportedForForwardSecurity(AbstractMessage message, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {
+		// We mock 'getBody' to support incomplete
+		AbstractMessage messageMock = Mockito.spy(message);
+		Mockito.doReturn(new byte[0]).when(messageMock).getBody();
+		Assert.assertNotNull(senderContext.fsmp.makeMessage(
+			DummyUsers.getContactForUser(recipient),
+			messageMock
+		));
+	}
+
+	private void assertMessageTypeNotSupportedForForwardSecurity(AbstractMessage message, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException {
+		boolean messageCreated = true;
+		try {
+			// We expect that this throws an exception as the message type is not supported in the
+			// given session.
+			senderContext.fsmp.makeMessage(DummyUsers.getContactForUser(recipient), message);
+		} catch (ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession e) {
+			messageCreated = false;
+		}
+		Assert.assertFalse(messageCreated);
 	}
 
 	private UserContext makeTestUserContext(DummyUsers.User user) {
@@ -514,6 +835,18 @@ public class ForwardSecurityMessageProcessorTest {
 			context.failureListener);
 
 		return context;
+	}
+
+	/**
+	 * Replaces the static {@link DHSession#SUPPORTED_VERSION_RANGE} with the given range. Note that
+	 * this has only an impact on the initial handshake. A client with a restricted supported
+	 * version range still announces the latest minor version.
+	 * Also, this method sets the version range globally, so that both Alice and Bob are affected.
+	 *
+	 * @param versionRange the new supported version range
+	 */
+	private void setSupportedVersionRange(VersionRange versionRange) {
+		Whitebox.setInternalState(DHSession.class, "SUPPORTED_VERSION_RANGE", versionRange);
 	}
 
 	private static class UserContext {

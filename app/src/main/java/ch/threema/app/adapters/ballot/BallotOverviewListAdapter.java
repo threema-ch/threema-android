@@ -28,6 +28,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -35,7 +37,6 @@ import ch.threema.app.R;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.AvatarListItemUtil;
-import ch.threema.app.ui.CountBoxView;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -49,8 +50,8 @@ import ch.threema.storage.models.ballot.BallotModel;
  */
 public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
 
-	private Context context;
-	private List<BallotModel> values;
+	private final Context context;
+	private final List<BallotModel> values;
 	private final BallotService ballotService;
 	private final ContactService contactService;
 
@@ -68,7 +69,7 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
 		public TextView state;
 		public TextView creator;
 		public TextView creationDate;
-		public CountBoxView countBoxView;
+		public MaterialButton countBoxView;
 	}
 
 	@Override

@@ -29,10 +29,10 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.text.NumberFormat;
 
@@ -49,7 +49,7 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 	private DialogInterface.OnClickListener listener;
 	private NumberFormat mProgressPercentFormat;
 	private TextView progressPercent;
-	private ProgressBar progressBar;
+	private LinearProgressIndicator progressBar;
 	private int max;
 
 	/**

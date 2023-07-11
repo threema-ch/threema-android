@@ -25,6 +25,14 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.SavedStateHandle;
+import androidx.lifecycle.ViewModel;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,13 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.SavedStateHandle;
-import androidx.lifecycle.ViewModel;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.RuntimeUtil;
 import java8.util.concurrent.CompletableFuture;
@@ -221,7 +222,7 @@ public class MediaAttachViewModel extends ViewModel {
 		return savedState.get(KEY_RECENT_QUERY_TYPE);
 	}
 
-	public void setlastQuery(@MediaFilterQuery.FilerType int type, String labelQuery) {
+	public void setlastQuery(@MediaFilterQuery.FilterType int type, String labelQuery) {
 		savedState.set(KEY_RECENT_QUERY, labelQuery);
 		savedState.set(KEY_RECENT_QUERY_TYPE, type);
 	}

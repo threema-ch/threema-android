@@ -15,12 +15,12 @@
 			android:paddingRight="@dimen/edittext_padding">
 
 		<TextView
+				style="@style/MaterialAlertDialog.Material3.Body.Text"
 				android:id="@+id/message_text"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:paddingLeft="3dp"
 				android:paddingRight="3dp"
-				android:textSize="16sp"
 				android:text="@string/enter_code_sum"
 				/>
 
@@ -46,24 +46,23 @@
 		</com.google.android.material.textfield.TextInputLayout>
 
 		<TextView
+				style="@style/MaterialAlertDialog.Material3.Body.Text"
 				android:id="@+id/no_code_text"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:paddingLeft="3dp"
 				android:paddingRight="3dp"
-				android:textSize="16sp"
-				android:layout_marginTop="16dp"
+				android:layout_marginTop="32dp"
 				android:text="@string/no_sms_received"
 				/>
 
 		<com.google.android.material.button.MaterialButton
+					style="@style/Threema.MaterialButton.Action"
 					android:id="@+id/request_call"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="@dimen/dialog_margin_top"
-					app:drawableLeftCompat="@drawable/ic_call_outline"
-					android:drawableTint="@android:color/white"
-					android:drawablePadding="8dp"
+					app:icon="@drawable/ic_call_outline"
 					android:text="@string/verify_phonecall_text"
 					/>
 

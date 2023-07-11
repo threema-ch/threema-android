@@ -14,7 +14,8 @@
 		android:layout_marginLeft="@dimen/emoji_popup_cardview_margin_horizontal"
 		android:layout_marginRight="@dimen/emoji_popup_cardview_margin_horizontal"
 		app:cardCornerRadius="6dp"
-		app:cardElevation="@dimen/emoji_popup_cardview_margin_bottom">
+		app:cardElevation="@dimen/emoji_popup_cardview_margin_bottom"
+		app:strokeWidth="0dp">
 
 	<ImageView
 		android:id="@+id/image_original"
@@ -23,9 +24,9 @@
 		android:layout_margin="@dimen/emoji_popup_image_margin"
 		android:clickable="true"
 		app:srcCompat="@drawable/ic_delete_outline"
-		android:tint="?attr/textColorSecondary"
 		android:background="@drawable/listitem_background_selector_noripple"
-		android:focusable="false"/>
+		android:focusable="false"
+		app:tint="?attr/colorOnSurface" />
 
 	</com.google.android.material.card.MaterialCardView>
 

@@ -94,7 +94,8 @@ public class DistributionListFragment extends RecipientListFragment {
 					activity,
 					distributionListModels,
 					checkedItemPositions,
-					distributionListService
+					distributionListService,
+					DistributionListFragment.this
 				);
 				setListAdapter(adapter);
 				if (listInstanceState != null) {

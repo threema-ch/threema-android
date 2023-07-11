@@ -31,6 +31,7 @@ import ch.threema.domain.models.QueueMessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * Abstract base class for messages that can be sent via the Threema server interface,
@@ -118,6 +119,17 @@ public abstract class AbstractMessage {
 	}
 
 	/**
+	 * Get the minimum version of forward security that is needed to send this message type with
+	 * perfect forward security. If the message type is currently not supported to be sent with
+	 * forward security, null is returned.
+	 *
+	 * @return the minimum version that is required in a session for this message type; null if it
+	 * is currently not supported
+	 */
+	@Nullable
+	public abstract Version getMinimumRequiredForwardSecurityVersion();
+
+	/**
 	 * Return whether the user's profile information (nickname, picture etc.) is allowed to
 	 * be sent along with this message. This should be set to true for user-initiated messages only.
 	 */
@@ -191,6 +203,21 @@ public abstract class AbstractMessage {
 
 	public void setMessageFlags(int messageFlags) {
 		this.messageFlags = messageFlags;
+	}
+
+	/**
+	 * Get the default message type flags. These flags are based on {@link #flagSendPush()},
+	 * {@link #flagNoServerQueuing}, {@link #flagNoServerAck()}, {@link #flagGroupMessage()}, and
+	 * {@link #flagShortLivedServerQueuing()}.
+	 *
+	 * @return the message flags that are set by default for the specific message type
+	 */
+	public int getMessageTypeDefaultFlags() {
+		return (flagSendPush() ? ProtocolDefines.MESSAGE_FLAG_SEND_PUSH : 0)
+			| (flagNoServerQueuing() ? ProtocolDefines.MESSAGE_FLAG_NO_SERVER_QUEUING : 0)
+			| (flagNoServerAck() ? ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK : 0)
+			| (flagGroupMessage() ? ProtocolDefines.MESSAGE_FLAG_GROUP : 0)
+			| (flagShortLivedServerQueuing() ? ProtocolDefines.MESSAGE_FLAG_SHORT_LIVED : 0);
 	}
 
 	public ForwardSecurityMode getForwardSecurityMode() {

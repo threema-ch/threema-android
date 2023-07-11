@@ -153,7 +153,6 @@
 		</intent>
 	</queries>
 
-
 	<application
 		android:name=".ThreemaApplication"
 		android:allowBackup="false"
@@ -358,7 +357,7 @@
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:launchMode="singleTop"
 			android:parentActivityName=".activities.HomeActivity"
-			android:theme="@style/Theme.Threema.WithToolbarAndCheck">
+			android:theme="@style/Theme.Threema.WithToolbar">
 		</activity>
 		<activity
 			android:name=".activities.ExportIDActivity"
@@ -418,6 +417,7 @@
 		</activity>
 		<activity
 			android:name=".activities.ServerMessageActivity"
+			android:theme="@style/Theme.Threema.WithToolbar"
 			android:label="server_message"/>
 		<activity
 			android:name=".activities.SendMediaActivity"
@@ -447,7 +447,7 @@
 			android:name=".activities.GroupDetailActivity"
 			android:theme="@style/Theme.Threema.TransparentStatusbar"
 			android:configChanges="uiMode"
-			android:windowSoftInputMode="stateHidden" />
+			android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 		<activity
 			android:name=".qrscanner.activity.BaseQrScannerActivity"
 			android:theme="@style/Theme.Threema.Translucent"/>
@@ -554,7 +554,7 @@
 		<activity
 			android:name=".activities.ImagePaintActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:theme="@style/Theme.Threema.LowProfile"
+			android:theme="@style/Theme.Threema.MediaViewer"
 			android:windowSoftInputMode="stateHidden|adjustResize"/>
 
 		<!-- Webclient activities -->
@@ -710,13 +710,13 @@
 			android:theme="@style/Theme.Threema.Translucent"/>
 		<activity
 			android:name=".voicemessage.VoiceRecorderActivity"
-			android:clearTaskOnLaunch="true"
+			android:theme="@style/Theme.Threema.Translucent"
 			android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
-			android:theme="@style/Theme.Threema.VoiceRecorder"
+			android:clearTaskOnLaunch="true"
 			android:windowSoftInputMode="stateAlwaysHidden"/>
 		<activity
 			android:name=".locationpicker.LocationPickerActivity"
-			android:theme="@style/Theme.LocationPicker"
+			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
 			/>
 		<activity
@@ -797,7 +797,7 @@
 			android:windowSoftInputMode="adjustResize"/>
 		<activity
 			android:name=".locationpicker.LocationAutocompleteActivity"
-			android:theme="@style/Theme.LocationPicker"
+			android:theme="@style/Theme.Threema.WithToolbar"
 			android:windowSoftInputMode="adjustResize" />
 		<activity
 			android:name=".archive.ArchiveActivity"
@@ -807,7 +807,7 @@
 		<activity
 			android:name=".activities.MapActivity"
 			android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
-			android:theme="@style/Theme.LocationPicker"
+			android:theme="@style/Theme.Threema.WithToolbar"
 			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
@@ -836,9 +836,17 @@
 			android:windowSoftInputMode="stateAlwaysHidden" />
 		<activity
 			android:name=".activities.ThreemaPushNotificationInfoActivity"
+			android:theme="@style/Theme.Threema.WithToolbar"
 			android:launchMode="singleTask"
 			android:taskAffinity=""
 			android:excludeFromRecents="true" />
+		<activity
+			android:name=".activities.PermissionRequestActivity"
+			android:theme="@style/Theme.Threema.WithToolbar"
+			android:launchMode="singleTop"
+			android:exported="false"
+			android:excludeFromRecents="true">
+		</activity>
 
 		<!-- services -->
 		<service
@@ -931,6 +939,16 @@
 			android:exported="true"
 			tools:node="merge">
 		</service>
+		<service
+			android:name=".services.VoiceMessagePlayerService"
+			android:foregroundServiceType="mediaPlayback"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="androidx.media3.session.MediaSessionService"/>
+				<action android:name="androidx.media3.session.MediaLibraryService"/>
+				<action android:name="android.media.browse.MediaBrowserService" />
+			</intent-filter>
+		</service>
 
 		<!-- broadcast receivers -->
 		<receiver
@@ -968,6 +986,9 @@
 			android:name=".receivers.ReSendMessagesBroadcastReceiver"
 			android:exported="false">
 		</receiver>
+		<receiver
+			android:name=".receivers.CancelResendMessagesBroadcastReceiver"
+			android:exported="false" />
 		<receiver android:name=".receivers.FetchMessagesBroadcastReceiver"/>
 		<receiver android:name=".voip.receivers.VoipMediaButtonReceiver"
 			android:exported="true">

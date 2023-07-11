@@ -297,7 +297,6 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="title_select_contacts">Seleziona membri</string>
     <string name="pin_invalid_not_set">Il codice PIN non è valido</string>
     <string name="prefs_group_notifications">Notifiche gruppi</string>
-    <string name="add_group_members_list">Membri del gruppo</string>
     <string name="group_select_at_least_two">Selezionare almeno un membro</string>
     <string name="group_select_max">Possono essere aggiunti al gruppo massimo %1$d membri</string>
     <string name="search">Cerca</string>
@@ -556,7 +555,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="send_as_files">Invia come file</string>
     <string name="send_as_files_warning">Il trasferimento di file e immagini non compressi può determinare un consumo di dati notevole e conseguenti addebiti extra da parte del tuo gestore telefonico. Ti consigliamo di caricare e scaricare i file solo in presenza di reti Wi-Fi.</string>
     <string name="prefs_theme">Crea tema</string>
-    <string name="list_theme_light">Chiaro (default)</string>
+    <string name="list_theme_light">Chiaro</string>
     <string name="list_theme_dark">Scuro</string>
     <string name="prefs_header_appearance">Aspetto</string>
     <string name="prefs_sum_passphrase">È richiesta una passphrase per sbloccare il criptaggio locale</string>
@@ -693,7 +692,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="prefs_proximity_sensor">Utilizza il sensore di prossimità</string>
     <string name="prefs_proximity_sensor_explain">Utilizza gli auricolari per riprodurre i messaggi vocali se il sensore di prossimità è coperto</string>
     <string name="error_creating_group">Errore durante la creazione del gruppo</string>
-    <string name="no_media_found_generic">Nessun elemento multimediale rilevato in questa chat</string>
+    <string name="no_media_found_generic">Nessun elemento multimediale rilevato in questa chat che corrisponde alla selezione.</string>
     <string name="max_images_reached">È possibile inviare fino a %d immagini contemporaneamente</string>
     <string name="enter_description">Descrivi qui il bug/problema.</string>
     <string name="add_caption_hint">Aggiungi una didascalia facoltativa</string>
@@ -913,7 +912,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="safe_configure_choose_password_force">Imposta una password sicura per proteggere il tuo Threema ID con Threema Safe. Non dimenticarti quello che inserisci!</string>
     <string name="safe_deactivate">Spegni Threema Safe</string>
     <string name="safe_deactivate_explain">Se disabiliti Threema Safe ogni backup esistente sarà eliminato dal server. Continuare?</string>
-    <string name="add_group_members">Nuovo membro</string>
+    <string name="add_group_members">Aggiungi nuovo membro</string>
     <string name="contact_add_confirm">Vuoi aggiungere un nuovo contatto «%1$s» alla tua lista di contatti?</string>
     <string name="password_bad">Password debole</string>
     <string name="prefs_fix_background_data">Abilita dati in background</string>
@@ -1030,11 +1029,6 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="open_in_maps_app">Apri in Mappe</string>
     <string name="delete">Elimina</string>
     <string name="continue_recording">Continua registrazione</string>
-    <string name="whatsnew_title">Novità: Chiamate di gruppo %1$s</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Ora è possibile effettuare chiamate end-to-end su %1$s per Android.</p>
-<p>Per avviare una chiamata, apri la chat di gruppo e tocca l\'icona della fotocamera in alto.</p>
-<p>I membri del gruppo ricevono una notifica e possono decidere se partecipare o no.</p>
-<p><b>Avviso:</b> La versione iOS sarà disponibile più avanti.</p>]]></string>
     <string name="tap_to_start">Tocca qui per iniziare %s adesso.</string>
     <string name="two_years">2 anni</string>
     <string name="invalid_backup_path">Percorso backup sbagliato</string>
@@ -1177,7 +1171,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="no_faces_detected">Nessun viso trovato</string>
     <string name="smiley">Smiley</string>
     <string name="blur">Sfocare</string>
-    <string name="face_blur_tooltip_title">Nuovo: riconoscimento facciale</string>
+    <string name="face_blur_tooltip_title">Riconoscimento facciale</string>
     <string name="face_blur_tooltip_text">Cerca i visi nella foto e rendili sfocati o coprili con uno smiley.</string>
     <string name="listened_to">ascoltato</string>
     <string name="transcoder_unsupported_audio_format">Impossibile convertire il formato audio poiché il sistema non è supportato.</string>
@@ -1248,7 +1242,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="group_link_rename">Rinomina link</string>
     <string name="group_link_rename_tag">Nuovo nome</string>
     <string name="tap_here_for_more">Tocca qui per ulteriori informazioni</string>
-    <string name="another_connection_instructions">Il server ha individuato due o più connessioni da dispositivi diversi con lo stesso Threema ID.\n\nNon è possibile usare lo stesso Threema ID su diversi dispositivi contemporaneamente. I nuovi messaggi sono trasmessi solo al dispositivo che ha avuto accesso per ultimo al server.\n\nSe stai passando a un altro dispositivo, disinstalla o disattiva %s sul dispositivo precedente e riavvia quello nuovo.</string>
+    <string name="another_connection_instructions"><![CDATA[Il server ha individuato due o più connessioni da dispositivi diversi con lo stesso Threema ID.<br><brNon è possibile usare lo stesso Threema ID su diversi dispositivi contemporaneamente. I nuovi messaggi sono trasmessi solo al dispositivo che ha avuto accesso per ultimo al server.<br><br>Se stai passando a un altro dispositivo, disinstalla o disattiva %s sul dispositivo precedente e riavvia quello nuovo.]]></string>
     <string name="app_store_error_code">Codice errore app store: %d</string>
     <string name="backup_restore_type"><![CDATA[Che tipo di backup desideri ripristinare? <br/><br/> <a href=%s>Scopri di più sui backup di Threema</a>]]></string>
     <string name="data_backup_info">Ripristina tutto, comprese le chat</string>
@@ -1372,7 +1366,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="organization_type">Organizzazione</string>
     <string name="permission_bluetooth_connect_required">Attiva l\'autorizzazione «Dispositivi nelle vicinanze» per cercare i dispositivi bluetooth collegati</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push è attivo. Le sessioni Threema Web devono quindi essere avviate manualmente.</string>
-    <string name="tooltip_multiple_recipients_title">Novità: più destinatari</string>
+    <string name="tooltip_multiple_recipients_title">Più destinatari</string>
     <string name="tooltip_multiple_recipients_text">Premi a lungo per selezionare più destinatari e inviare a tutti lo stesso messaggio.</string>
     <string name="synchronizing">Sincronizzazione...</string>
     <string name="forward_security">Invia messaggi con Perfect Forward Secrecy</string>
@@ -1420,21 +1414,27 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="prefs_summary_hibernation_api_32">Per evitare che Threema smetta di funzionare in caso di inattività prolungata, disattiva \"Cancella autorizzazioni e libera memoria\" nelle impostazioni.</string>
     <string name="prefs_summary_hibernation_api">Per evitare che Threema smetta di funzionare in caso di inattività prolungata, disattiva \"Interrompi attività app in caso di non utilizzo\" nelle impostazioni.</string>
     <string name="unable_to_fetch_configuration">Impossibile caricare la configurazione dal server. Riprova.</string>
-    <string name="rogue_device_warning">Il server ha riconosciuto una connessione proveniente da un altro dispositivo dotato dello stesso Threema ID.\n\nSe nel frattempo non hai usato il tuo Threema ID su un altro dispositivo oppure con una versione dell\'app più vecchia, ti preghiamo di contattare l\'assistenza e se possibile inviare anche il registro.</string>
+    <string name="rogue_device_warning">Il server ha riconosciuto una connessione proveniente da un altro dispositivo dotato dello stesso Threema ID. Hai usato di recente il tuo Threema ID su un altro dispositivo? &lt;br&gt;&lt;br&gt; Se la riposta è sì, puoi ignorare questo messaggio. &lt;br&gt;&lt;br&gt; Altrimenti la tua chiave privata potrebbe essere compromessa. Ti preghiamo di seguire le raccomandazioni su <a href="https://threema.ch/de/faq/another_connection"></a>per la protezione del tuo dispositivo e dei tuoi dati prima di creare un nuovo ID.</string>
     <string name="fetch2_failure">La sincronizzazione con il server di configurazione è fallita.</string>
     <string name="no_members_support_group_calls">Nessuno degli altri membri del gruppo può partecipare alle chiamate di gruppo.</string>
     <string name="group_calls">Chiamate di gruppo</string>
     <string name="prefs_title_group_calls_enable">Consenti chiamate di gruppo</string>
     <string name="group_no_members">Questo gruppo non ha altri membri</string>
     <string name="group_call">Chiamata di gruppo</string>
-    <string name="checking_compatibility">Verifica della compatibilità in corso...</string>
+    <string name="checking_compatibility">Verifica della compatibilità in corso…</string>
     <string name="group_call_mic_permission_rationale">Per effettuare chiamate di gruppo consenti a %s di accedere al microfono alla voce «Autorizzazioni».</string>
+    <string name="group_call_mic_permission_description">Per utilizzare le chiamate di gruppo è necessario l\'accesso al microfono, affinché gli altri possano sentirti.</string>
+    <string name="call_mic_permission_description">Per utilizzare le chiamate Threema è necessario l\'accesso al microfono, affinché gli altri possano sentirti.</string>
     <string name="group_call_camera_permission_rationale">Per permettere agli altri partecipanti di vedere la tua immagine consenti a %s di accedere alla fotocamera alla voce «Autorizzazioni».</string>
+    <string name="group_call_phone_permission_description">Per utilizzare le chiamate di gruppo è necessaria l\'autorizzazione chiamata. Ciò ti consente di chiudere una chiamata di gruppo per accettarne un\'altra.</string>
+    <string name="call_phone_permission_description">Per utilizzare le chiamate Threema è necessaria l\'autorizzazione chiamata. Ciò ti consente di chiudere una chiamata Threema per accettarne un\'altra.</string>
+    <string name="group_call_nearby_devices_permission_description">Per utilizzare le chiamate di gruppo con headset bluetooth è necessaria l\'autorizzazione «Dispositivi nelle vicinanze», affinché Threema possa riconoscere il headset bluetooth.</string>
+    <string name="call_nearby_devices_permission_description">Per utilizzare le chiamate Threema con headset bluetooth è necessaria l\'autorizzazione «Dispositivi nelle vicinanze», affinché Threema possa riconoscere il headset bluetooth.</string>
     <string name="settings">Impostazioni</string>
     <string name="leave">Abbandona</string>
     <string name="fs_key_mismatch">Differenza di chiave</string>
     <string name="tap_to_resend">Tocca per nuovo invio</string>
-    <string name="group_calls_tooltip_title">Novità: Chiamate di gruppo</string>
+    <string name="group_calls_tooltip_title">Chiamate di gruppo</string>
     <string name="group_calls_tooltip_text">Tocca qui per invitare i membri del gruppo a partecipare a una chiamata. Tutti i membri del gruppo riceveranno una notifica e potranno decidere se partecipare o meno alla chiamata.</string>
     <string name="prefs_title_calls">Chiamate sicure</string>
     <string name="prefs_sum_group_calls_vibration">Vibrazione all\'avvio di una chiamata di gruppo</string>
@@ -1444,6 +1444,34 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="group_call_inactivity_left">Abbandona chiamata di gruppo per inattività</string>
     <string name="missing_permission_external_storage">Errore durante la copia del file. Prova a seguire questi passi:\n1. Apri sul telefono l\'app «Impostazioni».\n2. Vai su «App».\n3. Tocca su «Accedere a tutti i file».\n4. Tocca sui tre punti in alto e seleziona «Visualizza app di sistema».\n5. Tocca su «Memoria esterna» e verifica che sia attivo «Autorizza accesso per gestire tutti i file».\n6. Riprova a ripristinare il backup dei dati.</string>
     <string name="forward_security_downgraded_status_message">Questo contatto usa una versione dell\'app che non supporta la Perfect Forward Secrecy. D\'ora in poi i messaggi saranno inviati senza PFS.</string>
+    <string name="crop_image_title">Taglia immagine</string>
+    <string name="scroll_to_bottom">Scorri in fondo</string>
+    <string name="scroll_to_top">Scorri in alto</string>
+    <string name="contact_sync_mdm_rationale">"L'amministratore ha attivato la sincronizzazione dei contatti. Perciò è necessaria l'autorizzazione per accedere ai contatti. "</string>
+    <string name="welcome_back">Ben tornato/a!</string>
+    <string name="id_restored_successfully">Il tuo Threema ID è stato ripristinato con successo</string>
+    <string name="prefs_dynamic_colors">Colori dinamici</string>
+    <string name="prefs_dynamic_colors_sum">Usa colori di sistema</string>
+    <string name="apply_changes">Applica modifiche</string>
+    <string name="prefs_threema_work_summary">Sapevi che Threema offre anche una soluzione di comunicazione professionale per le aziende? Tocca qui per saperne di più su Threema Work.</string>
+    <string name="notification_channel_voice_message_player">Player messaggi vocali</string>
+    <string name="voice_message_from">Messaggio vocale del %s</string>
+    <string name="vm_fg_service_not_allowed">Problema di riproduzione messaggi vocali</string>
+    <string name="vm_fg_service_not_allowed_explain">Tocca il pulsante \"Play\" nella notifica multimediale, se ancora disponibile. Altrimenti, apri l\'app per avviare la riproduzione dalla chat.</string>
+    <string name="use_threema_without_this_permission">Utilizzare %s senza questa autorizzazione</string>
+    <string name="grant_permission">Concedi autorizzazione</string>
+    <string name="grant_permission_settings">Concedi autorizzazione nelle impostazioni</string>
+    <string name="ignore_permission">Non chiedere più</string>
+    <string name="permission_nearby_devices">Dispositivi nelle vicinanze</string>
+    <string name="permission_bluetooth">Bluetooth</string>
+    <string name="permission_camera">Fotocamera</string>
+    <string name="permission_microphone">Microfono</string>
+    <string name="permission_read_phone_state">Telefono</string>
+    <string name="permission_enable_in_settings_rationale">Concedi l\'autorizzazione nelle impostazioni. Seleziona \"Autorizzazioni\" e concedi l\'autorizzazione a “%s”.</string>
+    <string name="group_name">Nome del gruppo</string>
+    <string name="samsung_permission_problem_explain">%1$s non ha accesso ai file media per mancanza di autorizzazione di un\'app di sistema. Per risolvere il problema, accertati che l\'interruttore accanto a \"Memoria esterna\" nella seguente schermata sia attivato e riavvia %1$s.</string>
+    <string name="min_n_chars">almeno %d caratt.</string>
+    <string name="prefs_title_grant_bluetooth_permission">Concedi autorizzazione bluetooth</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contatto</item>
         <item quantity="other">%d contatti</item>
@@ -1519,5 +1547,9 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <plurals name="delete_messages">
         <item quantity="one">Cancellare %d messaggio da questo dispositivo?</item>
         <item quantity="other">Cancellare %d messaggi da questo dispositivo?</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="one">%d membro del gruppo</item>
+        <item quantity="other">%d membri del gruppo</item>
     </plurals>
 </resources>

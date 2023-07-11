@@ -200,10 +200,6 @@ public class DownloadApkActivity extends ThreemaActivity implements GenericAlert
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			setTheme(R.style.Theme_Threema_Translucent_Dark);
-		}
-
 		if (savedInstanceState != null) {
 			downloadId = savedInstanceState.getLong(BUNDLE_DOWNLOAD_ID, -1);
 		}

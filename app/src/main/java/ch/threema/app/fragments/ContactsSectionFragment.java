@@ -21,6 +21,11 @@
 
 package ch.threema.app.fragments;
 
+import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
+import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
+import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
+import static ch.threema.app.ThreemaApplication.WORKER_WORK_SYNC;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -49,7 +54,18 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.material.chip.Chip;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.util.Pair;
+import androidx.core.view.MenuItemCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
@@ -62,16 +78,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.util.Pair;
-import androidx.core.view.MenuItemCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
@@ -110,7 +116,6 @@ import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.LockingSwipeRefreshLayout;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.SelectorDialogItem;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
@@ -127,11 +132,6 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
-
-import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
-import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
-import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
-import static ch.threema.app.ThreemaApplication.WORKER_WORK_SYNC;
 
 public class ContactsSectionFragment
 		extends MainFragment
@@ -171,7 +171,7 @@ public class ContactsSectionFragment
 
 	private ResumePauseHandler resumePauseHandler;
 	private ListView listView;
-	private Chip contactsCounterChip;
+	private MaterialButton contactsCounterButton;
 	private LockingSwipeRefreshLayout swipeRefreshLayout;
 	private ServiceManager serviceManager;
 	private SearchView searchView;
@@ -567,10 +567,12 @@ public class ContactsSectionFragment
 		super.onPrepareOptionsMenu(menu);
 
 		// move search item to popup if the lock item is visible
-		if (lockAppService != null && lockAppService.isLockingEnabled()) {
-			this.searchMenuItem.setShowAsAction(SHOW_AS_ACTION_NEVER | SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-		} else {
-			this.searchMenuItem.setShowAsAction(SHOW_AS_ACTION_ALWAYS | SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+		if (this.searchMenuItem != null) {
+			if (lockAppService != null && lockAppService.isLockingEnabled()) {
+				this.searchMenuItem.setShowAsAction(SHOW_AS_ACTION_NEVER | SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+			} else {
+				this.searchMenuItem.setShowAsAction(SHOW_AS_ACTION_ALWAYS | SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+			}
 		}
 	}
 
@@ -624,9 +626,7 @@ public class ContactsSectionFragment
 
 	private int getDesiredWorkTab(boolean isOnFirstLaunch, Bundle savedInstanceState) {
 		if (ConfigUtils.isWorkBuild()) {
-			if (isOnFirstLaunch) {
-				return TAB_WORK_ONLY; // may be overridden later if there are no work contacts
-			} else {
+			if (!isOnFirstLaunch) {
 				if (savedInstanceState != null) {
 					return savedInstanceState.getInt(BUNDLE_SELECTED_TAB, TAB_ALL_CONTACTS);
 				} else if (workTabLayout != null) {
@@ -716,7 +716,7 @@ public class ContactsSectionFragment
 
 	private void updateContactsCounter(int numContacts, @Nullable FetchResults counts) {
 		if (getActivity() != null && listView != null && isAdded()) {
-			if (contactsCounterChip != null) {
+			if (contactsCounterButton != null) {
 				if (counts != null) {
 					ListenerManager.contactCountListener.handle(listener -> listener.onNewContactsCountUpdated(counts.last24h));
 				}
@@ -726,10 +726,10 @@ public class ContactsSectionFragment
 					if (counts != null) {
 						builder.append(" (+").append(counts.last30d).append(" / ").append(getString(R.string.thirty_days_abbrev)).append(")");
 					}
-					contactsCounterChip.setText(builder.toString());
-					contactsCounterChip.setVisibility(View.VISIBLE);
+					contactsCounterButton.setText(builder.toString());
+					contactsCounterButton.setVisibility(View.VISIBLE);
 				} else {
-					contactsCounterChip.setVisibility(View.GONE);
+					contactsCounterButton.setVisibility(View.GONE);
 				}
 			}
 			if (ConfigUtils.isWorkBuild() && counts != null) {
@@ -812,7 +812,6 @@ public class ContactsSectionFragment
 		Intent intent = new Intent(getActivity(), AddContactActivity.class);
 		intent.putExtra(AddContactActivity.EXTRA_ADD_BY_ID, true);
 		startActivity(intent);
-		getActivity().overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 	}
 
 	@Override
@@ -850,7 +849,7 @@ public class ContactsSectionFragment
 					mode.getMenuInflater().inflate(R.menu.action_contacts_section, menu);
 					actionMode = mode;
 
-					ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
+					ConfigUtils.tintMenu(menu, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
 
 					return true;
 				}
@@ -894,7 +893,7 @@ public class ContactsSectionFragment
 				listView.addHeaderView(headerView, null, false);
 
 				View footerView = View.inflate(getActivity(), R.layout.footer_contact_section, null);
-				this.contactsCounterChip = footerView.findViewById(R.id.contact_counter_text);
+				this.contactsCounterButton = footerView.findViewById(R.id.contact_counter_text);
 				listView.addFooterView(footerView, null, false);
 
 				headerView.findViewById(R.id.share_container).setOnClickListener(new View.OnClickListener() {
@@ -912,7 +911,7 @@ public class ContactsSectionFragment
 			this.swipeRefreshLayout = fragmentView.findViewById(R.id.swipe_container);
 			this.swipeRefreshLayout.setOnRefreshListener(this);
 			this.swipeRefreshLayout.setDistanceToTriggerSync(getResources().getConfiguration().screenHeightDp / 3);
-			this.swipeRefreshLayout.setColorSchemeResources(R.color.accent_light);
+			this.swipeRefreshLayout.setColorSchemeResources(R.color.md_theme_light_primary);
 			this.swipeRefreshLayout.setSize(SwipeRefreshLayout.LARGE);
 
 			this.floatingButtonView = fragmentView.findViewById(R.id.floating);
@@ -1096,14 +1095,14 @@ public class ContactsSectionFragment
 		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
 
-		AnimationUtil.startActivityForResult(getActivity(), v, intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+		getActivity().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 	}
 
 	private void openContact(@Nullable View view, String identity) {
 		Intent intent = new Intent(getActivity(), ContactDetailActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
 
-		AnimationUtil.startActivityForResult(getActivity(), view, intent, ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL);
+		getActivity().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL);
 	}
 
 	@Override
@@ -1268,7 +1267,7 @@ public class ContactsSectionFragment
 		if (showExcludeFromContactSync(contacts)) {
 			dialog = TextWithCheckboxDialog.newInstance(
 				deleteContactTitle,
-				0,
+				R.drawable.ic_contact,
 				message,
 				R.string.exclude_contact,
 				R.string.ok,

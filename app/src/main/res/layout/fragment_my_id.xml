@@ -10,7 +10,7 @@
 		android:id="@+id/fragment_id_container"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="?android:windowBackground"
+		android:background="?android:attr/colorBackground"
 		android:scrollbars="vertical"
 		android:scrollbarSize="@dimen/scrollbar_size"
 		android:isScrollContainer="true">
@@ -38,7 +38,7 @@
 					android:layout_height="wrap_content"
 					android:layout_marginRight="8dp"
 					app:srcCompat="@drawable/ic_info_outline"
-					app:tint="?attr/textColorSecondary" />
+					app:tint="?attr/colorOnSurface" />
 
 				<TextView
 					android:layout_width="match_parent"
@@ -57,54 +57,46 @@
 				android:layout_height="wrap_content"
 				android:orientation="vertical">
 
-				<ImageView
+				<com.google.android.material.button.MaterialButton
+					style="@style/Threema.MaterialButton.Icon"
 					android:id="@+id/profile_edit"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginEnd="16dp"
-					android:background="@drawable/circle_transparent"
-					android:contentDescription="@string/edit"
-					android:padding="8dp"
-					android:scaleType="fitCenter"
+					android:layout_alignParentRight="true"
+					android:layout_centerVertical="true"
+					app:icon="@drawable/ic_pencil_outline"
 					app:layout_constraintBottom_toBottomOf="@+id/nickname"
 					app:layout_constraintEnd_toEndOf="parent"
 					app:layout_constraintTop_toTopOf="@+id/nickname"
-					app:srcCompat="@drawable/ic_pencil_outline"
-					app:tint="?attr/colorAccent"
+					android:contentDescription="@string/edit"
 					tools:layout_conversion_absoluteHeight="40dp"
-					tools:layout_conversion_absoluteWidth="40dp" />
+					tools:layout_conversion_absoluteWidth="40dp"
+					/>
 
-				<ImageView
+				<com.google.android.material.button.MaterialButton
+					style="@style/Threema.MaterialButton.Icon"
 					android:id="@+id/my_id_qr"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginEnd="4dp"
-					android:background="@drawable/selector_compose_button"
-					android:clickable="true"
 					android:contentDescription="@string/show_as_qrcode"
-					android:focusable="true"
-					android:padding="12dp"
 					app:layout_constraintEnd_toStartOf="@+id/my_id_share"
 					app:layout_constraintTop_toBottomOf="@+id/my_id_title"
-					app:srcCompat="@drawable/ic_qr_code"
-					app:tint="?attr/textColorSecondary"
+					app:icon="@drawable/ic_qr_code"
 					tools:layout_conversion_absoluteHeight="48dp"
 					tools:layout_conversion_absoluteWidth="48dp" />
 
-				<ImageView
+				<com.google.android.material.button.MaterialButton
+					style="@style/Threema.MaterialButton.Icon"
 					android:id="@+id/my_id_share"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_marginEnd="4dp"
-					android:background="@drawable/selector_compose_button"
-					android:clickable="true"
+					android:layout_marginEnd="16dp"
 					android:contentDescription="@string/share_via"
-					android:focusable="true"
-					android:padding="12dp"
 					app:layout_constraintEnd_toEndOf="parent"
 					app:layout_constraintTop_toTopOf="@+id/my_id_qr"
-					app:srcCompat="@drawable/ic_share_outline"
-					app:tint="?attr/textColorSecondary"
+					app:icon="@drawable/ic_share_outline"
 					tools:layout_conversion_absoluteHeight="48dp"
 					tools:layout_conversion_absoluteWidth="48dp" />
 
@@ -115,7 +107,7 @@
 					android:layout_marginTop="16dp"
 					android:text="@string/profile_picture_and_nickname"
 					android:textAppearance="@style/Threema.Text.Overline"
-					android:textColor="@null"
+					android:textColor="?attr/colorPrimary"
 					app:layout_constraintStart_toStartOf="@+id/my_id"
 					app:layout_constraintTop_toBottomOf="@id/my_id"
 					tools:layout_conversion_absoluteHeight="16dp"
@@ -131,7 +123,7 @@
 					android:singleLine="true"
 					android:text="@string/title_mythreemaid"
 					android:textAppearance="@style/Threema.Text.Overline"
-					android:textColor="@null"
+					android:textColor="?attr/colorPrimary"
 					app:layout_constrainedWidth="true"
 					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintTop_toTopOf="parent"
@@ -140,25 +132,24 @@
 					tools:layout_editor_absoluteX="16dp"
 					tools:layout_editor_absoluteY="16dp" />
 
-				<ImageView
+				<com.google.android.material.button.MaterialButton
+					style="@style/Threema.MaterialButton.Icon"
 					android:id="@+id/picrelease_config"
-					android:layout_width="40dp"
-					android:layout_height="40dp"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
 					android:layout_marginEnd="16dp"
 					android:layout_marginTop="4dp"
-					android:background="@drawable/circle_transparent"
 					android:contentDescription="@string/configure"
-					android:rotation="180"
-					android:scaleType="center"
 					app:layout_constraintBottom_toBottomOf="@+id/picrelease_text"
 					app:layout_constraintEnd_toEndOf="parent"
 					app:layout_constraintTop_toTopOf="@+id/picrelease_text"
-					app:srcCompat="@drawable/ic_settings_outline_24dp"
-					app:tint="?attr/colorAccent" />
+					app:icon="@drawable/ic_settings_outline_24dp"
+					tools:layout_conversion_absoluteHeight="48dp"
+					tools:layout_conversion_absoluteWidth="48dp" />
 
 				<com.google.android.material.textfield.TextInputLayout
 					android:id="@+id/picrelease_text"
-					style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+					style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="8dp"
@@ -207,7 +198,7 @@
 					app:layout_constraintTop_toBottomOf="@+id/avatar_edit_view"
 					tools:layout_conversion_absoluteHeight="40dp"
 					tools:layout_conversion_absoluteWidth="326dp"
-					tools:text="Nick Name" />
+					tools:text="Nickname" />
 
 				<ch.threema.app.ui.AvatarEditView
 					android:id="@+id/avatar_edit_view"
@@ -220,7 +211,6 @@
 					app:layout_constraintHorizontal_bias="0.5"
 					app:layout_constraintStart_toStartOf="parent"
 					app:layout_constraintTop_toBottomOf="@+id/profilepictitle" />
-
 
 			</androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -238,7 +228,7 @@
 					android:layout_height="wrap_content"
 					android:text="@string/account_links"
 					android:textAppearance="@style/Threema.Text.Overline"
-					android:textColor="@null" />
+					android:textColor="?attr/colorPrimary" />
 
 				<RelativeLayout
 					android:id="@+id/linked_mobile_layout"
@@ -254,20 +244,18 @@
 						android:layout_marginRight="24dp"
 						android:contentDescription="@string/linked_mobile"
 						app:srcCompat="@drawable/ic_call_outline"
-						app:tint="?attr/textColorSecondary" />
+						app:tint="?attr/colorOnSurface" />
 
-					<ImageView
+					<com.google.android.material.button.MaterialButton
+						style="@style/Threema.MaterialButton.Icon"
 						android:id="@+id/change_mobile"
-						android:layout_width="40dp"
-						android:layout_height="40dp"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
 						android:layout_alignParentRight="true"
 						android:layout_centerVertical="true"
-						android:background="@drawable/circle_transparent"
+						app:icon="@drawable/ic_pencil_outline"
 						android:contentDescription="@string/change"
-						android:padding="8dp"
-						android:scaleType="fitCenter"
-						app:srcCompat="@drawable/ic_pencil_outline"
-						app:tint="?attr/colorAccent" />
+					/>
 
 					<LinearLayout
 						android:layout_width="wrap_content"
@@ -312,20 +300,18 @@
 						android:layout_marginRight="24dp"
 						android:contentDescription="@string/linked_email"
 						app:srcCompat="@drawable/ic_email_outline"
-						app:tint="?attr/textColorSecondary" />
+						app:tint="?attr/colorOnSurface" />
 
-					<ImageView
+					<com.google.android.material.button.MaterialButton
+						style="@style/Threema.MaterialButton.Icon"
 						android:id="@+id/change_email"
-						android:layout_width="40dp"
-						android:layout_height="40dp"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
 						android:layout_alignParentRight="true"
 						android:layout_centerVertical="true"
-						android:background="@drawable/circle_transparent"
+						app:icon="@drawable/ic_pencil_outline"
 						android:contentDescription="@string/change"
-						android:padding="8dp"
-						android:scaleType="fitCenter"
-						app:srcCompat="@drawable/ic_pencil_outline"
-						app:tint="?attr/colorAccent" />
+						/>
 
 					<LinearLayout
 						android:layout_width="wrap_content"
@@ -378,7 +364,7 @@
 					android:layout_height="wrap_content"
 					android:text="@string/backup_and_delete"
 					android:textAppearance="@style/Threema.Text.Overline"
-					android:textColor="@null" />
+					android:textColor="?attr/colorPrimary" />
 
 				<RelativeLayout
 					android:id="@+id/revocation_key_layout"
@@ -386,18 +372,17 @@
 					android:layout_height="wrap_content"
 					android:minHeight="?android:attr/listPreferredItemHeight">
 
-					<ImageView
+					<com.google.android.material.button.MaterialButton
+						style="@style/Threema.MaterialButton.Icon"
 						android:id="@+id/revocation_key"
-						android:layout_width="40dp"
-						android:layout_height="40dp"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
 						android:layout_alignParentRight="true"
 						android:layout_centerVertical="true"
-						android:background="@drawable/circle_transparent"
-						android:contentDescription="@string/change"
+						app:icon="@drawable/ic_arrow_left"
 						android:rotation="180"
-						android:scaleType="center"
-						app:srcCompat="@drawable/ic_arrow_left"
-						app:tint="?attr/colorAccent" />
+						android:contentDescription="@string/change"
+						/>
 
 					<LinearLayout
 						android:layout_width="wrap_content"
@@ -434,18 +419,17 @@
 					android:layout_height="wrap_content"
 					android:minHeight="?android:attr/listPreferredItemHeight">
 
-					<ImageView
+					<com.google.android.material.button.MaterialButton
+						style="@style/Threema.MaterialButton.Icon"
 						android:id="@+id/export_id"
-						android:layout_width="40dp"
-						android:layout_height="40dp"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
 						android:layout_alignParentRight="true"
 						android:layout_centerVertical="true"
-						android:background="@drawable/circle_transparent"
-						android:contentDescription="@string/change"
+						app:icon="@drawable/ic_arrow_left"
 						android:rotation="180"
-						android:scaleType="center"
-						app:srcCompat="@drawable/ic_arrow_left"
-						app:tint="?attr/colorAccent" />
+						android:contentDescription="@string/change"
+						/>
 
 					<LinearLayout
 						android:layout_width="wrap_content"
@@ -482,18 +466,17 @@
 					android:layout_height="wrap_content"
 					android:minHeight="?android:attr/listPreferredItemHeight">
 
-					<ImageView
+					<com.google.android.material.button.MaterialButton
+						style="@style/Threema.MaterialButton.Icon"
 						android:id="@+id/delete_id"
-						android:layout_width="40dp"
-						android:layout_height="40dp"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
 						android:layout_alignParentRight="true"
 						android:layout_centerVertical="true"
-						android:background="@drawable/circle_transparent"
-						android:contentDescription="@string/change"
+						app:icon="@drawable/ic_arrow_left"
 						android:rotation="180"
-						android:scaleType="center"
-						app:srcCompat="@drawable/ic_arrow_left"
-						app:tint="?attr/colorAccent" />
+						android:contentDescription="@string/change"
+						/>
 
 					<LinearLayout
 						android:layout_width="wrap_content"
@@ -525,9 +508,9 @@
 
 				</RelativeLayout>
 
-				<com.google.android.material.chip.Chip
+				<com.google.android.material.button.MaterialButton
 					android:id="@+id/public_key_button"
-					style="@style/Threema.Chip.Action"
+					style="@style/Threema.MaterialButton.Action"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="16dp"

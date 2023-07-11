@@ -21,9 +21,12 @@
 
 package ch.threema.app.grouplinks;
 
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.SQLException;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -38,22 +41,21 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.appcompat.widget.FitWindowsFrameLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputLayout;
-
-import net.sqlcipher.SQLException;
 
 import org.slf4j.Logger;
 
 import java.util.Date;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatCheckBox;
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.appcompat.widget.FitWindowsFrameLayout;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
@@ -62,7 +64,6 @@ import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.mediaattacher.ControlPanelButton;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.group.GroupInviteService;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -71,8 +72,6 @@ import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 import java8.util.Optional;
-
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
 
 public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements View.OnClickListener {
 
@@ -89,7 +88,7 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
 
 	private TextInputLayout textInputLayout;
 	private EmojiEditText newGroupLinkName;
-	private AppCompatCheckBox administrationCheckbox;
+	private MaterialCheckBox administrationCheckbox;
 	private AppCompatImageButton expirationDateButton;
 	private TextView linkExpirationDate;
 	private ControlPanelButton qrButton;
@@ -146,7 +145,7 @@ public class AddGroupLinkBottomSheet extends ThreemaToolbarActivity implements V
 	}
 
 	private void initLayout() {
-		getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(AddGroupLinkBottomSheet.this, R.attr.attach_status_bar_color_collapsed));
+		getWindow().setStatusBarColor(this.getResources().getColor(R.color.attach_status_bar_color_collapsed));
 
 		this.textInputLayout = findViewById(R.id.text_input_layout);
 		this.newGroupLinkName = findViewById(R.id.link_name);

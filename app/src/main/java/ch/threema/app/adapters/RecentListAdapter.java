@@ -44,6 +44,7 @@ import ch.threema.app.ui.CheckableConstraintLayout;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -52,8 +53,9 @@ import ch.threema.storage.models.GroupModel;
 public class RecentListAdapter extends FilterableListAdapter {
 	private final Context context;
 	private List<ConversationModel> values;
-	private List<ConversationModel> ovalues;
+	private final List<ConversationModel> ovalues;
 	private RecentListFilter recentListFilter;
+	private final FilterResultsListener filterResultsListener;
 	private final ContactService contactService;
 	private final GroupService groupService;
 	private final DistributionListService distributionListService;
@@ -63,7 +65,8 @@ public class RecentListAdapter extends FilterableListAdapter {
 	                         final List<Integer> checkedItems,
 	                         ContactService contactService,
 	                         GroupService groupService,
-	                         DistributionListService distributionListService) {
+	                         DistributionListService distributionListService,
+							 FilterResultsListener filterResultsListener) {
 		super(context, R.layout.item_user_list, (List<Object>) (Object) values);
 
 		this.context = context;
@@ -72,6 +75,8 @@ public class RecentListAdapter extends FilterableListAdapter {
 		this.contactService = contactService;
 		this.groupService = groupService;
 		this.distributionListService = distributionListService;
+		this.filterResultsListener = filterResultsListener;
+
 		if (checkedItems != null && checkedItems.size() > 0) {
 			// restore checked items
 			this.checkedItems.addAll(checkedItems);
@@ -222,6 +227,9 @@ public class RecentListAdapter extends FilterableListAdapter {
 		@Override
 		protected void publishResults(CharSequence constraint, FilterResults results) {
 			values = (List<ConversationModel>) results.values;
+			if (filterResultsListener != null) {
+				filterResultsListener.onResultsAvailable(TestUtil.empty(constraint) ? 0 : results.count);
+			}
 			notifyDataSetChanged();
 		}
 

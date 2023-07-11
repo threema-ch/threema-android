@@ -14,17 +14,14 @@
 
 	<include layout="@layout/conversation_bubble_start_recv"/>
 
+	<com.google.android.material.card.MaterialCardView
+		style="@style/Threema.CardView.Bubble.Receive"
+		android:id="@+id/message_block">
+
 	<LinearLayout
-		android:id="@+id/message_block"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/avatar_view"
-		android:background="@drawable/bubble_recv_selector"
-		android:orientation="vertical"
-		android:paddingBottom="@dimen/chat_bubble_border_padding"
-		android:paddingLeft="@dimen/chat_bubble_border_padding_arrow"
-		android:paddingRight="@dimen/chat_bubble_border_padding"
-		android:paddingTop="@dimen/chat_bubble_border_padding">
+		android:orientation="vertical">
 
 		<include layout="@layout/conversation_bubble_header"/>
 
@@ -44,5 +41,7 @@
 		<include layout="@layout/conversation_bubble_footer_recv"/>
 
 	</LinearLayout>
+
+	</com.google.android.material.card.MaterialCardView>
 
 </RelativeLayout>

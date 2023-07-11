@@ -94,15 +94,48 @@ public interface GroupService extends AvatarService<GroupModel> {
 		}
 	}
 
+	/**
+	 * The result of the common group receive steps.
+	 */
+	enum CommonGroupReceiveStepsResult {
+		/**
+		 * The common group receive steps succeeded.
+		 */
+		SUCCESS,
+
+		/**
+		 * The common group receive steps triggered a group sync request.
+		 */
+		SYNC_REQUEST_SENT,
+
+		/**
+		 * The message should be discarded.
+		 */
+		DISCARD_MESSAGE,
+	}
+
 	@Nullable GroupModel getById(int intExtra);
 
 	GroupModel getGroup(AbstractGroupMessage message) throws SQLException;
 
-	boolean requestSync(AbstractGroupMessage msg, boolean leaveIfMine);
+	/**
+	 * Run the common group receive steps. Note that we cache messages that have triggered a group
+	 * sync request to process them after we received the group setup message. The cached messages
+	 * should never be processed before running the common group receive steps successfully. To be
+	 * able to implement this behavior, we have {@link CommonGroupReceiveStepsResult#SYNC_REQUEST_SENT}
+	 * that is returned when a message could be cached.
+	 *
+	 * @param message the received message
+	 * @return {@link CommonGroupReceiveStepsResult#SUCCESS} if the steps completed successfully,
+	 * {@link CommonGroupReceiveStepsResult#SYNC_REQUEST_SENT} if a group sync request has been
+	 * sent, and {@link CommonGroupReceiveStepsResult#DISCARD_MESSAGE} if the steps failed and the
+	 * message should be discarded.
+	 */
+	CommonGroupReceiveStepsResult runCommonGroupReceiveSteps(AbstractGroupMessage message);
+
+	boolean requestSync(AbstractGroupMessage msg);
 
 	int requestSync(String groupCreator, GroupId groupId) throws ThreemaException;
-
-	boolean sendLeave(AbstractGroupMessage msg);
 
 	GroupCreateMessageResult processGroupCreateMessage(GroupCreateMessage groupCreateMessage);
 
@@ -172,7 +205,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @param groupModel Group model of the group
 	 * @return String array of identities (i.e. Threema IDs)
 	 */
-	@NonNull String[] getGroupIdentities(GroupModel groupModel);
+	@NonNull String[] getGroupIdentities(@NonNull GroupModel groupModel);
 	GroupMemberModel getGroupMember(GroupModel groupModel, String identity);
 	List<GroupMemberModel> getGroupMembers(GroupModel groupModel);
 
@@ -186,7 +219,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	GroupMessageReceiver createReceiver(GroupModel groupModel);
 
 	boolean isGroupOwner(GroupModel groupModel);
-	boolean isGroupMember(GroupModel groupModel);
+	boolean isGroupMember(@NonNull GroupModel groupModel);
 
 	GroupModel getByApiGroupIdAndCreator(@NonNull GroupId apiGroupId, @NonNull String creatorIdentity);
 

@@ -143,7 +143,7 @@ public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> i
 				final String candidateString = JSONUtil.getStringOrNull(o, KEY_CANDIDATE);
 				if (candidateString == null) {
 					logger.error("Bad Candidate: " + KEY_CANDIDATE + " must be defined");
-					throw new BadMessageException("TM062", true);
+					throw new BadMessageException("TM062");
 				} else {
 					candidate.candidate = candidateString;
 				}
@@ -154,7 +154,7 @@ public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> i
 
 				return candidate;
 			} catch (Exception e) {
-				throw new BadMessageException("TM062", true);
+				throw new BadMessageException("TM062");
 			}
 		}
 
@@ -205,7 +205,7 @@ public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> i
 			o = new JSONObject(jsonObjectString);
 		} catch (JSONException e) {
 			logger.error("Bad VoipICECandidatesData: Invalid JSON string", e);
-			throw new BadMessageException("TM062", true);
+			throw new BadMessageException("TM062");
 		}
 
 		final VoipICECandidatesData candidatesData = new VoipICECandidatesData();
@@ -217,7 +217,7 @@ public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> i
 			}
 		} catch (Exception e) {
 			logger.error("Bad VoipICECandidatesData: Invalid Call ID", e);
-			throw new BadMessageException("TM062", true);
+			throw new BadMessageException("TM062");
 		}
 
 		try {
@@ -226,7 +226,7 @@ public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> i
 			final JSONArray candidates = o.getJSONArray(KEY_CANDIDATES);
 			if (candidates.length() == 0) {
 				logger.error("Bad VoipICECandidatesData: " + KEY_CANDIDATES + " may not be empty");
-				throw new BadMessageException("TM062", true);
+				throw new BadMessageException("TM062");
 			}
 			candidatesData.candidates = new Candidate[candidates.length()];
 			for (int i = 0; i < candidates.length(); i++) {
@@ -235,7 +235,7 @@ public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> i
 			}
 		} catch (Exception e) {
 			logger.error("Bad VoipICECandidatesData", e);
-			throw new BadMessageException("TM062", true);
+			throw new BadMessageException("TM062");
 		}
 
 		return candidatesData;
@@ -255,7 +255,7 @@ public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> i
 			}
 			o.put(KEY_CANDIDATES, candidateArray);
 		} catch (Exception e) {
-			throw new BadMessageException("TM062", true);
+			throw new BadMessageException("TM062");
 		}
 
 		return o.toString();

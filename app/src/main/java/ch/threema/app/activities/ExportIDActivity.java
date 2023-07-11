@@ -37,7 +37,6 @@ import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
@@ -55,10 +54,6 @@ public class ExportIDActivity extends AppCompatActivity implements PasswordEntry
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			setTheme(R.style.Theme_Threema_Translucent_Dark);
-		}
 
 		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		preferenceService = serviceManager.getPreferenceService();

@@ -75,14 +75,10 @@ public class StopPassphraseServiceActivity extends Activity {
 
 				masterKey.lock();
 				PassphraseService.stop(this);
-				ConfigUtils.scheduleAppRestart(this, 2000, getString(R.string.passphrase_locked));
+				ConfigUtils.scheduleAppRestart(this, 2000, null);
 			}
 		}
 
-		if (Build.VERSION.SDK_INT >= 21) {
-			finishAndRemoveTask();
-		} else {
-			finish();
-		}
+		finishAndRemoveTask();
 	}
 }

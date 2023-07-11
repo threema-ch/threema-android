@@ -44,7 +44,7 @@ class ForwardSecurityStatusDataModel : StatusDataModelInterface {
 			const val MESSAGE_WITHOUT_FORWARD_SECURITY = 1
 			const val FORWARD_SECURITY_RESET = 2
 			const val FORWARD_SECURITY_ESTABLISHED = 3
-			const val FORWARD_SECURITY_ESTABLISHED_RX = 4
+			const val FORWARD_SECURITY_ESTABLISHED_RX = 4 // As of version 1.1 this status is not created anymore
 			const val FORWARD_SECURITY_MESSAGES_SKIPPED = 5
             const val FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER = 6
             const val FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE = 7

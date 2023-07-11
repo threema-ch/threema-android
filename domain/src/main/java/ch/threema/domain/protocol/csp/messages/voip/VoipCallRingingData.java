@@ -48,7 +48,7 @@ public class VoipCallRingingData extends VoipCallData<VoipCallRingingData> {
 				o = new JSONObject(jsonObjectString);
 			} catch (JSONException e) {
 				logger.error("Bad VoipCallRingingData: Invalid JSON string", e);
-				throw new BadMessageException("TM064", true);
+				throw new BadMessageException("TM064");
 			}
 		}
 
@@ -61,7 +61,7 @@ public class VoipCallRingingData extends VoipCallData<VoipCallRingingData> {
 			}
 		} catch (Exception e) {
 			logger.error("Bad VoipCallRingingData: Invalid Call ID", e);
-			throw new BadMessageException("TM064", true);
+			throw new BadMessageException("TM064");
 		}
 
 		return callRingingData;

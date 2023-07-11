@@ -2,19 +2,19 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:state_pressed="true">
 		<shape android:shape="rectangle">
-			<gradient android:endColor="#00000000" android:startColor="?attr/bubble_pressed"
+			<gradient android:endColor="#00000000" android:startColor="@color/bubble_pressed"
 				android:angle="90"/>
 		</shape>
 	</item>
 	<item android:state_activated="true">
 		<shape android:shape="rectangle">
-			<gradient android:endColor="#00000000" android:startColor="?attr/bubble_selected"
+			<gradient android:endColor="#00000000" android:startColor="?attr/colorPrimary"
 				android:angle="90"/>
 		</shape>
 	</item>
 	<item>
 		<shape android:shape="rectangle">
-			<gradient android:endColor="#00000000" android:startColor="?attr/bubble_recv"
+			<gradient android:endColor="#00000000" android:startColor="@color/bubble_receive"
 				android:angle="90"/>
 		</shape>
 	</item>

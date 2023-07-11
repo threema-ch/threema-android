@@ -23,8 +23,6 @@
 		анонімно.</string>
     <string name="threema_contact">Контакт Threema Work</string>
     <string name="menu_about">Про Threema Work</string>
-    <string name="list_theme_light">Світла</string>
-    <string name="list_theme_dark">Темна (за умовчанням)</string>
     <string name="private_threema_download"><![CDATA[Якщо вам потрібен месенджер для особистого використання, <a href="https://play.google.com/store/apps/details?id=ch.threema.app">торкніться тут</a>, щоб завантажити Threema.]]></string>
     <string name="directory_search">Шукати в каталозі</string>
     <string name="directory_title">Каталог компанії</string>

@@ -39,6 +39,7 @@ import android.widget.TextView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.PrivacyPolicyActivity;
+import ch.threema.app.activities.SimpleWebViewActivity;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
@@ -101,8 +102,9 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 			builder.setSpan(new ClickableSpan() {
 				@Override
 				public void onClick(View widget) {
-					ConfigUtils.setAppTheme(ConfigUtils.THEME_DARK);
-					startActivityForResult(new Intent(WizardIntroActivity.this, PrivacyPolicyActivity.class), ACTIVITY_RESULT_PRIVACY_POLICY);
+					Intent intent = new Intent(WizardIntroActivity.this, PrivacyPolicyActivity.class);
+					intent.putExtra(SimpleWebViewActivity.FORCE_DARK_THEME, true);
+					startActivityForResult(intent, ACTIVITY_RESULT_PRIVACY_POLICY);
 				}
 			}, index, index + privacyPolicy.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			privacyPolicyExplainText.setText(builder);
@@ -153,13 +155,6 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 				frameAnimation.stop();
 			}
 		}
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		ConfigUtils.resetAppTheme();
 	}
 
 	/**

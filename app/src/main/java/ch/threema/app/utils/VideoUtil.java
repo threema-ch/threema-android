@@ -29,9 +29,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
-
-import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlayer;
+import androidx.annotation.OptIn;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.DefaultRenderersFactory;
+import androidx.media3.exoplayer.ExoPlayer;
 
 import org.slf4j.Logger;
 
@@ -91,6 +92,7 @@ public class VideoUtil {
 		return duration;
 	}
 
+	@OptIn(markerClass = UnstableApi.class)
 	public static ExoPlayer getExoPlayer(@NonNull Context context) {
 		DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);
 		renderersFactory.setEnableDecoderFallback(true);
@@ -98,6 +100,9 @@ public class VideoUtil {
 			// Workaround for https://github.com/google/ExoPlayer/issues/10021
 			renderersFactory.forceDisableMediaCodecAsynchronousQueueing();
 		}
-		return new ExoPlayer.Builder(context, renderersFactory).build();
+		return new ExoPlayer.Builder(context, renderersFactory)
+			.setSeekBackIncrementMs(5000)
+			.setSeekForwardIncrementMs(5000)
+			.build();
 	}
 }

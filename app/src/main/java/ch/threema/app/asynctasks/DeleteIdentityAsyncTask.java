@@ -44,7 +44,7 @@ import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
-import ch.threema.storage.NonceDatabaseBlobService;
+import ch.threema.storage.DatabaseNonceStore;
 
 public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteIdentityAsyncTask");
@@ -76,7 +76,7 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 			// clear push token
 			PushService.deleteToken(ThreemaApplication.getAppContext());
 
-			serviceManager.getThreemaSafeService().unscheduleUpload();
+			serviceManager.getThreemaSafeService().unschedulePeriodicUpload();
 			serviceManager.getMessageService().removeAll();
 			serviceManager.getConversationService().reset();
 			serviceManager.getGroupService().removeAll();
@@ -115,7 +115,7 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 
 			File aesFile = new File(ThreemaApplication.getAppContext().getFilesDir(), ThreemaApplication.AES_KEY_FILE);
 			File databaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME_V4);
-			File nonceDatabaseFile = ThreemaApplication.getAppContext().getDatabasePath(NonceDatabaseBlobService.DATABASE_NAME_V4);
+			File nonceDatabaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseNonceStore.DATABASE_NAME_V4);
 			File backupFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME_V4 + DatabaseServiceNew.DATABASE_BACKUP_EXT);
 			File cacheDirectory = ThreemaApplication.getAppContext().getCacheDir();
 			File externalCacheDirectory = ThreemaApplication.getAppContext().getExternalCacheDir();

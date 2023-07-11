@@ -42,10 +42,10 @@ public class Quote extends Converter {
 		builder.put(FIELD_TEXT, quoteContent.quotedText);
 		if (quoteContent.isQuoteV2()) {
 			builder.put(FIELD_MESSAGE_ID, quoteContent.quotedMessageId);
-			if (quoteContent.quotedMessageModel != null && quoteContent.receiverType != null) {
+			if (quoteContent.quotedMessageModel != null && quoteContent.messageReceiver != null) {
 				builder.put(FIELD_MESSAGE, Message.convert(
 					quoteContent.quotedMessageModel,
-					quoteContent.receiverType,
+					quoteContent.messageReceiver,
 					false,
 					Message.DETAILS_NO_QUOTE
 				));

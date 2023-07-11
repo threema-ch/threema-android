@@ -284,7 +284,6 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="title_select_contacts">Seleccionar membres</string>
     <string name="pin_invalid_not_set">PIN no vàlid. No definit.</string>
     <string name="prefs_group_notifications">Xat de grup</string>
-    <string name="add_group_members_list">Membres del grup</string>
     <string name="group_select_at_least_two">Necessiteu seleccionar almenys un membre per continuar</string>
     <string name="group_select_max">No hauríeu de seleccionar més de %1$d membres de grup</string>
     <string name="search">Cercar</string>
@@ -529,7 +528,7 @@ de contacte</string>
     <string name="send_as_files">Enviar com a fitxer</string>
     <string name="send_as_files_warning">Transferint fitxers i imatges sense comprimir pot provocar un ús substancial de dades que pot provocar càrrecs addicionals per part del vostre proveïdor de mòbil. Recomanem carregar i descarregar fitxers només a través de xarxes WiFi.</string>
     <string name="prefs_theme">Disseny del tema</string>
-    <string name="list_theme_light">Clar (predeterminat)</string>
+    <string name="list_theme_light">Clar</string>
     <string name="list_theme_dark">Fosc</string>
     <string name="prefs_header_appearance">Aparença</string>
     <string name="prefs_sum_passphrase">Requerir una contrasenya per desbloquejar el xifrat local</string>
@@ -1149,7 +1148,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="no_faces_detected">No s\'han detectat cares</string>
     <string name="smiley">Emoticona</string>
     <string name="blur">Difuminar</string>
-    <string name="face_blur_tooltip_title">Nou: reconeixement de cares</string>
+    <string name="face_blur_tooltip_title">Reconeixement de cares</string>
     <string name="face_blur_tooltip_text">Buscar cares a la imatge i difuminar-les o cobrir-les amb una emoticona.</string>
     <string name="listened_to">escoltat</string>
     <string name="transcoder_unsupported_audio_format">L\'àudio no s\'ha pogut transcodificar per manca de suport del sistema.</string>

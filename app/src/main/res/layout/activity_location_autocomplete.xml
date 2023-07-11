@@ -9,7 +9,8 @@
                                                      android:id="@+id/coordinator"
                                                      android:layout_width="match_parent"
                                                      android:layout_height="match_parent"
-                                                     android:fitsSystemWindows="true">
+                                                     android:fitsSystemWindows="true"
+													 android:background="?android:attr/colorBackground">
 
 	<com.google.android.material.appbar.AppBarLayout
 		android:id="@+id/appbar"
@@ -21,7 +22,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent">
 
-		<androidx.appcompat.widget.Toolbar
+		<com.google.android.material.appbar.MaterialToolbar
 			android:id="@+id/toolbar"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"/>
@@ -31,19 +32,15 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:background="@android:color/transparent"
-			android:textSize="16dp"
-			android:layout_marginLeft="70dp"
+			android:textSize="18dp"
+			android:layout_marginLeft="60dp"
 			android:layout_gravity="center_vertical"
 			android:hint="@string/lp_search_place"
 			android:inputType="textNoSuggestions|textFilter"
 			android:imeOptions="flagNoExtractUi"
-			android:textColor="@color/dark_text_color_primary"
-			android:textColorHint="@color/dark_text_color_secondary"
-			android:textCursorDrawable="@null"
 			android:cursorVisible="true">
 			<requestFocus/>
 		</ch.threema.app.ui.ThreemaEditText>
-
 
 		</FrameLayout>
 
@@ -55,18 +52,15 @@
 		android:layout_height="match_parent"
 		android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
 		android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+		app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-	<ProgressBar
+	<com.google.android.material.progressindicator.LinearProgressIndicator
 		android:id="@+id/progress"
 		android:layout_width="match_parent"
-		android:layout_height="3dp"
+		android:layout_height="wrap_content"
 		android:layout_gravity="top"
-		android:scaleY="9"
-		style="@android:style/Widget.Holo.ProgressBar.Horizontal"
-		android:indeterminateOnly="true"
 		android:indeterminate="true"
-		android:indeterminateBehavior="repeat"
+		app:trackColor="?attr/colorPrimaryContainer"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior"
 		android:visibility="gone"/>
 

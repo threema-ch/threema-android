@@ -1,42 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  no avatar
 -->
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/msg_list_item_status"
-	android:layout_width="fill_parent"
-	android:layout_height="wrap_content"
-	android:orientation="vertical"
-	android:paddingBottom="5dp"
-	android:paddingLeft="16dp"
-	android:paddingRight="16dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/msg_list_item_status"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-	<LinearLayout
-		android:id="@+id/message_block"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:background="@drawable/bubble_status_selector"
-		android:orientation="vertical"
-		android:paddingBottom="@dimen/message_status_padding_bottom"
-		android:paddingLeft="@dimen/chat_bubble_margin_end"
-		android:paddingRight="@dimen/chat_bubble_margin_end"
-		android:paddingTop="@dimen/message_status_padding_top">
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Threema.CardView.Bubble.Status"
+        android:id="@+id/message_block"
+        app:cardBackgroundColor="@color/bubble_status_colorstatelist">
 
-		<ch.threema.app.emojis.EmojiConversationTextView
-			android:id="@+id/text_view"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:autoLink="none"
-			android:gravity="center_horizontal"
-			android:maxLines="6"
-			android:ellipsize="end"
-			android:text="Text"
-			android:textColor="@color/text_color_secondary"
-			android:textSize="?attr/font_status"
-			/>
+        <ch.threema.app.emojis.EmojiConversationTextView
+            android:id="@+id/text_view"
+            style="@style/Threema.Bubble.Text.Body.Status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:autoLink="none"
+            android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:maxLines="6"
+            android:text="Text" />
 
-	</LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

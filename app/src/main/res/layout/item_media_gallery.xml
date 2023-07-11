@@ -1,77 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ch.threema.app.ui.CheckableFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/content_frame"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content_frame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
 	android:padding="@dimen/media_gallery_grid_item_padding">
 
-	<FrameLayout
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_margin="1dp"
-		android:duplicateParentState="true"
-		android:stateListAnimator="@animator/selector_gallery_image">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:duplicateParentState="true"
+        android:stateListAnimator="@animator/selector_gallery_image">
 
-	<ch.threema.app.ui.SquareImageView
-		android:id="@+id/image_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:duplicateParentState="true"
-		android:scaleType="centerCrop"/>
+        <ch.threema.app.ui.SquareImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:duplicateParentState="true"
+            android:scaleType="centerCrop" />
 
-	<ch.threema.app.ui.ControllerView
-		android:id="@+id/play_button"
-		android:layout_width="24dp"
-		android:layout_height="24dp"
-		android:layout_gravity="center"
-		android:visibility="gone"/>
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress_decoding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
 
-	<ProgressBar
-		android:id="@+id/progress_decoding"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:visibility="gone"/>
+        <LinearLayout
+            android:id="@+id/gif_marker_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/mime_type_marker_background"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="left"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-	<LinearLayout
-		android:id="@+id/filename_container"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_gravity="bottom"
-		android:background="#0C000000"
-		android:duplicateParentState="true"
-		android:gravity="center_horizontal"
-		android:orientation="vertical"
-		android:paddingBottom="4dp"
-		android:paddingLeft="4dp"
-		android:paddingRight="4dp"
-		android:paddingTop="4dp"
-		android:visibility="gone">
+            <ImageView
+                android:id="@+id/gif_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/attach_gif"
+                app:srcCompat="@drawable/ic_gif_24dp"
+                app:tint="@android:color/white" />
 
-		<TextView
-			android:id="@+id/text_filename"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:ellipsize="middle"
-			android:fontFamily="sans-serif-condensed"
-			android:maxLines="2"
-			android:gravity="center_horizontal"
-			android:layout_gravity="center_horizontal"
-			android:textAlignment="center"
-			android:textColor="?attr/textColorSecondary"
-			android:textSize="12sp"/>
+        </LinearLayout>
 
-	</LinearLayout>
+        <LinearLayout
+            android:id="@+id/video_marker_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/mime_type_marker_background"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="4dp"
+            android:paddingRight="6dp"
+            android:visibility="gone">
 
-	</FrameLayout>
+            <ImageView
+                android:id="@+id/video_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dp"
+                android:contentDescription="@string/attach_video"
+                app:srcCompat="@drawable/ic_videocam_black_24dp"
+                app:tint="@android:color/white" />
 
-	<ch.threema.app.ui.CheckableView
-		android:id="@+id/check_box"
-		android:layout_width="24dp"
-		android:layout_height="24dp"
-		android:layout_gravity="top|left"
-		android:layout_margin="6dp"
-		android:background="@drawable/selector_grid_checkbox_invisible"
-		android:duplicateParentState="true"/>
+            <TextView
+                android:id="@+id/video_duration_text"
+                style="@style/Threema.TextAppearance.BodySmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/voicemessage_marker_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/mime_type_marker_background"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="4dp"
+            android:paddingRight="6dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/voicemessage_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="2dp"
+                android:contentDescription="@string/media_gallery_audio"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                app:srcCompat="@drawable/ic_keyboard_voice_outline"
+                app:tint="@android:color/white" />
+
+            <TextView
+                android:id="@+id/voicemessage_duration_text"
+                style="@style/Threema.TextAppearance.BodySmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filename_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:background="@color/mime_type_marker_background"
+            android:duplicateParentState="true"
+            android:gravity="left"
+            android:orientation="vertical"
+            android:paddingLeft="4dp"
+            android:paddingTop="4dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="4dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/text_filename"
+                style="@style/Threema.TextAppearance.BodySmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:ellipsize="middle"
+                android:gravity="left"
+                android:maxLines="2"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <ch.threema.app.ui.CheckableView
+        android:id="@+id/check_box"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|left"
+        android:layout_margin="6dp"
+        android:background="@drawable/selector_grid_checkbox_invisible"
+        android:duplicateParentState="true" />
 
 </ch.threema.app.ui.CheckableFrameLayout>

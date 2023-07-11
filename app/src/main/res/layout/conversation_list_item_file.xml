@@ -27,36 +27,33 @@
 				android:paddingLeft="@dimen/chat_bubble_container_padding_left_right">
 
 			<TextView
+					style="@style/Threema.Bubble.Text.Body"
 					android:id="@+id/tertiaryTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:linksClickable="false"
 					android:ellipsize="middle"
-					android:singleLine="true"
-					android:textColor="?android:textColorPrimary"
-					android:textSize="?attr/font_large"/>
+					android:singleLine="true" />
 
 			<TextView
+					style="@style/Threema.Bubble.Text.Body.Small"
 					android:id="@+id/secondary_text_view"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:linksClickable="false"
 					android:ellipsize="middle"
-					android:singleLine="true"
-					android:textColor="?attr/textColorSecondary"
-					android:textSize="?attr/font_medium"/>
+					android:singleLine="true" />
 
 		</LinearLayout>
 
 	</LinearLayout>
 
 	<ch.threema.app.emojis.EmojiConversationTextView
+			style="@style/Threema.Bubble.Text.Body"
 			android:id="@+id/text_view"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="6dp"
-			android:textColor="?android:textColorPrimary"
-			android:textSize="?attr/font_large"
 			android:visibility="gone"
 			/>
 

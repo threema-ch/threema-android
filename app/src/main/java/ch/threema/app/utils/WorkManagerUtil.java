@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -69,4 +70,22 @@ public class WorkManagerUtil {
 		}
 		return true;
 	}
+
+	public static boolean isWorkManagerInstanceScheduled(WorkManager workManager, String tag) {
+		ListenableFuture<List<WorkInfo>> workInfos = workManager.getWorkInfosForUniqueWork(tag);
+		try {
+			List<WorkInfo> workInfoList = workInfos.get();
+			for (WorkInfo workInfo : workInfoList) {
+				WorkInfo.State state = workInfo.getState();
+				if (state == WorkInfo.State.ENQUEUED || state == WorkInfo.State.BLOCKED) {
+					return true;
+				}
+			}
+		} catch (ExecutionException | InterruptedException e) {
+			logger.error("Could not get work info", e);
+			return false;
+		}
+		return false;
+	}
+
 }

@@ -30,6 +30,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceManager;
+
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
@@ -38,11 +45,6 @@ import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Set;
 
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.appcompat.widget.Toolbar;
-import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.WizardIntroActivity;
@@ -93,8 +95,6 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
 	@Override
 	protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
-		// TODO
-
 		super.onApplyThemeResource(theme, resid, first);
 	}
 
@@ -107,7 +107,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	protected void onCreate(Bundle savedInstanceState) {
 		logger.debug("onCreate");
 
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 		resetKeyboard();
 
 		super.onCreate(savedInstanceState);
@@ -183,9 +183,14 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 			logger.debug("setContentView");
 
 			setContentView(getLayoutResource());
+
 			this.toolbar = findViewById(R.id.toolbar);
 			if (toolbar != null) {
 				setSupportActionBar(toolbar);
+			}
+			AppBarLayout appBarLayout = findViewById(R.id.appbar);
+			if (appBarLayout != null) {
+				appBarLayout.addLiftOnScrollListener((elevation, backgroundColor) -> getWindow().setStatusBarColor(backgroundColor));
 			}
 
 			connectionIndicator = findViewById(R.id.connection_indicator);
@@ -249,7 +254,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	private static final String LANDSCAPE_HEIGHT = "kbd_landscape_height";
 	private final Set<OnSoftKeyboardChangedListener> softKeyboardChangedListeners = new HashSet<>();
 	private boolean softKeyboardOpen = false;
-	private int minKeyboardHeight, minEmojiPickerHeight;
+	private int minEmojiPickerHeight;
 
 	public interface OnSoftKeyboardChangedListener {
 		void onKeyboardHidden();
@@ -283,14 +288,11 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	}
 
 	public void onSoftKeyboardOpened(int softKeyboardHeight) {
-		logger.debug("Potential keyboard height = " + softKeyboardHeight + " Min = " + minKeyboardHeight);
+		logger.debug("Soft keyboard open detected");
 
-		if (softKeyboardHeight >= minKeyboardHeight) {
-			logger.debug("Soft keyboard open detected");
-
+		if (!this.softKeyboardOpen) {
 			this.softKeyboardOpen = true;
 			saveSoftKeyboardHeight(softKeyboardHeight);
-
 			notifySoftKeyboardShown();
 		}
 	}
@@ -298,9 +300,10 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	public void onSoftKeyboardClosed() {
 		logger.debug("Soft keyboard closed");
 
-		this.softKeyboardOpen = false;
-
-		notifySoftKeyboardHidden();
+		if (this.softKeyboardOpen) {
+			this.softKeyboardOpen = false;
+			notifySoftKeyboardHidden();
+		}
 	}
 
 	public void runOnSoftKeyboardClose(final Runnable runnable) {
@@ -388,7 +391,6 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	}
 
 	public void resetKeyboard() {
-		minKeyboardHeight = getResources().getDimensionPixelSize(R.dimen.min_keyboard_height);
 		minEmojiPickerHeight = getResources().getDimensionPixelSize(R.dimen.min_emoji_keyboard_height);
 
 		removeAllListeners();

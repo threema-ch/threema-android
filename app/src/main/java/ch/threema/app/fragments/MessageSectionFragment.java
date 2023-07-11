@@ -21,6 +21,13 @@
 
 package ch.threema.app.fragments;
 
+import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
+import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
+import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
+import static ch.threema.app.ThreemaApplication.MAX_PW_LENGTH_BACKUP;
+import static ch.threema.app.ThreemaApplication.MIN_PW_LENGTH_BACKUP;
+import static ch.threema.app.managers.ListenerManager.conversationListeners;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -68,7 +75,9 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -78,6 +87,8 @@ import ch.threema.app.activities.DistributionListAddActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.adapters.MessageListAdapter;
+import ch.threema.app.adapters.MessageListAdapterItem;
+import ch.threema.app.adapters.MessageListViewHolder;
 import ch.threema.app.archive.ArchiveActivity;
 import ch.threema.app.asynctasks.DeleteDistributionListAsyncTask;
 import ch.threema.app.asynctasks.DeleteGroupAsyncTask;
@@ -101,6 +112,7 @@ import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
@@ -122,7 +134,6 @@ import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.SelectorDialogItem;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
@@ -145,13 +156,6 @@ import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.TagModel;
-
-import static android.view.MenuItem.SHOW_AS_ACTION_ALWAYS;
-import static android.view.MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW;
-import static android.view.MenuItem.SHOW_AS_ACTION_NEVER;
-import static ch.threema.app.ThreemaApplication.MAX_PW_LENGTH_BACKUP;
-import static ch.threema.app.ThreemaApplication.MIN_PW_LENGTH_BACKUP;
-import static ch.threema.app.managers.ListenerManager.conversationListeners;
 
 public class MessageSectionFragment extends MainFragment
 		implements
@@ -222,6 +226,7 @@ public class MessageSectionFragment extends MainFragment
 	private String filterQuery;
 	private int cornerRadius;
 	private TagModel unreadTagModel;
+	private final Map<ConversationModel, MessageListAdapterItem> messageListAdapterItemCache = new HashMap<>();
 
 	private @Nullable String myIdentity;
 
@@ -283,6 +288,10 @@ public class MessageSectionFragment extends MainFragment
 		public void onModified(final ConversationModel modifiedConversationModel, final Integer oldPosition) {
 			logger.debug("on modified conversation. old position = {}", oldPosition);
 			if (messageListAdapter != null && recyclerView != null) {
+				synchronized (messageListAdapterItemCache) {
+					messageListAdapterItemCache.remove(modifiedConversationModel);
+				}
+
 				//scroll if position changed (to top)
 				List<ConversationModel> l = new ArrayList<>();
 				l.add(modifiedConversationModel);
@@ -603,7 +612,10 @@ public class MessageSectionFragment extends MainFragment
 	};
 
 	private void showConversation(ConversationModel conversationModel, View v) {
-		conversationTagService.unTag(conversationModel, unreadTagModel);
+		new Thread(() -> {
+			conversationTagService.unTag(conversationModel, unreadTagModel);
+			conversationModel.setUnreadCount(0);
+		}).start();
 
 		// Close keyboard if search view is expanded
 		if (searchView != null && !searchView.isIconified()) {
@@ -623,7 +635,7 @@ public class MessageSectionFragment extends MainFragment
 				activity.overridePendingTransition(0, 0);
 			}
 		} else {
-			AnimationUtil.startActivityForResult(activity, ConfigUtils.isTabletLayout() ? null : v, intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+			activity.startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 		}
 	}
 
@@ -670,10 +682,7 @@ public class MessageSectionFragment extends MainFragment
 				if (resultCode == Activity.RESULT_OK) {
 					ThreemaApplication.getServiceManager().getScreenLockService().setAuthenticated(true);
 					if (selectedConversation != null) {
-						MessageReceiver receiver = selectedConversation.getReceiver();
-						if (receiver != null) {
-							doUnhideChat(receiver);
-						}
+						doUnhideChat(selectedConversation);
 					}
 				}
 				// fallthrough
@@ -682,7 +691,8 @@ public class MessageSectionFragment extends MainFragment
 		}
 	}
 
-	private void doUnhideChat(MessageReceiver receiver) {
+	private void doUnhideChat(@NonNull ConversationModel conversationModel) {
+		MessageReceiver<?> receiver = conversationModel.getReceiver();
 		if (receiver != null && hiddenChatsListService.has(receiver.getUniqueIdString())) {
 			hiddenChatsListService.remove(receiver.getUniqueIdString());
 
@@ -704,7 +714,7 @@ public class MessageSectionFragment extends MainFragment
 				selectedConversation = conversationModel;
 				HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, ID_PRIVATE_TO_PUBLIC);
 			} else {
-				doUnhideChat(receiver);
+				doUnhideChat(conversationModel);
 			}
 		} else {
 			if (ConfigUtils.hasProtection(preferenceService)) {
@@ -892,30 +902,34 @@ public class MessageSectionFragment extends MainFragment
 					// required to clear swipe layout
 					messageListAdapter.notifyDataSetChanged();
 
-					final MessageListAdapter.MessageListViewHolder holder = (MessageListAdapter.MessageListViewHolder) viewHolder;
-					final int oldPosition = holder.getConversationModel().getPosition();
+					final MessageListViewHolder holder = (MessageListViewHolder) viewHolder;
+					MessageListAdapterItem messageListAdapterItem = holder.getMessageListAdapterItem();
+					ConversationModel conversationModel = messageListAdapterItem != null ? messageListAdapterItem.getConversationModel() : null;
+					if (conversationModel == null) {
+						logger.error("Conversation model is null");
+						return;
+					}
+					final int oldPosition = conversationModel.getPosition();
 
 					if (direction == ItemTouchHelper.RIGHT) {
 						TagModel pinTagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
 
-						conversationTagService.toggle(holder.getConversationModel(), pinTagModel, true);
+						conversationTagService.toggle(conversationModel, pinTagModel, true);
+						conversationModel.setIsPinTagged(!conversationModel.isPinTagged());
 
 						ArrayList<ConversationModel> conversationModels = new ArrayList<>();
-						conversationModels.add(holder.getConversationModel());
+						conversationModels.add(conversationModel);
 
 						updateList(null, conversationModels, new Runnable() {
 							@Override
 							public void run() {
-								conversationListeners.handle((ConversationListener listener) -> {
-									listener.onModified(holder.getConversationModel(), oldPosition);
-								});
+								conversationListeners.handle((ConversationListener listener) -> listener.onModified(conversationModel, oldPosition));
 							}
 						});
 					} else if (direction == ItemTouchHelper.LEFT) {
-						ConversationModel archiveableConversation = holder.getConversationModel();
-						conversationService.archive(archiveableConversation);
+						conversationService.archive(conversationModel);
 
-						archiveSnackbar = new ArchiveSnackbar(archiveSnackbar, archiveableConversation);
+						archiveSnackbar = new ArchiveSnackbar(archiveSnackbar, conversationModel);
 					}
  				}
 
@@ -927,13 +941,16 @@ public class MessageSectionFragment extends MainFragment
 						Paint paint = new Paint();
 
 						if (dX > 0) {
-							MessageListAdapter.MessageListViewHolder holder = (MessageListAdapter.MessageListViewHolder) viewHolder;
+							MessageListViewHolder holder = (MessageListViewHolder) viewHolder;
 							TagModel pinTagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
 
-							VectorDrawableCompat icon = conversationTagService.isTaggedWith(holder.getConversationModel(), pinTagModel) ? unpinIconDrawable : pinIconDrawable;
+							MessageListAdapterItem messageListAdapterItem = holder.getMessageListAdapterItem();
+							ConversationModel conversationModel = messageListAdapterItem != null ? messageListAdapterItem.getConversationModel() : null;
+
+							VectorDrawableCompat icon = conversationTagService.isTaggedWith(conversationModel, pinTagModel) ? unpinIconDrawable : pinIconDrawable;
 							icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
 
-							String label = conversationTagService.isTaggedWith(holder.getConversationModel(), pinTagModel) ? getString(R.string.unpin) : getString(R.string.pin);
+							String label = conversationTagService.isTaggedWith(conversationModel, pinTagModel) ? getString(R.string.unpin) : getString(R.string.pin);
 
 							paint.setColor(getResources().getColor(R.color.messagelist_pinned_color));
 							canvas.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX + cornerRadius, (float) itemView.getBottom(), paint);
@@ -1078,7 +1095,7 @@ public class MessageSectionFragment extends MainFragment
 		intent.putExtra(ThreemaApplication.INTENT_DATA_HIDE_RECENTS, true);
 		intent.putExtra(RecipientListBaseActivity.INTENT_DATA_MULTISELECT, false);
 		intent.putExtra(RecipientListBaseActivity.INTENT_DATA_MULTISELECT_FOR_COMPOSE, true);
-		AnimationUtil.startActivityForResult(this.getActivity(), v, intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+		getActivity().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 	}
 
 	@Override
@@ -1110,7 +1127,7 @@ public class MessageSectionFragment extends MainFragment
 			intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, model.getDistributionList().getId());
 		}
 		if (intent != null) {
-			AnimationUtil.startActivityForResult(activity, view, intent, 0);
+			activity.startActivity(intent);
 		}
 	}
 
@@ -1118,7 +1135,7 @@ public class MessageSectionFragment extends MainFragment
 	public void onFooterClick(View view) {
 		Intent intent = new Intent(getActivity(), ArchiveActivity.class);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_ARCHIVE_FILTER, filterQuery);
-		AnimationUtil.startActivity(getActivity(), TestUtil.empty(filterQuery) ? view : null, intent);
+		getActivity().startActivity(intent);
 	}
 
 	@Override
@@ -1132,7 +1149,7 @@ public class MessageSectionFragment extends MainFragment
 	private void editGroup(ConversationModel model, View view) {
 		Intent intent = groupService.getGroupEditIntent(model.getGroup(), activity);
 		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, model.getGroup().getId());
-		AnimationUtil.startActivityForResult(activity, view, intent, 0);
+		activity.startActivity(intent);
 	}
 
 	@Override
@@ -1392,15 +1409,16 @@ public class MessageSectionFragment extends MainFragment
 				break;
 			case TAG_MARK_READ:
 				conversationTagService.unTag(conversationModel, unreadTagModel);
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						messageService.markConversationAsRead(conversationModel.getReceiver(), serviceManager.getNotificationService());
-					}
-				}).start();
+				conversationModel.setIsUnreadTagged(false);
+				conversationModel.setUnreadCount(0);
+				new Thread(() -> messageService.markConversationAsRead(
+					conversationModel.getReceiver(),
+					serviceManager.getNotificationService())
+				).start();
 				break;
 			case TAG_MARK_UNREAD:
 				conversationTagService.tag(conversationModel, unreadTagModel);
+				conversationModel.setIsUnreadTagged(true);
 				break;
 		}
 	}
@@ -1568,16 +1586,17 @@ public class MessageSectionFragment extends MainFragment
 									MessageSectionFragment.this.activity,
 									contactService,
 									groupService,
-									groupCallManager,
 									distributionListService,
 									conversationService,
 									mutedChatsListService,
 									mentionOnlyChatsListService,
-									hiddenChatsListService,
-									conversationTagService,
 									ringtoneService,
+									hiddenChatsListService,
+									groupCallManager,
 									highlightUid,
-									MessageSectionFragment.this);
+									MessageSectionFragment.this,
+									messageListAdapterItemCache
+								);
 
 								recyclerView.setAdapter(messageListAdapter);
 							}
@@ -1606,6 +1625,22 @@ public class MessageSectionFragment extends MainFragment
 						}
 					}
 				});
+
+				synchronized (messageListAdapterItemCache) {
+					for (ConversationModel conversationModel : conversationModels) {
+						if (!messageListAdapterItemCache.containsKey(conversationModel)) {
+							messageListAdapterItemCache.put(conversationModel, new MessageListAdapterItem(
+								conversationModel,
+								contactService,
+								groupService,
+								mutedChatsListService,
+								mentionOnlyChatsListService,
+								ringtoneService,
+								hiddenChatsListService
+							));
+						}
+					}
+				}
 			}
 		});
 
@@ -1637,21 +1672,18 @@ public class MessageSectionFragment extends MainFragment
 
 	private void fireReceiverUpdate(final MessageReceiver receiver) {
 		if (receiver instanceof GroupMessageReceiver) {
-			ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
-				@Override
-				public void handle(GroupListener listener) {
-					listener.onUpdate(((GroupMessageReceiver) receiver).getGroup());
-				}
-			});
+			ListenerManager.groupListeners.handle(listener ->
+				listener.onUpdate(((GroupMessageReceiver) receiver).getGroup())
+			);
 		} else if (receiver instanceof ContactMessageReceiver) {
-			ListenerManager.contactListeners.handle(new ListenerManager.HandleListener<ContactListener>() {
-				@Override
-				public void handle(ContactListener listener) {
-					listener.onModified(((ContactMessageReceiver) receiver).getContact());
-				}
-			});
+			ListenerManager.contactListeners.handle(listener ->
+				listener.onModified(((ContactMessageReceiver) receiver).getContact())
+			);
+		} else if (receiver instanceof DistributionListMessageReceiver) {
+			ListenerManager.distributionListListeners.handle(listener ->
+				listener.onModify(((DistributionListMessageReceiver) receiver).getDistributionList())
+			);
 		}
-		//ignore distribution lists
 	}
 
 	@WorkerThread

@@ -347,12 +347,12 @@ public class FileUtil {
 			}
 			if (extension.equalsIgnoreCase("opus")) {
 				// whatsapp ogg files
-				mimeType = "audio/ogg";
+				mimeType = MimeUtil.MIME_TYPE_AUDIO_OGG;
 			} else if (extension.equalsIgnoreCase("gpx")) {
 				// https://issuetracker.google.com/issues/37120151
-				mimeType = "application/gpx+xml";
+				mimeType = MimeUtil.MIME_TYPE_GPX;
 			} else if (extension.equalsIgnoreCase("pkpass")) {
-				mimeType = "application/vnd.apple.pkpass";
+				mimeType = MimeUtil.MIME_TYPE_APPLE_PKPASS;
 			}
 		}
 		if (TestUtil.empty(mimeType)) {
@@ -532,29 +532,6 @@ public class FileUtil {
 				cursor.close();
 		}
 		return data;
-	}
-
-	public static boolean isAnimGif(ContentResolver contentResolver, Uri uri) {
-		if (uri == null) {
-			return false;
-		}
-
-		byte[] buffer = new byte[4];
-		try (InputStream is = contentResolver.openInputStream(uri)) {
-			is.read(buffer);
-			return isAnimGif(buffer);
-		} catch (Exception x) {
-			logger.error("Exception", x);
-			return false;
-		}
-	}
-
-	private static boolean isAnimGif(byte[] buffer) {
-
-		return	buffer != null
-				&& buffer.length >= 4
-				&& (buffer[0] == 0x47 && buffer[1] == 0x49 &&
-				buffer[2] == 0x46 && buffer[3] == 0x38);
 	}
 
 	public static boolean isImageFile(FileDataModel fileDataModel) {

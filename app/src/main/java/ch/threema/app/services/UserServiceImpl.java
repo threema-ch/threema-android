@@ -22,7 +22,6 @@
 package ch.threema.app.services;
 
 import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
-import static ch.threema.app.ThreemaApplication.getServiceManager;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -71,9 +70,7 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.CreateIdentityRequestDataInterface;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
-import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
 import ch.threema.domain.stores.IdentityStoreInterface;
-import ch.threema.storage.models.ContactModel;
 
 /**
  * This service class handle all user actions (db/identity....)
@@ -86,7 +83,6 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 	private final IdentityStore identityStore;
 	private final APIConnector apiConnector;
 	private final LocaleService localeService;
-	private final MessageQueue messageQueue;
 	private final PreferenceService preferenceService;
 	private String policyResponseData;
 	private String policySignature;
@@ -100,13 +96,11 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 		LocaleService localeService,
 		APIConnector apiConnector,
 		IdentityStore identityStore,
-		MessageQueue messageQueue,
 		PreferenceService preferenceService
 	) {
 		this.context = context;
 		this.preferenceStore = preferenceStore;
 		this.localeService = localeService;
-		this.messageQueue = messageQueue;
 		this.identityStore = identityStore;
 		this.apiConnector = apiConnector;
 		this.preferenceService = preferenceService;
@@ -483,47 +477,6 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
 	private String getLanguage() {
 		return LocaleUtil.getLanguage();
-	}
-
-	@Override
-	public boolean isTyping(String toIdentity, boolean isTyping) {
-		boolean canSendIsTyping = this.preferenceService.isTypingIndicator();
-
-		ContactModel contactModel = null;
-		try {
-			if (getServiceManager() != null) {
-				contactModel = getServiceManager().getContactService().getByIdentity(toIdentity);
-			}
-		} catch (Exception e) {
-			logger.error("Can't get ContactService for isTyping", e);
-		}
-		if (contactModel != null) {
-			if (canSendIsTyping) {
-				if (contactModel.getTypingIndicators() == ContactModel.DONT_SEND) {
-					canSendIsTyping = false;
-				}
-			} else {
-				if (contactModel.getTypingIndicators() == ContactModel.SEND) {
-					canSendIsTyping = true;
-				}
-			}
-		}
-
-		if (!canSendIsTyping) {
-			return false;
-		}
-
-		final TypingIndicatorMessage msg = new TypingIndicatorMessage();
-		msg.setTyping(isTyping);
-		msg.setFromIdentity(this.getIdentity());
-		msg.setToIdentity(toIdentity);
-
-		try {
-			return this.messageQueue.enqueue(msg) != null;
-		} catch (ThreemaException e) {
-			logger.error("Exception", e);
-		}
-		return false;
 	}
 
 	@Override

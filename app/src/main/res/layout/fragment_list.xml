@@ -9,25 +9,26 @@
 		android:id="@android:id/list"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		app:layout_behavior="ch.threema.app.ui.ListViewBehavior">
+		app:layout_behavior="ch.threema.app.ui.ListViewBehavior"
+		android:background="?android:attr/colorBackground">
 	</ListView>
 
-	<ProgressBar
+	<com.google.android.material.progressindicator.CircularProgressIndicator
 		android:id="@+id/progress"
 		android:layout_width="64dp"
 		android:layout_height="64dp"
 		android:indeterminate="true"
 		android:layout_gravity="center"/>
 
-	<com.google.android.material.floatingactionbutton.FloatingActionButton
+	<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 		android:id="@+id/floating"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginBottom="-20dp"
+		android:layout_marginRight="16dp"
+		android:layout_marginBottom="0dp"
 		android:clickable="true"
-		android:contentDescription="@string/title_compose_message"
-		app:srcCompat="@drawable/ic_send_outline"
-		android:tint="@android:color/white"
+		app:icon="@drawable/ic_send_outline"
+		android:text="@string/send"
 		android:visibility="gone"
 		app:layout_anchor="@android:id/list"
 		app:layout_anchorGravity="bottom|right"

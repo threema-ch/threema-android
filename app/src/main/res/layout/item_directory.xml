@@ -61,7 +61,7 @@
 			android:layout_alignBaseline="@+id/categories"
 			android:layout_marginRight="6dp"
 			android:maxWidth="128dp"
-			app:chipBackgroundColor="?attr/colorAccent"
+			app:chipBackgroundColor="?attr/colorPrimary"
 			app:chipMinHeight="0dp"
 			app:chipStartPadding="0dp"
 			app:chipEndPadding="0dp"
@@ -104,6 +104,6 @@
 		android:layout_centerVertical="true"
 		android:visibility="visible"
 		android:focusable="true"
-		app:tint="?attr/textColorSecondary" />
+		app:tint="?attr/colorOnSurface" />
 
 </RelativeLayout>

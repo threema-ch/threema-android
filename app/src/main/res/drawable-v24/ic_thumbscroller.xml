@@ -30,19 +30,19 @@
       android:pathData="M33,58C35.4297,58 37.7507,57.6944 39.9985,57.1127C39.9985,57.1127 39.9985,2.8785 39.9985,2.8785C37.7603,2.3022 35.4182,2 33,2C17.536,2 5,14.536 5,30C5,45.464 17.536,58 33,58Z"
       android:strokeWidth="0"
       android:fillType="evenOdd"
-      android:fillColor="?attr/quickscroll_background"/>
+      android:fillColor="?attr/colorOnSurfaceInverse"/>
  <path
       android:pathData="M34,35l-6,6l-6,-6z"
       android:strokeLineJoin="round"
       android:strokeWidth="0.5"
-      android:fillColor="?attr/textColorSecondary"
+      android:fillColor="?attr/colorOnSurface"
       android:fillType="nonZero"
-      android:strokeColor="?attr/textColorSecondary"/>
+      android:strokeColor="?attr/colorOnSurface"/>
   <path
       android:pathData="M34,26l-6,-6l-6,6z"
       android:strokeLineJoin="round"
       android:strokeWidth="0.5"
-      android:fillColor="?attr/textColorSecondary"
+      android:fillColor="?attr/colorOnSurface"
       android:fillType="nonZero"
-      android:strokeColor="?attr/textColorSecondary"/>
+      android:strokeColor="?attr/colorOnSurface"/>
 </vector>

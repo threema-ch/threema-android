@@ -21,6 +21,11 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_IMAGES;
+import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
+import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
+import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -46,7 +51,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.AnyThread;
@@ -65,6 +69,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.search.SearchBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
@@ -106,6 +112,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
+import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.ui.ThreemaSearchView;
@@ -131,11 +138,6 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.LocationDataModel;
 import java8.util.concurrent.CompletableFuture;
 
-import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_IMAGES;
-import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
-import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
-import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
-
 public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	CancelableHorizontalProgressDialog.ProgressDialogClickListener,
 	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener,
@@ -160,10 +162,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
 	private static final String BUNDLE_QUERY_TEXT = "query";
 
-	private ViewPager viewPager;
+	private TabLayout tabLayout;
 	private UserGroupPagerAdapter userGroupPagerAdapter;
 	private MenuItem searchMenuItem;
 	private ThreemaSearchView searchView;
+	private SearchBar searchBar;
 
 	private boolean hideUi, hideRecents, multiSelect, multiSelectIdentities;
 	private String captionText, queryText;
@@ -250,7 +253,6 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			return false;
 		};
 
-		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		UserService userService;
 		try {
 			this.contactService = serviceManager.getContactService();
@@ -265,8 +267,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			return false;
 		}
 
-		if (!userService.hasIdentity()) {
-			ConfigUtils.recreateActivity(this);
+		if (!userService.hasIdentity() || (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid())) {
+			logger.debug("No identity or not licensed");
+			finish();
+			System.exit(0);
 		}
 
 		onNewIntent(getIntent());
@@ -275,11 +279,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void setupUI() {
-		final TabLayout tabLayout = findViewById(R.id.sliding_tabs);
+		tabLayout = findViewById(R.id.sliding_tabs);
 		final ActionBar actionBar = getSupportActionBar();
-		final ProgressBar progressBar = findViewById(R.id.progress_sending);
+		final CircularProgressIndicator progressBar = findViewById(R.id.progress_sending);
 
-		viewPager = findViewById(R.id.pager);
+		ViewPager viewPager = findViewById(R.id.pager);
 		if (viewPager == null || tabLayout == null) {
 			finish();
 			return;
@@ -387,11 +391,30 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			if (actionBar != null) {
 				actionBar.setDisplayHomeAsUpEnabled(true);
 				actionBar.setTitle(R.string.title_choose_recipient);
+				searchBar = (SearchBar) getToolbar();
+				searchBar.setNavigationOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if (searchView.isIconified()) {
+							finish();
+						} else {
+							searchView.setIconified(true);
+						}
+					}
+				});
+				searchBar.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						searchView.setIconified(false);
+					}
+				});
+
+				ConfigUtils.adjustSearchBarTextViewMargin(this, searchBar);
 			}
 
 			if (!hideRecents && !conversationService.hasConversations()) {
 				//no conversation? show users tab as default
-				this.viewPager.setCurrentItem(tabs.indexOf(FRAGMENT_USERS), true);
+				viewPager.setCurrentItem(tabs.indexOf(FRAGMENT_USERS), true);
 			}
 
 			if (searchMenuItem != null) {
@@ -826,18 +849,35 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_recipientlist, menu);
+		getMenuInflater().inflate(R.menu.action_compose_message_search, menu);
 
-		this.searchMenuItem = menu.findItem(R.id.menu_search_messages);
+		this.searchMenuItem = menu.findItem(R.id.menu_action_search);
 		this.searchView = (ThreemaSearchView) this.searchMenuItem.getActionView();
+		if (ConfigUtils.isLandscape(this)) {
+			this.searchView.setMaxWidth(Integer.MAX_VALUE);
+		}
 
-		if (this.searchView != null) {
-			this.searchView.setQueryHint(getString(R.string.hint_filter_list));
+		if (this.searchView != null && !hideUi) {
+			ConfigUtils.adjustSearchViewPadding(searchView);
+			this.searchView.setQueryHint(getString(R.string.title_choose_recipient));
 			this.searchView.setOnQueryTextListener(this);
-			if (hideUi) {
-				this.searchMenuItem.setVisible(false);
-			} else if (!TestUtil.empty(queryText)) {
+			// Hide the hint of the search bar when the search view is opened to prevent it from
+			// appearing on some devices
+			this.searchView.setOnSearchClickListener(v -> {
+				if (this.searchBar != null) {
+					this.searchBar.setHint("");
+				}
+			});
+			// Show the hint of the search bar again when the search view is closed
+			this.searchView.setOnCloseListener(() -> {
+				if (this.searchBar != null) {
+					this.searchBar.setHint(R.string.title_choose_recipient);
+				}
+				return false;
+			});
+			if (!TestUtil.empty(queryText)) {
 				this.searchMenuItem.expandActionView();
+				this.searchView.setIconified(false);
 				this.searchView.setQuery(queryText, true);
 			}
 		} else {
@@ -1033,7 +1073,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 					ThreemaDialogFragment alertDialog;
 					if (!expandable) {
-						alertDialog = TextWithCheckboxDialog.newInstance(getString(R.string.really_forward, recipientName), hasCaptions ? R.string.forward_captions : 0, R.string.send, R.string.cancel);
+						alertDialog = TextWithCheckboxDialog.newInstance(getString(R.string.forward_message),
+							getString(R.string.really_forward, recipientName),
+							hasCaptions ? R.string.forward_captions : 0,
+							R.string.send,
+							R.string.cancel);
 					} else {
 						alertDialog = ExpandableTextEntryDialog.newInstance(getString(R.string.really_forward, recipientName), R.string.add_caption_hint, presetCaption, R.string.send, R.string.cancel, true);
 					}
@@ -1152,6 +1196,23 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 				break;
 			default:
 				super.onActivityResult(requestCode, resultCode, data);
+		}
+	}
+
+	public void onQueryResultChanged(RecipientListFragment recipientListFragment, int count) {
+		int tabPosition = userGroupPagerAdapter.registeredFragments.indexOfValue(recipientListFragment);
+		TabLayout.Tab tab = tabLayout.getTabAt(tabPosition);
+
+		if (tab != null) {
+			if (count > 0) {
+				tab.getOrCreateBadge().setNumber(count);
+				tab.getBadge().setBackgroundColor(ConfigUtils.getColorFromAttribute(this, R.attr.colorPrimary));
+				tab.getBadge().setVisible(true);
+			} else {
+				if (tab.getBadge() != null) {
+					tab.getBadge().setVisible(false);
+				}
+			}
 		}
 	}
 

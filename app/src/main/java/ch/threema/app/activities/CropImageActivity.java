@@ -22,15 +22,28 @@
 package ch.threema.app.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.core.view.ViewCompat;
+import androidx.preference.PreferenceManager;
 
 import com.canhub.cropper.CropImageView;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
-import androidx.appcompat.widget.Toolbar;
+import java.util.Collections;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.BitmapUtil;
@@ -44,106 +57,104 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 	public static final String EXTRA_MAX_Y = "my";
 	public static final String EXTRA_OVAL = "oval";
 	public static final String FORCE_DARK_THEME = "darkTheme";
-
+	public static final String EXTRA_ADDITIONAL_ORIENTATION = "additional_rotation";
+	public static final String EXTRA_ADDITIONAL_FLIP = "additional_flip";
 	public static final int REQUEST_CROP = 7732;
 
-	private int aspectX;
-	private int aspectY;
-	private int orientation, flip;
-
-	// Output image size
-	private int maxX;
-	private int maxY;
-
-	private boolean oval = false;
-
-	private Uri sourceUri;
-	private Uri saveUri;
-
-	private boolean isSaving;
-
+	private int aspectX, aspectY, orientation, flip, additionalOrientation, additionalFlip, maxX, maxY;
+	private boolean oval = false, isSaving;
+	private Uri sourceUri, saveUri;
 	private CropImageView imageView;
+	private View contentView;
 
 	@Override
-	public void onCreate(Bundle icicle) {
+	public void onCreate(Bundle savedInstanceState) {
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
 
 		if (extras != null && extras.getBoolean(FORCE_DARK_THEME, false)) {
-			ConfigUtils.configureActivityTheme(this, ConfigUtils.THEME_DARK);
+			setTheme(R.style.Theme_Threema_MediaViewer);
+			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+			if (sharedPreferences != null && sharedPreferences.getBoolean("pref_dynamic_color", false)) {
+				DynamicColors.applyToActivityIfAvailable(this);
+			}
 		} else {
-			ConfigUtils.configureActivityTheme(this);
+			ConfigUtils.configureSystemBars(this);
 		}
 
-		super.onCreate(icicle);
+		super.onCreate(savedInstanceState);
 
-		Toolbar toolbar = findViewById(R.id.crop_toolbar);
+		MaterialToolbar toolbar = findViewById(R.id.crop_toolbar);
 		setSupportActionBar(toolbar);
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		View cancelActionView = findViewById(R.id.action_cancel);
-		cancelActionView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				setResult(RESULT_CANCELED);
-				finish();
-			}
-		});
-		View doneActionView = findViewById(R.id.action_done);
-		doneActionView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onSaveClicked();
-			}
-		});
+		ExtendedFloatingActionButton doneActionView = findViewById(R.id.floating);
+		doneActionView.setOnClickListener(v -> onSaveClicked());
 
 		setupFromIntent();
 
 		imageView = findViewById(R.id.crop_image);
-		imageView.setOnSetImageUriCompleteListener(new CropImageView.OnSetImageUriCompleteListener() {
-			@Override
-			public void onSetImageUriComplete(CropImageView view, Uri uri, Exception error) {
-				if (error == null && uri != null) {
-					BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(CropImageActivity.this, uri);
-					int exifFlip = exifOrientation.getFlip();
-					int exifRotation = 0;
+		imageView.setOnSetImageUriCompleteListener((view, uri, error) -> {
+			if (error == null && uri != null) {
+				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(CropImageActivity.this, uri);
+				int exifFlip = exifOrientation.getFlip();
+				int exifRotation = 0;
 
-					// Bug Workaround: CropImageView accounts for exif rotation but NOT if there's also a flip
-					if ((exifFlip & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
-						view.flipImageHorizontally();
-						exifRotation = (int) exifOrientation.getRotation();
-					}
-					if ((exifFlip & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
-						view.flipImageVertically();
-						exifRotation = (int) exifOrientation.getRotation();
-					}
-					if (exifRotation != 0) {
-						view.rotateImage(exifRotation);
-					}
+				// Bug Workaround: CropImageView accounts for exif rotation but NOT if there's also a flip
+				if ((exifFlip & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
+					view.flipImageHorizontally();
+					exifRotation = (int) exifOrientation.getRotation();
+				}
+				if ((exifFlip & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
+					view.flipImageVertically();
+					exifRotation = (int) exifOrientation.getRotation();
+				}
+				if (exifRotation != 0) {
+					view.rotateImage(exifRotation);
+				}
 
-					// non-exif
-					if ((flip & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
-						view.flipImageHorizontally();
-					}
-					if ((flip & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
-						view.flipImageVertically();
-					}
-					if (orientation != 0) {
-						view.rotateImage(orientation);
-					}
+				// non-exif
+				if ((flip & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
+					view.flipImageHorizontally();
+				}
+				if ((flip & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
+					view.flipImageVertically();
+				}
+				if (orientation != 0) {
+					view.rotateImage(orientation);
+				}
 
-					if (aspectX != 0 && aspectY != 0) {
-						view.setAspectRatio(aspectX, aspectY);
-						view.setFixedAspectRatio(true);
-					}
+				// Additional flip and rotation
+				if ((additionalFlip & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
+					view.flipImageHorizontally();
+				}
+				if ((additionalFlip & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
+					view.flipImageVertically();
+				}
+				if (additionalOrientation != 0) {
+					view.rotateImage(additionalOrientation);
+				}
+
+				if (aspectX != 0 && aspectY != 0) {
+					view.setAspectRatio(aspectX, aspectY);
+					view.setFixedAspectRatio(true);
 				}
 			}
 		});
-		imageView.setImageUriAsync(sourceUri);
-		imageView.setCropShape(oval ? CropImageView.CropShape.OVAL : CropImageView.CropShape.RECTANGLE);
-		imageView.setOnCropImageCompleteListener(new CropImageView.OnCropImageCompleteListener() {
+		if (savedInstanceState == null) {
+			imageView.setCropShape(oval ? CropImageView.CropShape.OVAL : CropImageView.CropShape.RECTANGLE);
+			imageView.setImageUriAsync(sourceUri);
+		}
+		imageView.setOnCropImageCompleteListener((view, result) -> cropCompleted());
+
+		contentView = findViewById(android.R.id.content);
+		ViewTreeObserver treeObserver = contentView.getViewTreeObserver();
+		treeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
-			public void onCropImageComplete(CropImageView view, CropImageView.CropResult result) {
-				cropCompleted();
+			public void onGlobalLayout() {
+				contentView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+				excludeGestures();
 			}
 		});
 	}
@@ -153,6 +164,15 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 		return R.layout.activity_crop;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			setResult(RESULT_CANCELED);
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 	private void cropCompleted() {
 		setResult(RESULT_OK, new Intent().putExtra(MediaStore.EXTRA_OUTPUT, saveUri));
 		finish();
@@ -171,6 +191,8 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 			saveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);
 			orientation = extras.getInt(ThreemaApplication.EXTRA_ORIENTATION, 0);
 			flip = extras.getInt(ThreemaApplication.EXTRA_FLIP, BitmapUtil.FLIP_NONE);
+			additionalOrientation = extras.getInt(EXTRA_ADDITIONAL_ORIENTATION, 0);
+			additionalFlip = extras.getInt(EXTRA_ADDITIONAL_FLIP, BitmapUtil.FLIP_NONE);
 		}
 
 		sourceUri = intent.getData();
@@ -187,6 +209,26 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 		} else {
 			imageView.croppedImageAsync(Bitmap.CompressFormat.PNG, 100, 0, 0, CropImageView.RequestSizeOptions.NONE, saveUri);
 		}
+	}
+
+	private void excludeGestures() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+			return;
+		}
+
+		int maxHeight = getResources().getDimensionPixelSize(R.dimen.gesture_exclusion_max_height);
+		Rect drawingRect = new Rect();
+		imageView.getDrawingRect(drawingRect);
+
+		int y = 0;
+		int realHeight = drawingRect.height();
+		if (realHeight > maxHeight) {
+			y = (realHeight - maxHeight) / 2;
+			realHeight = maxHeight;
+		}
+
+		Rect exclusionRect = new Rect(0, y, getResources().getDimensionPixelSize(R.dimen.gesture_exclusion_border_width), y + realHeight);
+		ViewCompat.setSystemGestureExclusionRects(imageView, Collections.singletonList(exclusionRect));
 	}
 }
 

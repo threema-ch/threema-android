@@ -22,11 +22,10 @@
 package ch.threema.storage.factories;
 
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.Nullable;
-
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteException;
 
 import org.slf4j.Logger;
 
@@ -140,13 +139,12 @@ public class ContactModelFactory extends ModelFactory {
 					.setIdColorIndex(cursorFactory.getInt(ContactModel.COLUMN_ID_COLOR_INDEX))
 					.setIsHidden(cursorFactory.getInt(ContactModel.COLUMN_IS_HIDDEN) == 1)
 					.setAvatarExpires(cursorFactory.getDate(ContactModel.COLUMN_AVATAR_EXPIRES))
-					.setProfilePicSentDate(cursorFactory.getDate(ContactModel.COLUMN_PROFILE_PIC_SENT_DATE))
+					.setProfilePicBlobID(cursorFactory.getBlob(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID))
 					.setDateCreated(cursorFactory.getDate(ContactModel.COLUMN_DATE_CREATED))
 					.setIsRestored(cursorFactory.getInt(ContactModel.COLUMN_IS_RESTORED) == 1)
 					.setArchived(cursorFactory.getInt(ContactModel.COLUMN_IS_ARCHIVED) == 1)
 					.setReadReceipts(cursorFactory.getInt(ContactModel.COLUMN_READ_RECEIPTS))
 					.setTypingIndicators(cursorFactory.getInt(ContactModel.COLUMN_TYPING_INDICATORS))
-					.setForwardSecurityEnabled(cursorFactory.getBoolean(ContactModel.COLUMN_FORWARD_SECURITY_ENABLED))
 					.setForwardSecurityState(cursorFactory.getInt(ContactModel.COLUMN_FORWARD_SECURITY_STATE));
 
 				// Convert state to enum
@@ -228,9 +226,7 @@ public class ContactModelFactory extends ModelFactory {
 				: null);
 		contentValues.put(ContactModel.COLUMN_IS_WORK, contactModel.isWork());
 		contentValues.put(ContactModel.COLUMN_TYPE, contactModel.getIdentityType());
-		contentValues.put(ContactModel.COLUMN_PROFILE_PIC_SENT_DATE, contactModel.getProfilePicSentDate() != null ?
-				contactModel.getProfilePicSentDate().getTime()
-				: null);
+		contentValues.put(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID, contactModel.getProfilePicBlobID());
 		contentValues.put(ContactModel.COLUMN_DATE_CREATED, contactModel.getDateCreated() != null ? contactModel.getDateCreated().getTime()
 				: null);
 		contentValues.put(ContactModel.COLUMN_IS_HIDDEN, contactModel.isHidden());
@@ -238,7 +234,6 @@ public class ContactModelFactory extends ModelFactory {
 		contentValues.put(ContactModel.COLUMN_IS_ARCHIVED, contactModel.isArchived());
 		contentValues.put(ContactModel.COLUMN_READ_RECEIPTS, contactModel.getReadReceipts());
 		contentValues.put(ContactModel.COLUMN_TYPING_INDICATORS, contactModel.getTypingIndicators());
-		contentValues.put(ContactModel.COLUMN_FORWARD_SECURITY_ENABLED, contactModel.isForwardSecurityEnabled());
 		contentValues.put(ContactModel.COLUMN_FORWARD_SECURITY_STATE, contactModel.getForwardSecurityState());
 
 		if (insert) {
@@ -285,14 +280,13 @@ public class ContactModelFactory extends ModelFactory {
 						"`" + ContactModel.COLUMN_AVATAR_EXPIRES + "` BIGINT," +
 						"`" + ContactModel.COLUMN_IS_WORK + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_TYPE + "` INT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_PROFILE_PIC_SENT_DATE + "` BIGINT DEFAULT 0," +
+						"`" + ContactModel.COLUMN_PROFILE_PIC_BLOB_ID + "` BLOB DEFAULT NULL," +
 						"`" + ContactModel.COLUMN_DATE_CREATED + "` BIGINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_IS_HIDDEN + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_IS_RESTORED + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_READ_RECEIPTS + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_TYPING_INDICATORS + "` TINYINT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_FORWARD_SECURITY_ENABLED + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_FORWARD_SECURITY_STATE + "` TINYINT DEFAULT 0," +
 					"PRIMARY KEY (`" + ContactModel.COLUMN_IDENTITY + "`) );"
 		};

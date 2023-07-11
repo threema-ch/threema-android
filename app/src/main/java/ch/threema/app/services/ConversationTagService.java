@@ -21,10 +21,12 @@
 
 package ch.threema.app.services;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
+import java.util.List;
+
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTagModel;
 import ch.threema.storage.models.TagModel;
@@ -53,7 +55,7 @@ public interface ConversationTagService {
 	/**
 	 * Untag the {@link ConversationModel} with the given {@link TagModel}
 	 */
-	boolean unTag(@Nullable ConversationModel conversation, @Nullable TagModel tagModel);
+	@WorkerThread boolean unTag(@Nullable ConversationModel conversation, @Nullable TagModel tagModel);
 
 	/**
 	 * Toggle the {@link TagModel} of the {@link ConversationModel}

@@ -24,6 +24,7 @@ package ch.threema.app.preference
 import androidx.preference.CheckBoxPreference
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
+import androidx.preference.PreferenceCategory
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.dialogs.GenericAlertDialog
@@ -32,7 +33,8 @@ import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.WallpaperService
 import ch.threema.app.utils.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.StateBitmapUtil
+import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.DynamicColorsOptions
 
 @Suppress("unused")
 class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
@@ -51,6 +53,8 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
 
         this.showBadge = getPrefOrNull(R.string.preferences__show_unread_badge)
         this.showBadgeChecked = this.showBadge?.isChecked ?: false
+
+        initDynamicColorPref()
 
         initDefaultColoredAvatarPref()
 
@@ -83,6 +87,36 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
     override fun getPreferenceTitleResource(): Int = R.string.prefs_header_appearance
 
     override fun getPreferenceResource(): Int = R.xml.preference_appearance
+
+    private fun initDynamicColorPref() {
+        if (DynamicColors.isDynamicColorAvailable()) {
+            getPrefOrNull<CheckBoxPreference>(R.string.preferences__dynamic_color)?.apply {
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+                    val newCheckedValue = newValue == true
+
+                    if ((preference as CheckBoxPreference).isChecked != newCheckedValue) {
+                        val dynamicColorsOptions = DynamicColorsOptions.Builder()
+                            .setPrecondition { _, _ -> newCheckedValue }
+                            .build()
+
+                        DynamicColors.applyToActivitiesIfAvailable(requireActivity().application, dynamicColorsOptions)
+
+                        // we need to set the new preference synchronously here because we exit the app before returning the result of this listener
+                        sharedPreferences?.edit()?.putBoolean(getString(R.string.preferences__dynamic_color), newCheckedValue)?.commit()
+
+                        ConfigUtils.recreateActivity(requireActivity())
+                        Runtime.getRuntime().exit(0)
+                    }
+
+                    true
+                }
+            }
+         } else {
+            val preferenceCategory = getPref<PreferenceCategory>("pref_key_appearance_cat")
+            preferenceCategory.removePreference(getPref(resources.getString(R.string.preferences__dynamic_color)))
+        }
+
+    }
 
     private fun initDefaultColoredAvatarPref() {
         getPrefOrNull<CheckBoxPreference>(R.string.preferences__default_contact_picture_colored)?.apply {
@@ -119,8 +153,7 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
 
     private fun initThemePref() {
         val themePreference = getPref<DropDownPreference>(R.string.preferences__theme)
-        var themeIndex: Int = preferenceManager.sharedPreferences?.getString(resources.getString(R.string.preferences__theme), "0")?.toInt()
-                ?: 0
+        var themeIndex: Int = ConfigUtils.getAppThemePrefsSettings().toInt()
         val themeArray = resources.getStringArray(R.array.list_theme)
 
         if (themeIndex >= themeArray.size) {
@@ -133,11 +166,10 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
         themePreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
             val newTheme = newValue.toString().toInt()
             if (newTheme != oldTheme) {
-                ConfigUtils.setAppTheme(newTheme)
-                StateBitmapUtil.init(ThreemaApplication.getAppContext())
+                ConfigUtils.saveAppThemeToPrefs(newValue.toString(), requireContext())
                 preference.summary = themeArray[newTheme]
                 ListenerManager.contactSettingsListeners.handle { listener -> listener.onAvatarSettingChanged() }
-                ConfigUtils.recreateActivity(activity)
+                activity?.recreate()
             }
             true
         }

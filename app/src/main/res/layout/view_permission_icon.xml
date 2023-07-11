@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="60dp"
+	android:layout_height="60dp"
+	android:padding="5dp"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<!-- This frame layout is needed for backwards compatibility before api 23 -->
+	<FrameLayout
+		android:id="@+id/background_frame"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:importantForAccessibility="no">
+
+		<ch.threema.app.ui.SquareImageView
+			android:id="@+id/permission_background_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:importantForAccessibility="no"
+			android:src="@drawable/ic_circle_white"
+			android:tint="?attr/colorSurfaceVariant" />
+
+	</FrameLayout>
+
+	<ImageView
+		android:id="@+id/permission_icon_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_gravity="center"
+		android:adjustViewBounds="true"
+		android:importantForAccessibility="no"
+		android:padding="5dp"
+		app:tint="?attr/colorOnSurface" />
+
+</FrameLayout>

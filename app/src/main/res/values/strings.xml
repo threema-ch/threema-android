@@ -293,7 +293,6 @@
 	<string name="title_select_contacts">Select members</string>
 	<string name="pin_invalid_not_set">PIN invalid. Not set.</string>
 	<string name="prefs_group_notifications">Group Chat</string>
-	<string name="add_group_members_list">Group members</string>
 	<string name="group_select_at_least_two">Need to select at least one member to continue</string>
 	<string name="group_select_max">You may not select more than %1$d group members</string>
 	<string name="search">Search</string>
@@ -558,7 +557,7 @@
 		that may lead to additional charges by your mobile provider. We recommend to upload and download files in WiFi
 		networks only.</string>
 	<string name="prefs_theme">Design theme</string>
-	<string name="list_theme_light">Light (default)</string>
+	<string name="list_theme_light">Light</string>
 	<string name="list_theme_dark">Dark</string>
 	<string name="prefs_header_appearance">Appearance</string>
 	<string name="prefs_sum_passphrase">Require a passphrase to unlock local encryption</string>
@@ -708,7 +707,7 @@
 	<string name="configure">Configure</string>
 	<string name="file_is_not_audio">Not an audio file</string>
 	<!-- restrictions -->
-	<string name="disabled_by_policy">Some settings have been disabled by device policy</string>
+	<string name="disabled_by_policy">Some settings have been disabled by the administrator</string>
 	<string name="select_all">Select all</string>
 	<string name="deleting_messages">Deleting messages</string>
 	<string name="media_gallery_files">Files</string>
@@ -719,7 +718,7 @@
 	<string name="prefs_proximity_sensor">Use proximity sensor</string>
 	<string name="prefs_proximity_sensor_explain">Use earpiece for voice message playback if proximity sensor is covered</string>
 	<string name="error_creating_group">Error creating/updating group</string>
-	<string name="no_media_found_generic">No media found in this chat</string>
+	<string name="no_media_found_generic">No media found in this chat matching the selection.</string>
 	<string name="max_images_reached">Max. %d items can be edited at once</string>
 	<string name="enter_description">Please describe bug/problem here.</string>
 	<string name="add_caption_hint">Add an optional caption</string>
@@ -939,7 +938,7 @@
 	<string name="safe_configure_choose_password_force">Please set a strong password to secure your Threema ID with Threema Safe. Don’t forget what you enter here!</string>
 	<string name="safe_deactivate">Turn off Threema Safe</string>
 	<string name="safe_deactivate_explain">If you disable Threema Safe, any existing backups will be deleted on the server. Continue?</string>
-	<string name="add_group_members">New member</string>
+	<string name="add_group_members">Add more members</string>
 	<string name="contact_add_confirm">Would you like to add the new contact “%1$s” to your contact list?</string>
 	<string name="password_bad">Weak password</string>
 	<string name="prefs_fix_background_data">Enable Background Data</string>
@@ -1056,13 +1055,14 @@
 	<string name="open_in_maps_app">Open in Maps app</string>
 	<string name="delete">Delete</string>
 	<string name="continue_recording">Continue recording</string>
-	<string name="whatsnew_title">New: %1$s Group Calls</string>
+	<string name="whatsnew_title">Welcome to %1$s 5.1 Beta!</string>
 	<string name="whatsnew_headline">
 		<![CDATA[
-		<p>End-to-end encrypted group calls are now available in %1$s for Android.</p>
-		<p>To initiate a call, open a group chat and tap the camera button at the top.</p>
-		<p>All group members will receive a notification and can decide whether they want to join the call or not.</p>
-		<p><b>Please note:</b> for iOS, the group call feature will be released at a later time.</p>
+		<p>This release focuses on security, usability and soft modernization of the app without sacrificing the tried and tested user experience concepts.</p>
+		<p>Perfect Forward Secrecy is now enabled by default for all contacts that have a recent Threema version installed.</p>
+		<p>By popular demand, the app has been redesigned completely to fully support the Material You paradigm introduced with Android 12 (including a Dynamic Colors option).</p>
+		<p>Other improvements include a new voice message player that continues playing in a notification when the app is put to the background and new user guidance when requesting permissions.</p>
+		<p><b>Bug reporting:</b> For reporting bugs and for feedback on this release, please feel free to contact us at <b>*SUPPORT</b>. Have fun using %1$s 5.1 Beta!</p>
 		]]>
 	</string>
 	<string name="whatsnew2_title"></string>
@@ -1209,7 +1209,7 @@
 	<string name="no_faces_detected">No faces detected</string>
 	<string name="smiley">Smiley</string>
 	<string name="blur">Blur</string>
-	<string name="face_blur_tooltip_title">New: Face recognition</string>
+	<string name="face_blur_tooltip_title">Face recognition</string>
 	<string name="face_blur_tooltip_text">Find faces in the image and have them blurred or covered with a smiley.</string>
 	<string name="listened_to">listened</string>
 	<string name="transcoder_unsupported_audio_format">Audio could not be transcoded due to missing system support.</string>
@@ -1404,7 +1404,7 @@
 	<string name="organization_type">Organization</string>
 	<string name="permission_bluetooth_connect_required">Enable “Nearby devices” permission to locate connected Bluetooth headsets</string>
 	<string name="threema_push_start_webclient_sessions_manually">Threema Push is active. Threema Web and Desktop sessions must thus be launched manually.</string>
-	<string name="tooltip_multiple_recipients_title">New: Multiple recipients</string>
+	<string name="tooltip_multiple_recipients_title">Multiple recipients</string>
 	<string name="tooltip_multiple_recipients_text">Long tap to select multiple recipients to send the same message to.</string>
 	<string name="synchronizing">Synchronizing…</string>
 	<string name="forward_security">Send messages with Perfect Forward Secrecy</string>
@@ -1461,12 +1461,18 @@
 	<string name="group_call">Group call</string>
 	<string name="checking_compatibility">Checking compatibility…</string>
     <string name="group_call_mic_permission_rationale">To perform group calls, you must allow %s to access the microphone under “permissions”.</string>
+	<string name="group_call_mic_permission_description">To perform group calls, you must allow the microphone permission, so that others can hear you.</string>
+	<string name="call_mic_permission_description">To perform calls, you must allow the microphone permission, so that others can hear you.</string>
 	<string name="group_call_camera_permission_rationale">For other participants to see your picture, you must allow %s to access the camera under “permissions”.</string>
+	<string name="group_call_phone_permission_description">To perform group calls, the phone permission is needed to detect when another call interrupts the group call.</string>
+	<string name="call_phone_permission_description">To perform Threema calls, the phone permission is needed to detect when another call interrupts the Threema call.</string>
+	<string name="group_call_nearby_devices_permission_description">To perform group calls with a bluetooth headset, you must allow the “nearby devices” permission to detect bluetooth headsets.</string>
+	<string name="call_nearby_devices_permission_description">To perform Threema calls with a bluetooth headset, you must allow the “nearby devices” permission to detect bluetooth headsets.</string>
 	<string name="settings">Settings</string>
 	<string name="leave">Leave</string>
     <string name="fs_key_mismatch">key mismatch</string>
     <string name="tap_to_resend">Tap to re-send</string>
-    <string name="group_calls_tooltip_title">New: Group calls</string>
+    <string name="group_calls_tooltip_title">Group calls</string>
 	<string name="group_calls_tooltip_text">Tap here to invite all group members to join a call. All group members will receive a notification and can decide whether they want to join the call or not.</string>
 	<string name="prefs_title_calls">Secure Calls</string>
 	<string name="prefs_sum_group_calls_vibration">Select whether to vibrate when a group call has been started</string>
@@ -1476,6 +1482,34 @@
 	<string name="group_call_inactivity_left">Group call left due to inactivity</string>
 	<string name="missing_permission_external_storage">Unable to copy the file. Try the following steps:\n1. Open the settings app.\n2. Go to “Apps” and choose “Special app access”.\n3. Tap on “All files access“.\n4. Tap on the three dots in the top right corner and choose “Show system“.\n5. Tap on “External Storage“ and ensure “Allow access to manage all files“ is granted.\n6. Try again restoring the backup.</string>
 	<string name="forward_security_downgraded_status_message">This contact has started using an app version that does not support Perfect Forward Secrecy. Messages will be sent without PFS from now on.</string>
+    <string name="crop_image_title">Crop image</string>
+	<string name="scroll_to_bottom">Scroll to bottom</string>
+	<string name="scroll_to_top">Scroll to top</string>
+	<string name="contact_sync_mdm_rationale">Your administrator enabled contact synchronization for your device. Therefore the permission to access contacts is required.</string>
+	<string name="welcome_back">Welcome back!</string>
+	<string name="id_restored_successfully">Your Threema ID has been restored successfully</string>
+    <string name="prefs_dynamic_colors">Dynamic color</string>
+    <string name="prefs_dynamic_colors_sum">Use system colors</string>
+    <string name="apply_changes">Apply changes</string>
+	<string name="prefs_threema_work_summary">Did you know that Threema also offers a professional communication solution for businesses? Tap here to learn more about Threema Work.</string>
+	<string name="notification_channel_voice_message_player">Voice message player</string>
+    <string name="voice_message_from">Voice message from %s</string>
+	<string name="vm_fg_service_not_allowed">Voice message playback error</string>
+	<string name="vm_fg_service_not_allowed_explain">Press on the play button on the media notification if it is still present, otherwise please open the app to start the playback from the chat.</string>
+	<string name="use_threema_without_this_permission">Use %s without this permission</string>
+	<string name="grant_permission">Grant permission</string>
+	<string name="grant_permission_settings">Grant permission in settings</string>
+	<string name="ignore_permission">Don\'t ask again</string>
+	<string name="permission_nearby_devices">Nearby Devices</string>
+	<string name="permission_bluetooth">Bluetooth</string>
+	<string name="permission_camera">Camera</string>
+	<string name="permission_microphone">Microphone</string>
+	<string name="permission_read_phone_state">Phone</string>
+	<string name="permission_enable_in_settings_rationale">Please enable the permission in the settings. Select “Permissions” and then allow “%s”.</string>
+    <string name="group_name">Group name</string>
+    <string name="samsung_permission_problem_explain">%1$s cannot access media files due to a missing permission on a system app. To fix it, make sure, the switch next to \"External Storage\" is enabled in the screen that follows and restart %1$s.</string>
+	<string name="min_n_chars">min. %d chars</string>
+	<string name="prefs_title_grant_bluetooth_permission">Grant Bluetooth permission</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>
@@ -1643,5 +1677,11 @@
 		<item quantity="few">Delete %d messages on this device?</item>
 		<item quantity="many">Delete %d messages on this device?</item>
 		<item quantity="other">Delete %d messages on this device?</item>
+	</plurals>
+	<plurals name="number_of_group_members">
+		<item quantity="one">%d group member</item>
+		<item quantity="few">%d group members</item>
+		<item quantity="many">%d group members</item>
+		<item quantity="other">%d group members</item>
 	</plurals>
 </resources>

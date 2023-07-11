@@ -60,7 +60,8 @@
                 android:dependency="@string/preferences__masterkey_switch"
                 android:defaultValue=""/>
         <CheckBoxPreference
-                android:key="@string/preferences__masterkey_notification_newmsg"
+				android:widgetLayout="@layout/preference_switch_layout"
+				android:key="@string/preferences__masterkey_notification_newmsg"
                 android:summaryOff="@string/prefs_masterkey_notification_newmsg_off"
                 android:summaryOn="@string/prefs_masterkey_notification_newmsg_on"
                 android:title="@string/prefs_title_masterkey_notification_newmsg"

@@ -34,7 +34,7 @@
 		android:background="@drawable/ripple_call_button"
 		android:scaleType="fitXY"
 		app:srcCompat="@drawable/ic_content_copy_outline"
-		app:tint="?attr/textColorSecondary"
+		app:tint="?attr/colorOnSurface"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/scan_result"/>
 
@@ -48,7 +48,7 @@
 		android:background="@drawable/ripple_call_button"
 		android:scaleType="fitXY"
 		app:srcCompat="@drawable/ic_share_outline"
-		app:tint="?attr/textColorSecondary"
+		app:tint="?attr/colorOnSurface"
 		app:layout_constraintStart_toEndOf="@+id/copy"
 		app:layout_constraintTop_toBottomOf="@+id/scan_result" />
 

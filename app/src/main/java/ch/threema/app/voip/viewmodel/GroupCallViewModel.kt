@@ -35,6 +35,7 @@ import ch.threema.app.services.NotificationService
 import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.getRunningSince
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.*
 import ch.threema.app.voip.groupcall.sfu.*
@@ -80,14 +81,14 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 	private val audioDevices = MutableLiveData<Set<AudioDevice>>(setOf())
 	fun getAudioDevices(): LiveData<Set<AudioDevice>> = audioDevices
 	private val selectedAudioDevice = MutableLiveData(AudioDevice.NONE)
-	fun getSelectedAudioDevice(): LiveData<AudioDevice> = Transformations
-		.distinctUntilChanged(selectedAudioDevice)
+	fun getSelectedAudioDevice(): LiveData<AudioDevice> = selectedAudioDevice
+		.distinctUntilChanged()
 
 	private var connectingState = MutableLiveData(ConnectingState.IDLE)
 	fun isConnecting(): LiveData<ConnectingState> = connectingState
 
 	private val callRunning = MutableLiveData(false)
-	fun isCallRunning(): LiveData<Boolean> = Transformations.distinctUntilChanged(callRunning)
+	fun isCallRunning(): LiveData<Boolean> = callRunning.distinctUntilChanged()
 
 	private val completableFinishEvent = CompletableDeferred<FinishEvent>()
 	val finishEvent: Deferred<FinishEvent> = completableFinishEvent
@@ -95,16 +96,16 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 	private val eglBaseAndParticipants = MutableLiveData<Pair<EglBase, Set<Participant>>>()
 	fun getEglBaseAndParticipants(): LiveData<Pair<EglBase, Set<Participant>>> = eglBaseAndParticipants
 
-	private val participantsCount = Transformations.map(eglBaseAndParticipants) { it.second.size }
+	private val participantsCount = eglBaseAndParticipants.map { it.second.size }
 
 	private val captureStateUpdates = MutableLiveData<Unit>()
 	fun getCaptureStateUpdates(): LiveData<Unit> = captureStateUpdates
 
 	private val microphoneActive = MutableLiveData(false)
-	fun isMicrophoneActive(): LiveData<Boolean> = Transformations.distinctUntilChanged(microphoneActive)
+	fun isMicrophoneActive(): LiveData<Boolean> = microphoneActive.distinctUntilChanged()
 
 	private val cameraActive = MutableLiveData(false)
-	fun isCameraActive(): LiveData<Boolean> = Transformations.distinctUntilChanged(cameraActive)
+	fun isCameraActive(): LiveData<Boolean> = cameraActive.distinctUntilChanged()
 
 	private val cameraFlipEvents = MutableLiveData<Unit>()
 	fun getCameraFlipEvents(): LiveData<Unit> = cameraFlipEvents
@@ -138,7 +139,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 	@AnyThread
 	override fun onGroupCallUpdate(call: GroupCallDescription?) {
 		logger.trace("Group call update")
-		startTime.postValue(call?.getRunningSince())
+		startTime.postValue(call?.let { getRunningSince(it, ThreemaApplication.getAppContext()) })
 	}
 
 	@UiThread
@@ -275,8 +276,8 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 
 	@UiThread
 	private fun mapGroupModelLiveData(): LiveData<GroupModel?> {
-		val distinctGroupId = Transformations.distinctUntilChanged(groupId)
-		return Transformations.map(distinctGroupId, this::getGroupModel)
+		val distinctGroupId = groupId.distinctUntilChanged()
+		return distinctGroupId.map(this::getGroupModel)
 	}
 
 	@UiThread
@@ -398,7 +399,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 	}
 
 	@UiThread
-	private fun mapTitle() = Transformations.map(group, this::getTitle)
+	private fun mapTitle() = group.map(this::getTitle)
 	@UiThread
 	private fun getTitle(groupModel: GroupModel?) = groupModel?.name ?: ""
 

@@ -30,11 +30,14 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import androidx.appcompat.app.ActionBar;
+
+import com.google.android.material.appbar.AppBarLayout;
+
 import org.slf4j.Logger;
 
 import java.util.List;
 
-import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.adapters.ballot.BallotOverviewListAdapter;
@@ -61,14 +64,11 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
 	private String myIdentity;
 
 	private BallotOverviewListAdapter listAdapter = null;
-	private List<BallotModel> ballots;
 	private ListView listView;
 
-	private BallotListener ballotListener = new BallotListener() {
+	private final BallotListener ballotListener = new BallotListener() {
 		@Override
-		public void onClosed(BallotModel ballotModel) {
-
-		}
+		public void onClosed(BallotModel ballotModel) {}
 
 		@Override
 		public void onModified(BallotModel ballotModel) {
@@ -78,13 +78,11 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
 		@Override
 		public void onCreated(BallotModel ballotModel) {
 			RuntimeUtil.runOnUiThread(() -> updateList());
-
 		}
 
 		@Override
 		public void onRemoved(BallotModel ballotModel) {
 			RuntimeUtil.runOnUiThread(() -> updateList());
-
 		}
 
 		@Override
@@ -109,6 +107,18 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
 		emptyView.setup(R.string.ballot_no_ballots_yet);
 		((ViewGroup) listView.getParent()).addView(emptyView);
 		listView.setEmptyView(emptyView);
+		final AppBarLayout appBarLayout = findViewById(R.id.appbar);
+		appBarLayout.setLiftable(true);
+		listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {}
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				boolean isAtTop = firstVisibleItem == 0 && (view.getChildCount() == 0 || view.getChildAt(0).getTop() == 0);
+				appBarLayout.setLifted(!isAtTop);
+			}
+		});
 
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
@@ -154,9 +164,9 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
 		}
 
 		try {
-			this.ballots = this.ballotService.getBallots(new BallotService.BallotFilter() {
+			List<BallotModel> ballots = this.ballotService.getBallots(new BallotService.BallotFilter() {
 				@Override
-				public MessageReceiver getReceiver() {
+				public MessageReceiver<?> getReceiver() {
 					return null;
 				}
 
@@ -171,9 +181,9 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
 				}
 			});
 
-			if (this.ballots != null) {
+			if (ballots != null) {
 				this.listAdapter = new BallotOverviewListAdapter(this,
-						this.ballots,
+					ballots,
 						this.ballotService,
 						this.contactService);
 
@@ -192,17 +202,15 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
 			return;
 		}
 
-		if(listAdapter != null) {
-			BallotModel b = listAdapter.getItem(position);
+		BallotModel b = listAdapter.getItem(position);
 
-			if(b != null) {
-				Intent resultIntent = this.getIntent();
-				//append ballot
-				IntentDataUtil.append(b, this.getIntent());
+		if(b != null) {
+			Intent resultIntent = this.getIntent();
+			//append ballot
+			IntentDataUtil.append(b, this.getIntent());
 
-				setResult(RESULT_OK, resultIntent);
-				finish();
-			}
+			setResult(RESULT_OK, resultIntent);
+			finish();
 		}
 	}
 

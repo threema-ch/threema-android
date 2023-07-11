@@ -27,7 +27,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -38,7 +37,7 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 
 		super.onCreate(savedInstanceState);
 

@@ -22,6 +22,8 @@
 package ch.threema.app.ui;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -35,13 +37,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.material.chip.Chip;
+import androidx.constraintlayout.widget.Group;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.lang.ref.WeakReference;
 
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.constraintlayout.widget.Group;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
@@ -67,7 +71,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 	private WeakReference<Activity> activityRef = new WeakReference<>(null);
 	private ImageView qrCodeView;
 	private QRCodeService qrCodeService;
-	private SwitchCompat webEnableView;
+	private MaterialSwitch webEnableView;
 	private SessionService sessionService;
 	private int animationCenterX, animationCenterY;
 	private ProfileButtonListener profileButtonListener;
@@ -111,7 +115,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 		this.webEnableView = popupLayout.findViewById(R.id.web_enable);
 		popupLayout.findViewById(R.id.web_label).setOnClickListener(v -> {
 			Intent intent = new Intent(context, SessionsActivity.class);
-			AnimationUtil.startActivity(activityRef.get(), v, intent);
+			activityRef.get().startActivity(intent);
 			dismiss();
 		});
 
@@ -123,6 +127,15 @@ public class IdentityPopup extends DimmingPopupWindow {
 
 		textView.setText(userService.getIdentity());
 		textView.setContentDescription(context.getString(R.string.my_id) + " " + userService.getIdentity());
+		textView.setOnLongClickListener(v -> {
+			ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+			ClipData clip = ClipData.newPlainText(null, userService.getIdentity());
+			clipboard.setPrimaryClip(clip);
+
+			Toast.makeText(context, R.string.contact_details_id_copied, Toast.LENGTH_SHORT).show();
+
+			return true;
+		});
 
 		setContentView(popupLayout);
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -136,10 +149,10 @@ public class IdentityPopup extends DimmingPopupWindow {
 
 		popupLayout.setOnClickListener(v -> dismiss());
 
-		Chip scanButton = popupLayout.findViewById(R.id.scan_button);
+		MaterialButton scanButton = popupLayout.findViewById(R.id.scan_button);
 		scanButton.setOnClickListener(v -> scanQR());
 
-		Chip profileButton = popupLayout.findViewById(R.id.profile_button);
+		MaterialButton profileButton = popupLayout.findViewById(R.id.profile_button);
 		profileButton.setOnClickListener(v -> {
 			dismiss();
 			this.profileButtonListener.onClicked();
@@ -150,7 +163,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 		}
 
 		if (webControls != null && webEnableView != null) {
-			if (AppRestrictionUtil.isWebDisabled(context) || ConfigUtils.isBlackBerry()) {
+			if (AppRestrictionUtil.isWebDisabled(context)) {
 				// Webclient is disabled, hide UI elements
 				webEnableView.setEnabled(false);
 				webControls.setVisibility(View.GONE);
@@ -169,7 +182,6 @@ public class IdentityPopup extends DimmingPopupWindow {
 			intent.putExtra(AddContactActivity.EXTRA_ADD_BY_QR, true);
 			if (activityRef.get() != null) {
 				activityRef.get().startActivity(intent);
-				activityRef.get().overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 			}
 		}
 	}
@@ -189,7 +201,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 		this.profileButtonListener = profileButtonListener;
 
 		int offsetY = activity.getResources().getDimensionPixelSize(R.dimen.navigation_icon_size) / 2;
-		int offsetX = activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_margin_left) + (activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_width) / 2);
+		int offsetX = activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_inset_left) + (activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_width) / 2);
 
 		animationCenterX = offsetX;
 		animationCenterY = 0;
@@ -204,7 +216,7 @@ public class IdentityPopup extends DimmingPopupWindow {
 		bitmapDrawable.setFilterBitmap(false);
 
 		this.qrCodeView.setImageDrawable(bitmapDrawable);
-		if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
+		if (ConfigUtils.isTheDarkSide(context)) {
 			ConfigUtils.invertColors(this.qrCodeView);
 		}
 

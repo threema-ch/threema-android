@@ -233,7 +233,7 @@ sealed class P2PContext(val pckPublic: ByteArray, val pcck: ByteArray) {
         // (https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html).
         // Therefore we need to swap endianness as the protocol specifies a little endian sequence number
         val swappedPcsn = EndianUtils.swapLong(currentPcsn.toLong())
-        return pcck + Utils.longToByteArray(swappedPcsn)
+        return pcck + Utils.longToByteArrayBigEndian(swappedPcsn)
     }
 }
 

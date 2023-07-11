@@ -27,8 +27,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -40,9 +38,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.mapbox.android.gestures.MoveGestureDetector;
 import com.mapbox.mapboxsdk.annotations.Marker;
@@ -66,18 +77,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.ContentLoadingProgressBar;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -131,10 +130,11 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	private TextView poilistDescription;
 	MaterialCardView searchView;
 	AppBarLayout appBarLayout;
+	CollapsingToolbarLayout collapsingToolbarBarLayout;
 	private LatLng lastPosition = new LatLng(0,0);
 
 	private LocationPickerAdapter locationPickerAdapter;
-	private ContentLoadingProgressBar loadingProgressBar;
+	private CircularProgressIndicator loadingProgressBar;
 
 	/**
 	 * Launcher to request location permissions. When the location permission is given, it zooms to the current position (or asks to enable location services).
@@ -206,18 +206,18 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 
 		setContentView(R.layout.activity_location_picker);
 
 		ConfigUtils.configureTransparentStatusBar(this);
-		((CollapsingToolbarLayout) findViewById(R.id.collapsingToolbarLayout)).setStatusBarScrimColor(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
 
 		root = findViewById(R.id.coordinator);
-		appBarLayout = findViewById(R.id.appbar_layout);
+		appBarLayout = findViewById(R.id.appbar);
+		collapsingToolbarBarLayout = findViewById(R.id.collapsingToolbarLayout);
 		mapView = findViewById(R.id.map);
 
-		Toolbar toolbar = findViewById(R.id.toolbar);
+		MaterialToolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar == null) {
@@ -225,10 +225,6 @@ public class LocationPickerActivity extends ThreemaActivity implements
 			return;
 		}
 		actionBar.setDisplayHomeAsUpEnabled(true);
-
-		if (toolbar.getNavigationIcon() != null) {
-			toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-		}
 
 		// Get Threema services
 		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
@@ -288,8 +284,8 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
 		searchView = findViewById(R.id.search_container);
 		searchView.setVisibility(View.VISIBLE);
-		((AppBarLayout)findViewById(R.id.appbar_layout)).addOnOffsetChangedListener(((appBarLayout, verticalOffset) -> {
-			Toolbar toolbar = findViewById(R.id.toolbar);
+		((AppBarLayout)findViewById(R.id.appbar)).addOnOffsetChangedListener(((appBarLayout, verticalOffset) -> {
+			MaterialToolbar toolbar = findViewById(R.id.toolbar);
 			float verticalOffset1 = (float)verticalOffset;
 			toolbar.setAlpha(Math.abs(verticalOffset1 / (float)appBarLayout.getTotalScrollRange()));
 		}));
@@ -302,6 +298,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
 		if (layoutParams != null) {
 			CoordinatorLayout.LayoutParams appBarLayoutParams = (CoordinatorLayout.LayoutParams)layoutParams;
+			AppBarLayout.LayoutParams collapsingToolBarLayoutParams = (AppBarLayout.LayoutParams)collapsingToolbarBarLayout.getLayoutParams();
 			appBarLayoutParams.setBehavior((new AppBarLayout.Behavior()));
 			CoordinatorLayout.Behavior appBarLayoutParamsBehavior = appBarLayoutParams.getBehavior();
 
@@ -317,15 +314,15 @@ public class LocationPickerActivity extends ThreemaActivity implements
 				// Set the size of AppBarLayout to 68% of the total height
 				CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
 				if (ViewCompat.isLaidOut(coordinatorLayout) && !coordinatorLayout.isLayoutRequested()) {
-					appBarLayoutParams.height = coordinatorLayout.getHeight() * APPBAR_HEIGHT_PERCENT / 100;
-					appBarLayout.setLayoutParams(appBarLayoutParams);
+					collapsingToolBarLayoutParams.height = coordinatorLayout.getHeight() * APPBAR_HEIGHT_PERCENT / 100 - getResources().getDimensionPixelSize(R.dimen.send_location_container_height);
+					collapsingToolbarBarLayout.setLayoutParams(collapsingToolBarLayoutParams);
 				} else {
 					coordinatorLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
 						@Override
 						public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 							coordinatorLayout.removeOnLayoutChangeListener(this);
-							appBarLayoutParams.height = coordinatorLayout.getHeight() * APPBAR_HEIGHT_PERCENT / 100;
-							appBarLayout.setLayoutParams(appBarLayoutParams);
+							collapsingToolBarLayoutParams.height = coordinatorLayout.getHeight() * APPBAR_HEIGHT_PERCENT / 100 - getResources().getDimensionPixelSize(R.dimen.send_location_container_height);
+							collapsingToolbarBarLayout.setLayoutParams(collapsingToolBarLayoutParams);
 						}
 					});
 				}
@@ -513,13 +510,10 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-			case R.id.action_search:
-				requestPlacesSearch();
-				break;
+		if (item.getItemId() == android.R.id.home) {
+			finish();
+		} else if (item.getItemId() == R.id.action_search) {
+			requestPlacesSearch();
 		}
 		return true;
 	}

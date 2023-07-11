@@ -2,24 +2,24 @@
 
 <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/linear_block"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="vertical"
-	xmlns:android="http://schemas.android.com/apk/res/android">
+	android:orientation="vertical">
 
 	<include layout="@layout/toolbar_view"/>
 
 	<ScrollView
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="?android:windowBackground">
+		android:background="?android:attr/colorBackground">
 
 		<androidx.constraintlayout.widget.ConstraintLayout
 			android:id="@id/constraint_layout"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:background="?android:windowBackground">
+			android:background="?android:attr/colorBackground">
 
 			<TextView
 				android:id="@id/verification_description"
@@ -29,8 +29,8 @@
 				android:layout_marginStart="16dp"
 				android:layout_marginTop="16dp"
 				android:text="@string/verification_settings_desc"
-				android:textAppearance="@style/Threema.TextAppearance.Body1"
-				android:textColor="?android:textColorPrimary"
+				android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+				android:textColor="?attr/colorOnBackground"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toTopOf="parent" />
@@ -54,11 +54,13 @@
 					android:layout_weight="1"
 					android:clickable="false"
 					android:focusable="false"
-					app:cardBackgroundColor="?attr/cardview_background"
+					app:cardBackgroundColor="?attr/colorOnSurfaceInverse"
 					app:cardCornerRadius="@dimen/cardview_border_radius"
 					app:cardElevation="4dp"
+					app:strokeWidth="0dp"
 					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/verification_description">
+					app:layout_constraintTop_toBottomOf="@id/verification_description"
+					android:outlineProvider="none">
 
 					<androidx.constraintlayout.widget.ConstraintLayout
 						android:layout_width="match_parent"
@@ -93,9 +95,11 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginStart="16dp"
+							android:layout_marginEnd="16dp"
 							android:layout_marginTop="16dp"
 							android:text="@string/work_verification_levels_title"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
+							android:textAppearance="@style/Threema.TextAppearance.Headline"
+							android:textSize="20sp"
 							app:layout_constraintStart_toStartOf="parent"
 							app:layout_constraintTop_toTopOf="parent" />
 
@@ -105,19 +109,18 @@
 							android:layout_height="wrap_content"
 							android:layout_marginEnd="16dp"
 							android:layout_marginStart="16dp"
-							android:layout_marginTop="24dp"
+							android:layout_marginTop="16dp"
 							android:text="@string/verification_level3_work_explain"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
-							android:textColor="?android:textColorPrimary"
+							android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+							android:textColor="?attr/colorOnBackground"
 							app:layout_constraintEnd_toEndOf="parent"
 							app:layout_constraintStart_toEndOf="@id/verification_level_3_work_img"
 							app:layout_constraintTop_toBottomOf="@id/work_verifications_title" />
 
-						<View
+						<com.google.android.material.divider.MaterialDivider
 							android:layout_width="match_parent"
 							android:layout_height="1dp"
 							android:layout_marginTop="16dp"
-							android:background="?attr/cardview_divider_color"
 							app:layout_constraintTop_toBottomOf="@id/verification_level_3_work_txt" />
 
 						<TextView
@@ -128,8 +131,8 @@
 							android:layout_marginStart="16dp"
 							android:layout_marginTop="32dp"
 							android:text="@string/verification_level2_work_explain"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
-							android:textColor="?android:textColorPrimary"
+							android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+							android:textColor="?attr/colorOnBackground"
 							app:layout_constraintEnd_toEndOf="parent"
 							app:layout_constraintStart_toEndOf="@id/verification_level_2_work_img"
 							app:layout_constraintTop_toBottomOf="@id/verification_level_3_work_txt" />
@@ -147,9 +150,11 @@
 					android:layout_weight="1"
 					android:clickable="false"
 					android:focusable="false"
-					app:cardBackgroundColor="?attr/cardview_background"
+					app:cardBackgroundColor="?attr/colorOnSurfaceInverse"
 					app:cardCornerRadius="@dimen/cardview_border_radius"
-					app:cardElevation="4dp">
+					app:strokeWidth="0dp"
+					app:cardElevation="4dp"
+					android:outlineProvider="none">
 
 					<androidx.constraintlayout.widget.ConstraintLayout
 						android:layout_width="match_parent"
@@ -197,8 +202,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginStart="16dp"
 							android:layout_marginTop="16dp"
+							android:layout_marginEnd="16dp"
 							android:text="@string/external_verification_levels_title"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
+							android:textAppearance="@style/Threema.TextAppearance.Headline"
+							android:textSize="20sp"
 							app:layout_constraintStart_toStartOf="parent"
 							app:layout_constraintTop_toTopOf="parent" />
 
@@ -208,19 +215,18 @@
 							android:layout_height="wrap_content"
 							android:layout_marginEnd="16dp"
 							android:layout_marginStart="16dp"
-							android:layout_marginTop="24dp"
+							android:layout_marginTop="16dp"
 							android:text="@string/verification_level3_explain"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
-							android:textColor="?android:textColorPrimary"
+							android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+							android:textColor="?attr/colorOnBackground"
 							app:layout_constraintEnd_toEndOf="parent"
 							app:layout_constraintStart_toEndOf="@id/verification_level_3_img"
 							app:layout_constraintTop_toBottomOf="@id/external_verifications_title" />
 
-						<View
+						<com.google.android.material.divider.MaterialDivider
 							android:layout_width="match_parent"
 							android:layout_height="1dp"
 							android:layout_marginTop="16dp"
-							android:background="?attr/cardview_divider_color"
 							app:layout_constraintTop_toBottomOf="@id/verification_level_3_txt" />
 
 						<TextView
@@ -231,17 +237,16 @@
 							android:layout_marginStart="16dp"
 							android:layout_marginTop="32dp"
 							android:text="@string/verification_level2_explain"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
-							android:textColor="?android:textColorPrimary"
+							android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+							android:textColor="?attr/colorOnBackground"
 							app:layout_constraintEnd_toEndOf="parent"
 							app:layout_constraintStart_toEndOf="@id/verification_level_2_img"
 							app:layout_constraintTop_toBottomOf="@id/verification_level_3_txt" />
 
-						<View
+						<com.google.android.material.divider.MaterialDivider
 							android:layout_width="match_parent"
 							android:layout_height="1dp"
 							android:layout_marginTop="16dp"
-							android:background="?attr/cardview_divider_color"
 							app:layout_constraintTop_toBottomOf="@id/verification_level_2_txt" />
 
 						<TextView
@@ -253,8 +258,8 @@
 							android:layout_marginStart="16dp"
 							android:layout_marginTop="32dp"
 							android:text="@string/verification_level1_explain"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
-							android:textColor="?android:textColorPrimary"
+							android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+							android:textColor="?attr/colorOnBackground"
 							app:layout_constraintBottom_toBottomOf="parent"
 							app:layout_constraintEnd_toEndOf="parent"
 							app:layout_constraintStart_toEndOf="@id/verification_level_1_img"

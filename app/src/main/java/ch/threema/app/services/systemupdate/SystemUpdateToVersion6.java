@@ -26,7 +26,7 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.database.Cursor;
 
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import java.util.Arrays;
 import java.util.HashSet;

@@ -35,23 +35,20 @@
 					android:text="@string/app_name"
 					android:gravity="center_horizontal"
 					android:layout_centerHorizontal="true"
-					android:textColor="?attr/textColorPrimary"
 					android:layout_marginTop="8dp"
 			/>
 
 			<TextView
+					style="@style/WizardMediumText"
 					android:id="@+id/layout_top"
 					android:layout_below="@id/enter_serial_welcome_title"
-					style="@style/WizardMediumText"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center_horizontal"
 					android:layout_centerHorizontal="true"
 					android:linksClickable="true"
 					android:autoLink="web"
-					android:textColorLink="@color/wizard_color_accent"
 					android:text="@string/enter_serial_body"
-					android:textColor="?attr/textColorPrimary"
 					android:layout_marginTop="@dimen/wizard_paragraph_height"
 					android:layout_marginBottom="5dp"
 			/>
@@ -69,7 +66,7 @@
 						android:id="@+id/unlock_logo"
 						android:layout_width="@dimen/wizard_default_view_height"
 						android:layout_height="@dimen/wizard_default_view_height"
-						app:srcCompat="@drawable/ic_person_grey600_24dp"/>
+						app:srcCompat="@drawable/ic_person_outline"/>
 
 				<ch.threema.app.emojis.EmojiEditText
 						style="@style/WizardEditText"
@@ -151,15 +148,13 @@
 					android:text="@string/next" />
 
 			<TextView
+				style="@style/WizardMediumText"
 				android:id="@+id/private_explain"
 				android:visibility="visible"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:layout_below="@id/unlock_button_work"
-				android:textAppearance="?android:textAppearanceMedium"
 				android:gravity="center_horizontal"
-				android:textColorLink="@color/wizard_color_accent"
-				android:textColor="?attr/textColorPrimary"
 				android:layout_marginTop="32dp" />
 
 		</RelativeLayout>

@@ -24,8 +24,6 @@
     <string name="new_wizard_info_sync_contacts">Si habilita esta opción, Threema OnPrem encripta unidireccionalmente las direcciones de correo electrónico y números de teléfono antes de enviarlas al servidor para buscar contactos coincidentes. Los datos se conservan solo en la memoria y nunca se almacenan en el servidor.</string>
     <string name="threema_contact">Contactar con Threema OnPrem</string>
     <string name="menu_about">Acerca de Threema OnPrem</string>
-    <string name="list_theme_light">Claro</string>
-    <string name="list_theme_dark">Oscuro (predeterminado)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Para usuarios privados</a>]]></string>
     <string name="directory_search">Buscar en el directorio</string>
     <string name="directory_title">Directorio de la empresa</string>

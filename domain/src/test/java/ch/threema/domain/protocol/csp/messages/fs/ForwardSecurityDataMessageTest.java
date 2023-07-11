@@ -28,24 +28,27 @@ import org.junit.Test;
 
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.protobuf.csp.e2e.fs.ForwardSecurityEnvelope;
+import ch.threema.protobuf.csp.e2e.fs.Encapsulated;
+import ch.threema.protobuf.csp.e2e.fs.Envelope;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 public class ForwardSecurityDataMessageTest {
-	static final DHSessionId TEST_SESSION_ID = new DHSessionId();
-	static final ForwardSecurityEnvelope.Message.DHType TEST_DH_TYPE = ForwardSecurityEnvelope.Message.DHType.FOURDH;
-	static final long TEST_COUNTER = 1;
-	static final byte[] TEST_MESSAGE = new byte[] { 0x01, (byte)0x48, (byte)0x65, (byte)0x6c, (byte)0x6c, (byte)0x6f};
+	private static final DHSessionId TEST_SESSION_ID = new DHSessionId();
+	private static final Encapsulated.DHType TEST_DH_TYPE = Encapsulated.DHType.FOURDH;
+	private static final long TEST_COUNTER = 1;
+	private static final byte[] TEST_MESSAGE = new byte[] { 0x01, (byte)0x48, (byte)0x65, (byte)0x6c, (byte)0x6c, (byte)0x6f};
 
-	static final ForwardSecurityEnvelope TEST_PROTOBUF_MESSAGE = ForwardSecurityEnvelope.newBuilder()
+	private static final Envelope TEST_PROTOBUF_MESSAGE = Envelope.newBuilder()
 		.setSessionId(ByteString.copyFrom(TEST_SESSION_ID.get()))
-		.setMessage(ForwardSecurityEnvelope.Message.newBuilder()
+		.setEncapsulated(Encapsulated.newBuilder()
 			.setDhType(TEST_DH_TYPE)
 			.setCounter(TEST_COUNTER)
-			.setMessage(ByteString.copyFrom(TEST_MESSAGE))
+			.setEncryptedInner(ByteString.copyFrom(TEST_MESSAGE))
+			.setAppliedVersion(Version.V1_1.getNumber())
 			.build())
 		.build();
 
-	static void assertEqualsTestProperties(ForwardSecurityDataMessage data) {
+	private static void assertEqualsTestProperties(ForwardSecurityDataMessage data) {
 		Assert.assertEquals(TEST_SESSION_ID, data.getSessionId());
 		Assert.assertEquals(TEST_DH_TYPE, data.getType());
 		Assert.assertEquals(TEST_COUNTER, data.getCounter());
@@ -53,7 +56,7 @@ public class ForwardSecurityDataMessageTest {
 	}
 
 	public ForwardSecurityDataMessage makeForwardSecurityDataMessage() {
-		return new ForwardSecurityDataMessage(TEST_SESSION_ID, TEST_DH_TYPE, TEST_COUNTER, TEST_MESSAGE);
+		return new ForwardSecurityDataMessage(TEST_SESSION_ID, Encapsulated.DHType.FOURDH, TEST_COUNTER, Version.V1_1_VALUE, TEST_MESSAGE);
 	}
 
 	@Test
@@ -72,7 +75,7 @@ public class ForwardSecurityDataMessageTest {
 	@Test
 	public void testToProtobufMessage() {
 		final ForwardSecurityDataMessage data = makeForwardSecurityDataMessage();
-		final ForwardSecurityEnvelope generatedProtobufMessage = data.toProtobufMessage();
+		final Envelope generatedProtobufMessage = data.toProtobufMessage();
 
 		Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
 	}

@@ -21,6 +21,7 @@
 
 package ch.threema.app.camera
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -40,20 +41,38 @@ import android.util.Rational
 import android.util.Size
 import android.view.*
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.camera.core.*
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraInfo
+import androidx.camera.core.CameraInfoUnavailableException
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.CameraState
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.FlashMode
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.core.ZoomState
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.FallbackStrategy
+import androidx.camera.video.FileOutputOptions
+import androidx.camera.video.Quality
+import androidx.camera.video.QualitySelector
+import androidx.camera.video.Recorder
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
+import androidx.camera.video.VideoRecordEvent
+import androidx.camera.video.VideoRecordEvent.Finalize
 import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.util.Consumer
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asFlow
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ch.threema.app.R
@@ -67,12 +86,14 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.base.utils.LoggingUtil
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import java.io.File
+import java.lang.IllegalArgumentException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.floor
@@ -86,7 +107,8 @@ class CameraFragment : Fragment() {
     private var displayId: Int = -1
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
-    private var videoCapture: VideoCapture? = null
+    private var videoCapture: VideoCapture<Recorder>? = null
+    private var videoRecording: Recording? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
 
@@ -96,7 +118,7 @@ class CameraFragment : Fragment() {
     private var container: ConstraintLayout? = null
     private var controlsContainer: View? = null
     private var previewView: PreviewView? = null
-    private var progressBar: ProgressBar? = null
+    private var progressBar: CircularProgressIndicator? = null
     private var timerView: TimerView? = null
     private var windowInsets: WindowInsetsCompat? = null
     private var mediaActionSound: LessObnoxiousMediaActionSound? = null
@@ -109,11 +131,6 @@ class CameraFragment : Fragment() {
     // Configuration options
     private var targetWidth = CameraConfig.getDefaultImageSize()
     private var targetHeight = CameraConfig.getDefaultImageSize()
-    private val targetVideoWidth = CameraConfig.getDefaultVideoSize()
-    private val targetVideoHeight = CameraConfig.getDefaultVideoSize()
-    private val targetVideoBitrate = CameraConfig.getDefaultVideoBitrate()
-    private val targetAudioBitrate = CameraConfig.getDefaultAudioBitrate()
-    private val targetVideoFramerate = CameraConfig.getDefaultVideoFramerate()
 
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
@@ -142,12 +159,10 @@ class CameraFragment : Fragment() {
         override fun onDisplayAdded(displayId: Int) = Unit
         override fun onDisplayRemoved(displayId: Int) = Unit
 
-        @SuppressLint("RestrictedApi")
         override fun onDisplayChanged(displayId: Int) = view?.let { view ->
             if (displayId == this@CameraFragment.displayId) {
                 logger.debug("Rotation changed: {}", view.display.rotation)
                 imageCapture?.targetRotation = view.display.rotation
-                videoCapture?.setTargetRotation(view.display.rotation)
             }
         } ?: Unit
     }
@@ -166,22 +181,32 @@ class CameraFragment : Fragment() {
         }
     }
 
-    @SuppressLint("RestrictedApi")
-    private val onVideoSavedCallback: VideoCapture.OnVideoSavedCallback = object : VideoCapture.OnVideoSavedCallback {
-        override fun onVideoSaved(outputFileResults: VideoCapture.OutputFileResults) {
-            if (lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
-                previewView?.visibility = View.GONE
-                val constraintLayout: ConstraintLayout? = container?.findViewById(R.id.camera_ui_container)
-                constraintLayout?.visibility = View.GONE
-                cameraCallback?.onVideoReady()
-            } else {
-                cameraCallback?.onError("Lifecycle")
+    private val videoEventConsumer: Consumer<VideoRecordEvent> = Consumer {
+        when (it) {
+            is VideoRecordEvent.Start -> logger.debug("Starting recording")
+            is Finalize -> {
+                if (it.hasError()) {
+                    cameraCallback?.onError(
+                        when(it.error) {
+                            Finalize.ERROR_ENCODING_FAILED -> "Encoding failed"
+                            Finalize.ERROR_FILE_SIZE_LIMIT_REACHED -> "File size limit reached"
+                            Finalize.ERROR_INSUFFICIENT_STORAGE -> "Insufficient storage"
+                            Finalize.ERROR_INVALID_OUTPUT_OPTIONS -> "Invalid output options"
+                            Finalize.ERROR_NO_VALID_DATA -> "No valid data"
+                            Finalize.ERROR_RECORDER_ERROR -> "Recorder error"
+                            Finalize.ERROR_SOURCE_INACTIVE -> "Source inactive"
+                            Finalize.ERROR_UNKNOWN -> "Unknown"
+                            Finalize.ERROR_NONE -> "None"
+                            else -> "Unknown"
+                        }
+                    )
+                } else {
+                    previewView?.visibility = View.GONE
+                    container?.findViewById<ConstraintLayout?>(R.id.camera_ui_container)
+                        ?.visibility = View.GONE
+                    cameraCallback?.onVideoReady()
+                }
             }
-        }
-
-        override fun onError(videoCaptureError: Int, message: String, cause: Throwable?) {
-            logger.debug("Video capture error {}", message)
-            cameraCallback?.onError(message)
         }
     }
 
@@ -363,7 +388,6 @@ class CameraFragment : Fragment() {
     }
 
     /** Declare and bind preview, capture and analysis use cases */
-    @SuppressLint("RestrictedApi")
     private fun bindCameraUseCases(): Boolean {
         if (previewView == null || previewView!!.display == null) {
             return false
@@ -378,7 +402,6 @@ class CameraFragment : Fragment() {
 
         val cameraProvider = cameraProvider
                 ?: throw IllegalStateException("Camera initialization failed.")
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(viewModel.lensFacing).build()
 
         val previewHeight = (previewView!!.measuredWidth / targetAspectRatio.toFloat()).toInt()
 
@@ -390,89 +413,96 @@ class CameraFragment : Fragment() {
                 .build()
         logger.debug("Preview size: {} * {} isDisplayPortrait {}", previewView!!.measuredWidth, previewHeight, isDisplayPortrait)
 
-        val width: Int
-        val height: Int
-
         if (ConfigUtils.supportsVideoCapture() && recordingMode == RECORDING_MODE_VIDEO) {
-            if (targetVideoWidth > targetVideoHeight) {
-                width = (targetVideoHeight.toFloat() * targetAspectRatio.toFloat()).toInt()
-                height = targetVideoHeight
-            } else if (targetVideoWidth < targetVideoHeight) {
-                width = targetVideoWidth
-                height = (targetVideoWidth.toFloat() / targetAspectRatio.toFloat()).toInt()
-            } else {
-                if (isDisplayPortrait) {
-                    width = (targetVideoHeight.toFloat() * targetAspectRatio.toFloat()).toInt()
-                    height = targetVideoHeight
-                } else {
-                    width = targetVideoWidth
-                    height = (targetVideoWidth.toFloat() / targetAspectRatio.toFloat()).toInt()
-                }
-            }
-
-            videoCapture = VideoCapture.Builder()
-                    .setTargetName("VideoCapture")
-                    .setTargetResolution(Size(width, height))
-                    .setTargetRotation(rotation)
-                    .setAudioChannelCount(1)
-/* Setting the video bitrate currently causes Pixel 5 to crash */
-/*                  .setBitRate(targetVideoBitrate) */
-                    .setAudioBitRate(targetAudioBitrate)
-                    .setVideoFrameRate(targetVideoFramerate)
-                    .build()
-            logger.debug("Video capture size: {} * {}", width, height)
-
+            prepareVideoRecording(cameraProvider)
+            imageCapture = null
         } else {
-            // ImageCapture
-            // Adjust the captured image resolution according to the view size and the target width.
-
-            if (targetWidth > targetHeight) {
-                width = (targetHeight.toFloat() * targetAspectRatio.toFloat()).toInt()
-                height = targetHeight
-            } else if (targetWidth < targetHeight) {
-                width = targetWidth
-                height = (targetWidth.toFloat() / targetAspectRatio.toFloat()).toInt()
-            } else {
-                if (isDisplayPortrait) {
-                    width = (targetHeight.toFloat() * targetAspectRatio.toFloat()).toInt()
-                    height = targetHeight
-                } else {
-                    width = targetWidth
-                    height = (targetWidth.toFloat() / targetAspectRatio.toFloat()).toInt()
-                }
+            if (!prepareImageCapture(cameraProvider, isDisplayPortrait, targetAspectRatio, rotation)) {
+                return false
             }
-
-            imageCapture = ImageCapture.Builder()
-                    .setTargetName("ImageCapture")
-                    .setCaptureMode(CameraUtil.getCaptureMode())
-                    .setTargetResolution(Size(width, height))
-                    .setTargetRotation(rotation)
-                    .build()
-            logger.debug("Image capture size: {} * {}", width, height)
-
             videoCapture = null
         }
 
+        // Attach the viewfinder's surface provider to preview use case
+        preview?.setSurfaceProvider(previewView!!.surfaceProvider)
+        observeCameraState(camera?.cameraInfo!!)
+
+        return true
+    }
+
+    private fun prepareVideoRecording(cameraProvider: ProcessCameraProvider) {
+        val qualitySelector = QualitySelector.fromOrderedList(
+            listOf(Quality.HD, Quality.FHD, Quality.SD, Quality.UHD),
+            FallbackStrategy.higherQualityOrLowerThan(Quality.HD)
+        )
+
+        // Note that the video bit rate varies depending on the device. However, we still set the
+        // bitrate to keep the bitrate close to the value we use for calculating the maximum
+        // duration of a video.
+        val recorder = Recorder.Builder()
+            .setQualitySelector(qualitySelector)
+            .setTargetVideoEncodingBitRate(CameraConfig.getDefaultVideoBitrate())
+            .build()
+
+        videoCapture = VideoCapture.withOutput(recorder)
+
         try {
-            // Must unbind the use-cases before rebinding them
             cameraProvider.unbindAll()
+            camera = cameraProvider.bindToLifecycle(
+                this,
+                CameraSelector.Builder().requireLensFacing(viewModel.lensFacing).build(),
+                preview,
+                videoCapture
+            )
+        } catch (e: Exception) {
+            logger.error("Error binding camera to lifecycle", e)
+        }
+    }
 
-            // A variable number of use-cases can be passed here -
-            // camera provides access to CameraControl & CameraInfo
-            camera = if (videoCapture != null) {
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, videoCapture)
+    private fun prepareImageCapture(
+        cameraProvider: ProcessCameraProvider,
+        isDisplayPortrait: Boolean,
+        targetAspectRatio: Rational,
+        rotation: Int,
+    ) : Boolean {
+        val cameraSelector = CameraSelector.Builder().requireLensFacing(viewModel.lensFacing).build()
+
+        // ImageCapture
+        // Adjust the captured image resolution according to the view size and the target width.
+        val width: Int
+        val height: Int
+
+        if (targetWidth > targetHeight) {
+            width = (targetHeight.toFloat() * targetAspectRatio.toFloat()).toInt()
+            height = targetHeight
+        } else if (targetWidth < targetHeight) {
+            width = targetWidth
+            height = (targetWidth.toFloat() / targetAspectRatio.toFloat()).toInt()
+        } else {
+            if (isDisplayPortrait) {
+                width = (targetHeight.toFloat() * targetAspectRatio.toFloat()).toInt()
+                height = targetHeight
             } else {
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+                width = targetWidth
+                height = (targetWidth.toFloat() / targetAspectRatio.toFloat()).toInt()
             }
-
-            // Attach the viewfinder's surface provider to preview use case
-            preview?.setSurfaceProvider(previewView!!.surfaceProvider)
-            observeCameraState(camera?.cameraInfo!!)
-        } catch (exc: Exception) {
-            logger.error("Use case binding failed", exc)
-            return false
         }
 
+        imageCapture = ImageCapture.Builder()
+            .setTargetName("ImageCapture")
+            .setCaptureMode(CameraUtil.getCaptureMode())
+            .setTargetResolution(Size(width, height))
+            .setTargetRotation(rotation)
+            .build()
+        logger.debug("Image capture size: {} * {}", width, height)
+
+        cameraProvider.unbindAll()
+        try {
+            camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Unable to resolve camera", e)
+            return false
+        }
         return true
     }
 
@@ -509,7 +539,7 @@ class CameraFragment : Fragment() {
                     return
                 }
             } catch (exc: java.lang.IllegalStateException) {
-                logger.error("Unable to get flash state", exc.message)
+                logger.error("Unable to get flash state", exc)
             }
             it.visibility = View.GONE
         }
@@ -813,14 +843,17 @@ class CameraFragment : Fragment() {
         updateFlashButton()
     }
 
-    @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError", "RestrictedApi", "MissingPermission")
     private fun startVideoRecording() {
-        if (cameraCallback?.videoFilePath == null) {
+        val context = context
+        if (cameraCallback?.videoFilePath == null || context == null) {
             return
         }
 
-        // play shutter sound
+        // Play shutter sound
         mediaActionSound?.play(LessObnoxiousMediaActionSound.START_VIDEO_RECORDING)
+        // Use default video and audio bitrate to calculate video duration. Note that the actual
+        // bitrate depends on the device. If the video gets larger than the maximum blob size, then
+        // it will be transcoded to reduce file size.
         val bytesPerSecond = CameraConfig.getDefaultVideoBitrate().toFloat() / 8f + CameraConfig.getDefaultAudioBitrate().toFloat() / 8f
         val durationSeconds = floor(((ThreemaApplication.MAX_BLOB_SIZE - 1000000).toFloat() / bytesPerSecond).toDouble()).toLong() // we assume a MP4 overhead of 1 MB
         logger.debug("Calculated video duration: " + LocaleUtil.formatTimerText(durationSeconds * DateUtils.SECOND_IN_MILLIS, true))
@@ -831,7 +864,15 @@ class CameraFragment : Fragment() {
         camera?.cameraControl?.setLinearZoom(0F)
 
         // Create output options object which contains file + metadata
-        val outputOptions = VideoCapture.OutputFileOptions.Builder(File(cameraCallback?.videoFilePath!!)).build()
+        val pendingRecording = videoCapture?.output?.prepareRecording(
+            context,
+            FileOutputOptions.Builder(File(cameraCallback?.videoFilePath!!)).build()
+        )
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            pendingRecording?.withAudioEnabled()
+        }
 
         CoroutineScope(Dispatchers.Default).launch {
             // Wait until camera is open
@@ -844,11 +885,10 @@ class CameraFragment : Fragment() {
             RuntimeUtil.runOnUiThread {
                 timerView?.start(durationSeconds * DateUtils.SECOND_IN_MILLIS) { _: Long -> stopVideoRecording() }
             }
-            videoCapture?.startRecording(outputOptions, RuntimeUtil.MainThreadExecutor(), onVideoSavedCallback)
+            videoRecording = pendingRecording?.start(RuntimeUtil.MainThreadExecutor(), videoEventConsumer)
         }
     }
 
-    @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError", "RestrictedApi")
     private fun stopVideoRecording() {
         timerView?.stop()
 
@@ -862,7 +902,7 @@ class CameraFragment : Fragment() {
             // ignore this
         }
         try {
-            videoCapture?.stopRecording()
+            videoRecording?.stop()
         } catch (e: java.lang.Exception) {
             logger.error("Exception", e)
         }

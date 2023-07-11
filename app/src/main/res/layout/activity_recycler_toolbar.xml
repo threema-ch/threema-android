@@ -3,7 +3,8 @@
                                                  xmlns:app="http://schemas.android.com/apk/res-auto"
                                                  android:id="@+id/parent_layout"
                                                  android:layout_width="match_parent"
-                                                 android:layout_height="match_parent">
+                                                 android:layout_height="match_parent"
+												android:background="?android:attr/colorBackground">
 
 	<include layout="@layout/toolbar_view"/>
 
@@ -13,7 +14,7 @@
 			android:layout_height="match_parent"
 			android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
 			android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+			app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 	<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 			android:id="@+id/floating"

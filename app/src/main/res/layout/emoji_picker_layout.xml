@@ -5,6 +5,6 @@
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/default_emoji_picker_height"
 		android:elevation="6dp"
-		android:background="@color/emoji_picker_background_main"
+		android:background="?attr/emoji_picker_background_main"
 		android:orientation="horizontal"
 		android:visibility="gone"/>

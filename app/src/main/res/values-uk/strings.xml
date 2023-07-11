@@ -3,7 +3,7 @@
     <string name="title_section2">Контакти</string>
     <string name="title_section1">Чати</string>
     <string name="title_compose_message">Почати чат</string>
-    <string name="title_choose_recipient">Виберіть одержувача</string>
+    <string name="title_choose_recipient">Виберіть отримувача</string>
     <string name="title_keyfingerprint">Відбиток ключа</string>
     <string name="title_mythreemaid">Мій ID Threema</string>
     <string name="title_threemaid">ID Threema</string>
@@ -292,7 +292,6 @@
     <string name="title_select_contacts">Виберіть учасників</string>
     <string name="pin_invalid_not_set">PIN-код недійсний. Не встановлено.</string>
     <string name="prefs_group_notifications">Груповий чат</string>
-    <string name="add_group_members_list">Учасники групи</string>
     <string name="group_select_at_least_two">Щоб продовжити, виберіть принаймні одного учасника</string>
     <string name="group_select_max">Ви перевищили максимальну кількість учасників групи (%1$d)</string>
     <string name="search">Пошук</string>
@@ -557,7 +556,7 @@
 		мобільного зв\'язку може стягувати додаткову плату за передавання даних. Радимо передавати й завантажувати файли лише в
 		мережах Wi-Fi.</string>
     <string name="prefs_theme">Тема оформлення</string>
-    <string name="list_theme_light">Світла (за умовчанням)</string>
+    <string name="list_theme_light">Світла</string>
     <string name="list_theme_dark">Темна</string>
     <string name="prefs_header_appearance">Вигляд</string>
     <string name="prefs_sum_passphrase">Запитувати парольну фразу для розшифрування локальних даних</string>
@@ -718,7 +717,7 @@
     <string name="prefs_proximity_sensor">Датчик відстані</string>
     <string name="prefs_proximity_sensor_explain">Відтворювати голосові повідомлення через слуховий динамік, коли ви тримаєте пристрій біля вуха</string>
     <string name="error_creating_group">Не вдалося створити або оновити групу</string>
-    <string name="no_media_found_generic">У цьому чаті медіафайлів не знайдено</string>
+    <string name="no_media_found_generic">У цьому чаті не знайдено відповідні медіафайли.</string>
     <string name="max_images_reached">Макс. кількість об\'єктів для одночасного редагування: %d</string>
     <string name="enter_description">Опишіть помилку або несправність.</string>
     <string name="add_caption_hint">Додати підпис</string>
@@ -938,7 +937,7 @@
     <string name="safe_configure_choose_password_force">Встановіть надійний пароль, щоб захистити свій ID в Threema Safe. Запам\'ятайте цей пароль!</string>
     <string name="safe_deactivate">Вимкнути Threema Safe</string>
     <string name="safe_deactivate_explain">Якщо ви вимкнете Threema Safe, усі наявні резервні копії буде видалено з сервера. Продовжити?</string>
-    <string name="add_group_members">Додати учасника</string>
+    <string name="add_group_members">Додати учасників</string>
     <string name="contact_add_confirm">Додати новий контакт \"%1$s\" до вашого списку контактів?</string>
     <string name="password_bad">Ненадійний пароль</string>
     <string name="prefs_fix_background_data">Увімкнути фонові дані</string>
@@ -1055,13 +1054,6 @@
     <string name="open_in_maps_app">Відкрити в додатку для карт</string>
     <string name="delete">Видалити</string>
     <string name="continue_recording">Продовжити запис</string>
-    <string name="whatsnew_title">Нове: групові виклики %1$s</string>
-    <string name="whatsnew_headline"><![CDATA[
-		<p>У %1$s для Android тепер доступні групові виклики, захищені наскрізним шифруванням.</p>
-		<p>Щоб здійснити такий виклик, відкрийте груповий чат і натисніть значок камери у верхній частині екрана.</p>
-		<p>Усі учасники групи отримають сповіщення та зможуть приєднатися до виклику, якщо забажають.</p>
-		<p><b>Примітка.</b> Для iOS функцію групових викликів буде додано пізніше.</p>
-		]]></string>
     <string name="tap_to_start">Торкніться тут, щоб запустити %s.</string>
     <string name="two_years">2 роки</string>
     <string name="invalid_backup_path">Недійсний шлях до рез. копії</string>
@@ -1204,7 +1196,7 @@
     <string name="no_faces_detected">Облич не виявлено</string>
     <string name="smiley">Смайлики</string>
     <string name="blur">Розмивання</string>
-    <string name="face_blur_tooltip_title">Новинка: розпізнавання облич</string>
+    <string name="face_blur_tooltip_title">Розпізнавання облич</string>
     <string name="face_blur_tooltip_text">Знайдіть обличчя на зображенні й розмийте їх або замініть смайликами.</string>
     <string name="listened_to">прослухано</string>
     <string name="transcoder_unsupported_audio_format">Система не підтримує перекодування цього аудіофайлу.</string>
@@ -1275,7 +1267,7 @@
     <string name="group_link_rename">Перейменувати</string>
     <string name="group_link_rename_tag">Нова назва</string>
     <string name="tap_here_for_more">Торкніться тут, щоб дізнатися більше</string>
-    <string name="another_connection_instructions">Сервер виявив кілька з\'єднань із різних пристроїв з однаковим ID Threema.\n\nВикористовувати один ID Threema на кількох пристроях одночасно неможливо. Нові повідомлення надходитимуть лише на той пристрій, який останнім підключився до сервера.\n\nЯкщо ви переходите на новий пристрій, видаліть або вимкніть %s на старому пристрої, а тоді перезавантажте новий.</string>
+    <string name="another_connection_instructions"><![CDATA[Сервер виявив кілька з\'єднань із різних пристроїв з однаковим ID Threema.<br><br>Використовувати один ID Threema на кількох пристроях одночасно неможливо. Нові повідомлення надходитимуть лише на той пристрій, який останнім підключився до сервера.<br><br>Якщо ви переходите на новий пристрій, видаліть або вимкніть %s на старому пристрої, а тоді перезавантажте новий.]]></string>
     <string name="app_store_error_code">Код помилки магазину додатків: %d</string>
     <string name="backup_restore_type"><![CDATA[Виберіть тип резервної копії, з якої потрібно відновити дані. <br/><br/> <a href=%s>Докладніше про резервні копії в Threema</a>]]></string>
     <string name="data_backup_info">Відновити все, включно з чатами</string>
@@ -1399,7 +1391,7 @@
     <string name="organization_type">Організація</string>
     <string name="permission_bluetooth_connect_required">Щоб знаходити підключені Bluetooth-гарнітури, надайте дозвіл \"Пристрої поблизу\".</string>
     <string name="threema_push_start_webclient_sessions_manually">Увімкнено push-сповіщення Threema. Сеанси веб-клієнта та додатка для ПК потрібно запускати вручну.</string>
-    <string name="tooltip_multiple_recipients_title">Нове: кілька отримувачів</string>
+    <string name="tooltip_multiple_recipients_title">Кілька отримувачів</string>
     <string name="tooltip_multiple_recipients_text">Натисніть і утримуйте екран, щоб вибрати кілька отримувачів повідомлення.</string>
     <string name="synchronizing">Триває синхронізація…</string>
     <string name="forward_security">Надсилати повідомлення з Perfect Forward Secrecy</string>
@@ -1447,7 +1439,7 @@
     <string name="prefs_summary_hibernation_api_32">Щоб система не призупиняла роботу Threema після тривалого періоду неактивності, вимкніть налаштування системи \"Видалення дозволів і очищення місця\".</string>
     <string name="prefs_summary_hibernation_api">Щоб система не призупиняла роботу Threema після тривалого періоду неактивності, вимкніть налаштування системи \"Призупинити дії в додатку, якщо він не використовується\".</string>
     <string name="unable_to_fetch_configuration">Не вдалося завантажити дані з сервера конфігурації. Повторіть спробу пізніше.</string>
-    <string name="rogue_device_warning">Сервер виявив підключення з іншого пристрою з ідентичним ID Threema.\n\nЯкщо ви не використовували свій ID Threema на іншому пристрої або в попередній версії додатка, зв\'яжіться зі службою підтримки та за можливості надішліть файл журналу.</string>
+    <string name="rogue_device_warning">Сервер виявив підключення з іншого пристрою з ідентичним ID Threema. Чи використовували ви нещодавно свій ID Threema на іншому пристрої? &lt;br&gt;&lt;br&gt; Якщо так, то можете не зважати на це повідомлення. &lt;br&gt;&lt;br&gt;Якщо ні, то ваш закритий ключ може бути скомпрометовано. <a href="https://threema.ch/en/faq/another_connection">Скористайтеся нашими порадами</a>, щоб захистити свої пристрій і дані, перш ніж створювати новий ID.</string>
     <string name="fetch2_failure">Помилка синхронізації з сервером підготовки.</string>
     <string name="no_members_support_group_calls">У цій групі немає інших учасників, які можуть відповідати на групові виклики</string>
     <string name="group_calls">Групові виклики</string>
@@ -1456,12 +1448,18 @@
     <string name="group_call">Груповий виклик</string>
     <string name="checking_compatibility">Перевірка сумісності…</string>
     <string name="group_call_mic_permission_rationale">Щоб здійснювати групові виклики, потрібно надати %s доступ до мікрофона в розділі \"Дозволи\".</string>
+    <string name="group_call_mic_permission_description">Щоб здійснювати групові виклики, надайте доступ до мікрофона, інакше вас не чутимуть.</string>
+    <string name="call_mic_permission_description">Щоб здійснювати виклики, надайте доступ до мікрофона, інакше вас не чутимуть.</string>
     <string name="group_call_camera_permission_rationale">Щоб інші учасники бачили ваше відео, потрібно надати %s доступ до камери в розділі \"Дозволи\".</string>
+    <string name="group_call_phone_permission_description">Щоб здійснювати групові виклики, надайте доступ до телефона. Це потрібно, щоб визначати, коли звичайний дзвінок перериває груповий виклик.</string>
+    <string name="call_phone_permission_description">Щоб здійснювати виклики Threema, надайте доступ до телефона. Це потрібно, щоб визначати, коли звичайний дзвінок перериває виклик Threema.</string>
+    <string name="group_call_nearby_devices_permission_description">Щоб здійснювати групові виклики за допомогою Bluetooth-гарнітури, надайте дозвіл \"Пристрої поблизу\". Це потрібно, щоб знаходити підключені Bluetooth-гарнітури.</string>
+    <string name="call_nearby_devices_permission_description">Щоб здійснювати виклики Threema за допомогою Bluetooth-гарнітури, надайте дозвіл \"Пристрої поблизу\". Це потрібно, щоб знаходити підключені Bluetooth-гарнітури.</string>
     <string name="settings">Налаштування</string>
     <string name="leave">Вийти</string>
     <string name="fs_key_mismatch">невідповідність ключів</string>
     <string name="tap_to_resend">Натисніть, щоб надіслати знову</string>
-    <string name="group_calls_tooltip_title">Нове: групові виклики</string>
+    <string name="group_calls_tooltip_title">Групові виклики</string>
     <string name="group_calls_tooltip_text">Натисніть тут, щоб запросити всіх учасників групи до виклику. Кожен із них отримає сповіщення та зможе вибрати, приєднуватися йому чи ні.</string>
     <string name="prefs_title_calls">Безпечні виклики</string>
     <string name="prefs_sum_group_calls_vibration">Виберіть, чи вмикати вібрацію, коли починається груповий виклик</string>
@@ -1471,6 +1469,32 @@
     <string name="group_call_inactivity_left">Груповий виклик покинуто через неактивність</string>
     <string name="missing_permission_external_storage">Не вдалося скопіювати файл. Спробуйте виконати такі кроки:\n1. Відкрийте додаток \"Налаштування\".\n2. Перейдіть до розділу \"Додатки\" й виберіть \"Спеціальний доступ для додатка\".\n3. Натисніть \"Доступ до всіх файлів\".\n4. Натисніть три крапки праворуч угорі й виберіть \"Показати системні\".\n5. Натисніть \"Зовнішня пам\'ять\" і переконайтеся, що вибрано варіант \"Надати доступ до керування всіма файлами\".\n6. Спробуйте відновити резервну копію ще раз.</string>
     <string name="forward_security_downgraded_status_message">Цей контакт почав використовувати версію додатка, яка не підтримує Perfect Forward Secrecy. Відтепер повідомлення надсилатимуться без використання цієї функції.</string>
+    <string name="crop_image_title">Кадрувати зображення</string>
+    <string name="scroll_to_bottom">Прокрутити вниз</string>
+    <string name="scroll_to_top">Прокрутити вгору</string>
+    <string name="contact_sync_mdm_rationale">Ваш адміністратор увімкнув синхронізацію контактів для цього пристрою, тому потрібно надати доступ до контактів.</string>
+    <string name="welcome_back">З поверненням!</string>
+    <string name="id_restored_successfully">Ваш ID Threema відновлено</string>
+    <string name="prefs_dynamic_colors">Динамічний колір</string>
+    <string name="prefs_dynamic_colors_sum">Використовувати кольори системи</string>
+    <string name="apply_changes">Застосувати зміни</string>
+    <string name="prefs_threema_work_summary">Чи знали ви, що в компанії Threema також є рішення для робочого спілкування? Натисніть тут, щоб дізнатися більше про Threema Work.</string>
+    <string name="notification_channel_voice_message_player">Програвач голосових повідомлень</string>
+    <string name="voice_message_from">Голосове повідомлення від \"%s\"</string>
+    <string name="vm_fg_service_not_allowed">Помилка відтворення голосового повідомлення</string>
+    <string name="vm_fg_service_not_allowed_explain">Натисніть кнопку відтворення в сповіщенні медіа-вмісту, якщо воно досі є, або відкрийте додаток, щоб почати відтворення з чату.</string>
+    <string name="use_threema_without_this_permission">Використовувати %s без цього дозволу</string>
+    <string name="grant_permission">Надати доступ</string>
+    <string name="grant_permission_settings">Надати доступ у налаштуваннях</string>
+    <string name="ignore_permission">Не запитувати знову</string>
+    <string name="permission_nearby_devices">Пристрої поблизу</string>
+    <string name="permission_bluetooth">Bluetooth</string>
+    <string name="permission_camera">Камера</string>
+    <string name="permission_microphone">Мікрофон</string>
+    <string name="permission_read_phone_state">Телефон</string>
+    <string name="permission_enable_in_settings_rationale">Увімкніть цей дозвіл у налаштуваннях. Виберіть \"Дозволи\" й увімкніть \"%s\".</string>
+    <string name="group_name">Назва групи</string>
+    <string name="samsung_permission_problem_explain">%1$s не має доступу до медіафайлів, оскільки в системного додатку не надано відповідний дозвіл. Щоб усунути цю проблему, переконайтеся, що на наступному екрані активовано перемикач \"Зовнішня пам\'ять\", і перезапустіть %1$s.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакти</item>
         <item quantity="many">%d контактів</item>
@@ -1602,5 +1626,11 @@
         <item quantity="many">Видалити %d повідомлень на цьому пристрої?</item>
         <item quantity="one">Видалити %d повідомлення на цьому пристрої?</item>
         <item quantity="other">Видалити %d повідомлення на цьому пристрої?</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="few">%d учасники групи</item>
+        <item quantity="many">%d учасників групи</item>
+        <item quantity="one">%d учасник групи</item>
+        <item quantity="other">%d учасника групи</item>
     </plurals>
 </resources>

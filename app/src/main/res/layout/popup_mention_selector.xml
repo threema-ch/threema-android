@@ -1,31 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:gravity="bottom">
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Threema.CardView.TopRounded"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:gravity="bottom"
+    app:cardElevation="2dp"
+    app:contentPadding="0dp"
+    app:strokeWidth="0dp"
+    app:cardPreventCornerOverlap="false"
+    android:outlineProvider="none">
 
-	<View
-	      android:layout_width="match_parent"
-	      android:layout_height="@dimen/list_divider_height"
-	      android:background="?background_secondary"
-	      android:foreground="?attr/divider_color"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/group_members_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:scrollbarStyle="outsideInset"
+        android:scrollbars="vertical" />
 
-	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/group_members_list"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_gravity="bottom"
-		android:background="?background_secondary"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:scrollbarStyle="outsideInset"
-		android:scrollbars="vertical"/>
-
-	<View
-	      android:layout_width="match_parent"
-	      android:layout_height="@dimen/list_divider_height"
-	      android:background="?background_secondary"
-	      android:foreground="?attr/divider_color"/>
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -20,14 +20,15 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ProgressBar;
-
-import com.android.colorpicker.ColorPickerSwatch.OnColorSelectedListener;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
+import com.android.colorpicker.ColorPickerSwatch.OnColorSelectedListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import ch.threema.app.R;
 
 /**
@@ -56,7 +57,7 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
     protected int mSize;
 
     private ColorPickerPalette mPalette;
-    private ProgressBar mProgress;
+    private CircularProgressIndicator mProgress;
 
     protected OnColorSelectedListener mListener;
 
@@ -110,16 +111,15 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.color_picker_dialog, null);
-        mProgress = view.findViewById(android.R.id.progress);
+        mProgress = view.findViewById(R.id.progress);
         mPalette = view.findViewById(R.id.color_picker);
-        view.findViewById(R.id.scroll_view).setBackgroundColor(android.R.attr.windowBackground);
         mPalette.init(mSize, mColumns, this);
 
         if (mColors != null) {
             showPaletteView();
         }
 
-        mAlertDialog = new MaterialAlertDialogBuilder(getActivity(), R.style.Theme_Threema_Colorpicker)
+        mAlertDialog = new MaterialAlertDialogBuilder(getActivity(), getTheme())
             .setTitle(mTitleResId)
             .setView(view)
             .create();

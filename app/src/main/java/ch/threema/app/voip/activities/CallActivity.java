@@ -21,6 +21,14 @@
 
 package ch.threema.app.voip.activities;
 
+import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+import static ch.threema.app.utils.ShortcutUtil.EXTRA_CALLED_FROM_SHORTCUT;
+import static ch.threema.app.voip.services.VideoContext.CAMERA_FRONT;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
+import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_INCOMING;
+import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_NONE;
+import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_OUTGOING;
+
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -29,8 +37,6 @@ import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.KeyguardManager;
 import android.app.PictureInPictureParams;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -66,27 +72,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.annotation.StringRes;
-import androidx.annotation.UiThread;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.transition.ChangeBounds;
-import androidx.transition.Transition;
-import androidx.transition.TransitionManager;
-
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
 
@@ -99,6 +84,27 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.ExecutionException;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.transition.ChangeBounds;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -121,6 +127,7 @@ import ch.threema.app.services.SensorService;
 import ch.threema.app.ui.AnimatedEllipsisTextView;
 import ch.threema.app.ui.BottomSheetItem;
 import ch.threema.app.ui.DebouncedOnClickListener;
+import ch.threema.app.ui.LongToast;
 import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AudioDevice;
@@ -128,6 +135,7 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.PermissionUtilsKt;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.AudioSelectorButton;
@@ -149,14 +157,6 @@ import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
-
-import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-import static ch.threema.app.utils.ShortcutUtil.EXTRA_CALLED_FROM_SHORTCUT;
-import static ch.threema.app.voip.services.VideoContext.CAMERA_FRONT;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
-import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_INCOMING;
-import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_NONE;
-import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_OUTGOING;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -217,11 +217,7 @@ public class CallActivity extends ThreemaActivity implements
 	};
 
 	// Permissions
-	private final static int PERMISSION_REQUEST_RECORD_AUDIO = 9001;
 	private final static int PERMISSION_REQUEST_CAMERA = 9002;
-	private final static int PERMISSION_REQUEST_BLUETOOTH_CONNECT = 9003;
-	@IntDef({PERMISSION_REQUEST_RECORD_AUDIO, PERMISSION_REQUEST_CAMERA, PERMISSION_REQUEST_BLUETOOTH_CONNECT})
-	private @interface PermissionRequest {}
 	/**
 	 * This future resolves as soon as the microphone permission request has been answered.
 	 * It resolves to a boolean that indicates whether the permission was granted or not.
@@ -232,11 +228,16 @@ public class CallActivity extends ThreemaActivity implements
 	 * It resolves to a boolean that indicates whether the permission was granted or not.
 	 */
 	private @Nullable CompletableFuture<PermissionRequestResult> camPermissionResponse;
-	/**
-	 * This future resolves as soon as the bluetooth connect permission request has been answered.
-	 * It resolves to a boolean that indicates whether the permission was granted or not.
-	 */
-	private @Nullable CompletableFuture<PermissionRequestResult> bluetoothConnectPermissionResponse;
+
+	private final ActivityResultLauncher<Intent> permissionLauncher = registerForActivityResult(
+		new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			if (result.getResultCode() == Activity.RESULT_OK) {
+				initializeCall(getIntent());
+			} else {
+				abortWithError();
+			}
+		});
 
 	private static final String DIALOG_TAG_SELECT_AUDIO_DEVICE = "saud";
 
@@ -525,8 +526,8 @@ public class CallActivity extends ThreemaActivity implements
 											&& (voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) != VIDEO_RENDER_FLAG_OUTGOING) {
 											int[] location = new int[2];
 											commonViews.audioSelectorButton.getLocationInWindow(location);
-											location[1] += (commonViews.audioSelectorButton.getHeight() / 5);
-											audioSelectorTooltip = new TooltipPopup(CallActivity.this, R.string.preferences__tooltip_audio_selector_hint, R.layout.popup_tooltip_bottom_right, CallActivity.this);
+											location[0] += (commonViews.audioSelectorButton.getWidth() / 2);
+											audioSelectorTooltip = new TooltipPopup(CallActivity.this, R.string.preferences__tooltip_audio_selector_hint,CallActivity.this);
 											audioSelectorTooltip.show(CallActivity.this, commonViews.audioSelectorButton, getString(R.string.tooltip_voip_enable_speakerphone), TooltipPopup.ALIGN_ABOVE_ANCHOR_ARROW_RIGHT, location, 5000);
 											audioSelectorTooltipShown = true;
 										}
@@ -545,8 +546,9 @@ public class CallActivity extends ThreemaActivity implements
 												((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) != VIDEO_RENDER_FLAG_OUTGOING)) {
 												int[] location = new int[2];
 												commonViews.toggleOutgoingVideoButton.getLocationInWindow(location);
-												location[1] -= (commonViews.toggleOutgoingVideoButton.getHeight() / 5);
-												toggleVideoTooltip = new TooltipPopup(CallActivity.this, 0, R.layout.popup_tooltip_top_right, CallActivity.this);
+												location[0] += (commonViews.toggleOutgoingVideoButton.getWidth() / 2);
+												location[1]	+= commonViews.toggleOutgoingVideoButton.getHeight();
+												toggleVideoTooltip = new TooltipPopup(CallActivity.this, 0, CallActivity.this);
 												toggleVideoTooltip.show(CallActivity.this, commonViews.toggleOutgoingVideoButton, getString(R.string.tooltip_voip_other_party_video_on), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, location, 6000);
 												toggleVideoTooltipShown = true;
 											}
@@ -609,7 +611,7 @@ public class CallActivity extends ThreemaActivity implements
 					case ACTION_DISABLE_VIDEO:
 						logger.debug("Video disabled by peer.");
 						if ((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
-							Toast.makeText(CallActivity.this, getString(R.string.voip_peer_video_disabled), Toast.LENGTH_LONG).show();
+							LongToast.makeText(CallActivity.this, getString(R.string.voip_peer_video_disabled), Toast.LENGTH_LONG).show();
 						}
 						voipStateService.setVideoRenderMode(VIDEO_RENDER_FLAG_NONE);
 						if (commonViews != null) {
@@ -785,7 +787,7 @@ public class CallActivity extends ThreemaActivity implements
 		final MasterKey masterKey = ThreemaApplication.getMasterKey();
 		if (masterKey != null && masterKey.isLocked()) {
 			logger.warn("Cannot start call, master key is locked");
-			Toast.makeText(this, R.string.master_key_locked, Toast.LENGTH_LONG).show();
+			LongToast.makeText(this, R.string.master_key_locked, Toast.LENGTH_LONG).show();
 			finish();
 			return;
 		}
@@ -830,32 +832,12 @@ public class CallActivity extends ThreemaActivity implements
 			return;
 		}
 
-		// Check for mandatory permissions
-		logger.info("Checking for audio permission...");
-		this.micPermissionResponse = new CompletableFuture<>();
-		if (ConfigUtils.requestAudioPermissions(this, null, PERMISSION_REQUEST_RECORD_AUDIO)) {
-			this.micPermissionResponse.complete(new PermissionRequestResult(true, true));
-		}
-
 		// Initialize activity once all permissions are granted
-		this.micPermissionResponse
-			.thenAccept((result) -> {
-				if (result.isGranted()) {
-					logger.info("Audio permission granted");
-					checkBluetoothPermission();
-				} else {
-					logger.warn("Audio permission not granted");
-					Toast.makeText(CallActivity.this, R.string.permission_record_audio_required, Toast.LENGTH_LONG).show();
-					abortWithError(VoipCallAnswerData.RejectReason.DISABLED);
-				}
-			})
-			.exceptionally((e) -> {
-				if (e != null) {
-					logger.error("Error in initializeActivity", e);
-					abortWithError();
-				}
-				return null;
-			});
+		logger.info("Checking for required permissions");
+		PermissionUtilsKt.requestCallPermissions(this, permissionLauncher, () -> {
+			initializeCall(getIntent());
+			return null;
+		});
 
 		// Check reject preferences and fix them if necessary
 		if (this.preferenceService.isRejectMobileCalls()) {
@@ -868,49 +850,6 @@ public class CallActivity extends ThreemaActivity implements
 		// make sure lock screen is not activated during call
 		keepAliveHandler.removeCallbacksAndMessages(null);
 		keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
-	}
-
-	private void checkBluetoothPermission() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-			initializeActivity(getIntent());
-			return;
-		}
-
-		try {
-			// simple check for connected headset - this still works with legacy BT permissions
-			BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-			if (bluetoothAdapter == null || BluetoothProfile.STATE_CONNECTED != bluetoothAdapter.getProfileConnectionState(BluetoothProfile.HEADSET)) {
-				initializeActivity(getIntent());
-				return;
-			}
-		} catch (Exception e) {
-			logger.error("Unable to get BT connection state. Android >12?", e);
-		}
-
-		this.bluetoothConnectPermissionResponse = new CompletableFuture<>();
-		if (ConfigUtils.requestBluetoothConnectPermissions(this, null, PERMISSION_REQUEST_BLUETOOTH_CONNECT, true)) {
-			this.bluetoothConnectPermissionResponse.complete(new PermissionRequestResult(true, true));
-		}
-
-		// Initialize activity once all permissions are granted
-		this.bluetoothConnectPermissionResponse
-			.thenAccept((result) -> {
-				if (result.isGranted()) {
-					logger.info("BLUETOOTH_CONNECT permission granted");
-				} else {
-					Toast.makeText(CallActivity.this, R.string.permission_bluetooth_connect_required, Toast.LENGTH_LONG).show();
-					logger.warn("BLUETOOTH_CONNECT permission not granted");
-					// simply continue without bluetooth support
-				}
-				initializeActivity(getIntent());
-			})
-			.exceptionally((e) -> {
-				if (e != null) {
-					logger.error("Error in checkBluetoothConnect", e);
-					abortWithError();
-				}
-				return null;
-			});
 	}
 
 
@@ -1071,12 +1010,10 @@ public class CallActivity extends ThreemaActivity implements
 		super.onNewIntent(intent);
 		setIntent(intent);
 		if (restoreState(intent, null)) {
-			try {
-				this.initializeActivity(intent);
-			} catch (Exception e) {
-				logger.error("Error in initializeActivity", e);
-				this.abortWithError();
-			}
+			PermissionUtilsKt.requestCallPermissions(this, permissionLauncher, () -> {
+				initializeCall(intent);
+				return null;
+			});
 		} else {
 			logger.info("Unable to restore state");
 			this.abortWithError();
@@ -1269,12 +1206,34 @@ public class CallActivity extends ThreemaActivity implements
 	//region Activity initialization
 
 	/**
+	 * Finishes initializing the activity and aborts with error if an exception is thrown. Call this
+	 * when all required permissions are granted.
+	 *
+	 * @param intent the intent to initialize the activity
+	 */
+	private void initializeCall(Intent intent) {
+		try {
+			initializeActivity(intent);
+		} catch (Exception e) {
+			logger.error("Error in initializeActivity", e);
+			abortWithError();
+		}
+	}
+
+	/**
 	 * Initialize the activity with the specified intent.
 	 */
 	@SuppressLint("ClickableViewAccessibility")
 	@UiThread
 	private void initializeActivity(final Intent intent) {
 		logger.info("Initialize activity");
+
+		if (VoipUtil.isPSTNCallOngoing(this)) {
+			LongToast.makeText(this, getString(R.string.voip_another_pstn_call), Toast.LENGTH_LONG).show();
+			abortWithError(VoipCallAnswerData.RejectReason.BUSY);
+			finish();
+			return;
+		}
 
 		final long callId = this.voipStateService.getCallState().getCallId();
 		final Boolean isInitiator = this.voipStateService.isInitiator();
@@ -1428,8 +1387,9 @@ public class CallActivity extends ThreemaActivity implements
 					if (navigationShown) {
 						int[] location = new int[2];
 						v.getLocationInWindow(location);
-						location[1] -= (v.getHeight() / 5);
-						TooltipPopup tooltipPopup = new TooltipPopup(CallActivity.this, 0, R.layout.popup_tooltip_top_right, CallActivity.this);
+						location[0] += (v.getWidth() / 2);
+						location[1]	+= v.getHeight();
+						TooltipPopup tooltipPopup = new TooltipPopup(CallActivity.this, 0, CallActivity.this);
 						tooltipPopup.show(CallActivity.this, v, getString(R.string.tooltip_voip_other_party_video_disabled), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, location, 3000);
 					}
 					return;
@@ -1460,7 +1420,7 @@ public class CallActivity extends ThreemaActivity implements
 									VoipUtil.sendVoipBroadcast(getApplicationContext(), VoipCallService.ACTION_START_CAPTURING);
 								} else {
 									// Permission was rejected
-									Toast.makeText(CallActivity.this, R.string.permission_camera_videocall_required, Toast.LENGTH_LONG).show();
+									LongToast.makeText(CallActivity.this, R.string.permission_camera_videocall_required, Toast.LENGTH_LONG).show();
 								}
 							}
 						})
@@ -1556,17 +1516,19 @@ public class CallActivity extends ThreemaActivity implements
 
 				if (ConfigUtils.isVideoCallsEnabled()) {
 					if (preferenceService.getVideoCallToggleTooltipCount() < 1) {
+						final @ColorInt int textColor = ConfigUtils.getColorFromAttribute(this, R.attr.colorOnPrimary);
+
 						try {
 							TapTargetView.showFor(CallActivity.this,
 								TapTarget.forView(commonViews.toggleOutgoingVideoButton, getString(R.string.video_calls), getString(R.string.tooltip_voip_turn_on_camera))
-									.outerCircleColor(ConfigUtils.getAppTheme(CallActivity.this) == ConfigUtils.THEME_DARK ? R.color.dark_accent : R.color.accent_light)      // Specify a color for the outer circle
+									.outerCircleColorInt(ConfigUtils.getColorFromAttribute(this, R.attr.colorPrimary))      // Specify a color for the outer circle
 									.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
 									.targetCircleColor(android.R.color.white)   // Specify a color for the target circle
 									.titleTextSize(24)                  // Specify the size (in sp) of the title text
-									.titleTextColor(android.R.color.white)      // Specify the color of the title text
+									.titleTextColorInt(textColor)      // Specify the color of the title text
 									.descriptionTextSize(18)            // Specify the size (in sp) of the description text
-									.descriptionTextColor(android.R.color.white)  // Specify the color of the description text
-									.textColor(android.R.color.white)            // Specify a color for both the title and description text
+									.descriptionTextColorInt(textColor)  // Specify the color of the description text
+									.textColorInt(textColor)            // Specify a color for both the title and description text
 									.textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
 									.dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
 									.drawShadow(true)                   // Whether to draw a drop shadow or not
@@ -1967,7 +1929,7 @@ public class CallActivity extends ThreemaActivity implements
 	@TargetApi(Build.VERSION_CODES.S)
 	@Override
 	public void onRequestPermissionsResult(
-		@PermissionRequest int requestCode,
+		int requestCode,
 		@NonNull String[] permissions,
 		@NonNull int[] grantResults
 	) {
@@ -1975,53 +1937,18 @@ public class CallActivity extends ThreemaActivity implements
 
 		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			// Permission was granted
-			final CompletableFuture<PermissionRequestResult> future;
-			switch (requestCode) {
-				case PERMISSION_REQUEST_RECORD_AUDIO:
-					future = this.micPermissionResponse;
-					break;
-				case PERMISSION_REQUEST_CAMERA:
-					future = this.camPermissionResponse;
-					break;
-				case PERMISSION_REQUEST_BLUETOOTH_CONNECT:
-					future = this.bluetoothConnectPermissionResponse;
-					break;
-				default:
-					future = null;
-			}
-			if (future != null) {
-				future.complete(new PermissionRequestResult(true, false));
+			if (requestCode == PERMISSION_REQUEST_CAMERA) {
+				if (this.camPermissionResponse != null) {
+					this.camPermissionResponse.complete(new PermissionRequestResult(true, false));
+				}
 			}
 		} else {
-			final String permission;
-			final CompletableFuture<PermissionRequestResult> future;
-			switch (requestCode) {
-				case PERMISSION_REQUEST_RECORD_AUDIO:
-					permission = Manifest.permission.RECORD_AUDIO;
-					future = this.micPermissionResponse;
-					break;
-				case PERMISSION_REQUEST_CAMERA:
-					permission = Manifest.permission.CAMERA;
-					future = this.camPermissionResponse;
-					break;
-				case PERMISSION_REQUEST_BLUETOOTH_CONNECT:
-					permission = Manifest.permission.BLUETOOTH_CONNECT;
-					future = this.bluetoothConnectPermissionResponse;
-					break;
-				default:
-					logger.warn("Invalid permission request code: {}", requestCode);
-					return;
-			}
-			if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-				logger.warn("Could not start call, permission {} manually rejected", permission);
-				if (future != null) {
-					future.complete(new PermissionRequestResult(false, false));
+			if (requestCode == PERMISSION_REQUEST_CAMERA) {
+				if (this.camPermissionResponse != null) {
+					this.camPermissionResponse.complete(new PermissionRequestResult(false, false));
 				}
 			} else {
-				logger.warn("Could not get permission {}, rejected by user", permission);
-				if (future != null) {
-					future.complete(new PermissionRequestResult(false, false));
-				}
+				logger.warn("Invalid permission request code: {}", requestCode);
 			}
 		}
 	}

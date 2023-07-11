@@ -21,6 +21,10 @@
 
 package ch.threema.app.adapters;
 
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.EXPANDED;
+import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.Layout;
@@ -28,19 +32,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -64,10 +70,6 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 import java8.util.Optional;
 
-import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
-import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.EXPANDED;
-import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
-
 public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	public enum GroupDescState {NONE, COLLAPSED, EXPANDED}
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDetailAdapter");
@@ -75,7 +77,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 	private static final int TYPE_HEADER = 0;
 	private static final int TYPE_ITEM = 1;
 
-	private boolean isGroupAdmin = false;
+	private boolean meIsGroupAdmin = false;
 
 	private final Context context;
 	private ContactService contactService;
@@ -92,6 +94,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		public final View view;
 		public final TextView nameView, idView;
 		public final AvatarView avatarView;
+		public final Chip adminChip;
 
 		public ItemHolder(View view) {
 			super(view);
@@ -99,19 +102,16 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 			this.nameView = itemView.findViewById(R.id.group_name);
 			this.avatarView = itemView.findViewById(R.id.avatar_view);
 			this.idView = itemView.findViewById(R.id.threemaid);
+			this.adminChip = itemView.findViewById(R.id.admin_chip);
 		}
 	}
 
 	public class HeaderHolder extends RecyclerView.ViewHolder {
 		private final SectionHeaderView groupMembersTitleView;
-		private final LinearLayout groupOwnerContainerView;
-		private final AvatarView ownerAvatarView;
-		private final TextView ownerName;
-		private final TextView ownerThreemaId;
-		private final SectionHeaderView ownerNameTitle;
+		private final View addMembersView;
 		private final ConstraintLayout linkContainerView;
 		private final SectionHeaderView groupLinkTitle;
-		private final SwitchCompat linkEnableSwitch;
+		private final MaterialSwitch linkEnableSwitch;
 		private final TextView linkString;
 		private final AppCompatImageButton linkResetButton;
 		private final AppCompatImageButton linkShareButton;
@@ -126,11 +126,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 			// items in object
 			this.groupMembersTitleView = itemView.findViewById(R.id.group_members_title);
-			this.groupOwnerContainerView = itemView.findViewById(R.id.group_owner_container);
-			this.ownerAvatarView = itemView.findViewById(R.id.avatar_view);
-			this.ownerName = itemView.findViewById(R.id.group_name);
-			this.ownerThreemaId = itemView.findViewById(R.id.threemaid);
-			this.ownerNameTitle = itemView.findViewById(R.id.group_owner_title);
+			this.addMembersView = itemView.findViewById(R.id.add_member);
 			this.linkContainerView = itemView.findViewById(R.id.group_link_container);
 			this.groupLinkTitle = itemView.findViewById(R.id.group_link_header);
 			this.linkEnableSwitch = itemView.findViewById(R.id.group_link_switch);
@@ -218,25 +214,19 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 			AdapterUtil.styleContact(itemHolder.nameView, contactModel);
 			itemHolder.avatarView.setImageBitmap(avatar);
 			itemHolder.avatarView.setBadgeVisible(contactService.showBadge(contactModel));
-			itemHolder.view.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					onClickListener.onGroupMemberClick(v, contactModel);
-				}
-			});
+			itemHolder.view.setOnClickListener(v -> onClickListener.onGroupMemberClick(v, contactModel));
+
+			boolean isAdmin = contactModel.getIdentity().equals(groupModel.getCreatorIdentity());
+			itemHolder.adminChip.setVisibility(isAdmin ? View.VISIBLE: View.GONE);
+			itemHolder.idView.setVisibility(isAdmin ? View.GONE : View.VISIBLE);
 		} else {
 			this.headerHolder = (HeaderHolder) holder;
-			headerHolder.groupOwnerContainerView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					onClickListener.onGroupOwnerClick(v, groupModel.getCreatorIdentity());
-				}
-			});
+			headerHolder.addMembersView.setOnClickListener(v -> onClickListener.onAddMembersClick(v));
 
 			ContactModel ownerContactModel = contactService.getByIdentity(groupModel.getCreatorIdentity());
 
 			// check if the ID is the owner of the group
-			isGroupAdmin = groupModel.getCreatorIdentity().equals(contactService.getMe().getIdentity());
+			meIsGroupAdmin = groupModel.getCreatorIdentity().equals(contactService.getMe().getIdentity());
 
 			if (ConfigUtils.supportGroupDescription()) {
 				initGroupDescriptionSection();
@@ -245,12 +235,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 			}
 
 			if (ownerContactModel != null) {
-				Bitmap bitmap = contactService.getAvatar(ownerContactModel, false);
-
-				headerHolder.ownerAvatarView.setImageBitmap(bitmap);
-				headerHolder.ownerThreemaId.setText(ownerContactModel.getIdentity());
-				headerHolder.ownerName.setText(NameUtil.getDisplayNameOrNickname(ownerContactModel, true));
-
 				if (!ConfigUtils.supportsGroupLinks() || ownerContactModel != contactService.getMe()) {
 					headerHolder.linkContainerView.setVisibility(View.GONE);
 				}
@@ -258,19 +242,19 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 					initGroupLinkSection();
 				}
 			} else {
-				// creator is no longer around / has been revoked
-				headerHolder.ownerAvatarView.setImageBitmap(contactService.getDefaultAvatar(null, false, false));
-				headerHolder.ownerThreemaId.setText(groupModel.getCreatorIdentity());
-				headerHolder.ownerName.setText(R.string.invalid_threema_id);
+				headerHolder.linkContainerView.setVisibility(View.GONE);
 			}
-			headerHolder.ownerNameTitle.setText(context.getString(R.string.add_group_owner) +
-					" (" + LocaleUtil.formatTimeStampString(context, groupModel.getCreatedAt().getTime(), false) +
-					")");
+
+			boolean addMembersViewVisibility = meIsGroupAdmin;
 
 			if (contactModels != null) {
-				headerHolder.groupMembersTitleView.setText(context.getString(R.string.add_group_members_list) +
-					" (" + contactModels.size() + "/" + BuildConfig.MAX_GROUP_SIZE + ")");
+				headerHolder.groupMembersTitleView.setText(ConfigUtils.getSafeQuantityString(context, R.plurals.number_of_group_members, contactModels.size(), contactModels.size()));
+				if (contactModels.size() >= BuildConfig.MAX_GROUP_SIZE) {
+					addMembersViewVisibility = false;
+				}
 			}
+
+			headerHolder.addMembersView.setVisibility(addMembersViewVisibility ? View.VISIBLE : View.GONE);
 		}
 	}
 
@@ -458,7 +442,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		headerHolder.groupDescText.setVisibility(View.VISIBLE);
 		headerHolder.groupDescText.setText(groupDetailViewModel.getGroupDesc());
 		LinkifyUtil.getInstance().linkifyText(headerHolder.groupDescText, true);
-		if (isGroupAdmin) {
+		if (meIsGroupAdmin) {
 			headerHolder.changeGroupDescButton.setVisibility(View.VISIBLE);
 		} else {
 			headerHolder.changeGroupDescButton.setVisibility(View.GONE);
@@ -475,7 +459,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		headerHolder.groupDescChangedDate.setVisibility(View.GONE);
 		headerHolder.changeGroupDescButton.setVisibility(View.GONE);
 		headerHolder.expandButton.setText(R.string.add_group_description);
-		if (isGroupAdmin) {
+		if (meIsGroupAdmin) {
 			headerHolder.expandButton.setVisibility(View.VISIBLE);
 		} else {
 			headerHolder.expandButton.setVisibility(View.GONE);
@@ -499,5 +483,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		void onResetLinkClick();
 		void onShareLinkClick();
 		void onGroupDescriptionEditClick();
+		void onAddMembersClick(View v);
 	}
 }

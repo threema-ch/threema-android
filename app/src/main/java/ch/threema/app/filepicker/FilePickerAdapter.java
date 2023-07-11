@@ -29,11 +29,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
@@ -44,20 +45,18 @@ import ch.threema.app.utils.TestUtil;
 
 public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 
-	private Context context;
-	private int resourceID;
-	private List<FileInfo> items;
-	private boolean isDirectoryMode;
-	private @ColorInt int enabledColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorSecondary);
-	private @ColorInt int disabledColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorTertiary);
+	private final Context context;
+	private final int resourceID;
+	private final List<FileInfo> items;
+	private final @ColorInt int enabledColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface);
+	private final @ColorInt int disabledColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurfaceVariant);
 
 	FilePickerAdapter(Context context, int textViewResourceId,
-	                  List<FileInfo> objects, boolean directoryMode) {
+	                  List<FileInfo> objects) {
 		super(context, textViewResourceId, objects);
 		this.context = context;
 		this.resourceID = textViewResourceId;
 		this.items = objects;
-		this.isDirectoryMode = directoryMode;
 	}
 
 	public FileInfo getItem(int i) {
@@ -95,14 +94,14 @@ public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 			if (fileInfo.getData().equalsIgnoreCase(Constants.FOLDER)) {
 				viewHolder.icon.setImageResource(R.drawable.ic_folder);
 				viewHolder.extra.setVisibility(View.GONE);
-				tintItem(viewHolder, true);
+				tintItem(viewHolder);
 			} else if (fileInfo.getData().equalsIgnoreCase(
 					Constants.PARENT_FOLDER)) {
 				viewHolder.icon.setImageResource(R.drawable.ic_doc_parent);
 				viewHolder.date.setText(R.string.parent_directory);
 				viewHolder.size.setVisibility(View.GONE);
 				viewHolder.extra.setVisibility(View.GONE);
-				tintItem(viewHolder, true);
+				tintItem(viewHolder);
 			} else {
 				String mimeType = FileUtil.getMimeTypeFromPath(fileInfo.getPath());
 
@@ -119,7 +118,7 @@ public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 					}
 				}
 
-				tintItem(viewHolder, !isDirectoryMode);
+				tintItem(viewHolder);
 			}
 
 			long date = fileInfo.getLastModified();
@@ -140,7 +139,7 @@ public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 					final Date time = new Date();
 
 					try {
-						time.setTime(Long.valueOf(pieces[2]));
+						time.setTime(Long.parseLong(pieces[2]));
 					} catch (NumberFormatException e) {
 						return null;
 					}
@@ -152,8 +151,8 @@ public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 		return null;
 	}
 
-	private void tintItem(ViewHolder holder, boolean enabled) {
-		int color = enabled ? enabledColor : disabledColor;
+	private void tintItem(ViewHolder holder) {
+		int color = enabledColor;
 
 		holder.icon.setColorFilter(color);
 		holder.name.setTextColor(color);
@@ -167,16 +166,7 @@ public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 		return false;
 	}
 
-	@Override
-	public boolean isEnabled(int position) {
-		if (isDirectoryMode) {
-			FileInfo fileInfo = items.get(position);
-			return fileInfo == null || fileInfo.isFolder() || fileInfo.isParent();
-		}
-		return true;
-	}
-
-	class ViewHolder {
+	static class ViewHolder {
 		View item;
 		ImageView icon;
 		TextView name;

@@ -140,7 +140,8 @@ public class UserMemberListFragment extends MemberListFragment {
 					contactService,
 					blacklistService,
 					hiddenChatsListService,
-					preferenceService
+					preferenceService,
+					UserMemberListFragment.this
 				);
 				setListAdapter(adapter);
 				if (listInstanceState != null) {

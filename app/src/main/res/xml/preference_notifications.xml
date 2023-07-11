@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:key="pref_key_notifications"
 	android:persistent="true"
 	android:summary="@string/prefs_sum_notifications"
@@ -18,6 +19,7 @@
 			android:title="@string/prefs_notification_sound"
 			android:icon="@drawable/ic_notifications_active_outline"/>
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__vibrate"
 			android:summary="@string/prefs_sum_vibrate"
@@ -30,7 +32,7 @@
 			android:key="@string/preferences__notification_light"
 			android:title="@string/prefs_light"
 			android:icon="@drawable/ic_outline_light_mode_24"
-			android:summary="%s"/>
+			app:useSimpleSummaryProvider="true" />
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:key="pref_key_group_notif"
@@ -42,6 +44,7 @@
 			android:title="@string/prefs_notification_sound"
 			android:icon="@drawable/ic_notifications_active_outline"/>
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__group_vibrate"
 			android:summary="@string/prefs_sum_vibrate"
@@ -52,7 +55,7 @@
 			android:entries="@array/list_light_color"
 			android:entryValues="@array/list_light_color_values"
 			android:key="@string/preferences__group_notification_light"
-			android:summary="%s"
+			app:useSimpleSummaryProvider="true"
 			android:icon="@drawable/ic_outline_light_mode_24"
 			android:title="@string/prefs_light"/>
 	</PreferenceCategory>
@@ -73,6 +76,7 @@
 			android:dependency="@string/preferences__use_system_ringtone"
 			android:title="@string/prefs_voice_call_sound"/>
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__voip_vibration"
 			android:summary="@string/prefs_sum_voice_call_vibrate"
@@ -96,6 +100,7 @@
 			android:dependency="@string/preferences__group_calls_use_system_ringtone"
 			android:title="@string/prefs_voice_call_sound"/>
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__group_calls_vibration"
 			android:summary="@string/prefs_sum_group_calls_vibration"
@@ -106,6 +111,7 @@
 		android:key="pref_key_inapp"
 		android:title="@string/prefs_inapp">
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__inapp_sounds"
 			android:summaryOff="@string/prefs_inapp_sounds_off"
@@ -113,6 +119,7 @@
 			android:icon="@drawable/ic_outline_music_note_24"
 			android:title="@string/prefs_inapp_sounds"/>
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__inapp_vibrate"
 			android:summaryOff="@string/prefs_inapp_vibrate_off"
@@ -124,6 +131,7 @@
 		android:key="pref_key_android_auto"
 		android:title="@string/prefs_notifications">
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__notification_preview"
 			android:icon="@drawable/ic_outline_preview_24"
@@ -141,12 +149,12 @@
 		android:key="pref_key_work_life_balance"
 		android:title="@string/prefs_work_life_balance">
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="false"
 			android:key="@string/preferences__working_days_enable"
 			android:summary="@string/prefs_working_days_enable_sum"
 			android:title="@string/prefs_working_days_enable_title"
-			android:icon="@drawable/ic_do_not_disturb_filled"
-			android:widgetLayout="@layout/preference_switch_layout"/>
+			android:icon="@drawable/ic_do_not_disturb_filled" />
 
 		<MultiSelectListPreference
 			android:key="@string/preferences__working_days"

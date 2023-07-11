@@ -291,7 +291,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="title_select_contacts">選擇成員</string>
     <string name="pin_invalid_not_set">PIN 碼無效。設定未完成。</string>
     <string name="prefs_group_notifications">群組對話</string>
-    <string name="add_group_members_list">群組成員</string>
     <string name="group_select_at_least_two">需要選擇至少一個成員才能繼續</string>
     <string name="group_select_max">您不能選擇超過%1$d個群組成員</string>
     <string name="search">搜尋</string>
@@ -553,7 +552,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
 而您的行動電話營運商可能會收取額外費用。我們建議僅在 WiFi
 網路中上傳和下載檔案。</string>
     <string name="prefs_theme">設計主題</string>
-    <string name="list_theme_light">淺色（預設）</string>
+    <string name="list_theme_light">淺色</string>
     <string name="list_theme_dark">深色</string>
     <string name="prefs_header_appearance">外貌</string>
     <string name="prefs_sum_passphrase">需要密碼才能解鎖本地加密</string>
@@ -692,7 +691,7 @@ Threema 支援的所有表情符號。</string>
     <string name="configure">配置</string>
     <string name="file_is_not_audio">不是音訊檔案</string>
     <!-- restrictions -->
-    <string name="disabled_by_policy">某些設定已被裝置策略停用</string>
+    <string name="disabled_by_policy">某些設定已被管理員停用</string>
     <string name="select_all">選擇所有</string>
     <string name="deleting_messages">正在刪除訊息</string>
     <string name="media_gallery_files">檔案</string>
@@ -703,7 +702,7 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_proximity_sensor">使用距離感測器</string>
     <string name="prefs_proximity_sensor_explain">如果覆蓋了距離感測器，請使用聽筒播放語音訊息</string>
     <string name="error_creating_group">建立/更新群組時發生錯誤</string>
-    <string name="no_media_found_generic">在此對話中找不到媒體</string>
+    <string name="no_media_found_generic">在此對話中找不到相符已選擇的媒體</string>
     <string name="max_images_reached">一次最多可以編輯%d個專案</string>
     <string name="enter_description">請在這裡描述錯誤/問題。</string>
     <string name="add_caption_hint">新增選用描述</string>
@@ -923,7 +922,7 @@ Threema 支援的所有表情符號。</string>
     <string name="safe_configure_choose_password_force">請設定一個強密碼，以使用 Threema Safe 保護您的 Threema ID。請不要忘記您在這裡輸入的內容！</string>
     <string name="safe_deactivate">停用 Threema Safe</string>
     <string name="safe_deactivate_explain">如果您停用 Threema Safe，任何現有的備份都將在伺服器上被刪除。是否繼續？</string>
-    <string name="add_group_members">新增新成員</string>
+    <string name="add_group_members">新增更多成員</string>
     <string name="contact_add_confirm">您想將新聯絡人「%1$s」新增至您的聯絡人清單中嗎？</string>
     <string name="password_bad">密碼強度低</string>
     <string name="prefs_fix_background_data">開啟背景數據</string>
@@ -1040,11 +1039,6 @@ Threema 支援的所有表情符號。</string>
     <string name="open_in_maps_app">在地圖應用程式中開啟</string>
     <string name="delete">刪除</string>
     <string name="continue_recording">繼續錄音</string>
-    <string name="whatsnew_title">新增功能：%1$s 群組通話</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Android 版的 %1$s 現在可以進行端對端加密群組通話了。</p>
-<p>如要發起群組通話，首先開啟任意一個群組對話，然後按一下最頂的相機圖示即可。</p>
-<p>所有群組成員都會收到通知，並可以決定是否加入通話。</p>
-<p><b>請注意：</b>iOS 的群組通話功能將於稍後發佈。</p>]]></string>
     <string name="tap_to_start">點擊這裡立即開啟 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">無效的備份路徑</string>
@@ -1117,7 +1111,7 @@ Threema 支援的所有表情符號。</string>
     <string name="tooltip_voip_turn_on_camera">點擊這裡開啟攝影機</string>
     <string name="prefs_videocall_profile_explain">實際的圖片品質取決於網路以及對方的設定</string>
     <string name="permission_camera_videocall_required">請允許取用攝影機以進行視訊通話。</string>
-    <string name="feedback">意見反饋</string>
+    <string name="feedback">意見回饋</string>
     <string name="tooltip_voip_enable_speakerphone">點擊這裡開啟電話揚聲器</string>
     <string name="ballot_open">開放投票</string>
     <string name="translators">翻譯人員</string>
@@ -1187,7 +1181,7 @@ Threema 支援的所有表情符號。</string>
     <string name="no_faces_detected">未檢測到臉部</string>
     <string name="smiley">笑臉</string>
     <string name="blur">模糊處理</string>
-    <string name="face_blur_tooltip_title">新增：人臉辨識</string>
+    <string name="face_blur_tooltip_title">人臉辨識</string>
     <string name="face_blur_tooltip_text">在圖片中找出面孔，將臉部模糊或以笑臉覆蓋。</string>
     <string name="listened_to">已聽取</string>
     <string name="transcoder_unsupported_audio_format">由於缺少系統支援，音訊無法轉碼。</string>
@@ -1258,7 +1252,7 @@ Threema 支援的所有表情符號。</string>
     <string name="group_link_rename">重新命名</string>
     <string name="group_link_rename_tag">新名稱</string>
     <string name="tap_here_for_more">點擊這裡查看更多資訊</string>
-    <string name="another_connection_instructions">伺服器檢測到相同的 Threema ID 在兩個或更多的裝置上同時連線。\n\n相同的 Threema ID 不可以在多個裝置上同時使用。新的訊息只會傳送至最新登入的裝置上。\n\n如果您要切換至新裝置，請先在舊裝置上解除安裝或停用 %s，然後重新啟動新裝置。</string>
+    <string name="another_connection_instructions"><![CDATA[伺服器檢測到相同的 Threema ID 在兩個或更多的裝置上同時連線。<br><br>相同的 Threema ID 不可以在多個裝置上同時使用。新的訊息只會傳送至最新登入的裝置上。<br><br>如果您要切換至新裝置，請先在舊裝置上解除安裝或停用 %s，然後重新啟動新裝置。]]></string>
     <string name="app_store_error_code">應用程式商店錯誤代碼：%d</string>
     <string name="backup_restore_type"><![CDATA[您想還原哪些備份資料？ <br/><br/> <a href=%s>了解更多關於 Threema 備份的資訊</a>。]]></string>
     <string name="data_backup_info">還原所有內容，包括對話記錄</string>
@@ -1382,7 +1376,7 @@ Threema 支援的所有表情符號。</string>
     <string name="organization_type">機構</string>
     <string name="permission_bluetooth_connect_required">請啟用「附近裝置」權限以定位已連線的藍牙耳機</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push 現在已啟用，您需要手動重新啟動 Threema 網頁版和桌面版對話。</string>
-    <string name="tooltip_multiple_recipients_title">新增功能：一則訊息同時傳送至多個收件者</string>
+    <string name="tooltip_multiple_recipients_title">一則訊息同時傳送至多個收件者</string>
     <string name="tooltip_multiple_recipients_text">長按可將一則訊息同時傳送到多個收件者。</string>
     <string name="synchronizing">同步中…</string>
     <string name="forward_security">以完全正向保密傳送訊息</string>
@@ -1395,7 +1389,7 @@ Threema 支援的所有表情符號。</string>
     <string name="forward_security_established_rx">在此對話中收到的訊息現正受完全正向保密的保護，您可以在聯絡人詳細資訊中啟用完全正向保密來保護以後傳送的訊息。</string>
     <string name="forward_security_reset">與此聯絡人的完全正向保密對話已被重設。如果聯絡人更換了裝置或重新安裝了此應用程式，就會重設對話。</string>
     <string name="forward_security_reset_simple">與此聯絡人的完全正向保密對話已重設。</string>
-    <string name="forward_security_message_out_of_order">收到的訊息發生故障，無法解密。</string>
+    <string name="forward_security_message_out_of_order">解密新收到的訊息發生錯誤，無法解密。</string>
     <string name="self_updater_installation_failed">下載更新失敗。請手動從 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下載並安裝更新。</string>
     <string name="spam_first_contact">此對話來自一位未知聯絡人</string>
     <string name="spam_report">檢舉垃圾訊息</string>
@@ -1430,21 +1424,27 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_summary_hibernation_api_32">為防止 Threema 在長時間不使用後被系統暫停，請停用系統設定中的「移除權限並釋出空間」。</string>
     <string name="prefs_summary_hibernation_api">為防止 Threema 在長時間不使用後被系統暫停，請停用系統設定中的「暫停未使用的應用程式活動」。</string>
     <string name="unable_to_fetch_configuration">無法從配置伺服器取得資料，請稍後再試。</string>
-    <string name="rogue_device_warning">伺服器檢測到有人試圖從另一台裝置登入現有的 Threema ID。\n\n如果您之前沒有在其他裝置上登入您的 Threema ID，或者使用舊版本的應用程式，請聯絡支持人員並傳送日誌檔案。</string>
+    <string name="rogue_device_warning">我們的伺服器檢測到有人試圖從另一台裝置登入現有的 Threema ID，您最近是否在其他裝置上登入過您的 Threema ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此訊息。&lt;br&gt;&lt;br&gt;如果沒有，您的私鑰可能已經洩露。在建立新ID之前，請<a href="https://threema.ch/en/faq/another_connection">按照我們的建議</a>保護您的裝置和資料。</string>
     <string name="fetch2_failure">與配置伺服器同步失敗。</string>
     <string name="no_members_support_group_calls">此群組中沒有成員可以接聽群組通話</string>
     <string name="group_calls">群組通話</string>
     <string name="prefs_title_group_calls_enable">開啟群組通話</string>
     <string name="group_no_members">此群組不包括任何其他成員</string>
     <string name="group_call">群組通話</string>
-    <string name="checking_compatibility">正在檢查相容性...</string>
+    <string name="checking_compatibility">正在檢查相容性…</string>
     <string name="group_call_mic_permission_rationale">如要進行群組通話，您必須在系統「權限」設定下允許 %s 取用麥克風權限。</string>
+    <string name="group_call_mic_permission_description">如要進行群組通話，您必須允許取用麥克風的權限，以便其他人可以聽到您的聲音。</string>
+    <string name="call_mic_permission_description">如要進行語音通話，您必須允許取用麥克風的權限，以便其他人可以聽到您的聲音。</string>
     <string name="group_call_camera_permission_rationale">為了讓其他參與者看到您的照片，您必須在系統「權限」設定下允許 %s 取用相機權限。</string>
+    <string name="group_call_phone_permission_description">如要進行群組通話，您必須允許取用電話權限，以防止語音通話中斷 Threema 通話。</string>
+    <string name="call_phone_permission_description">如要進行 Threema 通話，您必須允許取用電話權限，以防止語音通話中斷 Threema 通話。</string>
+    <string name="group_call_nearby_devices_permission_description">如要使用藍牙耳機進行群組通話，您必須允許取用「鄰近裝置」權限以檢測藍牙耳機。</string>
+    <string name="call_nearby_devices_permission_description">如要使用藍牙耳機進行 Threema 通話，您必須允許取用「鄰近裝置」權限以檢測藍牙耳機。</string>
     <string name="settings">設定</string>
     <string name="leave">離開</string>
     <string name="fs_key_mismatch">密鑰不相符</string>
     <string name="tap_to_resend">按一下以重新傳送</string>
-    <string name="group_calls_tooltip_title">新增功能：群組通話</string>
+    <string name="group_calls_tooltip_title">群組通話</string>
     <string name="group_calls_tooltip_text">按一下這裡可邀請所有群組成員加入通話。所有群組成員都會收到通知，並可以決定是否要加入通話。</string>
     <string name="prefs_title_calls">加密通話</string>
     <string name="prefs_sum_group_calls_vibration">選擇是否在群組通話開始時震動</string>
@@ -1452,8 +1452,36 @@ Threema 支援的所有表情符號。</string>
     <string name="forward_security_mode_2dh">單向保密</string>
     <string name="forward_security_explanation">完全正向保密（PFS）可以保護對話記錄不被追溯解密，即使長期加密密鑰已被盜用。\n\n如果雙方的應用程式都支援完全正向保密的話，就可以啟用此選項。</string>
     <string name="group_call_inactivity_left">因為長時間未使用，群組通話自動退出</string>
-    <string name="missing_permission_external_storage">無法複製檔案，請嘗試以下步驟以解決問題：\n1. 開啟系統設定。\n2. 前往「應用程式」，然後按一下右上角的三個點，選擇「特殊存取」權限。\n3. 按一下「所有檔案存取」。\n4. 按一下右上角的三個點，選擇「顯示系統應用程式」。\n5. 按一下「外部儲存」並確保授予「允許存取所有檔案」權限。\n6. 再次嘗試還原備份。</string>
+    <string name="missing_permission_external_storage">無法複製檔案，請嘗試以下步驟以解決問題：\n1. 開啟系統設定。\n2. 前往「應用程式」，然後按一下右上角的三個點，選擇「特殊存取」權限。\n3. 按一下「所有檔案存取」。\n4. 按一下右上角的三個點，選擇「顯示系統應用程式」。\n5. 按一下「外部儲存空間」並確保授予「允許存取所有檔案」權限。\n6. 再次嘗試還原備份。</string>
     <string name="forward_security_downgraded_status_message">此聯絡人所使用的應用程式版本並不支援「完全正向保密」功能。從現在起，訊息將在沒有「完全正向保密」的情況下傳送。</string>
+    <string name="crop_image_title">裁剪圖片</string>
+    <string name="scroll_to_bottom">回到頁尾</string>
+    <string name="scroll_to_top">回到頁首</string>
+    <string name="contact_sync_mdm_rationale">由於您的管理員為您的裝置啟用了聯絡人同步的功能，因此我們需要取用聯絡人的權限。</string>
+    <string name="welcome_back">歡迎回來！</string>
+    <string name="id_restored_successfully">您的 Threema ID 已成功還原</string>
+    <string name="prefs_dynamic_colors">動態色彩</string>
+    <string name="prefs_dynamic_colors_sum">使用系統色彩</string>
+    <string name="apply_changes">套用變更</string>
+    <string name="prefs_threema_work_summary">您知道 Threema 也為企業提供專業的通訊解決方案嗎？按一下這裡以了解更多關於 Threema Work 的資訊</string>
+    <string name="notification_channel_voice_message_player">語音訊息播放器</string>
+    <string name="voice_message_from">來自%s的語音訊息</string>
+    <string name="vm_fg_service_not_allowed">語音訊息播放錯誤</string>
+    <string name="vm_fg_service_not_allowed_explain">如果要播放語音訊息，請先在手機通知列按一下播放按鈕，否則就在對話畫面中按一下播放按鈕。</string>
+    <string name="use_threema_without_this_permission">在沒有啟用此權限的情況下使用 %s</string>
+    <string name="grant_permission">授予權限</string>
+    <string name="grant_permission_settings">在設定中授予權限</string>
+    <string name="ignore_permission">下次不再提示</string>
+    <string name="permission_nearby_devices">鄰近裝置</string>
+    <string name="permission_bluetooth">藍牙</string>
+    <string name="permission_camera">相機</string>
+    <string name="permission_microphone">麥克風</string>
+    <string name="permission_read_phone_state">電話</string>
+    <string name="permission_enable_in_settings_rationale">請在設定中啟用該權限。先選擇「權限」，然後按一下允許「%s」。</string>
+    <string name="group_name">群組名稱</string>
+    <string name="samsung_permission_problem_explain">由於「外部儲存空間」權限被停用，%1$s 無法取用媒體檔案。如要解決這個問題，請先在下一個畫面中啟用「外部儲存空間」權限，然後重新啟動 %1$s。</string>
+    <string name="min_n_chars">至少%d個字元</string>
+    <string name="prefs_title_grant_bluetooth_permission">授予藍牙權限</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>
@@ -1522,5 +1550,8 @@ Threema 支援的所有表情符號。</string>
     </plurals>
     <plurals name="delete_messages">
         <item quantity="other">刪除此裝置上的%d則訊息？</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="other">%d個群組成員</item>
     </plurals>
 </resources>

@@ -34,7 +34,6 @@ import java.util.ArrayList;
 
 import androidx.core.content.res.ResourcesCompat;
 import ch.threema.app.R;
-import ch.threema.app.utils.ConfigUtils;
 
 import static ch.threema.app.emojis.EmojiSpritemap.emojiCategories;
 
@@ -57,7 +56,7 @@ public class EmojiGridAdapter extends BaseAdapter {
 		this.pageNumber = pageNumber;
 		this.keyClickListener = listener;
 		this.emojiService = emojiService;
-		this.diverseHintColor = ConfigUtils.getColorFromAttribute(context, R.attr.emoji_picker_hint);
+		this.diverseHintColor = context.getResources().getColor(R.color.emoji_picker_hint);
 		if (EmojiManager.getInstance(context).getSpritemapInSampleSize() == 1) {
 			this.emojiItemSize = context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_item_size);
 			this.emojiItemPaddingSize = (emojiItemSize - context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_emoji_size)) / 2;

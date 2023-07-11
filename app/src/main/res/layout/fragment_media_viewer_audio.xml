@@ -6,13 +6,14 @@
              xmlns:app="http://schemas.android.com/apk/res-auto"
              android:background="@color/gallery_background">
 
-	<com.google.android.exoplayer2.ui.PlayerView
+	<androidx.media3.ui.PlayerView
 		android:id="@+id/audio_view"
 		app:surface_type="none"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+		android:layout_height="match_parent"
+		app:controller_layout_id="@layout/exo_player_control_view_standard" />
 
-	<ProgressBar
+	<com.google.android.material.progressindicator.CircularProgressIndicator
 		android:id="@+id/progress_bar"
 		android:layout_width="48dp"
 		android:layout_height="48dp"

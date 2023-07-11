@@ -99,9 +99,10 @@
 	</string-array>
 
 	<string-array name="media_gallery_spinner">
-		<item>@string/media_gallery_all</item>
 		<item>@string/media_gallery_pictures</item>
+		<item>@string/media_gallery_gifs</item>
 		<item>@string/media_gallery_videos</item>
+		<item>@string/media_gallery_audio</item>
 		<item>@string/audio_placeholder</item>
 		<item>@string/media_gallery_files</item>
 	</string-array>

@@ -41,16 +41,15 @@ public class ReadMessagesRoutine implements Runnable {
 
 	private final List<AbstractMessageModel> messages;
 	private final MessageService messageService;
-	private NotificationService notificationService;
+	private final NotificationService notificationService;
 
-	private List<OnFinished> onFinished = new ArrayList<>();
+	private final List<OnFinished> onFinished = new ArrayList<>();
 
 	public interface OnFinished {
 		void finished(boolean success);
 	}
 
 	public ReadMessagesRoutine(List<AbstractMessageModel> messages, MessageService messageService, NotificationService notificationService) {
-
 		this.messages = messages;
 		this.messageService = messageService;
 		this.notificationService = notificationService;
@@ -110,9 +109,8 @@ public class ReadMessagesRoutine implements Runnable {
 
 	}
 
-	public ReadMessagesRoutine addOnFinished(OnFinished onFinished) {
+	public void addOnFinished(OnFinished onFinished) {
 		this.onFinished.add(onFinished);
-		return this;
 	}
 
 	public void removeOnFinished(OnFinished onFinished) {

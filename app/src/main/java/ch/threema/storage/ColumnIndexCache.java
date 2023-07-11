@@ -21,7 +21,7 @@
 
 package ch.threema.storage;
 
-import net.sqlcipher.Cursor;
+import android.database.Cursor;
 
 import androidx.collection.SimpleArrayMap;
 

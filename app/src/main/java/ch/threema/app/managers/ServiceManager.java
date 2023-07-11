@@ -23,16 +23,14 @@ package ch.threema.app.managers;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.util.Date;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.BackupChatService;
@@ -128,7 +126,6 @@ import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DeviceIdUtil;
-import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.ForwardSecurityStatusSender;
 import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.groupcall.GroupCallManagerImpl;
@@ -220,7 +217,8 @@ public class ServiceManager {
 
 	private WebClientServiceManager webClientServiceManager;
 
-	private DHSessionStoreInterface dhSessionStore;
+	@NonNull
+	private final DHSessionStoreInterface dhSessionStore;
 	private ForwardSecurityMessageProcessor forwardSecurityMessageProcessor;
 	private SymmetricEncryptionService symmetricEncryptionService;
 
@@ -228,6 +226,7 @@ public class ServiceManager {
 
 	public ServiceManager(ThreemaConnection connection,
 						  @NonNull DatabaseServiceNew databaseServiceNew,
+						  @NonNull DHSessionStoreInterface dhSessionStore,
 						  IdentityStore identityStore,
 						  PreferenceStoreInterface preferenceStore,
 						  MasterKey masterKey,
@@ -240,12 +239,15 @@ public class ServiceManager {
 		this.identityStore = identityStore;
 		this.masterKey = masterKey;
 		this.databaseServiceNew = databaseServiceNew;
+		this.dhSessionStore = dhSessionStore;
 		this.updateSystemService = updateSystemService;
 	}
 
 	private DatabaseContactStore getContactStore() {
 		if (this.contactStore == null) {
 			this.contactStore = new DatabaseContactStore(
+					this.getIdentityStore(),
+					this.getDHSessionStore(),
 					this.getAPIConnector(),
 					this.getPreferenceService(),
 					this.databaseServiceNew,
@@ -399,7 +401,6 @@ public class ServiceManager {
 						this.getLocaleService(),
 						this.getAPIConnector(),
 						this.getIdentityStore(),
-						this.getMessageQueue(),
 						this.getPreferenceService());
 			} catch (Exception e) {
 				logger.error("Exception", e);
@@ -465,6 +466,7 @@ public class ServiceManager {
 					this.getBlackListService(),
 					this.getForwardSecurityMessageProcessor()
 			);
+			this.messageQueue.setMessageEnqueueListener(message -> messageService.executeProfilePictureDistribution(message));
 		}
 
 		return this.messageService;
@@ -738,6 +740,7 @@ public class ServiceManager {
 	public ConversationService getConversationService() throws ThreemaException {
 		if(null == this.conversationService) {
 			this.conversationService = new ConversationServiceImpl(
+				this.getContext(),
 				this.cacheService,
 				this.databaseServiceNew,
 				this.getContactService(),
@@ -840,7 +843,8 @@ public class ServiceManager {
 					getContext(),
 					this.getMessageService(),
 					this.getFileService(),
-					this.getPreferenceService()
+					this.getPreferenceService(),
+					this.getHiddenChatsListService()
 			);
 		}
 		return this.messagePlayerService;
@@ -988,8 +992,6 @@ public class ServiceManager {
 					this.getContactService(),
 					this.getRingtoneService(),
 					this.getPreferenceService(),
-					this.getMessageService(),
-					this.getMessageQueue(),
 					this.getLifetimeService(),
 					this.getContext()
 			);
@@ -1002,28 +1004,11 @@ public class ServiceManager {
 		return this.databaseServiceNew;
 	}
 
-	public DHSessionStoreInterface getDHSessionStore() throws MasterKeyLockedException {
-		if (this.dhSessionStore == null) {
-			this.dhSessionStore = new SQLDHSessionStore(this.getContext(), this.masterKey.getKey());
-			try {
-				dhSessionStore.executeNull();
-			} catch (Exception e) {
-				logger.error("Could not execute a statement on the fs database", e);
-				Context context = ThreemaApplication.getAppContext();
-				if (context != null) {
-					// The database file seems to be corrupt, therefore we delete the file
-					File databaseFile = context.getDatabasePath(SQLDHSessionStore.DATABASE_NAME);
-					if (databaseFile.exists()) {
-						FileUtil.deleteFileOrWarn(databaseFile, "sql dh session database", logger);
-					}
-					dhSessionStore = new SQLDHSessionStore(context, masterKey.getKey());
-				}
-			}
-		}
+	public DHSessionStoreInterface getDHSessionStore() {
 		return this.dhSessionStore;
 	}
 
-	public ForwardSecurityMessageProcessor getForwardSecurityMessageProcessor() throws MasterKeyLockedException {
+	public ForwardSecurityMessageProcessor getForwardSecurityMessageProcessor() {
 		if (!ConfigUtils.isForwardSecurityEnabled()) {
 			return null;
 		}
@@ -1034,13 +1019,17 @@ public class ServiceManager {
 				this.getContactStore(),
 				this.getIdentityStore(),
 				this.getMessageQueue(),
-				(sender, rejectedApiMessageId) -> {
-					this.messageService.updateMessageStateForOutgoingMessage(rejectedApiMessageId, MessageState.FS_KEY_MISMATCH, new Date());
-			}
+				(sender, rejectedApiMessageId) ->
+					this.messageService.updateMessageStateForOutgoingMessage(
+						rejectedApiMessageId,
+						MessageState.FS_KEY_MISMATCH,
+						new Date(),
+						sender.getIdentity()
+					)
 			);
 
 			try {
-				this.forwardSecurityMessageProcessor.addStatusListener(new ForwardSecurityStatusSender(
+				this.forwardSecurityMessageProcessor.setStatusListener(new ForwardSecurityStatusSender(
 					this.getContactService(),
 					this.getMessageService(),
 					this.getAPIConnector()

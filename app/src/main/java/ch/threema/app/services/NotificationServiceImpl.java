@@ -21,6 +21,18 @@
 
 package ch.threema.app.services;
 
+import static android.provider.Settings.System.DEFAULT_NOTIFICATION_URI;
+import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
+import static androidx.core.app.NotificationCompat.MessagingStyle.MAXIMUM_RETAINED_MESSAGES;
+import static ch.threema.app.ThreemaApplication.WORK_SYNC_NOTIFICATION_ID;
+import static ch.threema.app.backuprestore.csv.RestoreService.RESTORE_COMPLETION_NOTIFICATION_ID;
+import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_GROUP_CALL;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -92,6 +104,7 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
+import ch.threema.app.receivers.CancelResendMessagesBroadcastReceiver;
 import ch.threema.app.receivers.ReSendMessagesBroadcastReceiver;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DNDUtil;
@@ -116,18 +129,6 @@ import ch.threema.storage.models.ServerMessageModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 import java8.util.stream.StreamSupport;
-
-import static android.provider.Settings.System.DEFAULT_NOTIFICATION_URI;
-import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
-import static androidx.core.app.NotificationCompat.MessagingStyle.MAXIMUM_RETAINED_MESSAGES;
-import static ch.threema.app.ThreemaApplication.WORK_SYNC_NOTIFICATION_ID;
-import static ch.threema.app.backuprestore.csv.RestoreService.RESTORE_COMPLETION_NOTIFICATION_ID;
-import static ch.threema.app.notifications.NotificationBuilderWrapper.VIBRATE_PATTERN_GROUP_CALL;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
 
 public class NotificationServiceImpl implements NotificationService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationServiceImpl");
@@ -196,9 +197,8 @@ public class NotificationServiceImpl implements NotificationService {
 			return this;
 		}
 
-		public NotificationSchemaImpl setRingerMode(int ringerMode) {
+		private void setRingerMode(int ringerMode) {
 			this.ringerMode = ringerMode;
-			return this;
 		}
 
 		public NotificationSchemaImpl setVibrate(boolean vibrate) {
@@ -462,7 +462,7 @@ public class NotificationServiceImpl implements NotificationService {
 			.setContentTitle(context.getString(R.string.group_call))
 			.setContentText(context.getString(R.string.voip_gc_notification_new_call_public))
 			.setSmallIcon(R.drawable.ic_group_call)
-			.setColor(context.getResources().getColor(R.color.accent_light));
+			.setColor(context.getResources().getColor(R.color.md_theme_light_primary));
 
 		// private version of the notification
 		NotificationCompat.Builder builder = new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_GROUP_CALL, notificationSchema, publicBuilder)
@@ -475,7 +475,7 @@ public class NotificationServiceImpl implements NotificationService {
 			.setLocalOnly(true)
 			.setCategory(NotificationCompat.CATEGORY_SOCIAL)
 			.setPriority(NotificationCompat.PRIORITY_HIGH)
-			.setColor(ResourcesCompat.getColor(context.getResources(), R.color.accent_light, context.getTheme()))
+			.setColor(ResourcesCompat.getColor(context.getResources(), R.color.md_theme_light_primary, context.getTheme()))
 			.setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
 			.setPublicVersion(publicBuilder.build())
 			.setSound(preferenceService.getGroupCallRingtone(), AudioManager.STREAM_VOICE_CALL)
@@ -519,6 +519,11 @@ public class NotificationServiceImpl implements NotificationService {
 
 		if (ConfigUtils.hasInvalidCredentials()) {
 			logger.debug("Credentials are not (or no longer) valid. Suppressing notification.");
+			return;
+		}
+
+		if (preferenceService != null && preferenceService.getWizardRunning()) {
+			logger.debug("Wizard in progress. Notification suppressed.");
 			return;
 		}
 
@@ -694,7 +699,7 @@ public class NotificationServiceImpl implements NotificationService {
 						.setContentTitle(summaryText)
 						.setContentText(context.getString(R.string.notification_hidden_text))
 						.setSmallIcon(R.drawable.ic_notification_small)
-						.setColor(context.getResources().getColor(R.color.accent_light))
+						.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
 						.setOnlyAlertOnce(onlyAlertOnce);
 
 				// private version
@@ -704,7 +709,7 @@ public class NotificationServiceImpl implements NotificationService {
 								.setTicker(tickerText)
 								.setSmallIcon(R.drawable.ic_notification_small)
 								.setLargeIcon(newestGroup.getAvatar())
-								.setColor(context.getResources().getColor(R.color.accent_light))
+								.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
 								.setGroup(newestGroup.getGroupUid())
 								.setGroupSummary(false)
 								.setOnlyAlertOnce(onlyAlertOnce)
@@ -782,7 +787,7 @@ public class NotificationServiceImpl implements NotificationService {
 								.setContentText(unreadConversationsCount > 1 ? summaryText : singleMessageText)
 								.setTicker(tickerText)
 								.setLargeIcon(summaryAvatar)
-								.setColor(context.getResources().getColor(R.color.accent_light))
+								.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
 								.setNumber(unreadMessagesCount)
 								.setGroup(GROUP_KEY_MESSAGES)
 								// https://code.google.com/p/android/issues/detail?id=219876
@@ -1164,7 +1169,7 @@ public class NotificationServiceImpl implements NotificationService {
 		builder.extend(new NotificationCompat.CarExtender()
 				.setLargeIcon(newestGroup.getAvatar())
 				.setUnreadConversation(unreadConvBuilder.build())
-				.setColor(context.getResources().getColor(R.color.accent_light)));
+				.setColor(context.getResources().getColor(R.color.md_theme_light_primary)));
 	}
 
 	@Override
@@ -1186,6 +1191,11 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public void cancelConversationNotification(final String... uids) {
+		if (uids == null) {
+			logger.warn("Unique id array must not be null! Ignoring.");
+			return;
+		}
+		logger.info("Cancel {} conversation notifications", uids.length);
 		synchronized (this.conversationNotifications) {
 			for(final String uid: uids) {
 				ConversationNotification conversationNotification = Functional.select(this.conversationNotifications, new IPredicateNonNull<ConversationNotification>() {
@@ -1196,12 +1206,15 @@ public class NotificationServiceImpl implements NotificationService {
 				});
 
 				if(conversationNotification != null) {
+					logger.info("Cancel notification {}", uid);
 					conversationNotifications.remove(conversationNotification);
 					cancelAndDestroyConversationNotification(conversationNotification);
 
 					if (ConfigUtils.canDoGroupedNotifications()) {
 						notificationManagerCompat.cancel(conversationNotification.getGroup().getNotificationId());
 					}
+				} else {
+					logger.info("Notification {} not found", uid);
 				}
 			}
 
@@ -1221,6 +1234,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	private void cancelAndDestroyConversationNotification(ConversationNotification conversationNotification) {
 		if(conversationNotification != null) {
+			logger.info("Cancel notification {}", conversationNotification.getUid());
 			//remove wearable
 			cancel(conversationNotification.getGroup().getNotificationId());
 			conversationNotification.destroy();
@@ -1281,14 +1295,14 @@ public class NotificationServiceImpl implements NotificationService {
 										.setContentTitle(summaryText)
 										.setContentText(context.getString(R.string.notification_hidden_text))
 										.setSmallIcon(R.drawable.ic_notification_small)
-										.setColor(context.getResources().getColor(R.color.accent_light));
+										.setColor(context.getResources().getColor(R.color.md_theme_light_primary));
 
 								builder = new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_CHAT_UPDATE, null, publicBuilder)
 												.setContentTitle(group.getName())
 												.setContentText(singleMessageText)
 												.setSmallIcon(R.drawable.ic_notification_small)
 												.setLargeIcon(group.getAvatar())
-												.setColor(context.getResources().getColor(R.color.accent_light))
+												.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
 												.setGroup(group.getGroupUid())
 												.setGroupSummary(false)
 												.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
@@ -1399,7 +1413,7 @@ public class NotificationServiceImpl implements NotificationService {
 									.setContentTitle(contentTitle)
 									.setContentText(unreadMessagesCount > 1 ? summaryText : singleMessageText)
 									.setLargeIcon(avatar)
-									.setColor(context.getResources().getColor(R.color.accent_light))
+									.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
 									.setNumber(unreadMessagesCount)
 									.setGroup(GROUP_KEY_MESSAGES)
 									.setOnlyAlertOnce(false);
@@ -1787,6 +1801,16 @@ public class NotificationServiceImpl implements NotificationService {
 			NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender();
 			wearableExtender.addAction(tryAgainAction);
 
+			Intent cancelIntent = new Intent(context, CancelResendMessagesBroadcastReceiver.class);
+			IntentDataUtil.appendMultipleMessageTypes(failedMessages, cancelIntent);
+
+			PendingIntent cancelSendingMessages = PendingIntent.getBroadcast(
+				context,
+				ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID,
+				cancelIntent,
+				this.pendingIntentFlags
+			);
+
 			String content = ConfigUtils.getSafeQuantityString(context, R.plurals.sending_message_failed, num, num);
 
 			if (isFSKeyMismatch) {
@@ -1805,6 +1829,7 @@ public class NotificationServiceImpl implements NotificationService {
 						.setContentTitle(this.context.getString(R.string.app_name))
 						.setContentText(content)
 						.setStyle(new NotificationCompat.BigTextStyle().bigText(content))
+						.setDeleteIntent(cancelSendingMessages)
 						.addAction(R.drawable.ic_refresh_white_24dp, context.getString(R.string.try_again), sendPendingIntent);
 
 			this.notify(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID, builder, null, NOTIFICATION_CHANNEL_ALERT);
@@ -2203,5 +2228,4 @@ public class NotificationServiceImpl implements NotificationService {
 
 		this.notify(requestIdNonce, notifBuilder, null, NOTIFICATION_CHANNEL_GROUP_JOIN_REQUEST);
 	}
-
 }

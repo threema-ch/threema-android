@@ -23,6 +23,8 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -134,7 +136,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		return contentValues;
 	}
 
-	void appendFilter(QueryBuilder queryBuilder, MessageService.MessageFilter filter, List<String> placeholders) {
+	void appendFilter(QueryBuilder queryBuilder, @Nullable MessageService.MessageFilter filter, List<String> placeholders) {
 		if(filter != null) {
 			if(!filter.withStatusMessages()) {
 				queryBuilder.appendWhere(AbstractMessageModel.COLUMN_IS_STATUS_MESSAGE + "=0");
@@ -170,7 +172,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		}
 	}
 
-	<T> void postFilter(List<T> input, MessageService.MessageFilter filter) {
+	<T> void postFilter(List<T> input, @Nullable MessageService.MessageFilter filter) {
 		if(filter != null && filter.onlyDownloaded()) {
 			Iterator<T> i = input.iterator();
 			while (i.hasNext()) {
@@ -194,7 +196,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		}
 	}
 
-	String limitFilter(MessageService.MessageFilter filter) {
+	String limitFilter(@Nullable MessageService.MessageFilter filter) {
 		if (filter != null && filter.getPageSize() > 0) {
 			return "" + filter.getPageSize();
 		}

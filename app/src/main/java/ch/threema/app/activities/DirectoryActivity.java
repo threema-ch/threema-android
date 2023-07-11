@@ -21,12 +21,13 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.ui.DirectoryDataSource.MIN_SEARCH_STRING_LENGTH;
+
+import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -37,9 +38,23 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.search.SearchBar;
 
 import org.slf4j.Logger;
 
@@ -48,19 +63,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.paging.LivePagedListBuilder;
-import androidx.paging.PagedList;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import ch.threema.app.R;
 import ch.threema.app.adapters.DirectoryAdapter;
 import ch.threema.app.asynctasks.AddContactAsyncTask;
@@ -78,8 +80,6 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
-
-import static ch.threema.app.ui.DirectoryDataSource.MIN_SEARCH_STRING_LENGTH;
 
 public class DirectoryActivity extends ThreemaToolbarActivity implements ThreemaSearchView.OnQueryTextListener, MultiChoiceSelectorDialog.SelectorDialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryActivity");
@@ -107,6 +107,8 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 	private Menu menu;
 	private MenuItem searchMenuItem;
 	private LinearProgressIndicator progressIndicator;
+	private SearchBar searchBar;
+	private ThreemaSearchView searchView;
 
 	private List<WorkDirectoryCategory> categoryList = new ArrayList<>();
 	private final List<WorkDirectoryCategory> checkedCategories = new ArrayList<>();
@@ -126,34 +128,18 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 		}
 	};
 
-	final SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
-		@Override
-		public boolean onQueryTextChange(String newText) {
-			queryText = newText;
-			queryHandler.removeCallbacks(queryTask);
-			queryHandler.postDelayed(queryTask, QUERY_TIMEOUT);
-			return true;
-		}
-
-		@Override
-		public boolean onQueryTextSubmit(String query) {
-			return true;
-		}
-	};
-
 	@Override
 	public boolean onQueryTextSubmit(String query) {
-		// Do something
+		// Do nothing
 		return true;
 	}
 
-	@SuppressLint("StaticFieldLeak")
 	@Override
 	public boolean onQueryTextChange(String newText) {
+		showResultsLayout();
 		queryText = newText;
 		queryHandler.removeCallbacks(queryTask);
 		queryHandler.postDelayed(queryTask, QUERY_TIMEOUT);
-
 		return true;
 	}
 
@@ -166,16 +152,28 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 	protected boolean initActivity(Bundle savedInstanceState) {
 		if (!super.initActivity(savedInstanceState)) {
 			return false;
-		};
+		}
 
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			Toolbar toolbar = getToolbar();
-			if (toolbar != null) {
-				actionBar.setTitle(null);
-				toolbar.setTitle(R.string.directory_title);
-			}
+			searchBar = (SearchBar) getToolbar();
+			searchBar.setNavigationOnClickListener(v -> {
+				if (searchView != null) {
+					if (searchView.isIconified()) {
+						finish();
+					} else {
+						searchView.setIconified(true);
+					}
+				}
+			});
+			searchBar.setOnClickListener(v -> {
+				if (searchView != null) {
+					searchView.setIconified(false);
+				}
+			});
+			ConfigUtils.adjustSearchBarTextViewMargin(this, searchBar);
+
+			updateToolbarTitle(getString(R.string.directory_title));
 		}
 
 		try {
@@ -198,18 +196,20 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 		WorkOrganization workOrganization = preferenceService.getWorkOrganization();
 		if (workOrganization != null && !TestUtil.empty(workOrganization.getName())) {
 			logger.info("Organization: " + workOrganization.getName());
-			getToolbar().setTitle(workOrganization.getName());
+			updateToolbarTitle(workOrganization.getName());
 		}
 
 		sortByFirstName = preferenceService.isContactListSortingFirstName();
 
 		chipGroup = findViewById(R.id.chip_group);
+		chipGroup.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING|LayoutTransition.CHANGE_APPEARING);
+
 		emptyTextView = findViewById(R.id.empty_text);
 		progressIndicator = findViewById(R.id.progress_bar);
 		progressIndicator.setVisibility(View.GONE);
 
-		categorySpanColor = ConfigUtils.getColorFromAttribute(this, R.attr.mention_background);
-		categorySpanTextColor = ConfigUtils.getColorFromAttribute(this, R.attr.mention_text_color);
+		categorySpanColor = getResources().getColor(R.color.mention_background);
+		categorySpanTextColor = ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground);
 
 		recyclerView = this.findViewById(R.id.recycler);
 		recyclerView.setHasFixedSize(true);
@@ -257,8 +257,6 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 		});
 
 		recyclerView.setAdapter(directoryAdapter);
-
-		findViewById(R.id.search_container).setOnClickListener(v ->	showResultsLayout());
 		return true;
 	}
 
@@ -306,13 +304,29 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
 		getMenuInflater().inflate(R.menu.activity_directory, menu);
 
-		searchMenuItem = menu.findItem(R.id.menu_search_directory);
+		searchMenuItem = menu.findItem(R.id.menu_action_search);
 		if (searchMenuItem != null) {
-			SearchView searchView = (SearchView) searchMenuItem.getActionView();
-			if (searchView != null) {
-				searchView.setQueryHint(getString(R.string.directory_search));
-				searchView.setOnQueryTextListener(queryTextListener);
-
+			this.searchView = (ThreemaSearchView) this.searchMenuItem.getActionView();
+			if (this.searchView != null) {
+				ConfigUtils.adjustSearchViewPadding(searchView);
+				this.searchView.setQueryHint(getString(R.string.directory_search));
+				this.searchView.setOnQueryTextListener(this);
+				if (this.searchBar != null) {
+					this.searchBar.post(() -> {
+						try {
+							int[] locationCategoryIcon = new int[2];
+							int[] locationTextView = new int[2];
+							searchBar.findViewById(R.id.menu_category).getLocationInWindow(locationCategoryIcon);
+							searchBar.getTextView().getLocationInWindow(locationTextView);
+							searchView.setMaxWidth(locationCategoryIcon[0] - locationTextView[0]);
+						} catch (Exception e) {
+							logger.debug("Unable to patch searchview");
+						}
+					});
+				}
+				this.searchMenuItem.expandActionView();
+			} else {
+				this.searchMenuItem.setVisible(false);
 			}
 		}
 
@@ -324,14 +338,11 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				this.finish();
-				return true;
-			case R.id.menu_category:
-				selectCategories();
-				break;
-
+		if (item.getItemId() == android.R.id.home) {
+			this.finish();
+			return true;
+		} else if (item.getItemId() == R.id.menu_category) {
+			selectCategories();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -342,7 +353,6 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 		intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 		IntentDataUtil.append(identity, intent);
 		startActivity(intent);
-		overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
 	}
 
 	private void launchContact(final WorkDirectoryContact workDirectoryContact, final int position) {
@@ -411,7 +421,16 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 		int i = 0;
 		for (WorkDirectoryCategory category : categoryList) {
 			categoryNames[i] = category.getName();
-			categoryChecked[i] = checkedCategories.contains(category);
+
+			categoryChecked[i] = false;
+			if (category.id != null) {
+				for (WorkDirectoryCategory checkedCategory : checkedCategories) {
+					if (category.id.equals(checkedCategory.id)) {
+						categoryChecked[i] = true;
+						break;
+					}
+				}
+			}
 			i++;
 		}
 
@@ -428,28 +447,11 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 			if (!TextUtils.isEmpty(checkedCategory.name)) {
 				activeCategories++;
 
-				Chip chip = new Chip(this);
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-					chip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
-				} else {
-					chip.setTextSize(14);
-				}
-
-				ColorStateList foregroundColor, backgroundColor;
-				if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(this, R.attr.textColorPrimary));
-					backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
-				} else {
-					foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
-					backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
-				}
-
-				chip.setTextColor(foregroundColor);
-				chip.setChipBackgroundColor(backgroundColor);
+				Chip chip = (Chip) getLayoutInflater().inflate(
+					R.layout.chip_directory, null, false
+				);
 				chip.setText(checkedCategory.name);
-				chip.setCloseIconVisible(true);
 				chip.setTag(checkedCategory.id);
-				chip.setCloseIconTint(foregroundColor);
 				chip.setOnCloseIconClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
@@ -464,6 +466,11 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 									break;
 								}
 							}
+						}
+
+						if (checkedCategories.size() == 0) {
+							chipGroup.setVisibility(View.GONE);
+							showIntroLayout();
 						}
 					}
 				});
@@ -501,6 +508,13 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 				emptyTextView.setText(R.string.no_matching_contacts);
 				progressIndicator.setVisibility(View.GONE);
 				break;
+		}
+	}
+
+	@MainThread
+	protected void updateToolbarTitle(String title) {
+		if (searchBar != null) {
+			searchBar.setHint(title);
 		}
 	}
 

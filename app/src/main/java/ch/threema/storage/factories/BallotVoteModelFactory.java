@@ -23,8 +23,9 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.DatabaseUtils;
+import android.database.Cursor;
+
+import net.zetetic.database.DatabaseUtils;
 
 import java.util.ArrayList;
 import java.util.List;

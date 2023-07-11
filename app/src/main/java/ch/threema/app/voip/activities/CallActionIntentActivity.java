@@ -60,17 +60,6 @@ public class CallActionIntentActivity extends ThreemaActivity {
 	private ContactService contactService;
 	private PreferenceService preferenceService;
 	private LicenseService licenseService;
-	private ContactModel contact;
-
-	private final ActivityResultLauncher<String> readPhoneStatePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-		if (!isGranted && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
-			ConfigUtils.showPermissionRationale(this, null, R.string.read_phone_state_short_message);
-		} else {
-			if (!VoipUtil.initiateCall(this, contact, false, this::finish, null)) {
-				finish();
-			}
-		}
-	});
 
 	@Override
 	protected boolean checkInstances() {
@@ -113,7 +102,7 @@ public class CallActionIntentActivity extends ThreemaActivity {
 		}
 
 	//	String contactIdentity = null;
-		contact = null;
+		ContactModel contact = null;
 
 		// Validate intent
 		final Intent intent = getIntent();
@@ -148,7 +137,7 @@ public class CallActionIntentActivity extends ThreemaActivity {
 
 		logger.info("Calling {} via call intent action", contact.getIdentity());
 
-		if (!VoipUtil.initiateCall(this, contact, false, this::finish, readPhoneStatePermissionLauncher)) {
+		if (!VoipUtil.initiateCall(this, contact, false, this::finish)) {
 			finish();
 		}
 	}

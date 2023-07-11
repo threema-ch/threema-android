@@ -55,64 +55,64 @@ public class UtilsTest {
 	}
 
 	@Test
-	public void longToByteArray() {
+	public void longToByteArrayBigEndian() {
 		Assert.assertArrayEquals(
 			new byte[] { 0, 0, 0, 0, 0, 0, 0, (byte)0x0A },
-			Utils.longToByteArray(0x0AL)
+			Utils.longToByteArrayBigEndian(0x0AL)
 		);
 
 		Assert.assertArrayEquals(
 			new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 },
-			Utils.longToByteArray(0L)
+			Utils.longToByteArrayBigEndian(0L)
 		);
 
 		Assert.assertArrayEquals(
 			new byte[] { (byte)0x80, 0, 0, 0, 0, 0, 0, 0 },
-			Utils.longToByteArray(Long.MIN_VALUE)
+			Utils.longToByteArrayBigEndian(Long.MIN_VALUE)
 		);
 
 		Assert.assertArrayEquals(
 			new byte[] {
 				(byte)0x7F, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF
 			},
-			Utils.longToByteArray(Long.MAX_VALUE)
+			Utils.longToByteArrayBigEndian(Long.MAX_VALUE)
 		);
 
 		Assert.assertArrayEquals(
 			new byte[] {
 				(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF
 			},
-			Utils.longToByteArray(-1L)
+			Utils.longToByteArrayBigEndian(-1L)
 		);
 	}
 
 	@Test
-	public void bytesArrayToLong() {
+	public void bytesArrayToLongBigEndian() {
 		Assert.assertEquals(
 			0x0AL,
-			Utils.byteArrayToLong(new byte[] { 0, 0, 0, 0, 0, 0, 0, (byte)0x0A })
+			Utils.byteArrayToLongBigEndian(new byte[] { 0, 0, 0, 0, 0, 0, 0, (byte)0x0A })
 		);
 
 		Assert.assertEquals(
 			0L,
-			Utils.byteArrayToLong(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 })
+			Utils.byteArrayToLongBigEndian(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 })
 		);
 
 		Assert.assertEquals(
 			Long.MIN_VALUE,
-			Utils.byteArrayToLong(new byte[] { (byte)0x80, 0, 0, 0, 0, 0, 0, 0 })
+			Utils.byteArrayToLongBigEndian(new byte[] { (byte)0x80, 0, 0, 0, 0, 0, 0, 0 })
 		);
 
 		Assert.assertEquals(
 			Long.MAX_VALUE,
-			Utils.byteArrayToLong(new byte[] {
+			Utils.byteArrayToLongBigEndian(new byte[] {
 				(byte)0x7F, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF
 			})
 		);
 
 		Assert.assertEquals(
 			-1L,
-			Utils.byteArrayToLong(new byte[] {
+			Utils.byteArrayToLongBigEndian(new byte[] {
 				(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF
 			})
 		);

@@ -18,8 +18,6 @@
     <string name="new_wizard_info_sync_contacts">Als u deze optie inschakelt, past Threema OnPrem eenrichtigs-versleuteling (hashfunctie) toe op uw e-mailadressen en telefoonnummers, voordat ze naar de server worden verstuurd om naar overeenkomende contactpersonen te zoeken. De gegevens worden alleen in het geheugen bewaard en nooit op de server opgeslagen.</string>
     <string name="threema_contact">Contactpersoon Threema OnPrem</string>
     <string name="menu_about">Over Threema OnPrem</string>
-    <string name="list_theme_light">Licht</string>
-    <string name="list_theme_dark">Donker (standaard)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Voor privégebruikers</a>]]></string>
     <string name="directory_search">ディレクトリ内検索</string>
     <string name="directory_title">会社のディレクトリ</string>

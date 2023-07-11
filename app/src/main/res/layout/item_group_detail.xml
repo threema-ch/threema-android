@@ -1,45 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/group_detail_list_item_size"
-                android:background="?attr/selectableItemBackground">
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/group_detail_list_item_size"
+    android:background="?attr/selectableItemBackground"
+    android:orientation="vertical">
 
-	<ch.threema.app.ui.AvatarView
-		android:id="@+id/avatar_view"
-		android:visibility="visible"
-		android:layout_centerVertical="true"
-		android:layout_width="@dimen/avatar_size_small"
-		android:layout_height="@dimen/avatar_size_small"/>
+    <ch.threema.app.ui.AvatarView
+        android:id="@+id/avatar_view"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_centerVertical="true"
+        android:visibility="visible" />
 
-	<ch.threema.app.emojis.EmojiTextView
-		android:id="@+id/group_name"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignWithParentIfMissing="true"
-		android:layout_centerVertical="true"
-		android:layout_marginLeft="16dip"
-		android:layout_marginRight="5dip"
-		android:layout_toLeftOf="@id/threemaid"
-		android:layout_toRightOf="@id/avatar_view"
-		android:ellipsize="marquee"
-		android:singleLine="true"
-		android:text="Name"
-		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine" />
+    <ch.threema.app.emojis.EmojiTextView
+        android:id="@+id/group_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dip"
+        android:layout_marginRight="5dip"
+        android:layout_toLeftOf="@+id/info_container"
+        android:layout_toRightOf="@id/avatar_view"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="Name"
+        android:textAppearance="@style/Threema.TextAppearance.List.FirstLine" />
 
-	<TextView
-			android:id="@+id/threemaid"
-			android:text="XYZ678AB"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-			android:singleLine="true"
-			android:layout_marginLeft="10dip"
-			android:layout_alignParentRight="true"
-			android:layout_alignWithParentIfMissing="true"
-			android:layout_alignBottom="@+id/group_name"
-			android:layout_marginBottom="1dp"/>
+    <FrameLayout
+        android:id="@+id/info_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true">
+
+    <TextView
+        android:id="@+id/threemaid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:layout_marginRight="2dp"
+        android:singleLine="true"
+        android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
+
+    <com.google.android.material.chip.Chip
+        style="@style/Threema.Chip.Suggestion"
+        android:id="@+id/admin_chip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:text="@string/add_group_owner"
+        android:contentDescription="@string/add_group_owner"
+        android:visibility="gone"/>
+
+    </FrameLayout>
 
 </RelativeLayout>
 

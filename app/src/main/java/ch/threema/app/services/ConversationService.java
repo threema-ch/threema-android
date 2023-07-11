@@ -97,6 +97,11 @@ public interface ConversationService {
 	ConversationModel refresh(@NonNull MessageReceiver receiverModel);
 
 	/**
+	 * update the tags
+	 */
+	void updateTags();
+
+	/**
 	 * re-sort conversations
 	 */
 	void sort();

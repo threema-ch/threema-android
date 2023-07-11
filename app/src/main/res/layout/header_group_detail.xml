@@ -1,183 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/group_details_container"
-		android:orientation="vertical"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/group_details_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-		<ImageView
-			android:id="@+id/change_group_desc_btn"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="10dp"
-			android:background="@drawable/circle_transparent"
-			android:clickable="true"
-			android:contentDescription="@string/edit"
-			android:focusable="true"
-			android:padding="10dp"
-			android:scaleType="fitCenter"
-			app:layout_anchor="@id/group_desc_text"
-			app:layout_anchorGravity="top|right"
-			app:layout_constraintBottom_toBottomOf="@+id/group_desc_text"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintHorizontal_bias="1.0"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="parent"
-			app:srcCompat="@drawable/ic_pencil_outline"
-			app:tint="?attr/colorAccent" />
+        <ImageView
+            android:id="@+id/change_group_desc_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            android:contentDescription="@string/edit"
+            android:focusable="true"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            app:layout_anchor="@id/group_desc_text"
+            app:layout_anchorGravity="top|right"
+            app:layout_constraintBottom_toBottomOf="@+id/group_desc_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_pencil_outline"
+            app:tint="?attr/colorPrimary" />
 
-		<ch.threema.app.ui.SectionHeaderView
-			android:id="@+id/group_desc_title"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="16dp"
-			android:text="@string/group_description"
-			app:layout_constraintBottom_toTopOf="@+id/group_desc_text"
-			app:layout_constraintTop_toTopOf="parent" />
+        <ch.threema.app.ui.SectionHeaderView
+            android:id="@+id/group_desc_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/group_description"
+            app:layout_constraintBottom_toTopOf="@+id/group_desc_text"
+            app:layout_constraintTop_toTopOf="parent" />
 
-		<ch.threema.app.emojis.EmojiConversationTextView
-			android:id="@+id/group_desc_text"
-			android:clickable="true"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:ellipsize="end"
-			android:textColor="?android:textColorPrimary"
-			android:text=""
-			android:ems="10"
-			android:maxLines="3"
-			android:singleLine="false"
-			android:linksClickable="true"
-			android:textSize="14sp"
-			android:layout_marginBottom="32dp"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toStartOf="@+id/change_group_desc_btn"
-			app:layout_constraintHorizontal_chainStyle="packed"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="parent"
-			app:layout_goneMarginRight="2dp"
-			android:focusable="true" />
+        <ch.threema.app.emojis.EmojiConversationTextView
+            android:id="@+id/group_desc_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:ems="10"
+            android:focusable="true"
+            android:linksClickable="true"
+            android:maxLines="3"
+            android:singleLine="false"
+            android:text=""
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/change_group_desc_btn"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginRight="2dp" />
 
-		<TextView
-			android:id="@+id/expand_group_desc_text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:clickable="true"
-			android:focusable="true"
-			android:gravity="center"
-			android:text="@string/read_more"
-			android:textColor="@color/material_green"
-			android:textSize="16sp"
-			android:textStyle="normal|bold"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintTop_toBottomOf="@+id/group_desc_text"
-			app:layout_constraintVertical_bias="0.0" />
+        <TextView
+            android:id="@+id/expand_group_desc_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="@string/read_more"
+            android:textColor="@color/material_green"
+            android:textSize="16sp"
+            android:textStyle="normal|bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/group_desc_text"
+            app:layout_constraintVertical_bias="0.0" />
 
-		<ch.threema.app.ui.SectionHeaderView
-			android:id="@+id/group_desc_changed_date"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="16dp"
-			android:layout_marginTop="12dp"
-			android:text="@string/changed_group_desc_date"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintTop_toBottomOf="@+id/expand_group_desc_text"
-			app:layout_constraintVertical_bias="0.255"
-			tools:layout_editor_absoluteX="0dp" />
-	</androidx.constraintlayout.widget.ConstraintLayout>
+        <ch.threema.app.ui.SectionHeaderView
+            android:id="@+id/group_desc_changed_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/changed_group_desc_date"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/expand_group_desc_text"
+            app:layout_constraintVertical_bias="0.255"
+            tools:layout_editor_absoluteX="0dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-	<LinearLayout android:id="@+id/group_owner_container"
-				  android:layout_width="wrap_content"
-				  android:layout_height="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/group_link_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
 
-				  android:orientation="vertical"
-				  android:visibility="visible">
+        <TextView
+            android:id="@+id/group_link_string"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.Light"
+            app:layout_constraintBottom_toBottomOf="@+id/reset_button"
+            app:layout_constraintEnd_toStartOf="@+id/reset_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/reset_button" />
 
-		<ch.threema.app.ui.SectionHeaderView
-				android:id="@+id/group_owner_title"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="12dp"
-				android:layout_marginBottom="5dp"
-				android:text="@string/add_group_owner"/>
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/share_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/share_via"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/group_link_switch"
+            app:srcCompat="@drawable/ic_share_outline" />
 
-		<include layout="@layout/item_group_detail"/>
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/reset_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="4dp"
+            android:contentDescription="@string/reset_default_group_link"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/share_button"
+            app:layout_constraintTop_toBottomOf="@+id/group_link_switch"
+            app:srcCompat="@drawable/ic_outline_renew_24" />
 
-	</LinearLayout>
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/group_link_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/group_link_header"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/group_link_header" />
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:id="@+id/group_link_container"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+        <ch.threema.app.ui.SectionHeaderView
+            android:id="@+id/group_link_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/default_group_link"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-		<TextView
-			android:id="@+id/group_link_string"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_marginRight="8dp"
-			android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.Light"
-			app:layout_constraintBottom_toBottomOf="@+id/reset_button"
-			app:layout_constraintEnd_toStartOf="@+id/reset_button"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="@+id/reset_button" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-		<androidx.appcompat.widget.AppCompatImageButton
-			android:id="@+id/share_button"
-			android:layout_width="40dp"
-			android:layout_height="40dp"
-			android:contentDescription="@string/share_via"
-			android:scaleType="centerCrop"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toBottomOf="@+id/group_link_switch"
-			app:srcCompat="@drawable/ic_share_outline" />
+    <ch.threema.app.ui.SectionHeaderView
+        android:id="@+id/group_members_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="8dp" />
 
-		<androidx.appcompat.widget.AppCompatImageButton
-			android:id="@+id/reset_button"
-			android:layout_width="40dp"
-			android:layout_height="40dp"
-			android:layout_marginRight="4dp"
-			android:contentDescription="@string/reset_default_group_link"
-			android:scaleType="centerCrop"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toStartOf="@+id/share_button"
-			app:layout_constraintTop_toBottomOf="@+id/group_link_switch"
-			app:srcCompat="@drawable/ic_outline_renew_24" />
+    <RelativeLayout
+        android:id="@+id/add_member"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/group_detail_list_item_size"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:contentDescription="@string/add_group_members"
+        android:focusable="true"
+        android:orientation="vertical">
 
-		<androidx.appcompat.widget.SwitchCompat
-			android:id="@+id/group_link_switch"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:minHeight="0dp"
-			app:layout_constraintBottom_toBottomOf="@+id/group_link_header"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toTopOf="@+id/group_link_header" />
+        <ImageView
+            android:id="@+id/add_member_button"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:focusable="false"
+            android:importantForAccessibility="no"
+            android:padding="6dp"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_person_add_outline"
+            app:tint="?attr/colorOnSurface" />
 
-		<ch.threema.app.ui.SectionHeaderView
-			android:id="@+id/group_link_header"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="10dp"
-			android:text="@string/default_group_link"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/add_member_text"
+            style="@style/Threema.TextAppearance.List.FirstLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/add_member_button"
+            android:clickable="false"
+            android:ellipsize="end"
+            android:focusable="false"
+            android:importantForAccessibility="no"
+            android:singleLine="true"
+            android:text="@string/add_group_members" />
 
-	</androidx.constraintlayout.widget.ConstraintLayout>
-
-	<ch.threema.app.ui.SectionHeaderView
-			android:id="@+id/group_members_title"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="10dp"
-			android:layout_marginBottom="5dp"
-			android:text="@string/add_group_members_list"/>
+    </RelativeLayout>
 
 </LinearLayout>

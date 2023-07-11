@@ -14,8 +14,9 @@
 		android:layout_marginTop="12dp"
 		android:layout_marginRight="8dp"
 		android:layout_marginBottom="16dp"
-		app:cardBackgroundColor="?attr/background_identity_popup"
-		app:cardElevation="0dp"
+		app:cardBackgroundColor="?attr/colorSurface"
+		app:strokeWidth="0dp"
+		app:cardElevation="8dp"
 		app:contentPaddingBottom="2dp"
 		app:contentPaddingLeft="16dp"
 		app:contentPaddingRight="16dp"
@@ -33,7 +34,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="16dp"
 				android:contentDescription="@string/my_id"
-				android:textColor="?attr/textColorPrimary"
+				android:textColor="?attr/colorOnBackground"
 				android:textSize="24sp"
 				app:layout_constraintBottom_toTopOf="@+id/scan_button"
 				app:layout_constraintLeft_toLeftOf="@+id/qr_container" />
@@ -48,19 +49,21 @@
 				android:contentDescription="@string/share_via"
 				android:focusable="true"
 				android:padding="4dp"
+				android:layout_marginBottom="-1dp"
 				app:layout_constraintLeft_toRightOf="@+id/identity_label"
-				app:layout_constraintTop_toTopOf="@+id/identity_label"
+				app:layout_constraintBottom_toBottomOf="@+id/identity_label"
 				app:srcCompat="@drawable/ic_share_outline"
-				app:tint="?attr/textColorSecondary" />
+				app:tint="?attr/colorOnSurface" />
 
 			<com.google.android.material.card.MaterialCardView
 				android:id="@+id/qr_container"
-				android:layout_width="100dp"
-				android:layout_height="100dp"
-				app:strokeColor="?attr/accent_alpha"
-				app:strokeWidth="1dp"
-				app:cardElevation="0dp"
-				app:contentPadding="1dp"
+				android:layout_width="108dp"
+				android:layout_height="108dp"
+				app:strokeColor="@color/material_green"
+				app:cardBackgroundColor="?attr/colorSurface"
+				app:strokeWidth="2dp"
+				app:cardElevation="-8dp"
+				app:contentPadding="4dp"
 				app:layout_constraintBottom_toTopOf="@+id/web_enable"
 				app:layout_constraintLeft_toLeftOf="parent"
 				app:layout_constraintTop_toBottomOf="@+id/identity_label">
@@ -79,31 +82,30 @@
 
 			</com.google.android.material.card.MaterialCardView>
 
-			<com.google.android.material.chip.Chip
+			<com.google.android.material.button.MaterialButton
 				android:id="@+id/scan_button"
-				style="@style/Threema.Chip.Outline.Action.WithIcon"
+				style="@style/Threema.MaterialButton.Action"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_marginLeft="16dp"
 				android:text="@string/scan_id"
-				app:chipIcon="@drawable/ic_qr_code_scan"
+				app:icon="@drawable/ic_qr_code_scan"
 				app:ensureMinTouchTargetSize="false"
 				app:layout_constraintWidth_min="wrap"
 				app:layout_constraintLeft_toRightOf="@+id/qr_container"
 				app:layout_constraintTop_toTopOf="@+id/qr_container"
 				app:layout_constraintRight_toRightOf="@+id/buttons_right_barrier"/>
 
-			<com.google.android.material.chip.Chip
+			<com.google.android.material.button.MaterialButton
 				android:id="@+id/profile_button"
-				style="@style/Threema.Chip.Outline.Action.WithIcon"
+				style="@style/Threema.MaterialButton.Action"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:layout_marginTop="8dp"
 				android:text="@string/my_profile"
-				app:chipIcon="@drawable/ic_profile"
+				app:icon="@drawable/ic_profile"
 				app:ensureMinTouchTargetSize="false"
 				app:layout_constraintWidth_min="wrap"
-				app:layout_constraintTop_toBottomOf="@+id/scan_button"
+				app:layout_constraintBottom_toBottomOf="@+id/qr_container"
 				app:layout_constraintLeft_toLeftOf="@+id/scan_button"
 				app:layout_constraintRight_toRightOf="@+id/buttons_right_barrier" />
 
@@ -118,7 +120,7 @@
 
 			<!-- material switch currently has theming problems -->
 
-			<androidx.appcompat.widget.SwitchCompat
+			<com.google.android.material.materialswitch.MaterialSwitch
 				android:id="@+id/web_enable"
 				android:layout_marginBottom="2dp"
 				android:layout_width="0dp"
@@ -136,13 +138,13 @@
 				android:layout_height="0dp"
 				android:paddingTop="6dp"
 				android:paddingBottom="6dp"
-				android:paddingLeft="2dp"
+				android:paddingLeft="8dp"
 				android:paddingRight="2dp"
 				android:background="?selectableItemBackground"
 				android:clickable="true"
 				android:focusable="true"
 				android:text="@string/webclient"
-				android:textAppearance="@style/Threema.TextAppearance.Body2"
+				android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
 				app:layout_constraintBaseline_toBaselineOf="@+id/web_enable"
 				app:layout_constraintLeft_toRightOf="@+id/web_enable" />
 
@@ -159,13 +161,16 @@
 
 	<!-- arrow -->
 
-	<ImageView
+	<com.google.android.material.card.MaterialCardView
 		android:layout_width="@dimen/identity_popup_arrow_width"
-		android:layout_height="14dp"
+		android:layout_height="@dimen/identity_popup_arrow_height"
 		android:layout_gravity="left|top"
-		android:layout_marginLeft="@dimen/identity_popup_arrow_margin_left"
-		android:scaleType="fitXY"
-		app:srcCompat="@drawable/triangle_up"
-		app:tint="?attr/background_identity_popup" />
+		android:layout_marginLeft="@dimen/identity_popup_arrow_inset_left"
+		android:importantForAccessibility="no"
+		app:cardBackgroundColor="?attr/colorSurface"
+		app:shapeAppearance="@style/Threema.ShapeAppearance.Arrow.Up"
+		app:strokeWidth="0dp"
+		app:cardElevation="8dp"
+		/>
 
 </FrameLayout>

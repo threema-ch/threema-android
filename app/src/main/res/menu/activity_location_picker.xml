@@ -5,7 +5,7 @@
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search_outline"
-        app:iconTint="@android:color/white"
+        app:iconTint="?attr/colorOnSurface"
         android:title="@android:string/search_go"
         app:showAsAction="always" />
 

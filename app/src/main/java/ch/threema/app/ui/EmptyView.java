@@ -34,6 +34,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+
 import ch.threema.app.R;
 
 public class EmptyView extends LinearLayout {
@@ -56,7 +57,7 @@ public class EmptyView extends LinearLayout {
 
 		setOrientation(LinearLayout.VERTICAL);
 		setGravity(Gravity.CENTER);
-		int paddingPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, context.getResources().getDisplayMetrics());
+		int paddingPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, context.getResources().getDisplayMetrics());
 		setPadding(paddingPx, parentOffset, paddingPx, 0);
 		setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));

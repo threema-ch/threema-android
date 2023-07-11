@@ -170,9 +170,9 @@ public class GroupJoinResponseData implements ProtobufDataInterface<GroupJoinRes
 			final GroupInviteToken token = new GroupInviteToken(protobufMessage.getToken().toByteArray());
 			return new GroupJoinResponseData(token, response);
 		} catch (InvalidProtocolBufferException e) {
-			throw new BadMessageException("Invalid Group Join Response Protobuf Data", true);
+			throw new BadMessageException("Invalid Group Join Response Protobuf Data");
 		} catch (GroupInviteToken.InvalidGroupInviteTokenException e) {
-			throw new BadMessageException("Invalid Group Join Token Length", true);
+			throw new BadMessageException("Invalid Group Join Token Length");
 		}
 	}
 

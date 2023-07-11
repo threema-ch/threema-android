@@ -29,15 +29,14 @@
 			app:srcCompat="@drawable/ic_call_missed_black_24dp"/>
 
 		<ch.threema.app.emojis.EmojiTextView
+			style="@style/Threema.Bubble.Text.Body"
 			android:id="@+id/text_view"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerVertical="true"
 			android:layout_toRightOf="@id/attachment_image_view"
 			android:linksClickable="true"
-			android:text="Call Text"
-			android:textColor="?android:textColorPrimary"
-			android:textSize="?attr/font_large"/>
+			android:text="Call Text" />
 
 	</RelativeLayout>
 

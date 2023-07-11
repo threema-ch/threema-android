@@ -233,11 +233,6 @@ public class GroupInviteServiceTest {
 			}
 
 			@Override
-			public boolean isTyping(String toIdentity, boolean isTyping) {
-				return false;
-			}
-
-			@Override
 			public boolean restoreIdentity(String backupString, String password) throws Exception {
 				return false;
 			}

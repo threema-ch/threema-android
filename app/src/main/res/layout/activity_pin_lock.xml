@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2015 The Android Open Source Project
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-          http://www.apache.org/licenses/LICENSE-2.0
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
 <FrameLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/topFrame"
 		android:layout_height="match_parent"
 		android:layout_width="match_parent"
 		android:paddingTop="36dp"
-		android:background="?android:windowBackground">
+		android:background="?android:attr/colorBackground">
 
 <LinearLayout
 		android:id="@+id/topLayout"
@@ -26,34 +15,32 @@
 		android:layout_height="match_parent">
 
 	<TextView
+			style="@style/Threema.TextAppearance.Headline"
 			android:id="@+id/headerText"
-			android:layout_marginLeft="?attr/confirmDeviceCredentialsSideMargin"
-			android:layout_marginRight="?attr/confirmDeviceCredentialsSideMargin"
-			android:layout_marginTop="?attr/confirmDeviceCredentialsTopMargin"
+			android:layout_marginLeft="@dimen/pin_lock_side_margin"
+			android:layout_marginRight="@dimen/pin_lock_side_margin"
+			android:layout_marginTop="@dimen/pin_lock_top_margin"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:textSize="24sp"
-			android:fontFamily="sans-serif"
-			android:textColor="?attr/colorAccent"/>
+			android:textColor="?attr/colorPrimary"/>
 
 	<TextView
+			style="@style/Threema.TextAppearance.BodyMedium"
 			android:id="@+id/detailsText"
-			android:layout_marginLeft="?attr/confirmDeviceCredentialsSideMargin"
-			android:layout_marginRight="?attr/confirmDeviceCredentialsSideMargin"
+			android:layout_marginLeft="@dimen/pin_lock_side_margin"
+			android:layout_marginRight="@dimen/pin_lock_side_margin"
 			android:layout_marginTop="12dp"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:textSize="14sp"
-			android:fontFamily="sans-serif"
-			android:textColor="?attr/textColorPrimary"
-			/>
+		/>
 
 	<com.google.android.material.button.MaterialButton
+			style="@style/Threema.MaterialButton.Action"
 			android:id="@+id/cancelButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginLeft="?attr/confirmDeviceCredentialsSideMargin"
-			android:layout_marginRight="?attr/confirmDeviceCredentialsSideMargin"
+			android:layout_marginLeft="@dimen/pin_lock_side_margin"
+			android:layout_marginRight="@dimen/pin_lock_side_margin"
 			android:text="@string/cancel"
 			android:layout_marginTop="16dp"
 			/>
@@ -74,9 +61,9 @@
 			android:textSize="16sp"
 			android:singleLine="true"
 			android:fontFamily="sans-serif"
-			android:textColor="?attr/textColorPrimary">
+			android:textColor="?attr/colorOnBackground">
 			<requestFocus />
-		</ch.threema.app.ui.ThreemaEditText>
+	</ch.threema.app.ui.ThreemaEditText>
 
 	<TextView
 			android:id="@+id/errorText"
@@ -84,8 +71,8 @@
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:layout_gravity="center_horizontal"
-			android:layout_marginStart="?attr/confirmDeviceCredentialsSideMargin"
-			android:layout_marginEnd="?attr/confirmDeviceCredentialsSideMargin"
+			android:layout_marginStart="@dimen/pin_lock_side_margin"
+			android:layout_marginEnd="@dimen/pin_lock_side_margin"
 			android:textSize="12sp"
 			android:fontFamily="sans-serif"
 			android:textColor="@color/material_red"

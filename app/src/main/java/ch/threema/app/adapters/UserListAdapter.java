@@ -70,6 +70,7 @@ public class UserListAdapter extends FilterableListAdapter {
 	private final ContactService contactService;
 	private final IdListService blacklistService;
 	private final DeadlineListService hiddenChatsListService;
+	private final FilterResultsListener filterResultsListener;
 
 	public UserListAdapter(
 		Context context,
@@ -79,7 +80,8 @@ public class UserListAdapter extends FilterableListAdapter {
 		ContactService contactService,
 		IdListService blacklistService,
 		DeadlineListService hiddenChatsListService,
-		PreferenceService preferenceService
+		PreferenceService preferenceService,
+		FilterResultsListener filterResultsListener
 	) {
 		super(context, R.layout.item_user_list, (List<Object>) (Object) values);
 
@@ -87,6 +89,7 @@ public class UserListAdapter extends FilterableListAdapter {
 		this.contactService = contactService;
 		this.hiddenChatsListService = hiddenChatsListService;
 		this.blacklistService = blacklistService;
+		this.filterResultsListener = filterResultsListener;
 
 		this.values = new ArrayList<>(values);
 		this.values.addAll(getMissingPreselectedContacts(values, preselectedIdentities));
@@ -236,6 +239,9 @@ public class UserListAdapter extends FilterableListAdapter {
 		@Override
 		protected void publishResults(CharSequence constraint, FilterResults results) {
 			values = (List<ContactModel>) results.values;
+			if (filterResultsListener != null) {
+				filterResultsListener.onResultsAvailable(TestUtil.empty(constraint) ? 0 : results.count);
+			}
 			notifyDataSetChanged();
 		}
 

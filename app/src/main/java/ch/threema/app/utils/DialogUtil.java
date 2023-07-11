@@ -25,11 +25,12 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.UiThread;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -98,7 +99,7 @@ public abstract class DialogUtil {
 
 	public static ColorStateList getButtonColorStateList(Context context) {
 		// Fix for appcompat bug. Set button text color from theme
-		TypedArray a = context.getTheme().obtainStyledAttributes(new int[]{R.attr.colorAccent});
+		TypedArray a = context.getTheme().obtainStyledAttributes(new int[]{R.attr.colorPrimary});
 		int accentColor = a.getColor(0, 0);
 		a.recycle();
 

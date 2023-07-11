@@ -104,7 +104,8 @@ public class GroupListFragment extends RecipientListFragment {
 					activity,
 					groupModels,
 					checkedItemPositions,
-					groupService
+					groupService,
+					GroupListFragment.this
 				);
 				setListAdapter(adapter);
 				if (listInstanceState != null) {

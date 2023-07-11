@@ -191,10 +191,10 @@ public class EmojiMarkupUtil {
 			return inputText;
 		}
 
-		@ColorInt int mentionColor = ConfigUtils.getColorFromAttribute(context, R.attr.mention_background);
-		@ColorInt int invertedMentionColor = ConfigUtils.getColorFromAttribute(context, R.attr.mention_background_inverted);
-		@ColorInt int mentionTextColor = ConfigUtils.getColorFromAttribute(context, R.attr.mention_text_color);
-		@ColorInt int invertedMentionTextColor = ConfigUtils.getColorFromAttribute(context, R.attr.mention_text_color_inverted);
+		@ColorInt int mentionColor = context.getResources().getColor(R.color.mention_background);
+		@ColorInt int invertedMentionColor = context.getResources().getColor(R.color.mention_background_inverted);
+		@ColorInt int mentionTextColor = context.getResources().getColor(R.color.mention_text_color);
+		@ColorInt int invertedMentionTextColor =  context.getResources().getColor(R.color.mention_text_color_inverted);
 
 		SpannableStringBuilder s = new SpannableStringBuilder(inputText);
 

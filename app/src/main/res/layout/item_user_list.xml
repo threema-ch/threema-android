@@ -67,7 +67,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginRight="5dp"
-		android:tint="?attr/textColorSecondary"
+		android:tint="?attr/colorOnSurface"
 		app:srcCompat="@drawable/ic_chat_filled"
 		app:layout_constraintBottom_toBottomOf="@id/subject"
 		app:layout_constraintLeft_toRightOf="@id/subject"

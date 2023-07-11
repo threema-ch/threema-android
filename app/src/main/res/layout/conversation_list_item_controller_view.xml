@@ -2,37 +2,44 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<ImageView
+	<androidx.appcompat.widget.AppCompatImageView
 			android:id="@+id/icon"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_width="@dimen/avatar_size_small"
+			android:layout_height="@dimen/avatar_size_small"
 			android:maxHeight="@dimen/avatar_size_small"
 			android:maxWidth="@dimen/avatar_size_small"
-			android:padding="8dp"
 			android:layout_gravity="center"
 			android:clickable="false"
 			android:scaleType="centerCrop"
-			android:visibility="gone"
-			android:background="@drawable/circle_status_icon_color"/>
+			android:importantForAccessibility="no"
+			android:background="?attr/colorTertiaryContainer"
+			android:visibility="gone" />
 
-	<ProgressBar
+	<com.google.android.material.progressindicator.CircularProgressIndicator
 			android:id="@+id/progress"
 			android:layout_width="@dimen/avatar_size_small"
 			android:layout_height="@dimen/avatar_size_small"
 			android:indeterminate="true"
 			android:indeterminateOnly="true"
+			app:trackThickness="@dimen/conversation_controller_progress_stroke_width"
+			app:trackColor="?attr/colorPrimaryContainer"
+			app:indicatorColor="?attr/colorPrimary"
+			app:indicatorSize="@dimen/conversation_controller_progress_size"
+			app:indicatorInset="@dimen/conversation_controller_progress_stroke_width"
+			app:indicatorDirectionCircular="clockwise"
+			app:showAnimationBehavior="inward"
+			app:hideAnimationBehavior="inward"
 			android:clickable="false"
 			android:layout_gravity="center"
 			android:visibility="gone"/>
 
 	<com.google.android.material.progressindicator.CircularProgressIndicator
-			style="?attr/circularProgressIndicatorStyle"
 			android:id="@+id/progress_determinate"
 			android:layout_width="@dimen/avatar_size_small"
 			android:layout_height="@dimen/avatar_size_small"
 			app:trackThickness="@dimen/conversation_controller_progress_stroke_width"
-			app:trackColor="?attr/secondary_accent_color"
-			app:indicatorColor="?attr/colorAccent"
+			app:trackColor="?attr/colorPrimaryContainer"
+			app:indicatorColor="?attr/colorPrimary"
 			app:indicatorSize="@dimen/conversation_controller_progress_size"
 			app:indicatorInset="@dimen/conversation_controller_progress_stroke_width"
 			app:indicatorDirectionCircular="clockwise"

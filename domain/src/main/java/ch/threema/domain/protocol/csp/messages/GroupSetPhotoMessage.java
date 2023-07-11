@@ -26,8 +26,10 @@ import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A group message sent by the group creator that causes a new photo to be set for the group.
@@ -47,6 +49,12 @@ public class GroupSetPhotoMessage extends AbstractGroupMessage {
 	@Override
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_GROUP_SET_PHOTO;
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 
 	@Override

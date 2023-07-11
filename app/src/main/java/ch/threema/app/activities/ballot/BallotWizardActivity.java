@@ -26,9 +26,15 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.slf4j.Logger;
 
@@ -36,11 +42,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
@@ -75,9 +76,8 @@ public class BallotWizardActivity extends ThreemaActivity {
 	private GroupService groupService;
 	private String identity;
 	private StepPagerStrip stepPagerStrip;
-	private ImageView nextButton, copyButton, prevButton;
-	private Button nextText;
-	private MessageReceiver receiver;
+	private MaterialButton nextButton, copyButton, prevButton;
+	private MessageReceiver<?> receiver;
 
 	private final List<BallotChoiceModel> ballotChoiceModelList = new ArrayList<>();
 	private String ballotTitle;
@@ -96,7 +96,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 
 		super.onCreate(savedInstanceState);
 
@@ -119,9 +119,6 @@ public class BallotWizardActivity extends ThreemaActivity {
 		nextButton = findViewById(R.id.next_page_button);
 		nextButton.setOnClickListener(v -> nextPage());
 
-		nextText = findViewById(R.id.next_text);
-		nextText.setOnClickListener(v -> nextPage());
-
 		pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageScrolled(int i, float v, int i2) {}
@@ -136,17 +133,15 @@ public class BallotWizardActivity extends ThreemaActivity {
 				}
 				if (position == 1) {
 					if (checkTitle()) {
-						nextButton.setVisibility(View.GONE);
 						prevButton.setVisibility(View.VISIBLE);
-						nextText.setVisibility(View.VISIBLE);
+						nextButton.setText(R.string.finish);
 						copyButton.setVisibility(View.GONE);
 					} else {
 						position = 0;
 					}
 				} else {
-					nextButton.setVisibility(View.VISIBLE);
 					prevButton.setVisibility(View.GONE);
-					nextText.setVisibility(View.GONE);
+					nextButton.setText(R.string.next);
 					copyButton.setVisibility(View.VISIBLE);
 				}
 				stepPagerStrip.setCurrentPage(position);
@@ -175,7 +170,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 	 * @param fragment
 	 */
 	@Override
-	public void onAttachFragment(Fragment fragment) {
+	public void onAttachFragment(@NonNull Fragment fragment) {
 		super.onAttachFragment(fragment);
 
 		if(fragment instanceof BallotWizardFragment) {
@@ -272,7 +267,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 		return this.ballotAssessment;
 	}
 
-	private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+	private static class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 		public ScreenSlidePagerAdapter(FragmentManager fm) {
 			super(fm);
 		}

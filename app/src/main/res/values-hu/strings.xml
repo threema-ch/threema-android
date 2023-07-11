@@ -287,7 +287,6 @@
     <string name="title_select_contacts">Válassza ki a tagokat</string>
     <string name="pin_invalid_not_set">PIN-kód érvénytelen</string>
     <string name="prefs_group_notifications">Csoportos csevegés</string>
-    <string name="add_group_members_list">Csoporttagok</string>
     <string name="group_select_at_least_two">Kérjük, válasszon legalább egy tagot</string>
     <string name="group_select_max">A csoporthoz legfeljebb %1$d tag adható hozzá.</string>
     <string name="search">Keresés</string>
@@ -537,7 +536,7 @@
     <string name="send_as_files_warning">A tömörítetlen fájlok és képek továbbítása megnövekedett adatfogyasztáshoz vezet.
 		Ez további költségeket eredményezhet a mobiltelefon-szolgáltatónál. Javasoljuk a WLAN használatát.</string>
     <string name="prefs_theme">Dizájn stílus</string>
-    <string name="list_theme_light">Világos (standard)</string>
+    <string name="list_theme_light">Világos</string>
     <string name="list_theme_dark">Sötét</string>
     <string name="prefs_header_appearance">Megjelenés</string>
     <string name="prefs_sum_passphrase">Jelszó megkövetelése a helyi titkosításhoz</string>
@@ -1159,7 +1158,7 @@
     <string name="no_faces_detected">Nem találtunk arcokat</string>
     <string name="smiley">Smiley</string>
     <string name="blur">Elmosás</string>
-    <string name="face_blur_tooltip_title">Új: Arcfelismerés</string>
+    <string name="face_blur_tooltip_title">Arcfelismerés</string>
     <string name="face_blur_tooltip_text">Keress arcokat a képen, és homályosítsd el őket, vagy fedd le egy smileyval.</string>
     <string name="listened_to">meghallgatva</string>
     <string name="transcoder_unsupported_audio_format">A hangformátum konvertálása a rendszer támogatásának hiánya miatt nem sikerült.</string>

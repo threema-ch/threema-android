@@ -27,6 +27,7 @@ import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -37,7 +38,6 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.annotation.IdRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.widget.NestedScrollView
@@ -46,13 +46,15 @@ import androidx.lifecycle.ViewModelProvider
 import ch.threema.app.R
 import ch.threema.app.mediaattacher.ContactEditViewModel
 import ch.threema.app.ui.VCardPropertyView
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.VCardExtractor
 import ch.threema.base.utils.LoggingUtil
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.android.material.shape.MaterialShapeDrawable
 import ezvcard.property.StructuredName
 
 private val logger = LoggingUtil.getThreemaLogger("EditSendContactActivity")
@@ -65,16 +67,18 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
 
     private lateinit var viewModel: ContactEditViewModel
     private lateinit var toolbar: MaterialToolbar
+    private lateinit var appBarLayout: AppBarLayout
+    private lateinit var bottomSheet: View
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // set status bar color
-        window.statusBarColor = ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_collapsed)
+        window.statusBarColor = resources.getColor(R.color.attach_status_bar_color_collapsed)
 
         toolbar = findViewById(R.id.toolbar_contact)
-
+        appBarLayout = findViewById(R.id.appbar_layout_contact)
         viewModel = ViewModelProvider(this)[ContactEditViewModel::class.java]
 
         // Finish activity when chat activity (in "background") is clicked
@@ -82,7 +86,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
                 .parent as ViewGroup).setOnClickListener { cancelAndFinish() }
 
         // Finish activity when bottom sheet gets hidden and adapt status bar color on expand/drag
-        val bottomSheet = findViewById<View>(R.id.bottom_sheet)
+        bottomSheet = findViewById<View>(R.id.bottom_sheet)
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             addBottomSheetCallback(object : BottomSheetCallback() {
 
@@ -117,8 +121,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
             override fun onGlobalLayout() {
                 rootCoordinator.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
-                val topMargin = toolbar.height - resources.getDimensionPixelSize(R.dimen.drag_handle_height) -
-                        resources.getDimensionPixelSize(R.dimen.drag_handle_topbottom_margin)
+                val topMargin = toolbar.height - resources.getDimensionPixelSize(R.dimen.drag_handle_height)
 
                 val bottomSheetContainer = findViewById<CoordinatorLayout>(R.id.bottom_sheet_coordinator)
                 val bottomSheetContainerLayoutParams = bottomSheetContainer.layoutParams as CoordinatorLayout.LayoutParams
@@ -190,7 +193,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
             }
 
             // Hide progress bar
-            findViewById<ProgressBar>(R.id.progress_bar_parsing).visibility = View.GONE
+            findViewById<CircularProgressIndicator>(R.id.progress_bar_parsing).visibility = View.GONE
 
             // Send the possibly modified VCard as file
             findViewById<FloatingActionButton>(R.id.send_contact).apply {
@@ -219,16 +222,21 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      * Shows the toolbar and adapts the status bar color.
      */
     private fun onBottomSheetExpand() {
-        toolbar.animation?.cancel()
-        toolbar.alpha = 0f
-        toolbar.visibility = View.VISIBLE
-        toolbar.animate().alpha(1f).setDuration(100).setListener(object : AnimatorListenerAdapter() {
+        appBarLayout.animation?.cancel()
+        appBarLayout.alpha = 0f
+        appBarLayout.visibility = View.VISIBLE
+        appBarLayout.animate().alpha(1f).setDuration(100).setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                toolbar.visibility = View.VISIBLE
+                appBarLayout.visibility = View.VISIBLE
             }
         })
-        toolbar.postDelayed({
-            window.statusBarColor = ConfigUtils.getColorFromAttribute(this@EditSendContactActivity, R.attr.attach_status_bar_color_expanded)
+        appBarLayout.postDelayed({
+            val background: Drawable = bottomSheet.getBackground()
+            if (background is MaterialShapeDrawable) {
+                window.statusBarColor = background.resolvedTintColor
+            } else {
+                window.statusBarColor = resources.getColor(R.color.attach_status_bar_color_expanded)
+            }
         }, 100)
     }
 
@@ -236,17 +244,17 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      * Hides the toolbar and adapts the status bar color.
      */
     private fun onBottomSheetCollapse() {
-        toolbar.animation?.cancel()
-        toolbar.alpha = 1f
-        toolbar.animate().alpha(0f).setDuration(100).setListener(object : AnimatorListenerAdapter() {
+        appBarLayout.animation?.cancel()
+        appBarLayout.alpha = 1f
+        appBarLayout.animate().alpha(0f).setDuration(100).setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {}
             override fun onAnimationEnd(animation: Animator) {
-                toolbar.visibility = View.INVISIBLE
-                window.statusBarColor = ConfigUtils.getColorFromAttribute(this@EditSendContactActivity, R.attr.attach_status_bar_color_collapsed)
+                appBarLayout.visibility = View.INVISIBLE
+                window.statusBarColor = resources.getColor(R.color.attach_status_bar_color_collapsed)
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                window.statusBarColor = ConfigUtils.getColorFromAttribute(this@EditSendContactActivity, R.attr.attach_status_bar_color_collapsed)
+                window.statusBarColor = resources.getColor(R.color.attach_status_bar_color_collapsed)
             }
 
             override fun onAnimationRepeat(animation: Animator) {}

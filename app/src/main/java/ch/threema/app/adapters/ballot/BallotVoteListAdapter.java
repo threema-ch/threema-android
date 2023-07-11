@@ -30,14 +30,16 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.material.button.MaterialButton;
+
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.ui.CheckableRelativeLayout;
-import ch.threema.app.ui.CountBoxView;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
@@ -46,8 +48,8 @@ import ch.threema.storage.models.ballot.BallotChoiceModel;
  */
 public class BallotVoteListAdapter extends ArrayAdapter<BallotChoiceModel> {
 
-	private Context context;
-	private List<BallotChoiceModel> values;
+	private final Context context;
+	private final List<BallotChoiceModel> values;
 	private final Map<Integer, Integer> selected;
 	private final boolean readonly;
 	private final boolean multipleChoice;
@@ -71,7 +73,7 @@ public class BallotVoteListAdapter extends ArrayAdapter<BallotChoiceModel> {
 
 	private static class BallotAdminChoiceItemHolder {
 		public TextView name;
-		public CountBoxView voteCount;
+		public MaterialButton voteCount;
 		public RadioButton radioButton;
 		public CheckBox checkBox;
 		int originalPosition;

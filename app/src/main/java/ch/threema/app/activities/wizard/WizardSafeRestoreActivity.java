@@ -288,17 +288,14 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 	}
 
 	private void onSuccessfulRestore() {
-		SimpleStringAlertDialog.newInstance(R.string.restore_success_body,
-			Build.VERSION.SDK_INT <= Build.VERSION_CODES.P ?
-				R.string.android_backup_restart_threema :
-				R.string.safe_backup_tap_to_restart,
+		SimpleStringAlertDialog.newInstance(R.string.restore_success_body, R.string.android_backup_restart_threema,
 			true).show(getSupportFragmentManager(), "d");
 		try {
 			serviceManager.startConnection();
 		} catch (ThreemaException e) {
 			logger.error("Exception", e);
 		}
-		ConfigUtils.scheduleAppRestart(getApplicationContext(), 3000, getApplicationContext().getString(R.string.ipv6_restart_now));
+		ConfigUtils.scheduleAppRestart(getApplicationContext(), 3000, null);
 	}
 
 	@Override

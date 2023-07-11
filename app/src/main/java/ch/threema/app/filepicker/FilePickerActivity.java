@@ -32,12 +32,16 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.google.android.material.navigation.NavigationView;
 
 import org.slf4j.Logger;
@@ -51,11 +55,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.utils.ConfigUtils;
@@ -69,23 +68,17 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 	private static final int PERMISSION_STORAGE = 1;
 
 	public static final String INTENT_DATA_DEFAULT_PATH = "defpath";
-	public static final String INTENT_DATA_SELECT_DIRECTORY = "directory";
-	public static final String EXTRA_DIRECTORY = "dir";
 
 	private String currentFolder;
 	private FilePickerAdapter fileArrayListAdapter;
 	private FileFilter fileFilter;
-	private File fileSelected;
 	private ListView listView;
 	private ArrayList<String> extensions;
-	private ArrayList<String> rootPaths = new ArrayList<>(2);
+	private final ArrayList<String> rootPaths = new ArrayList<>(2);
 	private ActionBar actionBar;
 	private DrawerLayout drawerLayout;
 	private Comparator<FileInfo> comparator;
-	private ExtendedFloatingActionButton floatingActionButton;
 	private int currentRoot = 0;
-
-	private boolean isDirectoriesOnly = false, isExternal = false;
 
 	@Override
 	public int getLayoutResource() {
@@ -109,41 +102,19 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 
 		actionBar = getSupportActionBar();
 
-		floatingActionButton = findViewById(R.id.floating);
-
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			if (extras.getStringArrayList(Constants.KEY_FILTER_FILES_EXTENSIONS) != null) {
 				extensions = extras
 					.getStringArrayList(Constants.KEY_FILTER_FILES_EXTENSIONS);
-				fileFilter = new FileFilter() {
-					@Override
-					public boolean accept(File pathname) {
-						return ((pathname.isDirectory()) ||
-							(pathname.getName().contains(".") &&
-								extensions.contains(pathname.getName().substring(pathname.getName().lastIndexOf(".")))));
-					}
-				};
+				fileFilter = pathname -> ((pathname.isDirectory()) ||
+					(pathname.getName().contains(".") &&
+						extensions.contains(pathname.getName().substring(pathname.getName().lastIndexOf(".")))));
 			}
 
 			defaultPath = extras.getString(INTENT_DATA_DEFAULT_PATH, null);
 			if (defaultPath != null && !(new File(defaultPath)).exists()) {
 				defaultPath = null;
-			}
-
-			if (extras.getBoolean(INTENT_DATA_SELECT_DIRECTORY, false)) {
-				floatingActionButton.setText(R.string.select_directory_for_backup);
-				floatingActionButton.setIconResource(R.drawable.ic_check);
-				floatingActionButton.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent();
-						intent.putExtra(EXTRA_DIRECTORY, currentFolder);
-						setResult(Activity.RESULT_OK, intent);
-						finish();
-					}
-				});
-				isDirectoriesOnly = true;
 			}
 		}
 
@@ -156,25 +127,6 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 
 		listView.setOnItemClickListener(this);
 		listView.setDivider(getResources().getDrawable(R.drawable.divider_listview));
-
-		if (isDirectoriesOnly) {
-			listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-				@Override
-				public void onScrollStateChanged(AbsListView view, int scrollState) {
-				}
-
-				@Override
-				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-					if (floatingActionButton != null) {
-						if (firstVisibleItem == 0) {
-							floatingActionButton.extend();
-						} else {
-							floatingActionButton.shrink();
-						}
-					}
-				}
-			});
-		}
 		listView.setDividerHeight(getResources().getDimensionPixelSize(R.dimen.list_divider_height));
 
 		if (getRootPaths() == 0) {
@@ -195,12 +147,10 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 		if (defaultPath != null) {
 			currentRoot = 0;
 			currentFolder = defaultPath;
-			if (currentFolder != null) {
-				for (int i=0; i < rootPaths.size(); i++) {
-					if (currentFolder.startsWith(rootPaths.get(i))) {
-						currentRoot = i;
-						break;
-					}
+			for (int i=0; i < rootPaths.size(); i++) {
+				if (currentFolder.startsWith(rootPaths.get(i))) {
+					currentRoot = i;
+					break;
 				}
 			}
 
@@ -273,13 +223,12 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 		List<FileInfo> files = new ArrayList<FileInfo>();
 		try {
 			for (File file : folders) {
-				if (file.isDirectory() && !file.isHidden())
+				if (file.isDirectory() && !file.isHidden()) {
 					dirs.add(new FileInfo(file.getName(),
-							Constants.FOLDER, file.getAbsolutePath(),
-							file.lastModified(),
-							true, false));
-//				else if (!isDirectoriesOnly) {
-				else {
+						Constants.FOLDER, file.getAbsolutePath(),
+						file.lastModified(),
+						true, false));
+				} else {
 					if (!file.isHidden())
 						files.add(new FileInfo(file.getName(),
 								Formatter.formatFileSize(this, file.length()),
@@ -309,13 +258,9 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 		}
 
 		fileArrayListAdapter = new FilePickerAdapter(FilePickerActivity.this,
-				R.layout.item_filepicker, dirs, isDirectoriesOnly);
+				R.layout.item_filepicker, dirs);
 
 		listView.setAdapter(fileArrayListAdapter);
-
-		if (isDirectoriesOnly) {
-			floatingActionButton.setVisibility(f.canWrite() ? View.VISIBLE : View.GONE);
-		}
 	}
 
 	private boolean isTop(String path) {
@@ -339,7 +284,7 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 			currentFolder = fileDescriptor.getPath();
 			scanFiles(currentFolder);
 		} else {
-			fileSelected = new File(fileDescriptor.getPath());
+			File fileSelected = new File(fileDescriptor.getPath());
 
 			Intent intent = new Intent();
 			intent.setData(Uri.fromFile(fileSelected));
@@ -362,47 +307,39 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 
 	private void setupDrawerContent(final NavigationView navigationView) {
 		Menu menu = navigationView.getMenu();
-		if (menu != null) {
-			if (rootPaths.size() > 1) {
-				for (int i = 1; i < rootPaths.size(); i++) {
-					File file = new File(rootPaths.get(i));
-					MenuItem item = menu.add(R.id.main_group, Menu.NONE, i, file.getName()).setIcon(R.drawable.ic_sd_card_black_24dp);
-					if (i == currentRoot) {
-						item.setChecked(true);
-					}
+		if (rootPaths.size() > 1) {
+			for (int i = 1; i < rootPaths.size(); i++) {
+				File file = new File(rootPaths.get(i));
+				MenuItem item = menu.add(R.id.main_group, Menu.NONE, i, file.getName()).setIcon(R.drawable.ic_sd_card_black_24dp);
+				if (i == currentRoot) {
+					item.setChecked(true);
 				}
 			}
-			menu.setGroupCheckable(R.id.main_group, true, true);
+		}
+		menu.setGroupCheckable(R.id.main_group, true, true);
 
-			if (currentRoot == 0) {
-				MenuItem menuItem = menu.findItem(R.id.internal_storage);
-				menuItem.setChecked(true);
-			}
+		if (currentRoot == 0) {
+			MenuItem menuItem = menu.findItem(R.id.internal_storage);
+			menuItem.setChecked(true);
 		}
 
 		navigationView.setNavigationItemSelectedListener(
-				new NavigationView.OnNavigationItemSelectedListener() {
-					@Override
-					public boolean onNavigationItemSelected(MenuItem menuItem) {
-						currentFolder = rootPaths.get(menuItem.getOrder());
-						currentRoot = menuItem.getOrder();
-						scanFiles(currentFolder);
-						drawerLayout.closeDrawers();
-						menuItem.setChecked(true);
-						return true;
-					}
-				});
+			menuItem -> {
+				currentFolder = rootPaths.get(menuItem.getOrder());
+				currentRoot = menuItem.getOrder();
+				scanFiles(currentFolder);
+				drawerLayout.closeDrawers();
+				menuItem.setChecked(true);
+				return true;
+			});
 	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
-										   @NonNull String permissions[], @NonNull int[] grantResults) {
+										   @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		switch (requestCode) {
 			case PERMISSION_STORAGE:
-				/* From the docs: It is possible that the permissions request interaction with the user is
-				 * interrupted. In this case you will receive empty permissions and results arrays which
-				 * should be treated as a cancellation.
-				 */
 				if (grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 					scanFiles(currentFolder);
 				} else {

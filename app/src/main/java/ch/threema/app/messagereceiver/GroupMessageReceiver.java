@@ -24,6 +24,9 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.sql.SQLException;
@@ -34,8 +37,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -221,14 +222,14 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	}
 
 	@Override
-	public boolean createBoxedBallotMessage(final BallotData ballotData,
+	public void createBoxedBallotMessage(final BallotData ballotData,
 											final BallotModel ballotModel,
 											final String[] filteredIdentities,
 											@Nullable GroupMessageModel abstractMessageModel) throws ThreemaException {
 
 		final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
-		return sendMessage(messageId -> {
+		sendMessage(messageId -> {
 			final GroupBallotCreateMessage msg = new GroupBallotCreateMessage();
 			msg.setMessageId(messageId);
 			msg.setBallotCreator(ballotModel.getCreatorIdentity());
@@ -246,7 +247,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	}
 
 	@Override
-	public boolean createBoxedBallotVoteMessage(final BallotVote[] votes, final BallotModel ballotModel) throws ThreemaException {
+	public void createBoxedBallotVoteMessage(final BallotVote[] votes, final BallotModel ballotModel) throws ThreemaException {
 		final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
 		String[] toIdentities = groupService.getGroupIdentities(group);
@@ -268,7 +269,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 				//only to the creator
 				break;
 		}
-		return sendMessage(messageId -> {
+		sendMessage(messageId -> {
 			final GroupBallotVoteMessage msg = new GroupBallotVoteMessage();
 			msg.setMessageId(messageId);
 			msg.setBallotCreator(ballotModel.getCreatorIdentity());
@@ -276,8 +277,6 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 			for (BallotVote v : votes) {
 				msg.getBallotVotes().add(v);
 			}
-			logger.info("Enqueue ballot vote message ID {} to {}", msg.getMessageId(), msg.getToIdentity());
-
 			return msg;
 		}, null, toIdentities);
 	}
@@ -333,9 +332,16 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 	@Override
 	public Bitmap getNotificationAvatar() {
-		//lacy
 		if(avatar == null && groupService != null) {
 			avatar = groupService.getAvatar(group, false);
+		}
+		return avatar;
+	}
+
+	@Override
+	public Bitmap getAvatar() {
+		if(avatar == null && groupService != null) {
+			avatar = groupService.getAvatar(group, true, true);
 		}
 		return avatar;
 	}

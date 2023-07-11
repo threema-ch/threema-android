@@ -23,15 +23,14 @@
 			android:paddingRight="24dp">
 
 			<TextView
+				style="@style/MaterialAlertDialog.Material3.Body.Text"
 				android:id="@+id/message"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginTop="8dp"
-				android:text="@string/safe_configure_server_explain"
-				android:textColor="?attr/textColorPrimary"
-				android:textSize="16sp"/>
+				android:text="@string/safe_configure_server_explain" />
 
-			<androidx.appcompat.widget.AppCompatCheckBox
+			<com.google.android.material.checkbox.MaterialCheckBox
 				android:id="@+id/checkbox"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -40,7 +39,7 @@
 				android:checked="false"
 				android:enabled="true"
 				android:text="@string/dont_show_again"
-				android:textSize="16sp"/>
+				android:textAppearance="@style/Threema.TextAppearance.BodyMedium" />
 
 		</LinearLayout>
 	</ScrollView>

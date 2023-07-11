@@ -62,7 +62,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
 		final MessagePlayer videoMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
-			(Activity) getContext(), helper.getMessageReceiver());
+			(Activity) getContext(), helper.getMessageReceiver(), null);
 
 		logger.debug("configureChatMessage Video on position {} instance {} holder {} messageplayer = {}", position, this, holder, videoMessagePlayer);
 
@@ -107,6 +107,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 		if (duration > 0) {
 			datePrefixString = StringConversionUtil.secondsToString(duration, false);
 			dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
+			setDuration(duration);
 		}
 
 		if (size > 0) {
@@ -114,32 +115,40 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 			dateContentDescriptionPrefix = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
 		}
 
-		setDatePrefix(datePrefixString, holder.dateView.getTextSize());
+		setDatePrefix(datePrefixString);
 
 		setDefaultBackground(holder);
 	}
 
 	private void configureForMessageTypeFile(@NonNull ComposeMessageHolder holder) {
-		String datePrefixString = getMessageModel().getFileData().getDurationString();
+		String datePrefixString = "";
 		long duration = getMessageModel().getFileData().getDurationSeconds();
 
 		if (!getMessageModel().getFileData().isDownloaded()) {
 			long size = getMessageModel().getFileData().getFileSize();
 			if (size > 0) {
-				if (duration > 0) {
-					datePrefixString += " (" + Formatter.formatShortFileSize(getContext(), size) + ")";
-				} else {
-					datePrefixString = Formatter.formatShortFileSize(getContext(), size);
-				}
+				datePrefixString = Formatter.formatShortFileSize(getContext(), size);
 				dateContentDescriptionPrefix = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
 			}
+
+			if (duration > 0) {
+				if (size > 0) {
+					datePrefixString = datePrefixString + " | ";
+				}
+				datePrefixString = datePrefixString + getMessageModel().getFileData().getDurationString();
+			}
 		} else {
-			dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
+			if (duration > 0) {
+				datePrefixString = datePrefixString + getMessageModel().getFileData().getDurationString();
+				dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
+			}
 		}
 
-		if (holder.dateView != null) {
-			setDatePrefix(datePrefixString, 0);
+		if (duration > 0) {
+			setDuration(duration);
 		}
+
+		setDatePrefix(datePrefixString);
 
 		configureBodyText(holder, getMessageModel().getFileData().getCaption());
 
@@ -148,7 +157,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 
 	private void configureBackground(@NonNull ComposeMessageHolder holder) {
 		if (getMessageModel().getFileData().getRenderingType() == FileData.RENDERING_STICKER) {
-			holder.messageBlockView.setBackground(null);
+			setStickerBackground(holder);
 		} else {
 			setDefaultBackground(holder);
 		}
@@ -223,11 +232,19 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 		holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
 			@Override
 			public void onDebouncedClick(View v) {
+				if (actionModeStatus.getActionModeEnabled()) {
+					propagateControllerClickToParent();
+					return;
+				}
+
 				int status = holder.controller.getStatus();
 
 				logger.debug("onClick status = {}", status);
 
 				switch (status) {
+					case ControllerView.STATUS_READY_TO_RETRY:
+						propagateControllerRetryClickToParent();
+						break;
 					case ControllerView.STATUS_READY_TO_PLAY:
 					case ControllerView.STATUS_READY_TO_DOWNLOAD:
 						videoMessagePlayer.open();

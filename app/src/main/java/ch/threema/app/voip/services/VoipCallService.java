@@ -21,6 +21,12 @@
 
 package ch.threema.app.voip.services;
 
+import static ch.threema.app.ThreemaApplication.getAppContext;
+import static ch.threema.app.ThreemaApplication.getServiceManager;
+import static ch.threema.app.voip.services.VideoContext.CAMERA_BACK;
+import static ch.threema.app.voip.services.VideoContext.CAMERA_FRONT;
+import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_NONE;
+
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -45,6 +51,19 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.util.Pair;
+import androidx.lifecycle.LifecycleService;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.PreferenceManager;
+
 import org.slf4j.Logger;
 import org.webrtc.CameraVideoCapturer;
 import org.webrtc.IceCandidate;
@@ -65,19 +84,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.util.Pair;
-import androidx.lifecycle.LifecycleService;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.preference.PreferenceManager;
 import ch.threema.annotation.SameThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
@@ -133,12 +139,6 @@ import ch.threema.protobuf.callsignaling.O2OCall;
 import ch.threema.storage.models.ContactModel;
 import java8.util.function.Supplier;
 import java8.util.stream.StreamSupport;
-
-import static ch.threema.app.ThreemaApplication.getAppContext;
-import static ch.threema.app.ThreemaApplication.getServiceManager;
-import static ch.threema.app.voip.services.VideoContext.CAMERA_BACK;
-import static ch.threema.app.voip.services.VideoContext.CAMERA_FRONT;
-import static ch.threema.app.voip.services.VoipStateService.VIDEO_RENDER_FLAG_NONE;
 
 /**
  * The service keeping track of VoIP call state and the corresponding WebRTC peer connection.
@@ -1471,7 +1471,6 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				final String contactIdentity = contact.getIdentity();
 				final Boolean isInitiator = this.voipStateService.isInitiator();
 				final Integer duration = this.voipStateService.getCallDuration();
-
 				logger.info("Call is still connected, notify event listeners"); // TODO(ANDR-2441): remove eventually
 				VoipListenerManager.callEventListener.handle(listener -> {
 					if (isInitiator == null) {
@@ -2177,7 +2176,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		final NotificationCompat.Builder notificationBuilder = new NotificationBuilderWrapper(this, NotificationService.NOTIFICATION_CHANNEL_IN_CALL, null)
 				.setContentTitle(NameUtil.getDisplayNameOrNickname(contact, true))
 				.setContentText(getString(R.string.voip_title))
-				.setColor(getResources().getColor(R.color.accent_light))
+				.setColor(getResources().getColor(R.color.md_theme_light_primary))
 				.setLocalOnly(true)
 				.setOngoing(true)
 				.setUsesChronometer(true)

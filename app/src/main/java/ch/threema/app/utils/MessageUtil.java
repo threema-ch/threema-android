@@ -546,7 +546,7 @@ public class MessageUtil {
 						}
 					}
 
-					return new MessageViewElement(R.drawable.ic_file_filled,
+					return new MessageViewElement(IconUtil.getMimeIcon(messageModel.getFileData().getMimeType()),
 							context.getString(R.string.file_placeholder),
 							TestUtil.empty(messageModel.getFileData().getCaption()) ?
 									messageModel.getFileData().getFileName() :
@@ -675,7 +675,7 @@ public class MessageUtil {
 									context.getString(R.string.voip_gc_call_started),
 									body,
 									null,
-									R.color.group_call_accent
+									null
 								);
 							case GroupCallStatusDataModel.STATUS_ENDED:
 								return new MessageViewElement(
@@ -683,7 +683,7 @@ public class MessageUtil {
 									context.getString(R.string.voip_gc_call_ended),
 									context.getString(R.string.voip_gc_call_ended),
 									null,
-									R.color.group_call_accent
+									null
 								);
 						}
 						break;

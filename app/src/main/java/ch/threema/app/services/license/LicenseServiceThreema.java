@@ -28,7 +28,7 @@ import ch.threema.domain.protocol.api.APIConnector;
 abstract public class  LicenseServiceThreema<T extends LicenseService.Credentials>  implements LicenseService<T> {
 	protected final APIConnector apiConnector;
 	protected final PreferenceService preferenceService;
-	private String deviceId;
+	private final String deviceId;
 	private String updateMessage;
 	private String updateUrl;
 	private boolean updateMessageShown;     /* not the best place to track this... */

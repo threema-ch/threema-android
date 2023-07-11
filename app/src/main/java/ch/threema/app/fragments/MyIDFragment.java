@@ -21,6 +21,9 @@
 
 package ch.threema.app.fragments;
 
+import static ch.threema.app.ThreemaApplication.EMAIL_LINKED_PLACEHOLDER;
+import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -32,16 +35,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-
-import org.slf4j.Logger;
-
-import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,6 +45,14 @@ import androidx.annotation.UiThread;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+
+import org.slf4j.Logger;
+
+import java.util.Date;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ExportIDActivity;
@@ -77,7 +81,6 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ImagePopup;
 import ch.threema.app.ui.QRCodePopup;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
@@ -92,9 +95,6 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.localcrypto.MasterKeyLockedException;
-
-import static ch.threema.app.ThreemaApplication.EMAIL_LINKED_PLACEHOLDER;
-import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
 
 public class MyIDFragment extends MainFragment
 		implements
@@ -233,7 +233,7 @@ public class MyIDFragment extends MainFragment
 
 			fragmentView.findViewById(R.id.policy_explain).setVisibility(isReadonlyProfile || AppRestrictionUtil.isBackupsDisabled(ThreemaApplication.getAppContext()) || AppRestrictionUtil.isIdBackupsDisabled(ThreemaApplication.getAppContext()) ? View.VISIBLE : View.GONE);
 
-			final ImageView picReleaseConfImageView = fragmentView.findViewById(R.id.picrelease_config);
+			final MaterialButton picReleaseConfImageView = fragmentView.findViewById(R.id.picrelease_config);
 			picReleaseConfImageView.setOnClickListener(this);
 			picReleaseConfImageView.setVisibility(preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_SOME ? View.VISIBLE : View.GONE);
 
@@ -487,23 +487,11 @@ public class MyIDFragment extends MainFragment
 		return pending;
 	}
 
-	private void configureEditWithButton(RelativeLayout l, ImageView button, boolean disable) {
+	private void configureEditWithButton(RelativeLayout l, MaterialButton button, boolean disable) {
 		if (disable) {
 			button.setVisibility(View.INVISIBLE);
 		} else {
 			button.setOnClickListener(this);
-		}
-	}
-
-	private String getIdentity() {
-		if(!this.requiredInstances()) {
-			return "undefined";
-		}
-
-		if (userService.hasIdentity()) {
-			return userService.getIdentity();
-		} else {
-			return "undefined";
 		}
 	}
 
@@ -539,111 +527,88 @@ public class MyIDFragment extends MainFragment
 	@Override
 	public void onClick(View v) {
 		int neutral;
+		final int id = v.getId();
 
-		switch (v.getId()) {
-			case R.id.change_email:
-				neutral = 0;
-				if (this.userService.getEmailLinkingState() != UserService.LinkingState_NONE) {
-					neutral = R.string.unlink;
-				}
-
-				TextEntryDialog textEntryDialog = TextEntryDialog.newInstance(
-						R.string.wizard2_email_linking,
-						R.string.wizard2_email_hint,
-						R.string.ok,
-						neutral,
-						R.string.cancel,
-						userService.getLinkedEmail(),
-						InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS, TextEntryDialog.INPUT_FILTER_TYPE_NONE);
-				textEntryDialog.setTargetFragment(this, 0);
-				textEntryDialog.show(getFragmentManager(), DIALOG_TAG_LINKED_EMAIL);
-				break;
-			case R.id.change_mobile:
-				String presetNumber = serviceManager.getLocaleService().getHRPhoneNumber(userService.getLinkedMobile());
-				neutral = 0;
-				if (this.userService.getMobileLinkingState() != UserService.LinkingState_NONE) {
-					neutral = R.string.unlink;
-				} else {
-					presetNumber = localeService.getCountryCodePhonePrefix();
-					if (!TestUtil.empty(presetNumber)) {
-						presetNumber += " ";
-					}
-				}
-				TextEntryDialog textEntryDialog1 = TextEntryDialog.newInstance(
-						R.string.wizard2_phone_linking,
-						R.string.wizard2_phone_hint,
-						R.string.ok,
-						neutral,
-						R.string.cancel,
-						presetNumber,
-						InputType.TYPE_CLASS_PHONE,
-						TextEntryDialog.INPUT_FILTER_TYPE_PHONE);
-				textEntryDialog1.setTargetFragment(this, 0);
-				textEntryDialog1.show(getFragmentManager(), DIALOG_TAG_LINKED_MOBILE);
-				break;
-			case R.id.revocation_key:
-				if (!preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_NONE)) {
-					HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_REVOCATION);
-				} else {
-					setRevocationPassword();
-				}
-				break;
-			case R.id.delete_id:
-				// ask for pin before entering
-				if (!preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_NONE)) {
-					HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_DELETE_ID);
-				} else {
-					confirmIdDelete();
-				}
-				break;
-			case R.id.export_id:
-				// ask for pin before entering
-				if (!preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_NONE)) {
-					HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_EXPORT_ID);
-				} else {
-					startActivity(new Intent(getContext(), ExportIDActivity.class));
-				}
-				break;
-			case R.id.picrelease_config:
-				launchProfilePictureRecipientsSelector(v);
-				break;
-			case R.id.profile_edit:
-				TextEntryDialog nicknameEditDialog = TextEntryDialog.newInstance(R.string.set_nickname_title,
-					R.string.wizard3_nickname_hint,
-					R.string.ok, 0,
-					R.string.cancel,
-					userService.getPublicNickname(),
-					InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
-					0,
-					ProtocolDefines.PUSH_FROM_LEN);;
-				nicknameEditDialog.setTargetFragment(this, 0);
-				nicknameEditDialog.show(getFragmentManager(), DIALOG_TAG_EDIT_NICKNAME);
-				break;
-			case R.id.my_id_qr:
-				new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, null, QRCodeServiceImpl.QR_TYPE_ID);
-				break;
-			case R.id.avatar:
-				launchContactImageZoom(v);
-				break;
-			case R.id.my_id_share:
-				ShareUtil.shareContact(getContext(), null);
-				break;
-		}
-	}
-
-	private void launchContactImageZoom(View v) {
-		if (getView() != null) {
-			View rootView = getView().findViewById(R.id.main_content);
-
-			if (fileService.hasContactAvatarFile(contactService.getMe())) {
-				ImagePopup detailPopup = new ImagePopup(getContext(), rootView, rootView.getWidth(), rootView.getHeight());
-				detailPopup.show(v, contactService.getAvatar(contactService.getMe(), true), userService.getPublicNickname());
+		if (id == R.id.change_email) {
+			neutral = 0;
+			if (this.userService.getEmailLinkingState() != UserService.LinkingState_NONE) {
+				neutral = R.string.unlink;
 			}
+
+			TextEntryDialog textEntryDialog = TextEntryDialog.newInstance(
+				R.string.wizard2_email_linking,
+				R.string.wizard2_email_hint,
+				R.string.ok,
+				neutral,
+				R.string.cancel,
+				userService.getLinkedEmail(),
+				InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS, TextEntryDialog.INPUT_FILTER_TYPE_NONE);
+			textEntryDialog.setTargetFragment(this, 0);
+			textEntryDialog.show(getFragmentManager(), DIALOG_TAG_LINKED_EMAIL);
+		} else if (id == R.id.change_mobile) {
+			String presetNumber = serviceManager.getLocaleService().getHRPhoneNumber(userService.getLinkedMobile());
+			neutral = 0;
+			if (this.userService.getMobileLinkingState() != UserService.LinkingState_NONE) {
+				neutral = R.string.unlink;
+			} else {
+				presetNumber = localeService.getCountryCodePhonePrefix();
+				if (!TestUtil.empty(presetNumber)) {
+					presetNumber += " ";
+				}
+			}
+			TextEntryDialog textEntryDialog1 = TextEntryDialog.newInstance(
+				R.string.wizard2_phone_linking,
+				R.string.wizard2_phone_hint,
+				R.string.ok,
+				neutral,
+				R.string.cancel,
+				presetNumber,
+				InputType.TYPE_CLASS_PHONE,
+				TextEntryDialog.INPUT_FILTER_TYPE_PHONE);
+			textEntryDialog1.setTargetFragment(this, 0);
+			textEntryDialog1.show(getFragmentManager(), DIALOG_TAG_LINKED_MOBILE);
+		} else if (id == R.id.revocation_key) {
+			if (!preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_NONE)) {
+				HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_REVOCATION);
+			} else {
+				setRevocationPassword();
+			}
+		} else if (id == R.id.delete_id) {
+			// ask for pin before entering
+			if (!preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_NONE)) {
+				HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_DELETE_ID);
+			} else {
+				confirmIdDelete();
+			}
+		} else if (id == R.id.export_id) {
+			// ask for pin before entering
+			if (!preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_NONE)) {
+				HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_EXPORT_ID);
+			} else {
+				startActivity(new Intent(getContext(), ExportIDActivity.class));
+			}
+		} else if (id == R.id.picrelease_config) {
+			launchProfilePictureRecipientsSelector(v);
+		} else if (id == R.id.profile_edit) {
+			TextEntryDialog nicknameEditDialog = TextEntryDialog.newInstance(R.string.set_nickname_title,
+				R.string.wizard3_nickname_hint,
+				R.string.ok, 0,
+				R.string.cancel,
+				userService.getPublicNickname(),
+				InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
+				0,
+				ProtocolDefines.PUSH_FROM_LEN);
+			nicknameEditDialog.setTargetFragment(this, 0);
+			nicknameEditDialog.show(getFragmentManager(), DIALOG_TAG_EDIT_NICKNAME);
+		} else if (id == R.id.my_id_qr) {
+			new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, null, QRCodeServiceImpl.QR_TYPE_ID);
+		} else if (id == R.id.my_id_share) {
+			ShareUtil.shareContact(getContext(), null);
 		}
 	}
 
 	private void launchProfilePictureRecipientsSelector(View v) {
-		AnimationUtil.startActivityForResult(getActivity(), v, new Intent(getContext(), ProfilePicRecipientsActivity.class), 55);
+		getActivity().startActivityForResult(new Intent(getContext(), ProfilePicRecipientsActivity.class), 55);
 	}
 
 	private void confirmIdDelete() {

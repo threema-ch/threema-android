@@ -36,7 +36,6 @@ import androidx.annotation.ColorInt;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.emojis.MarkupParser;
-import ch.threema.app.utils.ConfigUtils;
 
 public class MarkupTextWatcher implements TextWatcher {
 	private final EditText editText;
@@ -51,7 +50,7 @@ public class MarkupTextWatcher implements TextWatcher {
 		editText = editor;
 		editText.addTextChangedListener(this);
 
-		markerColor = ConfigUtils.getColorFromAttribute(context, R.attr.markup_marker_color);
+		markerColor = context.getResources().getColor(R.color.markup_marker_color);
 		markupCharPattern = Pattern.compile(MarkupParser.MARKUP_CHAR_PATTERN);
 	}
 

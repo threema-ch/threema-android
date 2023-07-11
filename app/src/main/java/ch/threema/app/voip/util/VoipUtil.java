@@ -41,6 +41,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
@@ -51,6 +52,7 @@ import java.util.Collections;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.managers.ServiceManager;
@@ -73,6 +75,7 @@ public class VoipUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipUtil");
 
 	private static final String DIALOG_TAG_FETCHING_FEATURE_MASK = "fetchingFeatureMask";
+	private static final String DIALOG_TAG_PSTN_OUTGOING = "pstn_outgoing";
 
 	/**
 	 * Send a VoIP broadcast without any intent extras
@@ -113,46 +116,19 @@ public class VoipUtil {
 		sendVoipCommand(context, VoipCallService.class, VoipCallService.ACTION_HANGUP);
 	}
 
-
-	/**
-	 * Start a call. If necessary, fetch the feature mask of the specified contact.
-	 *
-	 * @param activity         The activity context
-	 * @param contactModel     The contact model of the peer
-	 * @param launchVideo      If {@code true}, video is launched
-	 * @param onFinishRunnable The runnable that is executed after the feature mask has been fetched
-	 * @param resultLauncher   The result launcher to request the READ_PHONE_STATE permission
-	 * @return {@code true} if the call could have been started
-	 */
-	public static boolean initiateCall(
-		@NonNull final AppCompatActivity activity,
-		@NonNull final ContactModel contactModel,
-		boolean launchVideo,
-		@Nullable Runnable onFinishRunnable,
-		@Nullable ActivityResultLauncher<String> resultLauncher
-	) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-		boolean requestPermission = prefs.getBoolean(activity.getString(R.string.preferences__enable_read_phone_state_permission_request), true);
-		return initiateCall(activity, contactModel, launchVideo, onFinishRunnable, resultLauncher, requestPermission);
-	}
-
 	/**
 	 * Start a call. If necessary, fetch the feature mask of the specified contact.
 	 *
 	 * @param activity          The activity that triggered this call.
 	 * @param contactModel      The contact to call
 	 * @param onFinishRunnable
-	 * @param resultLauncher    The result launcher to request the READ_PHONE_STATE permission
-	 * @param requestPermission If true, a permission request is shown if the permission is not granted
 	 * @return true if the call could be initiated, false otherwise
 	 */
-	private static boolean initiateCall(
+	public static boolean initiateCall(
 		@NonNull final AppCompatActivity activity,
 	    @NonNull final ContactModel contactModel,
 		boolean launchVideo,
-	    @Nullable Runnable onFinishRunnable,
-		@Nullable ActivityResultLauncher<String> resultLauncher,
-		boolean requestPermission
+	    @Nullable Runnable onFinishRunnable
 	) {
 
 		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
@@ -190,27 +166,6 @@ public class VoipUtil {
 		if (!voipStateService.getCallState().isIdle()) {
 			SimpleStringAlertDialog.newInstance(R.string.threema_call, R.string.voip_another_call).show(activity.getSupportFragmentManager(), "err");
 			return false;
-		}
-
-		if (requestPermission) {
-			// Ask for READ_PHONE_STATE permission (because the user did not choose to not being asked again)
-			try {
-				// If permission not granted: Displays a dialog asking for the permission and throws a SecurityException
-				if (isPSTNCallOngoingRequestPermission(activity, () -> initiateCall(activity, contactModel, launchVideo, onFinishRunnable, resultLauncher, false), resultLauncher)) {
-					// A PSTN call is ongoing
-					SimpleStringAlertDialog.newInstance(R.string.threema_call, R.string.voip_another_pstn_call).show(activity.getSupportFragmentManager(), "err");
-					return false;
-				}
-			} catch (SecurityException exception) {
-				logger.info("Permission not granted: ", exception);
-				return false;
-			}
-		} else {
-			// Don't ask for permission (user doesn't want to)
-			if (isPSTNCallOngoing(activity)) {
-				SimpleStringAlertDialog.newInstance(R.string.threema_call, R.string.voip_another_pstn_call).show(activity.getSupportFragmentManager(), "err");
-				return false;
-			}
 		}
 
 		if (!ThreemaFeature.canVoip(contactModel.getFeatureMask()) || (ConfigUtils.isVideoCallsEnabled() && !ThreemaFeature.canVideocall(contactModel.getFeatureMask()))) {
@@ -286,72 +241,7 @@ public class VoipUtil {
 			callActivityIntent.putExtra(VoipCallService.EXTRA_LAUNCH_VIDEO, launchVideo);
 			callActivityIntent.putExtra(VoipCallService.EXTRA_CALL_ID, -1L);
 			activity.startActivity(callActivityIntent);
-			activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
-		}
-	}
-
-	/**
-	 * Check if a PSTN call is ongoing. If a permission is needed that is not given, a dialog is shown
-	 * to request the permission if the user did not deny this (previously clicked "don't show again"
-	 * option of the dialog). If this dialog is shown, this method throws an exception as the call
-	 * initialization will be triggered by the dialog with the initiateCallRunnable argument.
-	 *
-	 * @param activity the activity
-	 * @param initiateCallRunnable the runnable is only executed when a dialog should be shown (and the permission is not given to check for calls)
-	 * @param resultLauncher the result launcher is only used, when the user wants to grant the permission
-	 * @throws SecurityException if the permission is not given adn a dialog is shown
-	 * @return {@code true} if a call is ongoing
-	 */
-	public static boolean isPSTNCallOngoingRespectPreference(@NonNull Activity activity, @Nullable Runnable initiateCallRunnable, @Nullable ActivityResultLauncher<String> resultLauncher) {
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-		if (prefs.getBoolean(activity.getString(R.string.preferences__enable_read_phone_state_permission_request), true)) {
-			// Ask for permission if the user did not forbid that
-			return isPSTNCallOngoingRequestPermission(activity, initiateCallRunnable, resultLauncher);
-		} else {
-			// User doesn't care about the permission. Try to check for PSTN call, otherwise return false.
-			return isPSTNCallOngoing(activity);
-		}
-	}
-
-	/**
-	 * Check if a PSTN call is ongoing. If a permission is needed that is not given, a dialog is
-	 * shown to ask for the permission. If the permission is not given, a dialog requesting the
-	 * permission is shown. The call initialization is handled in this case with the initiateCallRunnable
-	 * and resultLauncher if not null.
-	 *
-	 * @param activity the activity
-	 * @param initiateCallRunnable the runnable that initiates a call without requesting the permission
-	 * @throws SecurityException if the permission is not given and a dialog is shown
-	 * @return {@code true} if a call is ongoing, {@code false} otherwise or when the state cannot be accessed
-	 */
-	private static boolean isPSTNCallOngoingRequestPermission(@NonNull Activity activity, @Nullable Runnable initiateCallRunnable, @Nullable ActivityResultLauncher<String> resultLauncher) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-				return isPSTNCallOngoingAndroidS(activity);
-			} else {
-				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-				builder.setTitle(R.string.read_phone_state_dialog_title);
-				builder.setMessage(R.string.read_phone_state_dialog_message);
-				builder.setPositiveButton(R.string.read_phone_state_dialog_allow, (dialog, which) -> ConfigUtils.requestReadPhonePermission(activity, resultLauncher));
-				builder.setNegativeButton(R.string.read_phone_state_dialog_disallow, (dialog, which) -> {
-					// User does not want to grant the permission now, so just make the call independent of the permission
-					if (initiateCallRunnable != null) {
-						initiateCallRunnable.run();
-					}
-				});
-				builder.setNeutralButton(R.string.read_phone_state_dialog_never_ask_again, (dialog, which) -> {
-					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-					prefs.edit().putBoolean(activity.getString(R.string.preferences__enable_read_phone_state_permission_request), false).apply();
-					// User does not want to grant the permission, so just make the call independent of the permission
-					if (initiateCallRunnable != null) {
-						initiateCallRunnable.run();
-					}
-				});
-				builder.show();
-				throw new SecurityException("Permission READ_PHONE_STATE required to get current phone state");
-			}
-		} else {
-			return isPSTNCallOngoingPreS(activity);
+			activity.overridePendingTransition(R.anim.activity_open_enter, R.anim.activity_close_exit);
 		}
 	}
 

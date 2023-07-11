@@ -28,7 +28,7 @@
 		<View
 			android:layout_width="match_parent"
 			android:layout_height="1dp"
-			android:background="?attr/divider_color"
+			android:background="@color/file_picker_divider_color"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="@id/gdContent"
 			app:layout_constraintTop_toTopOf="parent"/>
@@ -41,7 +41,7 @@
 			android:paddingBottom="@dimen/lp_default_margin"
 			android:ellipsize="end"
 			android:maxLines="1"
-			android:textAppearance="@style/Threema.TextAppearance.Body2"
+			android:textAppearance="@style/Threema.TextAppearance.BodySmall"
 			app:layout_constraintEnd_toEndOf="@id/gdMarginEnd"
 			app:layout_constraintStart_toStartOf="@id/gdContent"
 			app:layout_constraintTop_toTopOf="parent"

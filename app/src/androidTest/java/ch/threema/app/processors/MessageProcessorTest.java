@@ -185,7 +185,7 @@ public class MessageProcessorTest {
 		boxmsg.setBox(new byte[] { 0, 1, 2, 3 });
 		boxmsg.setNonce(this.nonceFactory.next());
 		final ProcessIncomingResult result = this.messageProcessor.processIncomingMessage(boxmsg);
-		Assert.assertFalse(result.processed);
+		Assert.assertFalse(result.wasProcessed());
 		final String logs = this.getLogs();
 		ThreemaAssert.assertContains(logs, "BadMessageException: Message is not for own identity, cannot decode");
 	}
@@ -202,7 +202,7 @@ public class MessageProcessorTest {
 		boxmsg.setBox(new byte[] { 0, 1, 2, 3 });
 		boxmsg.setNonce(this.nonceFactory.next());
 		final ProcessIncomingResult result = this.messageProcessor.processIncomingMessage(boxmsg);
-		Assert.assertFalse(result.processed);
+		Assert.assertFalse(result.wasProcessed());
 		final String logs = this.getLogs();
 		ThreemaAssert.assertContains(logs, "ch.threema.domain.protocol.csp.messages.BadMessageException: Decryption of message from");
 	}
@@ -233,7 +233,7 @@ public class MessageProcessorTest {
 
 		// Process message
 		final ProcessIncomingResult result = this.messageProcessor.processIncomingMessage(boxmsg);
-		Assert.assertTrue(result.processed);
+		Assert.assertTrue(result.wasProcessed());
 
 		// Assert log messages
 		final String logs = this.getLogs();

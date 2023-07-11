@@ -101,7 +101,7 @@ public class WorkUserMemberListFragment extends MemberListFragment {
 				}), new IPredicateNonNull<ContactModel>() {
 					@Override
 					public boolean apply(@NonNull ContactModel type) {
-						return type.isWork() && (!profilePics || ContactUtil.canReceiveProfilePics(type));
+						return type.isWork() && (!profilePics || !ContactUtil.isEchoEchoOrChannelContact(type));
 					}
 				});
 
@@ -127,7 +127,8 @@ public class WorkUserMemberListFragment extends MemberListFragment {
 					contactService,
 					blacklistService,
 					hiddenChatsListService,
-					preferenceService
+					preferenceService,
+					WorkUserMemberListFragment.this
 				);
 				setListAdapter(adapter);
 				getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);

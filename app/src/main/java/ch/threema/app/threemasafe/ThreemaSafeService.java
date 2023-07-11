@@ -22,7 +22,6 @@
 package ch.threema.app.threemasafe;
 
 import android.app.Activity;
-import android.content.Context;
 import android.text.format.DateUtils;
 
 import java.io.IOException;
@@ -80,16 +79,64 @@ public interface ThreemaSafeService {
 
 	ThreemaSafeServerTestResponse testServer(ThreemaSafeServerInfo serverInfo) throws ThreemaException;
 
-	boolean scheduleUpload();
+	/**
+	 * Schedules the Threema Safe backup to run periodically. There is an initial delay of one
+	 * period, therefore the backup is not run immediately after calling this. This does not replace
+	 * existing periodic Threema Safe backup work. Therefore the periodic execution cycle is not
+	 * affected by this method. However, if the schedule period changes, this call cancels the
+	 * currently scheduled upload and schedules a new upload with the new schedule period and again
+	 * an initial delay.
+	 *
+	 * Periodic Threema Safe backups are only uploaded if they are different than the last
+	 * successful backup.
+	 *
+	 * @return {@code true} if the backup has been scheduled successfully, {@code false} otherwise
+	 */
+	boolean schedulePeriodicUpload();
 
-	void unscheduleUpload();
+	/**
+	 * Reschedule the Threema Safe backup to run with an initial delay of one period from now on.
+	 * Existing periodic work is canceled.
+	 *
+	 * @return {@code true} if the backup has been rescheduled successfully, {@code false} otherwise
+	 */
+	boolean reschedulePeriodicUpload();
 
-	boolean isUploadDue();
+	/**
+	 * Cancel the periodic Threema Safe work.
+	 */
+	void unschedulePeriodicUpload();
 
+	/**
+	 * Enable or disable the Threema Safe backup. If the backup is being enabled, then this method
+	 * schedules the periodic work. See {@link #schedulePeriodicUpload()} for more details. If the backup is
+	 * being disabled, {@link #unschedulePeriodicUpload()} is also called.
+	 *
+	 * @param enabled {@code true} if the backup should be enabled, {@code false} otherwise
+	 */
 	void setEnabled(boolean enabled);
 
-	void uploadNow(Context context, boolean force);
+	/**
+	 * Create a one time work request to create and upload a Threema Safe backup. This method
+	 * cancels already enqueued one time work requests. If a periodic work request is scheduled, it
+	 * gets rescheduled, so that the schedule period is still met.
+	 *
+	 * @param force If set to {@code true}, the backup is created even if the last backup was
+	 *              created within the last 24 hours or there are no new changes since the last
+	 *              backup. See {@link #createBackup(boolean)} for more details.
+	 */
+	void uploadNow(boolean force);
 
+	/**
+	 * Create and upload a Threema Safe backup.
+	 *
+	 * @param force If set to {@code true}, the backup is created and uploaded in any case. If this
+	 *              is {@code false}, then the backup is only uploaded if it is different than the
+	 *              last Threema Safe backup or the last backup is older than half of the server's
+	 *              retention time. The grace time of 23 hours is only respected when this parameter
+	 *              is {@code false}.
+	 * @throws ThreemaSafeUploadException If an error occurs with the backup or the connection.
+	 */
 	void createBackup(boolean force) throws ThreemaSafeUploadException;
 
 	void deleteBackup() throws ThreemaException;

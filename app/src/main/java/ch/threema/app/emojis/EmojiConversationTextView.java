@@ -31,9 +31,13 @@ import android.util.AttributeSet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.material.textview.MaterialTextView;
+
+import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 
-public class EmojiConversationTextView extends androidx.appcompat.widget.AppCompatTextView {
+public class EmojiConversationTextView extends MaterialTextView {
 	protected final EmojiMarkupUtil emojiMarkupUtil;
 	private boolean isFade = false;
 	private boolean ignoreMarkup = false;
@@ -71,7 +75,7 @@ public class EmojiConversationTextView extends androidx.appcompat.widget.AppComp
 					0,
 					getHeight() - (getTextSize() * 3),
 					Color.TRANSPARENT,
-					ConfigUtils.getColorFromAttribute(getContext(), android.R.attr.textColorPrimary),
+					ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnBackground),
 					Shader.TileMode.CLAMP));
 		}
 		super.onDraw(canvas);
@@ -88,6 +92,13 @@ public class EmojiConversationTextView extends androidx.appcompat.widget.AppComp
 	}
 
 	public void setFade(boolean isFade) {
+		if (this.isFade != isFade && isFade == false) {
+			if (getPaint() != null) {
+				getPaint().clearShadowLayer();
+				getPaint().setShader(null);
+			}
+		}
+
 		this.isFade = isFade;
 	}
 

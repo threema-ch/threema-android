@@ -22,7 +22,6 @@
 package ch.threema.app.activities;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,22 +33,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.LayoutRes;
+
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.card.MaterialCardView;
 
 import org.slf4j.Logger;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.LayoutRes;
-import androidx.appcompat.widget.Toolbar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.emojis.EmojiConversationTextView;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -61,7 +58,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
-public class TextChatBubbleActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
+public class TextChatBubbleActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("TextChatBubbleActivity");
 
 	private static final int CONTEXT_MENU_FORWARD = 600;
@@ -78,7 +75,12 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
 			menu.removeGroup(CONTEXT_MENU_GROUP);
-			menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_FORWARD, 200, R.string.forward_text);
+			try {
+				menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_FORWARD, 200, R.string.forward_text);
+			} catch (Exception e) {
+				// some MIUI device crash when attempting to add a context menu
+				logger.error("Error adding context menu (Xiaomi?)", e);
+			}
 			return true;
 		}
 
@@ -120,38 +122,25 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 	};
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		logger.debug("onCreate");
+	protected boolean initActivity(Bundle savedInstanceState) {
+		getTheme().applyStyle(ThreemaApplication.getServiceManager().getPreferenceService().getFontStyle(), true);
+
+		if (!super.initActivity(savedInstanceState)) {
+			return false;
+		}
 
 		MessageService messageService;
-		PreferenceService preferenceService;
-		LockAppService lockAppService;
 		MessageReceiver<? extends AbstractMessageModel> messageReceiver;
 		@LayoutRes int footerLayout;
 		@ColorInt int color;
 		String title;
 
-		ConfigUtils.configureActivityTheme(this);
-
-		super.onCreate(savedInstanceState);
-
 		try {
-			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 			messageService = serviceManager.getMessageService();
-			preferenceService = serviceManager.getPreferenceService();
-			lockAppService = serviceManager.getLockAppService();
 		} catch (Exception e) {
 			finish();
-			return;
+			return false;
 		}
-
-		// set font size according to user preferences
-		getTheme().applyStyle(ThreemaApplication.getServiceManager().getPreferenceService().getFontStyle(), true);
-		// hide contents in app switcher and inhibit screenshots
-		ConfigUtils.setScreenshotsAllowed(this, preferenceService, lockAppService);
-		ConfigUtils.setLocaleOverride(this, preferenceService);
-
-		setContentView(R.layout.activity_text_chat_bubble);
 
 		AbstractMessageModel messageModel = IntentDataUtil.getAbstractMessageModel(getIntent(), messageService);
 		try {
@@ -159,22 +148,22 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 		} catch (ThreemaException e) {
 			logger.error("Exception", e);
 			finish();
-			return;
+			return false;
 		}
 
 		if (messageModel.isOutbox()) {
 			// send
-			color = ConfigUtils.getColorFromAttribute(this, R.attr.bubble_send);
+			color = ConfigUtils.getColorFromAttribute(this, R.attr.colorSecondaryContainer);
 			title = getString(R.string.threema_message_to, messageReceiver.getDisplayName());
 			footerLayout = R.layout.conversation_bubble_footer_send;
 		} else {
 			// recv
-			color = ConfigUtils.getColorFromAttribute(this, R.attr.bubble_recv);
+			color = getResources().getColor(R.color.bubble_receive);
 			title = getString(R.string.threema_message_from, messageReceiver.getDisplayName());
 			footerLayout = R.layout.conversation_bubble_footer_recv;
 		}
 
-		Toolbar toolbar = findViewById(R.id.toolbar);
+		MaterialToolbar toolbar = findViewById(R.id.material_toolbar);
 		toolbar.setNavigationOnClickListener(view -> finish());
 		toolbar.setOnMenuItemClickListener(item -> {
 			if (item.isChecked()) {
@@ -192,13 +181,6 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 
 		ConfigUtils.addIconsToOverflowMenu(this, toolbar.getMenu());
 
-		// TODO: replace with "toolbarNavigationButtonStyle" attribute in theme as soon as all Toolbars have been switched to Material Components
-		toolbar.getNavigationIcon().setColorFilter(getResources().getColor(
-			ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK ?
-				R.color.dark_text_color_primary :
-				R.color.text_color_secondary),
-			PorterDuff.Mode.SRC_IN);
-
 		MaterialCardView cardView = findViewById(R.id.card_view);
 		cardView.setCardBackgroundColor(color);
 
@@ -213,7 +195,7 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 		((TextView) footerView.findViewById(R.id.date_view)).setText(s != null ? s : "");
 
 		// display message status
-		StateBitmapUtil.getInstance().setStateDrawable(messageModel, findViewById(R.id.delivered_indicator), true);
+		StateBitmapUtil.getInstance().setStateDrawable(this, messageModel, findViewById(R.id.delivered_indicator), true);
 
 		// mock a composemessageholder
 		ComposeMessageHolder holder = new ComposeMessageHolder();
@@ -236,6 +218,13 @@ public class TextChatBubbleActivity extends ThreemaActivity implements GenericAl
 				finish();
 			}
 		});
+
+		return true;
+	}
+
+	@Override
+	public int getLayoutResource() {
+		return R.layout.activity_text_chat_bubble;
 	}
 
 	private void setText(AbstractMessageModel messageModel) {

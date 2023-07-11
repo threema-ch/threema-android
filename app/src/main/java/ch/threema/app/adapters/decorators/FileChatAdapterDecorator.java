@@ -44,6 +44,7 @@ import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -69,7 +70,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		fileMessagePlayer = (FileMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) context, helper.getMessageReceiver());
+		fileMessagePlayer = (FileMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) context, helper.getMessageReceiver(), null);
 
 		holder.messagePlayer = fileMessagePlayer;
 
@@ -105,8 +106,8 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 			setDatePrefix(
 				FileUtil.getFileMessageDatePrefix(getContext(),
 				getMessageModel(),
-				FileUtil.isImageFile(fileData) ? getContext().getString(R.string.image_placeholder) : null),
-				0);
+				FileUtil.isImageFile(fileData) ? getContext().getString(R.string.image_placeholder) : null)
+			);
 		}
 	}
 
@@ -223,6 +224,9 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 					int status = holder.controller.getStatus();
 
 					switch (status) {
+						case ControllerView.STATUS_READY_TO_RETRY:
+							propagateControllerRetryClickToParent();
+							break;
 						case ControllerView.STATUS_READY_TO_PLAY:
 						case ControllerView.STATUS_READY_TO_DOWNLOAD:
 						case ControllerView.STATUS_NONE:
@@ -295,27 +299,18 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 			}
 
 			if (fileData.getRenderingType() == FileData.RENDERING_STICKER) {
-				holder.messageBlockView.setBackground(null);
+				setStickerBackground(holder);
 			} else {
 				setDefaultBackground(holder);
 			}
 		} else {
-			if (thumbnail == null) {
-				try {
-					thumbnail = getFileService().getDefaultMessageThumbnailBitmap(context, getMessageModel(), null, fileData.getMimeType(), false);
-					if (thumbnail != null) {
-						thumbnail = AvatarConverterUtil.convert(getContext().getResources(), thumbnail, getContext().getResources().getColor(R.color.item_controller_color), Color.WHITE);
-					}
-				} catch (Exception e) {
-					//
-				}
-			} else {
-				thumbnail = AvatarConverterUtil.convert(getContext().getResources(), thumbnail);
-			}
-
 			if (thumbnail != null) {
 				if (holder.controller != null) {
 					holder.controller.setBackgroundImage(thumbnail);
+				}
+			} else {
+				if (holder.controller != null) {
+					holder.controller.setImageResource(IconUtil.getMimeIcon(fileData.getMimeType()));
 				}
 			}
 

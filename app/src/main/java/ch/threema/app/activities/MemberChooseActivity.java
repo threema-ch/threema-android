@@ -22,36 +22,41 @@
 package ch.threema.app.activities;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.ListFragment;
 import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import ch.threema.app.R;
 import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.fragments.MemberListFragment;
@@ -65,12 +70,22 @@ import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SnackbarUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 
 abstract public class MemberChooseActivity extends ThreemaToolbarActivity implements SearchView.OnQueryTextListener, MemberListFragment.SelectionListener {
 	private final static int FRAGMENT_USERS = 0;
 	private final static int FRAGMENT_WORK_USERS = 1;
 	private final static int NUM_FRAGMENTS = 2;
+
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({MODE_NEW_GROUP, MODE_ADD_TO_GROUP, MODE_NEW_DISTRIBUTION_LIST, MODE_PROFILE_PIC_RECIPIENTS})
+	public @interface MemberChooseMode {}
+	protected final static int MODE_NEW_GROUP = 1;
+	protected final static int MODE_ADD_TO_GROUP = 2;
+	protected final static int MODE_NEW_DISTRIBUTION_LIST = 3;
+	protected final static int MODE_PROFILE_PIC_RECIPIENTS = 4;
+	private static final String BUNDLE_QUERY_TEXT = "query";
 
 	private MemberChoosePagerAdapter memberChoosePagerAdapter;
 	private MenuItem searchMenuItem;
@@ -80,10 +95,13 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 	protected ArrayList<String> excludedIdentities = new ArrayList<>();
 	protected ArrayList<String> preselectedIdentities = new ArrayList<>();
 
-	private ViewPager viewPager;
+	private TabLayout tabLayout;
 	private final ArrayList<Integer> tabs = new ArrayList<>(NUM_FRAGMENTS);
 	private Snackbar snackbar;
 	private View rootView;
+	private SearchBar searchBar;
+	private ExtendedFloatingActionButton floatingActionButton;
+	private String queryText;
 
 	@Override
 	public boolean onQueryTextSubmit(String query) {
@@ -93,15 +111,18 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 
 	@Override
 	public boolean onQueryTextChange(String newText) {
-		int currentItem = viewPager.getCurrentItem();
-		Fragment fragment = memberChoosePagerAdapter.getRegisteredFragment(currentItem);
+		int itemCount = memberChoosePagerAdapter.getCount();
 
-		if (fragment != null) {
-			FilterableListAdapter listAdapter = ((MemberListFragment) fragment).getAdapter();
-
-			// adapter can be null if it has not been initialized yet (runs in different thread)
-			if (listAdapter == null) return false;
-			listAdapter.getFilter().filter(newText);
+		// apply filter to all adapters
+		for (int currentItem = 0; currentItem < itemCount; currentItem++) {
+			Fragment fragment = memberChoosePagerAdapter.getRegisteredFragment(currentItem);
+			if (fragment != null) {
+				FilterableListAdapter listAdapter = ((MemberListFragment) fragment).getAdapter();
+				// adapter can be null if it has not been initialized yet (runs in different thread)
+				if (listAdapter != null) {
+					listAdapter.getFilter().filter(newText);
+				}
+			}
 		}
 		return true;
 	}
@@ -119,25 +140,46 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 		// add notice, if desired
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			Toolbar toolbar = getToolbar();
-			if (toolbar != null) {
-				actionBar.setTitle(null);
-			}
+			searchBar = (SearchBar) getToolbar();
+			searchBar.setNavigationOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (searchView.isIconified()) {
+						goHome();
+					} else {
+						searchView.setIconified(true);
+					}
+				}
+			});
+			searchBar.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					searchView.setIconified(false);
+				}
+			});
+			ConfigUtils.adjustSearchBarTextViewMargin(this, searchBar);
+
 			if (getNotice() != 0) {
+				final View noticeLayout = findViewById(R.id.notice_layout);
 				final TextView noticeText = findViewById(R.id.notice_text);
-				final LinearLayout noticeLayout = findViewById(R.id.notice_layout);
 				noticeText.setText(getNotice());
 				noticeLayout.setVisibility(View.VISIBLE);
 
-				ImageView closeButton = findViewById(R.id.close_button);
-				closeButton.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						AnimationUtil.collapse(noticeLayout);
-					}
-				});
+				findViewById(R.id.close_button).setOnClickListener(v -> AnimationUtil.collapse(noticeLayout));
 			}
+		}
+
+		this.floatingActionButton = findViewById(R.id.floating);
+
+		if (getMode() == MODE_PROFILE_PIC_RECIPIENTS) {
+			floatingActionButton.hide();
+		} else {
+			this.floatingActionButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					menuNext(getSelectedContacts());
+				}
+			});
 		}
 
 		this.rootView = findViewById(R.id.coordinator);
@@ -153,15 +195,19 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 
 	@MainThread
 	protected void updateToolbarTitle(@StringRes int title, @StringRes int subtitle) {
-		getToolbar().setTitle(title);
-		getToolbar().setSubtitle(subtitle);
+		if (searchBar != null) {
+			searchBar.setHint(subtitle);
+		}
+		if (searchView != null) {
+			searchView.setQueryHint(getString(subtitle));
+		}
 	}
 
 	protected void initList() {
-		final TabLayout tabLayout = findViewById(R.id.sliding_tabs);
+		tabLayout = findViewById(R.id.sliding_tabs);
 		tabs.clear();
 
-		viewPager = findViewById(R.id.pager);
+		ViewPager viewPager = findViewById(R.id.pager);
 		if (viewPager == null || tabLayout == null) {
 			finish();
 			return;
@@ -176,13 +222,13 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 
 		if (ConfigUtils.isWorkBuild()) {
 			tabLayout.addTab(tabLayout.newTab()
-				.setIcon(ConfigUtils.getThemedDrawable(this, R.drawable.ic_work_outline))
+				.setIcon(R.drawable.ic_work_outline)
 				.setContentDescription(R.string.title_tab_work_users));
 			tabs.add(FRAGMENT_WORK_USERS);
 		}
 
 		tabLayout.addTab(tabLayout.newTab()
-			.setIcon(ConfigUtils.getThemedDrawable(this, R.drawable.ic_person_outline))
+			.setIcon(R.drawable.ic_person_outline)
 			.setContentDescription(R.string.title_tab_users));
 
 		tabs.add(FRAGMENT_USERS);
@@ -201,34 +247,79 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 		viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				if (searchMenuItem != null) {
-					searchMenuItem.collapseActionView();
-					if (searchView != null) {
-						searchView.setQuery("", false);
+				if (searchView != null) {
+					if (searchMenuItem != null) {
+						CharSequence query = searchView.getQuery();
+						if (TestUtil.empty(query)) {
+							invalidateOptionsMenu();
+							if (searchMenuItem.isActionViewExpanded()) {
+								searchMenuItem.collapseActionView();
+								onQueryTextChange(null);
+							}
+							searchView.setQuery("", false);
+							queryText = null;
+						} else {
+							searchMenuItem.getActionView().post(new Runnable() {
+								@Override
+								public void run() {
+									if (!searchMenuItem.isActionViewExpanded()) {
+										searchMenuItem.expandActionView();
+									}
+									searchView.setQuery(query, true);
+								}
+							});
+							queryText = query.toString();
+						}
 					}
 				}
-				invalidateOptionsMenu();
 			}
 		});
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		if (savedInstanceState != null) {
+			queryText = savedInstanceState.getString(BUNDLE_QUERY_TEXT, null);
+		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_member_choose, menu);
+		getMenuInflater().inflate(R.menu.action_compose_message_search, menu);
 
-		if (!getAddNextButton()) {
-			MenuItem checkItem = menu.findItem(R.id.menu_next);
-			checkItem.setVisible(false);
+		this.searchMenuItem = menu.findItem(R.id.menu_action_search);
+		this.searchView = (ThreemaSearchView) this.searchMenuItem.getActionView();
+		if (ConfigUtils.isLandscape(this)) {
+			this.searchView.setMaxWidth(Integer.MAX_VALUE);
 		}
 
-		this.searchMenuItem = menu.findItem(R.id.menu_search_messages);
-		this.searchView = (ThreemaSearchView) this.searchMenuItem.getActionView();
-
 		if (this.searchView != null) {
-			this.searchView.setQueryHint(getString(R.string.hint_filter_list));
+			ConfigUtils.adjustSearchViewPadding(searchView);
+			this.searchView.setQueryHint(getString(R.string.title_select_contacts));
 			this.searchView.setOnQueryTextListener(this);
+			// Hide the hint of the search bar when the search view is opened to prevent it from
+			// appearing on some devices
+			this.searchView.setOnSearchClickListener(v -> {
+				if (this.searchBar != null) {
+					this.searchBar.setHint("");
+				}
+			});
+			// Show the hint of the search bar again when the search view is closed
+			this.searchView.setOnCloseListener(() -> {
+				if (this.searchBar != null) {
+					this.searchBar.setHint(R.string.title_select_contacts);
+				}
+				return false;
+			});
+			if (!TestUtil.empty(queryText)) {
+				this.searchMenuItem.expandActionView();
+				this.searchView.setIconified(false);
+				this.searchView.setQuery(queryText, true);
+			}
 		} else {
 			this.searchMenuItem.setVisible(false);
 		}
@@ -240,24 +331,23 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				if (getAddNextButton()) {
-					finish();
-					return true;
-				}
-				/* fallthrough */
-			case R.id.menu_next:
-				RuntimeUtil.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (searchView != null) {
-							new WindowInsetsControllerCompat(getWindow(), searchView).hide(WindowInsetsCompat.Type.ime());
-						}
-						menuNext(getSelectedContacts());
-					}
-				});
+				goHome();
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void goHome() {
+		if (getMode() != MODE_PROFILE_PIC_RECIPIENTS) {
+			finish();
+		} else {
+			RuntimeUtil.runOnUiThread(() -> {
+				if (searchView != null) {
+					new WindowInsetsControllerCompat(getWindow(), searchView).hide(WindowInsetsCompat.Type.ime());
+				}
+				menuNext(getSelectedContacts());
+			});
+		}
 	}
 
 	protected List<ContactModel> getSelectedContacts() {
@@ -282,6 +372,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 			super(fm);
 		}
 
+		@NonNull
 		@Override
 		public Fragment getItem(int position) {
 
@@ -324,14 +415,14 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 
 		@NonNull
 		@Override
-		public Object instantiateItem(ViewGroup container, int position) {
+		public Object instantiateItem(@NonNull ViewGroup container, int position) {
 			Fragment fragment = (Fragment) super.instantiateItem(container, position);
 			registeredFragments.put(position, fragment);
 			return fragment;
 		}
 
 		@Override
-		public void destroyItem(ViewGroup container, int position, Object object) {
+		public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
 			registeredFragments.remove(position);
 			super.destroyItem(container, position, object);
 		}
@@ -348,17 +439,29 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 		if (contacts.size() > 0) {
 			if (snackbar == null) {
 				snackbar = SnackbarUtil.make(rootView, "", Snackbar.LENGTH_INDEFINITE, 4);
-				snackbar.setBackgroundTint(ConfigUtils.getColorFromAttribute(this, R.attr.colorAccent));
 				snackbar.getView().getLayoutParams().width = AppBarLayout.LayoutParams.MATCH_PARENT;
 			}
-			snackbar.setTextColor(ConfigUtils.getColorFromAttribute(this, R.attr.colorOnSecondary));
 			snackbar.setText(getMemberNames());
 			if (!snackbar.isShown()) {
 				snackbar.show();
 			}
+			if (getMode() == MODE_NEW_GROUP || getMode() == MODE_ADD_TO_GROUP || getMode() == MODE_NEW_DISTRIBUTION_LIST) {
+				if (!floatingActionButton.isShown()) {
+					floatingActionButton.show();
+				}
+			}
 		} else {
 			if (snackbar != null && snackbar.isShown()) {
 				snackbar.dismiss();
+			}
+			if (getMode() == MODE_NEW_GROUP) {
+				if (!floatingActionButton.isShown()) {
+					floatingActionButton.show();
+				}
+			} else {
+				if (floatingActionButton.isShown()) {
+					floatingActionButton.hide();
+				}
 			}
 		}
 	}
@@ -374,8 +477,34 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 		return builder.toString();
 	}
 
+	public void onQueryResultChanged(ListFragment listFragment, int count) {
+		int tabPosition = memberChoosePagerAdapter.registeredFragments.indexOfValue(listFragment);
+		TabLayout.Tab tab = tabLayout.getTabAt(tabPosition);
 
-	protected abstract boolean getAddNextButton();
+		if (tab != null) {
+			if (count > 0) {
+				tab.getOrCreateBadge().setNumber(count);
+				tab.getBadge().setBackgroundColor(ConfigUtils.getColorFromAttribute(this, R.attr.colorPrimary));
+				tab.getBadge().setVisible(true);
+			} else {
+				if (tab.getBadge() != null) {
+					tab.getBadge().setVisible(false);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		if (searchView != null) {
+			CharSequence query = searchView.getQuery();
+			outState.putString(BUNDLE_QUERY_TEXT, TextUtils.isEmpty(query) ? null : query.toString());
+		}
+		super.onSaveInstanceState(outState);
+	}
+
+	@MemberChooseMode
+	protected abstract int getMode();
 
 	@MainThread
 	protected abstract void initData(Bundle savedInstanceState);

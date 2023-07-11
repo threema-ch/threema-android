@@ -27,7 +27,7 @@
 			android:maxLines="6"
 			android:nextFocusRight="@+id/groupDescDialog"
 			android:singleLine="false"
-			android:textColor="?android:textColorPrimary"
+			android:textColor="?attr/colorOnBackground"
 			android:textStyle="normal" />
 
 		<requestFocus />

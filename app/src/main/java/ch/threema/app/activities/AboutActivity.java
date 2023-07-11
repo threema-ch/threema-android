@@ -29,11 +29,11 @@ import android.widget.Toast;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.utils.AnimationUtil;
 
 public class AboutActivity extends ThreemaToolbarActivity {
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -55,6 +55,7 @@ public class AboutActivity extends ThreemaToolbarActivity {
 		}
 	}
 
+	@Override
 	public int getLayoutResource() {
 		return R.layout.activity_about;
 	}
@@ -62,10 +63,8 @@ public class AboutActivity extends ThreemaToolbarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
+		if (item.getItemId() == android.R.id.home) {
+			finish();
 		}
 		return false;
 	}

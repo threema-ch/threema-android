@@ -21,6 +21,9 @@
 
 package ch.threema.app.routines;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -33,12 +36,9 @@ import java.util.Date;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.ConfigUtils.AppTheme;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -87,18 +87,18 @@ public class UpdateAppLogoRoutine implements Runnable {
 		this.running = false;
 	}
 
-	private void setLogo(@NonNull String url, @NonNull File file, @NonNull Date expires, @AppTheme int theme) {
+	private void setLogo(@NonNull String url, @NonNull File file, @NonNull Date expires, @ConfigUtils.AppThemeSetting String theme) {
 		this.fileService.saveAppLogo(file, theme);
 		this.preferenceService.setAppLogo(url, theme);
 		this.preferenceService.setAppLogoExpiresAt(expires, theme);
 	}
 
-	private void clearLogo(@AppTheme int theme) {
+	private void clearLogo(@ConfigUtils.AppThemeSetting String theme) {
 		this.fileService.saveAppLogo(null, theme);
 		this.preferenceService.clearAppLogo(theme);
 	}
 
-	private void downloadLogo(@Nullable String urlString, @AppTheme int theme) {
+	private void downloadLogo(@Nullable String urlString, @ConfigUtils.AppThemeSetting String theme) {
 
 		logger.debug("Logo download forced = " + forceUpdate);
 

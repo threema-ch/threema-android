@@ -21,6 +21,8 @@
 
 package ch.threema.app.mediaattacher;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -30,6 +32,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -46,17 +53,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ui.CheckableFrameLayout;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.base.utils.LoggingUtil;
-
-import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.MediaGalleryHolder> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaAttachAdapter");
@@ -150,7 +151,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 				Glide.with(context).load(mediaAttachItem.getUri())
 					.transition(withCrossFade())
 					.centerInside()
-					.addListener(new RequestListener<Drawable>() {
+					.addListener(new RequestListener<>() {
 						@Override
 						public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
 							logger.error("Glide Loading Exception ", e);
@@ -177,8 +178,11 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 								return true;
 							});
 
+							contentView.setContentDescription(context.getString(R.string.attach_picture) +  ": " + mediaAttachItem.getDisplayName());
+
 							if (mediaAttachItem.getType() == MediaItem.TYPE_GIF) {
 								gifIndicator.setVisibility(View.VISIBLE);
+								contentView.setContentDescription(context.getString(R.string.attach_gif) +  ": " + mediaAttachItem.getDisplayName());
 							} else {
 								gifIndicator.setVisibility(View.GONE);
 							}
@@ -186,11 +190,13 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 							if (mediaAttachItem.getType() == MediaItem.TYPE_VIDEO) {
 								videoDuration.setText(StringConversionUtil.getDurationString(mediaAttachItem.getDuration()));
 								videoIndicator.setVisibility(View.VISIBLE);
+								contentView.setContentDescription(context.getString(R.string.attach_video) +  ": " + mediaAttachItem.getDisplayName());
 							} else {
 								videoIndicator.setVisibility(View.GONE);
 							}
 
 							contentView.setChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().containsKey(mediaAttachItem.getId()));
+
 							return false;
 						}
 					})

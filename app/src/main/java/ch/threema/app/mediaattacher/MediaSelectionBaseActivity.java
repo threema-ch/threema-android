@@ -21,6 +21,15 @@
 
 package ch.threema.app.mediaattacher;
 
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
+import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_SELECTED;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
+
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -49,20 +58,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.button.MaterialButton;
-
-import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -80,6 +75,22 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.shape.MaterialShapeDrawable;
+
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.EnterSerialActivity;
@@ -97,19 +108,11 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.app.utils.RecyclerViewUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 import me.zhanghai.android.fastscroll.FastScroller;
 import me.zhanghai.android.fastscroll.FastScrollerBuilder;
-
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
-import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
-import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_SELECTED;
-import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
 
 abstract public class MediaSelectionBaseActivity extends ThreemaActivity implements View.OnClickListener,
 														MediaAttachAdapter.ItemClickListener {
@@ -138,9 +141,9 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected GridLayoutManager gridLayoutManager;
 	protected ConstraintLayout bottomSheetLayout, previewBottomSheetLayout;
 	protected ImageView dragHandle;
-	protected FrameLayout controlPanel, dateView;
+	protected FrameLayout controlPanel;
 	protected LinearLayout menuTitleFrame;
-	protected TextView dateTextView, menuTitle, previewFilenameTextView, previewDateTextView;
+	protected TextView menuTitle, previewFilenameTextView, previewDateTextView;
 	protected DisplayMetrics displayMetrics;
 	protected MenuItem selectFromGalleryItem;
 	protected PopupMenu bucketFilterMenu;
@@ -157,7 +160,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected boolean isEditingContact = false;
 
 	protected int peekHeightNumRows = 1;
-	private @ColorInt int savedStatusBarColor = 0;
+	private @ColorInt int savedStatusBarColor = 0, expandedStatusBarColor;
 
 	private boolean isDragging = false;
 	private boolean bottomSheetScroll = false;
@@ -176,7 +179,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 		checkMasterKey();
 		initServices();
 		// set font size according to user preferences
@@ -273,8 +276,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.mediaAttachRecyclerView = findViewById(R.id.media_grid_recycler);
 		this.dragHandle = findViewById(R.id.drag_handle);
 		this.controlPanel = findViewById(R.id.control_panel);
-		this.dateView = findViewById(R.id.date_separator_container);
-		this.dateTextView = findViewById(R.id.text_view);
 		this.gridContainer = findViewById(R.id.grid_container);
 		this.previewPager = findViewById(R.id.pager);
 		this.pagerContainer = findViewById(R.id.pager_container);
@@ -323,7 +324,19 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		contentFrameLayout.setOnClickListener(v -> finish());
 
 		// set status bar color
-		getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_collapsed));
+		getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
+
+		expandedStatusBarColor = getResources().getColor(R.color.attach_status_bar_color_expanded);
+
+		this.bottomSheetLayout.post(new Runnable() {
+			@Override
+			public void run() {
+				Drawable background = bottomSheetLayout.getBackground();
+				if (background instanceof MaterialShapeDrawable) {
+					expandedStatusBarColor = ((MaterialShapeDrawable) background).getResolvedTintColor();
+				}
+			}
+		});
 
 		// horizontal layout fill screen 2/3 with media selection layout
 		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && !isInSplitScreenMode()) {
@@ -372,8 +385,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 				// adjust height of bottom sheet container to snap smack below toolbar
 				CoordinatorLayout bottomSheetContainer = findViewById(R.id.bottom_sheet_container);
-				int topMargin = toolbar.getHeight() - getResources().getDimensionPixelSize(R.dimen.drag_handle_height) -
-					(getResources().getDimensionPixelSize(R.dimen.drag_handle_topbottom_margin) * 2);
+				int topMargin = toolbar.getHeight() - getResources().getDimensionPixelSize(R.dimen.drag_handle_height);
 
 				CoordinatorLayout.LayoutParams bottomSheetContainerLayoutParams = (CoordinatorLayout.LayoutParams) bottomSheetContainer.getLayoutParams();
 				bottomSheetContainerLayoutParams.setMargins(0, topMargin, 0, 0);
@@ -403,7 +415,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			return true;
 		});
 		topMenuItem.setIcon(R.drawable.ic_collections);
-		ConfigUtils.themeMenuItem(topMenuItem, ConfigUtils.getColorFromAttribute(this, R.attr.textColorSecondary));
+		ConfigUtils.tintMenuItem(this, topMenuItem, R.attr.colorOnSurface);
 
 		// Fetch all media, add a unique menu item for each media storage bucket and media type group.
 		registerOnAllDataFetchedListener(new Observer<List<MediaAttachItem>>() {
@@ -461,7 +473,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 								item.setIcon(R.drawable.ic_gif_24dp);
 								break;
 						}
-						ConfigUtils.themeMenuItem(item, ConfigUtils.getColorFromAttribute(MediaSelectionBaseActivity.this, R.attr.textColorSecondary));
+						ConfigUtils.tintMenuItem(MediaSelectionBaseActivity.this, item, R.attr.colorOnSurface);
 					}
 
 					for (String bucket : buckets) {
@@ -471,7 +483,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 								return true;
 							});
 							item.setIcon(R.drawable.ic_outline_folder_24);
-							ConfigUtils.themeMenuItem(item, ConfigUtils.getColorFromAttribute(MediaSelectionBaseActivity.this, R.attr.textColorSecondary));
+							ConfigUtils.tintMenuItem(MediaSelectionBaseActivity.this, item, R.attr.colorOnSurface);
 						}
 					}
 
@@ -594,7 +606,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				super.onScrolled(recyclerView, dx, dy);
 				setFirstVisibleItemDate();
 
-				// make sure only bottom sheet or recylcerview is scrolling at a same time
+				// make sure only bottom sheet or recyclerview is scrolling at a same time
 				if (bottomSheetScroll && bottomSheetBehavior.getState() == STATE_EXPANDED) {
 					bottomSheetScroll = false;
 					bottomSheetBehavior.setDraggable(false);
@@ -616,7 +628,16 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 						MediaSelectionBaseActivity.this.fastScroller = new FastScrollerBuilder(MediaSelectionBaseActivity.this.mediaAttachRecyclerView)
 							.setThumbDrawable(Objects.requireNonNull(thumbDrawable))
 							.setTrackDrawable(Objects.requireNonNull(AppCompatResources.getDrawable(context, R.drawable.fastscroll_track_media)))
-							.setPadding(0, 0, 0, 0)
+							.setPopupStyle(RecyclerViewUtil.thumbScrollerPopupStyle)
+							.setPopupTextProvider(position -> {
+								int firstVisible = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
+								if (firstVisible >= 0) {
+									MediaAttachItem item = mediaAttachAdapter.getMediaAttachItems().get(firstVisible);
+									return LocaleUtil.formatDateRelative(item.getDateModified() * 1000);
+								}
+
+								return context.getString(R.string.unknown);
+							})
 							.build();
 
 					}
@@ -649,9 +670,9 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 					getWindow().setStatusBarColor(savedStatusBarColor);
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-						getWindow().setNavigationBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_expanded));
+						getWindow().setNavigationBarColor(expandedStatusBarColor);
 					}
-					if (ConfigUtils.getAppTheme(this) != ConfigUtils.THEME_DARK) {
+					if (!ConfigUtils.isTheDarkSide(this)) {
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 							getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 						}
@@ -680,7 +701,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 						getWindow().setNavigationBarColor(getResources().getColor(R.color.gallery_background));
 					}
-					if (ConfigUtils.getAppTheme(MediaSelectionBaseActivity.this) != ConfigUtils.THEME_DARK) {
+					if (!ConfigUtils.isTheDarkSide(this)) {
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 							getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 						}
@@ -766,31 +787,30 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				}
 				break;
 			case STATE_EXPANDED:
-				dateView.setVisibility(View.VISIBLE);
 				dragHandle.setVisibility(View.INVISIBLE);
 				setFirstVisibleItemDate();
 
 				bucketFilterMenu.getMenu().setGroupVisible(Menu.NONE, true);
 				menuTitleFrame.setClickable(true);
 
-				animation = toolbar.getAnimation();
+				animation = appBarLayout.getAnimation();
 				if (animation != null) {
 					animation.cancel();
 				}
 
-				toolbar.setAlpha(0f);
-				toolbar.setVisibility(View.VISIBLE);
-				toolbar.animate()
+				appBarLayout.setAlpha(0f);
+				appBarLayout.setVisibility(View.VISIBLE);
+				appBarLayout.animate()
 					.alpha(1f)
 					.setDuration(100)
 					.setListener(new AnimatorListenerAdapter() {
 					@Override
 					public void onAnimationEnd(Animator animation) {
-						toolbar.setVisibility(View.VISIBLE);
+						appBarLayout.setVisibility(View.VISIBLE);
 					}
 				});
-				toolbar.postDelayed(
-					() -> getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_expanded)),
+				appBarLayout.postDelayed(
+					() -> getWindow().setStatusBarColor(expandedStatusBarColor),
 					50
 				);
 				// show/hide control panel in attach mode depending on whether we have selected items
@@ -809,32 +829,30 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				if (!isDragging) {
 					isDragging = true;
 
-					dateView.setVisibility(View.GONE);
 					dragHandle.setVisibility(View.VISIBLE);
 
-					animation = toolbar.getAnimation();
+					animation = appBarLayout.getAnimation();
 					if (animation != null) {
 						animation.cancel();
 					}
-					toolbar.setAlpha(1f);
-					toolbar.animate()
+					appBarLayout.setAlpha(1f);
+					appBarLayout.animate()
 						.alpha(0f)
 						.setDuration(100)
 						.setListener(new AnimatorListenerAdapter() {
 							@Override
 							public void onAnimationEnd(Animator animation) {
-								toolbar.setVisibility(View.GONE);
+								appBarLayout.setVisibility(View.GONE);
 							}
 						});
-					toolbar.postDelayed(() -> {
-						getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_collapsed));
+					appBarLayout.postDelayed(() -> {
+						getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
 					}, 50);
 				}
 				break;
 			case STATE_COLLAPSED:
 				bottomSheetBehavior.setDraggable(true);
 				bottomSheetScroll = true;
-				dateView.setVisibility(View.GONE);
 				bucketFilterMenu.getMenu().setGroupVisible(Menu.NONE, false);
 				menuTitleFrame.setClickable(false);
 				// only default slide up control panel if in attach mode, as there are no control button options otherwise
@@ -866,7 +884,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			final int controlPanelHeight = resources.getDimensionPixelSize(R.dimen.control_panel_height);
 			final int controlPanelShadowHeight = resources.getDimensionPixelSize(R.dimen.media_attach_control_panel_shadow_size);
 			final int dragHandleHeight = resources.getDimensionPixelSize(R.dimen.drag_handle_height);
-			final int dragHandleTopBottomMargin = resources.getDimensionPixelSize(R.dimen.drag_handle_topbottom_margin);
 
 			// We have a bit of a chicken-and-egg problem: Before the peek height is not set,
 			// the grid items are not loaded. But without the grid items being loaded, we cannot
@@ -876,8 +893,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			// are loaded, we can update the peek height.
 			int peekHeight = controlPanelHeight
 				- controlPanelShadowHeight
-				+ dragHandleHeight
-				+ dragHandleTopBottomMargin * 2;
+				+ dragHandleHeight;
 			boolean peekHeightKnown;
 			if (numItems > 0 && mediaAttachRecyclerView.getChildAt(0) != null) {
 				// Child views are already here, we can calculate the total height
@@ -921,45 +937,31 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 	protected void setFirstVisibleItemDate(){
 		int firstVisible = gridLayoutManager.findFirstVisibleItemPosition();
-		if (firstVisible >= 0){
-			MediaAttachItem item = mediaAttachAdapter.getMediaAttachItems().get(firstVisible);
-			dateView.post(() -> {
-				dateTextView.setMaxLines(1);
-				dateTextView.setText(LocaleUtil.formatDateRelative(item.getDateModified() * 1000));
-			});
-			dateView.setVisibility(View.VISIBLE);
-		} else {
+		if (firstVisible < 0){
 			mediaAttachRecyclerView.clearEmptyView();
 
 			EmptyView emptyView = new EmptyView(this, 0);
 			emptyView.setup(R.string.no_media_found_global);
 			((ViewGroup) mediaAttachRecyclerView.getParent()).addView(emptyView);
 			mediaAttachRecyclerView.setEmptyView(emptyView);
-
-			dateView.setVisibility(View.GONE);
 		}
 	}
 
-	@SuppressLint("NonConstantResourceId")
 	@Override
 	public void onClick(View v) {
-		int id = v.getId();
-		switch (id) {
-			case R.id.collapsing_toolbar:
-				finish();
-				break;
+		final int id = v.getId();
+		if (id == R.id.collapsing_toolbar) {
+			finish();
+		} else if (id == R.id.cancel) {
 			// finish when clicking transparent area showing the chat behind the attacher
-			case R.id.cancel:
-				if (mediaAttachAdapter != null) {
-					mediaAttachAdapter.clearSelection();
-					onItemChecked(0);
-				}
-				break;
-			case R.id.select_counter_button:
-				if (mediaAttachAdapter != null) {
-					filterMediaBySelectedItems();
-				}
-				break;
+			if (mediaAttachAdapter != null) {
+				mediaAttachAdapter.clearSelection();
+				onItemChecked(0);
+			}
+		} else if (id == R.id.select_counter_button) {
+			if (mediaAttachAdapter != null) {
+				filterMediaBySelectedItems();
+			}
 		}
 	}
 
@@ -1014,9 +1016,9 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		}
 
 		dragHandle.setVisibility(View.VISIBLE);
-		toolbar.setVisibility(View.GONE);
-		toolbar.post(() -> {
-			getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(this, R.attr.attach_status_bar_color_collapsed));
+		appBarLayout.setVisibility(View.GONE);
+		appBarLayout.post(() -> {
+			getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
 		});
 
 		updateUI(STATE_COLLAPSED);

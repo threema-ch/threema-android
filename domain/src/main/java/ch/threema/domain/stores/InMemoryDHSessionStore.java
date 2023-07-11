@@ -124,6 +124,6 @@ public class InMemoryDHSessionStore implements DHSessionStoreInterface {
 
 	@Override
 	public void executeNull() {
-		// nothing to do
+		// Nothing to do as the in memory dh session store does not support upgrades and downgrades
 	}
 }

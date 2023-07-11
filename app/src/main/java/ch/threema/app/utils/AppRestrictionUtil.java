@@ -182,8 +182,7 @@ public class AppRestrictionUtil {
 
 	/**
 	 * get boolean value for restriction
-	 * @param context
-	 * @param restriction
+	 * @param restriction The resource id of the restriction name
 	 * @return true if restriction value is set to true, false otherwise or if restriction does not exist or app is not restricted
 	 */
 	public static boolean getBoolRestriction(Context context, @StringRes int restriction) {

@@ -25,12 +25,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.threema.domain.helpers.DummyUsers;
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
 public class DHSessionTest {
 	private DHSession initiatorDHSession;
 	private DHSession responderDHSession;
 
-	public void createSessions() {
+	public void createSessions() throws BadMessageException {
 		// Alice is the initiator
 		this.initiatorDHSession = new DHSession(
 			DummyUsers.getContactForUser(DummyUsers.BOB),
@@ -40,6 +41,7 @@ public class DHSessionTest {
 		// Bob gets an init message from Alice with her ephemeral public key
 		this.responderDHSession = new DHSession(
 			this.initiatorDHSession.getId(),
+			DHSession.SUPPORTED_VERSION_RANGE,
 			this.initiatorDHSession.getMyEphemeralPublicKey(),
 			DummyUsers.getContactForUser(DummyUsers.ALICE),
 			DummyUsers.getIdentityStoreForUser(DummyUsers.BOB)
@@ -47,7 +49,7 @@ public class DHSessionTest {
 	}
 
 	@Test
-	public void test2DHKeyExchange() {
+	public void test2DHKeyExchange() throws BadMessageException {
 		createSessions();
 
 		// At this point, both parties should have the same 2DH chain keys
@@ -60,11 +62,12 @@ public class DHSessionTest {
 	}
 
 	@Test
-	public void test4DHKeyExchange() throws DHSession.MissingEphemeralPrivateKeyException {
+	public void test4DHKeyExchange() throws DHSession.MissingEphemeralPrivateKeyException, BadMessageException {
 		createSessions();
 
 		// Now Bob sends his ephemeral public key back to Alice
 		this.initiatorDHSession.processAccept(
+			DHSession.SUPPORTED_VERSION_RANGE,
 			this.responderDHSession.getMyEphemeralPublicKey(),
 			DummyUsers.getContactForUser(DummyUsers.BOB),
 			DummyUsers.getIdentityStoreForUser(DummyUsers.ALICE)
@@ -96,7 +99,7 @@ public class DHSessionTest {
 	}
 
 	@Test
-	public void testKDFRotation() throws KDFRatchet.RatchetRotationException, DHSession.MissingEphemeralPrivateKeyException {
+	public void testKDFRotation() throws KDFRatchet.RatchetRotationException, DHSession.MissingEphemeralPrivateKeyException, BadMessageException {
 		test4DHKeyExchange();
 
 		Assert.assertNotNull(this.initiatorDHSession.getMyRatchet4DH());

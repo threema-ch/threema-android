@@ -34,6 +34,16 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.transition.Fade;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
+
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipDrawable;
 import com.google.android.material.chip.ChipGroup;
@@ -44,15 +54,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.transition.Fade;
-import androidx.transition.Transition;
-import androidx.transition.TransitionManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
@@ -139,7 +140,7 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
 		this.contactService = serviceManager.getContactService();
 
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.view_open_ballots, this);
+		inflater.inflate(R.layout.notice_open_ballots, this);
 	}
 
 	@Override
@@ -186,15 +187,14 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
 		ChipDrawable firstChipDrawable = ChipDrawable.createFromAttributes(getContext(),
 			null,
 			0,
-			R.style.Chip_ChatNotice_Overview_Intro);
+			R.style.Threema_Chip_ChatNotice_Overview_Intro);
 		firstChip.setChipDrawable(firstChipDrawable);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			firstChip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
+			firstChip.setTextAppearance(R.style.Threema_TextAppearance_Chip_ChatNotice);
 		} else {
 			firstChip.setTextSize(14);
 		}
-		firstChip.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.text_color_openNotice));
-		firstChip.setChipBackgroundColor(ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.background_openNotice)));
+		firstChip.setTextColor(getResources().getColor(R.color.text_color_openNotice));
 		firstChip.setText(ThreemaApplication.getAppContext().getString(R.string.open_group_requests_chips_title));
 		firstChip.setClickable(false);
 		chipGroup.addView(firstChip);
@@ -205,10 +205,10 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
 		ChipDrawable chipDrawable = ChipDrawable.createFromAttributes(getContext(),
 			null,
 			0,
-			R.style.Chip_ChatNotice_Overview);
+			R.style.Threema_Chip_ChatNotice_Overview);
 		chip.setChipDrawable(chipDrawable);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			chip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
+			chip.setTextAppearance(R.style.Threema_TextAppearance_Chip_ChatNotice);
 		} else {
 			chip.setTextSize(14);
 		}
@@ -229,11 +229,11 @@ public class OpenGroupRequestNoticeView extends ConstraintLayout implements Defa
 		chip.setText(NameUtil.getDisplayName(contactService.getByIdentity(request.getRequestingIdentity())));
 		ColorStateList foregroundColor;
 		ColorStateList backgroundColor;
-		if (ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK) {
-			foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorPrimary));
-			backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
+		if (ConfigUtils.isTheDarkSide(getContext())) {
+			foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnBackground));
+			backgroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
 		} else {
-			foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
+			foregroundColor = ColorStateList.valueOf(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
 			backgroundColor = foregroundColor.withAlpha(getResources().getInteger(R.integer.chip_alpha));
 		}
 		chip.setTextColor(foregroundColor);

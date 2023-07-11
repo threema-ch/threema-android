@@ -53,7 +53,6 @@ import ch.threema.app.stores.PreferenceStoreInterface;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.ConfigUtils.AppTheme;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
@@ -731,19 +730,19 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public int getTheme() {
+	public int getAppThemeValue() {
 		String theme = this.preferenceStore.getString(this.getKeyName(R.string.preferences__theme));
 		if (theme != null && theme.length() > 0) {
-			return Integer.valueOf(theme);
+			return Integer.parseInt(theme);
 		}
-		return Theme_LIGHT;
+		return Integer.parseInt(BuildConfig.DEFAULT_APP_THEME);
 	}
 
 	@Override
 	public int getEmojiStyle() {
 		String theme = this.preferenceStore.getString(this.getKeyName(R.string.preferences__emoji_style));
 		if (theme != null && theme.length() > 0) {
-			if (Integer.valueOf(theme) == 1) {
+			if (Integer.parseInt(theme) == 1) {
 				return EmojiStyle_ANDROID;
 			}
 		}
@@ -807,17 +806,17 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setAppLogoExpiresAt(Date expiresAt, int theme) {
+	public void setAppLogoExpiresAt(Date expiresAt, @ConfigUtils.AppThemeSetting String theme) {
 		this.preferenceStore.save(this.getKeyName(
-			theme == ConfigUtils.THEME_DARK ?
+			ConfigUtils.THEME_DARK.equals(theme) ?
 				R.string.preferences__app_logo_dark_expires_at :
 				R.string.preferences__app_logo_light_expires_at), expiresAt);
 	}
 
 	@Override
-	public Date getAppLogoExpiresAt(int theme) {
+	public Date getAppLogoExpiresAt(@ConfigUtils.AppThemeSetting String theme) {
 		return this.preferenceStore.getDate(this.getKeyName(
-			theme == ConfigUtils.THEME_DARK ?
+			ConfigUtils.THEME_DARK.equals(theme) ?
 				R.string.preferences__app_logo_dark_expires_at :
 				R.string.preferences__app_logo_light_expires_at));
 	}
@@ -899,20 +898,20 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	private @NonNull
-	String getAppLogoKey(@AppTheme int theme) {
-		if (theme == ConfigUtils.THEME_DARK) {
+	String getAppLogoKey(@ConfigUtils.AppThemeSetting String theme) {
+		if (ConfigUtils.THEME_DARK.equals(theme)) {
 			return this.getKeyName(R.string.preferences__app_logo_dark_url);
 		}
 		return this.getKeyName(R.string.preferences__app_logo_light_url);
 	}
 
 	@Override
-	public void setAppLogo(@NonNull String url, @AppTheme int theme) {
+	public void setAppLogo(@NonNull String url, @ConfigUtils.AppThemeSetting String theme) {
 		this.preferenceStore.save(this.getAppLogoKey(theme), url, true);
 	}
 
 	@Override
-	public void clearAppLogo(@AppTheme int theme) {
+	public void clearAppLogo(@ConfigUtils.AppThemeSetting String theme) {
 		this.preferenceStore.remove(this.getAppLogoKey(theme));
 	}
 
@@ -924,7 +923,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	@Nullable
-	public String getAppLogo(@AppTheme int theme) {
+	public String getAppLogo(@ConfigUtils.AppThemeSetting String theme) {
 		return this.preferenceStore.getString(this.getAppLogoKey(theme), true);
 	}
 
@@ -990,18 +989,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public Date getProfilePicLastUpdate() {
-		return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__profile_pic_last_update));
-	}
-
-	@Override
-	public void setProfilePicLastUpdate(Date date) {
-		// reset upload date
-		setProfilePicUploadDate(new Date(0L));
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__profile_pic_last_update), date);
-	}
-
-	@Override
 	public long getProfilePicUploadDate() {
 		return this.preferenceStore.getDateAsLong(this.getKeyName(R.string.preferences__profile_pic_upload_date));
 	}
@@ -1012,33 +999,40 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setProfilePicUploadData(ContactServiceImpl.ContactPhotoUploadResult result) {
-		JSONObject toStore = new JSONObject();
+	public void setProfilePicUploadData(@Nullable ContactService.ProfilePictureUploadData result) {
+		JSONObject toStore = null;
 
-		try {
-			toStore.put(CONTACT_PHOTO_BLOB_ID, Base64.encodeBytes(result.blobId));
-			toStore.put(CONTACT_PHOTO_ENCRYPTION_KEY, Base64.encodeBytes(result.encryptionKey));
-			toStore.put(CONTACT_PHOTO_SIZE, result.size);
-		} catch (Exception e) {
-			logger.error("Exception", e);
+		if (result != null) {
+			toStore = new JSONObject();
+			try {
+				toStore.put(CONTACT_PHOTO_BLOB_ID, Base64.encodeBytes(result.blobId));
+				toStore.put(CONTACT_PHOTO_ENCRYPTION_KEY, Base64.encodeBytes(result.encryptionKey));
+				toStore.put(CONTACT_PHOTO_SIZE, result.size);
+			} catch (Exception e) {
+				logger.error("Exception", e);
+			}
 		}
 
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__profile_pic_upload_data), toStore, true);
 	}
 
 	@Override
-	public ContactServiceImpl.ContactPhotoUploadResult getProfilePicUploadData(ContactServiceImpl.ContactPhotoUploadResult result) {
+	@Nullable
+	public ContactService.ProfilePictureUploadData getProfilePicUploadData() {
 		JSONObject fromStore = this.preferenceStore.getJSONObject(this.getKeyName(R.string.preferences__profile_pic_upload_data), true);
 		if (fromStore != null) {
 			try {
-				result.blobId = Base64.decode(fromStore.getString(CONTACT_PHOTO_BLOB_ID));
-				result.encryptionKey = Base64.decode(fromStore.getString(CONTACT_PHOTO_ENCRYPTION_KEY));
-				result.size = fromStore.getInt(CONTACT_PHOTO_SIZE);
+				ContactService.ProfilePictureUploadData data = new ContactService.ProfilePictureUploadData();
+				data.blobId = Base64.decode(fromStore.getString(CONTACT_PHOTO_BLOB_ID));
+				data.encryptionKey = Base64.decode(fromStore.getString(CONTACT_PHOTO_ENCRYPTION_KEY));
+				data.size = fromStore.getInt(CONTACT_PHOTO_SIZE);
+				return data;
 			} catch (Exception e) {
 				logger.error("Exception", e);
+				return null;
 			}
 		}
-		return result;
+		return null;
 	}
 
 	@Override
@@ -1078,7 +1072,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public boolean isVoipEnabled() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voip_enable)) && !ConfigUtils.isBlackBerry();
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voip_enable));
 	}
 
 	@Override
@@ -1624,5 +1618,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean skipGroupCallCreateDelay() {
 		return ConfigUtils.isTestBuild() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_call_skip_delay), false);
+	}
+
+	@Override
+	public long getBackupWarningDismissedTime() {
+		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__backup_warning_dismissed_time));
+	}
+
+	@Override
+	public void setBackupWarningDismissedTime(long time) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__backup_warning_dismissed_time), time);
 	}
 }
