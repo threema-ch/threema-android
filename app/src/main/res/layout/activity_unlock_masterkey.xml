@@ -6,7 +6,7 @@
             android:layout_height="match_parent"
             android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
             android:paddingRight="@dimen/wizard_contents_padding_horizontal"
-			android:background="?android:windowBackground">
+			android:background="?android:attr/colorBackground">
 
 	<RelativeLayout
 			android:id="@+id/layout_parent_top"
@@ -16,27 +16,26 @@
 			android:paddingTop="24dp">
 
 		<TextView
-				style="@style/WizardTitleText"
+				style="@style/Threema.TextAppearance.Headline"
 				android:id="@+id/unlock_masterkey_title"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/masterkey_title"
 				android:gravity="center_horizontal"
 				android:layout_centerHorizontal="true"
-				android:textColor="?attr/textColorPrimary"
+				android:textColor="?attr/colorOnBackground"
 				/>
 
 		<TextView
+				style="@style/Threema.TextAppearance.BodyLarge"
 				android:id="@+id/layout_top"
 				android:layout_below="@id/unlock_masterkey_title"
-				android:textAppearance="?android:textAppearanceMedium"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:gravity="center_horizontal"
 				android:layout_centerHorizontal="true"
 				android:layout_marginTop="16dp"
 				android:text="@string/masterkey_body"
-				android:textColor="?attr/textColorPrimary"
 				android:paddingBottom="5dp"
 				/>
 
@@ -56,7 +55,7 @@
 				android:layout_marginBottom="3dp"
 				android:layout_marginRight="8dp"
 				app:srcCompat="@drawable/ic_key_outline"
-				app:tint="?attr/textColorSecondary" />
+				app:tint="?attr/colorOnSurface" />
 
 			<com.google.android.material.textfield.TextInputLayout
 				android:id="@+id/passphrase_layout"
@@ -82,33 +81,30 @@
 
 			</com.google.android.material.textfield.TextInputLayout>
 
-			<ImageView
+			<com.google.android.material.button.MaterialButton
+				style="@style/Threema.MaterialButton.Icon"
 				android:id="@+id/unlock_button"
-				android:layout_width="36dp"
-				android:layout_height="36dp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:layout_marginLeft="8dp"
-				android:layout_marginBottom="3dp"
+				android:layout_marginBottom="2dp"
 				android:layout_gravity="center_vertical"
-				android:background="@drawable/circle_transparent"
-				android:contentDescription="@string/edit"
+				app:icon="@drawable/ic_arrow_left"
 				android:rotation="180"
-				android:scaleType="center"
-				app:srcCompat="@drawable/ic_arrow_left"
+				android:contentDescription="@string/label_continue"
 				android:enabled="false"
-				android:clickable="false"
-				app:tint="?attr/colorAccent" />
+				/>
 
 		</LinearLayout>
 
 		<TextView
+				style="@style/Threema.TextAppearance.BodyMedium"
 				android:id="@+id/unlock_info"
-				android:textAppearance="?android:textAppearanceSmall"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_below="@id/unlock_layout"
 				android:layout_marginBottom="5dp"
 				android:text="@string/masterkey_lock_explain"
-				android:textColor="?attr/textColorPrimary"
 				app:drawableLeftCompat="@drawable/ic_info_outline"
 				android:drawablePadding="10dp"
 				/>

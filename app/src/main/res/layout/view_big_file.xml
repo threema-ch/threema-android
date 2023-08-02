@@ -24,7 +24,7 @@
 		android:layout_height="wrap_content"
 		android:layout_gravity="center_horizontal"
 		android:padding="@dimen/edittext_padding"
-		android:textSize="@dimen/text_size_body"
+		android:textSize="14sp"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/big_file_image_view" />
@@ -37,7 +37,7 @@
 		android:paddingRight="@dimen/edittext_padding"
 		android:layout_marginBottom="@dimen/edittext_padding"
 		android:textSize="12sp"
-		android:textColor="?attr/textColorSecondary"
+		android:textColor="?attr/colorOnSurface"
 		app:layout_constraintTop_toBottomOf="@id/big_filename_view"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent" />

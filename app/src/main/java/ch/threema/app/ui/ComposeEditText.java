@@ -35,12 +35,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.util.regex.Pattern;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.SendMediaActivity;
@@ -254,13 +255,13 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
 	 * Dismiss the mention popup (if currently shown)
 	 */
 	public void dismissMentionPopup() {
-		if (this.mentionPopup != null) {
+		if (mentionPopup != null) {
 			try {
-				this.mentionPopup.dismiss();
+				mentionPopup.dismiss();
 			} catch(IllegalArgumentException ignored){
 				// whatever
 			} finally{
-				this.mentionPopup = null;
+				mentionPopup = null;
 			}
 		}
 	}

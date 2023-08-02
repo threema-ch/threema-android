@@ -93,7 +93,7 @@ public class ColorUtil {
 	 * @return the gray based on the theme
 	 */
 	public int getCurrentThemeGray(Context context) {
-		if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
+		if (ConfigUtils.isTheDarkSide(context)) {
 			return COLOR_GRAY_DARK;
 		} else {
 			return COLOR_GRAY_LIGHT;

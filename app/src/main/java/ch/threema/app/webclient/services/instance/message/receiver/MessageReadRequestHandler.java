@@ -26,7 +26,6 @@ import org.msgpack.value.Value;
 import org.slf4j.Logger;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.AnyThread;
@@ -40,7 +39,6 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
@@ -139,7 +137,8 @@ public class MessageReadRequestHandler extends MessageReceiver {
 						return null;
 					}
 				};
-				(new ReadMessagesRoutine(receiver.loadMessages(filter), messageService, notificationService)).run();
+				new ReadMessagesRoutine(receiver.loadMessages(filter), messageService, notificationService).run();
+				notificationService.cancel(receiver);
 			} catch (SQLException e) {
 				logger.error("Exception", e);
 				//do nothing more

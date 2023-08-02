@@ -552,7 +552,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void showSettingsDropDown(final View view, final @NonNull MediaItem mediaItem) {
-		Context contextWrapper = new ContextThemeWrapper(this, R.style.Threema_PopupMenuStyle);
+		Context contextWrapper = new ContextThemeWrapper(this, R.style.Threema_PopupMenuStyle_SendMedia);
 		PopupMenu popup = new PopupMenu(contextWrapper, view);
 
 		if (mediaItem.getType() == TYPE_IMAGE) {
@@ -681,7 +681,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		try {
 			startActivityForResult(cameraIntent, requestCode);
-			overridePendingTransition(0, 0);
 		} catch (ActivityNotFoundException e) {
 			logger.error("Exception", e);
 			finish();
@@ -797,7 +796,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void prepareFlip() {
-		flip(mediaAdapterManager.getCurrentItem());
+		mediaAdapterManager.getCurrentItem().flip();
 		mediaAdapterManager.updateCurrent(NOTIFY_BOTH_ADAPTERS);
 	}
 
@@ -807,27 +806,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			confirmQuit();
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	private void flip(@NonNull MediaItem item) {
-		int currentFlip = item.getFlip();
-
-		if (item.getRotation() == 90 || item.getRotation() == 270) {
-			if ((currentFlip & FLIP_VERTICAL) == FLIP_VERTICAL) {
-				// clear vertical flag
-				currentFlip &= ~FLIP_VERTICAL;
-			} else {
-				currentFlip |= FLIP_VERTICAL;
-			}
-		} else {
-			if ((currentFlip & FLIP_HORIZONTAL) == FLIP_HORIZONTAL) {
-				// clear horizontal flag
-				currentFlip &= ~FLIP_HORIZONTAL;
-			} else {
-				currentFlip |= FLIP_HORIZONTAL;
-			}
-		}
-		mediaAdapterManager.getCurrentItem().setFlip(currentFlip);
 	}
 
 	@SuppressLint("StaticFieldLeak")

@@ -9,7 +9,7 @@
 		android:orderInCategory="15"
 		android:title="@string/quote"
 		android:visible="false"
-		app:iconTint="?attr/colorAccent"
+		app:iconTint="?attr/colorPrimary"
 		app:showAsAction="always"/>
 
 	<item
@@ -17,7 +17,7 @@
 		android:icon="@drawable/ic_forward_outline"
 		android:orderInCategory="17"
 		android:title="@string/forward_message"
-		app:iconTint="?attr/colorAccent"
+		app:iconTint="?attr/colorPrimary"
 		app:showAsAction="always"/>
 
 	<item
@@ -25,7 +25,7 @@
 		android:icon="@drawable/ic_content_copy_outline"
 		android:orderInCategory="20"
 		android:title="@string/copy_message_action"
-		app:iconTint="?attr/colorAccent"
+		app:iconTint="?attr/colorPrimary"
 		app:showAsAction="always"/>
 	<item
 		android:id="@+id/menu_message_save"
@@ -33,14 +33,14 @@
 		android:orderInCategory="30"
 		android:title="@string/save_message_action"
 		android:visible="false"
-		app:iconTint="?attr/colorAccent"
+		app:iconTint="?attr/colorPrimary"
 		app:showAsAction="ifRoom"/>
 	<item
 		android:id="@+id/menu_message_discard"
 		android:icon="@drawable/ic_delete_outline"
 		android:orderInCategory="40"
 		android:title="@string/delete"
-		app:iconTint="?attr/colorAccent"
+		app:iconTint="?attr/colorPrimary"
 		app:showAsAction="ifRoom"/>
 	<item
 		android:id="@+id/menu_message_qrcode"
@@ -48,14 +48,14 @@
 		android:orderInCategory="50"
 		android:title="@string/show_as_qrcode"
 		android:visible="false"
-		app:iconTint="?attr/colorAccent"
+		app:iconTint="?attr/colorPrimary"
 		app:showAsAction="ifRoom"/>
 	<item
 		android:id="@+id/menu_share"
 		android:icon="@drawable/ic_share_outline"
 		android:orderInCategory="80"
 		android:title="@string/share_via"
-		app:iconTint="?attr/colorAccent"
+		app:iconTint="?attr/colorPrimary"
 		app:showAsAction="ifRoom"/>
 
 	<item
@@ -63,7 +63,7 @@
 		android:orderInCategory="85"
 		android:title="@string/show_text"
 		android:icon="@drawable/ic_outline_text_snippet_24"
-		app:iconTint="?attr/colorAccent"
+		app:iconTint="?attr/colorPrimary"
 		android:visible="false"
 		app:showAsAction="never"/>
 

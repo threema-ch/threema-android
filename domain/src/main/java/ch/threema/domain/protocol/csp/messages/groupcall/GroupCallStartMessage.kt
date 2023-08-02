@@ -23,6 +23,7 @@ package ch.threema.domain.protocol.csp.messages.groupcall
 
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufGroupMessage
+import ch.threema.protobuf.csp.e2e.fs.Version
 
 class GroupCallStartMessage(payloadData: GroupCallStartData) : AbstractProtobufGroupMessage<GroupCallStartData>(
         ProtocolDefines.MSGTYPE_GROUP_CALL_START,
@@ -31,6 +32,8 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) : AbstractProtobufG
     override fun flagSendPush() = true
 
     override fun flagNoDeliveryReceipts() = true
+
+    override fun getMinimumRequiredForwardSecurityVersion(): Version? = null
 
     override fun allowUserProfileDistribution() = true
 }

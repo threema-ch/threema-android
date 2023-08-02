@@ -5,7 +5,7 @@
 			  android:layout_height="?attr/actionBarSize"
 			  android:gravity="center_vertical"
 			  android:elevation="@dimen/appbar_elevation"
-			  android:background="?attr/colorAccent">
+			  android:background="?attr/colorPrimary">
 
 	<TextView
 			android:id="@+id/title_text"
@@ -14,6 +14,6 @@
 			android:layout_marginLeft="16dp"
 			android:textSize="20sp"
 			android:text="@string/open_from"
-			android:textColor="@color/material_primary"/>
+			android:textColor="?attr/colorOnPrimary"/>
 
 </LinearLayout>

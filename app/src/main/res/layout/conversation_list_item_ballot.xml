@@ -14,17 +14,17 @@
 			android:contentDescription="@string/ballot_placeholder"/>
 
 	<ch.threema.app.emojis.EmojiConversationTextView
+			style="@style/Threema.Bubble.Text.Body"
 			android:id="@+id/text_view"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
 			android:layout_toRightOf="@id/controller"
 			android:linksClickable="false"
-			android:text="Title"
-			android:textColor="?android:textColorPrimary"
-			android:textSize="?attr/font_large"/>
+			android:text="Title" />
 
 	<TextView
+			style="@style/Threema.Bubble.Text.Body.Small"
 			android:id="@+id/secondary_text_view"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -33,8 +33,6 @@
 			android:layout_alignLeft="@id/text_view"
 			android:ellipsize="end"
 			android:singleLine="true"
-			android:text="Tap"
-			android:textColor="?attr/textColorSecondary"
-			android:textSize="?attr/font_medium"/>
+			android:text="Tap" />
 
 </RelativeLayout>

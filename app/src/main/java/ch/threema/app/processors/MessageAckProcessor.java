@@ -23,6 +23,7 @@ package ch.threema.app.processors;
 
 import org.slf4j.Logger;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.QueueMessageId;
 import ch.threema.domain.protocol.csp.connection.MessageAckListener;
+import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
 
 /**
@@ -51,6 +53,7 @@ public class MessageAckProcessor implements MessageAckListener {
 
 	@Override
 	public void processAck(@NonNull QueueMessageId queueMessageId) {
+		final long ackReceivedAt = new Date().getTime();
 		logger.info(
 			"Processing server ack for message ID {} from {}",
 			queueMessageId.getMessageId(),
@@ -65,11 +68,16 @@ public class MessageAckProcessor implements MessageAckListener {
 		}
 
 		if (this.messageService != null) {
-			this.messageService.updateMessageStateForOutgoingMessage(
+			final AbstractMessageModel updatedMessage = this.messageService.updateMessageStateForOutgoingMessage(
 				queueMessageId.getMessageId(),
 				MessageState.SENT,
-				null
+				null,
+				queueMessageId.getRecipientId()
 			);
+			if (updatedMessage != null && updatedMessage.getCreatedAt() != null) {
+				long elapsedMs = ackReceivedAt - updatedMessage.getCreatedAt().getTime();
+				logger.info("Outgoing message acknowledged RTT: {}ms", elapsedMs);
+			}
 		}
 	}
 

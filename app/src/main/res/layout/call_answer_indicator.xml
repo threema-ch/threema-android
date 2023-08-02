@@ -18,7 +18,7 @@
 		android:contentDescription="@string/voip_reject"
 		android:scaleType="center"
 		app:srcCompat="@drawable/ic_call_end_outline"
-		android:tint="@color/voip_end_call_tint"/>
+		app:tint="@color/material_red"/>
 
 	<ImageView
 		android:id="@+id/button_incoming_call_answer"
@@ -32,7 +32,7 @@
 		android:contentDescription="@string/voip_accept"
 		android:scaleType="center"
 		app:srcCompat="@drawable/ic_phone_locked_outline"
-		android:tint="@color/voip_accept_call_tint"/>
+		app:tint="@color/material_green"/>
 
 	<View
 		android:id="@+id/dummy"
@@ -48,7 +48,7 @@
 		android:layout_toLeftOf="@id/dummy"
 		android:layout_centerVertical="true"
 		android:scaleX="-1"
-		android:tint="@android:color/white"
+		app:tint="@android:color/white"
 		android:src="@drawable/ic_next_alpha"/>
 
 	<ImageView
@@ -59,7 +59,7 @@
 		android:layout_marginRight="9dp"
 		android:layout_centerVertical="true"
 		android:scaleX="-1"
-		android:tint="@android:color/white"
+		app:tint="@android:color/white"
 		android:src="@drawable/ic_next_alpha"/>
 
 	<ImageView
@@ -70,7 +70,7 @@
 		android:layout_marginRight="18dp"
 		android:layout_centerVertical="true"
 		android:scaleX="-1"
-		android:tint="@android:color/white"
+		app:tint="@android:color/white"
 		android:src="@drawable/ic_next_alpha"/>
 
 	<ImageView
@@ -79,7 +79,7 @@
 		android:layout_height="24dp"
 		android:layout_toRightOf="@id/dummy"
 		android:layout_centerVertical="true"
-		android:tint="@android:color/white"
+		app:tint="@android:color/white"
 		android:src="@drawable/ic_next_alpha"/>
 
 	<ImageView
@@ -89,7 +89,7 @@
 		android:layout_toRightOf="@id/dummy"
 		android:layout_centerVertical="true"
 		android:layout_marginLeft="9dp"
-		android:tint="@android:color/white"
+		app:tint="@android:color/white"
 		android:src="@drawable/ic_next_alpha"/>
 
 	<ImageView
@@ -99,7 +99,7 @@
 		android:layout_toRightOf="@id/dummy"
 		android:layout_centerVertical="true"
 		android:layout_marginLeft="18dp"
-		android:tint="@android:color/white"
+		app:tint="@android:color/white"
 		android:src="@drawable/ic_next_alpha"/>
 
 </RelativeLayout>

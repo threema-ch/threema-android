@@ -65,15 +65,16 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public static final String COLUMN_AVATAR_EXPIRES = "avatarExpires";
 	public static final String COLUMN_IS_WORK = "isWork";
 	public static final String COLUMN_TYPE = "type";
-	public static final String COLUMN_PROFILE_PIC_SENT_DATE = "profilePicSent"; /* date when profile pic was last sent to this contact */
+	public static final String COLUMN_PROFILE_PIC_BLOB_ID = "profilePicBlobID"; /* the blob ID of the profile pic that was last sent to this contact */
 	public static final String COLUMN_DATE_CREATED = "dateCreated"; /* date when this contact was created locally */
 	public static final String COLUMN_IS_HIDDEN = "isHidden"; /* whether this contact is visible in the contact list */
 	public static final String COLUMN_IS_RESTORED = "isRestored"; /* whether this contact has been restored from a backup and not yet been contacted */
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this contact has been archived by user */
 	public static final String COLUMN_READ_RECEIPTS = "readReceipts"; /* whether read receipts should be sent to this contact */
 	public static final String COLUMN_TYPING_INDICATORS = "typingIndicators"; /* whether typing indicators should be sent to this contact */
-	public static final String COLUMN_FORWARD_SECURITY_ENABLED = "forwardSecurityEnabled"; /* whether forward security should be used when sending to this contact */
 	public static final String COLUMN_FORWARD_SECURITY_STATE = "forwardSecurityState"; /* current state of forward security with this contact */
+
+	public static final byte[] NO_PROFILE_PICTURE_BLOB_ID = new byte[0];
 
 	public enum State {
 		/**
@@ -102,7 +103,8 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public @interface OverridePolicy {}
 
 	/**
-	 * Forward Security state constants
+	 * Forward Security state constants. Note that these values are only maintained for contacts
+	 * with a DH session of version 1.0.
 	 */
 	public static final int FS_OFF = 0; // last message from this contact did not have FS enabled
 	public static final int FS_ON = 1; // last message from this contact was received with FS
@@ -122,10 +124,11 @@ public class ContactModel extends Contact implements ReceiverModel {
 	private int featureMask;
 	private int colorIndex = -1;
 	private boolean isWork, isHidden, isRestored, isArchived;
-	private Date avatarExpires, profilePicSent, dateCreated;
+	private Date avatarExpires, dateCreated;
+	private byte[] profilePicBlobID;
 	private @IdentityType.Type int type;
 	private @OverridePolicy int readReceipts, typingIndicators;
-	private boolean forwardSecurityEnabled;
+	// TODO(ANDR-2452): Remove the forward security state when most of clients support 1.1 anyway
 	private int forwardSecurityState;
 
 	public ContactModel(String identity, byte[] publicKey) {
@@ -217,7 +220,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 	}
 
 	public int getThemedColor(@NonNull Context context) {
-		if (ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK) {
+		if (ConfigUtils.isTheDarkSide(context)) {
 			return getColorDark();
 		} else {
 			return getColorLight();
@@ -345,8 +348,15 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this.isWork;
 	}
 
-	public Date getProfilePicSentDate() {
-		return profilePicSent;
+	/**
+	 * Get the BlobId of the latest profile picture that was sent to this contact.
+	 *
+	 * @return The blobId of the latest profile-picture sent to this contact, {@code null} if no
+	 *      profile-picture has been sent or {@code new byte[0]} if a delete-profile-picture message has been sent
+	 */
+	@Nullable
+	public byte[] getProfilePicBlobID() {
+		return profilePicBlobID;
 	}
 
 	public @Nullable Date getDateCreated() {
@@ -371,8 +381,14 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this.isRestored;
 	}
 
-	public ContactModel setProfilePicSentDate(Date profilePicSent) {
-		this.profilePicSent = profilePicSent;
+	/**
+	 * Set the BlobId of the latest profile picture that was sent to this contact.
+	 *
+	 * @param profilePicBlobID The blobId of the latest profile-picture sent to this contact, {@code null} if no
+	 *      profile-picture has been sent or {@code new byte[0]} if a delete-profile-picture message has been sent
+	 */
+	public ContactModel setProfilePicBlobID(@Nullable byte[] profilePicBlobID) {
+		this.profilePicBlobID = profilePicBlobID;
 		return this;
 	}
 
@@ -423,20 +439,26 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this;
 	}
 
-	public boolean isForwardSecurityEnabled() {
-		return forwardSecurityEnabled;
-	}
-
-	public ContactModel setForwardSecurityEnabled(boolean forwardSecurityEnabled) {
-		this.forwardSecurityEnabled = forwardSecurityEnabled;
-		return this;
-	}
-
+	/**
+	 * Get the forward security state of this contact. Note that these states are only maintained
+	 * for contacts with a DH session of version 1.0.
+	 * TODO(ANDR-2452): Remove the forward security state when most of clients support 1.1 anyway
+	 *
+	 * @return the forward security state
+	 */
 	@ForwardSecurityState
 	public int getForwardSecurityState() {
 		return forwardSecurityState;
 	}
 
+	/**
+	 * Set the forward security state of this contact. Note that these states are only maintained
+	 * for contacts with a DH session of version 1.0.
+	 * TODO(ANDR-2452): Remove the forward security state when most of clients support 1.1 anyway
+	 *
+	 * @param forwardSecurityState the forward security state
+	 * @return this contact model
+	 */
 	public ContactModel setForwardSecurityState(@ForwardSecurityState int forwardSecurityState) {
 		this.forwardSecurityState = forwardSecurityState;
 		return this;
@@ -457,7 +479,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 			this.featureMask,
 			this.avatarExpires,
 			this.isWork,
-			this.profilePicSent,
+			this.profilePicBlobID,
 			this.type,
 			this.dateCreated,
 			this.isHidden,
@@ -465,7 +487,6 @@ public class ContactModel extends Contact implements ReceiverModel {
 			this.isArchived,
 			this.readReceipts,
 			this.typingIndicators,
-			this.forwardSecurityEnabled,
 			this.forwardSecurityState
 		};
 	}

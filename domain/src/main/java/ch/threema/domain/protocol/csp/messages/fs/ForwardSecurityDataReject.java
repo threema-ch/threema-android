@@ -21,22 +21,23 @@
 
 package ch.threema.domain.protocol.csp.messages.fs;
 
-import androidx.annotation.NonNull;
-
 import com.google.protobuf.ByteString;
 
-import java.util.Objects;
-
+import androidx.annotation.NonNull;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.MessageId;
-import ch.threema.protobuf.csp.e2e.fs.ForwardSecurityEnvelope;
+import ch.threema.protobuf.csp.e2e.fs.Envelope;
+import ch.threema.protobuf.csp.e2e.fs.Reject;
 
 public class ForwardSecurityDataReject extends ForwardSecurityData {
-
 	private final @NonNull MessageId rejectedMessageId;
-	private final @NonNull ForwardSecurityEnvelope.Reject.Cause cause;
+	private final @NonNull Reject.Cause cause;
 
-	public ForwardSecurityDataReject(@NonNull DHSessionId sessionId, @NonNull MessageId rejectedMessageId, @NonNull ForwardSecurityEnvelope.Reject.Cause cause) {
+	public ForwardSecurityDataReject(
+		@NonNull DHSessionId sessionId,
+		@NonNull MessageId rejectedMessageId,
+		@NonNull Reject.Cause cause
+	) {
 		super(sessionId);
 		this.rejectedMessageId = rejectedMessageId;
 		this.cause = cause;
@@ -48,32 +49,19 @@ public class ForwardSecurityDataReject extends ForwardSecurityData {
 	}
 
 	@NonNull
-	public ForwardSecurityEnvelope.Reject.Cause getCause() {
+	public Reject.Cause getCause() {
 		return cause;
 	}
 
 	@NonNull
 	@Override
-	public ForwardSecurityEnvelope toProtobufMessage() {
-		return ForwardSecurityEnvelope.newBuilder()
+	public Envelope toProtobufMessage() {
+		return Envelope.newBuilder()
 			.setSessionId(ByteString.copyFrom(this.getSessionId().get()))
-			.setReject(ForwardSecurityEnvelope.Reject.newBuilder()
-				.setRejectedMessageId(this.rejectedMessageId.getMessageIdLong())
+			.setReject(Reject.newBuilder()
+				.setRejectedEncapsulatedMessageId(this.rejectedMessageId.getMessageIdLong())
 				.setCause(this.cause)
 				.build())
 			.build();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		ForwardSecurityDataReject that = (ForwardSecurityDataReject) o;
-		return rejectedMessageId.equals(that.rejectedMessageId) && getCause() == that.getCause();
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(rejectedMessageId, getCause());
 	}
 }

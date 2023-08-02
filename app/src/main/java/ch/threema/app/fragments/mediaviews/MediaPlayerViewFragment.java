@@ -21,6 +21,9 @@
 
 package ch.threema.app.fragments.mediaviews;
 
+import static ch.threema.app.utils.StringConversionUtil.getDurationString;
+
+import android.annotation.SuppressLint;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -30,11 +33,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.exoplayer2.ui.DefaultTimeBar;
-import com.google.android.exoplayer2.ui.TimeBar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.media3.ui.DefaultTimeBar;
+import androidx.media3.ui.TimeBar;
+
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.slf4j.Logger;
 
@@ -42,22 +49,22 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-import static ch.threema.app.utils.StringConversionUtil.getDurationString;
-
+/**
+ * Media Player Fragment using traditional Android MediaPlayer. Only used to play MIDI and FLAC files which are not supported by ExoPlayer
+ */
+@SuppressLint("UnsafeOptInUsageError")
 public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragment implements TimeBar.OnScrubListener, MediaPlayerStateWrapper.StateListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaPlayerViewFragment");
 
 	private WeakReference<TextView> filenameViewRef, positionRef, durationRef;
 	private WeakReference<DefaultTimeBar> timeBarRef;
-	private WeakReference<ProgressBar> progressBarRef;
+	private WeakReference<CircularProgressIndicator> progressBarRef;
 	private WeakReference<ImageButton> playRef, pauseRef;
 
 	private MediaPlayerStateWrapper mediaPlayer;
@@ -76,7 +83,7 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 	public boolean inquireClose() { return true; }
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Bundle arguments = getArguments();
 		if (arguments != null) {
 			this.isImmediatePlay = arguments.getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
@@ -284,13 +291,13 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 	}
 
 	@Override
-	public void onScrubStart(TimeBar timeBar, long position) {}
+	public void onScrubStart(@NonNull TimeBar timeBar, long position) {}
 
 	@Override
-	public void onScrubMove(TimeBar timeBar, long position) {}
+	public void onScrubMove(@NonNull TimeBar timeBar, long position) {}
 
 	@Override
-	public void onScrubStop(TimeBar timeBar, long position, boolean canceled) {
+	public void onScrubStop(@NonNull TimeBar timeBar, long position, boolean canceled) {
 		if (!canceled) {
 			mediaPlayer.seekTo((int) position);
 		}
@@ -313,6 +320,14 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 			} else {
 				filenameViewRef.get().setVisibility(View.INVISIBLE);
 			}
+		}
+	}
+
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		// stop player if fragment comes out of view
+		if (!isVisibleToUser) {
+			pauseAudio();
 		}
 	}
 }

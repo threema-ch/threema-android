@@ -33,8 +33,8 @@ data class GroupCallState(
     companion object {
         fun fromProtobufBytes(bytes: ByteArray): GroupCallState {
             val state = CallState.parseFrom(bytes)
-            val participants = state.participantsMap.values
-                .map(GroupCallState::mapParticipant)
+            val participants = state.participantsMap
+                .map { (id, participant) -> mapParticipant(ParticipantId(id.toUInt()), participant) }
                 .toSet()
             return GroupCallState(
                 ParticipantId(state.stateCreatedBy.toUInt()),
@@ -43,25 +43,25 @@ data class GroupCallState(
             )
         }
 
-        private fun mapParticipant(participant: CallState.Participant): ParticipantDescription {
+        private fun mapParticipant(id: ParticipantId, participant: CallState.Participant): ParticipantDescription {
             return when {
-                participant.hasThreema() -> mapNormalParticipant(participant)
-                participant.hasGuest() -> mapGuestParticipant(participant)
+                participant.hasThreema() -> mapNormalParticipant(id, participant)
+                participant.hasGuest() -> mapGuestParticipant(id, participant)
                 else -> throw GroupCallException("Cannot map state participant")
             }
         }
 
-        private fun mapNormalParticipant(participant: CallState.Participant): NormalParticipantDescription {
+        private fun mapNormalParticipant(id: ParticipantId, participant: CallState.Participant): NormalParticipantDescription {
             return SimpleNormalParticipantDescription(
-                ParticipantId(participant.participantId.toUInt()),
+                id,
                 participant.threema.identity,
                 participant.threema.nickname
             )
         }
 
-        private fun mapGuestParticipant(participant: CallState.Participant): GuestParticipantDescription {
+        private fun mapGuestParticipant(id: ParticipantId, participant: CallState.Participant): GuestParticipantDescription {
             return SimpleGuestParticipantDescription(
-                ParticipantId(participant.participantId.toUInt()),
+                id,
                 participant.guest.name
             )
         }
@@ -75,7 +75,6 @@ data class GroupCallState(
 
         participants.forEach {
             val participant = CallState.Participant.newBuilder()
-                .setParticipantId(it.id.id.toInt())
 
             if (it is NormalParticipantDescription) {
                 val threema = CallState.Participant.Normal.newBuilder()

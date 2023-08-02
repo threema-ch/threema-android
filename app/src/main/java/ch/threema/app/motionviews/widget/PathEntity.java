@@ -21,38 +21,9 @@
 
 package ch.threema.app.motionviews.widget;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+/**
+ * A dummy entity for paths on draw canvas.
+ */
 
-/* dummy entity for paths on draw canvas */
-
-public class PathEntity extends MotionEntity {
-	public PathEntity() {
-		super(null, 1, 1);
-	}
-
-	@Override
-	protected void drawContent(@NonNull Canvas canvas, @Nullable Paint drawingPaint) {}
-
-	@Override
-	public boolean canMove() {
-		return false;
-	}
-
-	@Override
-	public boolean canChangeColor() {
-		return false;
-	}
-
-	@Override
-	public int getWidth() {
-		return 0;
-	}
-
-	@Override
-	public int getHeight() {
-		return 0;
-	}
+public class PathEntity implements ActionEntity {
 }

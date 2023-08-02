@@ -23,6 +23,9 @@ package ch.threema.app.services;
 
 import org.slf4j.Logger;
 
+import java.util.HashMap;
+import java.util.concurrent.Future;
+
 import ch.threema.app.utils.ExponentialBackOffUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -30,6 +33,7 @@ public class MessageSendingServiceExponentialBackOff implements MessageSendingSe
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageSendingServiceExponentialBackOff");
 
 	private final MessageSendingServiceState messageSendingServiceState;
+	private final HashMap<String, Future<?>> backoffFutures = new HashMap<>();
 
 	public MessageSendingServiceExponentialBackOff(MessageSendingServiceState messageSendingServiceState) {
 		this.messageSendingServiceState = messageSendingServiceState;
@@ -37,7 +41,8 @@ public class MessageSendingServiceExponentialBackOff implements MessageSendingSe
 
 	@Override
 	public void addToQueue(final MessageSendingProcess process) {
-		ExponentialBackOffUtil.getInstance().run(new ExponentialBackOffUtil.BackOffRunnable() {
+		logger.debug("{} Add message to queue", process.getMessageModel().getUid());
+		Future<?> backoffFuture = ExponentialBackOffUtil.getInstance().run(new ExponentialBackOffUtil.BackOffRunnable() {
 			@Override
 			public void run(int currentRetry) throws Exception {
 				try {
@@ -51,13 +56,43 @@ public class MessageSendingServiceExponentialBackOff implements MessageSendingSe
 
 			@Override
 			public void finished(int currentRetry) {
+				synchronized (backoffFutures) {
+					backoffFutures.remove(process.getMessageModel().getUid());
+				}
+				logger.debug("{} Exponential backoff finished successfully", process.getMessageModel().getUid());
+
 				messageSendingServiceState.processingFinished(process.getMessageModel(), process.getReceiver());
 			}
 
 			@Override
 			public void exception(Exception e, int currentRetry) {
+				synchronized (backoffFutures) {
+					backoffFutures.remove(process.getMessageModel().getUid());
+				}
+				logger.debug("{} Exponential backoff failed", process.getMessageModel().getUid());
+
 				messageSendingServiceState.processingFailed(process.getMessageModel(), process.getReceiver());
 			}
-		}, 5);
+		}, 5, process.getMessageModel().getUid());
+
+		if (backoffFuture != null) {
+			synchronized (backoffFutures) {
+				backoffFutures.put(process.getMessageModel().getUid(), backoffFuture);
+			}
+		}
+	}
+
+	@Override
+	public void abort(String messageUid) {
+		synchronized (backoffFutures) {
+			Future<?> backoffFuture = backoffFutures.get(messageUid);
+			if (backoffFuture != null) {
+				if (!backoffFuture.isCancelled() && !backoffFuture.isDone()) {
+					logger.debug("{} Cancelling backoff", messageUid);
+					backoffFuture.cancel(true);
+				}
+				backoffFutures.remove(messageUid);
+			}
+		}
 	}
 }

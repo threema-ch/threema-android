@@ -24,13 +24,15 @@ package ch.threema.app.glide;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Registry;
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.services.AvatarCacheServiceImpl;
+import ch.threema.storage.models.AbstractMessageModel;
 
 @GlideModule
 public class AvatarGlideModule extends AppGlideModule {
@@ -40,6 +42,6 @@ public class AvatarGlideModule extends AppGlideModule {
 		registry.prepend(AvatarCacheServiceImpl.ContactAvatarConfig.class, Bitmap.class, new ContactAvatarModelLoaderFactory(context));
 		registry.prepend(AvatarCacheServiceImpl.GroupAvatarConfig.class, Bitmap.class, new GroupAvatarModelLoaderFactory(context));
 		registry.prepend(AvatarCacheServiceImpl.DistributionListAvatarConfig.class, Bitmap.class, new DistributionListAvatarModelLoaderFactory(context));
+		registry.prepend(AbstractMessageModel.class, Bitmap.class, new ThumbnailLoaderFactory(context));
 	}
-
 }

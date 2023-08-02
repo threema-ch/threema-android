@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ch.threema.app.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:custom="http://schemas.android.com/apk/res-auto"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:id="@+id/item_container"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
 		android:layout_centerVertical="true"
 		android:duplicateParentState="true">
 
-		<CheckBox
+		<com.google.android.material.checkbox.MaterialCheckBox
 			android:id="@+id/choice_checkbox"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
 			android:duplicateParentState="true"
 			android:clickable="false"/>
 
-		<RadioButton
+		<com.google.android.material.radiobutton.MaterialRadioButton
 			android:id="@+id/choice_radio"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -37,6 +37,7 @@
 			android:clickable="false"/>
 
 		<ch.threema.app.emojis.EmojiConversationTextView
+			style="@style/Threema.TextAppearance.BodyLarge"
 			android:id="@+id/choice_name"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -47,18 +48,18 @@
 			android:layout_toLeftOf="@+id/vote_count"
 			android:layout_toRightOf="@id/choice_radio"
 			android:text="Name"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textColor="?attr/textColorPrimary" />
+			android:textColor="?attr/colorOnBackground" />
 
-		<ch.threema.app.ui.CountBoxView
+		<com.google.android.material.button.MaterialButton
+			style="@style/Threema.MaterialButton.CountView"
 			android:id="@+id/vote_count"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_height="20dp"
 			android:layout_alignParentRight="true"
 			android:layout_centerVertical="true"
 			android:layout_marginLeft="8dp"
 			android:layout_marginRight="8dp"
-			custom:backgroundOverride="@drawable/count_box_background_accent" />
+			app:backgroundTint="?attr/colorPrimary" />
 
 	</RelativeLayout>
 </ch.threema.app.ui.CheckableRelativeLayout>

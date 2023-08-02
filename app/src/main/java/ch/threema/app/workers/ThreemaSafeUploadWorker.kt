@@ -30,6 +30,7 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.threemasafe.ThreemaSafeService
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.utils.LoggingUtil
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -44,28 +45,41 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
     companion object {
         private const val EXTRA_FORCE_UPDATE = "FORCE_UPDATE"
 
+        /**
+         * Build a one time work request without any initial delay.
+         */
         fun buildOneTimeWorkRequest(forceUpdate: Boolean): OneTimeWorkRequest {
             val data = Data.Builder()
-                    .putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
-                    .build()
+                .putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
+                .build()
 
             return OneTimeWorkRequestBuilder<ThreemaSafeUploadWorker>()
-                    .apply { setInputData(data) }
-                    .build()
+                .apply { setInputData(data) }
+                .build()
         }
 
+        /**
+         * Build a periodic work request that runs every [schedulePeriodMs] milliseconds. The
+         * request is scheduled to first run in [schedulePeriodMs] milliseconds. Note that the
+         * schedule period is not added as tag, as these period does not change dynamically.
+         */
         fun buildPeriodicWorkRequest(schedulePeriodMs: Long): PeriodicWorkRequest {
             val data = Data.Builder()
-                    .putBoolean(EXTRA_FORCE_UPDATE, false)
-                    .build()
+                .putBoolean(EXTRA_FORCE_UPDATE, false)
+                .build()
             val constraints = Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
 
-            return PeriodicWorkRequestBuilder<ThreemaSafeUploadWorker>(schedulePeriodMs, TimeUnit.MILLISECONDS)
-                    .setConstraints(constraints)
-                    .apply { setInputData(data) }
-                    .build()
+            return PeriodicWorkRequestBuilder<ThreemaSafeUploadWorker>(
+                schedulePeriodMs,
+                TimeUnit.MILLISECONDS
+            )
+                .setInitialDelay(schedulePeriodMs, TimeUnit.MILLISECONDS)
+                .setConstraints(constraints)
+                .addTag(schedulePeriodMs.toString())
+                .apply { setInputData(data) }
+                .build()
         }
     }
 
@@ -73,11 +87,16 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
         val forceUpdate: Boolean = inputData.getBoolean(EXTRA_FORCE_UPDATE, false)
         var success = true
 
-        logger.info("Uploading Threema Safe, force = {}", forceUpdate)
+        logger.info("Threema Safe upload worker started, force = {}", forceUpdate)
 
         if (serviceManager == null || threemaSafeService == null || preferenceService == null) {
             logger.info("Services not available")
             return Result.failure()
+        }
+
+        if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
+            // skip upload if license was revoked or is temporarily unavailable
+            return Result.success()
         }
 
         try {
@@ -96,7 +115,7 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
 
         ListenerManager.threemaSafeListeners.handle { obj: ThreemaSafeListener -> obj.onBackupStatusChanged() }
 
-        logger.info("Threema Safe upload finished. Success = {}", success)
+        logger.info("Threema Safe upload worker finished. Success = {}", success)
 
         return if (success) {
             Result.success()

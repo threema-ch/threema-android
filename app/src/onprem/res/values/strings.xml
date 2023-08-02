@@ -27,8 +27,6 @@
 		before sending them to the server to look for matching contacts. The data is kept in memory only and never stored on the server.</string>
 	<string name="threema_contact">Threema OnPrem Contact</string>
 	<string name="menu_about">About Threema OnPrem</string>
-	<string name="list_theme_light">Light</string>
-	<string name="list_theme_dark">Dark (default)</string>
 	<string name="private_threema_download"><![CDATA[If you are a private user, please <a href="https://play.google.com/store/apps/details?id=ch.threema.app">tap here</a> to download Threema.]]></string>
 	<string name="directory_search">Search in the directory</string>
 	<string name="directory_title">Company directory</string>

@@ -23,22 +23,20 @@ package ch.threema.app.activities;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.fragments.MessageSectionFragment;
-import ch.threema.app.listeners.MessagePlayerListener;
-import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.services.DeadlineListService;
@@ -47,7 +45,6 @@ import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
-import ch.threema.storage.models.AbstractMessageModel;
 
 public class ComposeMessageActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageActivity");
@@ -64,16 +61,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	private final String COMPOSE_FRAGMENT_TAG = "compose_message_fragment";
 	private final String MESSAGES_FRAGMENT_TAG = "message_section_fragment";
 
-	private final MessagePlayerListener messagePlayerListener = new MessagePlayerListener() {
-		@Override
-		public void onAudioStreamChanged(int newStreamType) {
-			setVolumeControlStream(newStreamType == AudioManager.STREAM_VOICE_CALL ? AudioManager.STREAM_VOICE_CALL : AudioManager.USE_DEFAULT_STREAM_TYPE);
-		}
-
-		@Override
-		public void onAudioPlayEnded(AbstractMessageModel messageModel) { }
-	};
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		logger.debug("onCreate");
@@ -81,8 +68,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		super.onCreate(savedInstanceState);
 
 		this.currentIntent = getIntent();
-
-		ListenerManager.messagePlayerListener.add(this.messagePlayerListener);
 
 		//check master key
 		MasterKey masterKey = ThreemaApplication.getMasterKey();
@@ -164,7 +149,9 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		if (composeMessageFragment != null) {
 			if (!composeMessageFragment.onBackPressed()) {
 				finish();
-				overridePendingTransition(0, 0);
+				if (ConfigUtils.isTabletLayout()) {
+					overridePendingTransition(0, 0);
+				}
 			}
 			return;
 		}
@@ -174,9 +161,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	@Override
 	public void onDestroy() {
 		logger.debug("onDestroy");
-
-		ListenerManager.messagePlayerListener.remove(this.messagePlayerListener);
-
 		super.onDestroy();
 	}
 
@@ -255,7 +239,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	}
 
 	private boolean checkHiddenChatLock(Intent intent, int requestCode) {
-		MessageReceiver messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(getApplicationContext(), intent);
+		MessageReceiver<?> messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(getApplicationContext(), intent);
 
 		if (messageReceiver != null) {
 			if (serviceManager != null) {

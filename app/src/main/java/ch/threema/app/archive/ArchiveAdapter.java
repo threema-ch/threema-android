@@ -30,13 +30,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiMarkupUtil;
@@ -227,7 +228,12 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
 
 			if (this.onClickItemListener != null) {
 				holder.itemView.setOnClickListener(v -> onClickItemListener.onClick(conversationModel, holder.itemView, position));
-				holder.itemView.setOnLongClickListener(v -> onClickItemListener.onLongClick(conversationModel, holder.itemView, position));
+				holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+					@Override
+					public boolean onLongClick(View v) {
+						return onClickItemListener.onLongClick(conversationModel, holder.itemView, position);
+					}
+				});
 			}
 		} else {
 			// Covers the case of data not being ready yet.

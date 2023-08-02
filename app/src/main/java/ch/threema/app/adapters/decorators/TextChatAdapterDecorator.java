@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -40,6 +41,7 @@ import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -110,7 +112,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 	private QuoteUtil.QuoteContent configureQuote(final ComposeMessageHolder holder, final AbstractMessageModel messageModel) {
 		QuoteUtil.QuoteContent content = QuoteUtil.getQuoteContent(
 			messageModel,
-			this.helper.getMessageReceiver().getType(),
+			this.helper.getMessageReceiver(),
 			false,
 			this.helper.getThumbnailCache(),
 			this.getContext(),
@@ -121,9 +123,13 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 
 		if (content != null) {
 			if (holder.secondaryTextView instanceof EmojiConversationTextView) {
-				holder.secondaryTextView.setText(formatTextString(content.quotedText, this.filterString, helper.getMaxQuoteTextLength() + 8));
 				((EmojiConversationTextView) holder.secondaryTextView).setFade(
-					content.quotedText != null && content.quotedText.length() > helper.getMaxQuoteTextLength());
+						TestUtil.empty(filterString) &&
+						content.quotedText != null &&
+						content.quotedText.length() > helper.getMaxQuoteTextLength());
+				holder.secondaryTextView.setText(
+					formatTextString(content.quotedText, this.filterString, helper.getMaxQuoteTextLength() + 8),
+					TextView.BufferType.SPANNABLE);
 			}
 
 			ContactModel contactModel = this.helper.getContactService().getByIdentity(content.identity);

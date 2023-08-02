@@ -238,7 +238,7 @@ class GroupCallService : Service() {
             .setContentText(getString(R.string.group_call))
             .setSmallIcon(R.drawable.ic_group_call)
             .setLargeIcon(getAvatar(group))
-            .setColor(ResourcesCompat.getColor(resources, R.color.accent_light, theme))
+            .setColor(ResourcesCompat.getColor(resources, R.color.md_theme_light_primary, theme))
             .setLocalOnly(true)
             .setOngoing(true)
             .setUsesChronometer(true)

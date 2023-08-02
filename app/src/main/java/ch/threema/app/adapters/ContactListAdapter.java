@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import ch.threema.app.R;
@@ -63,7 +64,6 @@ import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
@@ -543,14 +543,16 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		HashSet<ContactModel> contacts = new HashSet<>();
 		ContactModel contactModel;
 
-		for (int position: checkedItems) {
+		Iterator<Integer> iterator = checkedItems.iterator();
+		while (iterator.hasNext()) {
+			int position = iterator.next();
 			try {
 				contactModel = ovalues.get(position);
 				if (contactModel != null) {
 					contacts.add(contactModel);
 				}
 			} catch (IndexOutOfBoundsException e) {
-				checkedItems.remove(position);
+				iterator.remove();
 			}
 		}
 		return contacts;

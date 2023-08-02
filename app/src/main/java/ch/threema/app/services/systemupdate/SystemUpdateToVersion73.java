@@ -21,7 +21,7 @@
 
 package ch.threema.app.services.systemupdate;
 
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import java.sql.SQLException;
 
@@ -44,13 +44,11 @@ public class SystemUpdateToVersion73 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, MessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + MessageModel.TABLE + " ADD COLUMN " +
-				AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE + " TINYINT DEFAULT 0");
+		if (!this.fieldExist(this.sqLiteDatabase, "message", "forwardSecurityMode")) {
+			sqLiteDatabase.rawExecSQL("ALTER TABLE message ADD COLUMN forwardSecurityMode TINYINT DEFAULT 0");
 		}
-		if (!this.fieldExist(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_FORWARD_SECURITY_ENABLED)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE + " ADD COLUMN " +
-				ContactModel.COLUMN_FORWARD_SECURITY_ENABLED + " TINYINT DEFAULT 0");
+		if (!this.fieldExist(this.sqLiteDatabase, "contacts", "forwardSecurityEnabled")) {
+			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN forwardSecurityEnabled TINYINT DEFAULT 0");
 		}
 
 		return true;

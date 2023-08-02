@@ -221,7 +221,8 @@ public class BackupServiceTest {
 			.setBackupAvatars(false)
 			.setBackupMedia(false)
 			.setBackupThumbnails(false)
-			.setBackupVideoAndFiles(false));
+			.setBackupVideoAndFiles(false)
+			.setBackupNonces(false));
 
 		try {
 			final ZipFile zipFile = this.openBackupFile(backupFile, new String[]{ "settings", "identity" });
@@ -274,7 +275,8 @@ public class BackupServiceTest {
             .setBackupAvatars(false)
             .setBackupMedia(false)
             .setBackupThumbnails(false)
-            .setBackupVideoAndFiles(false));
+            .setBackupVideoAndFiles(false)
+	        .setBackupNonces(false));
 
         try {
             final ZipFile zipFile = this.openBackupFile(backupFile, new String[]{

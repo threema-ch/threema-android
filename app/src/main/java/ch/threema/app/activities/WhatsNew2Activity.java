@@ -35,7 +35,7 @@ import static ch.threema.app.activities.WhatsNewActivity.EXTRA_NO_ANIMATION;
 public class WhatsNew2Activity extends ThreemaAppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 
 		super.onCreate(savedInstanceState);
 

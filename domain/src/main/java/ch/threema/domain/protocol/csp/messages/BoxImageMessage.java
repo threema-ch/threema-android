@@ -25,7 +25,9 @@ import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.EndianUtils;
 
+import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A message that has an image (stored on the blob server) as its content.
@@ -54,6 +56,12 @@ public class BoxImageMessage extends AbstractMessage {
 	@Override
 	public boolean flagSendPush() {
 		return true;
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 
 	@Override

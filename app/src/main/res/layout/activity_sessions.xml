@@ -3,7 +3,8 @@
                                                  xmlns:app="http://schemas.android.com/apk/res-auto"
                                                  android:id="@+id/parent_layout"
                                                  android:layout_width="match_parent"
-                                                 android:layout_height="match_parent">
+                                                 android:layout_height="match_parent"
+												android:background="?android:attr/colorBackground">
 
 	<include layout="@layout/toolbar_view"/>
 
@@ -17,8 +18,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_alignParentBottom="true"
-			android:layout_below="@+id/notice_layout"
-			>
+			android:layout_below="@+id/notice_layout">
 
 			<ch.threema.app.ui.EmptyRecyclerView
 				android:id="@+id/recycler"
@@ -40,10 +40,11 @@
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_horizontal"
 					android:layout_marginBottom="24dp"
-					android:src="@drawable/ic_phonelink_white_128dp"
-					app:tint="?attr/image_tint_default" />
+					app:srcCompat="@drawable/ic_phonelink_white_128dp"
+					app:tint="?attr/colorOnBackground" />
 
 				<TextView
+					style="@style/Threema.TextAppearance.Emptyview"
 					android:id="@+id/empty_text"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -53,33 +54,38 @@
 					android:layout_gravity="center_horizontal"
 					android:gravity="center_horizontal"
 					android:text="@string/webclient_no_sessions_found"
-					android:textColor="?attr/textColorPrimary"
+					android:textColor="?attr/colorOnBackground"
 					android:textSize="18sp"/>
 
 			</LinearLayout>
 
 		</FrameLayout>
 
-		<FrameLayout
+		<com.google.android.material.card.MaterialCardView
 			android:id="@+id/switch_frame"
 			android:layout_width="match_parent"
 			android:layout_height="@dimen/web_sessions_switch_frame_height"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"
 			android:layout_alignParentTop="true"
-			android:background="?attr/detail_highlight_bg_color"
-			android:paddingRight="16dp">
+			app:cardBackgroundColor="?attr/colorSurface"
+			app:cardCornerRadius="0dp"
+			app:cardElevation="4dp"
+			app:contentPaddingBottom="8dp"
+			app:contentPaddingLeft="16dp"
+			app:contentPaddingRight="16dp"
+			app:contentPaddingTop="8dp"
+			app:strokeWidth="0dp"
+			android:outlineProvider="none">
 
 			<TextView
+				style="@style/Threema.TextAppearance.SwitchHeader"
 				android:id="@+id/switch_text"
 				android:layout_width="wrap_content"
 				android:layout_height="match_parent"
-				android:layout_gravity="left"
-				android:layout_marginLeft="72dp"
-				android:fontFamily="sans-serif-medium"
+				android:layout_gravity="center_vertical|left"
 				android:gravity="center_vertical"
-				android:text="@string/off_cap"
-				android:textSize="18sp"/>
+				android:text="@string/threema_safe" />
 
 			<ch.threema.app.ui.SilentSwitchCompat
 				android:id="@+id/switch_button"
@@ -88,35 +94,51 @@
 				android:layout_gravity="center_vertical|right"
 				android:contentDescription="@string/webclient_enable"/>
 
-		</FrameLayout>
+		</com.google.android.material.card.MaterialCardView>
 
-		<LinearLayout
+		<com.google.android.material.card.MaterialCardView
 			android:id="@+id/notice_layout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@+id/switch_frame"
-			android:background="?attr/colorAccent"
-			android:orientation="vertical"
+			android:layout_marginLeft="8dp"
+			android:layout_marginRight="8dp"
+			android:layout_marginTop="8dp"
+			android:layout_marginBottom="8dp"
 			android:clickable="false"
-			android:focusable="false"
-			android:visibility="gone">
+			android:visibility="gone"
+			app:cardBackgroundColor="?android:attr/colorBackground"
+			app:cardCornerRadius="@dimen/cardview_border_radius"
+			app:cardElevation="@dimen/notice_views_elevation"
+			app:strokeWidth="0dp"
+			android:outlineProvider="none">
+
+			<ImageView
+				android:layout_width="24dp"
+				android:layout_height="24dp"
+				android:layout_marginLeft="16dp"
+				android:layout_gravity="center_vertical|start"
+				app:srcCompat="@drawable/ic_info_outline"
+				app:tint="?attr/colorOnBackground"
+				android:importantForAccessibility="no" />
 
 			<TextView
+				style="@style/Threema.TextAppearance.BodyLarge"
 				android:id="@+id/notice_text"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:paddingTop="12dp"
-				android:paddingBottom="12dp"
-				android:paddingLeft="16dp"
-				android:paddingRight="16dp"
-				android:textSize="16sp"
-				android:textColor="@android:color/white"
+				android:layout_marginTop="12dp"
+				android:layout_marginRight="16dp"
+				android:layout_marginLeft="56dp"
+				android:layout_marginBottom="12dp"
+				android:hyphenationFrequency="full"
 				android:clickable="false"
-				android:focusable="false"
-				android:gravity="left"
-				android:text="@string/threema_push_start_webclient_sessions_manually" />
+				android:gravity="start"
+				android:text="@string/threema_push_start_webclient_sessions_manually"
+				android:textColor="?attr/colorOnBackground"
+				android:textSize="16sp" />
 
-		</LinearLayout>
+		</com.google.android.material.card.MaterialCardView>
 
 	</RelativeLayout>
 

@@ -3,7 +3,7 @@
     <string name="title_section2">Contatos</string>
     <string name="title_section1">Conversas</string>
     <string name="title_compose_message">Nova conversa</string>
-    <string name="title_choose_recipient">Selecionar destinatário</string>
+    <string name="title_choose_recipient">Selecionar destinatários</string>
     <string name="title_keyfingerprint">Impressão digital da chave</string>
     <string name="title_mythreemaid">Minha ID Threema</string>
     <string name="title_threemaid">ID Threema</string>
@@ -280,7 +280,6 @@
     <string name="title_select_contacts">Selecionar membros</string>
     <string name="pin_invalid_not_set">PIN inválido. Não definido.</string>
     <string name="prefs_group_notifications">Conversa em grupo</string>
-    <string name="add_group_members_list">Membros do grupo</string>
     <string name="group_select_at_least_two">Selecione pelo menos um membro para continuar</string>
     <string name="group_select_max">Você não pode selecionar mais de %1$d membros do grupo</string>
     <string name="search">Pesquisar</string>
@@ -536,7 +535,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="send_as_files">Enviar como arquivo</string>
     <string name="send_as_files_warning">Transferir arquivos e imagens descompactadas pode causar uso substancial de dados, podendo levar a cobranças adicionais pela sua operadora móvel. Recomendamos enviar e baixar arquivos somente em redes Wi-Fi.</string>
     <string name="prefs_theme">Tema de design</string>
-    <string name="list_theme_light">Claro (padrão)</string>
+    <string name="list_theme_light">Claro</string>
     <string name="list_theme_dark">Escuro</string>
     <string name="prefs_header_appearance">Aparência</string>
     <string name="prefs_sum_passphrase">Exige uma frase secreta para desbloquear criptografia local</string>
@@ -664,7 +663,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="configure">Configurar</string>
     <string name="file_is_not_audio">Não é um arquivo de áudio</string>
     <!-- restrictions -->
-    <string name="disabled_by_policy">Algumas configurações foram desabilitadas pela política do dispositivo</string>
+    <string name="disabled_by_policy">Algumas configurações foram desabilitadas pelo administrador</string>
     <string name="select_all">Selecionar tudo</string>
     <string name="deleting_messages">Excluindo mensagens</string>
     <string name="media_gallery_files">Arquivos</string>
@@ -675,7 +674,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="prefs_proximity_sensor">Usar sensor de proximidade</string>
     <string name="prefs_proximity_sensor_explain">Usar fone para reprodução de mensagens de voz se o sensor de proximidade estiver coberto</string>
     <string name="error_creating_group">Erro ao criar grupo</string>
-    <string name="no_media_found_generic">Nenhuma mídia encontrada nesta conversa</string>
+    <string name="no_media_found_generic">Nenhuma mídia encontrada nesta conversa corresponde à seleção.</string>
     <string name="max_images_reached">O máximo de %d itens podem ser editados de uma só vez</string>
     <string name="enter_description">Por favor, descreva o erro/problema aqui.</string>
     <string name="add_caption_hint">Adicione uma legenda opcional</string>
@@ -896,7 +895,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="safe_configure_choose_password_force">Defina uma senha forte para proteger a sua ID do Threema com o Threema Safe. Não se esqueça de inserir aqui!</string>
     <string name="safe_deactivate">Desligar o Threema Safe</string>
     <string name="safe_deactivate_explain">Se você desabilitar o Threema Safe, todos os backups existentes serão excluídos do servidor. Continuar?</string>
-    <string name="add_group_members">Adicionar membros do grupo</string>
+    <string name="add_group_members">Adicionar mais membros</string>
     <string name="contact_add_confirm">Gostaria de adicionar o novo contato «%1$s» à sua lista de contatos?</string>
     <string name="password_bad">Senha fraca</string>
     <string name="prefs_fix_background_data">Habilitar dados em segundo plano</string>
@@ -1013,12 +1012,11 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="open_in_maps_app">Abrir no Maps</string>
     <string name="delete">Excluir</string>
     <string name="continue_recording">Continuar gravação</string>
-    <string name="whatsnew_title">Novo: Chamadas de grupo do %1$s</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Chamadas em grupo encriptadas de ponta a ponta agora estão disponíveis %1$s no Android.</p>
-<p>Para iniciar uma chamada, abra uma conversa em grupo e toque o botão da cämera na parte superior.</p>
-<p>Todos os membros do grupo receberão uma notificação e poderão decidir se desejam ou não participar da chamada.</p>
-<p><b>Observação:</b> No iOS as chamadas de grupo ainda não são possíveis.</p>
-]]></string>
+    <string name="whatsnew_headline"><![CDATA[
+<p>Esta atualização foca na segurança, usabilidade e modernização do app.</p>
+<p>Por causa da demanda popular, o app foi completamente reprojetado para ter total compatibilidade com o paradigma \"Material You\", introduzido com o Android 12. Uma configuração de \"Cores dinâmicas\" possibilita que o app se adapte ao seu esquema personalizado de cores.</p>
+<p>Agora, por padrão, o Perfect Forward Secrecy está habilitado em todos os contatos que têm uma versão recente do %1$s instalada.</p>
+<p>Outras melhorias incluem: novo reprodutor de mensagens de voz, que continua reproduzindo uma notificação quando o app for colocado em segundo plano, e uma nova orientação ao usuário quando solicitar permissões.</p> ]]></string>
     <string name="tap_to_start">Toque aqui para iniciar o %s agora.</string>
     <string name="two_years">2 anos</string>
     <string name="invalid_backup_path">Caminho de backup inválido</string>
@@ -1161,7 +1159,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="no_faces_detected">Nenhum rosto detectado</string>
     <string name="smiley">Smiley</string>
     <string name="blur">Desfoque</string>
-    <string name="face_blur_tooltip_title">Novo: reconhecimento de rostos</string>
+    <string name="face_blur_tooltip_title">Reconhecimento de rostos</string>
     <string name="face_blur_tooltip_text">Encontre rostos na imagem e desfoque-as ou cubra-as com um smiley.</string>
     <string name="listened_to">ouvidas</string>
     <string name="transcoder_unsupported_audio_format">O áudio não pôde ser transcodificado devido à ausência de suporte do sistema.</string>
@@ -1232,7 +1230,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="group_link_rename">Renomear</string>
     <string name="group_link_rename_tag">Novo nome</string>
     <string name="tap_here_for_more">Toque aqui para mais informações</string>
-    <string name="another_connection_instructions">O servidor detectou duas ou mais conexões de dispositivos diferentes com a mesma ID do Threema.\n\nNão é possível usar a mesma ID do Threema em diversos dispositivos simultaneamente. Novas mensagens são transmitidas somente para o dispositivo que fez login pela última vez no servidor.\n\nSe você está trocando para um novo dispositivo, desinstale ou desative %s no antigo dispositivo e, depois, reinicie o novo.</string>
+    <string name="another_connection_instructions"><![CDATA[O servidor detectou duas ou mais conexões de dispositivos diferentes com a mesma ID do Threema.<br><br>Não é possível usar a mesma ID do Threema em diversos dispositivos simultaneamente. Novas mensagens são transmitidas somente para o dispositivo que fez login pela última vez no servidor.<br><br>Se você está trocando para um novo dispositivo, desinstale ou desative %s no antigo dispositivo e, depois, reinicie o novo.]]></string>
     <string name="app_store_error_code">Código de erro da loja de app: %d</string>
     <string name="backup_restore_type"><![CDATA[Que tipo de backup deseja restaurar? <br/><br/> <a href=%s>Saiba mais sobre backups no Threema</a>]]></string>
     <string name="data_backup_info">Restaurar tudo, inclusive conversas</string>
@@ -1356,18 +1354,19 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="organization_type">Organização</string>
     <string name="permission_bluetooth_connect_required">Habilite a permissão \"Dispositivos próximos\" para localizar fones de ouvido conectados por Bluetooth</string>
     <string name="threema_push_start_webclient_sessions_manually">O Push do Threema está ativo. Assim, as sessões do Threema Web e Desktop devem ser abertas manualmente.</string>
-    <string name="tooltip_multiple_recipients_title">Novo: Vários destinatários.</string>
+    <string name="tooltip_multiple_recipients_title">Vários destinatários.</string>
     <string name="tooltip_multiple_recipients_text">Dê um toque longo para selecionar vários destinatários para enviar a mesma mensagem.</string>
     <string name="synchronizing">Sincronizando...</string>
     <string name="forward_security">Enviar mensagens com Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">não</string>
-    <string name="clear_forward_security">Apagar sessões com Perfect Forward Secrecy</string>
+    <string name="clear_forward_security">Redefinir o Perfect Forward Secrecy para este contato</string>
+    <string name="clear_forward_security_warning">Apenas realize esta ação quando a equipe de suporte do Threema instruir.</string>
     <string name="forward_security_cleared">As sessões com Perfect Forward Secrecy deste contato foram apagadas</string>
     <string name="message_without_forward_security">Uma mensagem sem Perfect Forward Secrecy foi recebida. Verifique se o remetente desativou o FPS intencionalmente.</string>
     <string name="forward_security_established">As mensagens nesta conversa estão protegidas pelo Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">As mensagens recebidas nesta conversa estão protegidas pelo Perfect Forward Secrecy (PFS). Ative o PFS nos detalhes de contato para proteger também as mensagens enviadas.</string>
-    <string name="forward_security_reset">A sessão com Perfect Forward Secrecy deste contato foi redefinida. Isso pode acontecer se o contato trocou de dispositivo ou reinstalou o app.</string>
+    <string name="forward_security_reset">A sessão com Perfect Forward Secrecy foi redefinida. Isso pode acontecer quando o contato do chat muda de dispositivo ou reinstala o app.</string>
     <string name="forward_security_reset_simple">A sessão com Perfect Forward Secrecy deste contato foi redefinida.</string>
     <string name="forward_security_message_out_of_order">Uma mensagem foi recebida incorretamente e não pôde ser descodificada.</string>
     <string name="self_updater_installation_failed">O download da atualização falhou. Faça o download e instale a atualização em <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manualmente.</string>
@@ -1404,21 +1403,27 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="prefs_summary_hibernation_api_32">Para evitar que o Threema seja pausado pelo sistema após ficar inativo por algum tempo, desative a configuração do sistema “Remover permissões e liberar espaço”.</string>
     <string name="prefs_summary_hibernation_api">Para evitar que o Threema seja pausado pelo sistema após ficar inativo por algum tempo, desative a configuração do sistema “Pausar a atividade no app quando não usado”.</string>
     <string name="unable_to_fetch_configuration">Não foi possível obter os dados do servidor de configuração. Tente novamente mais tarde.</string>
-    <string name="rogue_device_warning">O servidor detectou uma conexão de um dispositivo diferente com a mesma ID do Threema.\n\nSe você não usou a sua ID do Threema em outro dispositivo ou em uma versão antiga do app neste período, entre em contato com o suporte e envie o arquivo de log, se possível.</string>
+    <string name="rogue_device_warning">Foi detectada uma conexão de um dispositivo diferente com a mesma ID do Threema. Você usou recentemente sua ID do Threema em outro dispositivo?&lt;br&gt;&lt;br&gt;Se usou, você pode ignorar esta mensagem.&lt;br&gt;&lt;br&gt;Se não usou, sua chave privada por ter sido comprometida. <a href="https://threema.ch/en/faq/another_connection">Siga as nossas sugestões</a> para proteger seu dispositivo e os seus dados antes de criar uma nova ID.</string>
     <string name="fetch2_failure">A sincronização com o servidor de provisionamento falhou.</string>
     <string name="no_members_support_group_calls">Não há outros membros neste grupo que podem receber chamadas de grupo</string>
     <string name="group_calls">Chamadas de grupo</string>
     <string name="prefs_title_group_calls_enable">Ativar chamadas de grupo</string>
     <string name="group_no_members">Este grupo não contém outros membros</string>
     <string name="group_call">Chamada de grupo</string>
-    <string name="checking_compatibility">Verificando compatibilidade...</string>
+    <string name="checking_compatibility">Verificando compatibilidade…</string>
     <string name="group_call_mic_permission_rationale">Para efetuar chamadas de grupo, você precisa permitir que o %s acesse o microfone em «permissões».</string>
+    <string name="group_call_mic_permission_description">Para realizar chamadas de grupo, você deve permitir o uso do microfone para que as outras pessoas possam te ouvir</string>
+    <string name="call_mic_permission_description">Para realizar chamadas, você deve permitir o uso do microfone para que as outras pessoas possam te ouvir</string>
     <string name="group_call_camera_permission_rationale">Para que os outros participantes vejam a sua foto, você precisa permitir que o %s acesse a câmera em «permissões».</string>
+    <string name="group_call_phone_permission_description">Para realizar chamadas de grupo, é necessária a permissão do telefone para detectar quando outra chamada interrompe a chamada do Threema.</string>
+    <string name="call_phone_permission_description">Para realizar chamadas do Threema, é necessária a permissão do telefone para detectar quando outra chamada interrompe a chamada do Threema.</string>
+    <string name="group_call_nearby_devices_permission_description">Para realizar chamadas de grupo com um fone de ouvido bluetooth, você deve habilitar a permissão para que \"dispositivos próximos\" detectem fones de ouvido bluetooth.</string>
+    <string name="call_nearby_devices_permission_description">Para realizar chamadas do Threema com um fone de ouvido bluetooth, você deve habilitar a permissão para que \"dispositivos próximos\" detectem fones de ouvido bluetooth.</string>
     <string name="settings">Configurações</string>
     <string name="leave">Sair</string>
     <string name="fs_key_mismatch">discrepância de chave</string>
     <string name="tap_to_resend">Toque para reenviar</string>
-    <string name="group_calls_tooltip_title">Novo: Chamadas de grupo</string>
+    <string name="group_calls_tooltip_title">Chamadas de grupo</string>
     <string name="group_calls_tooltip_text">Toque aqui para convidar todos os membros do grupo para participar de uma chamada. Todos os membros receberão uma notificação e podem decidir se desejam ingressar na chamada ou não.</string>
     <string name="prefs_title_calls">Chamadas seguras</string>
     <string name="prefs_sum_group_calls_vibration">Selecione se deseja ativar a vibração quando uma chamada de grupo começar</string>
@@ -1427,7 +1432,35 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS), ou \"sigilo encaminhado perfeito\", protege uma comunicação gravada de uma decodificação retroativa, mesmo se a chave criptográfica de longo prazo for comprometida.\n\nA opção pode ser ativada se o app em ambas as pontas for compatível com PFS.</string>
     <string name="group_call_inactivity_left">Chamada de grupo abandonada devido à inatividade</string>
     <string name="missing_permission_external_storage">Não foi possível copiar o arquivo. Tente os passos a seguir:\n1. Abra o aplicativo de ajustes.\n2. Vá até “Aplicativos” e escolha “Acesso especial ao aplicativo”.\n3. Toque em \"Acesso a todos os arquivos\".\n4. Toque nos três pontos no canto superior direito e escolha “Mostrar sistema“.\n5. Toque em “Armazenamento externo” e conceda autorização para “Permitir acesso para gerenciar todos os arquivos”.\n6. Tente restaurar o backup novamente.</string>
-    <string name="forward_security_downgraded_status_message">Este contato começou a usar uma versão do aplicativo que não oferece suporte ao Perfect Forward Secrecy. A partir de agora, as mensagens serão enviadas sem PFS.</string>
+    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy foi desativado nesta conversa porque a versão do app do seu contato do chat não é compatível.</string>
+    <string name="crop_image_title">Cortar imagem</string>
+    <string name="scroll_to_bottom">Rolar para baixo</string>
+    <string name="scroll_to_top">Rolar para cima</string>
+    <string name="contact_sync_mdm_rationale">Seu administrador habilitou a sincronização de contatos para seu dispositivo. Portanto, a permissão para acessar os contatos é necessária.</string>
+    <string name="welcome_back">Boas-vindas!</string>
+    <string name="id_restored_successfully">Seu ID do Threema foi restaurada com sucesso</string>
+    <string name="prefs_dynamic_colors">Cor dinâmica</string>
+    <string name="prefs_dynamic_colors_sum">Usar cores do sistema</string>
+    <string name="apply_changes">Aplicar mudanças</string>
+    <string name="prefs_threema_work_summary">Você sabia que o Threema também oferece uma solução de comunicação profissional para empresas? Toque aqui para saber mais sobre o Threema Work.</string>
+    <string name="notification_channel_voice_message_player">Leitor de mensagem de voz</string>
+    <string name="voice_message_from">Mensagem de voz de %s</string>
+    <string name="vm_fg_service_not_allowed">Erro de reprodução de mensagem de voz</string>
+    <string name="vm_fg_service_not_allowed_explain">Pressione o botão de reproduzir (Play) na notificação de mídia se ainda estiver presente. Caso contrário, abra o aplicativo para iniciar a reprodução da conversa.</string>
+    <string name="use_threema_without_this_permission">Usar %s sem esta permissão</string>
+    <string name="grant_permission">Conceder permissão</string>
+    <string name="grant_permission_settings">Conceder permissão nas configurações</string>
+    <string name="ignore_permission">Não perguntar de novo</string>
+    <string name="permission_nearby_devices">Dispositivos Próximos</string>
+    <string name="permission_bluetooth">Bluetooth</string>
+    <string name="permission_camera">Câmera</string>
+    <string name="permission_microphone">Microfone</string>
+    <string name="permission_read_phone_state">Telefone</string>
+    <string name="permission_enable_in_settings_rationale">Habilite a permissão nas configurações. Selecione \"Permissões\" e, depois, \"%s\".</string>
+    <string name="group_name">Nome do grupo</string>
+    <string name="samsung_permission_problem_explain">%1$s não pode acessar os arquivos de mídia devido a uma permissão em falta em um app do sistema. Para corrigir isso, certifique-se de que o selecionador ao lado de \"Armazenamento Externo\" está habilitado na tela que segue e reinicie o %1$s.</string>
+    <string name="min_n_chars">%d caracteres (mín.)</string>
+    <string name="prefs_title_grant_bluetooth_permission">Conceder permissão do Bluetooth</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>
@@ -1507,5 +1540,9 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <plurals name="delete_messages">
         <item quantity="one">Excluir %d mensagem neste dispositivo?</item>
         <item quantity="other">Excluir %d mensagens neste dispositivo?</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="one">%d membro do grupo</item>
+        <item quantity="other">%d membros do grupo</item>
     </plurals>
 </resources>

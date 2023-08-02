@@ -21,6 +21,9 @@
 
 package ch.threema.app.archive;
 
+import static ch.threema.app.managers.ListenerManager.conversationListeners;
+import static ch.threema.app.managers.ListenerManager.messageListeners;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -57,7 +60,6 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.ThreemaSearchView;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.TestUtil;
@@ -65,9 +67,6 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
-
-import static ch.threema.app.managers.ListenerManager.conversationListeners;
-import static ch.threema.app.managers.ListenerManager.messageListeners;
 
 public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, SearchView.OnQueryTextListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ArchiveActivity");
@@ -203,16 +202,6 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				this.finish();
-				return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
 	public boolean onQueryTextSubmit(String query) {
 		return false;
 	}
@@ -227,8 +216,6 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			mode.getMenuInflater().inflate(R.menu.action_archive, menu);
-
-			ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(ArchiveActivity.this, R.attr.colorAccent));
 
 			return true;
 		}
@@ -245,23 +232,22 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			switch (item.getItemId()) {
-				case R.id.menu_delete:
-					delete(archiveAdapter.getCheckedItems());
-					return true;
-				case R.id.menu_unarchive:
-					unarchive(archiveAdapter.getCheckedItems());
-					return true;
-				case R.id.menu_select_all:
-					archiveAdapter.selectAll();
-					if (archiveAdapter.getCheckedItemsCount() > 0) {
-						actionMode.invalidate();
-					} else {
-						actionMode.finish();
-					}
-					return true;
-				default:
-					return false;
+			if (item.getItemId() == R.id.menu_delete) {
+				delete(archiveAdapter.getCheckedItems());
+				return true;
+			} else if (item.getItemId() == R.id.menu_unarchive) {
+				unarchive(archiveAdapter.getCheckedItems());
+				return true;
+			} else if (item.getItemId() == R.id.menu_select_all) {
+				archiveAdapter.selectAll();
+				if (archiveAdapter.getCheckedItemsCount() > 0) {
+					actionMode.invalidate();
+				} else {
+					actionMode.finish();
+				}
+				return true;
+			} else {
+				return false;
 			}
 		}
 
@@ -287,7 +273,7 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 		if (intent == null) {
 			return;
 		}
-		AnimationUtil.startActivityForResult(this, ConfigUtils.isTabletLayout() ? null : v, intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+		startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 	}
 
 	private void unarchive(List<ConversationModel> checkedItems) {
@@ -344,11 +330,6 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 	@Override
 	public void onYes(String tag, Object data) {
 		reallyDelete((List<ConversationModel>)data);
-	}
-
-	@Override
-	public void onNo(String tag, Object data) {
-
 	}
 
 	private final ConversationListener conversationListener = new ConversationListener() {
@@ -414,6 +395,11 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 
 		@Override
 		public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {}
+
+		@Override
+		public void onResendDismissed(@NonNull AbstractMessageModel messageModel) {
+			// Ignore
+		}
 	};
 
 	@Override

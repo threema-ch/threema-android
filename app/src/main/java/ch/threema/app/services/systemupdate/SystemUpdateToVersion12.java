@@ -23,7 +23,7 @@ package ch.threema.app.services.systemupdate;
 
 import android.content.Context;
 
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import org.slf4j.Logger;
 

@@ -129,7 +129,10 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CREATE_ID, true);
 
 				if (TestUtil.empty(errorString)) {
-					startActivity(new Intent(WizardFingerPrintActivity.this, WizardBaseActivity.class));
+					Intent intent = new Intent(WizardFingerPrintActivity.this, WizardBaseActivity.class);
+					intent.putExtra(WizardBaseActivity.EXTRA_NEW_IDENTITY_CREATED, true);
+					startActivity(intent);
+
 					overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 					finish();
 				} else {

@@ -55,9 +55,11 @@ public class StreamUtil {
 				String filePath = FileUtil.getRealPathFromURI(context, uri);
 				String appPath;
 				String tmpPath;
+				String intTmpPath;
 
 				try {
 					tmpPath = ThreemaApplication.getServiceManager().getFileService().getTempPath().getAbsolutePath();
+					intTmpPath = ThreemaApplication.getServiceManager().getFileService().getIntTmpPath().getAbsolutePath();
 					appPath = context.getApplicationInfo().dataDir;
 				} catch (Exception e) {
 					return null;
@@ -65,8 +67,8 @@ public class StreamUtil {
 
 				if (TestUtil.required(filePath, appPath, tmpPath)) {
 					// do not allow sending of files from local directories - but allow tmp dir
-					if (!filePath.startsWith(appPath) || filePath.startsWith(tmpPath)) {
-						inputStream = new FileInputStream(new File(filePath));
+					if (!filePath.startsWith(appPath) || filePath.startsWith(tmpPath) || filePath.startsWith(intTmpPath)) {
+						inputStream = new FileInputStream(filePath);
 					} else {
 						throw new FileNotFoundException("File on private directory");
 					}

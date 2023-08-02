@@ -8,7 +8,7 @@
 		android:icon="@drawable/ic_phone_locked_outline"
 		android:orderInCategory="10"
 		android:title="@string/threema_call"
-		app:iconTint="?android:textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="always" />
 
 	<item
@@ -17,7 +17,7 @@
 		android:orderInCategory="20"
 		android:title="@string/notifications_settings"
 		android:visible="true"
-		app:iconTint="?android:textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="ifRoom" />
 
 	<group
@@ -29,7 +29,7 @@
 			android:icon="@drawable/ic_search_outline"
 			android:orderInCategory="30"
 			android:title="@string/search"
-			app:iconTint="?android:textColorSecondary"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 	</group>
@@ -43,6 +43,7 @@
 			android:icon="@drawable/ic_outline_add_to_home_screen"
 			android:orderInCategory="50"
 			android:title="@string/add_shortcut"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 		<item
@@ -50,6 +51,7 @@
 			android:icon="@drawable/ic_wallpaper_outline"
 			android:orderInCategory="70"
 			android:title="@string/prefs_title_wallpaper_switch"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 		<item
@@ -57,6 +59,7 @@
 			android:icon="@drawable/ic_collections"
 			android:orderInCategory="75"
 			android:title="@string/media_gallery"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 	</group>
@@ -70,6 +73,7 @@
 			android:icon="@drawable/ic_outline_visibility"
 			android:orderInCategory="80"
 			android:title="@string/ballot_window_show"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 		<item
@@ -77,6 +81,7 @@
 			android:icon="@drawable/ic_outline_rule"
 			android:orderInCategory="85"
 			android:title="@string/ballot_overview"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 	</group>
@@ -91,6 +96,7 @@
 			android:orderInCategory="90"
 			android:visible="false"
 			android:title="@string/group_requests_show_menu_title"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 		<item
@@ -99,6 +105,7 @@
 			android:orderInCategory="90"
 			android:visible="false"
 			android:title="@string/group_request_show_all"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 	</group>
@@ -113,6 +120,7 @@
 			android:orderInCategory="100"
 			android:title="@string/block_contact"
 			android:visible="false"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 		<item
@@ -121,6 +129,7 @@
 			android:orderInCategory="104"
 			android:title="@string/empty_chat_title"
 			android:visible="true"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 		<item
@@ -129,6 +138,7 @@
 			android:orderInCategory="107"
 			android:title="@string/really_delete_distribution_list"
 			android:visible="false"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never" />
 
 	</group>

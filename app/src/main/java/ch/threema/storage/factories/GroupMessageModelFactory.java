@@ -25,7 +25,7 @@ import android.content.ContentValues;
 
 import androidx.annotation.NonNull;
 
-import net.sqlcipher.Cursor;
+import android.database.Cursor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,22 +81,16 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 			});
 	}
 
-	public GroupMessageModel getByApiMessageIdAndIsOutbox(MessageId apiMessageId, boolean isOutbox) {
+	public GroupMessageModel getByApiMessageIdAndIdentityAndIsOutbox(MessageId apiMessageId, @NonNull String recipientIdentity, boolean isOutbox) {
 		return getFirst(
-				GroupMessageModel.COLUMN_API_MESSAGE_ID + "=?" +
-						"AND " + GroupMessageModel.COLUMN_OUTBOX + "=?",
-				new String[]{
-						apiMessageId.toString(),
-						String.valueOf(isOutbox)
-				});
-	}
-
-	public GroupMessageModel getByApiMessageId(MessageId apiMessageId) {
-		return getFirst(
-				GroupMessageModel.COLUMN_API_MESSAGE_ID + "=?",
-				new String[]{
-						apiMessageId.toString(),
-				});
+			GroupMessageModel.COLUMN_API_MESSAGE_ID + "=?"
+				+ " AND " + GroupMessageModel.COLUMN_IDENTITY + "=?"
+				+ " AND " + GroupMessageModel.COLUMN_OUTBOX + "=?",
+			new String[]{
+				apiMessageId.toString(),
+				recipientIdentity,
+				String.valueOf(isOutbox)
+			});
 	}
 
 	public GroupMessageModel getById(int id) {
@@ -288,10 +282,8 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 			);
 
 			if (cursor != null) {
-				try {
+				try (cursor) {
 					insert = !cursor.moveToNext();
-				} finally {
-					cursor.close();
 				}
 			}
 		}

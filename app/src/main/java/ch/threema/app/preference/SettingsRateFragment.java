@@ -69,7 +69,7 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 			dialog.show(getParentFragmentManager(), DIALOG_TAG_RATE_ON_GOOGLE_PLAY);
 		} else {
 			Toast.makeText(getAppContext(), getString(R.string.rate_thank_you), Toast.LENGTH_LONG).show();
-			requireActivity().onBackPressed();
+			onBackPressed();
 		}
 	}
 
@@ -79,18 +79,18 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 			if (!startRating(Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID))) {
 				startRating(Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID));
 			}
-			requireActivity().onBackPressed();
+			onBackPressed();
 		}
 	}
 
 	@Override
 	public void onNo(String tag, Object data) {
-		requireActivity().onBackPressed();
+		onBackPressed();
 	}
 
 	@Override
 	public void onCancel(String tag) {
-		requireActivity().onBackPressed();
+		onBackPressed();
 	}
 
 	@Override
@@ -101,5 +101,11 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 	@Override
 	public int getPreferenceResource() {
 		return R.xml.preference_rate;
+	}
+
+	private void onBackPressed() {
+		if (getActivity() != null) {
+			getActivity().onBackPressed();
+		}
 	}
 }

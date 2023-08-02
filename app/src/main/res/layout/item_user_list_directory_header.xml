@@ -23,7 +23,7 @@
 			android:layout_height="@dimen/avatar_size_small"
 			android:clickable="false"
 			app:srcCompat="@drawable/ic_business"
-			app:tint="?attr/textColorSecondary"
+			app:tint="?attr/colorOnSurface"
 			android:importantForAccessibility="no"
 			android:visibility="visible"
 			android:focusable="false"/>
@@ -74,7 +74,7 @@
 		app:srcCompat="@drawable/ic_keyboard_arrow_right_black_24dp"
 		android:layout_centerVertical="true"
 		android:visibility="visible"
-		app:tint="?attr/textColorSecondary" />
+		app:tint="?attr/colorOnSurface" />
 
 </RelativeLayout>
 

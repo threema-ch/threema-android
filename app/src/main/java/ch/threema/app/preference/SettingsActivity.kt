@@ -21,33 +21,40 @@
 
 package ch.threema.app.preference
 
-import android.content.res.Resources
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.ConfigUtils.THEME_DARK
 import ch.threema.app.utils.ConfigUtils.isTabletLayout
 import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsActivity")
 
 class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
-    private val settingsFragment = SettingsFragment()
+    private val settingsSummaryFragment = SettingsSummaryFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.statusBarColor = Color.TRANSPARENT
+            window.navigationBarColor = Color.TRANSPARENT
+        }
 
         // hide contents in app switcher and inhibit screenshots
         ConfigUtils.setScreenshotsAllowed(this, preferenceService, lockAppService)
 
-        if (isTabletLayout() && ConfigUtils.getAppTheme(this) == THEME_DARK) {
+        if (isTabletLayout() && ConfigUtils.isTheDarkSide(this)) {
             findViewById<View>(R.id.settings_separator).visibility = View.INVISIBLE
         }
 
@@ -72,7 +79,7 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
     private fun showDefaultSettings() {
         supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.settings, settingsFragment)
+                .replace(R.id.settings, settingsSummaryFragment)
                 .commit()
 
         // Show first preference screen (privacy) on the right side on tablets per default.
@@ -97,7 +104,7 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
         if (isTabletLayout()) {
             supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.settings, settingsFragment)
+                    .replace(R.id.settings, settingsSummaryFragment)
                     .commit()
 
             supportFragmentManager
@@ -123,16 +130,29 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
                 fragmentClassName)
 
         val layoutID = if (isTabletLayout()) R.id.settings_detailed else R.id.settings
-        val transaction = supportFragmentManager
-                .beginTransaction()
-                .replace(layoutID, fragment)
+        val transaction =
+            if (isTabletLayout()) {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(layoutID, fragment)
+            } else {
+                supportFragmentManager
+                    .beginTransaction()
+                    .setCustomAnimations(
+                        R.anim.slide_in_right_short,
+                        R.anim.slide_out_left_short,
+                        R.anim.slide_in_left_short,
+                        R.anim.slide_out_right_short,
+                        )
+                    .replace(layoutID, fragment)
+            }
         // On tablets there is no need to add the fragment to the back stack except for nested fragments (i.e. troubleshooting)
         if (!isTabletLayout() || fragment is SettingsTroubleshootingFragment) {
             transaction.addToBackStack(null)
         }
         transaction.commit()
 
-        settingsFragment.onPrefClicked(pref.key)
+        settingsSummaryFragment.onPrefClicked(pref.key)
 
         return true
     }
@@ -146,14 +166,6 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
             }
         }
         return false
-    }
-
-    override fun onApplyThemeResource(theme: Resources.Theme, resid: Int, first: Boolean) {
-        if (ConfigUtils.getAppTheme(this) == THEME_DARK) {
-            theme.applyStyle(R.style.Theme_Threema_Settings_Dark, true)
-        } else {
-            super.onApplyThemeResource(theme, resid, first)
-        }
     }
 
     fun setActionBarTitle(@StringRes title: Int = R.string.menu_settings) {

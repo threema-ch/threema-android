@@ -21,42 +21,57 @@
 
 package ch.threema.domain.protocol.csp.connection;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
-import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 
 /**
  * Interface for objects that wish to process incoming messages from the server.
  */
 public interface MessageProcessorInterface {
 	class ProcessIncomingResult {
-		public final boolean processed;
-		public final AbstractMessage abstractMessage;
+		private final boolean processed;
+		private final @Nullable Integer type;
 
-		public ProcessIncomingResult(boolean processed, AbstractMessage abstractMessage) {
+		private ProcessIncomingResult(boolean processed, @Nullable Integer type) {
 			this.processed = processed;
-			this.abstractMessage = abstractMessage;
+			this.type = type;
 		}
 
 		/**
-		 * Processing a message failed. It should not be acked towards the chat server.
+		 * Processing a message failed exceptionally and processing should be retried in a
+		 * subsequent connection. It should not be acked towards the chat server.
 		 */
+		@NonNull
 		public static ProcessIncomingResult failed() {
 			return new ProcessIncomingResult(false, null);
 		}
 
 		/**
-		 * A message should be ignored and dropped. It should be acked towards the chat server.
+		 * A message was successfully processed. It should be acked towards the chat server.
 		 */
-		public static ProcessIncomingResult ignore() {
+		@NonNull
+		public static ProcessIncomingResult processed() {
 			return new ProcessIncomingResult(true, null);
 		}
 
 		/**
 		 * A message was successfully processed. It should be acked towards the chat server.
+		 *
+		 * @param type The type of the message if known.
 		 */
-		public static ProcessIncomingResult ok(AbstractMessage abstractMessage) {
-			return new ProcessIncomingResult(true, abstractMessage);
+		@NonNull
+		public static ProcessIncomingResult processed(@Nullable Integer type) {
+			return new ProcessIncomingResult(true, type);
+		}
+
+		public boolean wasProcessed() {
+			return this.processed;
+		}
+
+		public boolean hasType(int type) {
+			return this.type != null && this.type == type;
 		}
 	}
 
@@ -68,6 +83,7 @@ public interface MessageProcessorInterface {
 	 * @param boxmsg boxed message to be processed
 	 */
 	@WorkerThread
+	@NonNull
 	ProcessIncomingResult processIncomingMessage(MessageBox boxmsg);
 
 	/**

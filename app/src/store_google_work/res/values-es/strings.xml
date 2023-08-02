@@ -23,8 +23,6 @@
 		anónimamente.</string>
     <string name="threema_contact">Contactar con Threema Work</string>
     <string name="menu_about">Acerca de Threema Work</string>
-    <string name="list_theme_light">Claro</string>
-    <string name="list_theme_dark">Oscuro (predeterminado)</string>
     <string name="private_threema_download"><![CDATA[ <a href=%1$s>Obtenga más información sobre Threema Work</a> <br/><br/> Si es usted un usuario privado, <a href=%2$s>toque aquí</a> para descargarse Threema.]]></string>
     <string name="directory_search">Buscar en el directorio</string>
     <string name="directory_title">Directorio de la empresa</string>

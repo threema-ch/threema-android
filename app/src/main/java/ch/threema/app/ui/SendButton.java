@@ -22,8 +22,6 @@
 package ch.threema.app.ui;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
@@ -33,8 +31,8 @@ import android.widget.FrameLayout;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+
 import ch.threema.app.R;
-import ch.threema.app.utils.ConfigUtils;
 
 public class SendButton extends FrameLayout {
 	private static final int STATE_SEND = 1;
@@ -69,21 +67,8 @@ public class SendButton extends FrameLayout {
 
 		this.context = context;
 
-		int theme = ConfigUtils.getAppTheme(context);
-
-		if (attrs != null) {
-			TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.SendButton, 0, 0);
-
-			if (a != null) {
-				theme = a.getInt(R.styleable.SendButton_buttonTheme, theme);
-				a.recycle();
-			}
-		}
-
-		Resources.Theme resolvedTheme = getResources().newTheme();
-		resolvedTheme.applyStyle(theme == ConfigUtils.THEME_DARK ? R.style.Theme_Threema_WithToolbar_Dark : R.style.Theme_Threema_WithToolbar, true);
-		this.backgroundEnabled = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_circle_send, resolvedTheme);
-		this.backgroundDisabled = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_circle_send_disabled, null);
+		this.backgroundEnabled = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_circle_send, context.getTheme());
+		this.backgroundDisabled = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_circle_send_disabled, context.getTheme());
 	}
 
 	@Override

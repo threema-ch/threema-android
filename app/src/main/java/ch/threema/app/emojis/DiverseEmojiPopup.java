@@ -156,7 +156,7 @@ public class DiverseEmojiPopup extends PopupWindow implements View.OnClickListen
 			EmojiItemView emojiView = (EmojiItemView) originView;
 			if (emojiView != null) {
 				emojiView.setEmoji(emojiService.getPreferredDiversity(emojiSequence), true,
-						ConfigUtils.getColorFromAttribute(context, R.attr.emoji_picker_hint));
+					context.getResources().getColor(R.color.emoji_picker_hint));
 			}
 			dismiss();
 		}

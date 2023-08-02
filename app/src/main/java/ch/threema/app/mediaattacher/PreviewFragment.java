@@ -31,8 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 
-public abstract class PreviewFragment extends Fragment implements AudioManager.OnAudioFocusChangeListener, PreviewFragmentInterface.AudioFocusActions {
-	private AudioManager audioManager;
+public abstract class PreviewFragment extends Fragment {
 	protected MediaAttachItem mediaItem;
 	protected MediaAttachViewModel mediaAttachViewModel;
 	protected View rootView;
@@ -43,44 +42,6 @@ public abstract class PreviewFragment extends Fragment implements AudioManager.O
 		this.mediaAttachViewModel = mediaAttachViewModel;
 
 		setRetainInstance(true);
-	}
-
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		this.audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
-
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
-	public void onAudioFocusChange(int focusChange) {
-		switch (focusChange) {
-			case AudioManager.AUDIOFOCUS_GAIN:
-				resumeAudio();
-				setVolume(1.0f);
-				break;
-			case AudioManager.AUDIOFOCUS_LOSS:
-				stopAudio();
-				break;
-			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-				pauseAudio();
-				break;
-			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-				setVolume(0.2f);
-				break;
-		}
-	}
-
-	protected boolean requestFocus() {
-		if (audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT) != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-			Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
-			return false;
-		}
-		return true;
-	}
-
-	protected void abandonFocus() {
-		audioManager.abandonAudioFocus(this);
 	}
 }
 

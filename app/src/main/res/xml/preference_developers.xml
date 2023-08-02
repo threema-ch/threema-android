@@ -30,6 +30,7 @@
 		android:key="pref_key_group_calls"
 		android:title="Group Calls">
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:key="@string/preferences__group_call_send_init"
 			android:title="Send group call init"
 			android:summary="If enabled, a text message containing encoded call info will be sent in the group when a call is started." />

@@ -39,7 +39,7 @@
 				app:tabPaddingStart="0dp"
 				app:tabPaddingEnd="0dp"
 				app:tabIndicatorHeight="2dp"
-				app:tabIconTint="?attr/textColorSecondary"/>
+				app:tabIconTint="?attr/colorOnSurface"/>
 
 		<View android:layout_width="match_parent"
 			  android:layout_height="1dp"
@@ -70,7 +70,7 @@
 				android:paddingRight="16dp"
 				android:visibility="gone"
 				android:contentDescription="@string/emoji_search"
-				app:tint="?attr/textColorSecondary" />
+				app:tint="?attr/colorOnSurface" />
 
 			<LinearLayout android:id="@+id/backspace_button"
 				android:layout_width="wrap_content"
@@ -86,7 +86,7 @@
 					android:layout_marginLeft="16dp"
 					android:contentDescription="@string/delete"
 					app:srcCompat="@drawable/ic_backspace_outline"
-					app:tint="?attr/textColorSecondary"/>
+					app:tint="?attr/colorOnSurface"/>
 			</LinearLayout>
 
 		</LinearLayout>

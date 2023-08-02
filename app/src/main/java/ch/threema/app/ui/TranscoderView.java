@@ -28,7 +28,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.slf4j.Logger;
 
@@ -44,7 +45,7 @@ public class TranscoderView extends FrameLayout {
 
 	public static final int PROGRESS_MAX = 100;
 
-	private ProgressBar transcodeProgress;
+	private LinearProgressIndicator transcodeProgress;
 	private AbstractMessageModel messageModel;
 	private MessageService messageService;
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/edittext_bubble_border_radius" />
+    <padding
+        android:bottom="@dimen/chat_bubble_border_padding"
+        android:left="@dimen/chat_bubble_border_padding"
+        android:right="@dimen/chat_bubble_border_padding"
+        android:top="@dimen/chat_bubble_border_padding" />
+    <solid android:color="?attr/colorSurfaceVariant" />
+</shape>

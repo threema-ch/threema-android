@@ -21,7 +21,7 @@
 
 package ch.threema.app.camera;
 
-import static com.google.android.exoplayer2.C.TIME_END_OF_SOURCE;
+import static androidx.media3.common.C.TIME_END_OF_SOURCE;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -54,12 +54,6 @@ import androidx.core.view.ViewCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.source.ClippingMediaSource;
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
-import com.google.android.exoplayer2.ui.PlayerView;
-
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -69,6 +63,13 @@ import java.util.List;
 import androidx.media.AudioAttributesCompat;
 import androidx.media.AudioFocusRequestCompat;
 import androidx.media.AudioManagerCompat;
+import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.ClippingMediaSource;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+import androidx.media3.ui.PlayerView;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.PreferenceService;
@@ -80,7 +81,7 @@ import ch.threema.app.utils.VideoUtil;
 import ch.threema.app.video.VideoTimelineThumbnailTask;
 import ch.threema.base.utils.LoggingUtil;
 
-public class VideoEditView extends FrameLayout implements DefaultLifecycleObserver, VideoTimelineThumbnailTask.VideoTimelineListener {
+@UnstableApi public class VideoEditView extends FrameLayout implements DefaultLifecycleObserver, VideoTimelineThumbnailTask.VideoTimelineListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoEditView");
 
 	private static final int MOVING_NONE = 0;
@@ -106,7 +107,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 	private GridLayout timelineGridLayout;
 	private PlayerView videoView;
 	private ExoPlayer videoPlayer;
-	private com.google.android.exoplayer2.MediaItem videoSourceMediaItem;
+	private androidx.media3.common.MediaItem videoSourceMediaItem;
 	private DefaultMediaSourceFactory mediaSourceFactory;
 	private View startContainer, endContainer, sizeContainer;
 	private TextView startTimeTextView, endTimeTextView, sizeTextView;
@@ -555,7 +556,7 @@ public class VideoEditView extends FrameLayout implements DefaultLifecycleObserv
 		}
 
 		if (isAttachedToWindow() && context != null) {
-			videoSourceMediaItem = com.google.android.exoplayer2.MediaItem.fromUri(videoItem.getUri());
+			videoSourceMediaItem = androidx.media3.common.MediaItem.fromUri(videoItem.getUri());
 			preparePlayer();
 		}
 

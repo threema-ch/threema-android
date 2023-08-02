@@ -13,6 +13,6 @@
 	android:paddingLeft="3dp"
 	android:paddingRight="3dp">
 
-	<include layout="@layout/date_separator_no_elevation"/>
+	<include layout="@layout/date_separator"/>
 
 </FrameLayout>

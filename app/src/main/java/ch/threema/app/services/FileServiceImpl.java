@@ -32,7 +32,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -44,6 +43,7 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -95,7 +95,6 @@ import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.ConfigUtils.AppTheme;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IconUtil;
@@ -363,6 +362,16 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
+	public File getIntTmpPath() {
+		File intTmpPath = new File(context.getFilesDir(), "tmp");
+
+		if (!intTmpPath.exists()) {
+			intTmpPath.mkdirs();
+		}
+		return intTmpPath;
+	}
+
+	@Override
 	public File getExtTmpPath() {
 		File extTmpPath = new File(context.getExternalFilesDir(null), "tmp");
 
@@ -404,7 +413,7 @@ public class FileServiceImpl implements FileService {
 			return;
 		}
 
-		Date thresholdDate = new Date(System.currentTimeMillis() - (15 * DateUtils.MINUTE_IN_MILLIS));
+		Date thresholdDate = new Date(System.currentTimeMillis() - (2 * DateUtils.HOUR_IN_MILLIS));
 
 		// this will crash if path is not a directory
 		try {
@@ -440,6 +449,7 @@ public class FileServiceImpl implements FileService {
 		logger.debug("Cleaning temp files");
 
 		cleanDirectory(getTempPath(), null);
+		cleanDirectory(getIntTmpPath(), null);
 		cleanDirectory(getExtTmpPath(), new Runnable() {
 			@Override
 			public void run() {
@@ -596,7 +606,7 @@ public class FileServiceImpl implements FileService {
 		if (is != null) {
 			FileOutputStream fos = null;
 			try {
-				File decrypted = new File(ConfigUtils.useContentUris() ? this.getTempPath() : this.getExtTmpPath(), messageModel.getApiMessageId() + "-" + filename);
+				File decrypted = new File(this.getTempPath(), messageModel.getApiMessageId() + "-" + filename);
 				fos = new FileOutputStream(decrypted);
 
 				IOUtils.copy(is, fos);
@@ -685,14 +695,17 @@ public class FileServiceImpl implements FileService {
 				} catch (Exception e) {
 					logger.error("Exception", e);
 				}
-				if (!TestUtil.empty(extension)) {
+				if (!TestUtil.empty(extension) && !"bin".equals(extension)) {
 					return "." + extension;
 				} else {
 					if (messageModel.getFileData().getFileName() != null) {
-						extension = MimeTypeMap.getFileExtensionFromUrl(messageModel.getFileData().getFileName());
-						if (!TestUtil.empty(extension)) {
-							return "." + extension;
+						String guessedExtension = MimeTypeMap.getFileExtensionFromUrl(messageModel.getFileData().getFileName());
+						if (!TestUtil.empty(guessedExtension)) {
+							return "." + guessedExtension;
 						}
+					}
+					if (!TestUtil.empty(extension)) {
+						return "." + extension;
 					}
 					return null;
 				}
@@ -1230,7 +1243,8 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType, boolean returnNullIfNotCached) {
+	@WorkerThread
+	public Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType, boolean returnNullIfNotCached, @ColorInt int tintColor) {
 		if (thumbnailCache != null) {
 			Bitmap cached = thumbnailCache.get(messageModel.getId());
 			if (cached != null && !cached.isRecycled()) {
@@ -1247,7 +1261,7 @@ public class FileServiceImpl implements FileService {
 
 		Bitmap thumbnailBitmap = null;
 		if (icon != 0) {
-			thumbnailBitmap = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(context, icon), Color.WHITE);
+			thumbnailBitmap = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(context, icon), tintColor);
 		}
 
 		if (thumbnailBitmap != null && thumbnailCache != null) {
@@ -1311,7 +1325,7 @@ public class FileServiceImpl implements FileService {
 			if (srcFile != null && srcFile.exists()) {
 				String destFilePrefix = FileUtil.getMediaFilenamePrefix(messageModel);
 				String destFileExtension = getMediaFileExtension(messageModel);
-				File destFile = copyUriToTempFile(Uri.fromFile(srcFile), destFilePrefix, destFileExtension, !ConfigUtils.useContentUris());
+				File destFile = copyUriToTempFile(Uri.fromFile(srcFile), destFilePrefix, destFileExtension, false);
 
 				String filename = null;
 				if (messageModel.getType() == MessageType.FILE) {
@@ -1334,13 +1348,7 @@ public class FileServiceImpl implements FileService {
 	public Uri getShareFileUri(@NonNull File destFile, @Nullable String filename) {
 		if (destFile != null) {
 			// see https://code.google.com/p/android/issues/detail?id=76683
-			if (ConfigUtils.useContentUris()) {
-				/* content uri */
-				return NamedFileProvider.getUriForFile(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getPackageName() + ".fileprovider", destFile, filename);
-			} else {
-				/* file uri */
-				return Uri.fromFile(destFile);
-			}
+			return NamedFileProvider.getUriForFile(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getPackageName() + ".fileprovider", destFile, filename);
 		}
 		return null;
 	}
@@ -1538,7 +1546,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public void saveAppLogo(File logo, @AppTheme int theme) {
+	public void saveAppLogo(File logo, @ConfigUtils.AppThemeSetting String theme) {
 		File existingLogo = this.getAppLogo(theme);
 		if(logo == null || !logo.exists()) {
 			//remove existing icon
@@ -1555,10 +1563,10 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public File getAppLogo(@AppTheme int theme) {
+	public File getAppLogo(@ConfigUtils.AppThemeSetting String theme) {
 		String key = "light";
 
-		if(theme == ConfigUtils.THEME_DARK) {
+		if(ConfigUtils.THEME_DARK.equals(theme)) {
 			key = "dark";
 		}
 		return new File(getAppDataPathAbsolute(),"appicon_" + key + ".png");

@@ -24,6 +24,7 @@ package ch.threema.app.listeners;
 import java.util.List;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import ch.threema.storage.models.AbstractMessageModel;
 
 /**
@@ -35,4 +36,5 @@ public interface MessageListener {
 	@AnyThread void onRemoved(AbstractMessageModel removedMessageModel);
 	@AnyThread void onRemoved(List<AbstractMessageModel> removedMessageModels);
 	@AnyThread void onProgressChanged(AbstractMessageModel messageModel, int newProgress);
+	@AnyThread void onResendDismissed(@NonNull AbstractMessageModel messageModel);
 }

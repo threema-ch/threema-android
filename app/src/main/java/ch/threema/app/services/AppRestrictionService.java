@@ -30,12 +30,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.license.UserCredentials;
 import ch.threema.app.utils.RuntimeUtil;
@@ -44,6 +50,8 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkData;
 import ch.threema.domain.protocol.api.work.WorkMDMSettings;
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 
 /**
  * Hold all Work App Restrictions
@@ -52,24 +60,40 @@ public class AppRestrictionService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AppRestrictionService");
 
 	private Bundle appRestrictions;
+
+	/**
+	 * Always make sure, that only parameters allowed for the threema MDM are stored in these settings.
+ 	 */
 	private volatile WorkMDMSettings workMDMSettings;
 	private boolean hasExternalMDMRestrictions;
 	private static final String PREFERENCE_KEY = "wrk_app_restriction";
 
+	// List of mdm restrictions that shall be ignored when provided by the threema mdm
+	private static final List<Integer> EXTERNAL_MDM_ONLY_RESTRICTIONS_IDS = Arrays.asList(
+		R.string.restriction__id_backup,
+		R.string.restriction__id_backup_password,
+		R.string.restriction__safe_password,
+		R.string.restriction__license_username,
+		R.string.restriction__license_password
+	);
+	private Set<String> externalMdmOnlyRestrictions;
+
+	AppRestrictionService() {}
+
 	/**
 	 * Save the given WorkMDMSettings and reload the AppRestrictions
 	 */
-	public boolean storeWorkMDMSettings(final WorkMDMSettings settings) {
-		if (this.workMDMSettings != settings) {
+	public void storeWorkMDMSettings(@NonNull final WorkMDMSettings settings) {
+		if (!Objects.equals(this.workMDMSettings, settings)) {
 			if (ThreemaApplication.getServiceManager() != null
 					&& ThreemaApplication.getServiceManager().getPreferenceStore() != null) {
+				logger.debug("Store work mdm settings");
 				ThreemaApplication.getServiceManager().getPreferenceStore()
 						.save(PREFERENCE_KEY, convert(settings), true);
-				this.workMDMSettings = settings;
+				this.workMDMSettings = filterWorkMdmSettings(settings);
 				this.reload();
 			}
 		}
-		return true;
 	}
 
 	/**
@@ -84,7 +108,7 @@ public class AppRestrictionService {
 						.getJSONObject(PREFERENCE_KEY, true);
 
 				if (object != null) {
-					this.workMDMSettings = this.convert(object);
+					this.workMDMSettings = filterWorkMdmSettings(convert(object));
 				}
 			}
 		}
@@ -114,6 +138,40 @@ public class AppRestrictionService {
 	}
 
 	/**
+	 * Create a copy of the WorkMDMSettings with parameters removed that are not available for the threema mdm.
+	 * This is to prevent invalid parameters from a malicious threema mdm server.
+	 */
+	@NonNull
+	private WorkMDMSettings filterWorkMdmSettings(@NonNull WorkMDMSettings unfilteredSettings) {
+		Set<String> nonWorkMdmSettings = getExternalMdmOnlyRestrictions();
+		WorkMDMSettings filteredSettings = new WorkMDMSettings();
+		filteredSettings.parameters = new HashMap<>();
+		if (unfilteredSettings.parameters != null) {
+			filteredSettings.override = unfilteredSettings.override;
+			for (Map.Entry<String, Object> entry : unfilteredSettings.parameters.entrySet()) {
+				if (!nonWorkMdmSettings.contains(entry.getKey())) {
+					filteredSettings.parameters.put(entry.getKey(), entry.getValue());
+				} else {
+					logger.warn("Non work mdm restriction in WorkMDMSettings: {}", entry.getKey());
+				}
+			}
+		}
+		return filteredSettings;
+	}
+
+	private Set<String> getExternalMdmOnlyRestrictions() {
+		synchronized (EXTERNAL_MDM_ONLY_RESTRICTIONS_IDS) {
+			Context context = ThreemaApplication.getAppContext();
+			if (externalMdmOnlyRestrictions == null) {
+				externalMdmOnlyRestrictions = StreamSupport.stream(EXTERNAL_MDM_ONLY_RESTRICTIONS_IDS)
+					.map(context::getString)
+					.collect(Collectors.toSet());
+			}
+		}
+		return externalMdmOnlyRestrictions;
+	}
+
+	/**
 	 * Determine if this app is under control of Threema MDM and has at least one parameter set
 	 * @return true if Threema MDM is active
 	 */
@@ -133,11 +191,11 @@ public class AppRestrictionService {
 	 * Fetch the MDM Settings
 	 */
 	@WorkerThread
-	public boolean fetchAndStoreWorkMDMSettings(APIConnector apiConnector,
+	public void fetchAndStoreWorkMDMSettings(APIConnector apiConnector,
 	                                                    UserCredentials credentials) throws Exception {
 		// Verify notnull instances
 		if (apiConnector == null || credentials == null) {
-			return false;
+			return;
 		}
 
 		if (RuntimeUtil.isOnUiThread()) {
@@ -150,7 +208,7 @@ public class AppRestrictionService {
 				credentials.password,
 				new String[]{});
 
-		return null != result && this.storeWorkMDMSettings(result.mdm);
+		this.storeWorkMDMSettings(result.mdm);
 	}
 
 	/**

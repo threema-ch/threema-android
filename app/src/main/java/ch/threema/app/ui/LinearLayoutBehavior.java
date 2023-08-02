@@ -26,11 +26,12 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
 
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import ch.threema.base.utils.LoggingUtil;
 
 public class LinearLayoutBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
@@ -42,26 +43,19 @@ public class LinearLayoutBehavior extends CoordinatorLayout.Behavior<LinearLayou
 
 	@Override
 	public boolean layoutDependsOn(CoordinatorLayout parent, LinearLayout child, View dependency) {
-
 		return dependency instanceof Snackbar.SnackbarLayout;
 	}
 
 	@Override
 	public boolean onDependentViewChanged(CoordinatorLayout parent, LinearLayout child, View dependency) {
-		logger.debug("onDependentViewChanged");
-
 		float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight());
 		child.setTranslationY(translationY);
-
-		logger.debug("TranslationY: " + translationY);
 
 		return true;
 	}
 
 	@Override
 	public void onDependentViewRemoved(CoordinatorLayout parent, LinearLayout child, View dependency) {
-		logger.debug("onDependentViewRemoved");
-
 		child.setTranslationY(0);
 	}
 }

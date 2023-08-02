@@ -21,61 +21,84 @@
 
 package ch.threema.app.activities;
 
-import android.content.res.Configuration;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.ProgressBar;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.view.WindowCompat;
+
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+
 import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.utils.ConfigUtils;
 
+/**
+ * Warning! Do not start an Activity extending this class from an application context!
+ */
 public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
+
+	public static final String FORCE_DARK_THEME = "darkTheme";
 	private static final String DIALOG_TAG_NO_CONNECTION = "nc";
-	private ProgressBar progressBar;
+	private LinearProgressIndicator progressBar;
 	private WebView webView;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(getWebViewTitle());
+		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+		MaterialToolbar toolbar = findViewById(R.id.material_toolbar);
+		toolbar.setNavigationOnClickListener(view -> finish());
+		toolbar.setTitle(getWebViewTitle());
+
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		final boolean darkThemeForced;
+
+		if (extras != null && extras.getBoolean(FORCE_DARK_THEME, false)) {
+			darkThemeForced = true;
+			if (getConnectionIndicator() != null) {
+				// hide connection indicator when launched from wizard
+				getConnectionIndicator().setVisibility(View.INVISIBLE);
+			}
+		} else {
+			darkThemeForced = false;
+		}
+
+		if (!ConfigUtils.isTheDarkSide(this)) {
+			if (darkThemeForced) {
+				getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+			}
 		}
 
 		progressBar = findViewById(R.id.progress);
 		webView = findViewById(R.id.simple_webview);
-		webView.getSettings().setJavaScriptEnabled(false);
-		webView.setWebChromeClient(new WebChromeClient() {
-			@Override
-			public void onProgressChanged(WebView view, int newProgress) {
-				if (newProgress >= 99) {
-					progressBar.setVisibility(View.INVISIBLE);
-				} else {
-					progressBar.setProgress(newProgress);
+		webView.getSettings().setJavaScriptEnabled(requiresJavaScript());
+
+		if (requiresConnection()) {
+			webView.setWebChromeClient(new WebChromeClient() {
+				@Override
+				public void onProgressChanged(WebView view, int newProgress) {
+					if (newProgress >= 99) {
+						progressBar.setVisibility(View.INVISIBLE);
+					} else {
+						progressBar.setProgress(newProgress);
+					}
 				}
-			}
-		});
+			});
+			checkConnection();
+		} else {
+			progressBar.setVisibility(View.GONE);
 
-		checkConnection();
-	}
-
-	@Override
-	protected boolean initActivity(Bundle savedInstanceState) {
-		boolean result = super.initActivity(savedInstanceState);
-
-		if (getConnectionIndicator() != null) {
-			getConnectionIndicator().setVisibility(View.INVISIBLE);
+			loadWebView();
 		}
-		return result;
 	}
 
 	private void loadWebView() {
@@ -96,23 +119,6 @@ public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity imple
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-		}
-		return false;
-	}
-
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-
-		ConfigUtils.adjustToolbar(this, getToolbar());
-	}
-
-	@Override
 	public void onYes(String tag, Object data) {
 		checkConnection();
 	}
@@ -124,4 +130,9 @@ public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity imple
 
 	protected abstract @StringRes int getWebViewTitle();
 	protected abstract String getWebViewUrl();
+	protected boolean requiresConnection() {
+		return true;
+	}
+	protected boolean requiresJavaScript() { return false; }
 }
+

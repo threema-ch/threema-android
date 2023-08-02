@@ -67,7 +67,8 @@ public class VoipStatusDataChatAdapterDecorator extends ChatAdapterDecorator {
 						this.setDatePrefix(StringConversionUtil.secondsToString(
 							status.getDuration(),
 							false
-						), holder.dateView.getTextSize());
+						));
+						this.setDuration(status.getDuration());
 					}
 				}
 

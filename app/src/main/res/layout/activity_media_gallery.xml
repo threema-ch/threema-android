@@ -1,45 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			 android:layout_width="match_parent"
-			 android:layout_height="match_parent">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<FrameLayout
-			android:id="@+id/frame_parent"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@+id/item_list">
 
-		<ch.threema.app.ui.FastScrollGridView
-				android:id="@+id/item_list"
-				class ="ch.threema.app.ui.FastScrollGridView"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:paddingTop="?attr/actionBarSize"
-				android:verticalSpacing="0dp"
-				android:horizontalSpacing="0dp"
-				android:stretchMode="columnWidth"
-				android:gravity="center"
-				android:background="?android:windowBackground"
-				android:fastScrollEnabled="true"
-				android:listSelector="@android:color/transparent"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-		<FrameLayout
-			android:id="@+id/date_separator_container"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:gravity="top|center_horizontal"
-			android:paddingTop="5dp"
-			android:paddingBottom="3dp"
-			android:paddingLeft="3dp"
-			android:paddingRight="3dp"
-			android:clipToPadding="false"
-			android:layout_marginTop="?attr/actionBarSize"
-			android:visibility="gone">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize" />
 
-			<include layout="@layout/date_separator" />
-		</FrameLayout>
+            <include layout="@layout/connection_indicator" />
 
-	</FrameLayout>
+        </FrameLayout>
 
-	<include layout="@layout/toolbar_view"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-</FrameLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/results_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/colorBackground"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:paddingLeft="16dp"
+            android:paddingTop="10dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="10dp"
+            android:visibility="visible"
+            app:chipSpacingHorizontal="4dp"
+            app:chipSpacingVertical="0dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lineSpacing="4dp" />
+
+        <ch.threema.app.ui.EmptyRecyclerView
+            android:id="@+id/item_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingLeft="@dimen/grid_spacing"
+            android:paddingRight="@dimen/grid_spacing"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chip_group" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

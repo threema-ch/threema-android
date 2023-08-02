@@ -31,15 +31,17 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.Collections;
 import java.util.List;
@@ -158,7 +160,7 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 		this.allContactModel.setState(ContactModel.State.ACTIVE);
 
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		LinearLayout popupLayout = (LinearLayout) layoutInflater.inflate(R.layout.popup_mention_selector, null, false);
+		MaterialCardView popupLayout = (MaterialCardView) layoutInflater.inflate(R.layout.popup_mention_selector, null, false);
 
 		setContentView(popupLayout);
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -167,6 +169,8 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 		setTouchable(true);
 		setOutsideTouchable(false);
 		setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		setWindowLayoutMode(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		setHeight(1);
 
 		this.recyclerView = popupLayout.findViewById(R.id.group_members_list);
 
@@ -195,15 +199,14 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 		int[] coordinates = getPositionCoordinates(activity, boundary != null ? boundary : editText);
 
 		int popupX = 0;
-		int popupY = coordinates[1];
+		int popupY = coordinates[1] + context.getResources().getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_vertical);
 
 		this.editText = editText;
 		editText.setLocked(true);
 		editText.addTextChangedListener(textWatcher);
 		this.filterStart = editText.getSelectionStart();
 
-		this.viewableSpaceHeight = coordinates[2];
-		this.dividersHeight = 2 * context.getResources().getDimensionPixelSize(R.dimen.list_divider_height);
+		this.viewableSpaceHeight = coordinates[2] - context.getResources().getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_vertical);
 
 		this.setWidth(activity.getWindowManager().getDefaultDisplay().getWidth());
 		this.setHeight(this.viewableSpaceHeight);
@@ -226,7 +229,7 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 	private void updateRecyclerViewDimensions() {
 		int maxHeight = context.getResources().getDimensionPixelSize(R.dimen.group_detail_list_item_size) * this.mentionAdapter.getItemCount();
 
-		this.recyclerView.getLayoutParams().height = Math.min(maxHeight, viewableSpaceHeight - dividersHeight);
+		this.recyclerView.getLayoutParams().height = Math.min(maxHeight, viewableSpaceHeight);
 		this.recyclerView.requestLayout();
 	}
 

@@ -6,7 +6,7 @@
     android:height="18dp"
     android:viewportWidth="18"
     android:viewportHeight="18"
-    android:tint="?attr/colorControlActivated"
+    android:tint="?attr/colorPrimary"
     android:opticalInsetLeft="6dp"
     android:opticalInsetRight="6dp">
     <group

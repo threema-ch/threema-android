@@ -1,41 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  android:id="@+id/main_content"
-			  android:layout_width="match_parent"
-			  android:layout_height="match_parent"
-			  android:orientation="vertical"
-				android:visibility="invisible">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:visibility="invisible">
 
-	<com.google.android.material.appbar.AppBarLayout
-			android:id="@+id/appbar"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-		<include layout="@layout/toolbar_view_noshadow"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-		<com.google.android.material.tabs.TabLayout
-				android:id="@+id/sliding_tabs"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"/>
+         <com.google.android.material.search.SearchBar
+             android:id="@+id/toolbar"
+             android:layout_height="wrap_content"
+             android:layout_width="match_parent"
+             android:hint="@string/title_choose_recipient"
+             app:navigationIcon="@drawable/ic_arrow_left"
+             android:outlineProvider="none"/>
 
-	</com.google.android.material.appbar.AppBarLayout>
+            <include layout="@layout/connection_indicator"/>
 
-	<FrameLayout android:layout_width="match_parent"
-				 android:layout_height="0dp"
-				 android:layout_weight="1">
+        </FrameLayout>
 
-		<androidx.viewpager.widget.ViewPager
-				android:id="@+id/pager"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"/>
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/sliding_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-		<ProgressBar android:id="@+id/progress_sending"
-					 android:layout_width="48dp"
-					 android:layout_height="48dp"
-					 android:indeterminate="true"
-					 android:layout_gravity="center"
-					 android:visibility="gone"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-	</FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress_sending"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
 </LinearLayout>

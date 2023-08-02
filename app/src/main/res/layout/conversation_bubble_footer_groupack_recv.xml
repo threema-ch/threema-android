@@ -6,7 +6,8 @@
 	android:layout_height="match_parent"
 	android:orientation="horizontal"
 	android:layout_marginRight="3dp"
-	android:visibility="gone">
+	android:visibility="gone"
+	android:animateLayoutChanges="true">
 
 	<ImageView
 		android:id="@+id/groupack_thumbsup"
@@ -15,7 +16,8 @@
 		android:padding="2dp"
 		android:layout_gravity="center_vertical"
 		android:src="@drawable/ic_thumb_up_grey600_24dp"
-		app:tint="@color/material_green" />
+		app:tint="@color/material_green"
+		android:contentDescription="@string/message_acknowledged" />
 
 	<TextView
 		android:id="@+id/groupack_thumbsup_count"
@@ -35,7 +37,8 @@
 		android:padding="2dp"
 		android:layout_gravity="center_vertical"
 		android:src="@drawable/ic_thumb_down_grey600_24dp"
-		app:tint="@color/material_orange" />
+		app:tint="@color/material_orange"
+		android:contentDescription="@string/message_declined" />
 
 	<TextView
 		android:id="@+id/groupack_thumbsdown_count"

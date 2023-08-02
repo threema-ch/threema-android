@@ -21,27 +21,24 @@
 
 package ch.threema.app.services;
 
-import android.graphics.Bitmap;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
-import ch.threema.base.ThreemaException;
+import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.work.WorkContact;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactDeleteProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactSetProfilePictureMessage;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
@@ -56,6 +53,86 @@ public interface ContactService extends AvatarService<ContactModel> {
 
     interface ContactProcessor {
 		boolean process(ContactModel contactModel);
+	}
+
+	class ProfilePictureUploadData {
+		public byte[] bitmapArray;
+		public byte[] blobId;
+		public byte[] encryptionKey;
+		public int size;
+	}
+
+	class ForwardSecuritySessionState {
+		private enum ForwardSecurityState {
+			NO_SESSION,
+			UNSUPPORTED_BY_REMOTE,
+			L20,
+			R20,
+			R24,
+			RL44,
+		}
+
+		private final ForwardSecurityState forwardSecurityState;
+		private final DHSession.DHVersions currentDHVersions;
+
+		private ForwardSecuritySessionState(@NonNull ForwardSecurityState forwardSecurityState) {
+			this(forwardSecurityState, null);
+		}
+
+		private ForwardSecuritySessionState(
+			@NonNull ForwardSecurityState forwardSecurityState,
+			@Nullable DHSession.DHVersions currentDHVersions
+		) {
+			this.forwardSecurityState = forwardSecurityState;
+			this.currentDHVersions = currentDHVersions;
+		}
+
+		protected static ForwardSecuritySessionState noSession() {
+			return new ForwardSecuritySessionState(ForwardSecurityState.NO_SESSION);
+		}
+
+		protected static ForwardSecuritySessionState unsupportedByRemote() {
+			return new ForwardSecuritySessionState(ForwardSecurityState.UNSUPPORTED_BY_REMOTE);
+		}
+
+		protected static ForwardSecuritySessionState fromDHState(
+			@NonNull DHSession.State state,
+			@Nullable DHSession.DHVersions dhVersions
+		) {
+			switch (state) {
+				case L20:
+					return new ForwardSecuritySessionState(ForwardSecurityState.L20, dhVersions);
+				case R20:
+					return new ForwardSecuritySessionState(ForwardSecurityState.R20, dhVersions);
+				case R24:
+					return new ForwardSecuritySessionState(ForwardSecurityState.R24, dhVersions);
+				case RL44:
+					return new ForwardSecuritySessionState(ForwardSecurityState.RL44, dhVersions);
+				default:
+					throw new IllegalStateException("No such dh state: " + state);
+			}
+		}
+
+		@NonNull
+		@Override
+		public String toString() {
+			switch (forwardSecurityState) {
+				case NO_SESSION:
+					return "No session";
+				case L20:
+					return "L20 " + currentDHVersions;
+				case R20:
+					return "R20 " + currentDHVersions;
+				case R24:
+					return "R24 " + currentDHVersions;
+				case RL44:
+					return "RL44 " + currentDHVersions;
+				case UNSUPPORTED_BY_REMOTE:
+					return "Unsupported by remote";
+				default:
+					return "Unknown state";
+			}
+		}
 	}
 
 	interface Filter {
@@ -227,6 +304,14 @@ public interface ContactService extends AvatarService<ContactModel> {
 	void setIsTyping(String identity, boolean isTyping) ;
 	boolean isTyping(String identity);
 
+	/**
+	 * Send a typing indicator if the preferences do not prevent that.
+	 *
+	 * @param toIdentity the identity that should receive the typing indicator
+	 * @param isTyping   whether the user is typing or not
+	 */
+	void sendTypingIndicator(String toIdentity, boolean isTyping);
+
 	void setActive(String identity);
 
 	int updateContactVerification(String identity, byte[] publicKey);
@@ -276,10 +361,27 @@ public interface ContactService extends AvatarService<ContactModel> {
 	boolean setAvatar(ContactModel contactModel, byte[] avatar) throws Exception;
 	boolean removeAvatar(ContactModel contactModel);
 
-	ContactServiceImpl.ContactPhotoUploadResult uploadContactPhoto(Bitmap picture) throws IOException, ThreemaException;
-	boolean updateContactPhoto(ContactSetPhotoMessage msg);
-	boolean deleteContactPhoto(ContactDeletePhotoMessage msg);
-	boolean requestContactPhoto(ContactRequestPhotoMessage msg);
+	/**
+	 * Check whether the app settings allow the profile picture to be sent to the contact. Note that
+	 * this method does <b>not</b> check whether the contact is a gateway ID or ECHOECHO.
+	 *
+	 * @return {@code true} if the profile picture could be sent, {@code false} otherwise
+	 */
+	boolean isContactAllowedToReceiveProfilePicture(@NonNull ContactModel contactModel);
+
+	/**
+	 * Upload the current profile picture if it hasn't been uploaded recently and get the most
+	 * recent contact profile picture upload data.
+	 *
+	 * @return the most recent profile picture upload data. If the upload failed or the last stored
+	 * data could not be read, the returned data contains null as blob ID. If there is no profile
+	 * picture set, the blob ID is {@link ContactModel#NO_PROFILE_PICTURE_BLOB_ID}.
+	 */
+	@NonNull
+	ProfilePictureUploadData getUpdatedProfilePictureUploadData();
+	boolean updateProfilePicture(ContactSetProfilePictureMessage msg);
+	boolean deleteProfilePicture(ContactDeleteProfilePictureMessage msg);
+	boolean requestProfilePicture(ContactRequestProfilePictureMessage msg);
 
 	ContactModel createContactModelByIdentity(String identity) throws InvalidEntryException;
 
@@ -289,9 +391,17 @@ public interface ContactService extends AvatarService<ContactModel> {
 	String getAndroidContactLookupUriString(ContactModel contactModel);
 	@Nullable ContactModel addWorkContact(@NonNull WorkContact workContact, @Nullable List<ContactModel> existingWorkContacts);
 	void createWorkContact(@NonNull String identity);
-	void setForwardSecurityState(@NonNull ContactModel contactModel, @ContactModel.ForwardSecurityState int state);
 
 	@WorkerThread
 	boolean resetReceiptsSettings();
 	void reportSpam(@NonNull ContactModel spammerContactModel, @Nullable Consumer<Void> onSuccess, @Nullable Consumer<String> onFailure);
+
+	/**
+	 * Get the forward security state of a given contact.
+	 *
+	 * @return the forward security state of a given contact
+	 */
+	@Nullable
+	ForwardSecuritySessionState getForwardSecurityState(@NonNull ContactModel contactModel);
+
 }

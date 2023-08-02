@@ -26,6 +26,12 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,13 +41,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.crypto.CipherInputStream;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AppCompatActivity;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.utils.ConfigUtils.AppTheme;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.ThreemaException;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -95,6 +97,8 @@ public interface FileService {
 	 * get the temporary file path
 	 */
 	File getTempPath();
+
+	File getIntTmpPath();
 
 	File getExtTmpPath();
 
@@ -311,7 +315,7 @@ public interface FileService {
 	/**
 	 * return the "default" thumbnail
 	 */
-	Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType, boolean returnNullIfNotCached);
+	Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType, boolean returnNullIfNotCached, @ColorInt int tintColor);
 
 	/**
 	 * clear directory
@@ -353,8 +357,8 @@ public interface FileService {
 
 	void saveMedia(final AppCompatActivity activity, final View feedbackView, final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages, boolean quiet);
 
-	void saveAppLogo(File logo, @AppTheme int theme);
-	File getAppLogo(@AppTheme int theme);
+	void saveAppLogo(File logo, @ConfigUtils.AppThemeSetting String theme);
+	File getAppLogo(@ConfigUtils.AppThemeSetting String theme);
 
 	@NonNull
 	Uri getTempShareFileUri(@NonNull Bitmap bitmap) throws IOException;

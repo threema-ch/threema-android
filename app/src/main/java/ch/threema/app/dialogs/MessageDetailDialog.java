@@ -39,6 +39,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipDrawable;
@@ -59,7 +60,6 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.stores.IdentityStore;
-import ch.threema.app.ui.CountBoxView;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -106,6 +106,11 @@ public class MessageDetailDialog extends ThreemaDialogFragment implements View.O
 
 		@Override
 		public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {}
+
+		@Override
+		public void onResendDismissed(@NonNull AbstractMessageModel messageModel) {
+			// Ignore
+		}
 	};
 
 	public static MessageDetailDialog newInstance(@StringRes int title, int messageId, String type, @Nullable ForwardSecurityMode forwardSecurityMode) {
@@ -371,11 +376,11 @@ public class MessageDetailDialog extends ThreemaDialogFragment implements View.O
 		final MaterialCardView ackCard = dialogView.findViewById(R.id.ack_card);
 		final ImageView ackIcon = dialogView.findViewById(R.id.ack_icon);
 		final ChipGroup ackData = dialogView.findViewById(R.id.ack_data);
-		final CountBoxView ackCountView = dialogView.findViewById(R.id.ack_count);
+		final MaterialButton ackCountView = dialogView.findViewById(R.id.ack_count);
 		final MaterialCardView decCard = dialogView.findViewById(R.id.dec_card);
 		final ImageView decIcon = dialogView.findViewById(R.id.dec_icon);
 		final ChipGroup decData = dialogView.findViewById(R.id.dec_data);
-		final CountBoxView decCountView = dialogView.findViewById(R.id.dec_count);
+		final MaterialButton decCountView = dialogView.findViewById(R.id.dec_count);
 
 		if (messageModel instanceof GroupMessageModel) {
 			Map<String, Object> messageStates = ((GroupMessageModel) messageModel).getGroupMessageStates();
@@ -432,13 +437,13 @@ public class MessageDetailDialog extends ThreemaDialogFragment implements View.O
 		ChipDrawable chipDrawable = ChipDrawable.createFromAttributes(getContext(),
 			null,
 			0,
-			R.style.Chip_MessageDetails);
+			R.style.Threema_Chip_MessageDetails);
 		chip.setChipDrawable(chipDrawable);
 		chip.setEnsureMinTouchTargetSize(false);
 		chip.setTag(contactModel.getIdentity());
 		chip.setOnClickListener(this);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			chip.setTextAppearance(R.style.TextAppearance_Chip_ChatNotice);
+			chip.setTextAppearance(R.style.Threema_TextAppearance_Chip_ChatNotice);
 		} else {
 			chip.setTextSize(14);
 		}

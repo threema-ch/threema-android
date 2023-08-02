@@ -524,7 +524,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 				return null;
 			}
 		} else {
-			return this.sharedPreferences.getLong(key, 0);
+			return this.sharedPreferences.getLong(key, 0L);
 		}
 	}
 

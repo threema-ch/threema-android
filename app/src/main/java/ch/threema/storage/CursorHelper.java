@@ -21,6 +21,8 @@
 
 package ch.threema.storage;
 
+import android.database.Cursor;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,7 +37,7 @@ import java8.util.function.Function;
  * Handling NULL Values and Support Date (as Long) fields
  */
 public class CursorHelper implements AutoCloseable {
-	private final net.sqlcipher.Cursor cursor;
+	private final Cursor cursor;
 	private final ColumnIndexCache columnIndexCache;
 	// SimpleDateFormat is not thread-safe, so give one to each thread
 	public static final ThreadLocal<SimpleDateFormat> dateAsStringFormat = new ThreadLocal<SimpleDateFormat>(){
@@ -58,7 +60,7 @@ public class CursorHelper implements AutoCloseable {
 	}
 
 
-	public CursorHelper(net.sqlcipher.Cursor cursor, ColumnIndexCache columnIndexCache) {
+	public CursorHelper(Cursor cursor, ColumnIndexCache columnIndexCache) {
 		this.cursor = cursor;
 		this.columnIndexCache = columnIndexCache;
 	}

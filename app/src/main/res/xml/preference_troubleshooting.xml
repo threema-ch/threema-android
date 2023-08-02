@@ -99,6 +99,10 @@
 			android:key="@string/preferences__grant_read_phone_state_permission"
 			android:summary="@string/read_phone_state_dialog_message"
 			android:title="@string/prefs_title_read_phone_state"/>
+		<Preference
+			android:key="@string/preferences__grant_bluetooth_permission"
+			android:summary="@string/permission_bluetooth_connect_required"
+			android:title="@string/prefs_title_grant_bluetooth_permission"/>
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:key="pref_key_webclient"

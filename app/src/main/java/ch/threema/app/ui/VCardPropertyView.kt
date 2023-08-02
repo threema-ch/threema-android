@@ -34,7 +34,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
@@ -157,38 +156,13 @@ class VCardPropertyView(context: Context) : FrameLayout(context) {
         if (checkbox.isChecked) {
             iconIncluded?.let { contactPropertyIcon.setBackgroundResource(it) }
             contactPropertyPhoto.setImageDrawable(drawableIncluded)
-            contactPropertyText.setTextColor(ContextCompat.getColor(context, getPrimaryTextColor()))
-            contactPropertyType.setTextColor(ContextCompat.getColor(context, getSecondaryTextColor()))
+            contactPropertyText.setTextColor(ConfigUtils.getColorFromAttribute(context, R.attr.colorOnBackground))
+            contactPropertyType.setTextColor(ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurface))
         } else {
             iconExcluded?.let { contactPropertyIcon.setBackgroundResource(it) }
             contactPropertyPhoto.setImageDrawable(drawableExcluded)
-            contactPropertyText.setTextColor(ContextCompat.getColor(context, getTertiaryTextColor()))
-            contactPropertyType.setTextColor(ContextCompat.getColor(context, getTertiaryTextColor()))
+            contactPropertyText.setTextColor(ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurfaceVariant))
+            contactPropertyType.setTextColor(ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurfaceVariant))
         }
     }
-
-    private fun getPrimaryTextColor(): Int {
-        return if (ConfigUtils.getAppTheme(context) != ConfigUtils.THEME_DARK) {
-            R.color.text_color_primary
-        } else {
-            R.color.dark_text_color_primary
-        }
-    }
-
-    private fun getSecondaryTextColor(): Int {
-        return if (ConfigUtils.getAppTheme(context) != ConfigUtils.THEME_DARK) {
-            R.color.text_color_secondary
-        } else {
-            R.color.dark_text_color_secondary
-        }
-    }
-
-    private fun getTertiaryTextColor(): Int {
-        return if (ConfigUtils.getAppTheme(context) != ConfigUtils.THEME_DARK) {
-            R.color.text_color_tertiary
-        } else {
-            R.color.dark_text_color_tertiary
-        }
-    }
-
 }

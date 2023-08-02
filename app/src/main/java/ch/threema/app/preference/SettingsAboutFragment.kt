@@ -83,7 +83,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     private fun initLicensePref() {
         val licensePreference = getPref<Preference>(R.string.preferences__licenses)
         licensePreference.setOnPreferenceClickListener {
-            startActivity(Intent(requireActivity().applicationContext, LicenseActivity::class.java))
+            startActivity(Intent(context, LicenseActivity::class.java))
             true
         }
     }
@@ -94,7 +94,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             privacyPolicyPreference.isVisible = false
         } else {
             privacyPolicyPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                startActivity(Intent(requireActivity().applicationContext, PrivacyPolicyActivity::class.java))
+                startActivity(Intent(context, PrivacyPolicyActivity::class.java))
                 true
             }
         }
@@ -106,7 +106,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             licensePreference.isVisible = false
         } else {
             licensePreference.setOnPreferenceClickListener {
-                startActivity(Intent(requireActivity().applicationContext, TermsOfServiceActivity::class.java))
+                startActivity(Intent(context, TermsOfServiceActivity::class.java))
                 true
             }
         }
@@ -116,7 +116,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         val licensePreference = getPref<Preference>(R.string.preferences__eula)
         if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE) {
             licensePreference.setOnPreferenceClickListener {
-                startActivity(Intent(requireActivity().applicationContext, EulaActivity::class.java))
+                startActivity(Intent(context, EulaActivity::class.java))
                 true
             }
         } else {

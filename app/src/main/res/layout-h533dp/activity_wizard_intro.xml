@@ -53,7 +53,7 @@
 			android:id="@+id/wizard_privacy_policy_explain"
 			style="@style/WizardSmallText"
 			android:layout_marginTop="32dp"
-			android:textSize="15dp"
+			android:textSize="16dp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@string/privacy_policy_explain"/>

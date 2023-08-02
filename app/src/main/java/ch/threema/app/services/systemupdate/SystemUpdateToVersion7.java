@@ -24,7 +24,7 @@ package ch.threema.app.services.systemupdate;
 import android.database.Cursor;
 import android.os.Environment;
 
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import org.slf4j.Logger;
 

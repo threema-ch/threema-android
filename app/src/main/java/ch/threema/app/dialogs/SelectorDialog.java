@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,12 +33,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDialog;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.ui.SelectorDialogItem;
@@ -136,10 +138,12 @@ public class SelectorDialog extends ThreemaDialogFragment {
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
 		if (title != null) {
-			EmojiTextView emojiTextView = new EmojiTextView(new ContextThemeWrapper(getContext(), R.style.Threema_AlertDialog_TitleTextStyle));
+			EmojiTextView emojiTextView = new EmojiTextView(new ContextThemeWrapper(getContext(), R.style.MaterialAlertDialog_Material3_Title_Text));
 			emojiTextView.setText(title);
+			emojiTextView.setMaxLines(2);
 			int padding = getResources().getDimensionPixelSize(R.dimen.edittext_padding);
-			emojiTextView.setPadding(padding, padding, 0, 0);
+			int paddingRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+			emojiTextView.setPadding(padding, padding, paddingRight, 0);
 			builder.setCustomTitle(emojiTextView);
 		}
 

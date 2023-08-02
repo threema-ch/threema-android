@@ -55,6 +55,7 @@ import androidx.core.app.NotificationCompat;
 import org.slf4j.Logger;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -304,7 +305,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 
 			// clear all chats in this channel group and re-create it
 			if (getNotificationChannelGroup(notificationManager, notificationChannelSettings.getChannelGroupId()) != null) {
-				notificationManager.deleteNotificationChannelGroup(notificationChannelSettings.getChannelGroupId());
+				deleteNotificationChannelGroup(notificationManager, notificationChannelSettings.getChannelGroupId());
 			}
 			createNotificationChannelGroupIfNotExists(notificationManager, notificationChannelSettings);
 			newNotificationChannel = createNotificationChannel(notificationChannelSettings.hash(), notificationChannelSettings);
@@ -317,7 +318,7 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 			if (existingNotificationChannel == null) {
 				if (!allowMultipleChannelsPerGroup &&
 					getNotificationChannelGroup(notificationManager, notificationChannelSettings.getChannelGroupId()) != null) {
-						notificationManager.deleteNotificationChannelGroup(notificationChannelSettings.getChannelGroupId());
+						deleteNotificationChannelGroup(notificationManager, notificationChannelSettings.getChannelGroupId());
 				}
 				createNotificationChannelGroupIfNotExists(notificationManager, notificationChannelSettings);
 
@@ -337,6 +338,31 @@ public class NotificationBuilderWrapper extends NotificationCompat.Builder {
 		}
 
 		return newNotificationChannel;
+	}
+
+	@TargetApi(Build.VERSION_CODES.O)
+	private static void deleteNotificationChannelGroup(@NonNull NotificationManager notificationManager, String channelGroupId) {
+		if (ConfigUtils.hasBrokenDeleteNotificationChannelGroup()) {
+			final List<String> channelIds = new ArrayList<>();
+			for (NotificationChannel channel: notificationManager.getNotificationChannels()) {
+				if (channelGroupId.equals(channel.getGroup())) {
+					channelIds.add(channel.getId());
+				}
+			}
+
+			if (channelIds.size() > 0) {
+				for (String channelId : channelIds) {
+					try {
+						notificationManager.deleteNotificationChannel(channelId);
+					} catch (Exception e) {
+						logger.error("Deleting notification channel failed", e);
+					}
+				}
+			}
+		}
+		else {
+			notificationManager.deleteNotificationChannelGroup(channelGroupId);
+		}
 	}
 
 	@TargetApi(Build.VERSION_CODES.O)

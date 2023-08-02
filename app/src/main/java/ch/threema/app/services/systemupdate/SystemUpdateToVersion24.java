@@ -23,7 +23,7 @@ package ch.threema.app.services.systemupdate;
 
 import androidx.annotation.NonNull;
 
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import java.util.Arrays;
 import java.util.Date;

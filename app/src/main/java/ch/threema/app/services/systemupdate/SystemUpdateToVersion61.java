@@ -21,8 +21,8 @@
 
 package ch.threema.app.services.systemupdate;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
+import android.database.Cursor;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import java.sql.SQLException;
 

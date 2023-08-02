@@ -24,19 +24,22 @@ package ch.threema.app.push;
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
@@ -59,13 +62,31 @@ public class PushService extends FirebaseMessagingService {
 		}
 	}
 
-	public static void deleteToken(Context context) {
+	public static String deleteToken(Context context) {
 		try {
-			FirebaseInstanceId.getInstance().deleteInstanceId();
+			FirebaseMessaging.getInstance().deleteToken();
+			Tasks.await(FirebaseInstallations.getInstance().delete());
 			PushUtil.sendTokenToServer(context,"", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
-		} catch (IOException | ThreemaException e) {
+		} catch (ThreemaException | ExecutionException | InterruptedException e) {
 			logger.warn("Could not delete FCM token", e);
+			return e.getMessage();
 		}
+		return null;
+	}
+
+	@Override
+	public void onDeletedMessages() {
+		logger.info("Too many messages stored on the Firebase server. Messages have been dropped.");
+	}
+
+	@Override
+	public void onMessageSent(@NonNull String msgId) {
+		logger.info("onMessageSent called for message id: {}", msgId);
+	}
+
+	@Override
+	public void onSendError(@NonNull String msgId, @NonNull Exception exception) {
+		logger.info("onSendError called for message id: {} exception: {}", msgId, exception);
 	}
 
 	@Override

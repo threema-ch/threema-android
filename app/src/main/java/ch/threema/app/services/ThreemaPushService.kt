@@ -221,9 +221,12 @@ class ThreemaPushService : Service() {
                     val intent = Intent(appContext, ThreemaPushService::class.java)
                     intent.action = SessionAndroidService.ACTION_START
                     callerLogger.info("Starting ThreemaPushService")
-                    ContextCompat.startForegroundService(appContext, intent)
-
-                    return true
+                    try {
+                        ContextCompat.startForegroundService(appContext, intent)
+                        return true
+                    } catch (e: Exception) {
+                        logger.error("Unable to start foreground service", e)
+                    }
                 }
             }
             return false

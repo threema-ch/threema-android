@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/indicator_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,26 +13,36 @@
     android:paddingRight="@dimen/chat_bubble_margin_start">
 
     <TextView
+        style="@style/Threema.Bubble.Text.Footer"
         android:id="@+id/tap_to_resend"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
+        android:layout_marginRight="4dp"
         android:ellipsize="end"
         android:text="@string/tap_to_resend"
         android:textColor="@color/material_red"
-        android:textSize="?attr/font_medium"
         android:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/date_prefix_icon"
+        app:srcCompat="@drawable/ic_av_timer_grey600_18dp"
+        app:tint="@color/bubble_text_colorstatelist"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:padding="3dp"
+        android:layout_gravity="center_vertical"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
+
     <TextView
+        style="@style/Threema.Bubble.Text.Footer"
         android:id="@+id/date_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
-        android:layout_marginLeft="4dp"
         android:ellipsize="none"
-        android:singleLine="true"
-        android:textColor="?attr/textColorSecondary"
-        android:textSize="?attr/font_medium" />
+        android:singleLine="true" />
 
     <include layout="@layout/conversation_bubble_footer_groupack_send" />
 
@@ -41,6 +52,7 @@
         android:layout_height="18dp"
         android:layout_gravity="center_vertical"
         android:paddingLeft="3dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:tint="@color/bubble_text_colorstatelist" />
 
 </LinearLayout>

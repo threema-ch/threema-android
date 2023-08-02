@@ -25,30 +25,33 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.Toast;
-
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.Player;
-
-import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.media3.common.AudioAttributes;
+import androidx.media3.common.C;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.PlayerView;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
-import ch.threema.app.ui.ZoomableExoPlayerView;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
+@UnstableApi
 public class VideoPreviewFragment extends PreviewFragment implements DefaultLifecycleObserver, Player.Listener, PreviewFragmentInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoPreviewFragment");
 
-	private ZoomableExoPlayerView videoView;
+	private PlayerView videoView;
 	private ExoPlayer videoPlayer;
 
 	VideoPreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel){
@@ -70,11 +73,6 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 
 		if (rootView != null) {
 			this.videoView = rootView.findViewById(R.id.video_view);
-
-			ImageButton play = rootView.findViewById(R.id.exo_play);
-			ImageButton pause = rootView.findViewById(R.id.exo_pause);
-			play.setImageResource(R.drawable.ic_play);
-			pause.setImageResource(R.drawable.ic_pause);
 		}
 	}
 
@@ -98,29 +96,23 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 	}
 
 	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+
+		if (isVisibleToUser) {
+			onResume(this);
+		} else {
+			onPause(this);
+		}
+	}
+
+	@Override
 	public void onDestroy(@NonNull LifecycleOwner owner) {
 		releasePlayer();
 	}
 
 	@Override
-	public void setVolume(float volume) {
-		// ducking
-		if (this.videoPlayer != null) {
-			this.videoPlayer.setVolume(volume);
-		}
-	}
-
-	@Override
-	public void onIsPlayingChanged(boolean isPlaying) {
-		if (isPlaying) {
-			requestFocus();
-		} else {
-			abandonFocus();
-		}
-	}
-
-	@Override
-	public void onPlayerError(PlaybackException error) {
+	public void onPlayerError(@NonNull PlaybackException error) {
 		RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), "Exoplayer error: " + error.getErrorCodeName(), Toast.LENGTH_LONG).show());
 
 		releasePlayer();
@@ -129,11 +121,19 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 
 	public void initializePlayer(boolean playWhenReady) {
 		try {
+			AudioAttributes audioAttributes = new AudioAttributes.Builder()
+				.setUsage(C.USAGE_MEDIA)
+				.setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+				.setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_NONE)
+				.build();
+
 			this.videoPlayer = VideoUtil.getExoPlayer(getContext());
+			this.videoPlayer.setAudioAttributes(audioAttributes, true);
 			this.videoPlayer.addListener(this);
 
 			this.videoView.setPlayer(videoPlayer);
 			this.videoView.setControllerHideOnTouch(true);
+			this.videoView.setControllerShowTimeoutMs(1500);
 			this.videoView.showController();
 
 			this.videoPlayer.setMediaItem(MediaItem.fromUri(this.mediaItem.getUri()));

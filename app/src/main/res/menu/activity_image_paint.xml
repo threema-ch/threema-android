@@ -10,9 +10,9 @@
 			android:id="@+id/item_undo"
 			android:enabled="true"
 			android:icon="@drawable/ic_undo_outline"
-			app:iconTint="@android:color/white"
 			android:orderInCategory="50"
 			android:title="@string/undo"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="always"
 			/>
 
@@ -25,9 +25,9 @@
 			android:id="@+id/item_face"
 			android:enabled="true"
 			android:icon="@drawable/ic_outline_face_retouching_off"
-			app:iconTint="@android:color/white"
 			android:orderInCategory="52"
 			android:title="@string/blur_faces"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="always">
 
 			<menu>
@@ -37,7 +37,7 @@
 					android:icon="@drawable/ic_outline_blur_on_24"
 					android:orderInCategory="40"
 					android:title="@string/blur"
-					app:iconTint="@android:color/white"
+					app:iconTint="?attr/colorOnSurface"
 					app:showAsAction="always" />
 
 				<item
@@ -60,7 +60,7 @@
 			android:icon="@drawable/ic_brush"
 			android:orderInCategory="55"
 			android:title="@string/draw"
-			app:iconTint="@android:color/white"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="always">
 
 			<menu>
@@ -70,7 +70,7 @@
 					android:icon="@drawable/ic_brush"
 					android:orderInCategory="40"
 					android:title="@string/brush"
-					app:iconTint="@android:color/white"
+					app:iconTint="?attr/colorOnSurface"
 					app:showAsAction="always" />
 
 				<item
@@ -79,7 +79,7 @@
 					android:icon="@drawable/ic_pencil_outline"
 					android:orderInCategory="60"
 					android:title="@string/pencil"
-					app:iconTint="@android:color/white"
+					app:iconTint="?attr/colorOnSurface"
 					app:showAsAction="always" />
 
 			</menu>
@@ -90,9 +90,9 @@
 			android:id="@+id/item_stickers"
 			android:enabled="true"
 			android:icon="@drawable/ic_mood_outline"
-			app:iconTint="@android:color/white"
 			android:orderInCategory="60"
 			android:title="@string/stickers"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="always"
 			/>
 
@@ -100,9 +100,9 @@
 			android:id="@+id/item_text"
 			android:enabled="true"
 			android:icon="@drawable/ic_font_download_outline"
-			app:iconTint="@android:color/white"
 			android:orderInCategory="65"
 			android:title="@string/text"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="always"
 			/>
 
@@ -110,10 +110,10 @@
 			android:id="@+id/item_palette"
 			android:enabled="true"
 			android:icon="@drawable/ic_color_lens_24px"
-			app:iconTint="@android:color/white"
 			android:orderInCategory="70"
 			android:title="@string/palette"
 			android:visible="true"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="always"
 			/>
 
@@ -121,13 +121,46 @@
 			android:id="@+id/item_background"
 			android:enabled="true"
 			android:icon="@drawable/ic_drawing_background"
-			app:iconTint="@android:color/white"
 			android:orderInCategory="75"
 			android:title="@string/background_color"
 			android:visible="false"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="always"
 			/>
 
 	</group>
+
+	<item
+		android:id="@+id/item_flip"
+		android:enabled="true"
+		android:icon="@drawable/ic_flip_outline"
+		android:orderInCategory="80"
+		android:title="@string/flip"
+		android:visible="false"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="ifRoom"
+		/>
+
+	<item
+		android:id="@+id/item_rotate"
+		android:enabled="true"
+		android:icon="@drawable/ic_outline_rotate_90_degrees_ccw_24"
+		android:orderInCategory="85"
+		android:title="@string/rotate"
+		android:visible="false"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="ifRoom"
+		/>
+
+	<item
+		android:id="@+id/item_crop"
+		android:enabled="true"
+		android:icon="@drawable/ic_crop_outline"
+		android:orderInCategory="90"
+		android:title="@string/crop"
+		android:visible="false"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="ifRoom"
+		/>
 
 </menu>

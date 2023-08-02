@@ -31,10 +31,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
@@ -85,7 +85,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 	private TextView totalView, usageView, freeView, messageView, inuseView;
 	private MaterialAutoCompleteTextView timeSpinner, messageTimeSpinner;
 	private Button deleteButton, messageDeleteButton;
-	private ProgressBar progressBar;
+	private CircularProgressIndicator progressBar;
 	private boolean isCancelled, isMessageDeleteCancelled;
 	private int selectedSpinnerItem, selectedMessageSpinnerItem;
 	private FrameLayout storageFull, storageThreema, storageEmpty;

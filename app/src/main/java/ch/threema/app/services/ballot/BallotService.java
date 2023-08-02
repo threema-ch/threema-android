@@ -21,11 +21,12 @@
 
 package ch.threema.app.services.ballot;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.managers.ListenerManager;
@@ -46,7 +47,7 @@ import ch.threema.storage.models.ballot.LinkBallotModel;
 public interface BallotService {
 
 	interface BallotFilter {
-		MessageReceiver getReceiver();
+		MessageReceiver<?> getReceiver();
 		BallotModel.State[] getStates();
 		default String createdOrNotVotedByIdentity() {
 			return null;
@@ -85,7 +86,7 @@ public interface BallotService {
 	List<BallotModel> getBallots(BallotFilter filter) throws NotAllowedException;
 	long countBallots(BallotFilter filter);
 
-	boolean belongsToMe(Integer ballotModelId, MessageReceiver messageReceiver) throws NotAllowedException;
+	boolean belongsToMe(Integer ballotModelId, MessageReceiver<?> messageReceiver) throws NotAllowedException;
 
 	/**
 	 * Create / Update ballot from createMessage
@@ -96,17 +97,17 @@ public interface BallotService {
 	@NonNull BallotUpdateResult update(BallotCreateInterface createMessage) throws ThreemaException, BadMessageException;
 	boolean update(BallotModel ballotModel);
 
-	BallotPublishResult publish(MessageReceiver messageReceiver, BallotModel ballotModel,
+	BallotPublishResult publish(MessageReceiver<?> messageReceiver, BallotModel ballotModel,
 								AbstractMessageModel abstractMessageModel) throws NotAllowedException, MessageTooLongException;
 
-	BallotPublishResult publish(MessageReceiver messageReceiver,
+	BallotPublishResult publish(MessageReceiver<?> messageReceiver,
 	                            BallotModel ballotModel,
 	                            AbstractMessageModel abstractMessageModel,
 	                            String receivingIdentity) throws NotAllowedException, MessageTooLongException;
 
 	LinkBallotModel getLinkedBallotModel(BallotModel ballotModel) throws NotAllowedException;
 	boolean remove(BallotModel ballotModel) throws NotAllowedException;
-	boolean remove(MessageReceiver receiver);
+	boolean remove(MessageReceiver<?> receiver);
 
 	/*
 	choice stuff
@@ -124,12 +125,12 @@ public interface BallotService {
 	 * return the count of votings depending on the ballot properties
 	 */
 	int getVotingCount(BallotChoiceModel choiceModel);
-	boolean removeVotes(MessageReceiver receiver, String identity);
+	boolean removeVotes(MessageReceiver<?> receiver, String identity);
 
 	@NonNull List<String> getVotedParticipants(Integer ballotModelId);
 	@NonNull List<String> getPendingParticipants(Integer ballotModelId);
 	@NonNull String[] getParticipants(Integer ballotModelId);
-	@NonNull String[] getParticipants(MessageReceiver messageReceiver);
+	@NonNull String[] getParticipants(MessageReceiver<?> messageReceiver);
 
 	boolean hasVoted(Integer ballotModelId, String fromIdentity);
 
@@ -143,7 +144,7 @@ public interface BallotService {
 	 */
 	List<BallotVoteModel> getBallotVotes(Integer ballotModelId) throws NotAllowedException;
 
-	MessageReceiver getReceiver(BallotModel ballotModel);
+	MessageReceiver<?> getReceiver(BallotModel ballotModel);
 
 	BallotMatrixData getMatrixData(int ballotModelId);
 

@@ -42,6 +42,7 @@ class ForwardSecurityStatusChatAdapterDecorator(context: Context?, messageModel:
             ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER -> body = context.getString(R.string.forward_security_message_out_of_order)
             ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED -> body = ConfigUtils.getSafeQuantityString(context, R.plurals.forward_security_messages_skipped, statusDataModel.quantity, statusDataModel.quantity)
             ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE -> body = context.getString(R.string.forward_security_downgraded_status_message)
+            ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE -> body = context.getString(R.string.forward_security_illegal_session_status_message)
         }
         if (showHide(holder.bodyTextView, !TestUtil.empty(body))) {
             holder.bodyTextView.text = body

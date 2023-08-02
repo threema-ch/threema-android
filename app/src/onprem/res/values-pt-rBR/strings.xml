@@ -22,8 +22,6 @@
 antes de enviá-los ao servidor para procurar contatos correspondentes. Os dados são mantidos apenas na memória e nunca armazenados no servidor.</string>
     <string name="threema_contact">Contato do Threema OnPrem</string>
     <string name="menu_about">Sobre o Threema OnPrem</string>
-    <string name="list_theme_light">Claro</string>
-    <string name="list_theme_dark">Escuro (padrão)</string>
     <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Para usuários privados</a>]]></string>
     <string name="directory_search">Pesquisar no diretório</string>
     <string name="directory_title">Diretório da empresa</string>

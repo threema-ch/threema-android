@@ -35,19 +35,20 @@ import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.fragments.BackupDataFragment.REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS;
+import static ch.threema.app.utils.PowermanagerUtil.isIgnoringBatteryOptimizations;
 
 /**
  * Guides user through the process of disabling battery optimization energy saving option.
@@ -92,7 +93,7 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || isIgnoringBatteryOptimizations(this)) {
+		if (isIgnoringBatteryOptimizations(this)) {
 			setResult(RESULT_OK);
 			finish();
 			return;
@@ -100,7 +101,7 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 
 		Intent intent = getIntent();
 
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK || intent.getBooleanExtra(EXTRA_WIZARD, false)) {
+		if (ConfigUtils.isTheDarkSide(this) || intent.getBooleanExtra(EXTRA_WIZARD, false)) {
 			setTheme(R.style.Theme_Threema_Translucent_Dark);
 		}
 
@@ -134,28 +135,6 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 			cancelLabel
 		);
 		dialog.show(getSupportFragmentManager(), DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS);
-	}
-
-	/**
-	 * Try to find out whether battery optimizations are already disabled for our app.
-	 * If this fails (e.g. on devices older than Android M), `true` will be returned.
-	 */
-	public static boolean isIgnoringBatteryOptimizations(@NonNull Context context) {
-		// App is always whitelisted in unit tests
-		if (RuntimeUtil.isInTest()) {
-			return true;
-		}
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			final PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(POWER_SERVICE);
-			try {
-				return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
-			} catch (Exception e) {
-				logger.error("Exception while checking if battery optimization is disabled", e);
-				// don't care about buggy phones not implementing this API
-				return true;
-			}
-		}
-		return true;
 	}
 
 	@TargetApi(Build.VERSION_CODES.M)

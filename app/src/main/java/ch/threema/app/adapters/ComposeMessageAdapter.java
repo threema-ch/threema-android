@@ -21,9 +21,8 @@
 
 package ch.threema.app.adapters;
 
-import android.annotation.SuppressLint;
+import android.animation.LayoutTransition;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -40,7 +39,12 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
+import androidx.media3.session.MediaController;
+
+import com.google.android.material.shape.ShapeAppearanceModel;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.slf4j.Logger;
 
@@ -94,8 +98,11 @@ import ch.threema.storage.models.DateSeparatorMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.MessageType;
 
+import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DEFAULT;
+
 public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageAdapter");
+	public static final int MIN_CONSTRAINT_LENGTH = 2;
 
 	private final List<AbstractMessageModel> values;
 	private final ChatAdapterDecorator.Helper decoratorHelper;
@@ -115,7 +122,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 
 	private int firstUnreadPos = -1, unreadMessagesCount;
 	private final Context context;
-
+	private final ShapeAppearanceModel shapeAppearanceModelReceiveTop, shapeAppearanceModelReceiveMiddle, shapeAppearanceModelReceiveBottom, shapeAppearanceModelSendTop, shapeAppearanceModelSendMiddle, shapeAppearanceModelSendBottom, shapeAppearanceModelSingle;
 	private final LayoutInflater layoutInflater;
 
 	@Retention(RetentionPolicy.SOURCE)
@@ -187,7 +194,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		void longClick(View view, int position, AbstractMessageModel messageModel);
 		boolean touch(View view, MotionEvent motionEvent, AbstractMessageModel messageModel);
 		void avatarClick(View view, int position, AbstractMessageModel messageModel);
-		void onSearchResultsUpdate(int searchResultsIndex, int searchResultsSize);
+		void onSearchResultsUpdate(int searchResultsIndex, int searchResultsSize, int queryLength);
 		void onSearchInProgress(boolean inProgress);
 	}
 
@@ -208,20 +215,15 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			ThumbnailCache<?> thumbnailCache,
 			int thumbnailWidth,
 			Fragment fragment,
-			int unreadMessagesCount) {
+			int unreadMessagesCount,
+			ListenableFuture<MediaController> mediaControllerFuture) {
 		super(context, R.layout.conversation_list_item_send, values);
 
 		this.context = context;
 		this.values = values;
 		this.listView = listView;
 		this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		int regularColor;
-		if (ConfigUtils.getAppTheme(context) != ConfigUtils.THEME_LIGHT) {
-			regularColor = context.getResources().getColor(R.color.dark_text_color_secondary);
-		} else {
-			regularColor = context.getResources().getColor(R.color.text_color_secondary);
-		}
-		Drawable stopwatchIcon = ConfigUtils.getThemedDrawable(getContext(), R.drawable.ic_av_timer_grey600_18dp);
+		int regularColor = ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurface);
 		int maxBubbleTextLength = context.getResources().getInteger(R.integer.max_bubble_text_length);
 		int maxQuoteTextLength = context.getResources().getInteger(R.integer.max_quote_text_length);
 		this.resultMapIndex = 0;
@@ -245,14 +247,55 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				thumbnailWidth,
 				fragment,
 				regularColor,
-				stopwatchIcon,
 				maxBubbleTextLength,
-				maxQuoteTextLength
+				maxQuoteTextLength,
+				mediaControllerFuture
 		);
 
+		int cornerRadius = context.getResources().getDimensionPixelSize(R.dimen.chat_bubble_border_radius),
+			cornerRadiusSharp = context.getResources().getDimensionPixelSize(R.dimen.chat_bubble_border_radius_sharp);
 		this.bubblePaddingLeftRight = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_container_padding_left_right);
 		this.bubblePaddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_container_padding_bottom);
 		this.bubblePaddingBottomGrouped = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_container_padding_bottom_grouped);
+		this.shapeAppearanceModelReceiveTop = new ShapeAppearanceModel.Builder()
+			.setTopLeftCornerSize(cornerRadius)
+			.setTopRightCornerSize(cornerRadius)
+			.setBottomLeftCornerSize(cornerRadiusSharp)
+			.setBottomRightCornerSize(cornerRadius)
+			.build();
+		this.shapeAppearanceModelReceiveMiddle = new ShapeAppearanceModel.Builder()
+			.setTopLeftCornerSize(cornerRadiusSharp)
+			.setTopRightCornerSize(cornerRadius)
+			.setBottomLeftCornerSize(cornerRadiusSharp)
+			.setBottomRightCornerSize(cornerRadius)
+			.build();
+		this.shapeAppearanceModelReceiveBottom = new ShapeAppearanceModel.Builder()
+			.setTopLeftCornerSize(cornerRadiusSharp)
+			.setTopRightCornerSize(cornerRadius)
+			.setBottomLeftCornerSize(cornerRadius)
+			.setBottomRightCornerSize(cornerRadius)
+			.build();
+		this.shapeAppearanceModelSendTop = new ShapeAppearanceModel.Builder()
+			.setTopLeftCornerSize(cornerRadius)
+			.setTopRightCornerSize(cornerRadius)
+			.setBottomLeftCornerSize(cornerRadius)
+			.setBottomRightCornerSize(cornerRadiusSharp)
+			.build();
+		this.shapeAppearanceModelSendMiddle = new ShapeAppearanceModel.Builder()
+			.setTopLeftCornerSize(cornerRadius)
+			.setTopRightCornerSize(cornerRadiusSharp)
+			.setBottomLeftCornerSize(cornerRadius)
+			.setBottomRightCornerSize(cornerRadiusSharp)
+			.build();
+		this.shapeAppearanceModelSendBottom = new ShapeAppearanceModel.Builder()
+			.setTopLeftCornerSize(cornerRadius)
+			.setTopRightCornerSize(cornerRadiusSharp)
+			.setBottomLeftCornerSize(cornerRadius)
+			.setBottomRightCornerSize(cornerRadius)
+			.build();
+		this.shapeAppearanceModelSingle = new ShapeAppearanceModel.Builder()
+			.setAllCornerSizes(cornerRadius)
+			.build();
 	}
 
 	/**
@@ -430,7 +473,6 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	}
 
 	@NonNull
-	@SuppressLint("WrongViewCast")
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View itemView = convertView;
@@ -455,6 +497,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				holder.messageBlockView = itemView.findViewById(R.id.message_block);
 				holder.footerView = itemView.findViewById(R.id.indicator_container);
 				holder.dateView = itemView.findViewById(R.id.date_view);
+				holder.datePrefixIcon = itemView.findViewById(R.id.date_prefix_icon);
 
 				if (isUserMessage(itemType)) {
 					holder.senderView = itemView.findViewById(R.id.group_sender_view);
@@ -481,6 +524,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					holder.groupAckThumbsUpImage = itemView.findViewById(R.id.groupack_thumbsup);
 					holder.groupAckThumbsDownImage = itemView.findViewById(R.id.groupack_thumbsdown);
 					holder.tapToResend = itemView.findViewById(R.id.tap_to_resend);
+
+					((ViewGroup) holder.groupAckContainer).getLayoutTransition().enableTransitionType(LayoutTransition.DISAPPEARING|LayoutTransition.APPEARING);
 				}
 				itemView.setTag(holder);
 			}
@@ -497,18 +542,16 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			if (isUserMessage(itemType)) {
 				itemView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, 0));
 				if (messageModel.isOutbox()) {
-					holder.messageBlockView.setBackgroundResource(R.drawable.bubble_send_selector);
+					holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(context, R.color.bubble_send_colorstatelist));
 				} else {
-					holder.messageBlockView.setBackgroundResource(R.drawable.bubble_recv_selector);
+					holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(context, R.color.bubble_receive_colorstatelist));
 				}
-
 			} else {
 				itemView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, 0));
 			}
 		}
 		holder.position = position;
 
-		final boolean showAvatar = adjustMarginsForMessageGrouping(holder, itemView, itemType);
 		final ChatAdapterDecorator decorator;
 
 		if (itemType == TYPE_FIRST_UNREAD) {
@@ -516,6 +559,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			decorator = new FirstUnreadChatAdapterDecorator(this.context, messageModel, this.decoratorHelper, unreadMessagesCount);
 		}
 		else {
+			final boolean showAvatar = adjustMarginsForMessageGrouping(holder, itemView, itemType, messageModel);
+
 			switch (messageType) {
 				case STATUS:
 					decorator = new StatusChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
@@ -571,13 +616,14 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					}
 			}
 
-			if(groupId > 0) {
+			if (groupId > 0) {
 				decorator.setGroupMessage(groupId, this.identityColors);
 				decorator.setGroupedMessage(showAvatar);
 			}
 
-			if(this.onClickListener != null) {
-				final View v = itemView;
+			if (this.onClickListener != null) {
+				final View v = holder.messageBlockView;
+
 				decorator.setOnClickElement(messageModel12 -> onClickListener.click(v, position, messageModel12));
 
 				decorator.setOnLongClickElement(messageModel13 -> onClickListener.longClick(v, position, messageModel13));
@@ -617,13 +663,11 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	 * @param itemType The Type the item is representing
 	 * @return true if it's the first item in a group, false if it's a consecutive iitem
 	 */
-	private boolean adjustMarginsForMessageGrouping(ComposeMessageHolder holder, View itemView, @ItemType int itemType) {
-		boolean isFirstItemInGroup = true;
+	private boolean adjustMarginsForMessageGrouping(ComposeMessageHolder holder, View itemView, @ItemType int itemType, @NonNull AbstractMessageModel currentItem) {
+		boolean isFirstItemInGroup = true, hasPreviousItem = false, hasNextItem = false;
 
 		if (itemView != null) {
 			int paddingBottom = bubblePaddingBottom;
-			AbstractMessageModel currentItem = values.get(holder.position);
-
 			if (isUserMessage(itemType)) {
 				if (values.size() > holder.position + 1) {
 					AbstractMessageModel nextItem = values.get(holder.position + 1);
@@ -631,30 +675,52 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					if (isUserMessage(getItemType(nextItem))) {
 						if (isConsecutiveItem(currentItem, nextItem)) {
 							paddingBottom = bubblePaddingBottomGrouped;
+							hasNextItem = true;
 						}
 					}
 				}
+
 				if (holder.position > 0) {
 					AbstractMessageModel previousItem = values.get(holder.position - 1);
 
 					if (isUserMessage(getItemType(previousItem))) {
 						if (isConsecutiveItem(currentItem, previousItem)) {
-							if (currentItem.isOutbox()) {
-								holder.messageBlockView.setBackgroundResource(R.drawable.bubble_send_selector_no_arrow);
-							} else {
-								holder.messageBlockView.setBackgroundResource(R.drawable.bubble_recv_selector_no_arrow);
-							}
 							isFirstItemInGroup = false;
+							hasPreviousItem = true;
 						}
 					}
 				}
 			}
+
+			holder.messageBlockView.setShapeAppearanceModel(getShapeAppearanceForBubble(currentItem.isOutbox(), hasPreviousItem, hasNextItem));
 
 			if (itemView.getPaddingBottom() != paddingBottom) {
 				itemView.setPadding(bubblePaddingLeftRight, 0, bubblePaddingLeftRight, paddingBottom);
 			}
 		}
 		return isFirstItemInGroup;
+	}
+
+	/**
+	 * Return the ShapeAppearanceModel that fits the combination of parameters
+	 * @param isOutbox true if the user is the sender of the message(s), false if he is the receiver
+	 * @param hasPreviousItem true if there is a consecutive message previous to this
+	 * @param hasNextItem true if there is a consecutive message after this
+	 * @return a ShapeAppearanceModel that fits the situation
+	 */
+	private ShapeAppearanceModel getShapeAppearanceForBubble(boolean isOutbox, boolean hasPreviousItem, boolean hasNextItem) {
+		if (hasPreviousItem) {
+			if (hasNextItem) {
+				return isOutbox ? shapeAppearanceModelSendMiddle : shapeAppearanceModelReceiveMiddle;
+			}
+			return isOutbox ? shapeAppearanceModelSendBottom : shapeAppearanceModelReceiveBottom;
+		}
+
+		if (hasNextItem) {
+			return isOutbox ? shapeAppearanceModelSendTop : shapeAppearanceModelReceiveTop;
+		}
+
+		return shapeAppearanceModelSingle;
 	}
 
 	/**
@@ -711,7 +777,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			resultMapIndex = 0;
 			searchUpdate();
 
-			if (constraint == null || constraint.length() < 2) {
+			if (constraint == null || constraint.length() < MIN_CONSTRAINT_LENGTH) {
 				// no filtering
 				filterString = null;
 			} else {
@@ -776,7 +842,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 								if (quoteType != QuoteUtil.QUOTE_TYPE_NONE) {
 									QuoteUtil.QuoteContent quoteContent = QuoteUtil.getQuoteContent(
 										messageModel,
-										decoratorHelper.getMessageReceiver().getType(),
+										decoratorHelper.getMessageReceiver(),
 										false,
 										decoratorHelper.getThumbnailCache(),
 										getContext(),
@@ -799,8 +865,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 						} else if (messageModel.getType() == MessageType.FILE) {
 							String searchString = "";
 
-							if (!MimeUtil.isImageFile(messageModel.getFileData().getMimeType()) && !TestUtil.empty(messageModel.getFileData().getFileName())) {
-								// do not index filename for images and GIFs - as it's not visible in the UI
+							if (messageModel.getFileData().getRenderingType() == RENDERING_DEFAULT && !TestUtil.empty(messageModel.getFileData().getFileName())) {
+								// do not index filename for RENDERING_MEDIA or RENDERING_STICKER as it's not visible in the UI
 								searchString += messageModel.getFileData().getFileName();
 							}
 
@@ -929,7 +995,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	private void searchUpdate() {
 		int size = resultMap.size();
 
-		onClickListener.onSearchResultsUpdate(size > 0 ? resultMapIndex + 1 : 0, resultMap.size());
+		onClickListener.onSearchResultsUpdate(size > 0 ? resultMapIndex + 1 : 0, resultMap.size(), currentConstraint.length());
 	}
 
 	public void resetMatchPosition() {

@@ -29,9 +29,11 @@ import org.junit.Test;
 import java.nio.charset.StandardCharsets;
 
 import androidx.test.core.app.ApplicationProvider;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.helpers.DummyUsers;
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.stores.DHSessionStoreException;
 
 public class SQLDHSessionStoreTest {
@@ -47,7 +49,12 @@ public class SQLDHSessionStoreTest {
 	@Before
 	public void setup() {
 		tempDbFileName = "threema-fs-test-" + System.currentTimeMillis() + ".db";
-		store = new SQLDHSessionStore(ApplicationProvider.getApplicationContext(), DATABASE_KEY, tempDbFileName);
+		store = new SQLDHSessionStore(
+			ApplicationProvider.getApplicationContext(),
+			DATABASE_KEY,
+			tempDbFileName,
+			ThreemaApplication.requireServiceManager().getUpdateSystemService()
+		);
 	}
 
 	@After
@@ -57,7 +64,7 @@ public class SQLDHSessionStoreTest {
 		ApplicationProvider.getApplicationContext().deleteDatabase(tempDbFileName);
 	}
 
-	public void createSessions() {
+	public void createSessions() throws BadMessageException {
 		// Alice is the initiator (= us)
 		this.initiatorDHSession = new DHSession(
 			DummyUsers.getContactForUser(DummyUsers.BOB),
@@ -67,6 +74,7 @@ public class SQLDHSessionStoreTest {
 		// Bob gets an init message from Alice with her ephemeral public key
 		this.responderDHSession = new DHSession(
 			this.initiatorDHSession.getId(),
+			DHSession.SUPPORTED_VERSION_RANGE,
 			this.initiatorDHSession.getMyEphemeralPublicKey(),
 			DummyUsers.getContactForUser(DummyUsers.ALICE),
 			DummyUsers.getIdentityStoreForUser(DummyUsers.BOB)
@@ -74,7 +82,7 @@ public class SQLDHSessionStoreTest {
 	}
 
 	@Test
-	public void testStoreInitiatorSession() throws DHSessionStoreException, DHSession.MissingEphemeralPrivateKeyException {
+	public void testStoreInitiatorSession() throws DHSessionStoreException, DHSession.MissingEphemeralPrivateKeyException, BadMessageException {
 		// Assume that we are Alice = the initiator, and Bob is the responder
 		createSessions();
 
@@ -97,6 +105,7 @@ public class SQLDHSessionStoreTest {
 
 		// Now Bob sends his ephemeral public key back to Alice
 		this.initiatorDHSession.processAccept(
+			DHSession.SUPPORTED_VERSION_RANGE,
 			this.responderDHSession.getMyEphemeralPublicKey(),
 			DummyUsers.getContactForUser(DummyUsers.BOB),
 			DummyUsers.getIdentityStoreForUser(DummyUsers.ALICE)
@@ -118,7 +127,7 @@ public class SQLDHSessionStoreTest {
 	}
 
 	@Test
-	public void testStoreResponderSession() throws DHSessionStoreException {
+	public void testStoreResponderSession() throws DHSessionStoreException, BadMessageException {
 		// Assume that we are Bob = the responder
 		createSessions();
 
@@ -143,7 +152,7 @@ public class SQLDHSessionStoreTest {
 	}
 
 	@Test
-	public void testDiscardRatchet() throws DHSessionStoreException {
+	public void testDiscardRatchet() throws DHSessionStoreException, BadMessageException {
 		// Assume that we are Bob = the responder
 		createSessions();
 
@@ -172,7 +181,7 @@ public class SQLDHSessionStoreTest {
 	}
 
 	@Test
-	public void testRaceCondition() throws DHSession.MissingEphemeralPrivateKeyException, DHSessionStoreException {
+	public void testRaceCondition() throws DHSession.MissingEphemeralPrivateKeyException, DHSessionStoreException, BadMessageException {
 		// Repeat the test several times, as random session IDs are involved
 		for (int i = 0; i < NUM_RANDOM_RUNS; i++) {
 			if (i > 0) {
@@ -183,7 +192,7 @@ public class SQLDHSessionStoreTest {
 		}
 	}
 
-	private void testRaceConditionOnce() throws DHSession.MissingEphemeralPrivateKeyException, DHSessionStoreException {
+	private void testRaceConditionOnce() throws DHSession.MissingEphemeralPrivateKeyException, DHSessionStoreException, BadMessageException {
 		createSessions();
 
 		// Alice stores the session that she initiated (still in 2DH mode)
@@ -198,6 +207,7 @@ public class SQLDHSessionStoreTest {
 		// Alice gets the Init for Bob's new session first and processes it
 		DHSession raceResponderDHSession = new DHSession(
 			raceInitiatorDHSession.getId(),
+			DHSession.SUPPORTED_VERSION_RANGE,
 			raceInitiatorDHSession.getMyEphemeralPublicKey(),
 			DummyUsers.getContactForUser(DummyUsers.BOB),
 			DummyUsers.getIdentityStoreForUser(DummyUsers.ALICE)
@@ -207,6 +217,7 @@ public class SQLDHSessionStoreTest {
 
 		// Alice then processes the Accept from Bob and stores the session
 		this.initiatorDHSession.processAccept(
+			DHSession.SUPPORTED_VERSION_RANGE,
 			this.responderDHSession.getMyEphemeralPublicKey(),
 			DummyUsers.getContactForUser(DummyUsers.BOB),
 			DummyUsers.getIdentityStoreForUser(DummyUsers.ALICE)

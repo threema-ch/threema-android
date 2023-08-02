@@ -35,14 +35,15 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -141,14 +142,10 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
 			explainLayout = fragmentView.findViewById(R.id.explain_layout);
 
 			floatingActionButton = fragmentView.findViewById(R.id.floating);
-			floatingActionButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (preferenceService.getThreemaSafeEnabled()) {
-						threemaSafeService.unscheduleUpload();
-						threemaSafeService.scheduleUpload();
-						threemaSafeService.uploadNow(getContext(), true);
-					}
+			floatingActionButton.setOnClickListener(v -> {
+				if (preferenceService.getThreemaSafeEnabled()) {
+					threemaSafeService.uploadNow(true);
+					threemaSafeService.reschedulePeriodicUpload();
 				}
 			});
 
@@ -157,7 +154,7 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
 				@Override
 				public void onClick(View v) {
 					if (preferenceService.getThreemaSafeEnabled()) {
-						threemaSafeService.unscheduleUpload();
+						threemaSafeService.unschedulePeriodicUpload();
 						Intent intent = new Intent(getActivity(), ThreemaSafeConfigureActivity.class);
 						intent.putExtra(EXTRA_CHANGE_PASSWORD, true);
 						startActivityForResult(intent, REQUEST_CODE_SAFE_CHANGE_PASSWORD);
@@ -170,7 +167,7 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if (buttonView.isShown()) {
-						logger.debug("*** onCheckedChanged buttonView " + buttonView.isChecked() + " isChecked " + isChecked);
+						logger.debug("*** onCheckedChanged buttonView {} isChecked {}", buttonView.isChecked(), isChecked);
 						if (isChecked) {
 							startActivityForResult(new Intent(getActivity(), ThreemaSafeConfigureActivity.class), REQUEST_CODE_SAFE_CONFIGURE);
 						} else {
@@ -238,7 +235,7 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
 					backupResult.setTextColor(getResources().getColor(R.color.material_red));
 				} else {
 					backupResult.setText("-");
-					backupResult.setTextColor(ConfigUtils.getPrimaryColor());
+					backupResult.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnBackground));
 				}
 				changePasswordButton.setVisibility(View.INVISIBLE);
 			}

@@ -23,7 +23,7 @@
 		android:ellipsize="end"
 		android:fontFamily="sans-serif-condensed"
 		android:textSize="12sp"
-		android:textColor="?attr/textColorPrimary"
+		android:textColor="?attr/colorOnBackground"
 		android:gravity="center_horizontal|top"
 		android:maxLines="2"
 		android:textAlignment="center"/>

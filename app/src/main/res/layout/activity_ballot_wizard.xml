@@ -1,112 +1,85 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  xmlns:custom="http://schemas.android.com/apk/res-auto"
-			  android:id="@+id/root_view"
-			  android:layout_width="match_parent"
-			  android:layout_height="match_parent"
-			  android:background="?attr/background_secondary">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground">
 
-	<androidx.viewpager.widget.ViewPager
-			android:id="@+id/pager"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"/>
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-	<View android:id="@+id/divider"
-		  android:layout_height="1dp"
-		  android:layout_width="match_parent"
-		  android:layout_gravity="bottom"
-		  android:background="?android:attr/dividerHorizontal"
-		  android:layout_marginBottom="@dimen/wizard_footer_height"/>
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/wizard_footer_height"
+        android:background="?android:attr/dividerHorizontal" />
 
-	<RelativeLayout
-			style="?android:attr/buttonBarStyle"
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/wizard_footer_height"
-			android:layout_gravity="bottom">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/wizard_footer_height"
+        android:layout_gravity="bottom">
 
-		<FrameLayout android:layout_width="wrap_content"
-					 android:layout_height="wrap_content"
-					 android:layout_alignParentLeft="true"
-					 android:layout_centerVertical="true">
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/strip">
 
-			<ImageView
-				style="?android:attr/buttonBarButtonStyle"
-				android:contentDescription="@string/ballot_copy"
-				android:tooltipText="@string/ballot_copy"
-				custom:srcCompat="@drawable/ic_content_copy_outline"
-				android:id="@+id/copy_ballot"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:paddingTop="10dp"
-				android:paddingBottom="10dp"
-				android:layout_gravity="center_vertical|left"
-				android:visibility="visible"
-				custom:tint="?attr/textColorSecondary" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/copy_ballot"
+                style="@style/Threema.MaterialButton.Borderless.Wizard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:maxWidth="250dp"
+                android:text="@string/ballot_copy"
+                android:visibility="visible"
+                app:icon="@drawable/ic_content_copy_outline"
+                app:iconGravity="start" />
 
-			<ImageView
-				style="?android:attr/buttonBarButtonStyle"
-				android:visibility="gone"
-				android:tooltipText="@string/back"
-				android:contentDescription="@string/back"
-				android:src="@drawable/ic_next_alpha"
-				android:id="@+id/prev_page_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:scaleX="-1"
-				android:paddingTop="10dp"
-				android:paddingBottom="10dp"
-				android:layout_gravity="center_vertical|left"
-				custom:tint="?attr/textColorSecondary" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/prev_page_button"
+                style="@style/Threema.MaterialButton.Borderless.Wizard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:maxWidth="250dp"
+                android:text="@string/back"
+                android:visibility="gone"
+                app:icon="@drawable/ic_keyboard_arrow_left"
+                app:iconGravity="start" />
 
-		</FrameLayout>
+        </FrameLayout>
 
-		<ch.threema.app.ui.StepPagerStrip
-				android:id="@+id/strip"
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-	            android:layout_centerVertical="true"
-				android:layout_centerHorizontal="true"
-				android:padding="10dp"
-				android:gravity="center_horizontal"
-				custom:selectedColor="?colorAccent"
-				custom:previousColor="?attr/textColorSecondary"
-				custom:nextColor="?attr/textColorSecondary"
-				/>
+        <ch.threema.app.ui.StepPagerStrip
+            android:id="@+id/strip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            app:nextColor="?attr/colorOnSurface"
+            app:previousColor="?attr/colorOnSurface"
+            app:selectedColor="?attr/colorPrimary" />
 
-		<FrameLayout android:layout_width="wrap_content"
-					 android:layout_height="wrap_content"
-					 android:layout_alignParentRight="true"
-					 android:layout_centerVertical="true">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/next_page_button"
+            style="@style/Threema.MaterialButton.Borderless.Wizard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:maxWidth="250dp"
+            android:text="@string/next"
+            android:visibility="visible"
+            app:icon="@drawable/ic_keyboard_arrow_right"
+            app:iconGravity="end" />
 
-		<ImageView
-				style="?android:attr/buttonBarButtonStyle"
-				android:contentDescription="@string/next"
-				android:tooltipText="@string/next"
-				android:src="@drawable/ic_next_alpha"
-				android:id="@+id/next_page_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:paddingTop="10dp"
-				android:paddingBottom="10dp"
-				android:layout_gravity="center_vertical|right"
-				custom:tint="?attr/textColorSecondary" />
-
-		<Button
-				  style="@style/Threema.TextButton"
-				  android:id="@+id/next_text"
-				  android:layout_width="wrap_content"
-				  android:layout_height="wrap_content"
-				  android:paddingRight="16dp"
-				  android:textSize="14sp"
-				  android:fontFamily="sans-serif-condensed"
-				  android:textStyle="normal"
-				  android:textAllCaps="true"
-				  android:text="@string/finish"
-				  android:layout_gravity="center_vertical"
-				  android:visibility="gone"
-				/>
-
-		</FrameLayout>
-
-	</RelativeLayout>
+    </RelativeLayout>
 
 </FrameLayout>

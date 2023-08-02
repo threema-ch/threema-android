@@ -7,7 +7,7 @@
 		android:orderInCategory="10"
 		android:title="@string/title_lock"
 		android:visible="true"
-		app:iconTint="?android:textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="always"/>
 
 	<group
@@ -20,7 +20,7 @@
 		android:icon="@drawable/ic_search_outline"
 		android:title="@string/global_search"
 		android:visible="true"
-		app:iconTint="?android:textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
 	</group>
@@ -35,6 +35,7 @@
 		android:title="@string/title_addgroup"
 		android:icon="@drawable/ic_group_outline"
 		android:visible="true"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
 	<item
@@ -43,6 +44,7 @@
 		android:title="@string/title_add_distribution_list"
 		android:icon="@drawable/ic_bullhorn_outline"
 		android:visible="true"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
 	</group>
@@ -58,7 +60,7 @@
 			android:icon="@drawable/ic_link_outline"
 			android:title="@string/group_request_sent_menu"
 			android:visible="false"
-			app:iconTint="?android:textColorSecondary"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never"/>
 
 	</group>
@@ -72,6 +74,7 @@
 		android:title="@string/title_hide_private_chats"
 		android:icon="@drawable/ic_outline_visibility"
 		android:visible="false"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
 	<item
@@ -79,6 +82,7 @@
 		android:icon="@drawable/ic_settings_backup_restore_outline"
 		android:orderInCategory="55"
 		android:title="@string/my_backups_title"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
 	<item
@@ -86,6 +90,7 @@
 		android:icon="@drawable/ic_archive_outline"
 		android:orderInCategory="60"
 		android:title="@string/archived"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
 	<item
@@ -93,6 +98,7 @@
 		android:icon="@drawable/ic_web_notification"
 		android:orderInCategory="65"
 		android:title="@string/webclient"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
 	<item
@@ -101,6 +107,7 @@
 		android:orderInCategory="70"
 		android:title="@string/qr_code"
 		android:visible="false"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
 	<item
@@ -109,6 +116,7 @@
 		android:orderInCategory="75"
 		android:title="@string/directory_title"
 		android:visible="false"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
 	</group>
@@ -122,6 +130,7 @@
 			android:icon="@drawable/ic_rss_feed_outline"
 			android:orderInCategory="70"
 			android:title="@string/threema_channel"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never"/>
 
 		<item
@@ -129,6 +138,7 @@
 			android:icon="@drawable/ic_settings_outline_24dp"
 			android:orderInCategory="75"
 			android:title="@string/menu_settings"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never"/>
 
 		<item
@@ -136,6 +146,7 @@
 			android:icon="@drawable/ic_help_outline_24dp"
 			android:orderInCategory="80"
 			android:title="@string/support"
+			app:iconTint="?attr/colorOnSurface"
 			app:showAsAction="never"/>
 
 	</group>

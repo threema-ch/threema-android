@@ -137,10 +137,11 @@ public class VideoConfig {
 	 */
 	public static int getTargetVideoBitrate(Context context, MediaItem mediaItem, int videoSize) throws ThreemaException {
 		int originalBitrate;
-		int targetBitrate = 0;
+		int targetBitrate;
 		int preferredBitrate = getPreferredVideoBitrate(videoSize);
 
 		// do not use automatic resource management on MediaMetadataRetriever
+		//noinspection resource
 		MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
 		try {
 			metaRetriever.setDataSource(context, mediaItem.getUri());
@@ -226,11 +227,13 @@ public class VideoConfig {
 			logger.info("Preferred bit rate is {}. Falling back to bit rate {} due to size", preferredBitrate, targetBitrate);
 		}
 
-		if (targetBitrate > preferredBitrate && preferredBitrate != BITRATE_DEFAULT) {
+		if (mediaItem.getType() != MediaItem.TYPE_VIDEO_CAM && targetBitrate > preferredBitrate && preferredBitrate != BITRATE_DEFAULT) {
+			logger.info("Target bitrate ({}) is higher than preferred bitrate ({})", targetBitrate, preferredBitrate);
 			return preferredBitrate;
 		}
 
 		if (targetBitrate != originalBitrate) {
+			logger.info("Target bitrate ({}) is not original bitrate ({})", targetBitrate, originalBitrate);
 			return targetBitrate;
 		}
 

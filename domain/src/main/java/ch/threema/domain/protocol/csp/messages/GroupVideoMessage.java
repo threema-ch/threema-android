@@ -27,7 +27,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A group message that has a video including thumbnail (stored on the blob server) as its content.
@@ -65,6 +67,12 @@ public class GroupVideoMessage extends AbstractGroupMessage {
 	@Override
 	public boolean flagSendPush() {
 		return true;
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 
 	@Override

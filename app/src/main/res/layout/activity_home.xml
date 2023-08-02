@@ -26,16 +26,14 @@
 
 		</FrameLayout>
 
-		<include layout="@layout/view_sms_notice"/>
-
 		<ch.threema.app.ui.OngoingCallNoticeView
 			android:id="@+id/ongoing_call_notice"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:animateLayoutChanges="true"
-			android:background="?attr/background_openNotice"
-			android:elevation="4dp"
 			android:visibility="gone" />
+
+		<include layout="@layout/notice_sms_verification"/>
 
 	</com.google.android.material.appbar.AppBarLayout>
 
@@ -50,6 +48,7 @@
 		app:layout_constraintTop_toBottomOf="@+id/appbar"/>
 
 	<com.google.android.material.bottomnavigation.BottomNavigationView
+		style="@style/Threema.BottomNavigationView"
 		android:id="@+id/bottom_navigation"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

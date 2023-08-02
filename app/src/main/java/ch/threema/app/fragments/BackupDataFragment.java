@@ -21,6 +21,8 @@
 
 package ch.threema.app.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -32,13 +34,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import org.slf4j.Logger;
-
-import java.util.Date;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -47,6 +42,14 @@ import androidx.core.widget.NestedScrollView;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
+import org.slf4j.Logger;
+
+import java.util.Date;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
@@ -63,8 +66,6 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
-
-import static android.app.Activity.RESULT_OK;
 
 public class BackupDataFragment extends Fragment implements
 		GenericAlertDialog.DialogClickListener,
@@ -84,7 +85,6 @@ public class BackupDataFragment extends Fragment implements
 	private BackupRestoreDataService backupRestoreDataService;
 	private View fragmentView;
 	private ExtendedFloatingActionButton fab;
-	private ServiceManager serviceManager;
 	private FileService fileService;
 	private PreferenceService preferenceService;
 	private Uri backupUri;
@@ -119,7 +119,7 @@ public class BackupDataFragment extends Fragment implements
 		setRetainInstance(true);
 
 		try {
-			this.serviceManager = ThreemaApplication.getServiceManager();
+			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 			this.fileService = serviceManager.getFileService();
 			this.preferenceService = serviceManager.getPreferenceService();
 			this.backupRestoreDataService = serviceManager.getBackupRestoreDataService();
@@ -271,7 +271,8 @@ public class BackupDataFragment extends Fragment implements
 					.setBackupAvatars(true)
 					.setBackupMedia(includeMedia)
 					.setBackupThumbnails(includeMedia)
-					.setBackupVideoAndFiles(includeMedia);
+					.setBackupVideoAndFiles(includeMedia)
+					.setBackupNonces(true);
 
 			Intent intent = new Intent(getActivity(), BackupService.class);
 			intent.putExtra(BackupService.EXTRA_BACKUP_RESTORE_DATA_CONFIG, backupRestoreDataConfig);

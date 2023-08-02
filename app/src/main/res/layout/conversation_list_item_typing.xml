@@ -11,21 +11,15 @@
 	android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
 	android:paddingRight="@dimen/chat_bubble_container_padding_left_right"
 	android:descendantFocusability="blocksDescendants"
-	android:clickable="false"
-	>
+	android:clickable="false">
 
-	<FrameLayout
+	<com.google.android.material.card.MaterialCardView
 			android:id="@+id/message_block"
+			style="@style/Threema.CardView.Bubble.Receive"
 			android:minHeight="@dimen/avatar_size_mini"
+			android:minWidth="48dp"
 			android:alpha="0.9"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
 			android:layout_gravity="center_vertical"
-			android:paddingLeft="@dimen/chat_bubble_border_padding_arrow"
-			android:paddingTop="@dimen/chat_bubble_border_padding"
-			android:paddingBottom="@dimen/chat_bubble_border_padding"
-			android:paddingRight="@dimen/chat_bubble_border_padding"
-			android:background="@drawable/bubble_recv_selector"
 			android:contentDescription="@string/is_typing">
 
 		<ch.threema.app.ui.TypingIndicatorImageView
@@ -36,5 +30,5 @@
 				android:layout_gravity="center"
 				android:visibility="visible"/>
 
-	</FrameLayout>
+	</com.google.android.material.card.MaterialCardView>
 </FrameLayout>

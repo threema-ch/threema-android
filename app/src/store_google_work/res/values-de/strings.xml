@@ -25,8 +25,6 @@
 	</string>
 	<string name="threema_contact">Threema Work-Kontakt</string>
 	<string name="menu_about">Über Threema Work</string>
-	<string name="list_theme_light">Hell</string>
-	<string name="list_theme_dark">Dunkel (standard)</string>
 	<string name="private_threema_download"><![CDATA[ <a href=%1$s>Erfahren Sie mehr über Threema Work</a> <br/><br/> Wenn Sie die App privat nutzen möchten, laden Sie Threema bitte <a href=%2$s>hier</a> herunter.]]></string>
 	<string name="directory_search">Im Verzeichnis suchen</string>
 	<string name="directory_title">Firmenverzeichnis</string>

@@ -5,7 +5,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="?android:windowBackground">
+	android:background="?android:attr/colorBackground">
 
 	<FrameLayout
 		android:layout_width="match_parent"
@@ -38,43 +38,45 @@
 						android:layout_marginTop="16dp"
 						android:clickable="true"
 						android:focusable="true"
-						app:cardBackgroundColor="?attr/cardview_background"
+						app:cardBackgroundColor="?attr/colorSurface"
 						app:cardCornerRadius="@dimen/cardview_border_radius"
 						app:cardElevation="0dp"
 						app:contentPaddingBottom="8dp"
 						app:contentPaddingLeft="15dp"
 						app:contentPaddingRight="15dp"
-						app:contentPaddingTop="8dp">
+						app:contentPaddingTop="8dp"
+						app:strokeWidth="0dp">
 
 						<FrameLayout
 							android:id="@+id/logo_frame"
-							android:layout_width="80dp"
-							android:layout_height="80dp"
+							android:layout_width="128dp"
+							android:layout_height="128dp"
 							android:layout_gravity="center_horizontal|top"
 							android:contentDescription="@string/image_placeholder"
 							android:importantForAccessibility="no">
 
 							<ch.threema.app.ui.SquareImageView
-								android:layout_width="80dp"
-								android:layout_height="80dp"
+								android:layout_width="128dp"
+								android:layout_height="128dp"
 								android:src="@drawable/ic_circle_white"
-								android:tint="@color/backup_logos_background"
+								android:tint="@color/md_theme_light_surfaceVariant"
 								android:importantForAccessibility="no"/>
 
 							<ImageView
-								android:layout_width="50dp"
+								android:layout_width="100dp"
 								android:layout_height="wrap_content"
 								android:layout_gravity="center"
 								android:adjustViewBounds="true"
 								android:src="@drawable/ic_backup_data_black_192dp"
 								android:importantForAccessibility="no"
-								app:tint="@color/text_color_secondary" />
+								app:tint="@color/md_theme_light_onSurfaceVariant" />
 
 						</FrameLayout>
 
 						<TextView
+							style="@style/Threema.TextAppearance.Emptyview"
 							android:id="@+id/empty_text"
-							android:layout_marginTop="96dp"
+							android:layout_marginTop="154dp"
 							android:layout_width="match_parent"
 							android:layout_height="match_parent"
 							android:gravity="center_horizontal|bottom"
@@ -95,13 +97,15 @@
 						android:layout_marginTop="16dp"
 						android:clickable="true"
 						android:focusable="true"
-						app:cardBackgroundColor="?attr/cardview_background"
+						app:cardBackgroundColor="?attr/colorSurface"
 						app:cardCornerRadius="@dimen/cardview_border_radius"
-						app:cardElevation="2dp"
+						app:cardElevation="4dp"
 						app:contentPaddingBottom="12dp"
 						app:contentPaddingLeft="15dp"
 						app:contentPaddingRight="15dp"
-						app:contentPaddingTop="12dp">
+						app:contentPaddingTop="12dp"
+						app:strokeWidth="0dp"
+						android:outlineProvider="none">
 
 						<LinearLayout
 							android:layout_width="match_parent"
@@ -121,7 +125,7 @@
 								android:layout_marginTop="8dp"
 								android:ellipsize="middle"
 								android:singleLine="true"
-								android:textAppearance="@style/Threema.TextAppearance.Body2"
+								android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
 								android:text=""/>
 
 						</LinearLayout>
@@ -140,13 +144,15 @@
 					android:layout_marginTop="8dp"
 					android:clickable="true"
 					android:focusable="true"
-					app:cardBackgroundColor="?attr/cardview_background"
+					app:cardBackgroundColor="?attr/colorSurface"
 					app:cardCornerRadius="@dimen/cardview_border_radius"
-					app:cardElevation="2dp"
+					app:cardElevation="4dp"
 					app:contentPaddingBottom="0dp"
 					app:contentPaddingLeft="15dp"
 					app:contentPaddingRight="15dp"
-					app:contentPaddingTop="12dp">
+					app:contentPaddingTop="12dp"
+					app:strokeWidth="0dp"
+					android:outlineProvider="none">
 
 					<LinearLayout
 						android:layout_width="match_parent"
@@ -166,7 +172,7 @@
 							android:layout_marginTop="8dp"
 							android:ellipsize="middle"
 							android:singleLine="true"
-							android:textAppearance="@style/Threema.TextAppearance.Body2"
+							android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
 							android:text=""/>
 
 						<com.google.android.material.button.MaterialButton
@@ -190,7 +196,7 @@
 
 				<com.google.android.material.button.MaterialButton
 					android:id="@+id/info"
-					style="@style/Threema.OutlinedButton"
+					style="@style/Threema.MaterialButton.Action.Outline"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:contentDescription="@string/safe_learn_more_button"
@@ -202,7 +208,7 @@
 
 				<com.google.android.material.button.MaterialButton
 					android:id="@+id/restore"
-					style="@style/Threema.OutlinedButton"
+					style="@style/Threema.MaterialButton.Action.Outline"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_alignParentRight="true"

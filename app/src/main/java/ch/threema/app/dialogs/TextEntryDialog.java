@@ -32,13 +32,14 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
@@ -201,7 +202,9 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 	public interface TextEntryDialogClickListener {
 		void onYes(String tag, String text);
 		void onNo(String tag);
-		void onNeutral(String tag);
+		default void onNeutral(String tag) {
+			// optional interface
+		}
 	}
 
 	@Override

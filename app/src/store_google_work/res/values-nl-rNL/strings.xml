@@ -17,8 +17,6 @@
     <string name="new_wizard_info_link">Als je je telefoonnummer en e-mailadres opgeeft, kan Threema Work helpen je vrienden automatisch te vinden als jij in hun lijst van contactpersonen staat. E-mailadressen worden versleuteld (hashed) op onze server opgeslagen. Je kunt deze stap ook overslaan als je Threema Work liever anoniem gebruikt.</string>
     <string name="threema_contact">Contactpersoon Threema Work</string>
     <string name="menu_about">Over Threema Work</string>
-    <string name="list_theme_light">Licht</string>
-    <string name="list_theme_dark">Donker (standaard)</string>
     <string name="private_threema_download"><![CDATA[ <a href=%1$s>Meer informatie over Threema Work</a> <br/><br/> Als je een privégebruiker bent, kun je <a href=%2$s>hier tikken</a> om Threema te downloaden.]]></string>
     <string name="directory_search">Zoeken in de directory</string>
     <string name="directory_title">Bedrijfsdirectory</string>

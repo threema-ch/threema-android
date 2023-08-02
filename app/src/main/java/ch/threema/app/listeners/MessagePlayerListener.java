@@ -22,9 +22,9 @@
 package ch.threema.app.listeners;
 
 import androidx.annotation.AnyThread;
+
 import ch.threema.storage.models.AbstractMessageModel;
 
 public interface MessagePlayerListener {
-	@AnyThread void onAudioStreamChanged(int newStreamType);
-	@AnyThread void onAudioPlayEnded(AbstractMessageModel messageModel);
+	@AnyThread default void onAudioPlayEnded(AbstractMessageModel messageModel) {};
 }

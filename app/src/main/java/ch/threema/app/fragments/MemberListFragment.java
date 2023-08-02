@@ -29,20 +29,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.ListFragment;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import androidx.annotation.StringRes;
-import androidx.fragment.app.ListFragment;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.GroupAddActivity;
 import ch.threema.app.activities.MemberChooseActivity;
 import ch.threema.app.activities.ProfilePicRecipientsActivity;
+import ch.threema.app.adapters.FilterResultsListener;
 import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
@@ -57,7 +60,7 @@ import ch.threema.app.utils.LogUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.ContactModel;
 
-public abstract class MemberListFragment extends ListFragment {
+public abstract class MemberListFragment extends ListFragment implements FilterResultsListener {
 	public static final String BUNDLE_ARG_PRESELECTED = "pres";
 	public static final String BUNDLE_ARG_EXCLUDED = "excl";
 
@@ -70,16 +73,16 @@ public abstract class MemberListFragment extends ListFragment {
 	protected DeadlineListService hiddenChatsListService;
 	protected Activity activity;
 	protected Parcelable listInstanceState;
-	protected FloatingActionButton floatingActionButton;
+	protected ExtendedFloatingActionButton floatingActionButton;
 	protected ArrayList<String> preselectedIdentities = new ArrayList<>();
 	protected ArrayList<String> excludedIdentities = new ArrayList<>();
-	protected ProgressBar progressBar;
+	protected CircularProgressIndicator progressBar;
 	protected View topLayout;
 	protected FilterableListAdapter adapter;
 	private SelectionListener selectionListener;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		activity = getActivity();
 		selectionListener = (MemberChooseActivity) activity;
 
@@ -125,7 +128,7 @@ public abstract class MemberListFragment extends ListFragment {
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
 		getListView().setDividerHeight(0);
@@ -145,7 +148,7 @@ public abstract class MemberListFragment extends ListFragment {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		try {
 			ListView listView = getListView();
 
@@ -189,6 +192,13 @@ public abstract class MemberListFragment extends ListFragment {
 				((ViewGroup) getListView().getParent()).addView(emptyView);
 				getListView().setEmptyView(emptyView);
 			} catch (IllegalStateException ignored) {}
+		}
+	}
+
+	@Override
+	public void onResultsAvailable(int count) {
+		if (isAdded() && activity != null) {
+			((MemberChooseActivity) activity).onQueryResultChanged(this, count);
 		}
 	}
 

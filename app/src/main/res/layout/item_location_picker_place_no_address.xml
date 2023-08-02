@@ -16,13 +16,14 @@
 			android:id="@+id/type_icon"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:tint="?attr/textColorSecondary"
 			android:layout_marginLeft="@dimen/lp_guide_start_margin"
 			android:layout_gravity="center_vertical"
 			app:srcCompat="@drawable/ic_map_marker_outline"
-			tools:ignore="ContentDescription"/>
+			tools:ignore="ContentDescription"
+			app:tint="?attr/colorOnSurface" />
 
 		<TextView
+			style="@style/Threema.TextAppearance.BodyLarge"
 			android:id="@+id/name"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -31,7 +32,6 @@
 			android:ellipsize="end"
 			android:maxLines="1"
 			android:layout_gravity="center_vertical"
-			android:textAppearance="@style/Threema.TextAppearance.Body1"
 			tools:text="name"/>
 
 	</FrameLayout>

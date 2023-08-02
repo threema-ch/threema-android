@@ -174,9 +174,7 @@ public class IntentDataUtil {
 		ArrayList<Integer> messageIDs = new ArrayList<>(models.size());
 		ArrayList<String> messageTypes = new ArrayList<>();
 
-		Iterator<AbstractMessageModel> iterator = models.iterator();
-		while (iterator.hasNext()) {
-			AbstractMessageModel failedMessage = iterator.next();
+		for (AbstractMessageModel failedMessage : models) {
 			messageIDs.add(failedMessage.getId());
 			messageTypes.add(failedMessage.getClass().toString());
 		}

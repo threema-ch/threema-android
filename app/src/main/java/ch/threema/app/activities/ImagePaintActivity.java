@@ -21,7 +21,12 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL;
+import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
+import static ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL;
+
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -36,7 +41,9 @@ import android.graphics.drawable.Drawable;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,13 +52,24 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerSwatch;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -66,18 +84,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -91,15 +105,20 @@ import ch.threema.app.motionviews.FaceItem;
 import ch.threema.app.motionviews.viewmodel.Font;
 import ch.threema.app.motionviews.viewmodel.Layer;
 import ch.threema.app.motionviews.viewmodel.TextLayer;
+import ch.threema.app.motionviews.widget.ActionEntity;
+import ch.threema.app.motionviews.widget.CropEntity;
 import ch.threema.app.motionviews.widget.FaceBlurEntity;
 import ch.threema.app.motionviews.widget.FaceEmojiEntity;
 import ch.threema.app.motionviews.widget.FaceEntity;
+import ch.threema.app.motionviews.widget.FlipEntity;
 import ch.threema.app.motionviews.widget.ImageEntity;
 import ch.threema.app.motionviews.widget.MotionEntity;
 import ch.threema.app.motionviews.widget.MotionView;
 import ch.threema.app.motionviews.widget.PathEntity;
+import ch.threema.app.motionviews.widget.RotationEntity;
 import ch.threema.app.motionviews.widget.TextEntity;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
@@ -121,8 +140,6 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.GroupModel;
-
-import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
 
 public class ImagePaintActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ImagePaintActivity");
@@ -163,31 +180,79 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	private static final int STROKE_MODE_PENCIL = 1;
 	private static final int MAX_FACES = 16;
 
+	private static final int ANIMATION_DURATION_MS = 200;
+
+	private static final Set<Class<? extends ActionEntity>> allowedActionsEntitiesToCrop = new HashSet<>();
+	static {
+		allowedActionsEntitiesToCrop.add(RotationEntity.class);
+		allowedActionsEntitiesToCrop.add(FlipEntity.class);
+		allowedActionsEntitiesToCrop.add(CropEntity.class);
+	}
+
 	private ImageView imageView;
 	private PaintView paintView;
 	private MotionView motionView;
 	private FrameLayout imageFrame;
 	private LockableScrollView scrollView;
 	private ComposeEditText captionEditText;
-	private ProgressBar progressBar;
+	private CircularProgressIndicator progressBar;
 	private EmojiPicker emojiPicker;
 
-	private int orientation, exifOrientation, flip, exifFlip, clipWidth, clipHeight;
+	private int clipWidth, clipHeight;
 
 	private File inputFile;
 	private Uri imageUri, outputUri;
+	private MediaItem mediaItem;
 
 	@ColorInt private int penColor, backgroundColor;
 
-	private MenuItem undoItem, drawParentItem, paintItem, pencilItem, blurFacesItem;
+	private MenuItem undoItem, drawParentItem, paintItem, pencilItem, blurFacesItem, cropItem;
 	private Drawable brushIcon, pencilIcon;
 	private PaintSelectionPopup paintSelectionPopup;
-	private final ArrayList<MotionEntity> undoHistory = new ArrayList<>();
+	private final Deque<ActionEntity> undoHistory = new LinkedList<>();
+	private long lastAnimationStart = 0;
+	private final MediaItem.Orientation currentOrientation = new MediaItem.Orientation();
 	private boolean saveSemaphore = false;
 	private int strokeMode = STROKE_MODE_BRUSH;
 	private ActivityMode activityMode = ActivityMode.EDIT_IMAGE;
 	private int groupId = -1;
 	private final ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
+	private File cropFile;
+
+	private final ActivityResultLauncher<Intent> cropResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			if (result.getResultCode() == Activity.RESULT_OK
+				&& activityMode == ActivityMode.IMAGE_REPLY
+				&& cropFile != null
+				&& mediaItem != null
+			) {
+				// Add crop entity to undo history
+				undoHistory.push(new CropEntity(
+					mediaItem.getUri(),
+					new MediaItem.Orientation(mediaItem.getRotation(), mediaItem.getFlip()))
+				);
+
+				imageUri = Uri.fromFile(cropFile);
+				mediaItem.setUri(imageUri);
+				// As the image is saved with the current orientation applied, we need to apply the
+				// inverse orientation to get it in the original orientation.
+				MediaItem.Orientation inverseOrientation = currentOrientation.getInverse();
+				// As the flip is applied before the rotation, we may need to swap the flips,
+				// because a horizontal flip on a 90 or 270 rotated image is a vertical flip.
+				if (inverseOrientation.getRotation() == 90 || inverseOrientation.getRotation() == 270) {
+					inverseOrientation = getSwappedFlips(inverseOrientation);
+				}
+				mediaItem.setRotation(inverseOrientation.getRotation());
+				mediaItem.setFlip(inverseOrientation.getFlip());
+
+				resetViewOrientation(imageView);
+				resetViewOrientation(motionView);
+				resetViewOrientation(paintView);
+
+				loadImage(this::applyCurrentOrientation);
+				invalidateOptionsMenu();
+			}
+		});
 
 	/**
 	 * Returns an intent to start the activity for editing a picture. The edited picture is stored
@@ -280,7 +345,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	}
 
 	private boolean hasChanges() {
-		return undoHistory.size() > 0;
+		return !undoHistory.isEmpty();
 	}
 
 	@Override
@@ -311,7 +376,17 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			@Override
 			protected Bitmap doInBackground(Void... params) {
 				try {
-					return BitmapFactory.decodeStream(getAssets().open(stickerPath));
+					Bitmap bitmap = BitmapFactory.decodeStream(getAssets().open(stickerPath));
+					boolean isFlippedHorizontally = isFlippedHorizontally();
+					boolean isFlippedVertically = isFlippedVertically();
+					float rotation = imageView.getRotation();
+					if (isFlippedHorizontally || isFlippedVertically || rotation != 0) {
+						Matrix matrix = new Matrix();
+						matrix.postRotate(-rotation);
+						matrix.postScale(isFlippedHorizontally ? -1 : 1, isFlippedVertically ? -1 : 1);
+						bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+					}
+					return bitmap;
 				} catch (IOException e) {
 					logger.error("Exception", e);
 					return null;
@@ -345,6 +420,16 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 		textLayer.setFont(font);
 		textLayer.setText(text);
+		textLayer.setRotationInDegrees(-imageView.getRotation());
+		int rotation = (int) imageView.getRotation() % 360;
+		if (rotation < 0) {
+			rotation += 360;
+		}
+		if (rotation == 90 || rotation == 270) {
+			textLayer.setFlipped(imageView.getScaleY() < 0);
+		} else {
+			textLayer.setFlipped(imageView.getScaleX() < 0);
+		}
 
 		TextEntity textEntity = new TextEntity(textLayer, motionView.getWidth(),
 				motionView.getHeight());
@@ -362,7 +447,11 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 		groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 
-		MediaItem mediaItem = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			mediaItem = intent.getParcelableExtra(Intent.EXTRA_STREAM, MediaItem.class);
+		} else {
+			mediaItem = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+		}
 
 		try {
 			String activityModeOrdinal = intent.getStringExtra(EXTRA_ACTIVITY_MODE);
@@ -371,13 +460,6 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			logger.error("Invalid activity mode", e);
 			finishWithoutChanges();
 			return;
-		}
-
-		if (mediaItem != null) {
-			this.orientation = mediaItem.getRotation();
-			this.flip = mediaItem.getFlip();
-			this.exifOrientation = mediaItem.getExifRotation();
-			this.exifFlip = mediaItem.getExifFlip();
 		}
 
 		this.outputUri = intent.getParcelableExtra(ThreemaApplication.EXTRA_OUTPUT_FILE);
@@ -391,6 +473,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		}
 
 		actionBar.setDisplayHomeAsUpEnabled(activityMode == ActivityMode.EDIT_IMAGE);
+		actionBar.setHomeAsUpIndicator(R.drawable.ic_check);
 		actionBar.setTitle("");
 
 		this.paintView = findViewById(R.id.paint_view);
@@ -431,14 +514,11 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 			@Override
 			public void onAdded() {
-				undoHistory.add(new PathEntity());
+				undoHistory.push(new PathEntity());
 			}
 
 			@Override
 			public void onDeleted() {
-				if (undoHistory.size() > 0) {
-					undoHistory.remove(undoHistory.size() - 1);
-				}
 			}
 		});
 
@@ -455,7 +535,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 			@Override
 			public void onAdded(MotionEntity entity) {
-				undoHistory.add(entity);
+				undoHistory.push(entity);
 			}
 
 			@SuppressLint("UseValueOf")
@@ -615,16 +695,18 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		});
 	}
 
-	private void loadImage() {
+	private void loadImage(@Nullable Runnable onLoaded) {
 		BitmapWorkerTaskParams bitmapParams = new BitmapWorkerTaskParams();
 		bitmapParams.imageUri = this.imageUri;
 		bitmapParams.width = this.imageFrame.getWidth();
 		bitmapParams.height = this.scrollView.getHeight();
 		bitmapParams.contentResolver = getContentResolver();
-		bitmapParams.orientation = this.orientation;
-		bitmapParams.flip = this.flip;
-		bitmapParams.exifOrientation = this.exifOrientation;
-		bitmapParams.exifFlip = this.exifFlip;
+		if (mediaItem != null) {
+			bitmapParams.orientation = mediaItem.getRotation();
+			bitmapParams.flip = mediaItem.getFlip();
+			bitmapParams.exifOrientation = mediaItem.getExifRotation();
+			bitmapParams.exifFlip = mediaItem.getExifFlip();
+		}
 
 		logger.debug("screen height: {}", bitmapParams.height);
 
@@ -649,6 +731,10 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 					paintView.recalculate(clipWidth, clipHeight);
 					resizeView(paintView, clipWidth, clipHeight);
 					resizeView(motionView, clipWidth, clipHeight);
+				}
+
+				if (onLoaded != null) {
+					onLoaded.run();
 				}
 			}
 		}.execute(bitmapParams);
@@ -706,6 +792,14 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 				options.inJustDecodeBounds = false;
+
+				int orientation = 0, flip = FLIP_NONE, exifOrientation = 0, exifFlip = FLIP_NONE;
+				if (mediaItem != null) {
+					orientation = mediaItem.getRotation();
+					flip = mediaItem.getFlip();
+					exifOrientation = mediaItem.getExifRotation();
+					exifFlip = mediaItem.getExifFlip();
+				}
 
 				try (InputStream data = getContentResolver().openInputStream(imageUri)) {
 					if (data != null) {
@@ -828,26 +922,38 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			drawParentItem.setIcon(brushIcon);
 		}
 
-		ConfigUtils.themeMenuItem(drawParentItem, Color.WHITE);
-		ConfigUtils.themeMenuItem(paintItem, Color.WHITE);
-		ConfigUtils.themeMenuItem(pencilItem, Color.WHITE);
+		ConfigUtils.tintMenuItem(this, drawParentItem, R.attr.colorOnSurface);
+		ConfigUtils.tintMenuItem(this, paintItem, R.attr.colorOnSurface);
+		ConfigUtils.tintMenuItem(this, pencilItem, R.attr.colorOnSurface);
 
 		if (motionView.getSelectedEntity() == null) {
 			// no selected entities => draw mode or neutral mode
 			if (paintView.getActive()) {
 				if (this.strokeMode == STROKE_MODE_PENCIL) {
-					ConfigUtils.themeMenuItem(pencilItem, this.penColor);
+					ConfigUtils.tintMenuItem(pencilItem, this.penColor);
 					drawParentItem.setIcon(pencilIcon);
-					ConfigUtils.themeMenuItem(drawParentItem, this.penColor);
+					ConfigUtils.tintMenuItem(drawParentItem, this.penColor);
 				} else {
-					ConfigUtils.themeMenuItem(paintItem, this.penColor);
+					ConfigUtils.tintMenuItem(paintItem, this.penColor);
 					drawParentItem.setIcon(brushIcon);
-					ConfigUtils.themeMenuItem(drawParentItem, this.penColor);
+					ConfigUtils.tintMenuItem(drawParentItem, this.penColor);
 				}
 			}
 		}
-		undoItem.setVisible(undoHistory.size() > 0);
+		undoItem.setVisible(hasChanges());
 		blurFacesItem.setVisible(activityMode != ActivityMode.DRAWING && motionView.getEntitiesCount() == 0);
+
+		if (activityMode == ActivityMode.IMAGE_REPLY) {
+			// Cropping is currently not possible when the image already has been edited. However,
+			// if the image has only been rotated or flipped, it is still possible to crop it.
+			cropItem.setVisible(true);
+			for (ActionEntity action : undoHistory) {
+				if (!allowedActionsEntitiesToCrop.contains(action.getClass())) {
+					cropItem.setVisible(false);
+					break;
+				}
+			}
+		}
 		return true;
 	}
 
@@ -865,7 +971,14 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 		if (activityMode == ActivityMode.DRAWING) {
 			menu.findItem(R.id.item_background).setVisible(true);
+		} else if (activityMode == ActivityMode.IMAGE_REPLY) {
+			menu.findItem(R.id.item_flip).setVisible(true);
+			menu.findItem(R.id.item_rotate).setVisible(true);
+			cropItem = menu.findItem(R.id.item_crop);
+			cropItem.setVisible(true);
 		}
+
+		ConfigUtils.addIconsToOverflowMenu(this, menu);
 
 		return true;
 	}
@@ -876,7 +989,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 		int id = item.getItemId();
 		if (id == android.R.id.home) {
-			if (undoHistory.size() > 0) {
+			if (hasChanges()) {
 				item.setEnabled(false);
 				renderImage();
 			} else {
@@ -913,6 +1026,18 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			blurFaces(true);
 		} else if (id == R.id.item_background) {
 			chooseBackgroundColor();
+		} else if (id == R.id.item_flip) {
+			if (lastAnimationStart + ANIMATION_DURATION_MS < System.currentTimeMillis()) {
+				flip();
+				lastAnimationStart = System.currentTimeMillis();
+			}
+		} else if (id == R.id.item_rotate) {
+			if (lastAnimationStart + ANIMATION_DURATION_MS < System.currentTimeMillis()) {
+				rotate();
+				lastAnimationStart = System.currentTimeMillis();
+			}
+		} else if (id == R.id.item_crop) {
+			crop();
 		}
 		return false;
 	}
@@ -923,17 +1048,18 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			if (getToolbar() != null) {
 				getToolbar().postDelayed(() -> {
 					final View v = findViewById(R.id.item_face);
+					final @ColorInt int textColor = ConfigUtils.getColorFromAttribute(this, R.attr.colorOnPrimary);
 					try {
 						TapTargetView.showFor(this,
 							TapTarget.forView(v, getString(R.string.face_blur_tooltip_title), getString(R.string.face_blur_tooltip_text))
-								.outerCircleColor(R.color.dark_accent)      // Specify a color for the outer circle
+								.outerCircleColorInt(ConfigUtils.getColorFromAttribute(this, R.attr.colorPrimary)) // Specify a color for the outer circle
 								.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
 								.targetCircleColor(android.R.color.white)   // Specify a color for the target circle
 								.titleTextSize(24)                  // Specify the size (in sp) of the title text
-								.titleTextColor(android.R.color.white)      // Specify the color of the title text
+								.titleTextColorInt(textColor)      // Specify the color of the title text
 								.descriptionTextSize(18)            // Specify the size (in sp) of the description text
-								.descriptionTextColor(android.R.color.white)  // Specify the color of the description text
-								.textColor(android.R.color.white)            // Specify a color for both the title and description text
+								.descriptionTextColorInt(textColor)  // Specify the color of the description text
+								.textColorInt(textColor)            // Specify a color for both the title and description text
 								.textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
 								.dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
 								.drawShadow(true)                   // Whether to draw a drop shadow or not
@@ -984,16 +1110,23 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	}
 
 	private void undo() {
-		if (undoHistory.size() > 0) {
-			MotionEntity entity = undoHistory.get(undoHistory.size() - 1);
+		if (hasChanges() && lastAnimationStart + ANIMATION_DURATION_MS + 100 < System.currentTimeMillis()) {
+			ActionEntity entity = undoHistory.pop();
 
 			motionView.unselectEntity();
 			if (entity instanceof PathEntity) {
 				paintView.undo();
-			} else {
-				motionView.deleteEntity(entity);
+			} else if (entity instanceof RotationEntity) {
+				undoRotate();
+			} else if (entity instanceof FlipEntity) {
+				undoFlip();
+			} else if (entity instanceof CropEntity) {
+				undoCrop((CropEntity) entity);
+			} else if (entity instanceof MotionEntity) {
+				motionView.deleteEntity((MotionEntity) entity);
 			}
 			invalidateOptionsMenu();
+			lastAnimationStart = System.currentTimeMillis();
 		}
 	}
 
@@ -1040,7 +1173,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 				// Otherwise we can remove this listener and load the image
 				if (imageFrame.getMinimumHeight() <= scrollView.getHeight()) {
 					scrollView.removeOnLayoutChangeListener(this);
-					loadImage();
+					loadImage(null);
 				}
 			}
 		});
@@ -1109,10 +1242,12 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		BitmapWorkerTaskParams bitmapParams = new BitmapWorkerTaskParams();
 		bitmapParams.imageUri = this.imageUri;
 		bitmapParams.contentResolver = getContentResolver();
-		bitmapParams.orientation = this.orientation;
-		bitmapParams.flip = this.flip;
-		bitmapParams.exifOrientation = this.exifOrientation;
-		bitmapParams.exifFlip = this.exifFlip;
+		if (mediaItem != null) {
+			bitmapParams.orientation = mediaItem.getRotation();
+			bitmapParams.flip = mediaItem.getFlip();
+			bitmapParams.exifOrientation = mediaItem.getExifRotation();
+			bitmapParams.exifFlip = mediaItem.getExifFlip();
+		}
 		bitmapParams.mutable = true;
 
 		new BitmapWorkerTask(null) {
@@ -1137,7 +1272,9 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 							File output = new File(outputUri.getPath());
 
 							FileOutputStream outputStream = new FileOutputStream(output);
-							params[0].compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+							Matrix matrix = currentOrientation.getTransformationMatrix();
+							Bitmap transformed = Bitmap.createBitmap(params[0], 0, 0, params[0].getWidth(), params[0].getHeight(), matrix, true);
+							transformed.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
 							outputStream.flush();
 							outputStream.close();
 						} catch (Exception e) {
@@ -1306,6 +1443,195 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	private boolean isEmojiPickerShown() {
 		return emojiPicker != null && emojiPicker.isShown();
 	}
+
+	private void flip() {
+		flipViewsAnimated();
+		if (hasChanges() && undoHistory.peek() instanceof FlipEntity) {
+			// Remove the previous flip action instead of creating two consecutive flip actions
+			undoHistory.pop();
+		} else {
+			undoHistory.push(new FlipEntity());
+		}
+		invalidateOptionsMenu();
+	}
+
+	private void undoFlip() {
+		flipViewsAnimated();
+	}
+
+	private void flipViewsAnimated() {
+		int previousFlip = currentOrientation.getFlip();
+		currentOrientation.flip();
+		int currentFlip = currentOrientation.getFlip();
+
+		flipViewAnimated(imageView, previousFlip, currentFlip);
+		flipViewAnimated(motionView, previousFlip, currentFlip);
+		flipViewAnimated(paintView, previousFlip, currentFlip);
+	}
+
+	private void flipViewAnimated(@NonNull View view, int previousFlip, int newFlip) {
+		if ((previousFlip & FLIP_HORIZONTAL) != (newFlip & FLIP_HORIZONTAL)) {
+			flipViewHorizontalAnimated(view);
+		}
+		if ((previousFlip & FLIP_VERTICAL) != (newFlip & FLIP_VERTICAL)) {
+			flipViewVerticalAnimated(view);
+		}
+	}
+
+	private void flipViewHorizontalAnimated(@NonNull View view) {
+		view.animate().scaleX(view.getScaleX() * -1f).setDuration(ANIMATION_DURATION_MS).start();
+	}
+
+	private void flipViewVerticalAnimated(@NonNull View view) {
+		view.animate().scaleY(view.getScaleY() * -1f).setDuration(ANIMATION_DURATION_MS).start();
+	}
+
+	private void resetViewOrientation(@NonNull View view) {
+		view.setScaleX(1f);
+		view.setScaleY(1f);
+		view.setRotation(0f);
+	}
+
+	private boolean isFlippedHorizontally() {
+		return imageView.getScaleX() < 0f;
+	}
+
+	private boolean isFlippedVertically() {
+		return imageView.getScaleY() < 0f;
+	}
+
+	private void rotate() {
+		rotateBy(-90);
+		undoHistory.push(new RotationEntity());
+		invalidateOptionsMenu();
+	}
+
+	private void undoRotate() {
+		rotateBy(90);
+	}
+
+	private void rotateBy(int degrees) {
+		// Rotate views
+		currentOrientation.rotateBy(degrees);
+
+		rotateViewAnimated(imageView, degrees);
+		rotateViewAnimated(motionView, degrees);
+		rotateViewAnimated(paintView, degrees);
+	}
+
+	private void rotateViewAnimated(@NonNull View view, int degrees) {
+		int rotation = ((int) view.getRotation()) % 360;
+		if (rotation < 0) {
+			rotation += 360;
+		}
+		boolean invertedDimensions = rotation == 90 || rotation == 270;
+		float newWidth = invertedDimensions ? view.getWidth() : view.getHeight();
+		float newHeight = invertedDimensions ? view.getHeight() : view.getWidth();
+		float scale = getTargetScale(newWidth, newHeight);
+		float xScaleNormalized = view.getScaleX() < 0 ? -1 : 1;
+		float yScaleNormalized = view.getScaleY() < 0 ? -1 : 1;
+
+		view.animate()
+			.rotationBy(degrees)
+			.scaleX(xScaleNormalized * scale)
+			.scaleY(yScaleNormalized * scale)
+			.setDuration(ANIMATION_DURATION_MS)
+			.start();
+	}
+
+	private float getTargetScale(float width, float height) {
+		float parentWidth = scrollView.getWidth();
+		float parentHeight = scrollView.getHeight();
+		return Math.min(parentWidth / width, parentHeight / height);
+	}
+
+	private void crop() {
+		try {
+			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+			if (serviceManager == null) {
+				logger.error("Service manager is null");
+				return;
+			}
+			FileService fileService = serviceManager.getFileService();
+			cropFile = fileService.createTempFile(".crop", ".png");
+
+			Intent intent = new Intent(this, CropImageActivity.class);
+			intent.setData(imageUri);
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cropFile));
+			// The rotation and flip to load the image 'correctly'
+			intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, mediaItem.getRotation());
+			intent.putExtra(ThreemaApplication.EXTRA_FLIP, mediaItem.getFlip());
+			// The rotation and flip that has been applied in the image paint activity
+			intent.putExtra(CropImageActivity.EXTRA_ADDITIONAL_ORIENTATION, currentOrientation.getRotation());
+			intent.putExtra(CropImageActivity.EXTRA_ADDITIONAL_FLIP, currentOrientation.getFlip());
+			intent.putExtra(CropImageActivity.FORCE_DARK_THEME, true);
+
+			cropResultLauncher.launch(intent);
+		} catch (FileSystemNotPresentException | IOException e) {
+			logger.debug("Unable to create temp file for crop");
+		}
+	}
+
+	private void undoCrop(@NonNull CropEntity cropEntity) {
+		imageView.setAlpha(0f);
+		motionView.setAlpha(0f);
+		paintView.setAlpha(0f);
+
+		resetViewOrientation(imageView);
+		resetViewOrientation(motionView);
+		resetViewOrientation(paintView);
+
+		imageUri = cropEntity.getLastUri();
+		mediaItem.setUri(imageUri);
+		mediaItem.setRotation(cropEntity.getOrientation().getRotation());
+		mediaItem.setFlip(cropEntity.getOrientation().getFlip());
+		loadImage(() -> {
+			applyCurrentOrientation();
+			animateFadeIn(imageView);
+			animateFadeIn(motionView);
+			animateFadeIn(paintView);
+		});
+	}
+
+	private void animateFadeIn(@NonNull View view) {
+		view.animate()
+			.alpha(1f)
+			.setDuration(ANIMATION_DURATION_MS)
+			.start();
+	}
+
+	private MediaItem.Orientation getSwappedFlips(@NonNull MediaItem.Orientation orientation) {
+		MediaItem.Orientation swappedOrientation = new MediaItem.Orientation(orientation.getRotation(), FLIP_NONE);
+		boolean isHorizontalFlip = orientation.isHorizontalFlip();
+		boolean isVerticalFlip = orientation.isVerticalFlip();
+		swappedOrientation.setFlip(
+			(isHorizontalFlip ? FLIP_VERTICAL : FLIP_NONE)
+				| (isVerticalFlip ? FLIP_HORIZONTAL : FLIP_NONE)
+		);
+		return swappedOrientation;
+	}
+
+	private void applyCurrentOrientation() {
+		imageView.setRotation(currentOrientation.getRotation());
+		motionView.setRotation(currentOrientation.getRotation());
+		paintView.setRotation(currentOrientation.getRotation());
+
+		float scaleX = currentOrientation.isHorizontalFlip() ? -1 : 1;
+		float scaleY = currentOrientation.isVerticalFlip() ? -1 : 1;
+
+		boolean inverted = currentOrientation.getRotation() == 90 || currentOrientation.getRotation() == 270;
+		float width = inverted ? imageView.getHeight() : imageView.getWidth();
+		float height = inverted ? imageView.getWidth() : imageView.getHeight();
+		float scale = getTargetScale(width, height);
+
+		imageView.setScaleX(scaleX * scale);
+		imageView.setScaleY(scaleY * scale);
+		motionView.setScaleX(scaleX * scale);
+		motionView.setScaleY(scaleY * scale);
+		paintView.setScaleX(scaleX * scale);
+		paintView.setScaleY(scaleY * scale);
+	}
+
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {

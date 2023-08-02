@@ -4,24 +4,26 @@
 												 android:id="@+id/main_content"
 												 android:layout_width="match_parent"
 												 android:layout_height="match_parent"
-												 android:fitsSystemWindows="true">
+												 android:fitsSystemWindows="true"
+												android:background="?attr/colorSurface">
 
 	<com.google.android.material.appbar.AppBarLayout
 			android:id="@+id/appbar"
 			android:layout_width="match_parent"
-			android:layout_height="@dimen/contact_detail_avatar_height"
-			android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+			android:layout_height="wrap_content"
+			android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
 			android:importantForAccessibility="no"
 			android:fitsSystemWindows="true">
 
 		<com.google.android.material.appbar.CollapsingToolbarLayout
+				style="?attr/collapsingToolbarLayoutLargeStyle"
 				android:id="@+id/collapsing_toolbar"
 				android:layout_width="match_parent"
-				android:layout_height="match_parent"
+				android:layout_height="@dimen/contact_detail_avatar_height"
 				app:layout_scrollFlags="scroll|exitUntilCollapsed"
 				android:fitsSystemWindows="true"
 				android:importantForAccessibility="no"
-				app:contentScrim="?android:windowBackground">
+				app:contentScrim="?android:attr/colorBackground">
 
 			<ch.threema.app.ui.AvatarEditView
 				android:id="@+id/avatar_edit_view"
@@ -41,15 +43,14 @@
 				android:layout_gravity="bottom|left"
 				android:gravity="bottom"
 				android:importantForAccessibility="no"
-				android:orientation="horizontal"
-				>
+				android:orientation="horizontal">
 
 			<ch.threema.app.ui.HintedImageView
 				android:id="@+id/work_icon"
 				android:layout_width="30dp"
 				android:layout_height="30dp"
 				android:layout_marginRight="6dp"
-				android:layout_marginBottom="6dp"
+				android:layout_marginBottom="2dp"
 				app:srcCompat="@drawable/ic_badge_work"
 				android:foreground="@drawable/selector_avatar"
 			    android:contentDescription="@string/threema_work_contact"
@@ -60,6 +61,8 @@
 				android:id="@+id/contact_title"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:maxLines="2"
+				android:ellipsize="end"
 				android:textAppearance="@style/Threema.TextAppearance.DetailTitle"
 				app:layout_anchor="@id/appbar"
 				app:layout_anchorGravity="bottom|left"
@@ -73,10 +76,11 @@
 				android:layout_gravity="bottom"
 				android:background="@drawable/shape_detail"/>
 
-			<androidx.appcompat.widget.Toolbar
+			<com.google.android.material.appbar.MaterialToolbar
 					android:id="@+id/toolbar"
 					android:layout_width="match_parent"
 					android:layout_height="?attr/actionBarSize"
+					android:elevation="0dp"
 					app:popupTheme="@style/Threema.PopupTheme.TransparentStatusbar"
 					app:layout_collapseMode="pin" />
 
@@ -102,7 +106,7 @@
 		app:srcCompat="@drawable/ic_pencil_outline"
 		android:contentDescription="@string/edit_name_only"
 		android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
-		android:layout_marginBottom="-42dp"
+		android:layout_marginBottom="-40dp"
 		app:layout_insetEdge="bottom" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

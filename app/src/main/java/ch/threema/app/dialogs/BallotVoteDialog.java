@@ -77,7 +77,7 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
 
 	private Thread votingThread = null;
 
-	private BallotListener ballotListener = new BallotListener() {
+	private final BallotListener ballotListener = new BallotListener() {
 		@Override
 		public void onClosed(BallotModel ballotModel) {
 		}
@@ -105,7 +105,7 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
 		}
 	};
 
-	private BallotVoteListener ballotVoteListener = new BallotVoteListener() {
+	private final BallotVoteListener ballotVoteListener = new BallotVoteListener() {
 		@Override
 		public void onSelfVote(BallotModel ballotModel) { }
 

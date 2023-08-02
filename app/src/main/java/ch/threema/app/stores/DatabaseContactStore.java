@@ -40,12 +40,17 @@ import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.ContactStore;
+import ch.threema.domain.stores.DHSessionStoreException;
+import ch.threema.domain.stores.DHSessionStoreInterface;
+import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.protobuf.csp.e2e.fs.Terminate;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
@@ -58,19 +63,25 @@ import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 public class DatabaseContactStore implements ContactStore {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseContactStore");
 
-	private final APIConnector apiConnector;
-	private final PreferenceService preferenceService;
-	private final DatabaseServiceNew databaseServiceNew;
-	private final IdListService blackListService;
-	private final IdListService excludeListService;
+	private final @NonNull IdentityStoreInterface identityStore;
+	private final @NonNull DHSessionStoreInterface fsSessions;
+	private final @NonNull APIConnector apiConnector;
+	private final @NonNull PreferenceService preferenceService;
+	private final @NonNull DatabaseServiceNew databaseServiceNew;
+	private final @NonNull IdListService blackListService;
+	private final @NonNull IdListService excludeListService;
 
 	public DatabaseContactStore(
-		APIConnector apiConnector,
-		PreferenceService preferenceService,
-		DatabaseServiceNew databaseServiceNew,
-		IdListService blackListService,
-		IdListService excludeListService
+		@NonNull IdentityStoreInterface identityStore,
+		@NonNull DHSessionStoreInterface fsSessions,
+		@NonNull APIConnector apiConnector,
+		@NonNull PreferenceService preferenceService,
+		@NonNull DatabaseServiceNew databaseServiceNew,
+		@NonNull IdListService blackListService,
+		@NonNull IdListService excludeListService
 	) {
+		this.identityStore = identityStore;
+		this.fsSessions = fsSessions;
 		this.apiConnector = apiConnector;
 		this.preferenceService = preferenceService;
 		this.databaseServiceNew = databaseServiceNew;
@@ -206,15 +217,27 @@ public class DatabaseContactStore implements ContactStore {
 				logger.debug("do not save unmodified contact");
 				return;
 			}
-			if (ThreemaFeature.canForwardSecurity(existingModel.getFeatureMask()) && !ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask())) {
-				logger.info("Forward security feature has been downgraded for contact {}", contactModel.getIdentity());
-				if (existingModel.isForwardSecurityEnabled()) {
-					// If forward security was enabled for this contact, create a status message that
-					// forward security has been disabled for this contact due to a downgrade.
-					createForwardSecurityDowngradedStatus(contactModel);
 
-					// Disable forward security for this contact
-					contactModel.setForwardSecurityEnabled(false);
+			// Only warn about an FS feature mask downgrade if an FS session existed.
+			DHSession fsSession = null;
+			try {
+				fsSession = fsSessions.getBestDHSession(identityStore.getIdentity(), contact.getIdentity());
+			} catch (DHSessionStoreException exception) {
+				logger.error("Unable to determine best DH session", exception);
+			}
+			if (fsSession != null && !ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask())) {
+				logger.info("Forward security feature has been downgraded for contact {}", contactModel.getIdentity());
+				// Create a status message that forward security has been disabled for this contact
+				// due to a downgrade.
+				createForwardSecurityDowngradedStatus(contactModel);
+
+				// Clear and terminate all sessions with that contact
+				ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+				if (serviceManager != null) {
+					serviceManager.getForwardSecurityMessageProcessor().clearAndTerminateAllSessions(
+						contact,
+						Terminate.Cause.DISABLED_BY_REMOTE
+					);
 				}
 			}
 		}

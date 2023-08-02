@@ -27,12 +27,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.AbstractRecyclerAdapter;
@@ -58,7 +60,7 @@ public class SessionListAdapter extends AbstractRecyclerAdapter<WebClientSession
 	private static class SessionListViewHolder extends RecyclerView.ViewHolder {
 		private final TextView createDateView;
 		private final TextView lastUsageView;
-		private final ProgressBar loadingIndicator;
+		private final CircularProgressIndicator loadingIndicator;
 		private final ImageView browserIcon;
 		private final ImageView errorIcon;
 		private final TextView sessionNameView;

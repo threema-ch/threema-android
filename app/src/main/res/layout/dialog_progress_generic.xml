@@ -8,17 +8,17 @@
 	android:paddingRight="22dp"
 	android:paddingBottom="24dp">
 
-	<ProgressBar
-		style="@style/Widget.AppCompat.ProgressBar"
+	<com.google.android.material.progressindicator.CircularProgressIndicator
 		android:id="@+id/progress"
 		android:layout_width="48dp"
 		android:layout_height="48dp"
+		android:indeterminate="true"
 		android:layout_alignParentLeft="true"
 		android:layout_centerVertical="true"/>
 
 	<TextView
+		style="@style/MaterialAlertDialog.Material3.Body.Text"
 		android:id="@+id/text"
-		android:textAppearance="@style/Threema.AlertDialog.BodyTextStyle"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerVertical="true"

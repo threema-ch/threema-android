@@ -46,7 +46,7 @@ import java.util.Map;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
@@ -143,7 +143,7 @@ public class Message extends Converter {
 	 */
 	public static List<MsgpackBuilder> convert(
 		List<AbstractMessageModel> messages,
-		@MessageReceiverType int receiverType,
+		MessageReceiver messageReceiver,
 		boolean sendThumbnail
 	) throws ConversionException {
 		final List<MsgpackBuilder> builders = new ArrayList<>();
@@ -153,7 +153,7 @@ public class Message extends Converter {
 		ArrayList<AbstractMessageModel> messagesCopy = new ArrayList<>(messages);
 		Collections.reverse(messagesCopy);
 		for (AbstractMessageModel message : messagesCopy) {
-			builders.add(Message.convert(message, receiverType, sendThumbnail, DETAILS_FULL));
+			builders.add(Message.convert(message, messageReceiver, sendThumbnail, DETAILS_FULL));
 		}
 		return builders;
 	}
@@ -161,12 +161,12 @@ public class Message extends Converter {
 	/**
 	 * Converts a message model to a MsgpackObjectBuilder instance.
 	 *
-	 * @param receiverType Must be provided if `detailLevel` is `FULL`.
+	 * @param messageReceiver Must be provided if `detailLevel` is `FULL`.
 	 * @param detailLevel If set to true, then only the most important fields will be serialized.
 	 */
 	public static MsgpackObjectBuilder convert(
 		AbstractMessageModel message,
-	    @MessageReceiverType int receiverType,
+	    MessageReceiver messageReceiver,
 	    boolean sendThumbnail,
 	    @DetailLevel int detailLevel
 	) throws ConversionException {
@@ -235,7 +235,7 @@ public class Message extends Converter {
 				// should be stripped from the body.)
 				final Context context = ThreemaApplication.getAppContext();
 				final QuoteUtil.QuoteContent quoteContent = QuoteUtil.getQuoteContent(
-					message, receiverType, true, null,
+					message, messageReceiver, true, null,
 					context, messageService, userService, fileService
 				);
 

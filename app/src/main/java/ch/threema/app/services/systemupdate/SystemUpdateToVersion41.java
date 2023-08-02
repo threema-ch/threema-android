@@ -21,7 +21,7 @@
 
 package ch.threema.app.services.systemupdate;
 
-import net.sqlcipher.database.SQLiteDatabase;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import java.sql.SQLException;
 
@@ -42,9 +42,8 @@ public class SystemUpdateToVersion41 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_PROFILE_PIC_SENT_DATE)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
-					+ " ADD COLUMN " + ContactModel.COLUMN_PROFILE_PIC_SENT_DATE + " BIGINT DEFAULT 0");
+		if (!this.fieldExist(this.sqLiteDatabase, "contacts", "profilePicSent")) {
+			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN profilePicSent BIGINT DEFAULT 0");
 		}
 		return true;
 	}

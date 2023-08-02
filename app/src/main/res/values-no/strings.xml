@@ -281,7 +281,6 @@ når den første meldingen mottas.</string>
     <string name="title_select_contacts">Velg medlemmer</string>
     <string name="pin_invalid_not_set">PIN-kode ugyldig. Ikke valgt.</string>
     <string name="prefs_group_notifications">Gruppesamtale</string>
-    <string name="add_group_members_list">Gruppemedlemmer</string>
     <string name="group_select_at_least_two">Du må velge minst én medlem for å fortsette</string>
     <string name="group_select_max">Du kan ikke velge mer enn %1$d gruppemedlemmer</string>
     <string name="search">Søk</string>
@@ -535,7 +534,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="send_as_files">Send som fil</string>
     <string name="send_as_files_warning">Å overføre ukomprimerte filer og bilder kan føre til stor databruk som kan bli dyrt, basert på din mobiloperatør. Vi anbefaler at du laster opp og ned via WiFi.</string>
     <string name="prefs_theme">Design tema</string>
-    <string name="list_theme_light">Lyst (standard)</string>
+    <string name="list_theme_light">Lyst</string>
     <string name="list_theme_dark">Mørkt</string>
     <string name="prefs_header_appearance">Utseende</string>
     <string name="prefs_sum_passphrase">Krever en passfrase for å låse opp lokal kryptering</string>
@@ -672,7 +671,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_proximity_sensor">Bruk nærhetssensor</string>
     <string name="prefs_proximity_sensor_explain">Bruk anropshøyttaler for lydmeldinger når nærhetssensoren er tildekket</string>
     <string name="error_creating_group">Feil ved oppretting/oppdatering av gruppe</string>
-    <string name="no_media_found_generic">Ingen medier er funnet i denne samtalen</string>
+    <string name="no_media_found_generic">Ingen medier er funnet i denne samtalen som passer til valg.</string>
     <string name="max_images_reached">Max. %d elementer kan bli redigert samtidig</string>
     <string name="enter_description">Vennligst beskriv bug/problem her.</string>
     <string name="add_caption_hint">Legg ved ekstra beskrivelse</string>
@@ -892,7 +891,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="safe_configure_choose_password_force">Vennligst velg et sterkt passord for å sikre din Threema ID med Threema Safe. Ikke glem det du skriver inn her!</string>
     <string name="safe_deactivate">Skru av Threema Safe</string>
     <string name="safe_deactivate_explain">Om du deaktiverer Threema Safe så blir eksisterende sikkerhetskopier slettet fra serveren. Vil du fortsette?</string>
-    <string name="add_group_members">Ny medlem</string>
+    <string name="add_group_members">Legg til ny medlem</string>
     <string name="contact_add_confirm">Vil du legge til den nye kontakten \"%1$s\" til din kontaktliste?</string>
     <string name="password_bad">Svakt passord</string>
     <string name="prefs_fix_background_data">Skru på bakgrunnsdata</string>
@@ -1009,12 +1008,16 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="open_in_maps_app">Åpne i kart-app</string>
     <string name="delete">Slett</string>
     <string name="continue_recording">Fortsett opptak</string>
-    <string name="whatsnew_title">Nytt: %1$s Gruppesamtaler</string>
+    <string name="whatsnew_title">Velkommen til %1$s 5.1</string>
     <string name="whatsnew_headline"><![CDATA[
-  <p>Ende-til-ende krypterte gruppesamtaler er nå tilgjengelig i %1$s for Android.</p>
-  <p>For å starte en gruppesamtale, åpne en gruppe og trykk på kameraknappen i toppen.</p>
-  <p>Alle gruppemedlemmer får da et varsel og kan velge om de vil bli med i samtalen eller ikke.</p>
-  <p><b>Vennligst merk:</b> for iOS, gruppesamtaler vil bli lansert på et senere tidspunkt.</p>
+  <p>Denne versjonen fokuserer på sikkerhet, brukervennlighet og modernisering av applikasjonen.</p>
+
+  <p>Etter stor etterspørsel så har vi laget ett komplett nytt design for å ha full støtte for \"Material You\" designspråket som ble lansert sammen med Android 12. Du kan nå aktivere \"Dynamiske farger\" i innstillingene slik at appen nå følger fargepaletten til enheten din.</p>
+
+  <p>Perfect Forward Secrecy er nå aktivert som standard for alle kontakter som har en nyere versjon av %1$s installert.</p>
+
+  <p>Andre forbedringer inkluderer en ny spiller for lydmeldinger som kan fortsette å spille av i bakgrunnen selv om appen ikke er i aktiv bruk. Og nye brukerveiledninger når Threema spør om tilganger på enheten din.</p>
+
   ]]></string>
     <string name="tap_to_start">Trykk her for å starte %s nå.</string>
     <string name="two_years">2 år</string>
@@ -1158,7 +1161,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="no_faces_detected">Ingen ansikter gjenkjent</string>
     <string name="smiley">Smilefjes</string>
     <string name="blur">Uskarp</string>
-    <string name="face_blur_tooltip_title">Ny: Ansiktsgjenkjenning</string>
+    <string name="face_blur_tooltip_title">Ansiktsgjenkjenning</string>
     <string name="face_blur_tooltip_text">Finn ansikter i bildet og gjør dem uskarp eller dekket til med et smilefjes.</string>
     <string name="listened_to">Avspilt</string>
     <string name="transcoder_unsupported_audio_format">Lyden kunne ikke bli transkodet på grunn av manglende støtte på enheten.</string>
@@ -1229,7 +1232,11 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_link_rename">Endre navn</string>
     <string name="group_link_rename_tag">Nytt navn</string>
     <string name="tap_here_for_more">Trykk her for mer informasjon</string>
-    <string name="another_connection_instructions">Serveren har oppdaget to eller flere tilkoblinger fra forskjellige enheter med samme Threema ID.\n\nDet er ikke mulig å bruke den samme Threema ID-en på flere enheter samtidig. Nye meldinger blir bare sendt til enheten som ble logget på sist. \n\nOm du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den gamle enheten og deretter restart den nye enheten.</string>
+    <string name="another_connection_instructions"><![CDATA[Serveren har oppdaget to eller flere tilkoblinger fra forskjellige enheter med samme Threema ID.
+
+Det er ikke mulig å bruke den samme Threema ID-en på flere enheter samtidig. Nye meldinger blir bare sendt til enheten som ble logget på sist.
+
+Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den gamle enheten og deretter restart den nye enheten.]]></string>
     <string name="app_store_error_code">App Store feilkode: %d</string>
     <string name="backup_restore_type"><![CDATA[Hvilken type sikkerhetskopi vil du gjenopprette? <br/><br/> <a href=%s>Lær mer om sikkerhetskopier i Threema</a>]]></string>
     <string name="data_backup_info">Gjenopprett alt, inkludert samtaler</string>
@@ -1353,18 +1360,19 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="organization_type">Organisasjon</string>
     <string name="permission_bluetooth_connect_required">Aktiver \"Enheter i nærheten\" tillatelse for å finne tilkoblede Blåtann hodetelefoner</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push er aktiv. Threema Web- og Skrivebordsøkter må derfor bli startet manuelt.</string>
-    <string name="tooltip_multiple_recipients_title">Nyhet: Flere mottakere</string>
+    <string name="tooltip_multiple_recipients_title">Flere mottakere</string>
     <string name="tooltip_multiple_recipients_text">Langt trykk for å velge flere mottakere å sende den samme meldingen til.</string>
     <string name="synchronizing">Synkroniserer...</string>
     <string name="forward_security">Send meldinger med Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">Ingen</string>
-    <string name="clear_forward_security">Fjern Perfect Forward Secrecy-økter</string>
+    <string name="clear_forward_security">Resett Perfect Forward Secrecy for denne kontakten</string>
+    <string name="clear_forward_security_warning">Sørg for å bare gjøre dette om du får beskjed fra Threema support.</string>
     <string name="forward_security_cleared">Perfect Forward Secrecy-økt med denne kontakten har blitt fjernet</string>
     <string name="message_without_forward_security">En melding uten Perfect Forward Secrecy er mottatt. Verifiser at avsender har skrudd av Perfect Forward Secrecy med vilje.</string>
     <string name="forward_security_established">Meldinger i denne samtalen er nå beskyttet av Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Meldinger mottatt i denne samtalen blir nå beskyttet av Perfect Forward Secrecy. Skru på Perfect Forward Secrecy i kontaktdetaljer for å beskytte sendte medlinger også.</string>
-    <string name="forward_security_reset">Perfect Forward Secrecy-økten med denne kontakten har blitt resatt. Dette kan skje om kontakten har byttet enhet eller reinstallert appen.</string>
+    <string name="forward_security_reset">Perfect Forward Secrecy-økten har blitt resatt. Dette kan skje om den du chattet med har byttet enhet eller reinstallert appen.</string>
     <string name="forward_security_reset_simple">Økten med Perfect Forward Secrecy som du har med denne kontakten har blitt resatt.</string>
     <string name="forward_security_message_out_of_order">En melding ble mottatt ute av rekkefølge og kunne derfor ikke bli dekryptert.</string>
     <string name="self_updater_installation_failed">Det skjedde en feil under nedlasting av oppdateringen. Vennligst last ned oppdateringen fra <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuelt.</string>
@@ -1401,7 +1409,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_summary_hibernation_api_32">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Fjern tillatelser og frigjør plass\".</string>
     <string name="prefs_summary_hibernation_api">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Sett en app i dvale om den er ubrukt\"</string>
     <string name="unable_to_fetch_configuration">Ute av stand til å hente data fra konfigurasjonsserver. Prøv igjen senere.</string>
-    <string name="rogue_device_warning">Serveren har oppdaget en tilkobling med den samme Threema IDen, men fra en annen enhet.\n\nOm du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre versjon av Threema, vennligst kontakt brukerstøtte og send en loggfil om det er mulig.</string>
+    <string name="rogue_device_warning">Serveren har oppdaget en tilkobling med den samme Threema IDen, men fra en annen enhet. Har du nylig brukt Threema på en annen enhet?\n\nOm du har gjort det, så kan du ignorere denne meldingen.\n\nOm du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre versjon av Threema, vennligst kontakt brukerstøtte og send en loggfil om det er mulig. Vennligst <a href="https://threema.ch/en/faq/another_connection">følg våre råd</a> for å beskytte din enhet og dine data før du lager en ny ID.</string>
     <string name="fetch2_failure">Synkronisering med server mislyktes.</string>
     <string name="no_members_support_group_calls">Det er ingen andre medlemmer i denne gruppen som er i stand til å svare på gruppesamtale</string>
     <string name="group_calls">Gruppesamtaler</string>
@@ -1410,12 +1418,18 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="group_call">Gruppesamtale</string>
     <string name="checking_compatibility">Sjekker kompatibilitet...</string>
     <string name="group_call_mic_permission_rationale">For å starte gruppesamtaler så må du tillate %s å få tilgang til mikrofon under \"Tillatelser\".</string>
+    <string name="group_call_mic_permission_description">For å bli med i en gruppesamtale, må du aktivere tilgang til mikrofonen, slik at andre kan høre deg.</string>
+    <string name="call_mic_permission_description">For å starte et anrop, må du aktivere tilgang til mikrofonen, slik at andre kan høre deg.</string>
     <string name="group_call_camera_permission_rationale">For at andre deltakere skal kunne se bildet ditt, så må du tillate %s å få tilgang til kamera under \"Tillatelser\".</string>
+    <string name="group_call_phone_permission_description">For å bli med i en gruppesamtale, må du aktivere tilgang til telefon, for å oppdage om det kommer et annet anrop som kan forstyrre gruppesamtalen.</string>
+    <string name="call_phone_permission_description">For å starte et anrop i Threema, må du aktivere tilgang til telefon, for å oppdage om det kommer et annet anrop som kan forstyrre anropet i Threema.</string>
+    <string name="group_call_nearby_devices_permission_description">For å starte en gruppesamtale med bluetooth hodetelefoner, så må du aktivere \"Enheter i nærheten\"-tillatelsen for å oppdage bluetooth enheter.</string>
+    <string name="call_nearby_devices_permission_description">For å starte et anrop i Threema med bluetooth hodetelefoner, så må du aktivere \"Enheter i nærheten\"-tillatelsen for å oppdage bluetooth enheter.</string>
     <string name="settings">Innstillinger</string>
     <string name="leave">Forlat</string>
     <string name="fs_key_mismatch">Nøkler er ikke lik</string>
     <string name="tap_to_resend">Trykk for å resende</string>
-    <string name="group_calls_tooltip_title">Nytt: Gruppesamtaler</string>
+    <string name="group_calls_tooltip_title">Gruppesamtaler</string>
     <string name="group_calls_tooltip_text">Trykk her for å invitere alle gruppemedlemmer til et anrop. Alle medlemmer vil motta et varsel og kan velge om de vil bli med eller ikke.</string>
     <string name="prefs_title_calls">Sikre anrop</string>
     <string name="prefs_sum_group_calls_vibration">Velg om mobilen skal vibrere når en gruppesamtale har startet</string>
@@ -1424,7 +1438,35 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beskytter kommunikasjonen fra å kunne bli dekryptert i fremtiden, selv om den langsiktige krypteringsnøkkelen er kompromittert.\n\nDette kan skrus på om appen på begge sider av kommunikasjonen støtter PFS.</string>
     <string name="group_call_inactivity_left">Gruppesamtale avsluttet på grunn av inaktivitet</string>
     <string name="missing_permission_external_storage">Ikke mulig å kopiere filen. Prøv følgende: \n1. Åpne innstillinger på enheten.\n2. Gå til \"Apper\" og velg \"Spesiell tilgang\" på menyen med tre prikker eller en nedtrekksmeny.\n3. Trykk på \"Lagring\" eller \"Tilgang til filer\".\n4. Trykk på de tre prikkene oppe i høyre hjørne og velg \"Vis systemet\". \n5. Trykk på \"Ekstern lagring\" og sørg for at \"Tilgang til alle filer\" er gitt.\n6. Prøv igjen å gjenopprette sikkerhetskopien.</string>
-    <string name="forward_security_downgraded_status_message">Denne kontakten har begynt å bruke en app-versjon som ikke støtter \"Perfect Forward Secrecy\". Meldinger blir sendt uten PFS fra nå av.</string>
+    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy har blitt deaktivert for denne samtalen fordi app-versjonen til den du chattet med ikke støtter det.</string>
+    <string name="crop_image_title">Bekjær bilde</string>
+    <string name="scroll_to_bottom">Rull til bunnen</string>
+    <string name="scroll_to_top">Rull til toppen</string>
+    <string name="contact_sync_mdm_rationale">Din administrator har aktivert synkronisering av kontakter på din enhet. Derfor er tilgangen til kontaktene dine nødvendig.</string>
+    <string name="welcome_back">Velkommen tilbake!</string>
+    <string name="id_restored_successfully">Din Threema ID har blitt gjenopprettet uten feil</string>
+    <string name="prefs_dynamic_colors">Dynamisk farge</string>
+    <string name="prefs_dynamic_colors_sum">Bruk systemfarger (BETA)</string>
+    <string name="apply_changes">Aktiver endringer</string>
+    <string name="prefs_threema_work_summary">Visste du at Threema også tilbyr en kommunikasjonsløsning for bedrifter? Trykk her for å lære mer om Threema Work.</string>
+    <string name="notification_channel_voice_message_player">Lydmeldingsspiller</string>
+    <string name="voice_message_from">Lydmelding fra %s</string>
+    <string name="vm_fg_service_not_allowed">Feil ved avspilling av lydmelding</string>
+    <string name="vm_fg_service_not_allowed_explain">Trykk på spill-knappen på mediavarselet om den fortsatt er tilstede, ellers vennligst åpne appen for å starte avspilling fra samtalen.</string>
+    <string name="use_threema_without_this_permission">Bruk %s uten denne tillatelsen</string>
+    <string name="grant_permission">Gi tillatelse</string>
+    <string name="grant_permission_settings">Gi tillatelse i innstillingene</string>
+    <string name="ignore_permission">Ikke spør igjen</string>
+    <string name="permission_nearby_devices">Enheter i nærheten</string>
+    <string name="permission_bluetooth">Bluetooth</string>
+    <string name="permission_camera">Kamera</string>
+    <string name="permission_microphone">Mikrofon</string>
+    <string name="permission_read_phone_state">Telefon</string>
+    <string name="permission_enable_in_settings_rationale">Vennligst aktiver tillatelsen i innstillingene. Velg \"Tillatelser\" og gi tillatelse til \"%s\".</string>
+    <string name="group_name">Gruppenavn</string>
+    <string name="samsung_permission_problem_explain">%1$s har ikke tilgang til mediafiler på grunn av en manglende tillatelse. For å fikse dette, sørg for at tillatelsen for \"Ekstern lagring\" er aktivert på den neste skjermen og deretter restart %1$s.</string>
+    <string name="min_n_chars">min. %d tegn</string>
+    <string name="prefs_title_grant_bluetooth_permission">Gi tilgang til Bluetooth</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1518,5 +1560,9 @@ Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</
     <plurals name="delete_messages">
         <item quantity="one">Slett %d melding på denne enheten?</item>
         <item quantity="other">Slett %d meldinger på denne enheten?</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="one">%d gruppemedlem</item>
+        <item quantity="other">%d gruppemedlemmer</item>
     </plurals>
 </resources>

@@ -21,6 +21,9 @@
 
 package ch.threema.app.mediaattacher;
 
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -32,11 +35,6 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -44,6 +42,12 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.threema.app.R;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.fragments.ComposeMessageFragment;
@@ -53,9 +57,6 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
-
-import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
-import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
 
 public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 
@@ -80,7 +81,6 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 	protected void setInitialMediaGrid() {
 		super.setInitialMediaGrid();
 		// hide media items dependent views until we have data loaded and set to grid
-		dateView.setVisibility(View.GONE);
 
 		// check for previous filter selection to be reset
 		Intent intent = getIntent();
@@ -128,7 +128,6 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 			@Override
 			public void onChanged(List<MediaAttachItem> mediaAttachItems) {
 				if (mediaAttachItems.size() != 0) {
-					dateView.setVisibility(View.VISIBLE);
 					mediaAttachViewModel.getCurrentMedia().removeObserver(this);
 				}
 			}

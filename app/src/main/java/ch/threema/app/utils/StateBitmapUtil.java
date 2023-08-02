@@ -27,6 +27,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -53,20 +54,13 @@ public class StateBitmapUtil {
 		StateBitmapUtil.instance = new StateBitmapUtil(context.getApplicationContext());
 	}
 
-	private final Context context;
 	private final Map<MessageState, Integer> messageStateBitmapResourceIds = new EnumMap<>(MessageState.class);
 	private final Map<MessageState, Integer> messageStateDescriptionMap = new EnumMap<MessageState, Integer>(MessageState.class);
-	private int regularColor;
 	private int warningColor;
 	private int ackColor;
 	private int decColor;
 
 	private StateBitmapUtil(Context context) {
-		this.context = context;
-		buildState();
-	}
-
-	private void buildState() {
 		this.messageStateBitmapResourceIds.put(MessageState.READ, R.drawable.ic_visibility_filled);
 		this.messageStateBitmapResourceIds.put(MessageState.DELIVERED, R.drawable.ic_inbox_filled);
 		this.messageStateBitmapResourceIds.put(MessageState.SENT, R.drawable.ic_mail_filled);
@@ -94,19 +88,9 @@ public class StateBitmapUtil {
 		this.ackColor = context.getResources().getColor(R.color.material_green);
 		this.decColor = context.getResources().getColor(R.color.material_orange);
 		this.warningColor = context.getResources().getColor(R.color.material_red);
-
-		this.refresh();
 	}
 
-	public void refresh() {
-		if (ConfigUtils.getAppTheme(context) != ConfigUtils.THEME_LIGHT) {
-			this.regularColor = context.getResources().getColor(R.color.dark_text_color_secondary);
-		} else {
-			this.regularColor = context.getResources().getColor(R.color.text_color_secondary);
-		}
-	}
-
-	public void setStateDrawable(AbstractMessageModel messageModel, @Nullable ImageView imageView, boolean useInverseColors) {
+	public void setStateDrawable(Context context, AbstractMessageModel messageModel, @Nullable ImageView imageView, boolean useInverseColors) {
 		if (imageView == null) {
 			return;
 		}
@@ -122,15 +106,17 @@ public class StateBitmapUtil {
 				imageView.setContentDescription(context.getString(this.messageStateDescriptionMap.get(state)));
 
 				if (state == MessageState.SENDFAILED || state == MessageState.FS_KEY_MISMATCH) {
+					imageView.setImageTintList(null);
 					imageView.setColorFilter(this.warningColor);
 				} else if (state == MessageState.USERACK) {
+					imageView.setImageTintList(null);
 					imageView.setColorFilter(this.ackColor);
 				} else if (state == MessageState.USERDEC) {
+					imageView.setImageTintList(null);
 					imageView.setColorFilter(this.decColor);
 				} else {
-					if (useInverseColors) {
-						imageView.setColorFilter(this.regularColor);
-					}
+					imageView.setColorFilter(null);
+					imageView.setImageTintList(ContextCompat.getColorStateList(context, R.color.bubble_text_colorstatelist));
 				}
 			}
 		}

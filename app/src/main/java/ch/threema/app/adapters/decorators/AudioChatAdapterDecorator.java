@@ -23,8 +23,6 @@ package ch.threema.app.adapters.decorators;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
-import android.os.PowerManager;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -35,62 +33,45 @@ import org.slf4j.Logger;
 
 import java.io.File;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.AudioProgressBarView;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
-import static ch.threema.app.voicemessage.VoiceRecorderActivity.MAX_VOICE_MESSAGE_LENGTH_MILLIS;
-
 public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioChatAdapterDecorator");
 
 	private static final String LISTENER_TAG = "decorator";
 	private MessagePlayer audioMessagePlayer;
-	private final PowerManager.WakeLock audioPlayerWakelock;
 
 	public AudioChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-		super(context.getApplicationContext(), messageModel, helper);
-		PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-		audioPlayerWakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, BuildConfig.APPLICATION_ID + ":AudioPlayer");
-	}
+		super(context, messageModel, helper);
 
-	private void keepScreenOn() {
-		if (audioPlayerWakelock.isHeld()) {
-			keepScreenOff();
+		if (logger instanceof ThreemaLogger) {
+			((ThreemaLogger) logger).setPrefix(String.valueOf(getMessageModel().getId()));
 		}
 
-		if (!audioPlayerWakelock.isHeld()) {
-			audioPlayerWakelock.acquire(MAX_VOICE_MESSAGE_LENGTH_MILLIS);
-		}
-
-		keepScreenOnUpdate();
-	}
-
-	private void keepScreenOnUpdate() {}
-
-	private void keepScreenOff() {
-		if (audioPlayerWakelock != null && audioPlayerWakelock.isHeld()) {
-			audioPlayerWakelock.release();
-		}
+		logger.info("New AudioChatAdapterDecorator instance for {}", messageModel.getId());
 	}
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+
+		logger.info("configureChatMessage for {}", getMessageModel().getId());
+
 		AudioDataModel audioDataModel;
 		FileDataModel fileDataModel;
 		final long duration;
@@ -109,7 +90,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 
 		audioMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
-			helper.getFragment().getActivity(), helper.getMessageReceiver());
+			helper.getFragment().getActivity(), helper.getMessageReceiver(), helper.getMediaControllerFuture());
 
 		setOnClickListener(view -> {
 			// no action on onClick
@@ -117,23 +98,28 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
 		holder.messagePlayer = audioMessagePlayer;
 		holder.readOnButton.setOnClickListener(v -> {
-			float speed = audioMessagePlayer.togglePlaybackSpeed();
+			float currentSpeed = getPreferenceService().getAudioPlaybackSpeed();
+			float speed = audioMessagePlayer.togglePlaybackSpeed(currentSpeed);
 			setSpeedButtonText(holder, speed);
 		});
 
 		setSpeedButtonText(holder, getPreferenceService().getAudioPlaybackSpeed());
 		holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
+		holder.seekBar.setEnabled(false);
 		holder.readOnButton.setVisibility(View.GONE);
 		holder.messageTypeButton.setVisibility(View.VISIBLE);
 		holder.controller.setOnClickListener(v -> {
 			int status = holder.controller.getStatus();
 
 			switch (status) {
+				case ControllerView.STATUS_READY_TO_RETRY:
+					propagateControllerRetryClickToParent();
+					break;
 				case ControllerView.STATUS_READY_TO_PLAY:
 				case ControllerView.STATUS_PLAYING:
 				case ControllerView.STATUS_READY_TO_DOWNLOAD:
 					if (holder.seekBar != null && audioMessagePlayer != null) {
-						audioMessagePlayer.toggle();
+						audioMessagePlayer.togglePlayPause();
 					}
 					break;
 				case ControllerView.STATUS_PROGRESSING:
@@ -167,6 +153,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 					case MessagePlayer.State_NONE:
 						if (isDownloaded) {
 							if (holder.seekBar != null) {
+								updateProgressCount(holder, 0);
 								holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
 							}
 							holder.controller.setPlay();
@@ -186,23 +173,24 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 					case MessagePlayer.State_DOWNLOADED:
 					case MessagePlayer.State_DECRYPTED:
 						if (holder.seekBar != null) {
+							updateProgressCount(holder, 0);
 							holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
 						}
 						holder.controller.setPlay();
 						break;
 					case MessagePlayer.State_PLAYING:
 						isPlaying = true;
-						changePlayingState(holder, true);
+						logger.debug("playing");
 						// fallthrough
 					case MessagePlayer.State_PAUSE:
-					case MessagePlayer.State_INTERRUPTED_PLAY:
 						if (isPlaying) {
 							holder.controller.setPause();
 						} else {
 							holder.controller.setPlay();
 						}
+						changePlayingState(holder, isPlaying);
 
-						if (holder.seekBar != null) {
+						if (holder.seekBar != null && audioMessagePlayer.getDuration() > 0) {
 							holder.seekBar.setEnabled(true);
 							logger.debug("SeekBar: Duration = " + audioMessagePlayer.getDuration());
 							holder.seekBar.setMax(audioMessagePlayer.getDuration());
@@ -210,22 +198,17 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 							updateProgressCount(holder, audioMessagePlayer.getPosition());
 							holder.seekBar.setOnSeekBarChangeListener(new AudioProgressBarView.OnSeekBarChangeListener() {
 								@Override
-								public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-									if (fromUser) {
-										audioMessagePlayer.seekTo(progress);
-									}
-								}
+								public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) { }
 
 								@Override
-								public void onStartTrackingTouch(SeekBar seekBar) {
-								}
+								public void onStartTrackingTouch(SeekBar seekBar) {}
 
 								@Override
 								public void onStopTrackingTouch(SeekBar seekBar) {
+									audioMessagePlayer.seekTo(seekBar.getProgress());
 								}
 							});
 						}
-
 						break;
 				}
 
@@ -239,7 +222,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						}
 
 						@Override
-						public void onEnd(AbstractMessageModel messageModel, boolean success, final String message, File decryptedFile) {
+						public void onEnd(final AbstractMessageModel messageModel, boolean success, final String message, File decryptedFile) {
 							if (!success) {
 								RuntimeUtil.runOnUiThread(() -> {
 									holder.controller.setPlay();
@@ -263,7 +246,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						}
 
 						@Override
-						public void onEnd(AbstractMessageModel messageModel, boolean success, final String message) {
+						public void onEnd(final AbstractMessageModel messageModel, boolean success, final String message) {
 							if (!success) {
 								RuntimeUtil.runOnUiThread(() -> {
 									holder.controller.setReadyToDownload();
@@ -278,27 +261,31 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
 					.addListener(LISTENER_TAG, new MessagePlayer.PlaybackListener() {
 						@Override
-						public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
+						public void onPlay(final AbstractMessageModel messageModel, boolean autoPlay) {
 							RuntimeUtil.runOnUiThread(() -> {
-								invalidate(holder, position);
-								keepScreenOn();
-								changePlayingState(holder, true);
+								if (holder.position == position && getMessageModel().getId() == messageModel.getId()) {
+									logger.debug("onPlay");
+									invalidate(holder, position);
+									changePlayingState(holder, true);
+								}
 							});
 						}
 
 						@Override
-						public void onPause(AbstractMessageModel messageModel) {
+						public void onPause(final AbstractMessageModel messageModel) {
 							RuntimeUtil.runOnUiThread(() -> {
-								invalidate(holder, position);
-								keepScreenOff();
-								changePlayingState(holder, false);
+								if (holder.position == position && getMessageModel().getId() == messageModel.getId()) {
+									logger.debug("onPause");
+									invalidate(holder, position);
+									changePlayingState(holder, false);
+								}
 							});
 						}
 
 						@Override
-						public void onStatusUpdate(AbstractMessageModel messageModel, final int pos) {
+						public void onStatusUpdate(final AbstractMessageModel messageModel, final int pos) {
 							RuntimeUtil.runOnUiThread(() -> {
-								if (holder.position == position) {
+								if (holder.position == position && getMessageModel().getId() == messageModel.getId()) {
 									if (holder.seekBar != null) {
 										if (holder.seekBar.getMax() != holder.messagePlayer.getDuration()) {
 											logger.info("Audio message player duration changed old={} new={}", holder.seekBar.getMax(), holder.messagePlayer.getDuration());
@@ -309,19 +296,25 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
 									// make sure pinlock is not activated while playing
 									ThreemaApplication.activityUserInteract(helper.getFragment().getActivity());
-									keepScreenOnUpdate();
 								}
 							});
 						}
 
 						@Override
-						public void onStop(AbstractMessageModel messageModel) {
+						public void onStop(final AbstractMessageModel messageModel) {
 							RuntimeUtil.runOnUiThread(() -> {
-								holder.controller.setPlay();
-								updateProgressCount(holder, 0);
-								invalidate(holder, position);
-								keepScreenOff();
-								changePlayingState(holder, false);
+								if (holder.position == position && getMessageModel().getId() == messageModel.getId()) {
+									logger.debug("onStop getMessageModel {} messageModel {} position {}", getMessageModel().getId(), messageModel.getId(), position);
+									invalidate(holder, position);
+									if (messageModel.isAvailable()) {
+										holder.controller.setPlay();
+									} else {
+										holder.controller.setReadyToDownload();
+									}
+									holder.seekBar.setEnabled(false);
+									updateProgressCount(holder, 0);
+									changePlayingState(holder, false);
+								}
 							});
 						}
 					});
@@ -356,10 +349,8 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
 		//do not show duration if 0
 		if(duration > 0) {
-			setDatePrefix(StringConversionUtil.secondsToString(
-					duration,
-					false
-			), holder.dateView.getTextSize());
+			setDatePrefix(StringConversionUtil.secondsToString(duration, false));
+			setDuration(duration);
 			dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
 		}
 
@@ -381,10 +372,9 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
 	@UiThread
 	private synchronized void changePlayingState(final ComposeMessageHolder holder, boolean isPlaying) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			AnimationUtil.setFadingVisibility(holder.readOnButton, isPlaying ? View.VISIBLE : View.GONE);
-			AnimationUtil.setFadingVisibility(holder.messageTypeButton, isPlaying ? View.GONE : View.VISIBLE);
-		}
+		logger.debug("changePlayingState for {} to {}", getMessageModel().getId(), isPlaying);
+		holder.readOnButton.setVisibility(isPlaying ? View.VISIBLE : View.GONE);
+		holder.messageTypeButton.setVisibility(isPlaying ? View.GONE : View.VISIBLE);
 	}
 
 	@SuppressLint("DefaultLocale")

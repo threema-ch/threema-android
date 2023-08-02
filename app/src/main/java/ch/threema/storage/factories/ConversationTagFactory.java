@@ -23,7 +23,7 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
-import net.sqlcipher.Cursor;
+import android.database.Cursor;
 
 import org.slf4j.Logger;
 

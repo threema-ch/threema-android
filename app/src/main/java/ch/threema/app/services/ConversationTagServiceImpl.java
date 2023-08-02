@@ -21,11 +21,13 @@
 
 package ch.threema.app.services;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
@@ -93,6 +95,7 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 	}
 
 	@Override
+	@WorkerThread
 	public boolean unTag(@Nullable ConversationModel conversation, @Nullable TagModel tagModel) {
 		if (conversation != null && tagModel != null) {
 			if (this.isTaggedWith(conversation, tagModel)) {

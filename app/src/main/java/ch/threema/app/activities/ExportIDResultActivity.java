@@ -40,13 +40,15 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import java.io.ByteArrayOutputStream;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NavUtils;
 import androidx.lifecycle.LifecycleOwner;
+
+import com.google.android.material.appbar.MaterialToolbar;
+
+import java.io.ByteArrayOutputStream;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -62,7 +64,7 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 
 	private Bitmap qrcodeBitmap;
 	private WebView printWebView;
-	private Toolbar toolbar;
+	private MaterialToolbar toolbar;
 	private TooltipPopup tooltipPopup;
 
 	private String identity, backupData;
@@ -81,9 +83,7 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle("");
-		if (ConfigUtils.getAppTheme(this) != ConfigUtils.THEME_DARK) {
-			actionBar.setHomeAsUpIndicator(R.drawable.ic_check);
-		}
+		actionBar.setHomeAsUpIndicator(R.drawable.ic_check);
 
 		this.backupData = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP);
 		this.identity = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
@@ -114,14 +114,25 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 		Bitmap bmpScaled = Bitmap.createScaledBitmap(qrcodeBitmap, px, px, false);
 		bmpScaled.setDensity(Bitmap.DENSITY_NONE);
 		imageView.setImageBitmap(bmpScaled);
+		if (ConfigUtils.isTheDarkSide(this)) {
+			ConfigUtils.invertColors(imageView);
+		}
+
 		imageView.setOnClickListener(v -> new QRCodePopup(ExportIDResultActivity.this, getWindow().getDecorView(), ExportIDResultActivity.this).show(v, backupData, QRCodeServiceImpl.QR_TYPE_ID_EXPORT));
 	}
 
 	private void showTooltip() {
 		if (!preferenceService.getIsExportIdTooltipShown()) {
 			getToolbar().postDelayed(() -> {
-				tooltipPopup = new TooltipPopup(this, R.string.preferences__tooltip_export_id_shown, R.layout.popup_tooltip_top_right, this);
-				tooltipPopup.show(this, getToolbar(), getString(R.string.tooltip_export_id), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, 5000);
+
+				View menuItemView = findViewById(R.id.menu_backup_share);
+				int[] location = new int[2];
+				menuItemView.getLocationOnScreen(location);
+				location[0] += menuItemView.getWidth() / 2;
+				location[1] += menuItemView.getHeight();
+
+				tooltipPopup = new TooltipPopup(this, R.string.preferences__tooltip_export_id_shown, this);
+				tooltipPopup.show(this, menuItemView, getString(R.string.tooltip_export_id), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, location, 5000);
 			}, 1000);
 		}
 	}
@@ -207,16 +218,12 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				done();
-				return true;
-			case R.id.menu_print:
-				printBitmap(qrcodeBitmap);
-				break;
-			case R.id.menu_backup_share:
-				shareId();
-				break;
+		if (item.getItemId() == android.R.id.home) {
+			done();
+		} else if (item.getItemId() == R.id.menu_print) {
+			printBitmap(qrcodeBitmap);
+		} else if (item.getItemId() == R.id.menu_backup_share) {
+			shareId();
 		}
 		return super.onOptionsItemSelected(item);
 	}

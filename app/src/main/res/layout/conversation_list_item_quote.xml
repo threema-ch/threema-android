@@ -21,7 +21,7 @@
 			android:id="@+id/quote_bar"
 			android:layout_width="4dp"
 			android:layout_height="0dp"
-			android:background="?colorAccent"
+			android:background="?attr/colorPrimary"
 			app:layout_constraintTop_toTopOf="parent"
 			app:layout_constraintLeft_toLeftOf="parent"
 			app:layout_constraintBottom_toBottomOf="parent"
@@ -41,12 +41,12 @@
 			app:layout_constraintTop_toTopOf="parent">
 
 			<ch.threema.app.emojis.EmojiConversationTextView
+				style="@style/Threema.Bubble.Text.Body.Small"
 				android:id="@+id/tertiaryTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginLeft="8dp"
-				android:textColor="?attr/textColorTertiary"
-				android:textSize="?attr/font_medium"
+				android:textColor="@color/bubble_text_quote_colorstatelist"
 				android:textStyle="bold" />
 
 			<LinearLayout
@@ -62,15 +62,15 @@
 					android:layout_marginTop="3dp"
 					android:layout_marginBottom="3dp"
 					android:layout_marginRight="-2.5dp"
-					app:tint="?attr/textColorSecondary"/>
+					app:tint="@color/bubble_text_colorstatelist"/>
 
 				<ch.threema.app.emojis.EmojiConversationTextView
+					style="@style/Threema.Bubble.Text.Body.Small"
 					android:id="@+id/secondary_text_view"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:linksClickable="true"
 					android:layout_marginLeft="8dp"
-					android:textColor="?attr/textColorSecondary"
 					android:textSize="?attr/font_status"
 					android:ellipsize="end"
 					android:maxLength="@integer/max_quote_text_length" />
@@ -93,13 +93,12 @@
 	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<ch.threema.app.emojis.EmojiConversationTextView
+		style="@style/Threema.Bubble.Text.Body"
 		android:id="@+id/text_view"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="4dp"
 		android:linksClickable="true"
-		android:textColor="?android:textColorPrimary"
-		android:textSize="?attr/font_large"
 		android:ellipsize="end"
 		android:maxLength="@integer/max_bubble_text_length"
 		app:layout_constraintLeft_toLeftOf="parent"

@@ -280,7 +280,6 @@
     <string name="title_select_contacts">Vyberte členy</string>
     <string name="pin_invalid_not_set">Neplatný PIN. Nenastaven.</string>
     <string name="prefs_group_notifications">Skupinové konverzace</string>
-    <string name="add_group_members_list">Členové skupiny</string>
     <string name="group_select_at_least_two">Chcete‑li pokračovat, musíte vybrat alespoň jednoho člena</string>
     <string name="group_select_max">Nemůžete vybrat více než %1$d členů skupiny</string>
     <string name="search">Najít</string>
@@ -536,7 +535,7 @@ https://myid.threema.ch/revoke</string>
     <string name="send_as_files">Odeslat jako soubor</string>
     <string name="send_as_files_warning">Přenos nekomprimovaných souborů a obrázků způsobuje zvýšenou spotřebu dat, což může vést k dodatečným poplatkům ze strany poskytovatele mobilních služeb. Doporučujeme přenášet soubory pouze pomocí Wi‑Fi sítí.</string>
     <string name="prefs_theme">Barevný motiv</string>
-    <string name="list_theme_light">Světlý (výchozí)</string>
+    <string name="list_theme_light">Světlý</string>
     <string name="list_theme_dark">Tmavý</string>
     <string name="prefs_header_appearance">Vzhled</string>
     <string name="prefs_sum_passphrase">Vyžadovat heslo k odemknutí lokálních zašifrovaných dat</string>
@@ -665,7 +664,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="configure">Konfigurovat</string>
     <string name="file_is_not_audio">Nejde o zvukový soubor</string>
     <!-- restrictions -->
-    <string name="disabled_by_policy">Některá nastavení byla zakázána bezpečnostními zásadami zařízení</string>
+    <string name="disabled_by_policy">Některá nastavení byla zakázána administrátorem</string>
     <string name="select_all">Vybrat vše</string>
     <string name="deleting_messages">Odstraňování zpráv</string>
     <string name="media_gallery_files">Soubory</string>
@@ -676,7 +675,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="prefs_proximity_sensor">Zohlednit senzor přiblížení</string>
     <string name="prefs_proximity_sensor_explain">Pokud je snímač přiblížení zakryt, použije se pro přehrávání hlasových zpráv sluchátko</string>
     <string name="error_creating_group">Chyba během vytváření/úpravy skupiny</string>
-    <string name="no_media_found_generic">V této konverzaci nebyly nalezeny žádné mediální soubory</string>
+    <string name="no_media_found_generic">V této konverzaci nebyly nalezeny žádné mediální soubory odpovídající výběru.</string>
     <string name="max_images_reached">Najednou může být upraveno maximálně %d položek</string>
     <string name="enter_description">Zde prosím popište problém/chybu.</string>
     <string name="add_caption_hint">Přidejte volitelný komentář</string>
@@ -750,8 +749,8 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="prefs_ipv6_preferred_off">Použít pouze adresaci IPv4</string>
     <string name="prefs_ipv6_preferred_on">Upřednostnit adresaci IPv6 nad IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 pro hovory a web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Povolit adresaci IPv6 pro Threema volání a Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Zakázat adresaci IPv6 pro Threema volání a Threema Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Povolit adresaci IPv6 pro hovory Threema a Threema Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Zakázat adresaci IPv6 pro hovory Threema a Threema Web</string>
     <string name="ipv6_requires_restart">Chcete‑li toto nastavení použít, bude nutné restartovat aplikaci.</string>
     <string name="ipv6_restart_now">Restartovat nyní</string>
     <string name="on_cap">Zap.</string>
@@ -782,22 +781,22 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="backup_data_cancelled">Zálohování bylo přerušeno</string>
     <string name="service_manager_not_available">Aplikaci Threema nelze spustit. Vypněte a zapněte prosím vaše zařízení.</string>
     <string name="message_sent">Zpráva odeslána</string>
-    <string name="threema_call">Threema volání</string>
+    <string name="threema_call">Hovor Threema</string>
     <string name="threema_message_to">Zpráva pro %s</string>
     <string name="threema_call_with">Zavolat %s</string>
-    <string name="prefs_title_voip">Threema volání</string>
+    <string name="prefs_title_voip">Hovory Threema</string>
     <string name="prefs_title_force_turn">Vždy během hovorů maskovat IP</string>
     <string name="prefs_summary_force_turn_off">Pokud to bude možné, naváže se přímé spojení s volaným. Pouze hovory s neověřenými kontakty budou přenášeny skrze Threema servery. Vaše IP adresa může být pro volaného zjistitelná.</string>
     <string name="prefs_summary_force_turn_on">Všechny hovory se budou přenášet skrze Threema servery, vaše IP adresa tak bude zabezpečena. Kvalita hovorů může být snížena.</string>
     <string name="permission_record_audio_required">Chcete‑li provádět šifrované hovory a odesílat hlasové zprávy, povolte prosím aplikaci Threema přístup k mikrofonu.</string>
-    <string name="prefs_voice_call_notifications">Threema volání</string>
+    <string name="prefs_voice_call_notifications">Hovory Threema</string>
     <string name="prefs_voice_call_sound">Vyzvánění</string>
     <string name="prefs_sum_voice_call_sound">Zvolte vyzváněcí tón pro příchozí hovory Threema</string>
-    <string name="prefs_sum_voice_call_vibrate">Vibrovat během příchozích Threema volání</string>
-    <string name="prefs_title_voip_enable">Povolit Threema volání</string>
+    <string name="prefs_sum_voice_call_vibrate">Vibrovat během příchozích hovorů Threema</string>
+    <string name="prefs_title_voip_enable">Povolit hovory Threema</string>
     <string name="webclient_invalid_push_token_message">Je vyžadováno ruční spuštění</string>
     <string name="threema_work_contact">Kontakt Threema Work</string>
-    <string name="permission_phone_required">Povolte oprávnění ke správě telefonních hovorů pro používání funkce Threema volání</string>
+    <string name="permission_phone_required">Povolte oprávnění ke správě telefonních hovorů pro používání funkce hovor Threema</string>
     <string name="strikethrough">Přeškrtnuté</string>
     <string name="italic">Kurzíva</string>
     <string name="bold">Tučné</string>
@@ -859,7 +858,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="prefs_sum_incognito_keyboard">Zakázat sběr dat pro personalizované návrhy (pokud je funkce podporována klávesnicí ve vašem zařízení)</string>
     <string name="tooltip_mentions">Zadejte na klávesnici znak @ pro výběr člena skupiny jako adresáta nebo pro jeho zmínění v textu.</string>
     <string name="tooltip_imagepaint">Buďte kreativní! Klepnutím na tlačítko kouzelné hůlky můžete před odesláním do obrázku něco načmárat nebo přidat samolepky a text.</string>
-    <string name="call_ongoing">Probíhá volání</string>
+    <string name="call_ongoing">Probíhá hovor</string>
     <string name="ballot_received_votes">Počet přijatých hlasů: %1$d/%2$d</string>
     <string name="quote_not_found">Citovaná zpráva nebyla nalezena</string>
     <string name="ballot_secret">tajné</string>
@@ -896,7 +895,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="safe_configure_choose_password_force">Zadejte prosím silné heslo pro zabezpečení vašeho Threema ID funkcí Threema Safe. Zadané heslo si dobře zapamatujte!</string>
     <string name="safe_deactivate">Vypnutí Threema Safe</string>
     <string name="safe_deactivate_explain">Jestliže zakážete službu Threema Safe, budou ze serveru odstraněny všechny existující zálohy. Přejete si pokračovat?</string>
-    <string name="add_group_members">Přidat člena</string>
+    <string name="add_group_members">Přidat další členy</string>
     <string name="contact_add_confirm">Přejete si přidat nový kontakt „%1$s“ do vašeho seznamu kontaktů?</string>
     <string name="password_bad">Heslo je příliš slabé</string>
     <string name="prefs_fix_background_data">Povolit využití dat na pozadí</string>
@@ -954,7 +953,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="insert_date">Vložit datum</string>
     <string name="add_answer">Přidat odpověď</string>
     <string name="title_cannot_be_empty">Kolonka pro název ankety nemůže zůstat prázdná</string>
-    <string name="voip_disabled">Threema volání je zakázané</string>
+    <string name="voip_disabled">Hovory Threema jsou zakázané</string>
     <string name="hide_chat_enter_message_explain">Tato konverzace je označena jako soukromá. Chcete‑li do ní vstoupit, nastavte nejdříve ochranu přístupu.</string>
     <string name="unknown">Neznámý</string>
     <string name="miui_notification_title">Důležité upozornění týkající se systému oznámení v systému MIUI</string>
@@ -1013,12 +1012,12 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="open_in_maps_app">Otevřít v aplikaci Mapy</string>
     <string name="delete">Odstranit</string>
     <string name="continue_recording">Pokračovat v nahrávání</string>
-    <string name="whatsnew_title">Novinka: Skupinové hovory %1$s</string>
+    <string name="whatsnew_title">Vítejte v %1$s 5.1</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p>Koncově šifrované skupinové hovory jsou nyní dostupné v aplikaci %1$s pro Android.</p>
-		<p>Pro zahájení hovoru otevřete skupinovou konverzaci a klepněte na tlačítko fotoaparátu v horní části obrazovky.</p>
-		<p>Všichni členové skupiny obdrží oznámení a mohou se rozhodnout, zda se hovoru zúčastní.</p>
-		<p><b>Poznámka:</b> skupinové hovory na platformě iOS budou k dispozici později.</p>
+		<p>Tato aktualizace se zaměřuje na zlepšení zabezpečení, vyšší použitelnost a modernizaci aplikace.</p>
+		<p>Na základě četných žádostí byla aplikace kompletně přepracována, aby plně podporovala paradigma „Material You“ představené se systémem Android 12. Díky volitelnému nastavení „Dynamické barvy“ se aplikace může přizpůsobit vašemu personalizovanému barevnému schématu.</p>
+		<p>Funkce Perfect Forward Secrecy je nyní standardně zapnuta pro všechny kontakty, které mají nainstalovanou aktuální verzi aplikace %1$s.</p>
+		<p>Mezi další vylepšení se řadí nový přehrávač hlasových zpráv, který pokračuje v přehrávání oznámení i po přepnutí aplikace do pozadí, a nové pokyny pro uživatele při žádostech o udělení oprávnění.</p>
 		]]></string>
     <string name="tap_to_start">Klepnutím sem spustíte aplikaci %s.</string>
     <string name="two_years">2 roky</string>
@@ -1162,7 +1161,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="no_faces_detected">Nebyly nalezeny žádné tváře</string>
     <string name="smiley">Smajlík</string>
     <string name="blur">Rozmazat</string>
-    <string name="face_blur_tooltip_title">Novinka: Rozpoznávání tváří</string>
+    <string name="face_blur_tooltip_title">Rozpoznávání tváří</string>
     <string name="face_blur_tooltip_text">Nechte na obrázcích najít tváře a nechte je rozmazat nebo zakrýt smajlíkem.</string>
     <string name="listened_to">vyslechnuta</string>
     <string name="transcoder_unsupported_audio_format">Zvuk nelze překódovat kvůli chybějící podpoře tohoto formátu v systému.</string>
@@ -1233,7 +1232,7 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="group_link_rename">Přejmenovat</string>
     <string name="group_link_rename_tag">Nový název</string>
     <string name="tap_here_for_more">Pro zjištění více informací klepněte sem</string>
-    <string name="another_connection_instructions">Server detekoval dvě nebo více připojení z různých zařízení se stejným Threema ID.\n\nPoužívat dvě stejná Threema ID na více zařízeních současně není možné. Nové zprávy budou odesílány pouze na to zařízení, které se k serveru připojilo naposledy.\n\nJestliže přecházíte na nové zařízení, odinstalujte nebo deaktivujte aplikaci %s na starém zařízení a poté restartujte vaše současné zařízení.</string>
+    <string name="another_connection_instructions"><![CDATA[Server detekoval dvě nebo více připojení z různých zařízení se stejným Threema ID.<br><br>Používat stejné Threema ID na více zařízeních současně není možné. Nové zprávy budou posílány pouze na to zařízení, které se k serveru připojilo naposledy.<br><br>Jestliže přecházíte na nové zařízení, odinstalujte nebo deaktivujte aplikaci %s na starém zařízení a poté restartujte vaše současné zařízení.]]></string>
     <string name="app_store_error_code">Kód chyby obchodu s aplikacemi: %d</string>
     <string name="backup_restore_type"><![CDATA[Kterou zálohu si přejete obnovit? <br/><br/> <a href=%s>Přečtěte si více o zálohování v aplikaci Threema</a>]]></string>
     <string name="data_backup_info">Obnovit vše, včetně konverzací</string>
@@ -1357,18 +1356,19 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="organization_type">Organizace</string>
     <string name="permission_bluetooth_connect_required">Povolte oprávnění „Zařízení v okolí“ k vyhledání připojených Bluetooth náhlavních souprav</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push je aktivní. Relace Threema Web a Desktop proto musí být spuštěny manuálně.</string>
-    <string name="tooltip_multiple_recipients_title">Nové: Více příjemců</string>
+    <string name="tooltip_multiple_recipients_title">Více příjemců</string>
     <string name="tooltip_multiple_recipients_text">Dlouhým klepnutím vyberte více příjemců, kterým poté můžete odeslat stejnou zprávu.</string>
     <string name="synchronizing">Synchronizace...</string>
     <string name="forward_security">Odesílat zprávy s Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">Žádný</string>
-    <string name="clear_forward_security">Vyčistit Perfect Forward Secrecy relace</string>
+    <string name="clear_forward_security">Resetovat Perfect Forward Secrecy pro tento kontakt</string>
+    <string name="clear_forward_security_warning">Tuto akci provádějte pouze na pokyn týmu podpory společnosti Threema.</string>
     <string name="forward_security_cleared">Perfect Forward Secrecy relace s tímto kontaktem byly vyčištěny</string>
     <string name="message_without_forward_security">Byla přijata zpráva bez Perfect Forward Secrecy. Ověřte, zda odesílatel záměrně zakázal Perfect Forward Secrecy.</string>
     <string name="forward_security_established">Zprávy v této konverzaci jsou nyní chráněny protokolem Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Zprávy přijaté v této konverzaci jsou nyní chráněny protokolem Perfect Forward Secrecy. Povolte Perfect Forward Secrecy v kontaktních údajích, aby byly chráněny i odeslané zprávy.</string>
-    <string name="forward_security_reset">Perfect Forward Secrecy relace s tímto kontaktem byla resetována. Toto se může stát v případě, kdy kontakt vyměnil zařízení nebo přeinstaloval aplikaci.</string>
+    <string name="forward_security_reset">Funkce Perfect Forward Secrecy byla resetována. K tomu může dojít, pokud partner v chatu změní své zařízení nebo přeinstaluje aplikaci.</string>
     <string name="forward_security_reset_simple">Perfect Forward Secrecy relace s tímto kontaktem byla resetována.</string>
     <string name="forward_security_message_out_of_order">Zpráva byla přijata mimo provoz a nemohla být dešifrována.</string>
     <string name="self_updater_installation_failed">Stažení aktualizace selhalo. Stáhněte a nainstalujte aktualizaci z <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ručně.</string>
@@ -1398,14 +1398,14 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="read_phone_state_dialog_disallow">Přesto pokračovat</string>
     <string name="read_phone_state_dialog_never_ask_again">Příště se již neptat</string>
     <string name="read_phone_state_dialog_title">Vyžadováno oprávnění</string>
-    <string name="read_phone_state_dialog_message">Aby se zabránilo tomu, že Threema volání naruší regulérní hovory, je potřeba povolit oprávnění přístupu k telefonu. Pokud toto oprávnění nebude povoleno, příchozí Threema volání bude vyzvánět i v případě probíhajícího regulérního hovoru.</string>
+    <string name="read_phone_state_dialog_message">Aby se zabránilo tomu, že hovory Threema naruší regulérní hovory, je potřeba povolit oprávnění přístupu k telefonu. Pokud toto oprávnění nebude povoleno, příchozí hovor Threema bude vyzvánět i v případě probíhajícího regulérního hovoru.</string>
     <string name="read_phone_state_short_message">Pro kontrolu probíhajících hovorů udělte aplikaci Threema oprávnění přístupu k telefonu.</string>
     <string name="prefs_title_read_phone_state">Udělit oprávnění Telefon</string>
     <string name="prefs_title_hibernation">Nastavení nepoužívaných aplikací</string>
     <string name="prefs_summary_hibernation_api_32">Aby se zabránilo tomu, že je aplikace Threema pozastavena systémem po delší neaktivitě, zakažte prosím systémové nastavení „Odstranit oprávnění a uvolnit místo“.</string>
     <string name="prefs_summary_hibernation_api">Aby se zabránilo tomu, že je aplikace Threema pozastavena systémem po delší neaktivitě, zakažte prosím systémové nastavení „Pozastavit aktivitu při nepouživání“.</string>
     <string name="unable_to_fetch_configuration">Nelze načíst data z konfiguračního serveru. Zkuste to prosím znovu později.</string>
-    <string name="rogue_device_warning">Server zjistil připojení z jiného zařízení s totožným Threema ID.\n\nPokud jste mezitím nepoužili vaše Threema ID na jiném zařízení nebo se starší verzí aplikace, potom prosím kontaktujte podporu a odešlete soubor se záznamem, pokud je to možné.</string>
+    <string name="rogue_device_warning">Bylo zjištěno připojení z jiného zařízení s totožným Threema ID. Použili jste v nedávné době své Threema ID na jiném zařízení? &lt;br&gt;&lt;br&gt; Pokud ano, můžete tuto zprávu ignorovat. &lt;br&gt;&lt;br&gt; V opačném případě mohlo dojít k narušení bezpečnosti vašeho soukromého klíče. Zachovejte se dle <a href="https://threema.ch/en/faq/another_connection">našich pokynů</a>, abyste ochránili své zařízení a data, a následně si vytvořte nové ID.</string>
     <string name="fetch2_failure">Synchronizace se zajišťovacím serverem selhala.</string>
     <string name="no_members_support_group_calls">V této skupině nejsou žádní další členové, kteří by mohli přijímat skupinové hovory.</string>
     <string name="group_calls">Skupinové hovory</string>
@@ -1414,12 +1414,18 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="group_call">Skupinový hovor</string>
     <string name="checking_compatibility">Zjišťuje se kompatibilita…</string>
     <string name="group_call_mic_permission_rationale">K uskutečnění skupinových hovorů musíte aplikaci %s umožnit přístup k mikrofonu pod položkou „oprávnění“.</string>
+    <string name="group_call_mic_permission_description">K uskutečnění skupinových hovorů musíte povolit oprávnění přístupu k mikrofonu, aby vás ostatní mohli slyšet.</string>
+    <string name="call_mic_permission_description">K uskutečnění hovorů musíte povolit oprávnění přístupu k mikrofonu, aby vás ostatní mohli slyšet.</string>
     <string name="group_call_camera_permission_rationale">Aby ostatní účastníci mohli vidět váš obraz, musíte aplikaci %s umožnit přístup k fotoaparátu pod položkou „oprávnění“.</string>
+    <string name="group_call_phone_permission_description">K uskutečnění skupinových hovorů je potřeba povolit oprávnění přístupu k telefonu, aby bylo možné zjišťovat, zda jiný hovor nepřerušuje skupinový hovor.</string>
+    <string name="call_phone_permission_description">K uskutečnění hovorů Threema je potřeba povolit oprávnění přístupu k telefonu, aby bylo možné zjišťovat, zda jiný hovor nepřerušuje hovor Threema.</string>
+    <string name="group_call_nearby_devices_permission_description">K uskutečnění skupinových hovorů s náhlavní soupravou Bluetooth musíte povolit oprávnění „Zařízení v okolí“, aby bylo možné vyhledávat náhlavní soupravy Bluetooth.</string>
+    <string name="call_nearby_devices_permission_description">K uskutečnění hovorů Threema s náhlavní soupravou Bluetooth musíte povolit oprávnění „Zařízení v okolí“, aby bylo možné vyhledávat náhlavní soupravy Bluetooth.</string>
     <string name="settings">Nastavení</string>
     <string name="leave">Opustit</string>
     <string name="fs_key_mismatch">klíče se neshodují</string>
     <string name="tap_to_resend">Klepnutím přepošlete</string>
-    <string name="group_calls_tooltip_title">Novinka: Skupinové hovory</string>
+    <string name="group_calls_tooltip_title">Skupinové hovory</string>
     <string name="group_calls_tooltip_text">Klepnutím sem pozvete všechny členy skupiny k připojení se k hovoru. Všichni členové skupiny obdrží oznámení a mohou se rozhodnout, zda se chtějí zúčastnit hovoru nebo ne.</string>
     <string name="prefs_title_calls">Zabezpečené hovory</string>
     <string name="prefs_sum_group_calls_vibration">Vyberte, zda má zařízení vibrovat po zahájení skupinového hovoru</string>
@@ -1427,7 +1433,36 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
     <string name="forward_security_mode_2dh">unilaterální</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) chrání zaznamenanou komunikaci před zpětným dešifrováním i když je dlouhodobý šifrovací klíč kompromitován.\n\nTato možnost může být povolena v případě, když aplikace na obou stranách podporuje PFS.</string>
     <string name="group_call_inactivity_left">Skupinový hovor byl opuštěn z důvodu neaktivity</string>
-    <string name="forward_security_downgraded_status_message">Tento kontakt začal používat verzi aplikace, která nepodporuje Perfect Forward Secrecy. Zprávy budou od nynějška odesílány bez PFS.</string>
+    <string name="missing_permission_external_storage">Soubor nelze zkopírovat. Vyzkoušejte následující postup:\n1. Otevřete aplikaci nastavení.\n2. Přejděte do kategorie „Aplikace“ a zvolte položku „Aplikace se speciálním přístupem“.\n3. Klepněte na „Přístup ke všem souborům“.\n4. Klepněte na tři tečky v pravém horním rohu obrazovky a zvolte „Zobrazit systémové aplikace“.\n5. Klepněte na „Externí úložiště“ a ujistěte se, že je povolena volba „Povolit přístup ke správě všech souborů“.\n6. Znovu vyzkoušejte obnovit zálohu.</string>
+    <string name="forward_security_downgraded_status_message">Funkce Perfect Forward Secrecy byla v této konverzaci deaktivována, protože verze aplikace, kterou používá váš partner v chatu, ji nepodporuje.</string>
+    <string name="crop_image_title">Oříznout obr.</string>
+    <string name="scroll_to_bottom">Sjeďte dolů</string>
+    <string name="scroll_to_top">Sjeďte nahoru</string>
+    <string name="contact_sync_mdm_rationale">Váš administrátor povolil synchronizaci kontaktů pro vaše zařízení. Je proto zapotřebí oprávnění pro přístup ke kontaktům.</string>
+    <string name="welcome_back">Vítejte zpět!</string>
+    <string name="id_restored_successfully">Obnovení vašeho Threema ID proběhlo úspěšně</string>
+    <string name="prefs_dynamic_colors">Dynamická barva</string>
+    <string name="prefs_dynamic_colors_sum">Použít systémové barvy</string>
+    <string name="apply_changes">Použit změny</string>
+    <string name="prefs_threema_work_summary">Věděli jste, že Threema také nabízí profesionální komunikační řešení pro firmy? Klepněte sem a zjistěte víc o Threema Work.</string>
+    <string name="notification_channel_voice_message_player">Přehrávač hlasových zpráv</string>
+    <string name="voice_message_from">Hlasová zpráva od: %s</string>
+    <string name="vm_fg_service_not_allowed">Chyba při přehrávání hlasové zprávy</string>
+    <string name="vm_fg_service_not_allowed_explain">Stiskněte tlačítko pro přehrávání v oznámení s médiem, je-li stále přítomno, nebo otevřete aplikaci a spusťte přehrávání z konverzace.</string>
+    <string name="use_threema_without_this_permission">Používat aplikaci %s bez tohoto oprávnění</string>
+    <string name="grant_permission">Udělit oprávnění</string>
+    <string name="grant_permission_settings">Udělit oprávnění v nastavení</string>
+    <string name="ignore_permission">Příště se již neptat</string>
+    <string name="permission_nearby_devices">Zařízení v okolí</string>
+    <string name="permission_bluetooth">Bluetooth</string>
+    <string name="permission_camera">Fotoaparát</string>
+    <string name="permission_microphone">Mikrofon</string>
+    <string name="permission_read_phone_state">Telefon</string>
+    <string name="permission_enable_in_settings_rationale">Udělte prosím toto oprávnění v nastavení. Vyberte možnost „Oprávnění“ a poté povolte „%s“.</string>
+    <string name="group_name">Název skupiny</string>
+    <string name="samsung_permission_problem_explain">Aplikace %1$s nemůže přistupovat k mediálním souborům kvůli chybějícímu oprávnění v systémové aplikaci. Chcete‑li tento problém opravit, ujistěte se, že je na následující obrazovce aktivovaný přepínač vedle položky „Externí úložiště“ a restartujte aplikaci %1$s.</string>
+    <string name="min_n_chars">min. %d znaků</string>
+    <string name="prefs_title_grant_bluetooth_permission">Udělit oprávnění Bluetooth</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>
@@ -1565,5 +1600,11 @@ přátelům vás automaticky vyhledat, pokud vás mají v adresáři svého tel
         <item quantity="many">Odstranit %d zpráv z tohoto zařízení?</item>
         <item quantity="one">Odstranit %d zprávu z tohoto zařízení?</item>
         <item quantity="other">Odstranit %d zpráv z tohoto zařízení?</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="few">%d členové skupiny</item>
+        <item quantity="many">%d členů skupiny</item>
+        <item quantity="one">%d člen skupiny</item>
+        <item quantity="other">%d členů skupiny</item>
     </plurals>
 </resources>

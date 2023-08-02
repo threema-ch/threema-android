@@ -281,7 +281,6 @@
     <string name="title_select_contacts">Leden selecteren</string>
     <string name="pin_invalid_not_set">PIN ongeldig. Niet ingesteld.</string>
     <string name="prefs_group_notifications">Groepschat</string>
-    <string name="add_group_members_list">Groepsleden</string>
     <string name="group_select_at_least_two">U moet tenminste één lid selecteren om door te gaan</string>
     <string name="group_select_max">U kunt niet meer dan %1$d groepsleden selecteren</string>
     <string name="search">Zoeken</string>
@@ -539,7 +538,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="send_as_files">Versturen als bestand</string>
     <string name="send_as_files_warning">Ongecomprimeerde bestanden en afbeeldingen versturen kan significant dataverbruik veroorzaken waarvoor uw mobiele aanbieder extra kosten kan rekenen. We raden aan bestanden alleen via wifinetwerken te up- en downloaden.</string>
     <string name="prefs_theme">Thema ontwerpen</string>
-    <string name="list_theme_light">Licht (standaard)</string>
+    <string name="list_theme_light">Licht</string>
     <string name="list_theme_dark">Donker</string>
     <string name="prefs_header_appearance">Verschijning</string>
     <string name="prefs_sum_passphrase">Wachtwoordzin nodig om lokale versleuteling vrij te geven</string>
@@ -666,7 +665,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="configure">Configureren</string>
     <string name="file_is_not_audio">Geen audiobestand</string>
     <!-- restrictions -->
-    <string name="disabled_by_policy">Sommige instellingen zijn uitgeschakeld door het apparaatbeleid</string>
+    <string name="disabled_by_policy">Sommige instellingen zijn uitgeschakeld door de beheerder</string>
     <string name="select_all">Alles selecteren</string>
     <string name="deleting_messages">Berichten verwijderen</string>
     <string name="media_gallery_files">Bestanden</string>
@@ -677,7 +676,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_proximity_sensor">Nabijheidssensor gebruiken</string>
     <string name="prefs_proximity_sensor_explain">Oordopje gebruiken voor het beluisteren van gesproken berichten als de nabijheidssensor is afgedekt</string>
     <string name="error_creating_group">Fout bij aanmaken van groep</string>
-    <string name="no_media_found_generic">Geen media gevonden in deze chat</string>
+    <string name="no_media_found_generic">Geen media gevonden in deze chat die overeenkomt met de selectie.</string>
     <string name="max_images_reached">U kunt max. %d afbeeldingen tegelijkertijd bewerken</string>
     <string name="enter_description">Beschrijf het probleem/de bug hier.</string>
     <string name="add_caption_hint">Aanvullend onderschrift toevoegen</string>
@@ -897,7 +896,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="safe_configure_choose_password_force">Geef een sterk wachtwoord op om uw Threema ID te beveiligen met Threema Safe. Vergeet niet wat u hier invoert!</string>
     <string name="safe_deactivate">Threema Safe uitschakelen</string>
     <string name="safe_deactivate_explain">Als u Threema Safe uitschakelt, worden bestaande back-ups van de server verwijderd. Doorgaan?</string>
-    <string name="add_group_members">Groepsleden toevoegen</string>
+    <string name="add_group_members">Meer leden toevoegen</string>
     <string name="contact_add_confirm">Weet u zeker dat u de nieuwe contactpersoon «%1$s» wilt toevoegen aan uw lijst contactpersonen?</string>
     <string name="password_bad">Zwak wachtwoord</string>
     <string name="prefs_fix_background_data">Achtergronddata inschakelen</string>
@@ -1016,10 +1015,11 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
     <string name="whatsnew_title">Nieuw: %1$s groepsgesprekken</string>
     <string name="whatsnew_headline"><![CDATA[
-<p>Er zijn nu end-to-end versleutelde groepsgesprekken beschikbaar in %1$s voor Android</p>
-<p>Open een groepsgesprek en tik bovenaan op de camera-knop om een gesprek te initiëren</p>
-<p>Alle groepsleden ontvangen een melding en kunnen beslissen of ze wel of niet aan het gesprek willen deelnemen.</p>
-<p><b>Let op:</b> voor iOS wordt de groepsgespreksfunctie iets later uitgebracht</p> ]]></string>
+		<p>Deze versie is gericht op de beveiliging, het gebruiksgemak en de modernisering van de app.</p>
+		<p>Op veler verzoek is de app volledig opnieuw ontworpen om het paradigma \"Material You\" dat in Android 12 werd geïntroduceerd te ondersteunen. Dankzij een optionele instelling “Dynamic Colors” kan de app zich aanpassen aan je persoonlijke kleurenschema.</p>
+		<p>Perfecte Forward Secrecy is nu standaard ingeschakeld voor alles contacten met een recente versie van %1$s.</p>
+		<p>Overige verbeteringen omvatten een nieuwe voicemail-player die in de achtergrond blijft afspelen wanneer de app naar de achtergrond wordt gezet en een nieuwe gebruikersbegeleiding wanneer je een machtigingsverzoek doet.</p>
+		]]></string>
     <string name="tap_to_start">Tik hier om %s te starten.</string>
     <string name="two_years">2 jaar</string>
     <string name="invalid_backup_path">Ongeldige back-uplocatie</string>
@@ -1162,7 +1162,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="no_faces_detected">Geen gezichten gedetecteerd</string>
     <string name="smiley">Smiley</string>
     <string name="blur">Vervagen</string>
-    <string name="face_blur_tooltip_title">Nieuw: gezichtsherkenning</string>
+    <string name="face_blur_tooltip_title">Gezichtsherkenning</string>
     <string name="face_blur_tooltip_text">Vind gezichten in de foto en vervaag ze of dek ze af met een smiley.</string>
     <string name="listened_to">beluisterd</string>
     <string name="transcoder_unsupported_audio_format">De audio kon niet worden getranscodeerd vanwege een gebrek aan systeemondersteuning</string>
@@ -1198,7 +1198,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="group_response_full">Je aansluitverzoek voor %s is afgewezen omdat de groep vol is</string>
     <string name="group_response_rejected">Je aansluitverzoek voor %s is afgewezen</string>
     <string name="group_link_expiration_none">Onbeperkt</string>
-    <string name="group_request_hint">Hé. Ik ben het…</string>
+    <string name="group_request_hint">Hé, ik ben het…</string>
     <string name="group_request_send_title">Aansluitverzoek verzenden</string>
     <string name="group_request_message_empty">Bericht in aansluitverzoek kan niet leeg zijn</string>
     <string name="group_requests_all_title">Alle aansluitverzoeken</string>
@@ -1233,7 +1233,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="group_link_rename">Hernoemen</string>
     <string name="group_link_rename_tag">Nieuwe naam</string>
     <string name="tap_here_for_more">Tik hier voor meer informatie</string>
-    <string name="another_connection_instructions">De server heeft twee of meer verbindingen gevonden van verschillende apparaten met hetzelfde Threema-ID.\n\nJe kunt hetzelfde Threema-ID niet op verschillende apparaten tegelijkertijd gebruiken. Nieuwe berichten worden alleen verzonden naar het apparaat dat als laatste is ingelogd op de server.\n\nAls je een nieuw apparaat gebruikt, verwijder dan de installatie van %s op het oude apparaat of schakel het uit en herstart het nieuwe apparaat.</string>
+    <string name="another_connection_instructions"><![CDATA[De server heeft twee of meer verbindingen gevonden van verschillende apparaten met dezelfde Threema-ID.<br><br>U kunt niet dezelfde Threema-ID op meerdere apparaten tegelijk gebruiken. Nieuwe berichten worden alleen verzonden naar het apparaat dat als laatste is ingelogd op de server.<br><br>Als u een nieuw apparaat wilt gebruiken, verwijdert u de installatie van %s op het oude apparaat of u schakelt het uit, en vervolgens herstart u het nieuwe apparaat.]]></string>
     <string name="app_store_error_code">App store foutcode: %d</string>
     <string name="backup_restore_type"><![CDATA[Welke soort back-up wil je herstellen? <br/><br/> <a href=%s>Meer informatie over back-ups in Threema</a>]]></string>
     <string name="data_backup_info">Alles herstellen inclusief chatgesprekken</string>
@@ -1357,18 +1357,19 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="organization_type">Organisatie</string>
     <string name="permission_bluetooth_connect_required">Toestemming voor \"Apparaten in de buurt\" inschakelen om verbonden Bluetooth-headsets te vinden</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push is actief. Threema Web en Desktop sessies moeten handmatig worden gestart.</string>
-    <string name="tooltip_multiple_recipients_title">Nieuw: meerdere ontvangers</string>
+    <string name="tooltip_multiple_recipients_title">Meerdere ontvangers</string>
     <string name="tooltip_multiple_recipients_text">Tik en houd vast om meerdere ontvangers voor hetzelfde bericht te selecteren.</string>
     <string name="synchronizing">Synchroniseren…</string>
     <string name="forward_security">Berichten met Perfect Forward Secrecy verzenden</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">nee</string>
-    <string name="clear_forward_security">Perfect Forward Secrecy-sessies wissen</string>
+    <string name="clear_forward_security">Perfect Forward Secrecy voor deze contactpersoon resetten</string>
+    <string name="clear_forward_security_warning">Deze actie alleen uitvoeren wanneer je hiertoe door de Klantenservice van Threema wordt geïnstrueerd.</string>
     <string name="forward_security_cleared">De Perfect Forward Secrecy-sessies met deze contactpersoon zijn gewist</string>
     <string name="message_without_forward_security">Er is een bericht zonder Perfect Forward Secrecy ontvangen. Controleer of de afzender Perfect Forward Secrecy opzettelijk heeft uitgeschakeld.</string>
     <string name="forward_security_established">De berichten in deze chat zijn nu beschermd met Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">De ontvangen berichten in deze chat zijn nu beschermd met Perfect Forward Secrecy. Door Perfect Forward Secrecy in de contactgegevens in te schakelen, zijn verzonden berichten ook beschermd.</string>
-    <string name="forward_security_reset">De Perfect Forward Secrecy-sessie met deze contactpersoon is gereset. Dit kan gebeuren wanneer de contactpersoon een ander apparaat gebruikt of de app opnieuw heeft geïnstalleerd.</string>
+    <string name="forward_security_reset">De Perfect Forward Secrecy-sessie is gereset. Dit kan gebeuren wanneer de gesprekspartner een ander apparaat gebruikt of de app opnieuw installeert.</string>
     <string name="forward_security_reset_simple">De Perfect Forward Secrecy-sessie met deze contactpersoon is gereset.</string>
     <string name="forward_security_message_out_of_order">Er is een bericht buiten de volgorde ontvangen dat niet is versleuteld.</string>
     <string name="self_updater_installation_failed">De update is niet gedownload. Download en installeer de update handmatig <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a>.</string>
@@ -1405,21 +1406,27 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_summary_hibernation_api_32">Zorg dat de systeeminstelling \'Toestemmingen verwijderen en ruimte vrijmaken\' uitgeschakeld is om te voorkomen dat Threema na lange perioden van inactiviteit door het systeem gepauzeerd wordt.</string>
     <string name="prefs_summary_hibernation_api">Zorg dat de systeeminstelling \'App-activiteit pauzeren indien ongebruikt\' uitgeschakeld is om te voorkomen dat Threema na lange perioden van inactiviteit door het systeem gepauzeerd wordt.</string>
     <string name="unable_to_fetch_configuration">Niet mogelijk om gegevens op te halen uit de configuratieserver. Probeer het later opnieuw.</string>
-    <string name="rogue_device_warning">De server heeft verbinding met een ander apparaat waargenomen dat hetzelfde Threema-ID heeft.\n\nAls u uw Threema-ID in de tussentijd niet op een ander apparaat of met een oudere app-versie heeft gebruikt, neem dan contact op met ondersteuning en stuur indien mogelijk het logbestand.</string>
+    <string name="rogue_device_warning">Er is een verbinding met een ander apparaat ontdekt dat dezelfde Threema-ID heeft. Hebt u uw Threema-ID onlangs op een ander apparaat gebruikt? &lt;br&gt;&lt;br&gt; Indien ja, kunt u dit bericht negeren. &lt;br&gt;&lt;br&gt; Indien nee, is uw privésleutel mogelijk gecompromitteerd. <a href="https://threema.ch/en/faq/another_connection">Volg onze suggesties</a> om uw apparaat en uw gegevens te beschermen voordat u een nieuwe ID aanmaakt.</string>
     <string name="fetch2_failure">Synchronisatie met de provisioningserver is mislukt.</string>
     <string name="no_members_support_group_calls">Er zijn geen andere leden in deze groep die groepsgesprekken kunnen beantwoorden</string>
     <string name="group_calls">Groepsgesprekken</string>
     <string name="prefs_title_group_calls_enable">Schakel groepsgesprekken in</string>
     <string name="group_no_members">Deze groep bevat geen andere leden</string>
     <string name="group_call">Groepsgesprek</string>
-    <string name="checking_compatibility">Compatibiliteit controleren...</string>
+    <string name="checking_compatibility">Compatibiliteit controleren…</string>
     <string name="group_call_mic_permission_rationale">Om groepsgesprekken te voeren, moet u onder \'Toestemmingen\' toestemming verlenen zodat %s toegang tot de microfoon krijgt.</string>
+    <string name="group_call_mic_permission_description">Om groepsgesprekken te voeren, moet u toestemming voor de microfoon geven zodat anderen u kunnen horen.</string>
+    <string name="call_mic_permission_description">Om gesprekken te voeren, moet u toestemming voor de microfoon geven zodat anderen u kunnen horen.</string>
     <string name="group_call_camera_permission_rationale">Ga naar \'Toestemmingen\' om %s toegang te geven tot de camera, zodat andere deelnemers uw foto kunnen zien.</string>
+    <string name="group_call_phone_permission_description">Er is toestemming voor de telefoon vereist om groepsgesprekken te voeren en te detecteren wanneer het groepsgesprek door een ander gesprek wordt onderbroken.</string>
+    <string name="call_phone_permission_description">Er is toestemming voor de telefoon vereist om Threema-gesprekken te voeren en te detecteren wanneer het Threema-gesprek door een ander gesprek wordt onderbroken.</string>
+    <string name="group_call_nearby_devices_permission_description">Om groepsgesprekken met een bluetooth-headset te voeren, moet u toestemming geven voor \'apparaten in de buurt\' om bluetooth-headsets te detecteren.</string>
+    <string name="call_nearby_devices_permission_description">Om Threema-gesprekken met een bluetooth-headset te voeren, moet u toestemming geven voor \'apparaten in de buurt\' om bluetooth-headsets te detecteren.</string>
     <string name="settings">Instellingen</string>
     <string name="leave">Verlaten</string>
     <string name="fs_key_mismatch">sleutel mismatch</string>
     <string name="tap_to_resend">Tik en verzend opnieuw</string>
-    <string name="group_calls_tooltip_title">Nieuw: groepsgesprekken</string>
+    <string name="group_calls_tooltip_title">Groepsgesprekken</string>
     <string name="group_calls_tooltip_text">Tik hier om alle groepsleden uit te nodigen voor deelname aan een gesprek. Alle leden zullen een melding ontvangen en kunnen beslissen of ze aan het gesprek willen deelnemen.</string>
     <string name="prefs_title_calls">Veilige gesprekken</string>
     <string name="prefs_sum_group_calls_vibration">Selecteer of u een trilling wilt wanneer een groepsgesprek is gestart</string>
@@ -1428,7 +1435,35 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beschermt opgenomen communicatie tegen ontsleuteling met terugwerkende kracht, zelfs wanneer de lange termijn-coderingssleutel gecomprimeerd is.\n\nDe optie kan worden ingeschakeld als de app aan beide zijden PFS ondersteunt.</string>
     <string name="group_call_inactivity_left">Groepsgesprek verlaten vanwege inactiviteit</string>
     <string name="missing_permission_external_storage">Het bestand kon niet worden gekopieerd. Probeer de volgende stappen:\n1. Open de Instellingen-app.\n2. Ga naar \'Apps\' en kies \'Speciale apptoegang\'.\n3. Tik op \'Toegang tot alle bestanden\'.\n4. Tik op de drie stippen rechts bovenaan en kies \'Systeem tonen\'.\n5. Tik op \'Externe opslag\' en zorg dat \'Toegang voor het beheren van alle bestanden toestaan\' verleend is.\n6. Probeer de back-up opnieuw te herstellen.</string>
-    <string name="forward_security_downgraded_status_message">Deze contactpersoon is een appversie gaan gebruiken die Perfect Forward Secrecy niet ondersteunt. Berichten worden voortaan gestuurd zonder PFS.</string>
+    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy voor dit gesprek is uitgeschakeld omdat je gesprekspartner een versie van de app gebruikt die deze functie niet ondersteunt.</string>
+    <string name="crop_image_title">Snij beeld bij</string>
+    <string name="scroll_to_bottom">Naar beneden scrollen</string>
+    <string name="scroll_to_top">Naar boven scrollen</string>
+    <string name="contact_sync_mdm_rationale">Uw beheerder heeft de synchronisatie van contactpersonen op uw apparaat ingeschakeld. Daarom is er toestemming voor toegang tot contactpersonen vereist.</string>
+    <string name="welcome_back">Welkom terug!</string>
+    <string name="id_restored_successfully">Uw Threema-ID is hersteld</string>
+    <string name="prefs_dynamic_colors">Dynamische kleur</string>
+    <string name="prefs_dynamic_colors_sum">Gebruik systeemkleuren</string>
+    <string name="apply_changes">Pas wijzigingen toe</string>
+    <string name="prefs_threema_work_summary">Wist u dat Threema ook een oplossing voor professionele communicatie in bedrijven aanbiedt? Tik hier voor meer informatie over Threema Work.</string>
+    <string name="notification_channel_voice_message_player">Speler voor spraakberichten</string>
+    <string name="voice_message_from">Spraakbericht van %s</string>
+    <string name="vm_fg_service_not_allowed">Fout bij het afspelen van spraakbericht</string>
+    <string name="vm_fg_service_not_allowed_explain">Druk op de afspeelknop op de media-melding als u deze nog kunt zien, of open de app om de het bericht in de chat af te spelen.</string>
+    <string name="use_threema_without_this_permission">%s zonder deze toestemming gebruiken</string>
+    <string name="grant_permission">Toestemming geven</string>
+    <string name="grant_permission_settings">Geef toestemming in de instellingen</string>
+    <string name="ignore_permission">Niet meer vragen</string>
+    <string name="permission_nearby_devices">Apparaten in de buurt</string>
+    <string name="permission_bluetooth">Bluetooth</string>
+    <string name="permission_camera">Camera</string>
+    <string name="permission_microphone">Microfoon</string>
+    <string name="permission_read_phone_state">Telefoon</string>
+    <string name="permission_enable_in_settings_rationale">Schakel de toestemming in de instellingen in. Selecteer \'Toestemmingen\' en sta dan \'%s\' toe.</string>
+    <string name="group_name">Groepsnaam</string>
+    <string name="samsung_permission_problem_explain">%1$s heeft geen toegang tot mediabestanden vanwege een ontbrekende toestemming op een systeem-app. Zorg ervoor dat de schakelaar naast \'Externe opslag\' is ingeschakeld in het opkomende scherm en herstart vervolgens %1$s om dit probleem te verhelpen.</string>
+    <string name="min_n_chars">min. %d tekens</string>
+    <string name="prefs_title_grant_bluetooth_permission">Geef bluetooth-toestemming</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>
@@ -1496,5 +1531,9 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <plurals name="delete_messages">
         <item quantity="one">%d bericht op dit apparaat verwijderen?</item>
         <item quantity="other">%d berichten op dit apparaat verwijderen?</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="one">%d groepslid</item>
+        <item quantity="other">%d groepsleden</item>
     </plurals>
 </resources>

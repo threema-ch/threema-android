@@ -33,7 +33,7 @@ import ch.threema.base.utils.LoggingUtil;
 public class ExponentialBackOffUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ExponentialBackOffUtil");
 	protected final static ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
-	private Random random;
+	private final Random random;
 
 	// Singleton stuff
 	private static ExponentialBackOffUtil sInstance = null;
@@ -45,7 +45,7 @@ public class ExponentialBackOffUtil {
 		return sInstance;
 	}
 
-	public ExponentialBackOffUtil() {
+	private ExponentialBackOffUtil() {
 		this.random = new Random();
 	}
 
@@ -55,32 +55,27 @@ public class ExponentialBackOffUtil {
 	 * @param exponentialBackOffCount Count of Retries
 	 * @return Future
 	 */
-	public Future run(final BackOffRunnable runnable, final int exponentialBackOffCount) {
-		return singleThreadExecutor.submit(new Runnable() {
-			@Override
-			public void run() {
+	public Future<?> run(final BackOffRunnable runnable, final int exponentialBackOffCount, final String messageUid) {
+		return singleThreadExecutor.submit(() -> {
+			try {
 				for (int n = 0; n < exponentialBackOffCount; ++n) {
-					logger.debug("run " + String.valueOf(n));
+					logger.debug("{} Starting backoff run {}", messageUid, n);
 					try {
 						runnable.run(n);
-
 						//its ok, do not retry
 						return;
 					} catch (Exception e) {
-						logger.error("Exception", e);
-						if(n >= exponentialBackOffCount-1) {
+						if (n >= exponentialBackOffCount - 1) {
 							//last
 							runnable.exception(e, n);
-						}
-						else {
-							try {
-								Thread.sleep((2 << n) * 1000 + random.nextInt(1001));
-							} catch (InterruptedException e1) {
-								//do nothing
-							}
+						} else {
+							Thread.sleep((2L << n) * 1000L + random.nextInt(1001));
 						}
 					}
 				}
+			} catch (InterruptedException ex) {
+				logger.debug("{} Exponential backoff aborted by user", messageUid);
+				runnable.exception(null, 4);
 			}
 		});
 	}

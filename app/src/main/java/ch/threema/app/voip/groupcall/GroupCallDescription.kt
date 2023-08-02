@@ -31,6 +31,7 @@ import ch.threema.base.utils.Utils
 import ch.threema.storage.models.GroupCallModel
 import com.neilalexander.jnacl.NaCl
 import java.util.*
+import kotlin.math.max
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallDescription")
 
@@ -42,6 +43,7 @@ data class GroupCallDescription(
     val callId: CallId,
     val gck: ByteArray,
     var startedAt: ULong,
+    val processedAt: ULong = startedAt,
     var maxParticipants: UInt? = null
 ) {
     private val gchk: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCHK) }
@@ -90,6 +92,22 @@ data class GroupCallDescription(
         }
     }
 
+    /**
+     * Get the time of this call in milliseconds since the group message has been processed.
+     * The time is relative to [SystemClock.elapsedRealtime].
+     *
+     * If [processedAt] is dated in the future, [SystemClock.elapsedRealtime] will be returned.
+     *
+     * If the device's time is potentially wrong, this method can be used instead of
+     * [getRunningSince] as it is relative to this device's time.
+     *
+     * @return The time in milliseconds since this call has been processed
+     */
+    fun getRunningSinceProcessed(): Long {
+        val duration = max(Date().time - processedAt.toLong(), 0)
+        return SystemClock.elapsedRealtime() - duration
+    }
+
     @AnyThread
     fun getGroupIdInt(): Int = groupId.id
 
@@ -101,7 +119,8 @@ data class GroupCallDescription(
             groupId.id,
             sfuBaseUrl,
             Utils.byteArrayToHexString(gck),
-            startedAt.toLong()
+            startedAt.toLong(),
+            processedAt.toLong()
         )
     }
 
@@ -188,6 +207,7 @@ fun GroupCallModel.toGroupCallDescription(): GroupCallDescription {
         CallId(Utils.hexStringToByteArray(callId)),
         Utils.hexStringToByteArray(gck),
         getStartedAtUnsigned(),
+        getProcessedAtUnsigned(),
         null
     )
 }

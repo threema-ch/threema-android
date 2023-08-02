@@ -30,11 +30,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
@@ -102,7 +103,7 @@ public class SMSVerificationDialog extends ThreemaDialogFragment {
 				callback.onCallRequested(tag);
 			}
 		});
-		if (ConfigUtils.getAppTheme(activity) == ConfigUtils.THEME_DARK) {
+		if (ConfigUtils.isTheDarkSide(getContext())) {
 			if (requestCallButton.getCompoundDrawables()[0] != null) {
 				requestCallButton.getCompoundDrawables()[0].setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
 			}

@@ -30,11 +30,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,23 +40,19 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.checkbox.MaterialCheckBox;
-import com.google.android.material.chip.Chip;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.PublicKeyDialog;
-import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
@@ -68,13 +61,10 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.ThreemaFeature;
-import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.protobuf.csp.e2e.fs.Terminate;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
-import java8.util.concurrent.CompletableFuture;
 
 public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactDetailAdapter");
@@ -87,7 +77,6 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	private GroupService groupService;
 	private UserService userService;
 	private PreferenceService preferenceService;
-	private APIConnector apiConnector;
 	private IdListService excludeFromSyncListService;
 	private IdListService blackListIdentityService;
 	private final ContactModel contactModel;
@@ -111,16 +100,15 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	public class HeaderHolder extends RecyclerView.ViewHolder {
 		private final VerificationLevelImageView verificationLevelImageView;
 		private final TextView threemaIdView;
-		private final CheckBox synchronize;
+		private final MaterialSwitch synchronize;
 		private final View nicknameContainer, synchronizeContainer;
 		private final ImageView syncSourceIcon;
 		private final TextView publicNickNameView;
 		private final LinearLayout groupMembershipTitle;
 		private final MaterialAutoCompleteTextView readReceiptsSpinner, typingIndicatorsSpinner;
-		private final MaterialCheckBox forwardSecurityCheckbox;
-		private final RelativeLayout forwardSecurityContainer;
-		private final Chip clearForwardSecurityButton;
-		private final ImageButton forwardSecurityInfo;
+		private final View clearForwardSecuritySection;
+		private final MaterialButton clearForwardSecurityButton;
+		private int onThreemaIDClickCount = 0;
 
 		public HeaderHolder(View view) {
 			super(view);
@@ -136,10 +124,8 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			this.syncSourceIcon = itemView.findViewById(R.id.sync_source_icon);
 			this.readReceiptsSpinner = itemView.findViewById(R.id.read_receipts_spinner);
 			this.typingIndicatorsSpinner = itemView.findViewById(R.id.typing_indicators_spinner);
-			this.forwardSecurityCheckbox = itemView.findViewById(R.id.forward_security_enabled);
+			this.clearForwardSecuritySection = itemView.findViewById(R.id.clear_forward_security_section);
 			this.clearForwardSecurityButton = itemView.findViewById(R.id.clear_forward_security);
-			this.forwardSecurityContainer = itemView.findViewById(R.id.forward_security_container);
-			this.forwardSecurityInfo = itemView.findViewById(R.id.forward_security_info);
 
 			verificationLevelIconView.setOnClickListener(v -> {
 				if (onClickListener != null) {
@@ -147,15 +133,33 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 				}
 			});
 
-
-			itemView.findViewById(R.id.threema_id).setOnLongClickListener(ignored -> {
+			threemaIdView.setOnLongClickListener(ignored -> {
 				String identity = contactModel.getIdentity();
 				copyTextToClipboard(identity, R.string.contact_details_id_copied);
 				return true;
 			});
 
+			// When clicking ten times on the Threema ID, the clear forward security session button
+			// becomes visible.
+			threemaIdView.setOnClickListener(v -> {
+				onThreemaIDClickCount++;
+				if (onThreemaIDClickCount >= 10) {
+					onThreemaIDClickCount = 0;
+					clearForwardSecuritySection.setVisibility(View.VISIBLE);
+					clearForwardSecurityButton.setOnClickListener(clearButton -> {
+						try {
+							ThreemaApplication.requireServiceManager()
+								.getForwardSecurityMessageProcessor()
+								.clearAndTerminateAllSessions(contactModel, Terminate.Cause.RESET);
+							Toast.makeText(clearButton.getContext(), R.string.forward_security_cleared, Toast.LENGTH_LONG).show();
+						} catch (Exception e) {
+							Toast.makeText(clearButton.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+						}
+					});
+				}
+			});
 
-			itemView.findViewById(R.id.public_nickname).setOnLongClickListener(ignored -> {
+			publicNickNameView.setOnLongClickListener(ignored -> {
 				String nickname = contactModel.getPublicNickName();
 				copyTextToClipboard(nickname, R.string.contact_details_nickname_copied);
 				return true;
@@ -182,16 +186,15 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		this.context = context;
 		this.values = values;
 		this.contactModel = contactModel;
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
 		try {
+			ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
 			this.contactService = serviceManager.getContactService();
 			this.groupService = serviceManager.getGroupService();
 			this.userService = serviceManager.getUserService();
 			this.excludeFromSyncListService = serviceManager.getExcludedSyncIdentitiesService();
 			this.blackListIdentityService = serviceManager.getBlackListService();
 			this.preferenceService = serviceManager.getPreferenceService();
-			this.apiConnector = serviceManager.getAPIConnector();
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}
@@ -257,19 +260,28 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			headerHolder.verificationLevelImageView.setContactModel(contactModel);
 			headerHolder.verificationLevelImageView.setVisibility(View.VISIBLE);
 
-			if (preferenceService.isSyncContacts() && contactModel.getAndroidContactLookupKey() != null &&
-				ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS)) {
+			boolean isSyncExcluded = excludeFromSyncListService.has(contactModel.getIdentity());
+
+			if (preferenceService.isSyncContacts()
+				&& (contactModel.getAndroidContactLookupKey() != null || isSyncExcluded)
+				&& ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS)
+			) {
 				headerHolder.synchronizeContainer.setVisibility(View.VISIBLE);
 
-				Drawable icon = AndroidContactUtil.getInstance().getAccountIcon(contactModel);
+				Drawable icon = null;
+				try {
+					icon = AndroidContactUtil.getInstance().getAccountIcon(contactModel);
+				} catch (SecurityException e) {
+					logger.error("Could not access android account icon", e);
+				}
 				if (icon != null) {
 					headerHolder.syncSourceIcon.setImageDrawable(icon);
 					headerHolder.syncSourceIcon.setVisibility(View.VISIBLE);
 				} else {
-					headerHolder.syncSourceIcon.setVisibility(View.INVISIBLE);
+					headerHolder.syncSourceIcon.setVisibility(View.GONE);
 				}
 
-				headerHolder.synchronize.setChecked(excludeFromSyncListService.has(contactModel.getIdentity()));
+				headerHolder.synchronize.setChecked(isSyncExcluded);
 				headerHolder.synchronize.setOnCheckedChangeListener((buttonView, isChecked) -> {
 					if (isChecked) {
 						excludeFromSyncListService.add(contactModel.getIdentity());
@@ -317,48 +329,6 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 				contactModel.setTypingIndicators(position12);
 				contactService.save(contactModel);
 			});
-
-			if (ConfigUtils.isForwardSecurityEnabled()) {
-				headerHolder.forwardSecurityInfo.setOnClickListener(v -> SimpleStringAlertDialog.newInstance(R.string.forward_security_mode, R.string.forward_security_explanation).show(((AppCompatActivity) context).getSupportFragmentManager(), "fsinfo"));
-
-				if (ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask())) {
-					headerHolder.forwardSecurityCheckbox.setEnabled(true);
-				} else {
-					try {
-						UpdateFeatureLevelRoutine.removeTimeCache(contactModel);
-						CompletableFuture
-							.runAsync(new UpdateFeatureLevelRoutine(
-								contactService,
-								apiConnector,
-								Collections.singletonList(this.contactModel)
-							))
-							.thenRun(() -> RuntimeUtil.runOnUiThread(() -> {
-								headerHolder.forwardSecurityCheckbox.setEnabled(ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask()));
-							}))
-							.get();
-					} catch (InterruptedException | ExecutionException e) {
-						logger.warn("Unable to fetch feature mask");
-					}
-				}
-				headerHolder.forwardSecurityCheckbox.setChecked(contactModel.isForwardSecurityEnabled());
-				headerHolder.forwardSecurityCheckbox.setOnCheckedChangeListener((compoundButton, b) -> {
-					contactModel.setForwardSecurityEnabled(b);
-					contactService.save(contactModel);
-				});
-				headerHolder.forwardSecurityContainer.setVisibility(View.VISIBLE);
-
-				if (ConfigUtils.isTestBuild()) {
-					headerHolder.clearForwardSecurityButton.setOnClickListener(view -> {
-						try {
-							ThreemaApplication.getServiceManager().getDHSessionStore().deleteAllDHSessions(userService.getIdentity(), contactModel.getIdentity());
-							Toast.makeText(this.context, R.string.forward_security_cleared, Toast.LENGTH_LONG).show();
-						} catch (Exception e) {
-							Toast.makeText(this.context, e.getMessage(), Toast.LENGTH_LONG).show();
-						}
-					});
-					headerHolder.clearForwardSecurityButton.setVisibility(View.VISIBLE);
-				}
-			}
 		}
 	}
 

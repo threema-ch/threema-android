@@ -18,8 +18,6 @@
 Адреса электронной почты будут храниться в зашифрованном (хэшированном) виде на нашем сервере. Вы можете пропустить этот шаг, если хотите использовать Threema Work анонимно.</string>
     <string name="threema_contact">Контакт Threema Work</string>
     <string name="menu_about">О Threema Work</string>
-    <string name="list_theme_light">Светлая тема</string>
-    <string name="list_theme_dark">Темная тема (по умолчанию)</string>
     <string name="private_threema_download"><![CDATA[Если вы частный пользователь, <a href="https://play.google.com/store/apps/details?id=ch.threema.app">нажмите здесь</a> для скачивания приложения Threema.]]></string>
     <string name="directory_search">Поиск в каталоге</string>
     <string name="directory_title">Каталог компании</string>

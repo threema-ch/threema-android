@@ -165,22 +165,22 @@ public class GroupMessagingServiceImpl implements GroupMessagingService {
 		// Enqueue every message
 		int enqueuedMessagesCount = 0;
 		for (AbstractGroupMessage groupMessage : pendingGroupMessages) {
+			if (groupMessage == null) {
+				logger.info("Cannot send group message because it is null");
+				continue;
+			}
 			logger.debug("Sending group message {}", groupMessage);
 			final MessageBox messageBox = this.messageQueue.enqueue(groupMessage);
-			if (messageBox == null) {
-				logger.info("Failed to enqueue group message to {}", groupMessage.getToIdentity());
-			} else {
-				enqueuedMessagesCount++;
-				if (logger.isDebugEnabled()) {
-					logger.debug(
-						"Outgoing group message ID {} from {} to {}",
-						messageBox.getMessageId(),
-						messageBox.getFromIdentity(),
-						messageBox.getToIdentity()
-					);
-					logger.debug("  Nonce: {}", Utils.byteArrayToHexString(messageBox.getNonce()));
-					logger.debug("  Data: {}", Utils.byteArrayToHexString(messageBox.getBox()));
-				}
+			enqueuedMessagesCount++;
+			logger.info(
+				"Enqueue group message {} of type {} to {}",
+				messageBox.getMessageId(),
+				Utils.byteToHex((byte) groupMessage.getType(), true, true),
+				messageBox.getToIdentity()
+			);
+			if (logger.isDebugEnabled()) {
+				logger.debug("  Nonce: {}", Utils.byteArrayToHexString(messageBox.getNonce()));
+				logger.debug("  Data: {}", Utils.byteArrayToHexString(messageBox.getBox()));
 			}
 		}
 

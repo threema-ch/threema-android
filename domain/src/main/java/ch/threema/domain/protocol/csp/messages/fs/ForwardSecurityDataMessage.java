@@ -23,34 +23,50 @@ package ch.threema.domain.protocol.csp.messages.fs;
 
 import com.google.protobuf.ByteString;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 import androidx.annotation.NonNull;
 import ch.threema.domain.fs.DHSessionId;
-import ch.threema.protobuf.csp.e2e.fs.ForwardSecurityEnvelope;
+import ch.threema.protobuf.csp.e2e.fs.Encapsulated;
+import ch.threema.protobuf.csp.e2e.fs.Envelope;
 
 public class ForwardSecurityDataMessage extends ForwardSecurityData {
-
 	private final @NonNull
-	ForwardSecurityEnvelope.Message.DHType type;
+	Encapsulated.DHType type;
 	private final long counter;
+	private final int offeredVersion;
+	private final int appliedVersion;
 	private final @NonNull byte[] message;
 
-	public ForwardSecurityDataMessage(@NonNull DHSessionId sessionId, @NonNull ForwardSecurityEnvelope.Message.DHType type, long counter, @NonNull byte[] message) {
+	public ForwardSecurityDataMessage(
+		@NonNull DHSessionId sessionId,
+		@NonNull Encapsulated.DHType type,
+		long counter,
+		int offeredVersion,
+		int appliedVersion,
+		@NonNull byte[] message
+	) {
 		super(sessionId);
 		this.type = type;
 		this.counter = counter;
+		this.offeredVersion = offeredVersion;
+		this.appliedVersion = appliedVersion;
 		this.message = message;
 	}
 
 	@NonNull
-	public ForwardSecurityEnvelope.Message.DHType getType() {
+	public Encapsulated.DHType getType() {
 		return type;
 	}
 
 	public long getCounter() {
 		return counter;
+	}
+
+	public int getOfferedVersion() {
+		return offeredVersion;
+	}
+
+	public int getAppliedVersion() {
+		return appliedVersion;
 	}
 
 	@NonNull
@@ -60,29 +76,16 @@ public class ForwardSecurityDataMessage extends ForwardSecurityData {
 
 	@NonNull
 	@Override
-	public ForwardSecurityEnvelope toProtobufMessage() {
-		return ForwardSecurityEnvelope.newBuilder()
+	public Envelope toProtobufMessage() {
+		return Envelope.newBuilder()
 			.setSessionId(ByteString.copyFrom(this.getSessionId().get()))
-			.setMessage(ForwardSecurityEnvelope.Message.newBuilder()
+			.setEncapsulated(Encapsulated.newBuilder()
 				.setDhType(type)
 				.setCounter(this.counter)
-				.setMessage(ByteString.copyFrom(this.message))
+				.setOfferedVersion(this.offeredVersion)
+				.setAppliedVersion(this.appliedVersion)
+				.setEncryptedInner(ByteString.copyFrom(this.message))
 				.build())
 			.build();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		ForwardSecurityDataMessage that = (ForwardSecurityDataMessage) o;
-		return getCounter() == that.getCounter() && getType() == that.getType() && Arrays.equals(getMessage(), that.getMessage());
-	}
-
-	@Override
-	public int hashCode() {
-		int result = Objects.hash(getType(), getCounter());
-		result = 31 * result + Arrays.hashCode(getMessage());
-		return result;
 	}
 }

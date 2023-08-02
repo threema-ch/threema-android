@@ -8,7 +8,7 @@
 			android:visible="true"
             android:title="@string/backup_share"
 			android:icon="@drawable/ic_share_outline"
-            app:iconTint="?android:textColorSecondary"
+            app:iconTint="?attr/colorOnSurface"
             android:orderInCategory="20"/>
 
 	<item
@@ -16,7 +16,7 @@
 			app:showAsAction="ifRoom"
 			android:visible="false"
 			android:icon="@drawable/ic_print_outline"
-			app:iconTint="?android:textColorSecondary"
+			app:iconTint="?attr/colorOnSurface"
 			android:title="@string/print"
 			android:orderInCategory="10"/>
 </menu>

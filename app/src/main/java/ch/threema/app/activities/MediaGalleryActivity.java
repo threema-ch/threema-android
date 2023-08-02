@@ -21,52 +21,62 @@
 
 package ch.threema.app.activities;
 
-import static ch.threema.app.fragments.ComposeMessageFragment.SCROLLBUTTON_VIEW_TIMEOUT;
+import static ch.threema.app.utils.RecyclerViewUtil.thumbScrollerPopupStyle;
 
 import android.Manifest;
+import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
+import android.graphics.Outline;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.SparseBooleanArray;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.view.ActionMode;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.MediaGalleryAdapter;
-import ch.threema.app.adapters.MediaGallerySpinnerAdapter;
-import ch.threema.app.cache.ThumbnailCache;
+import ch.threema.app.adapters.MediaGalleryViewModel;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
+import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
+import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.app.dialogs.MultiChoiceSelectorDialog;
+import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
@@ -74,9 +84,9 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
-import ch.threema.app.ui.FastScrollGridView;
-import ch.threema.app.utils.AnimationUtil;
+import ch.threema.app.ui.MediaGridItemDecoration;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
@@ -92,27 +102,28 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
+import me.zhanghai.android.fastscroll.FastScroller;
+import me.zhanghai.android.fastscroll.FastScrollerBuilder;
 
-public class MediaGalleryActivity extends ThreemaToolbarActivity implements AdapterView.OnItemClickListener, ActionBar.OnNavigationListener, GenericAlertDialog.DialogClickListener, FastScrollGridView.ScrollListener {
+public class MediaGalleryActivity extends ThreemaToolbarActivity implements
+	MediaGalleryAdapter.OnClickItemListener,
+	GenericAlertDialog.DialogClickListener,
+	MultiChoiceSelectorDialog.SelectorDialogClickListener,
+	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaGalleryActivity");
 
-	private ThumbnailCache<?> thumbnailCache = null;
+	private static final String DIALOG_TAG_DECRYPTING_MESSAGES = "dialog_decrypting_messages";
+
+	private MessageReceiver<?> messageReceiver;
 	private MediaGalleryAdapter mediaGalleryAdapter;
-	private MessageReceiver messageReceiver;
-	private String actionBarTitle;
-	private SpinnerMessageFilter spinnerMessageFilter;
-	private MediaGallerySpinnerAdapter spinnerAdapter;
-	private List<AbstractMessageModel> values;
-	private FastScrollGridView gridView;
-	private EmptyView emptyView;
-	private TypedArray mediaTypeArray;
-	private int currentType;
+	protected MediaGalleryViewModel mediaGalleryViewModel;
+	protected GridLayoutManager gridLayoutManager;
+	private EmptyRecyclerView recyclerView;
+	protected FastScroller fastScroller;
+	private ChipGroup chipGroup;
 	private ActionMode actionMode = null;
 	private AbstractMessageModel initialMessageModel = null;
-	private TextView dateTextView;
-	private FrameLayout dateView;
 
 	public FileService fileService;
 	public MessageService messageService;
@@ -120,86 +131,121 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	public GroupService groupService;
 	public DistributionListService distributionListService;
 
-	private final Handler dateViewHandler = new Handler();
-	private final Runnable dateViewTask = () -> RuntimeUtil.runOnUiThread(() -> {
-		if (dateView != null && dateView.getVisibility() == View.VISIBLE) {
-			AnimationUtil.slideOutAnimation(dateView, false, 1f, null);
-		}
-	});
-
-	private static final int TYPE_ALL = 0;
-	private static final int TYPE_IMAGE = 1;
-	private static final int TYPE_VIDEO = 2;
-	private static final int TYPE_AUDIO = 3;
-	private static final int TYPE_FILE = 4;
+	public final static int[] contentTypes = {
+		MessageContentsType.IMAGE,
+		MessageContentsType.GIF,
+		MessageContentsType.VIDEO,
+		MessageContentsType.VOICE_MESSAGE,
+		MessageContentsType.AUDIO,
+		MessageContentsType.FILE
+	};
+	private boolean[] checkedContentTypes = new boolean[contentTypes.length];
+	private String[] contentTypeNames;
 
 	private static final String DELETE_MESSAGES_CONFIRM_TAG = "reallydelete";
 	private static final String DIALOG_TAG_DELETING_MEDIA = "dmm";
-
+	private static final String DIALOG_TAG_TYPE_SELECTOR = "contentType";
 	private static final int PERMISSION_REQUEST_SAVE_MESSAGE = 88;
 
-	private static class SpinnerMessageFilter implements MessageService.MessageFilter {
-		private @MessageContentsType int[] filter = null;
-
-		public void setFilterByType(int spinnerMessageType) {
-			switch (spinnerMessageType) {
-				case TYPE_ALL:
-					this.filter = new int[]{MessageContentsType.IMAGE, MessageContentsType.VIDEO, MessageContentsType.AUDIO, MessageContentsType.FILE, MessageContentsType.GIF, MessageContentsType.VOICE_MESSAGE};
-					break;
-				case TYPE_IMAGE:
-					this.filter = new int[]{MessageContentsType.IMAGE};
-					break;
-				case TYPE_VIDEO:
-					this.filter = new int[]{MessageContentsType.VIDEO, MessageContentsType.GIF};
-					break;
-				case TYPE_AUDIO:
-					this.filter = new int[]{MessageContentsType.AUDIO, MessageContentsType.VOICE_MESSAGE};
-					break;
-				case TYPE_FILE:
-					this.filter = new int[]{MessageContentsType.FILE};
-					break;
-				default:
-					break;
+	public class MediaGalleryAction implements ActionMode.Callback {
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			mode.getMenuInflater().inflate(R.menu.action_media_gallery, menu);
+			if (AppRestrictionUtil.isShareMediaDisabled(MediaGalleryActivity.this)) {
+				menu.findItem(R.id.menu_message_save).setVisible(false);
 			}
-		}
-
-		@Override
-		public long getPageSize() {
-			return 0;
-		}
-
-		@Override
-		public Integer getPageReferenceId() {
-			return null;
-		}
-
-		@Override
-		public boolean withStatusMessages() {
-			return false;
-		}
-
-		@Override
-		public boolean withUnsaved() {
-			return false;
-		}
-
-		@Override
-		public boolean onlyUnread() {
-			return false;
-		}
-
-		@Override
-		public boolean onlyDownloaded() {
 			return true;
 		}
 
 		@Override
-		public MessageType[] types() { return null; }
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			final int checked = mediaGalleryAdapter.getCheckedItemsCount();
+			menu.findItem(R.id.menu_show_in_chat).setVisible(checked == 1);
+			menu.findItem(R.id.menu_share).setVisible(selectedItemsCanBeShared());
+
+			if (checked > 0) {
+				mode.setTitle(Integer.toString(checked));
+				return true;
+			}
+			return false;
+		}
 
 		@Override
-		@MessageContentsType
-		public int[] contentTypes() {
-			return this.filter;
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			int itemId = item.getItemId();
+			if (itemId == R.id.menu_message_discard) {
+				discardMessages();
+				return true;
+			} else if (itemId == R.id.menu_message_save) {
+				saveMessages();
+				return true;
+			} else if (itemId == R.id.menu_share) {
+				shareMessages();
+				return true;
+			} else if (itemId == R.id.menu_show_in_chat) {
+				showInChat();
+				return true;
+			} else if (itemId == R.id.menu_select_all) {
+				selectAllMessages();
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			mediaGalleryAdapter.clearCheckedItems();
+			actionMode = null;
+		}
+
+		@SuppressLint("StaticFieldLeak")
+		private void shareMessages() {
+			//noinspection deprecation
+			new AsyncTask<Void, Void, Void>() {
+				@Override
+				@Deprecated
+				protected void onPreExecute() {
+					GenericProgressDialog.newInstance(R.string.decoding_message, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DECRYPTING_MESSAGES);
+				}
+
+				@Override
+				protected Void doInBackground(Void... voids) {
+					fileService.loadDecryptedMessageFiles(mediaGalleryAdapter.getCheckedItems(), new FileService.OnDecryptedFilesComplete() {
+						@Override
+						public void complete(ArrayList<Uri> uris) {
+							shareMediaMessages(uris);
+						}
+
+						@Override
+						public void error(String message) {
+							RuntimeUtil.runOnUiThread(() -> Toast.makeText(MediaGalleryActivity.this, message, Toast.LENGTH_LONG).show());
+						}
+					});
+					return null;
+				}
+
+				@Override
+				@Deprecated
+				protected void onPostExecute(Void aVoid) {
+					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_DECRYPTING_MESSAGES, true);
+				}
+			}.execute();
+		}
+
+		private void shareMediaMessages(List<Uri> uris) {
+			List<AbstractMessageModel> selectedMessages = mediaGalleryAdapter.getCheckedItems();
+			if (uris.size() == 1) {
+				ExpandableTextEntryDialog alertDialog = ExpandableTextEntryDialog.newInstance(
+					getString(R.string.share_media),
+					R.string.add_caption_hint, selectedMessages.get(0).getCaption(),
+					R.string.label_continue, R.string.cancel, true);
+				alertDialog.setData(uris);
+				alertDialog.show(getSupportFragmentManager(), null);
+			} else {
+				messageService.shareMediaMessages(MediaGalleryActivity.this,
+					new ArrayList<>(selectedMessages),
+					new ArrayList<>(uris), null);
+			}
 		}
 	}
 
@@ -217,81 +263,14 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	protected boolean initActivity(Bundle savedInstanceState) {
 		logger.debug("initActivity");
 
-		// set font size according to user preferences
-		getTheme().applyStyle(preferenceService.getFontStyle(), true);
-
 		if (!super.initActivity(savedInstanceState)) {
 			return false;
 		}
 
-		if (!this.requiredInstances()) {
-			this.finish();
+		if (!requiredInstances()) {
+			finish();
 			return false;
 		}
-
-		currentType = TYPE_ALL;
-
-		this.gridView = findViewById(R.id.item_list);
-		this.gridView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
-		this.gridView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-			@Override
-			public void onItemCheckedStateChanged(android.view.ActionMode mode, int position, long id, boolean checked) {
-				final int count = gridView.getCheckedItemCount();
-				if (count > 0) {
-					mode.setTitle(Integer.toString(count));
-				}
-				if (actionMode != null) {
-					actionMode.getMenu().findItem(R.id.menu_show_in_chat).setVisible(count == 1);
-				}
-			}
-
-			@Override
-			public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
-				mode.getMenuInflater().inflate(R.menu.action_media_gallery, menu);
-				actionMode = mode;
-
-				ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(MediaGalleryActivity.this, R.attr.colorAccent));
-
-				if (AppRestrictionUtil.isShareMediaDisabled(MediaGalleryActivity.this)) {
-					menu.findItem(R.id.menu_message_save).setVisible(false);
-				}
-
-				return true;
-			}
-
-			@Override
-			public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
-				mode.setTitle(Integer.toString(gridView.getCheckedItemCount()));
-				return false;
-			}
-
-			@Override
-			public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
-				switch (item.getItemId()) {
-					case R.id.menu_message_discard:
-						discardMessages();
-						return true;
-					case R.id.menu_message_save:
-						saveMessages();
-						return true;
-					case R.id.menu_show_in_chat:
-						showInChat();
-						return true;
-					default:
-						return false;
-				}
-			}
-
-			@Override
-			public void onDestroyActionMode(android.view.ActionMode mode) {
-				actionMode = null;
-			}
-		});
-		this.gridView.setOnItemClickListener(this);
-		this.gridView.setNumColumns(ConfigUtils.isLandscape(this) ? 5 : 3);
-		this.gridView.setScrollListener(this);
-
-		processIntent(getIntent());
 
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar == null) {
@@ -300,54 +279,97 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 			return false;
 		}
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setTitle(processIntent(getIntent()));
 
-		// add text view if contact list is empty
-		this.mediaTypeArray = getResources().obtainTypedArray(R.array.media_gallery_spinner);
-		this.spinnerAdapter = new MediaGallerySpinnerAdapter(
-				actionBar.getThemedContext(), getResources().getStringArray(R.array.media_gallery_spinner),
-				this.actionBarTitle);
+		chipGroup = findViewById(R.id.chip_group);
+		chipGroup.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING|LayoutTransition.CHANGE_APPEARING|LayoutTransition.APPEARING|LayoutTransition.DISAPPEARING);
 
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
-		actionBar.setSelectedNavigationItem(this.currentType);
+		contentTypeNames = getResources().getStringArray(R.array.media_gallery_spinner);
+		Arrays.fill(checkedContentTypes, true);
 
-		this.spinnerMessageFilter = new SpinnerMessageFilter();
-		this.spinnerMessageFilter.setFilterByType(this.currentType);
-		this.thumbnailCache = new ThumbnailCache<Integer>(null);
+		gridLayoutManager = new GridLayoutManager(this, ConfigUtils.isLandscape(this) ? 5 : 3);
+		recyclerView = findViewById(R.id.item_list);
 
-		FrameLayout frameLayout = findViewById(R.id.frame_parent);
+		final int borderSize = (int) ((float) getResources().getDimensionPixelSize(R.dimen.grid_spacing) * 1.5F);
+		final int cornerRadius = getResources().getDimensionPixelSize(R.dimen.cardview_border_radius);
+		final ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
+			@Override
+			public void getOutline(View view, Outline outline) {
+				outline.setRoundRect(borderSize, 0, view.getWidth() - borderSize, view.getHeight() + cornerRadius , cornerRadius);;
+			}
+		};
 
-		this.emptyView = new EmptyView(this);
-		this.emptyView.setColorsInt(ConfigUtils.getColorFromAttribute(this, android.R.attr.windowBackground), ConfigUtils.getColorFromAttribute(this, R.attr.textColorPrimary));
-		this.emptyView.setup(getString(R.string.no_media_found_generic));
+		recyclerView.setOutlineProvider(viewOutlineProvider);
+		recyclerView.setClipToOutline(true);
+		recyclerView.setLayoutManager(gridLayoutManager);
+		recyclerView.addItemDecoration(new MediaGridItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
-		frameLayout.addView(this.emptyView);
-		this.gridView.setEmptyView(this.emptyView);
+		EmptyView emptyView = new EmptyView(this);
+		emptyView.setColorsInt(ConfigUtils.getColorFromAttribute(this, android.R.attr.colorBackground), ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground));
+		emptyView.setup(getString(R.string.no_media_found_generic));
+		((ViewGroup) recyclerView.getParent()).addView(emptyView);
+		recyclerView.setEmptyView(emptyView);
+		mediaGalleryAdapter = new MediaGalleryAdapter(this, this, messageReceiver, gridLayoutManager.getSpanCount());
+		recyclerView.setAdapter(mediaGalleryAdapter);
 
-		this.dateView = findViewById(R.id.date_separator_container);
-		this.dateTextView = findViewById(R.id.text_view);
+		final Observer<List<AbstractMessageModel>> messageObserver = abstractMessageModels -> {
+			mediaGalleryAdapter.setItems(abstractMessageModels);
+			if (actionMode != null) {
+				actionMode.invalidate();
+			}
+		};
 
-		if (savedInstanceState == null || mediaGalleryAdapter == null) {
-			setupAdapters(this.currentType, true);
+		if (fastScroller == null) {
+			Drawable thumbDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_thumbscroller, getTheme());
+			fastScroller = new FastScrollerBuilder(recyclerView)
+				.setThumbDrawable(Objects.requireNonNull(thumbDrawable))
+				.setTrackDrawable(Objects.requireNonNull(AppCompatResources.getDrawable(this, R.drawable.fastscroll_track_media)))
+				.setPopupStyle(thumbScrollerPopupStyle)
+				.setPopupTextProvider(position -> {
+						int firstVisible = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
+						if (firstVisible >= 0) {
+							AbstractMessageModel item = mediaGalleryAdapter.getItemAtPosition(firstVisible);
+							if (item != null) {
+								return LocaleUtil.formatDateRelative(item.getCreatedAt().getTime());
+							}
+						}
+						return getString(R.string.unknown);
+					})
+				.build();
 		}
 
+		MediaGalleryViewModel.MediaGalleryViewModelFactory viewModelFactory = new MediaGalleryViewModel.MediaGalleryViewModelFactory(messageReceiver);
+		mediaGalleryViewModel = new ViewModelProvider(this, viewModelFactory).get(MediaGalleryViewModel.class);
+		mediaGalleryViewModel.getAbstractMessageModels().observe(this, messageObserver);
+		mediaGalleryViewModel.setFilter(null);
+
+		refreshChipGroup();
+
+		if (initialMessageModel != null) {
+			recyclerView.post(() -> {
+				for (int position = 0; position < mediaGalleryAdapter.getItemCount(); position++) {
+					AbstractMessageModel messageModel = mediaGalleryAdapter.getItemAtPosition(position);
+					if (messageModel != null && messageModel.getId() == initialMessageModel.getId()) {
+						gridLayoutManager.scrollToPosition(position);
+						break;
+					}
+				}
+				initialMessageModel = null;
+			});
+		}
 		return true;
 	}
 
 	private void showInChat() {
-		if (getSelectedMessages().size() != 1) {
+		if (mediaGalleryAdapter.getCheckedItemsCount() != 1) {
 			return;
 		}
-		AnimationUtil.startActivityForResult(this, null, IntentDataUtil.getJumpToMessageIntent(this, getSelectedMessages().get(0)), ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+		startActivityForResult(IntentDataUtil.getJumpToMessageIntent(this, mediaGalleryAdapter.getCheckedItemAt(0)), ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 		finish();
 	}
 
 	@Override
 	protected void onDestroy() {
-		if (this.thumbnailCache != null) {
-			this.thumbnailCache.flush();
-		}
 		super.onDestroy();
 	}
 
@@ -355,29 +377,28 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_media_gallery, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-			case R.id.menu_message_select_all:
-				selectAllMessages();
-				break;
+		int itemId = item.getItemId();
+		if (itemId == android.R.id.home) {
+			finish();
+		} else if (itemId == R.id.menu_message_filter) {
+			MultiChoiceSelectorDialog.newInstance(getString(R.string.select), contentTypeNames, checkedContentTypes).show(getSupportFragmentManager(), DIALOG_TAG_TYPE_SELECTOR);
 		}
 		return true;
 	}
 
-	private void processIntent(Intent intent) {
+	private @Nullable String processIntent(Intent intent) {
+		String actionBarTitle;
+
 		if (intent.hasExtra(ThreemaApplication.INTENT_DATA_GROUP)) {
 			int groupId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
-			GroupModel groupModel = this.groupService.getById(groupId);
-			messageReceiver = this.groupService.createReceiver(groupModel);
+			GroupModel groupModel = groupService.getById(groupId);
+			messageReceiver = groupService.createReceiver(groupModel);
 			actionBarTitle = groupModel.getName();
 		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST)) {
 			DistributionListModel distributionListModel = distributionListService.getById(intent.getLongExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, 0));
@@ -392,8 +413,8 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 			if (identity == null) {
 				finish();
 			}
-			ContactModel contactModel = this.contactService.getByIdentity(identity);
-			messageReceiver = this.contactService.createReceiver(contactModel);
+			ContactModel contactModel = contactService.getByIdentity(identity);
+			messageReceiver = contactService.createReceiver(contactModel);
 			actionBarTitle = NameUtil.getDisplayNameOrNickname(contactModel, true);
 		}
 
@@ -404,136 +425,17 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		if (type != null && id != 0) {
 			initialMessageModel = messageService.getMessageModelFromId(id, type);
 		}
-	}
 
-	private void setupAdapters(int newType, boolean force) {
-		if (this.currentType != newType || force) {
-			this.values = this.getMessages(this.messageReceiver);
-			if (this.values == null || this.values.isEmpty()) {
-				if (this.emptyView != null) {
-					if (newType == TYPE_ALL) {
-						this.emptyView.setup(getString(R.string.no_media_found_generic));
-					} else {
-						this.emptyView.setup(String.format(getString(R.string.no_media_found), getString(this.mediaTypeArray.getResourceId(newType, -1))));
-					}
-				}
-			}
-
-			this.mediaGalleryAdapter = new MediaGalleryAdapter(
-					this,
-					values,
-					this.fileService,
-					this.thumbnailCache
-			);
-
-			this.gridView.setAdapter(this.mediaGalleryAdapter);
-			if (initialMessageModel != null) {
-				this.gridView.post(new Runnable() {
-					@Override
-					public void run() {
-						for(int position = 0; position < values.size(); position++) {
-							if (values.get(position).getId() == initialMessageModel.getId()) {
-								gridView.setSelection(position);
-								break;
-							}
-						}
-						initialMessageModel = null;
-					}
-				});
-			}
-		}
-		this.currentType = newType;
-		resetSpinnerAdapter(newType);
-	}
-
-	private void resetSpinnerAdapter(int type) {
-		if (this.spinnerAdapter != null && this.mediaTypeArray != null && this.values != null) {
-			this.spinnerAdapter.setSubtitle(getString(this.mediaTypeArray.getResourceId(type, -1)) + " (" + this.values.size() + ")");
-			this.spinnerAdapter.notifyDataSetChanged();
-		}
-	}
-
-	private List<AbstractMessageModel> getMessages(MessageReceiver<AbstractMessageModel> receiver) {
-		List<AbstractMessageModel> values = null;
-		try {
-			values = receiver.loadMessages(this.spinnerMessageFilter);
-		} catch (SQLException e) {
-			logger.error("Exception", e);
-		}
-		return values;
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-			final AbstractMessageModel m = this.mediaGalleryAdapter.getItem(position);
-			ProgressBar progressBar = view.findViewById(R.id.progress_decoding);
-
-			switch (mediaGalleryAdapter.getItemViewType(position)) {
-				case MediaGalleryAdapter.TYPE_IMAGE:
-					// internal viewer
-					showInMediaFragment(m, view);
-					break;
-				case MediaGalleryAdapter.TYPE_VIDEO:
-					showInMediaFragment(m, view);
-					break;
-				case MediaGalleryAdapter.TYPE_AUDIO:
-					showInMediaFragment(m, view);
-					break;
-				case MediaGalleryAdapter.TYPE_FILE:
-					if (m!= null && (FileUtil.isImageFile(m.getFileData()) || FileUtil.isVideoFile(m.getFileData()) || FileUtil.isAudioFile(m.getFileData()))) {
-						showInMediaFragment(m, view);
-					} else {
-						decodeAndShowFile(m, view, progressBar);
-					}
-					break;
-			}
-	}
-
-	@Override
-	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-		this.spinnerMessageFilter.setFilterByType(itemPosition);
-		setupAdapters(itemPosition, false);
-
-		return true;
-	}
-
-	@Override
-	public void onScroll(int firstVisibleItem) {
-		if (this.mediaGalleryAdapter != null) {
-			if (dateView.getVisibility() != View.VISIBLE && mediaGalleryAdapter != null && mediaGalleryAdapter.getCount() > 0) {
-				AnimationUtil.slideInAnimation(dateView, false, 200);
-			}
-
-			dateViewHandler.removeCallbacks(dateViewTask);
-			dateViewHandler.postDelayed(dateViewTask, SCROLLBUTTON_VIEW_TIMEOUT);
-
-			try {
-				final AbstractMessageModel messageModel = this.mediaGalleryAdapter.getItem(firstVisibleItem);
-				if (messageModel != null) {
-					final Date createdAt = messageModel.getCreatedAt();
-					if (createdAt != null) {
-						dateView.post(() -> {
-							dateTextView.setText(LocaleUtil.formatDateRelative(createdAt.getTime()));
-						});
-					}
-				}
-			} catch (IndexOutOfBoundsException ignore) {}
-		}
+		return actionBarTitle;
 	}
 
 	private void selectAllMessages() {
-		if (gridView != null) {
-			if (gridView.getCount() == gridView.getCheckedItemCount()) {
-				if (actionMode != null) {
+		if (mediaGalleryAdapter != null) {
+			mediaGalleryAdapter.selectAll();
+			if (actionMode != null) {
+				if (mediaGalleryAdapter.getCheckedItemsCount() == 0) {
 					actionMode.finish();
-				}
-			} else {
-				for (int i = 0; i < gridView.getCount(); i++) {
-					if (currentType == TYPE_ALL || mediaGalleryAdapter.getItemViewType(i) == currentType) {
-						gridView.setItemChecked(i, true);
-					}
-				}
-				if (actionMode != null) {
+				} else {
 					actionMode.invalidate();
 				}
 			}
@@ -541,7 +443,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	}
 
 	private void discardMessages() {
-		List<AbstractMessageModel> selectedMessages = getSelectedMessages();
+		List<AbstractMessageModel> selectedMessages = mediaGalleryAdapter.getCheckedItems();
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.really_delete_message_title, String.format(getString(R.string.really_delete_media), selectedMessages.size()), R.string.delete_message, R.string.cancel);
 		dialog.setData(selectedMessages);
 		dialog.show(getSupportFragmentManager(), DELETE_MESSAGES_CONFIRM_TAG);
@@ -549,49 +451,42 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 
 	private void saveMessages() {
 		if (ConfigUtils.requestWriteStoragePermissions(this, null, PERMISSION_REQUEST_SAVE_MESSAGE)) {
-			fileService.saveMedia(this, gridView, new CopyOnWriteArrayList<>(getSelectedMessages()), true);
+			fileService.saveMedia(this, recyclerView, new CopyOnWriteArrayList<>(mediaGalleryAdapter.getCheckedItems()), true);
 			actionMode.finish();
 		}
 	}
 
-	private List<AbstractMessageModel> getSelectedMessages() {
-		List<AbstractMessageModel> selectedMessages = new ArrayList<>();
-		SparseBooleanArray checkedItems = gridView.getCheckedItemPositions();
+	@Override
+	public void onYes(String tag, Object data, String text) {
+		List<Uri> uris = (List<Uri>) data;
+		messageService.shareMediaMessages(this,
+			new ArrayList<>(mediaGalleryAdapter.getCheckedItems()),
+			new ArrayList<>(uris), text);
+	}
 
-		final int size = checkedItems.size();
-		for (int i = 0; i < size; i++) {
-			final int index = checkedItems.keyAt(i);
-
-			if (checkedItems.valueAt(i)) {
-				selectedMessages.add(mediaGalleryAdapter.getItem(index));
-			}
-		}
-		return selectedMessages;
+	@Override
+	public void onNo(String tag) {
+		// Nothing to do here
 	}
 
 	@SuppressLint("StaticFieldLeak")
 	private void reallyDiscardMessages(final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages) {
-		new AsyncTask<Void, Integer, Integer>() {
+		new AsyncTask<Void, Integer, List<AbstractMessageModel>>() {
 			boolean cancelled = false;
 
 			@Override
 			protected void onPreExecute() {
 				if (selectedMessages.size() > 10) {
 					CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.deleting_messages, 0, R.string.cancel, selectedMessages.size());
-					dialog.setOnCancelListener(new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							cancelled = true;
-						}
-					});
+					dialog.setOnCancelListener((dialog1, which) -> cancelled = true);
 					dialog.show(getSupportFragmentManager(), DIALOG_TAG_DELETING_MEDIA);
 				}
 			}
 
 			@Override
-			protected Integer doInBackground(Void... params) {
+			protected List<AbstractMessageModel> doInBackground(Void... params) {
 				int i = 0;
-				int deleted = 0;
+				List<AbstractMessageModel> deletedMessages = new ArrayList<>();
 				Iterator<AbstractMessageModel> checkedItemsIterator = selectedMessages.iterator();
 				while (checkedItemsIterator.hasNext() && !cancelled) {
 					publishProgress(i++);
@@ -599,31 +494,25 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 						final AbstractMessageModel messageModel = checkedItemsIterator.next();
 
 						if (messageModel != null) {
+							deletedMessages.add(messageModel);
 							messageService.remove(messageModel);
-							deleted++;
-						 	RuntimeUtil.runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									mediaGalleryAdapter.remove(messageModel);
-								}
-							});
 						}
 					} catch (Exception e) {
 						logger.error("Exception", e);
 					}
 				}
-				return deleted;
+				return deletedMessages;
 			}
 
 			@Override
-			protected void onPostExecute(Integer deletedMessages) {
+			protected void onPostExecute(List<AbstractMessageModel> deletedMessages) {
+				mediaGalleryAdapter.removeItems(deletedMessages);
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_DELETING_MEDIA, true);
-				String text = ConfigUtils.getSafeQuantityString(gridView.getContext(), R.plurals.message_deleted, deletedMessages, deletedMessages);
-				Snackbar.make(gridView, text, Snackbar.LENGTH_LONG).show();
+				String text = ConfigUtils.getSafeQuantityString(recyclerView.getContext(), R.plurals.message_deleted, deletedMessages.size(), deletedMessages.size());
+				Snackbar.make(recyclerView, text, Snackbar.LENGTH_LONG).show();
 				if (actionMode != null) {
 					actionMode.finish();
 				}
-				resetSpinnerAdapter(currentType);
 			}
 
 			@Override
@@ -634,55 +523,48 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 	}
 
 	@Override
-	public void onYes(String tag, Object data) {
-		reallyDiscardMessages(new CopyOnWriteArrayList<>((ArrayList< AbstractMessageModel>) data));
-	}
-
-	@Override
-	public void onNo(String tag, Object data) {
-	}
-
-	@Override
 	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		final int topmost;
-		if (this.gridView != null) {
-			View topChild = this.gridView.getChildAt(0);
-			if (topChild != null) {
-				if (topChild.getTop() < 0) {
-					topmost = this.gridView.getFirstVisiblePosition() + 1;
-				} else {
-					topmost = this.gridView.getFirstVisiblePosition();
-				}
-			} else {
-				topmost = 0;
-			}
+		if (gridLayoutManager != null) {
+			topmost = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
 		} else {
 			topmost = 0;
 		}
 
 		super.onConfigurationChanged(newConfig);
 
-		if (this.gridView != null) {
-			this.gridView.post(() -> {
-				gridView.setNumColumns(ConfigUtils.isLandscape(MediaGalleryActivity.this) ? 5 : 3);
-				gridView.setSelection(topmost);
+		if (recyclerView != null) {
+			recyclerView.post(() -> {
+				if (gridLayoutManager != null) {
+					gridLayoutManager.setSpanCount(ConfigUtils.isLandscape(MediaGalleryActivity.this) ? 5 : 3);
+					gridLayoutManager.scrollToPosition(topmost);
+				}
 			});
 		}
 	}
 
-	private void hideProgressBar(final ProgressBar progressBar) {
+	@Override
+	public void onBackPressed() {
+		if (actionMode != null) {
+			actionMode.finish();
+		} else {
+			super.onBackPressed();
+		}
+	}
+
+	private void hideProgressBar(final CircularProgressIndicator progressBar) {
 		if (progressBar != null) {
 		 	RuntimeUtil.runOnUiThread(() -> progressBar.setVisibility(View.GONE));
 		}
 	}
 
-	private void showProgressBar(final ProgressBar progressBar) {
+	private void showProgressBar(final CircularProgressIndicator progressBar) {
 		if (progressBar != null) {
 		 	RuntimeUtil.runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
 		}
 	}
 
-	public void decodeAndShowFile(final AbstractMessageModel m, final View v, final ProgressBar progressBar) {
+	public void decryptAndShow(final AbstractMessageModel m, final View v, final CircularProgressIndicator progressBar) {
 		showProgressBar(progressBar);
 		fileService.loadDecryptedMessageFile(m, new FileService.OnDecryptedFileComplete() {
 			@Override
@@ -706,18 +588,18 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		IntentDataUtil.append(m, intent);
 		intent.putExtra(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, true);
 		intent.putExtra(MediaViewerActivity.EXTRA_ID_REVERSE_ORDER, false);
-		intent.putExtra(MediaViewerActivity.EXTRA_FILTER, this.spinnerMessageFilter.contentTypes());
-		AnimationUtil.startActivityForResult(this, v, intent, ACTIVITY_ID_MEDIA_VIEWER);
+		intent.putExtra(MediaViewerActivity.EXTRA_FILTER, getMediaContentTypeArray());
+		startActivityForResult(intent, ACTIVITY_ID_MEDIA_VIEWER);
 	}
 
 	@Override
 	protected boolean checkInstances() {
 		return TestUtil.required(
-				this.fileService,
-				this.messageService,
-				this.groupService,
-				this.distributionListService,
-				this.contactService
+				fileService,
+				messageService,
+				groupService,
+				distributionListService,
+				contactService
 		) && super.checkInstances();
 	}
 
@@ -728,11 +610,11 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager != null) {
 			try {
-				this.fileService = serviceManager.getFileService();
-				this.messageService = serviceManager.getMessageService();
-				this.groupService = serviceManager.getGroupService();
-				this.distributionListService = serviceManager.getDistributionListService();
-				this.contactService = serviceManager.getContactService();
+				fileService = serviceManager.getFileService();
+				messageService = serviceManager.getMessageService();
+				groupService = serviceManager.getGroupService();
+				distributionListService = serviceManager.getDistributionListService();
+				contactService = serviceManager.getContactService();
 			} catch (Exception e) {
 				LogUtil.exception(e, this);
 			}
@@ -748,19 +630,163 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements Adap
 		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			switch (requestCode) {
 				case PERMISSION_REQUEST_SAVE_MESSAGE:
-					fileService.saveMedia(this, gridView, new CopyOnWriteArrayList<>(getSelectedMessages()), true);
+					fileService.saveMedia(this, recyclerView, new CopyOnWriteArrayList<>(mediaGalleryAdapter.getCheckedItems()), true);
 					break;
 			}
 		} else {
 			switch (requestCode) {
 				case PERMISSION_REQUEST_SAVE_MESSAGE:
 					if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-						ConfigUtils.showPermissionRationale(this, gridView, R.string.permission_storage_required);
+						ConfigUtils.showPermissionRationale(this, recyclerView, R.string.permission_storage_required);
 					}
 					break;
 			}
 		}
 		actionMode.finish();
 	}
+
+	private void refreshChipGroup() {
+		chipGroup.removeAllViews();
+		for (int i = 0; i < checkedContentTypes.length; i++) {
+			if (checkedContentTypes[i]) {
+				Chip chip = (Chip) getLayoutInflater().inflate(
+					R.layout.chip_directory, null, false
+				);
+				chip.setText(contentTypeNames[i]);
+				chip.setTag(contentTypes[i]);
+				chip.setOnCloseIconClickListener(v -> {
+					int contentType = (int) v.getTag();
+					for (int j = 0; j < checkedContentTypes.length; j++) {
+						if (contentType == contentTypes[j]) {
+							checkedContentTypes[j] = false;
+							chipGroup.removeView(v);
+							updateFilter();
+							break;
+						}
+					}
+					if (chipGroup.getChildCount() == 0) {
+						finish();
+					}
+				});
+				chipGroup.addView(chip);
+			}
+		}
+		updateFilter();
+	}
+
+	private void updateFilter() {
+		if (mediaGalleryAdapter != null && mediaGalleryViewModel != null) {
+			mediaGalleryViewModel.setFilter(getMediaContentTypeArray());
+		}
+	}
+
+	private @Nullable int[] getMediaContentTypeArray() {
+		int[] contentTypeList = new int[checkedContentTypes.length];
+		int n = 0;
+		for(int i = 0; i < checkedContentTypes.length; i++) {
+			if (checkedContentTypes[i]) {
+				contentTypeList[n++] = contentTypes[i];
+			}
+		}
+
+		return n > 0 ? Arrays.copyOfRange(contentTypeList, 0, n) : null;
+	}
+
+	@Override
+	public void onYes(String tag, Object data) {
+		reallyDiscardMessages(new CopyOnWriteArrayList<>((ArrayList< AbstractMessageModel>) data));
+	}
+
+	@Override
+	public void onYes(String tag, boolean[] checkedItems) {
+		int n = 0;
+		for (boolean checkedItem: checkedItems) {
+			if (checkedItem) {
+				n++;
+				break;
+			}
+		}
+
+		if (n == 0) {
+			finish();
+			return;
+		}
+
+		checkedContentTypes = checkedItems;
+		refreshChipGroup();
+	}
+
+	@Override
+	public void onClick(@Nullable AbstractMessageModel messageModel, @Nullable View view, int position) {
+		if (actionMode != null) {
+			mediaGalleryAdapter.toggleChecked(position);
+			if (mediaGalleryAdapter.getCheckedItemsCount() > 0) {
+				if (actionMode != null) {
+					actionMode.invalidate();
+				}
+			} else {
+				actionMode.finish();
+			}
+		} else {
+			if (messageModel != null) {
+				if (view != null) {
+					CircularProgressIndicator progressBar = view.findViewById(R.id.progress_decoding);
+
+					switch (messageModel.getMessageContentsType()) {
+						case MessageContentsType.IMAGE:
+						case MessageContentsType.VIDEO:
+						case MessageContentsType.VOICE_MESSAGE:
+						case MessageContentsType.AUDIO:
+						case MessageContentsType.GIF:
+							showInMediaFragment(messageModel, view);
+							break;
+						case MessageContentsType.FILE:
+							if ((FileUtil.isImageFile(messageModel.getFileData()) || FileUtil.isVideoFile(messageModel.getFileData()) || FileUtil.isAudioFile(messageModel.getFileData()))) {
+								showInMediaFragment(messageModel, view);
+							} else {
+								decryptAndShow(messageModel, view, progressBar);
+							}
+							break;
+						default:
+							break;
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean onLongClick(@Nullable AbstractMessageModel messageModel, @Nullable View itemView, int position) {
+		if (actionMode != null) {
+			actionMode.finish();
+		}
+		mediaGalleryAdapter.toggleChecked(position);
+		if (mediaGalleryAdapter.getCheckedItemsCount() > 0) {
+			actionMode = startSupportActionMode(new MediaGalleryAction());
+		}
+		return true;
+	}
+
+	/**
+	 * Check that no more than {@link ComposeMessageFragment#MAX_FORWARDABLE_ITEMS} are selected,
+	 * that all media is downloaded, and that sharing media is allowed.
+	 *
+	 * @return true if the items can be shared, false otherwise
+	 */
+	private boolean selectedItemsCanBeShared() {
+		if (AppRestrictionUtil.isShareMediaDisabled(MediaGalleryActivity.this)) {
+			return false;
+		}
+		if (mediaGalleryAdapter.getCheckedItemsCount() > ComposeMessageFragment.MAX_FORWARDABLE_ITEMS) {
+			return false;
+		}
+		for (AbstractMessageModel message : mediaGalleryAdapter.getCheckedItems()) {
+			if (!message.isAvailable()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
 

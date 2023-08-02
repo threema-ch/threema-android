@@ -23,69 +23,20 @@
 
 		</FrameLayout>
 
+		<include layout="@layout/notice_with_close_button"/>
+
 		<com.google.android.material.tabs.TabLayout
 			android:id="@+id/tabs"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			app:tabGravity="fill"
-			app:tabMode="fixed"/>
-
-		<LinearLayout
-			android:id="@+id/notice_layout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="?attr/colorAccent"
-			android:clickable="false"
-			android:orientation="vertical"
-			android:visibility="gone">
-
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="1dp"
-				android:background="@android:color/white"/>
-
-			<LinearLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:paddingTop="8dp"
-				android:paddingBottom="8dp"
-				android:paddingLeft="16dp"
-				android:paddingRight="16dp"
-				android:orientation="horizontal">
-
-				<TextView
-					android:id="@+id/notice_text"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:text="@string/backup_explain_text"
-					android:textColor="@android:color/white"
-					android:layout_weight="2"
-					android:textSize="14sp"/>
-
-				<ImageView
-					android:id="@+id/close_button"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginLeft="8dp"
-					android:layout_gravity="right|center_vertical"
-					android:background="?android:selectableItemBackground"
-					android:contentDescription="@string/close"
-					android:clickable="true"
-					app:srcCompat="@drawable/ic_close"
-					android:tint="@android:color/white"/>
-
-			</LinearLayout>
-
-		</LinearLayout>
+			android:layout_height="wrap_content" />
 
 	</com.google.android.material.appbar.AppBarLayout>
 
 	<androidx.viewpager.widget.ViewPager
 		android:id="@+id/pager"
+		android:background="?android:attr/colorBackground"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-	</androidx.viewpager.widget.ViewPager>
+		app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

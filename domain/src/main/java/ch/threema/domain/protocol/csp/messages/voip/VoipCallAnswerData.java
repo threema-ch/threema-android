@@ -111,21 +111,21 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 				answerData.sdpType = JSONUtil.getStringOrNull(o, KEY_SDP_TYPE);
 				if (answerData.sdpType == null) {
 					logger.error("Bad VoipCallAnswerData: " + KEY_SDP_TYPE + " must be defined");
-					throw new BadMessageException("TM061", true);
+					throw new BadMessageException("TM061");
 				} else if (answerData.sdpType.equals("offer")) {
 					logger.error("Bad VoipCallAnswerData: " + KEY_SDP_TYPE + " may not be \"offer\"");
-					throw new BadMessageException("TM061", true);
+					throw new BadMessageException("TM061");
 				}
 
 				answerData.sdp = JSONUtil.getStringOrNull(o, KEY_SDP);
 				if (answerData.sdp == null && !answerData.sdpType.equals("rollback")) {
 					logger.error("Bad VoipCallAnswerData: " + KEY_SDP + " may only be null if " + KEY_SDP_TYPE + "=rollback");
-					throw new BadMessageException("TM061", true);
+					throw new BadMessageException("TM061");
 				}
 
 				return answerData;
 			} catch (Exception e) {
-				throw new BadMessageException("TM061", true);
+				throw new BadMessageException("TM061");
 			}
 		}
 
@@ -239,7 +239,7 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 			o = new JSONObject(jsonObjectString);
 		} catch (JSONException e) {
 			logger.error("Bad VoipCallAnswerData: Invalid JSON string", e);
-			throw new BadMessageException("TM061", true);
+			throw new BadMessageException("TM061");
 		}
 
 		final VoipCallAnswerData callAnswerData = new VoipCallAnswerData();
@@ -251,14 +251,14 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 			}
 		} catch (Exception e) {
 			logger.error("Bad VoipCallAnswerData: Invalid Call ID", e);
-			throw new BadMessageException("TM061", true);
+			throw new BadMessageException("TM061");
 		}
 
 		try {
 			callAnswerData.action = (byte) o.getInt(KEY_ACTION);
 		} catch (Exception e) {
 			logger.error("Bad VoipCallAnswerData: Action must be a valid integer");
-			throw new BadMessageException("TM061", true);
+			throw new BadMessageException("TM061");
 		}
 
 		if (callAnswerData.action == Action.ACCEPT) {
@@ -267,14 +267,14 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 				callAnswerData.answerData = AnswerData.parse(answerObj);
 			} catch (Exception e) {
 				logger.error("Bad VoipCallAnswerData: Answer could not be parsed");
-				throw new BadMessageException("TM061", true);
+				throw new BadMessageException("TM061");
 			}
 		} else if (callAnswerData.action == Action.REJECT) {
 			try {
 				callAnswerData.rejectReason = (byte) o.getInt(KEY_REJECT_REASON);
 			} catch (Exception e) {
 				logger.error("Bad VoipCallAnswerData: Reject reason could not be parsed");
-				throw new BadMessageException("TM061", true);
+				throw new BadMessageException("TM061");
 			}
 		}
 
@@ -284,7 +284,7 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 				callAnswerData.features = FeatureList.parse(featureObj);
 			}
 		} catch (Exception e) {
-			throw new BadMessageException("TM061", true);
+			throw new BadMessageException("TM061");
 		}
 
 		return callAnswerData;
@@ -298,30 +298,30 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 		// Validate data
 		if (this.action == null) {
 			logger.error("Bad VoipCallAnswerData: No action set");
-			throw new BadMessageException("TM061", true);
+			throw new BadMessageException("TM061");
 		}
 		switch (this.action) {
 			case Action.ACCEPT:
 				if (this.answerData == null) {
 					logger.error("Bad VoipCallAnswerData: Accept message must contain answer data");
-					throw new BadMessageException("TM061", true);
+					throw new BadMessageException("TM061");
 				} else if (this.rejectReason != null) {
 					logger.error("Bad VoipCallAnswerData: Accept message must not contain reject reason");
-					throw new BadMessageException("TM061", true);
+					throw new BadMessageException("TM061");
 				}
 				break;
 			case Action.REJECT:
 				if (this.rejectReason == null) {
 					logger.error("Bad VoipCallAnswerData: Reject message must contain reject reason");
-					throw new BadMessageException("TM061", true);
+					throw new BadMessageException("TM061");
 				} else if (this.answerData != null) {
 					logger.error("Bad VoipCallAnswerData: Accept message must not contain answer data");
-					throw new BadMessageException("TM061", true);
+					throw new BadMessageException("TM061");
 				}
 				break;
 			default:
 				logger.error("Bad VoipCallAnswerData: Invalid action");
-				throw new BadMessageException("TM061", true);
+				throw new BadMessageException("TM061");
 		}
 
 		final JSONObject o = this.buildJsonObject();
@@ -336,7 +336,7 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 			}
 		} catch (JSONException e) {
 			logger.error("Could not add answer data", e);
-			throw new BadMessageException("TM061", true);
+			throw new BadMessageException("TM061");
 		}
 
 		// Add feature list
@@ -345,7 +345,7 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 				o.put("features", this.features.toJSON());
 			} catch (JSONException e) {
 				logger.error("Could not add features", e);
-				throw new BadMessageException("TM061", true);
+				throw new BadMessageException("TM061");
 			}
 		}
 

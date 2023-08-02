@@ -13,7 +13,7 @@
 		app:layout_behavior="@string/appbar_scrolling_view_behavior"
 		android:scrollbarAlwaysDrawVerticalTrack="true"
 		android:fillViewport="true"
-		android:background="?android:windowBackground">
+		android:background="?android:attr/colorBackground">
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -25,7 +25,7 @@
 			android:orientation="vertical">
 
 			<TextView
-				style="@style/WizardTitleText"
+				style="@style/Threema.TextAppearance.Title"
 				android:id="@+id/webclient_welcome"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
 
 			<TextView
 				android:id="@+id/webclient_explain"
-				style="@style/WizardSmallText"
+				style="@style/Threema.TextAppearance.BodyLarge"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center_horizontal"
@@ -46,7 +46,7 @@
 
 			<TextView
 				android:id="@+id/webclient_link"
-				style="@style/WizardSmallText"
+				style="@style/Threema.TextAppearance.BodyLarge"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center_horizontal"
@@ -57,6 +57,7 @@
 				android:text=""/>
 
 			<com.google.android.material.button.MaterialButton
+				style="@style/Threema.MaterialButton.Action"
 				android:id="@+id/launch_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"

@@ -26,7 +26,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
 
-import ch.threema.app.services.UserService;
+import androidx.annotation.NonNull;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 
@@ -34,7 +35,8 @@ public class TypingIndicatorTextWatcher implements TextWatcher {
 
 	private static final long TYPING_SEND_TIMEOUT = 10 * DateUtils.SECOND_IN_MILLIS;
 	private final Handler typingIndicatorHandler = new Handler();
-	private final UserService userService;
+	@NonNull
+	private final ContactService contactService;
 	private final ContactModel contactModel;
 
 	private boolean isTypingSent = false;
@@ -44,13 +46,13 @@ public class TypingIndicatorTextWatcher implements TextWatcher {
 		public void run() {
 			if (isTypingSent) {
 				isTypingSent = false;
-				userService.isTyping(contactModel.getIdentity(), false);
+				contactService.sendTypingIndicator(contactModel.getIdentity(), false);
 			}
 		}
 	};
 
-	public TypingIndicatorTextWatcher(UserService userService, ContactModel contactModel) {
-		this.userService = userService;
+	public TypingIndicatorTextWatcher(@NonNull ContactService contactService, ContactModel contactModel) {
+		this.contactService = contactService;
 		this.contactModel = contactModel;
 	}
 
@@ -66,12 +68,9 @@ public class TypingIndicatorTextWatcher implements TextWatcher {
 	public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 		if(textHasChanged(charSequence)) {
 			if (!isTypingSent) {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						isTypingSent = true;
-						userService.isTyping(contactModel.getIdentity(), true);
-					}
+				new Thread(() -> {
+					isTypingSent = true;
+					contactService.sendTypingIndicator(contactModel.getIdentity(), true);
 				}).start();
 			} else {
 				//stop end typing sending handler

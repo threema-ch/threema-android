@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/edit_send_contact_coordinator"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:elevation="1dp"
 	tools:context=".activities.EditSendContactActivity">
 
 	<androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -20,37 +22,35 @@
 			android:layout_height="match_parent"
 			android:layout_gravity="center"
 			android:clipToPadding="false"
-			android:elevation="0dp"
 			android:paddingLeft="16dp"
 			android:paddingRight="16dp"
 			app:behavior_hideable="true"
 			app:behavior_saveFlags="all"
-			app:layout_behavior="@string/bottom_sheet_behavior">
+			app:layout_behavior="@string/bottom_sheet_behavior"
+			android:elevation="1dp">
 
 			<ImageView
+				style="@style/Threema.BottomSheet.DragHandle"
 				android:id="@+id/drag_handle"
-				android:layout_width="28dp"
-				android:layout_height="@dimen/drag_handle_height"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:layout_alignParentTop="true"
 				android:layout_centerHorizontal="true"
-				android:layout_marginBottom="@dimen/drag_handle_topbottom_margin"
-				android:layout_marginTop="@dimen/drag_handle_topbottom_margin"
-				android:importantForAccessibility="no"
-				android:src="@drawable/bottomsheet_grapple" />
+				android:importantForAccessibility="no" />
 
-			<ProgressBar
+			<com.google.android.material.progressindicator.CircularProgressIndicator
 				android:id="@+id/progress_bar_parsing"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_below="@id/drag_handle"
-				android:layout_centerHorizontal="true" />
+				android:layout_centerHorizontal="true"
+				android:indeterminate="true"/>
 
 			<androidx.core.widget.NestedScrollView
 				android:id="@+id/nested_scroll_view"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_below="@id/drag_handle"
-				android:background="#00000000"
 				android:clipToPadding="false"
 				android:orientation="vertical"
 				android:paddingBottom="64dp">
@@ -222,7 +222,8 @@
 		android:layout_alignLeft="@id/bottom_sheet_coordinator"
 		android:layout_alignRight="@id/bottom_sheet_coordinator"
 		android:layout_gravity="center_horizontal"
-		android:background="@android:color/transparent"
+		android:background="?attr/colorSurface"
+		android:visibility="invisible"
 		app:elevation="0dp">
 
 		<com.google.android.material.appbar.MaterialToolbar
@@ -230,19 +231,9 @@
 			style="@style/Threema.ToolbarStyle"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
-			android:visibility="invisible"
 			app:navigationIcon="@drawable/ic_chevron_down_slightly_bigger"
-			app:navigationIconTint="?attr/textColorSecondary">
-
-			<TextView
-				android:id="@+id/toolbar_title_contact_textview"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_vertical"
-				android:ellipsize="middle"
-				android:text="@string/share_contact"
-				android:textColor="?android:textColorPrimary"
-				android:textSize="18sp" />
+			app:navigationIconTint="?attr/colorOnSurface"
+			app:title="@string/share_contact">
 
 		</com.google.android.material.appbar.MaterialToolbar>
 

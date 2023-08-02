@@ -145,7 +145,7 @@ class QRScannerActivity : ThreemaActivity() {
         }
 
         val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-        val rotation = cameraPreview.display.rotation
+        val rotation = cameraPreview.display?.rotation ?: 0
         val resolution = Size(720, 1280)
 
         val cameraProvider = cameraProvider

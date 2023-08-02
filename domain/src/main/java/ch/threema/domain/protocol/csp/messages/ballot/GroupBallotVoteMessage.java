@@ -30,10 +30,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A group ballot vote message.
@@ -47,6 +49,12 @@ public class GroupBallotVoteMessage extends AbstractGroupMessage
 	private String ballotCreatorId;
 
 	private final List<BallotVote> ballotVotes = new ArrayList<>();
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
+	}
 
 	@Override
 	public boolean allowUserProfileDistribution() {

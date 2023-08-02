@@ -23,6 +23,7 @@ package ch.threema.app.fragments.mediaviews;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -78,15 +79,10 @@ abstract public class MediaViewFragment extends Fragment {
 		void thumbnailLoaded(Drawable bitmap);
 	}
 
-	public interface OnMediaOpenListener {
-		void closed();
-		void open();
-	}
-
 	private AbstractMessageModel messageModel;
 
 	private Future threadFullDecrypt;
-	private ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
+	private final ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
 	protected FileService fileService;
 	protected MessageService messageService;
 	private File[] decryptedFileCache;
@@ -125,20 +121,14 @@ abstract public class MediaViewFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
+	public void onAttach(@NonNull Activity activity) {
 		super.onAttach(activity);
 
 		this.activity = activity;
 	}
 
-	public void setOnClickListener(View.OnClickListener onClickListener) {
-	}
-
-	public void setOnMediaOpenListener(OnMediaOpenListener onMediaOpenListener) {
-	}
-
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
@@ -219,7 +209,7 @@ abstract public class MediaViewFragment extends Fragment {
 						thumbnail.setTint(ContextCompat.getColor(requireContext(), R.color.material_dark_grey));
 					}
 				} else if (messageModel.getType() == MessageType.FILE) {
-					thumbnail = new BitmapDrawable(getResources(), BitmapUtil.tintImage(fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType(), true), ContextCompat.getColor(requireContext(), R.color.material_dark_grey)));
+					thumbnail = new BitmapDrawable(getResources(), fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType(), true, ContextCompat.getColor(requireContext(), R.color.material_dark_grey)));
 				}
 			}
 
@@ -400,5 +390,19 @@ abstract public class MediaViewFragment extends Fragment {
 	 */
 	protected void handleFileName(@Nullable String filename) {
 		// nothing to do
+	}
+
+	@Override
+	public void onPause() {
+		setUserVisibleHint(false);
+		super.onPause();
+	}
+
+	@Override
+	public void setMenuVisibility(boolean menuVisible) {
+		super.setMenuVisibility(menuVisible);
+		if (!menuVisible) {
+			setUserVisibleHint(false);
+		}
 	}
 }

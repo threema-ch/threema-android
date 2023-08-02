@@ -16,14 +16,14 @@
 		android:paddingTop="@dimen/dialog_margin_below_title">
 
 		<TextView
+			style="@style/MaterialAlertDialog.Material3.Body.Text"
 			android:id="@+id/intro_text"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="4dp"
 			android:layout_marginLeft="2dp"
 			android:layout_marginRight="2dp"
-			android:text="@string/rate_intro"
-			android:textSize="16sp"/>
+			android:text="@string/rate_intro" />
 
 		<LinearLayout
 			android:id="@+id/star_layout"
@@ -43,7 +43,8 @@
 				android:layout_marginRight="6dp"
 				android:background="?attr/selectableItemBackground"
 				android:clickable="true"
-				app:srcCompat="@drawable/ic_star_outline_24dp"/>
+				app:srcCompat="@drawable/ic_star_outline_24dp"
+				app:tint="?attr/colorOnSurface"/>
 
 			<ImageView
 				android:id="@+id/star_two"
@@ -53,7 +54,8 @@
 				android:layout_marginRight="6dp"
 				android:background="?attr/selectableItemBackground"
 				android:clickable="true"
-				app:srcCompat="@drawable/ic_star_outline_24dp"/>
+				app:srcCompat="@drawable/ic_star_outline_24dp"
+				app:tint="?attr/colorOnSurface"/>
 
 			<ImageView
 				android:id="@+id/star_three"
@@ -63,7 +65,8 @@
 				android:layout_marginRight="6dp"
 				android:background="?attr/selectableItemBackground"
 				android:clickable="true"
-				app:srcCompat="@drawable/ic_star_outline_24dp"/>
+				app:srcCompat="@drawable/ic_star_outline_24dp"
+				app:tint="?attr/colorOnSurface"/>
 
 			<ImageView
 				android:id="@+id/star_four"
@@ -73,7 +76,8 @@
 				android:layout_marginRight="6dp"
 				android:background="?attr/selectableItemBackground"
 				android:clickable="true"
-				app:srcCompat="@drawable/ic_star_outline_24dp"/>
+				app:srcCompat="@drawable/ic_star_outline_24dp"
+				app:tint="?attr/colorOnSurface"/>
 
 			<ImageView
 				android:id="@+id/star_five"
@@ -82,7 +86,8 @@
 				android:padding="2dp"
 				android:background="?attr/selectableItemBackground"
 				android:clickable="true"
-				app:srcCompat="@drawable/ic_star_outline_24dp"/>
+				app:srcCompat="@drawable/ic_star_outline_24dp"
+				app:tint="?attr/colorOnSurface"/>
 
 		</LinearLayout>
 
@@ -94,18 +99,19 @@
 			android:visibility="gone">
 
 			<TextView
+				style="@style/MaterialAlertDialog.Material3.Body.Text"
 				android:id="@+id/feedback_intro_text"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginLeft="2dp"
 				android:layout_marginRight="2dp"
 				android:layout_marginTop="4dp"
-				android:text="@string/rate_feedback_intro"
-				android:textSize="16sp"/>
+				android:layout_marginBottom="4dp"
+				android:text="@string/rate_feedback_intro" />
 
 			<com.google.android.material.textfield.TextInputLayout
 				android:id="@+id/feedback_edittext_layout"
-				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+				style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="-2dp"
@@ -129,7 +135,7 @@
 
 	</LinearLayout>
 
-	<ProgressBar
+	<com.google.android.material.progressindicator.CircularProgressIndicator
 		android:id="@+id/progress_bar"
 		android:layout_width="48dp"
 		android:layout_height="48dp"

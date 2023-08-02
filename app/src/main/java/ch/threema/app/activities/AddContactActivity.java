@@ -106,10 +106,6 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 			return;
 		}
 
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			setTheme(R.style.Theme_Threema_Translucent_Dark);
-		}
-
 		super.onCreate(savedInstanceState);
 
 		supportRequestWindowFeature(Window.FEATURE_NO_TITLE);

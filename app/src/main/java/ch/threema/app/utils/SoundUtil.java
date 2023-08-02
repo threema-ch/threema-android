@@ -91,7 +91,7 @@ public class SoundUtil {
 	}
 
 	/**
-	 * Get audio attributes for playing a ringtone accompaigning a call notification
+	 * Get audio attributes for playing a ringtone accompanying a call notification
 	 * Android 12+ will always mute the sound when DND is on. In order to be able to play a ringtone for incoming messages from a "starred" contact when INTERRUPTION_FILTER_PRIORITY is set,
 	 * we use the private FLAG_BYPASS_INTERRUPTION_POLICY flag.
 	 * @return AudioAttributes

@@ -21,17 +21,21 @@
 
 package ch.threema.app.services;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import net.sqlcipher.Cursor;
+import android.database.Cursor;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -60,6 +64,7 @@ import ch.threema.storage.models.TagModel;
 public class ConversationServiceImpl implements ConversationService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationServiceImpl");
 
+	private final Context context;
 	private final List<ConversationModel> conversationCache;
 	private final ConversationTagService conversationTagService;
 	private final DatabaseServiceNew databaseServiceNew;
@@ -69,7 +74,9 @@ public class ConversationServiceImpl implements ConversationService {
 	private final MessageService messageService;
 	private final DeadlineListService hiddenChatsListService;
 	private boolean initAllLoaded = false;
-	private final TagModel starTag;
+	private final TagModel unreadTagModel;
+	private final @NonNull String pinTag;
+	private final @NonNull String unreadTag;
 
 	static class ConversationResult {
 		public final int messageId;
@@ -85,14 +92,16 @@ public class ConversationServiceImpl implements ConversationService {
 
 
 	public ConversationServiceImpl(
+			Context context,
 			CacheService cacheService,
 			DatabaseServiceNew databaseServiceNew,
 			ContactService contactService,
 			GroupService groupService,
 			DistributionListService distributionListService,
 			MessageService messageService,
-			DeadlineListService hiddenChatsListService,
+			@NonNull DeadlineListService hiddenChatsListService,
 			ConversationTagService conversationTagService) {
+		this.context = context;
 		this.databaseServiceNew = databaseServiceNew;
 		this.contactService = contactService;
 		this.groupService = groupService;
@@ -102,7 +111,11 @@ public class ConversationServiceImpl implements ConversationService {
 		this.conversationCache = cacheService.getConversationModelCache();
 		this.conversationTagService = conversationTagService;
 
-		this.starTag = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
+		TagModel pinTagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
+		this.pinTag = pinTagModel != null ? pinTagModel.getTag() : "";
+
+		this.unreadTagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
+		this.unreadTag = unreadTagModel != null ? unreadTagModel.getTag() : "";
 	}
 
 	@Override
@@ -120,13 +133,15 @@ public class ConversationServiceImpl implements ConversationService {
 			if (this.conversationCache.size() == 0) {
 
 				logger.debug("start selecting");
-				for(ConversationModelParser parser: new ConversationModelParser[] {
+				for(ConversationModelParser<?, ?, ?> parser: new ConversationModelParser<?, ?, ?>[] {
 						new ContactConversationModelParser(),
 						new GroupConversationModelParser(),
 						new DistributionListConversationModelParser()
 				}) {
 					parser.processAll();
 				}
+
+				this.updateTags();
 
 				logger.debug("selection finished");
 				this.initAllLoaded = true;
@@ -202,7 +217,7 @@ public class ConversationServiceImpl implements ConversationService {
 			}
 		}
 
-		return this.conversationCache;
+		return new ArrayList<>(this.conversationCache);
 	}
 
 	@Override
@@ -278,15 +293,31 @@ public class ConversationServiceImpl implements ConversationService {
 	}
 
 	@Override
-	public void sort() {
-		List<String> taggedConversationUids = new ArrayList<>();
+	public void updateTags() {
+		if (this.conversationCache == null) {
+			return;
+		}
+
+		Set<String> pinTaggedUids = new HashSet<>();
+		Set<String> unreadTaggedUids = new HashSet<>();
 		for (ConversationTagModel tagModel : conversationTagService.getAll()) {
-			if (tagModel.getTag().equals(starTag.getTag())) {
-				taggedConversationUids.add(tagModel.getConversationUid());
+			if (pinTag.equals(tagModel.getTag())) {
+				pinTaggedUids.add(tagModel.getConversationUid());
+			} else if (unreadTag.equals(tagModel.getTag())) {
+				unreadTaggedUids.add(tagModel.getConversationUid());
 			}
 		}
 
-		int size = taggedConversationUids.size();
+		synchronized (conversationCache) {
+			for (ConversationModel conversationModel : conversationCache) {
+				conversationModel.setIsPinTagged(pinTaggedUids.contains(conversationModel.getUid()));
+				conversationModel.setIsUnreadTagged(unreadTaggedUids.contains(conversationModel.getUid()));
+			}
+		}
+	}
+
+	@Override
+	public void sort() {
 
 		synchronized (this.conversationCache) {
 			Collections.sort(this.conversationCache, new Comparator<ConversationModel>() {
@@ -296,15 +327,11 @@ public class ConversationServiceImpl implements ConversationService {
 						return 0;
 					}
 
-					if (size > 0) {
-						boolean tagged1 = taggedConversationUids.contains(conversationModel.getUid());
-						boolean tagged2 = taggedConversationUids.contains(conversationModel2.getUid());
+					boolean tagged1 = conversationModel.isPinTagged();
+					boolean tagged2 = conversationModel2.isPinTagged();
 
-						return tagged1 == tagged2 ? conversationModel2.getSortDate().compareTo(conversationModel.getSortDate()) :
-							tagged2 ? 1 : -1;
-					} else {
-						return conversationModel2.getSortDate().compareTo(conversationModel.getSortDate());
-					}
+					return tagged1 == tagged2 ? conversationModel2.getSortDate().compareTo(conversationModel.getSortDate()) :
+						tagged2 ? 1 : -1;
 				}
 			});
 
@@ -738,8 +765,10 @@ public class ConversationServiceImpl implements ConversationService {
 				return null;
 			}
 
-			if((model.getLatestMessage() == null
-					|| model.getLatestMessage().getId() < modifiedMessageModel.getId())) {
+			if ((model.getLatestMessage() == null
+				|| model.getLatestMessage().getId() < modifiedMessageModel.getId())
+				&& !modifiedMessageModel.isStatusMessage()
+			) {
 				//set this message as latest message
 				model.setLatestMessage(modifiedMessageModel);
 				//increase message count
@@ -749,6 +778,7 @@ public class ConversationServiceImpl implements ConversationService {
 			if(model.getReceiver() != null && MessageUtil.isUnread(model.getLatestMessage())) {
 				//update unread count
 				model.setUnreadCount(model.getReceiver().getUnreadMessagesCount());
+				conversationTagService.unTag(model, unreadTagModel);
 			}
 			else {
 				if (model.getLatestMessage() == null) {
@@ -857,6 +887,7 @@ public class ConversationServiceImpl implements ConversationService {
 					"INNER JOIN contacts c ON c.identity = m.identity " +
 					"WHERE m.isSaved = 1 " +
 					"AND c.isArchived = " + (archived ? "1 " : "0 ") +
+					"AND m.isStatusMessage = 0 " +
 					"GROUP BY m.identity");
 		}
 
@@ -870,7 +901,7 @@ public class ConversationServiceImpl implements ConversationService {
 			if (contactModel != null) {
 				final ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
 				if(conversationModel == null) {
-					conversationModel = new ConversationModel(receiver);
+					conversationModel = new ConversationModel(context, receiver);
 					if (addToCache && !contactModel.isArchived()) {
 						synchronized (conversationCache) {
 							conversationCache.add(conversationModel);
@@ -922,7 +953,7 @@ public class ConversationServiceImpl implements ConversationService {
 			if (groupModel != null) {
 
 				if(conversationModel == null) {
-					conversationModel = new ConversationModel(receiver);
+					conversationModel = new ConversationModel(context, receiver);
 					if (addToCache && !groupModel.isArchived()) {
 						synchronized (conversationCache) {
 							conversationCache.add(conversationModel);
@@ -1003,7 +1034,7 @@ public class ConversationServiceImpl implements ConversationService {
 			if (distributionListModel != null) {
 
 				if(conversationModel == null) {
-					conversationModel = new ConversationModel(receiver);
+					conversationModel = new ConversationModel(context, receiver);
 					if (addToCache && !distributionListModel.isArchived() && !distributionListModel.isHidden()) {
 						synchronized (conversationCache) {
 							conversationCache.add(conversationModel);
@@ -1117,13 +1148,10 @@ public class ConversationServiceImpl implements ConversationService {
 			if (conversationModel.isGroupConversation() || conversationModel.isDistributionListConversation()) {
 				// do not remove groups and distribution list conversations from cache as they should still be accessible in message list
 				conversationModel.setMessageCount(0);
-			}
-			else {
-				if (conversationModel.getMessageCount() == 1) {
-					// remove model from cache completely
-					synchronized (this.conversationCache) {
-						this.conversationCache.remove(conversationModel);
-					}
+			} else {
+				// remove model from cache completely
+				synchronized (this.conversationCache) {
+					this.conversationCache.remove(conversationModel);
 				}
 			}
 		}

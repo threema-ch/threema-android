@@ -21,7 +21,9 @@
 
 package ch.threema.domain.protocol.csp.messages.voip;
 
+import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 public abstract class VoipMessage extends AbstractMessage {
 
@@ -38,5 +40,11 @@ public abstract class VoipMessage extends AbstractMessage {
 	public boolean flagShortLivedServerQueuing() {
 		// Should be set for all VoIP messages except for the hangup message
 		return true;
+	}
+
+	@Nullable
+	@Override
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return Version.V1_1;
 	}
 }

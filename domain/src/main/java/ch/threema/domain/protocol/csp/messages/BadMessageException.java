@@ -23,32 +23,11 @@ package ch.threema.domain.protocol.csp.messages;
 
 public class BadMessageException extends Exception {
 
-	private final boolean drop;
-
-	public BadMessageException(String msg, boolean shouldDrop) {
-		super(msg);
-		this.drop = shouldDrop;
-	}
-
 	public BadMessageException(String msg) {
-		this(msg, false);
-	}
-
-	public BadMessageException(String msg, boolean shouldDrop, Throwable cause) {
-		super(msg, cause);
-		this.drop = shouldDrop;
+		super(msg);
 	}
 
 	public BadMessageException(String msg, Throwable cause) {
-		this(msg, false, cause);
-	}
-
-	/**
-	 * Return whether this message should be dropped and acked.
-	 * If set to false, no ack should be sent, resulting in a retransmission
-	 * of the message by the server.
-	 */
-	public boolean shouldDrop() {
-		return drop;
+		super(msg, cause);
 	}
 }

@@ -328,7 +328,6 @@
 	<string name="title_select_contacts">Mitglieder auswählen</string>
 	<string name="pin_invalid_not_set">PIN ungültig</string>
 	<string name="prefs_group_notifications">Gruppenchat</string>
-	<string name="add_group_members_list">Gruppenmitglieder</string>
 	<string name="group_select_at_least_two">Bitte mindestens ein Mitglied wählen</string>
 	<string name="group_select_max">Es können maximal %1$d Mitglieder zur Gruppe hinzugefügt werden</string>
 	<string name="search">Suche</string>
@@ -614,7 +613,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 		die Nutzung im WLAN.
 	</string>
 	<string name="prefs_theme">Designstil</string>
-	<string name="list_theme_light">Hell (standard)</string>
+	<string name="list_theme_light">Hell</string>
 	<string name="list_theme_dark">Dunkel</string>
 	<string name="prefs_header_appearance">Erscheinungsbild</string>
 	<string name="prefs_sum_passphrase">Passphrase für lokale Verschlüsselung verlangen</string>
@@ -783,7 +782,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_proximity_sensor">Näherungssensor benutzen</string>
 	<string name="prefs_proximity_sensor_explain">Ton der Sprachnachrichten über Hörmuschel ausgeben, wenn Näherungssensor abgedeckt</string>
 	<string name="error_creating_group">Fehler beim Erstellen/Aktualisieren der Gruppe</string>
-	<string name="no_media_found_generic">Keine Medien gefunden</string>
+	<string name="no_media_found_generic">Keine Medien in diesem Chat gefunden, die der Auswahl entsprechen.</string>
 	<string name="max_images_reached">Es können nicht mehr als %d Bilder aufs Mal bearbeitet werden</string>
 	<string name="enter_description">Bitte beschreiben Sie das Problem oder den Fehler hier.</string>
 	<string name="add_caption_hint">Beschriftung hinzufügen</string>
@@ -1005,7 +1004,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="safe_configure_choose_password_force">Setzen Sie ein starkes Passwort, um Ihre ID mit Threema Safe abzusichern. Vergessen Sie nicht, was Sie hier eingeben!</string>
 	<string name="safe_deactivate">Threema Safe deaktivieren</string>
 	<string name="safe_deactivate_explain">Ihre bestehenden Threema Safe-Backups werden auf dem Server unwiderruflich gelöscht. Möchten Sie fortfahren?</string>
-	<string name="add_group_members">Neues Mitglied</string>
+	<string name="add_group_members">Weitere Mitglieder hinzufügen</string>
 	<string name="contact_add_confirm">Möchten Sie den neuen Kontakt «%1$s» zu Ihrer Kontaktliste hinzufügen?</string>
 	<string name="password_bad">Unsicheres Passwort</string>
 	<string name="prefs_fix_background_data">Hintergrunddaten aktivieren</string>
@@ -1122,13 +1121,13 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="open_in_maps_app">In Maps-App öffnen</string>
 	<string name="delete">Löschen</string>
 	<string name="continue_recording">Weiter aufnehmen</string>
-	<string name="whatsnew_title">Neu: %1$s-Gruppenanrufe</string>
+	<string name="whatsnew_title">Willkommen bei %1$s 5.1</string>
 	<string name="whatsnew_headline">
-		<![CDATA[
-		<p>Ende-zu-Ende-verschlüsselte Gruppenanrufe sind jetzt in %1$s für Android möglich.</p>
-		<p>Um einen Anruf zu starten, öffnen Sie den Gruppenchat und tippen Sie auf das Kamera-Symbol oben.</p>
-		<p>Die Gruppenmitglieder erhalten eine Benachrichtigung und entscheiden selbst, ob sie teilnehmen möchten oder nicht.</p>
-		<p><b>Hinweis:</b> Für iOS folgt das Feature zu einem späteren Zeitpunkt.</p>
+	<![CDATA[
+		<p>Diese Version fokussiert sich auf Sicherheit, Benutzerfreundlichkeit und die sanfte Modernisierung der App.</p>
+		<p>Auf vielfachen Wunsch wurde die App neu gestaltet, um die mit Android 12 eingeführten «Material You»-Paradigmen vollständig zu unterstützen. Mit der optionalen Einstellung «Dynamische Farben» kann sich die App zudem an Ihr persönliches Farbschema anpassen.</p>
+		<p>Perfect Forward Secrecy ist jetzt standardmässig aktiviert für alle Kontakte, die eine hinreichend aktuelle %1$s-Version nutzen.</p>
+		<p>Zu den weiteren Verbesserungen gehören ein neuer Player für Sprachnachrichten, der in einer Benachrichtigung weiterläuft, wenn die App in den Hintergrund gestellt wird, sowie eine optimierte Benutzerführung beim Anfordern von Berechtigungen.</p>
 		]]>
 	</string>
 	<string name="tap_to_start">Tippen Sie hier, um %s jetzt zu starten.</string>
@@ -1267,7 +1266,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="no_faces_detected">Keine Gesichter gefunden</string>
 	<string name="smiley">Smiley</string>
 	<string name="blur">Verwischen</string>
-	<string name="face_blur_tooltip_title">Neu: Gesichtserkennung</string>
+	<string name="face_blur_tooltip_title">Gesichtserkennung</string>
 	<string name="face_blur_tooltip_text">Finden Sie Gesichter im Bild und lassen Sie sie verwischen oder mit einem Smiley überdecken.</string>
 	<string name="listened_to">angehört</string>
 	<string name="transcoder_unsupported_audio_format">Audio-Formatkonvertierung aufgrund fehlender Systemunterstützung fehlgeschlagen.</string>
@@ -1449,7 +1448,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="organization_type">Organisation</string>
 	<string name="permission_bluetooth_connect_required">Aktivieren Sie die «Geräte in der Nähe»-Berechtigung, um verbundene Bluetooth-Geräte zu finden</string>
 	<string name="threema_push_start_webclient_sessions_manually">Threema Push ist aktiviert. Threema Web und Desktop-Sitzungen müssen daher manuell gestartet werden.</string>
-	<string name="tooltip_multiple_recipients_title">Neu: Mehrere Empfänger</string>
+	<string name="tooltip_multiple_recipients_title">Mehrere Empfänger</string>
 	<string name="tooltip_multiple_recipients_text">Lang tippen, um mehrere Empfänger zu wählen und allen die gleiche Nachricht zu senden.</string>
 	<string name="contact_details_id_copied">ID wurde in die Zwischenablage kopiert.</string>
 	<string name="contact_details_nickname_copied">Nickname wurde in die Zwischenablage kopiert.</string>
@@ -1458,11 +1457,12 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="forward_security_mode">Perfect Forward Secrecy</string>
 	<string name="forward_security_mode_none">nein</string>
 	<string name="clear_forward_security">Perfect Forward Secrecy-Sitzungen löschen</string>
+	<string name="clear_forward_security_warning">Führen Sie diese Aktion nur aus, wenn Sie vom Threema-Support explizit dazu aufgefordert wurden.</string>
 	<string name="forward_security_cleared">Perfect Forward Secrecy-Sitzungen mit diesem Kontakt wurden gelöscht</string>
 	<string name="message_without_forward_security">Eine Nachricht ohne Perfect Forward Secrecy wurde empfangen. Stellen Sie sicher, dass der Absender absichtlich Perfect Forward Secrecy deaktiviert hat.</string>
 	<string name="forward_security_established">Nachrichten in diesem Chat sind nun durch Perfect Forward Secrecy geschützt.</string>
 	<string name="forward_security_established_rx">Nachrichten, die in diesem Chat empfangen werden, sind nun durch Perfect Forward Secrecy geschützt. Aktivieren Sie Perfect Forward Secrecy in den Kontaktdetails, um auch gesendete Nachrichten zu schützen.</string>
-	<string name="forward_security_reset">Die Perfect Forward Secrecy-Sitzung mit diesem Kontakt wurde zurückgesetzt. Dies kann passieren, wenn der Kontakt ein neues Gerät hat oder die App neu installiert hat.</string>
+	<string name="forward_security_reset">Die Perfect Forward Secrecy-Sitzung wurde zurückgesetzt. Dies kann geschehen, wenn der Chat-Partner ein neues Gerät verwendet oder die App neu installiert.</string>
 	<string name="forward_security_reset_simple">Die Perfect Forward Secrecy-Sitzung mit diesem Kontakt wurde zurückgesetzt.</string>
 	<string name="forward_security_message_out_of_order">Eine Nachricht wurde in falscher Reihenfolge empfangen und konnte nicht entschlüsselt werden.</string>
 	<string name="self_updater_installation_failed">Der Download des Updates ist fehlgeschlagen. Bitte laden Sie das Update von der Webseite <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> herunter und installieren Sie es manuell.</string>
@@ -1515,12 +1515,18 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="group_call">Gruppenanruf</string>
 	<string name="checking_compatibility">Die Kompatibilität wird überprüft…</string>
     <string name="group_call_mic_permission_rationale">Um Gruppenanrufe tätigen zu können, müssen Sie unter «Berechtigungen» %s den Zugriff aufs Mikrofon erlauben.</string>
+	<string name="group_call_mic_permission_description">Um Gruppenanrufe zu benutzen, wird die Mikrofon-Berechtigung benötigt, damit die anderen Sie hören können.</string>
+	<string name="call_mic_permission_description">Um Threema Anrufe zu benutzen, wird die Mikrofon-Berechtigung benötigt, damit Sie gehört werden können.</string>
     <string name="settings">Einstellungen</string>
 	<string name="group_call_camera_permission_rationale">Damit die anderen Teilnehmer Ihr Bild sehen können, müssen Sie unter «Berechtigungen» %s den Zugriff auf die Kamera erlauben.</string>
+	<string name="group_call_nearby_devices_permission_description">Um Gruppenanrufe mit Bluetooth-Headset zu benutzen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit Threema ein Bluetooth-Headset erkennen kann.</string>
+	<string name="call_nearby_devices_permission_description">Um Threema Anrufe mit Bluetooth-Headset zu benutzen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit Threema ein Bluetooth-Headset erkennen kann.</string>
+	<string name="group_call_phone_permission_description">Um Gruppenanrufe zu benutzen, wird die Telefon-Berechtigung benötigt, damit der Gruppenanruf beendet werden kann, wenn Sie einen anderen Anruf annehmen.</string>
+	<string name="call_phone_permission_description">Um Threema Anrufe zu benutzen, wird die Telefon-Berechtigung benötigt, damit der Threema Anruf beendet werden kann, wenn Sie einen anderen Anruf annehmen.</string>
 	<string name="leave">Verlassen</string>
     <string name="fs_key_mismatch">schlüsselfehler</string>
     <string name="tap_to_resend">Tippen f. neuen Sendevers.</string>
-    <string name="group_calls_tooltip_title">Neu: Gruppenanrufe</string>
+    <string name="group_calls_tooltip_title">Gruppenanrufe</string>
 	<string name="group_calls_tooltip_text">Hier tippen, um die Gruppenmitglieder zu einem gemeinsamen Anruf einzuladen. Die Gruppenmitglieder erhalten eine Benachrichtigung und entscheiden selbst, ob sie teilnehmen möchten oder nicht.</string>
 	<string name="prefs_title_calls">Sichere Anrufe</string>
 	<string name="prefs_sum_group_calls_vibration">Vibrieren, wenn ein Gruppenanruf gestartet wurde</string>
@@ -1528,6 +1534,45 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="forward_security_mode_2dh">einseitig</string>
 	<string name="forward_security_explanation">Perfect Forward Secrecy (PFS) schützt eine aufgezeichnete Kommunikation auch bei Kenntnis des Langzeitschlüssels vor nachträglicher Entschlüsselung.\n\nDie Option kann aktiviert werden, wenn die App auf beiden Seiten PFS unterstützt.</string>
 	<string name="group_call_inactivity_left">Gruppenanruf wegen Inaktivität verlassen</string>
+	<string name="delete_multiple_contact_action">Kontakte löschen</string>
+	<string name="server_hint">Server</string>
+	<string name="edit_answer">Antwort bearbeiten</string>
+	<string name="group_request_sent_menu">Gruppenanfragen senden</string>
+	<string name="really_delete_multiple_group_links_title">Gruppenlinks löschen</string>
+	<string name="send_contact">Kontakt senden</string>
+	<string name="edit_send_contact_detail_icon">Kontaktdetail-Typ</string>
+	<string name="contact_picture_content_description">Kontaktbild</string>
+	<string name="missing_permission_external_storage">Fehler beim Kopieren der Datei. Versuchen Sie folgende Schritte:\n1. Öffnen Sie auf Ihrem Telefon die App «Einstellungen».\n2. Navigieren Sie zu «Apps».\n3. Tippen Sie auf «Zugriff auf alle Dateien».\n4. Tippen Sie auf die drei Punkte oben und wählen Sie «System Apps anzeigen».\n5. Tippen Sie auf «Externer Speicher» und stellen Sie sicher, dass «Zugriff zum Verwalten aller Dateien zulassen» aktiviert ist.\n6. Versuchen Sie erneut, das Daten-Backup wiederherzustellen.</string>
+	<string name="forward_security_downgraded_status_message">Perfect Forward Secrecy wurde in dieser Konversation deaktiviert, weil die App-Version des Chatpartners dies nicht unterstützt.</string>
+	<string name="forward_security_illegal_session_status_message">Die Perfect-Forward-Secrecy-Sitzung wurde wegen Ungültigkeit zurückgesetzt</string>
+	<string name="crop_image_title">Bild zuschneiden</string>
+	<string name="scroll_to_bottom">Ans Ende scrollen</string>
+	<string name="scroll_to_top">Nach oben scrollen</string>
+	<string name="contact_sync_mdm_rationale">Ihr Administrator hat die Kontaktsynchronisierung aktiviert. Deshalb wird die Kontakt-Berechtigung benötigt.</string>
+	<string name="welcome_back">Willkommen zurück!</string>
+	<string name="id_restored_successfully">Ihre Threema-ID wurde erfolgreich wiederhergestellt</string>
+	<string name="prefs_dynamic_colors">Dynamische Farben</string>
+	<string name="prefs_dynamic_colors_sum">Systemfarben verwenden</string>
+	<string name="apply_changes">Änderungen übernehmen</string>
+	<string name="prefs_threema_work_summary">Wussten Sie schon, dass Threema auch eine professionelle Kommunikationslösung für Unternehmen anbietet? Tippen Sie hier, um mehr über Threema Work zu erfahren.</string>
+	<string name="notification_channel_voice_message_player">Sprachnachrichten-Player</string>
+	<string name="voice_message_from">Sprachnachricht vom %s</string>
+	<string name="vm_fg_service_not_allowed">Sprachnachrichten-Wiedergabeproblem</string>
+	<string name="vm_fg_service_not_allowed_explain">Tippen Sie auf den «Play»-Knopf in der Medienbenachrichtigung, falls noch vorhanden. Andernfalls öffnen Sie bitte die App, um die Wiedergabe aus dem Chat zu starten.</string>
+	<string name="use_threema_without_this_permission">%s ohne diese Berechtigung verwenden</string>
+	<string name="grant_permission">Berechtigung erlauben</string>
+	<string name="grant_permission_settings">Berechtigung in Einstellungen erlauben</string>
+	<string name="ignore_permission">Nicht mehr fragen</string>
+	<string name="permission_nearby_devices">Geräte in der Nähe</string>
+	<string name="permission_bluetooth">Bluetooth</string>
+	<string name="permission_camera">Kamera</string>
+	<string name="permission_microphone">Mikrofon</string>
+	<string name="permission_read_phone_state">Telefon</string>
+	<string name="permission_enable_in_settings_rationale">Bitte erlauben Sie die Berechtigung in den Einstellungen. Wählen Sie «Berechtigungen» aus und lassen Sie danach “%s” zu.</string>
+    <string name="group_name">Name der Gruppe</string>
+	<string name="samsung_permission_problem_explain">%1$s hat keinen Zugriff auf Mediendaten aufgrund der fehlenden Berechtigung einer System-App. Um das Problem zu beheben, stellen Sie sicher, dass der Schalter neben «Externer Speicher» im folgenden Bildschirm aktiviert ist, und starten Sie %1$s neu.</string>
+	<string name="min_n_chars">min. %d Zeichen</string>
+	<string name="prefs_title_grant_bluetooth_permission">Bluetooth-Berechtigung erteilen</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>
@@ -1632,14 +1677,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 		<item quantity="one">%d Nachricht auf diesem Gerät löschen?</item>
 		<item quantity="other">%d Nachrichten auf diesem Gerät löschen?</item>
 	</plurals>
-    <string name="delete_multiple_contact_action">Kontakte löschen</string>
-	<string name="server_hint">Server</string>
-	<string name="edit_answer">Antwort bearbeiten</string>
-	<string name="group_request_sent_menu">Gruppemamfragen senden</string>
-	<string name="really_delete_multiple_group_links_title">Gruppenlinks löschen</string>
-	<string name="send_contact">Kontakt senden</string>
-	<string name="edit_send_contact_detail_icon">Kontaktdetail-Typ</string>
-	<string name="contact_picture_content_description">Kontaktbild</string>
-	<string name="missing_permission_external_storage">Fehler beim Kopieren der Datei. Versuchen Sie folgende Schritte:\n1. Öffnen Sie auf Ihrem Telefon die App «Einstellungen».\n2. Navigieren Sie zu «Apps».\n3. Tippen Sie auf «Zugriff auf alle Dateien».\n4. Tippen Sie auf die drei Punkte oben und wählen Sie «System Apps anzeigen».\n5. Tippen Sie auf «Externer Speicher» und stellen Sie sicher, dass «Zugriff zum Verwalten aller Dateien zulassen» aktiviert ist.\n6. Versuchen Sie erneut, das Daten-Backup wiederherzustellen.</string>
-	<string name="forward_security_downgraded_status_message">Dieser Kontakt verwendet jetzt eine App-Version, die Perfect Forward Secrecy nicht unterstützt. Nachrichten werden von nun an ohne PFS gesendet.</string>
+	<plurals name="number_of_group_members">
+		<item quantity="one">%d Gruppenmitglied</item>
+		<item quantity="other">%d Gruppenmitglieder</item>
+	</plurals>
 </resources>

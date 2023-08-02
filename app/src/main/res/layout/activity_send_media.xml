@@ -20,7 +20,8 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent" />
 
-		<FrameLayout
+		<com.google.android.material.card.MaterialCardView
+			style="@style/Threema.CardView.MediaViewerCaption"
 			android:id="@+id/item_count_container"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -29,11 +30,10 @@
 			android:layout_marginRight="8dp"
 			android:layout_marginBottom="8dp"
 			android:layout_alignParentLeft="true"
-			android:background="@drawable/shape_mediaviewer_caption_background"
-			android:paddingBottom="4dp"
-			android:paddingLeft="8dp"
-			android:paddingRight="8dp"
-			android:paddingTop="4dp">
+			app:contentPaddingBottom="4dp"
+			app:contentPaddingLeft="8dp"
+			app:contentPaddingRight="8dp"
+			app:contentPaddingTop="4dp">
 
 			<TextView
 				android:id="@+id/item_count"
@@ -45,9 +45,10 @@
 				android:ellipsize="end"
 				android:textSize="12sp"/>
 
-		</FrameLayout>
+		</com.google.android.material.card.MaterialCardView>
 
-		<FrameLayout
+		<com.google.android.material.card.MaterialCardView
+			style="@style/Threema.CardView.MediaViewerCaption"
 			android:id="@+id/recipient_container"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -56,13 +57,12 @@
 			android:layout_marginRight="8dp"
 			android:layout_marginBottom="8dp"
 			android:layout_alignParentRight="true"
-			android:background="@drawable/shape_mediaviewer_caption_background"
-			android:paddingBottom="4dp"
-			android:paddingLeft="8dp"
-			android:paddingRight="8dp"
-			android:paddingTop="4dp">
+			app:contentPaddingBottom="4dp"
+			app:contentPaddingLeft="8dp"
+			app:contentPaddingRight="8dp"
+			app:contentPaddingTop="4dp">
 
-			<TextView
+			<ch.threema.app.emojis.EmojiTextView
 				android:id="@+id/recipient_text"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
 				android:ellipsize="end"
 				android:textSize="12sp"/>
 
-		</FrameLayout>
+		</com.google.android.material.card.MaterialCardView>
 
 		<FrameLayout
 			android:id="@+id/bottom_panel"

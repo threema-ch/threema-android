@@ -19,6 +19,7 @@
 			android:widgetLayout="@layout/preference_switch_layout"/>
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="false"
 			android:key="@string/preferences__block_unknown"
 			android:summaryOff="@string/prefs_sum_block_unknown_off"
@@ -33,11 +34,13 @@
 		android:title="@string/prefs_header_receipts">
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__read_receipts"
 			android:title="@string/prefs_title_read_receipts" />
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__typing_indicator"
 			android:title="@string/prefs_title_typing_indicator" />
@@ -73,6 +76,7 @@
 		android:title="@string/prefs_header_other">
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="false"
 			android:key="@string/preferences__hide_screenshots"
 			android:summary="@string/prefs_summary_hide_screenshots"
@@ -85,6 +89,7 @@
 			android:icon="@drawable/ic_info_outline"/>
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="false"
 			android:key="@string/preferences__incognito_keyboard"
 			android:icon="@drawable/ic_keyboard_outline"
@@ -92,12 +97,14 @@
 			android:title="@string/prefs_title_incognito_keyboard"/>
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="true"
 			android:key="@string/preferences__direct_share"
 			android:summary="@string/prefs_sum_direct_share"
 			android:title="@string/prefs_title_direct_share"/>
 
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:defaultValue="false"
 			android:key="@string/preferences__disable_smart_replies"
 			android:icon="@drawable/ic_outline_quickreply_24"

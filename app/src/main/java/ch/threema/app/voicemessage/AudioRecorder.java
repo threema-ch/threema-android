@@ -23,7 +23,9 @@ package ch.threema.app.voicemessage;
 
 import android.content.Context;
 import android.media.MediaRecorder;
+import android.media.MicrophoneDirection;
 import android.net.Uri;
+import android.os.Build;
 
 import org.slf4j.Logger;
 
@@ -32,13 +34,10 @@ import java.io.IOException;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-import static ch.threema.app.voicemessage.VoiceRecorderActivity.DEFAULT_SAMPLING_RATE_HZ;
-
 public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecorder.OnInfoListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioRecorder");
 
-	private Context context;
-	private MediaRecorder mediaRecorder;
+	private final Context context;
 	private OnStopListener onStopListener;
 
 	public AudioRecorder(Context context) {
@@ -47,16 +46,23 @@ public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecord
 
 	public MediaRecorder prepare(Uri uri, int maxDuration, int samplingRate) {
 		logger.info("Preparing MediaRecorder with sampling rate {}", samplingRate);
-		mediaRecorder = new MediaRecorder();
+		MediaRecorder mediaRecorder = new MediaRecorder();
 
 		mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+		if (Build.VERSION.SDK_INT >= 30) {
+			mediaRecorder.setPrivacySensitive(true);
+		}
 		mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
 		mediaRecorder.setOutputFile(FileUtil.getRealPathFromURI(context, uri));
 		mediaRecorder.setAudioChannels(1);
 		mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 		mediaRecorder.setAudioEncodingBitRate(32000);
-		mediaRecorder.setAudioSamplingRate(samplingRate != 0 ? samplingRate : DEFAULT_SAMPLING_RATE_HZ);
+		mediaRecorder.setAudioSamplingRate(samplingRate != 0 ? samplingRate : VoiceRecorderActivity.getDefaultSamplingRate());
 		mediaRecorder.setMaxFileSize(20L*1024*1024);
+
+		if (Build.VERSION.SDK_INT >= 29) {
+			mediaRecorder.setPreferredMicrophoneDirection(MicrophoneDirection.MIC_DIRECTION_TOWARDS_USER);
+		}
 
 		mediaRecorder.setOnErrorListener(this);
 		mediaRecorder.setOnInfoListener(this);

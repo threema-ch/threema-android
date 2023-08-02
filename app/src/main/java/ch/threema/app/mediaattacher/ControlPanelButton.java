@@ -38,6 +38,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.ImageViewCompat;
+
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 
@@ -78,7 +79,7 @@ public class ControlPanelButton extends FrameLayout {
 			int fillColorAlpha = a.getInt(R.styleable.ControlPanelButton_fillColorAlpha, -1);
 
 			setFillAndStrokeColor(fillColor, strokeColor, fillColorAlpha);
-			setForegroundColor(a.getColor(R.styleable.ControlPanelButton_foregroundColor, ConfigUtils.getColorFromAttribute(context, R.attr.textColorSecondary)));
+			setForegroundColor(a.getColor(R.styleable.ControlPanelButton_foregroundColor, ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurface)));
 
 			a.recycle();
 		}
@@ -92,7 +93,7 @@ public class ControlPanelButton extends FrameLayout {
 		try {
 			GradientDrawable gradientDrawable = (GradientDrawable) labelImageView.getBackground().mutate();
 
-			if (ConfigUtils.getAppTheme(getContext())== ConfigUtils.THEME_DARK) {
+			if (ConfigUtils.isTheDarkSide(getContext())) {
 				fillColorAlpha += 0x20;
 			}
 

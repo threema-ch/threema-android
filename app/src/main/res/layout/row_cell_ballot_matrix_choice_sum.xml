@@ -8,7 +8,7 @@
 			android:id="@+id/cell"
 			android:layout_height="@dimen/ballot_matrix_cell_height"
 			android:layout_width="match_parent"
-			android:background="?attr/detail_highlight_bg_color"
+			android:background="@color/ballot_detail_highlight_bg_color"
 			android:layout_marginBottom="@dimen/ballot_matrix_cell_border"
 			android:layout_marginRight="@dimen/ballot_matrix_cell_border"
 			android:padding="8dp"
@@ -16,6 +16,7 @@
 			android:gravity="center_vertical|right">
 
 		<TextView
+				style="@style/Threema.TextAppearance.BallotDetailText"
 				android:id="@+id/voting_sum"
 				android:text="20"
 				android:layout_width="wrap_content"

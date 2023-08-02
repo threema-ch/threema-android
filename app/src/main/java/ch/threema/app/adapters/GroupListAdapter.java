@@ -42,6 +42,7 @@ import ch.threema.app.ui.CheckableConstraintLayout;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.storage.models.GroupModel;
 
@@ -51,14 +52,17 @@ public class GroupListAdapter extends FilterableListAdapter {
 	private List<GroupModel> ovalues;
 	private GroupListFilter groupListFilter;
 	private final GroupService groupService;
+	private final FilterResultsListener filterResultsListener;
 
-	public GroupListAdapter(Context context, List<GroupModel> values, List<Integer> checkedItems, GroupService groupService) {
+
+	public GroupListAdapter(Context context, List<GroupModel> values, List<Integer> checkedItems, GroupService groupService, FilterResultsListener filterResultsListener) {
 		super(context, R.layout.item_group_list, (List<Object>) (Object) values);
 
 		this.context = context;
 		this.values = values;
 		this.ovalues = values;
 		this.groupService = groupService;
+		this.filterResultsListener = filterResultsListener;
 
 		if (checkedItems != null && checkedItems.size() > 0) {
 			// restore checked items
@@ -168,6 +172,9 @@ public class GroupListAdapter extends FilterableListAdapter {
 		@Override
 		protected void publishResults(CharSequence constraint, FilterResults results) {
 			values = (List<GroupModel>) results.values;
+			if (filterResultsListener != null) {
+				filterResultsListener.onResultsAvailable(TestUtil.empty(constraint) ? 0 : results.count);
+			}
 			notifyDataSetChanged();
 		}
 

@@ -22,8 +22,6 @@
 package ch.threema.app.locationpicker;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -31,19 +29,20 @@ import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
@@ -71,7 +70,7 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
 	private LatLng currentLocation = new LatLng();
 	private LocationAutocompleteViewModel viewModel;
 	private List<Poi> places = new ArrayList<>();
-	private ProgressBar progressBar;
+	private LinearProgressIndicator progressBar;
 	private EmptyView emptyView;
 
 	private Handler queryHandler = new Handler();
@@ -86,13 +85,11 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 
 		setContentView(R.layout.activity_location_autocomplete);
 
-		ConfigUtils.configureTransparentStatusBar(this);
-
-		Toolbar toolbar = findViewById(R.id.toolbar);
+		MaterialToolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		toolbar.setTitle(null);
 		final ActionBar actionBar = getSupportActionBar();
@@ -102,10 +99,6 @@ public class LocationAutocompleteActivity extends ThreemaActivity {
 		}
 		actionBar.setTitle(null);
 		actionBar.setDisplayHomeAsUpEnabled(true);
-
-		if (toolbar.getNavigationIcon() != null) {
-			toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-		}
 
 		Intent intent = getIntent();
 		currentLocation.setLatitude(intent.getDoubleExtra(INTENT_DATA_LOCATION_LAT, 0));

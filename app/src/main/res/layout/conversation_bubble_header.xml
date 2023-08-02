@@ -13,13 +13,14 @@
 			  android:visibility="gone">
 
 	<ch.threema.app.emojis.EmojiTextView
+			style="@style/Threema.Bubble.Text.Footer"
 			android:id="@+id/group_sender_name"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_vertical"
-			android:textColor="@color/chat_sender_text"
-			android:textSize="?attr/font_medium"
 			android:textStyle="bold"
+			android:ellipsize="end"
+			android:maxLines="1"
 			/>
 
 </LinearLayout>

@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item
 		android:id="@+id/messages"
-		android:icon="@drawable/ic_chat_bubble"
+		android:icon="@drawable/selector_chat"
 		android:title="@string/title_section1"/>
 
 	<item
 		android:id="@+id/contacts"
-		android:icon="@drawable/ic_people_outline_black_24dp"
+		android:icon="@drawable/selector_contact"
 		android:title="@string/title_section2"/>
 
 	<item
 		android:id="@+id/my_profile"
-		android:icon="@drawable/ic_profile"
+		android:icon="@drawable/selector_profile"
 		android:title="@string/my_profile"/>
 
 </menu>

@@ -74,7 +74,6 @@ import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DeadlineListService;
@@ -84,7 +83,6 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.QRCodeService;
 import ch.threema.app.services.QRCodeServiceImpl;
-import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.TooltipPopup;
@@ -147,13 +145,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	private List<GroupModel> groupList;
 	private boolean isDisabledProfilePicReleaseSettings = false;
 	private View workIcon;
-	private final ActivityResultLauncher<String> readPhoneStatePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-		if (!isGranted && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
-			ConfigUtils.showPermissionRationale(this, findViewById(R.id.main_content), R.string.read_phone_state_short_message);
-		} else {
-			VoipUtil.initiateCall(this, contact, false, null, null);
-		}
-	});
 
 	private final ResumePauseHandler.RunIfActive runIfActiveUpdate = new ResumePauseHandler.RunIfActive() {
 		@Override
@@ -380,6 +371,12 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 				}
 			}
 		}
+
+		logger.info(
+			"DH session state with contact {}: {}",
+			contact.getIdentity(),
+			contactService.getForwardSecurityState(contact)
+		);
 	}
 
 	private void onCreateLocal() {
@@ -412,7 +409,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			location[0] += workIcon.getWidth() / 2;
 			location[1] += workIcon.getHeight();
 
-			final TooltipPopup workTooltipPopup = new TooltipPopup(this, R.string.preferences__tooltip_work_hint_shown, R.layout.popup_tooltip_top_left_work, this, new Intent(this, WorkExplainActivity.class));
+			final TooltipPopup workTooltipPopup = new TooltipPopup(this, R.string.preferences__tooltip_work_hint_shown, this, new Intent(this, WorkExplainActivity.class), R.drawable.ic_badge_work_24dp);
 			workTooltipPopup.show(this, workIcon, getString(R.string.tooltip_work_hint), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_LEFT, location, 0);
 
 			final AppBarLayout appBarLayout = findViewById(R.id.appbar);
@@ -627,71 +624,58 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.action_send_message:
-				if (identity != null) {
-					Intent intent = new Intent(this, ComposeMessageActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
-					intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
-					startActivity(intent);
-					finish();
-				}
-				break;
-			case R.id.action_remove_contact:
-				removeContact();
-				break;
-			case R.id.action_scan_id:
-				if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
-					scanQR();
-				}
-				break;
-			case R.id.menu_threema_call:
-				VoipUtil.initiateCall(this, contact, false, null, readPhoneStatePermissionLauncher);
-				break;
-			case R.id.action_block_contact:
-				if (this.blackListIdentityService != null && this.blackListIdentityService.has(this.contact.getIdentity())) {
-					blockContact();
-				} else {
-					GenericAlertDialog.newInstance(R.string.block_contact, R.string.really_block_contact, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_CONFIRM_BLOCK);
-				}
-				break;
-			case R.id.action_share_contact:
-				ShareUtil.shareContact(this, contact);
-				break;
-			case R.id.menu_gallery:
-				if (!hiddenChatsListService.has(contactService.getUniqueIdString(contact))) {
-					Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
-					mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
-					startActivity(mediaGalleryIntent);
-				}
-				break;
-			case R.id.action_add_profilepic_recipient:
-				if (!profilePicRecipientsService.has(contact.getIdentity())) {
-					profilePicRecipientsService.add(contact.getIdentity());
-				} else {
-					profilePicRecipientsService.remove(contact.getIdentity());
-				}
-				updateProfilepicMenu();
-				break;
-			case R.id.action_send_profilepic:
-				sendProfilePic();
-				break;
-			default:
-				finishUp();
+		final int id = item.getItemId();
+		if (id == R.id.action_send_message){
+			if (identity != null) {
+				Intent intent = new Intent(this, ComposeMessageActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+				intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+				startActivity(intent);
+				finish();
+			}
+		} else if (id == R.id.action_remove_contact) {
+			removeContact();
+		} else if (id == R.id.action_scan_id) {
+			if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
+				scanQR();
+			}
+		} else if (id == R.id.menu_threema_call) {
+			VoipUtil.initiateCall(this, contact, false, null);
+		} else if (id == R.id.action_block_contact) {
+			if (this.blackListIdentityService != null && this.blackListIdentityService.has(this.contact.getIdentity())) {
+				blockContact();
+			} else {
+				GenericAlertDialog.newInstance(R.string.block_contact, R.string.really_block_contact, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_CONFIRM_BLOCK);
+			}
+		} else if (id == R.id.action_share_contact) {
+			ShareUtil.shareContact(this, contact);
+		} else if (id == R.id.menu_gallery) {
+			if (!hiddenChatsListService.has(contactService.getUniqueIdString(contact))) {
+				Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
+				mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+				startActivity(mediaGalleryIntent);
+			}
+		} else if (id == R.id.action_add_profilepic_recipient) {
+			if (!profilePicRecipientsService.has(contact.getIdentity())) {
+				profilePicRecipientsService.add(contact.getIdentity());
+			} else {
+				profilePicRecipientsService.remove(contact.getIdentity());
+			}
+			updateProfilepicMenu();
+		} else if (id == R.id.action_send_profilepic) {
+			sendProfilePic();
+		} else {
+			finishUp();
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
 	private void sendProfilePic() {
-		contact.setProfilePicSentDate(new Date(0));
-		contactService.save(contact);
-
 		new AsyncTask<Void, Void, Boolean>() {
 			@Override
 			protected Boolean doInBackground(Void... params) {
-				MessageReceiver messageReceiver = contactService.createReceiver(contact);
-				return messageService.sendProfilePicture(new MessageReceiver[]{messageReceiver});
+				return messageService.sendProfilePicture(contact);
 			}
 
 			@Override
@@ -731,10 +715,10 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			switch (preferenceService.getProfilePicRelease()) {
 				case PreferenceService.PROFILEPIC_RELEASE_EVERYONE:
 					this.profilePicItem.setVisible(false);
-					this.profilePicSendItem.setVisible(ContactUtil.canReceiveProfilePics(contact));
+					this.profilePicSendItem.setVisible(!ContactUtil.isEchoEchoOrChannelContact(contact));
 					break;
 				case PreferenceService.PROFILEPIC_RELEASE_SOME:
-					if (ContactUtil.canReceiveProfilePics(contact)) {
+					if (!ContactUtil.isEchoEchoOrChannelContact(contact)) {
 						if (profilePicRecipientsService != null && profilePicRecipientsService.has(contact.getIdentity())) {
 							profilePicItem.setTitle(R.string.menu_send_profilpic_off);
 							profilePicItem.setIcon(R.drawable.ic_person_remove_outline);
@@ -962,6 +946,5 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			return;
 		}
 		navigateUpTo(new Intent(this, HomeActivity.class));
-		overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 	}
 }

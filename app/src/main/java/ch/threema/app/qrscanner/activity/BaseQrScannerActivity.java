@@ -82,10 +82,6 @@ public class BaseQrScannerActivity extends AppCompatActivity implements
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			setTheme(R.style.Theme_Threema_Translucent_Dark);
-		}
-
 		if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
 			launchScanner();
 		}

@@ -22,21 +22,23 @@
 package ch.threema.app.adapters.decorators;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.style.ImageSpan;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
+import androidx.media3.session.MediaController;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.slf4j.Logger;
 
@@ -98,7 +100,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 	private OnLongClickElement onLongClickElement = null;
 	private OnTouchElement onTouchElement = null;
 	protected ActionModeStatus actionModeStatus = null;
-
+	private long durationS = 0;
 	private CharSequence datePrefix = "";
 	protected String dateContentDescriptionPrefix = "";
 
@@ -133,9 +135,9 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		private final Fragment fragment;
 		protected int regularColor;
 		private final Map<String, ContactCache> contacts = new HashMap<>();
-		private final Drawable stopwatchIcon;
 		private final int maxBubbleTextLength;
 		private final int maxQuoteTextLength;
+		private final ListenableFuture<MediaController> mediaControllerFuture;
 
 		public Helper(
 			String myIdentity,
@@ -153,9 +155,9 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 			int thumbnailWidth,
 			Fragment fragment,
 			int regularColor,
-			Drawable stopwatchIcon,
 			int maxBubbleTextLength,
-			int maxQuoteTextLength) {
+			int maxQuoteTextLength,
+			ListenableFuture<MediaController> mediaControllerFuture) {
 			this.myIdentity = myIdentity;
 			this.messageService = messageService;
 			this.userService = userService;
@@ -171,9 +173,9 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 			this.thumbnailWidth = thumbnailWidth;
 			this.fragment = fragment;
 			this.regularColor = regularColor;
-			this.stopwatchIcon = stopwatchIcon;
 			this.maxBubbleTextLength = maxBubbleTextLength;
 			this.maxQuoteTextLength = maxQuoteTextLength;
+			this.mediaControllerFuture = mediaControllerFuture;
 		}
 
 		public Fragment getFragment() {
@@ -240,10 +242,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 			thumbnailWidth = preferredThumbnailWidth;
 		}
 
-		public Drawable getStopwatchIcon() {
-			return stopwatchIcon;
-		}
-
 		public int getMaxBubbleTextLength() {
 			return maxBubbleTextLength;
 		}
@@ -254,6 +252,10 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
 		public void setMessageReceiver(MessageReceiver messageReceiver) {
 			this.messageReceiver = messageReceiver;
+		}
+
+		public ListenableFuture<MediaController> getMediaControllerFuture() {
+			return this.mediaControllerFuture;
 		}
 	}
 
@@ -372,9 +374,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 			CharSequence contentDescription;
 
 			if (!TestUtil.empty(datePrefix)) {
-				contentDescription = dateContentDescriptionPrefix + ". "
-						+ getContext().getString(R.string.state_dialog_modified) + ": "
-						+ s;
+				contentDescription = getContext().getString(R.string.state_dialog_modified) + ": " + s;
 				if (messageModel.isOutbox()) {
 					s = TextUtils.concat(datePrefix, " | " + s);
 				} else {
@@ -384,11 +384,15 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 				contentDescription = s;
 			}
 			if (holder.dateView != null) {
-				holder.dateView.setText(s, TextView.BufferType.SPANNABLE);
+				holder.dateView.setText(s);
 				holder.dateView.setContentDescription(contentDescription);
 			}
 
-			stateBitmapUtil.setStateDrawable(messageModel, holder.deliveredIndicator, true);
+			if (holder.datePrefixIcon != null) {
+				holder.datePrefixIcon.setVisibility(durationS > 0L ? View.VISIBLE : View.GONE);
+			}
+
+			stateBitmapUtil.setStateDrawable(getContext(), messageModel, holder.deliveredIndicator, true);
 			stateBitmapUtil.setGroupAckCount(messageModel, holder);
 		}
 	}
@@ -414,19 +418,12 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
 	abstract protected void configureChatMessage(final ComposeMessageHolder holder, final int position);
 
-	protected void setDatePrefix(String prefix, float textSize) {
-		if (!TestUtil.empty(prefix) && textSize > 0) {
-			Drawable icon = helper.getStopwatchIcon();
-			icon.setBounds(0, 0, (int) (textSize * 0.8), (int) (textSize * 0.8));
+	protected void setDatePrefix(String prefix) {
+		datePrefix = prefix;
+	}
 
-			SpannableStringBuilder spannableString = new SpannableStringBuilder("  " + prefix);
-			spannableString.setSpan(new ImageSpan(icon, ImageSpan.ALIGN_BASELINE),
-				0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-			datePrefix = spannableString;
-		} else {
-			datePrefix = prefix;
-		}
+	protected void setDuration(long durationS) {
+		this.durationS = durationS;
 	}
 
 	protected MessageService getMessageService() {
@@ -499,18 +496,22 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		}
 	}
 
+	void setStickerBackground(ComposeMessageHolder holder) {
+		holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(getContext(), R.color.bubble_sticker_colorstatelist));
+	}
+
 	void setDefaultBackground(ComposeMessageHolder holder) {
-		if (holder.messageBlockView.getBackground() == null) {
-			@DrawableRes int drawableRes;
+		if (holder.messageBlockView.getCardBackgroundColor().getDefaultColor() == Color.TRANSPARENT) {
+			int colorStateListRes;
 
 			if (getMessageModel().isOutbox() && !(getMessageModel() instanceof DistributionListMessageModel)) {
 				// outgoing
-				drawableRes = R.drawable.bubble_send_selector;
+				colorStateListRes = R.color.bubble_send_colorstatelist;
 			} else {
 				// incoming
-				drawableRes = R.drawable.bubble_recv_selector;
+				colorStateListRes = R.color.bubble_receive_colorstatelist;
 			}
-			holder.messageBlockView.setBackground(AppCompatResources.getDrawable(getContext(), drawableRes));
+			holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(getContext(), colorStateListRes));
 
 			logger.debug("*** setDefaultBackground");
 		}
@@ -558,6 +559,21 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 			showHide(holder.bodyTextView, true);
 		} else {
 			showHide(holder.bodyTextView, false);
+		}
+	}
+
+	protected void propagateControllerRetryClickToParent() {
+		if (
+			getMessageModel().getState() == MessageState.FS_KEY_MISMATCH ||
+				getMessageModel().getState() == MessageState.SENDFAILED
+		) {
+			propagateControllerClickToParent();
+		}
+	}
+
+	protected void propagateControllerClickToParent() {
+		if (onClickElement != null) {
+			onClickElement.onClick(getMessageModel());
 		}
 	}
 }

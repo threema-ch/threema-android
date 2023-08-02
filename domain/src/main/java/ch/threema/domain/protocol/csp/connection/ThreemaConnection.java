@@ -37,11 +37,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -91,7 +94,7 @@ public class ThreemaConnection implements Runnable {
 
 	/* Server address object */
 	private ServerAddressProvider serverAddressProvider;
-	private boolean ipv6;
+	private final boolean ipv6;
 
 	/* Temporary data for each individual TCP connection */
 	private volatile Socket socket;
@@ -368,6 +371,9 @@ public class ThreemaConnection implements Runnable {
 				DataInputStream dis = new DataInputStream(socket.getInputStream());
 				OutputStream bos = new BufferedOutputStream(socket.getOutputStream());
 
+				long lastPacketSentAt;
+				long elapsedMsSinceLastPacket;
+
 				/* set socket timeout for connection phase */
 				socket.setSoTimeout(ProtocolDefines.READ_TIMEOUT * 1000);
 
@@ -378,6 +384,7 @@ public class ThreemaConnection implements Runnable {
 					logger.debug("Client cookie = {}", NaCl.asHex(clientCookie));
 				}
 
+				lastPacketSentAt = new Date().getTime();
 				bos.write(clientTempKeyPub);
 				bos.write(clientCookie);
 				bos.flush();
@@ -385,6 +392,7 @@ public class ThreemaConnection implements Runnable {
 				/* read server hello */
 				byte[] serverCookie = new byte[COOKIE_LEN];
 				dis.readFully(serverCookie);
+				elapsedMsSinceLastPacket = new Date().getTime() - lastPacketSentAt;
 				if (logger.isDebugEnabled()) {
 					logger.debug("Server cookie = {}", NaCl.asHex(serverCookie));
 				}
@@ -428,7 +436,7 @@ public class ThreemaConnection implements Runnable {
 					throw new ThreemaException("Client cookie mismatch");
 				}
 
-				logger.info("Server hello successful");
+				logger.info("Server hello successful (rtt: {}ms)", elapsedMsSinceLastPacket);
 
 				/* prepare NaCl for login and extension encryption */
 				NaCl kclientTempServerTemp = new NaCl(clientTempKeySec, serverTempKeyPub);
@@ -458,6 +466,7 @@ public class ThreemaConnection implements Runnable {
 				byte[] loginBox = kclientTempServerTemp.encrypt(login, loginNonce);
 
 				/* send it! */
+				lastPacketSentAt = new Date().getTime();
 				bos.write(loginBox);
 				bos.write(extensionsBox);
 				bos.flush();
@@ -466,6 +475,7 @@ public class ThreemaConnection implements Runnable {
 				/* read login ack */
 				byte[] loginackBox = new byte[LOGIN_ACK_LEN];
 				dis.readFully(loginackBox);
+				elapsedMsSinceLastPacket = new Date().getTime() - lastPacketSentAt;
 
 				/* decrypt login ack */
 				byte[] loginack = kclientTempServerTemp.decrypt(loginackBox, serverNonce.nextNonce());
@@ -473,7 +483,7 @@ public class ThreemaConnection implements Runnable {
 					throw new ThreemaException("Decryption of login ack box failed");
 				}
 
-				logger.info("Login ack received");
+				logger.info("Login ack received (rtt: {}ms)", elapsedMsSinceLastPacket);
 
 				/* clear socket timeout */
 				socket.setSoTimeout(0);
@@ -654,13 +664,16 @@ public class ThreemaConnection implements Runnable {
 
 		switch (payload.getType()) {
 			case ProtocolDefines.PLTYPE_ECHO_REPLY:
-				if (data.length == 4) {
-					lastRcvdEchoSeq = Utils.byteArrayToInt(data);
+				final long elapsedMs;
+				if (data.length == 12) {
+					final ByteBuffer buffer = ByteBuffer.wrap(data).order(ByteOrder.nativeOrder());
+					lastRcvdEchoSeq = buffer.getInt();
+					elapsedMs = new Date().getTime() - buffer.getLong();
 				} else {
 					throw new PayloadProcessingException("Bad length (" + data.length + ") for echo reply payload");
 				}
 
-				logger.info("Received echo reply (seq {})", lastRcvdEchoSeq);
+				logger.info("Received echo reply (seq: {}, rtt: {}ms)", lastRcvdEchoSeq, elapsedMs);
 				break;
 
 			case ProtocolDefines.PLTYPE_ERROR:
@@ -767,14 +780,11 @@ public class ThreemaConnection implements Runnable {
 
 					// Save nonce if the incoming message was successfully processed
 					// and if the message is *not* a typing indicator
-					if (result != null
-							&& result.processed
-							&& result.abstractMessage != null
-							&& result.abstractMessage.getType() != ProtocolDefines.MSGTYPE_TYPING_INDICATOR) {
+					if (result.wasProcessed() && !result.hasType(ProtocolDefines.MSGTYPE_TYPING_INDICATOR)) {
 						this.nonceFactory.store(boxmsg.getNonce());
 					}
 
-					ackMessage = result != null && result.processed;
+					ackMessage = result.wasProcessed();
 				} else {
 					// auto ack a already nonce'd message
 					ackMessage = true;
@@ -813,9 +823,14 @@ public class ThreemaConnection implements Runnable {
 
 	private void sendEchoRequest() {
 		lastSentEchoSeq++;
-		logger.debug("Sending echo request (seq {})", lastSentEchoSeq);
+		logger.debug("Sending echo request (seq: {})", lastSentEchoSeq);
 
-		byte[] echoData = Utils.intToByteArray(lastSentEchoSeq);
+		byte[] echoData = ByteBuffer
+			.wrap(new byte[12])
+			.order(ByteOrder.nativeOrder())
+			.putInt(lastSentEchoSeq)
+			.putLong(new Date().getTime())
+			.array();
 		Payload echoPayload = new Payload(ProtocolDefines.PLTYPE_ECHO_REQUEST, echoData);
 		sendPayload(echoPayload);
 

@@ -31,7 +31,6 @@ import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -72,7 +71,7 @@ public class FileMessagePlayer extends MessagePlayer {
 						IntentDataUtil.append(getMessageModel(), intent);
 						intent.putExtra(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, true);
 						intent.putExtra(MediaViewerActivity.EXTRA_ID_REVERSE_ORDER, true);
-						AnimationUtil.startActivityForResult(currentActivityRef.get(), null, intent, ThreemaActivity.ACTIVITY_ID_MEDIA_VIEWER);
+						currentActivityRef.get().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_MEDIA_VIEWER);
 					}
 				});
 				// don't call super - the gallery will handle the decryption

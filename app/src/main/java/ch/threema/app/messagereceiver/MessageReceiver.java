@@ -24,14 +24,15 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
@@ -106,7 +107,7 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	/**
 	 * send a ballot (create) message
 	 */
-	boolean createBoxedBallotMessage(
+	void createBoxedBallotMessage(
 			final BallotData ballotData,
 			final BallotModel ballotModel,
 			final String[] filteredIdentities,
@@ -115,7 +116,7 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	/**
 	 * send a ballot vote message
 	 */
-	boolean createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException;
+	void createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException;
 
 	/**
 	 * select and filter (if filter is set) all message models
@@ -163,6 +164,9 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	 * @return the bitmap of the avatar in the notification
 	 */
 	Bitmap getNotificationAvatar();
+
+	@Nullable
+	Bitmap getAvatar();
 
 	/**
 	 * @return a unique id

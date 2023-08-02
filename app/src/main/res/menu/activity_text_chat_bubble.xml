@@ -9,6 +9,6 @@
 		android:checked="true"
 		android:orderInCategory="50"
 		android:icon="@drawable/ic_outline_format_strikethrough"
-		app:iconTint="?attr/textColorSecondary"
+		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never" />
 </menu>

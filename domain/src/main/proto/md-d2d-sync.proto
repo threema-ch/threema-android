@@ -1,0 +1,707 @@
+// ## Data Synchronisation Messages
+//
+// All strings are UTF-8 encoded.
+//
+// ### General Information
+//
+// When creating a sync message, only provide fields which are required and
+// fields whose values have changed (i.e. delta updates). Fields that are
+// required will be explicitly marked. For any other field within a sync
+// message, assume that it is optional.
+//
+// When receiving a sync message, only handle fields whose values have been
+// provided. As a rule of thumb, if a field is not present it means that the
+// value has not changed.
+//
+// If more specific rules are needed in order to handle a field correctly,
+// a description will be provided for the specific field.
+//
+// ### Validation
+//
+// A sync message should be validated by the following general rules:
+//
+// - Strictly validate enums, i.e. unknown values are not allowed and no
+//   silent fallbacks are allowed.
+// - Empty strings/lists have a different semantic than an omitted string/list.
+//   The field should have a concise description on whether emptiness is
+//   allowed, and, if so, the meaning of _empty_.
+// - Follow the description of each field for more specific validation.
+//
+// If any of these rules is violated, the message should be discarded and logged
+// as an error (but still acknowledged, if necessary).
+
+syntax = "proto3";
+
+package sync;
+
+option java_package = "ch.threema.protobuf.d2d.sync";
+
+import "common.proto";
+
+// _Read_ receipt policy (when an unread message has been read)
+enum ReadReceiptPolicy {
+  // Send _read_ receipt when an unread message has been read
+  SEND_READ_RECEIPT = 0;
+  // Don't send _read_ receipts
+  DONT_SEND_READ_RECEIPT = 1;
+}
+
+// Typing indicator policy (signal _currently typing_)
+enum TypingIndicatorPolicy {
+  // Send _typing_ indicator when a message is being composed
+  SEND_TYPING_INDICATOR = 0;
+  // Don't send _typing_ indicators
+  DONT_SEND_TYPING_INDICATOR = 1;
+}
+
+// Notificatoun sound policy.
+enum NotificationSoundPolicy {
+  // Do not emit a sound when notifying of a _conversation_ message.
+  MUTED = 0;
+}
+
+// Visibility of a conversation.
+enum ConversationVisibility {
+  // Appears normally in the list of conversations
+  NORMAL = 0;
+  // Appears pinned in the list of conversations
+  PINNED = 2;
+  // Appears in the archived list of conversations
+  ARCHIVED = 1;
+}
+
+// Category of a conversation.
+enum ConversationCategory {
+  // No specific (default) category
+  DEFAULT = 0;
+  // Protected conversation (_private chat_)
+  PROTECTED = 1;
+}
+
+// Mobile device management parameters shared across Threema Work devices.
+//
+// See [mdm-parameters.md](./md-parameters.md) for documentation of possible
+// parameter values and associated steps to apply when a parameter has been set
+// for the first time, modified, or removed.
+message MdmParameters {
+  // A single MDM parameter.
+  message Parameter {
+    oneof value {
+      // String parameter
+      string string_value = 1;
+      // Boolean parameter
+      bool boolean_value = 2;
+    }
+  }
+
+  // A map of MDM parameters, originating from an external MDM system. The map
+  // key is the identifier of the MDM parameter (e.g. `th_nickname`).
+  map<string, Parameter> external_parameters = 1;
+
+  // A map of MDM parameters, originating from Threema App Configuration. The
+  // map key is the identifier of the MDM parameter (e.g. `th_nickname`).
+  map<string, Parameter> threema_parameters = 2;
+
+  enum ParameterPrecedence {
+    // On conflict, parameters defined by Threema App Configuration take precedence
+    THREEMA = 0;
+    // On conflict, parameters defined by an external MDM take precedence
+    EXTERNAL = 1;
+  }
+  // The parameter precedence defines how to resolve conflicting parameters
+  // between an external MDM and the Threema App Configuration.
+  ParameterPrecedence parameter_precedence = 3;
+}
+
+// The user's profile.
+message UserProfile {
+  // Nickname
+  //
+  // Required towards a new device. Optional otherwise.
+  //
+  // When the user cleared its nickname, send an empty string. Do not send the
+  // user's Threema ID (i.e. process data).
+  //
+  // When an empty string was received, store the empty string as-is and fall
+  // back to the users Threema ID when sending an end-to-end encrypted message.
+  optional string nickname = 1;
+
+  // Profile picture
+  //
+  // Always optional.
+  common.DeltaImage profile_picture = 2;
+
+  // Profile picture share policy
+  //
+  // Required towards a new device. Optional otherwise.
+  message ProfilePictureShareWith {
+    oneof policy {
+      // Don't share
+      common.Unit nobody = 1;
+      // Share with everyone
+      common.Unit everyone = 2;
+      // Share only with explicitly listed contacts
+      //
+      // When the user selected _allow list_ but did not select any contacts,
+      // send an empty list. Do not fall back to `nobody`.
+      common.Identities allow_list = 3;
+    }
+  }
+  ProfilePictureShareWith profile_picture_share_with = 3;
+
+  // External entities linked with the identity
+  //
+  // Required towards a new device. Optional otherwise.
+  //
+  // When the user has cleared all of its identity links, this message is
+  // present but `links` contains zero items.
+  message IdentityLinks {
+    // Threema ID link.
+    message IdentityLink {
+      // Identity link type
+      oneof type {
+        // Linked with a verified telephone number (E.164 format without leading
+        // `+`)
+        string phone_number = 1;
+        // Linked with a verified email address
+        string email = 2;
+      }
+
+      // Identity link description
+      string description = 3;
+    }
+
+    // List of identity links
+    repeated IdentityLink links = 1;
+  }
+  IdentityLinks identity_links = 4;
+}
+
+// Threema contact.
+message Contact {
+  // Threema ID of the contact
+  //
+  // Always required.
+  string identity = 1;
+
+  // Public key of the contact
+  //
+  // Required towards a new device and for a new contact. Should not be set
+  // for existing contacts and must be ignored (a public key for an identity
+  // cannot be changed).
+  optional bytes public_key = 2;
+
+  // Unix-ish timestamp in milliseconds when the contact has been created
+  // (added) locally.
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  optional uint64 created_at = 3;
+
+  // First name of the contact
+  //
+  // Always optional.
+  //
+  // An empty string is valid. When both `first_name` and `last_name` are
+  // empty string, the `nickname` should be used as display name.
+  optional string first_name = 4;
+
+  // Last name of the contact
+  //
+  // Always optional.
+  //
+  // An empty string is valid. When both `first_name` and `last_name` are
+  // empty string, the `nickname` should be used as display name.
+  optional string last_name = 5;
+
+  // Nickname of the contact (without `~` prefix)
+  //
+  // Always optional.
+  //
+  // An empty string is valid. If `first_name`, `last_name` and `nickname` are
+  // empty string, the Threema ID should be used as display name.
+  optional string nickname = 6;
+
+  // Verification level of the contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  //
+  // Note: When applying logic depending on the verification level, a
+  // `WorkVerificationLevel` of `WORK_SUBSCRIPTION_VERIFIED` virtually raises
+  // the verification level to `SERVER_VERIFIED`. However, the contact
+  // verification level takes precedence if it is `FULLY_VERIFIED`.
+  enum VerificationLevel {
+    // Unverified, public key has been obtained from the server
+    UNVERIFIED = 0;
+    // Verified with one of the account links via the server, or the contact
+    // has been obtained via the Work API.
+    SERVER_VERIFIED = 1;
+    // Verified, public key has been obtained via a secure channel
+    FULLY_VERIFIED = 2;
+  }
+  optional VerificationLevel verification_level = 7;
+
+  // Threema Work verification level of the contact.
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  //
+  // Note: When not using a Threema Work client, the Threema Work verification
+  // level must always be `NONE`.
+  enum WorkVerificationLevel {
+    // The user does not use Threema Work or the contact is not in the same
+    // Threema Work subscription.
+    NONE = 0;
+    // The contact is in the same Threema Work subscription.
+    WORK_SUBSCRIPTION_VERIFIED = 1;
+  }
+  optional WorkVerificationLevel work_verification_level = 21;
+
+  // Identity type of the contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  enum IdentityType {
+    // Regular contact (uses the regular Threema app)
+    REGULAR = 0;
+    // Work contact (uses the Threema work app)
+    WORK = 1;
+  }
+  optional IdentityType identity_type = 8;
+
+  // Acquaintance level of the contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  enum AcquaintanceLevel {
+    // The contact was explicitly added by the user or a 1:1 conversation with
+    // the contact has been initiated.
+    DIRECT = 0;
+    // The contact is part of a group the user is also part of. The contact was
+    // not explicitly added and no 1:1 conversation has been initiated.
+    GROUP = 1;
+  }
+  optional AcquaintanceLevel acquaintance_level = 9;
+
+  // Activity state of the contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  enum ActivityState {
+    // The ID is active (used recently and not deleted).
+    ACTIVE = 0;
+    // The ID has not been used for a prolonged time (typically 3 months) and
+    // may have been abandoned. Such IDs can be marked as "inactive" in the
+    // client's contact database, and the user may be alerted to the fact that
+    // messages to this ID may not arrive (e.g. alert box, gray color in
+    // contact list etc.). An inactive ID can become active again at any time,
+    // so the client should keep checking it.
+    INACTIVE = 1;
+    // ID has never been assigned, or it has been permanently deleted. Such IDs
+    // should be marked as "deleted" in the client's contact database, and no
+    // further messages should be sent or received from them. Since deletion is
+    // permanent, once an ID has been reported as invalid by the server, it
+    // should not be checked again in the future.
+    INVALID = 2;
+  }
+  optional ActivityState activity_state = 10;
+
+  // Features available for the contact (64 bit mask,
+  // `common.CspFeatureMaskFlag` logically or-ed).
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  optional uint64 feature_mask = 18;
+
+  // Contact synchronisation state
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  //
+  // These states are strict monotonic. When a downgrade is being detected,
+  // log the incident and ignore the update.
+  enum SyncState {
+    // The contact data has not been imported and has not been edited by the
+    // user either.
+    INITIAL = 0;
+    // The contact data has been imported (e.g. via a local address book and an
+    // identity link). In this state, subsequent contact synchronisations must
+    // not alter the contact's data.
+    IMPORTED = 1;
+    // The contact data has been edited by the user. In this state, subsequent
+    // contact synchronisations must not alter the contact's data.
+    CUSTOM = 2;
+  }
+  optional SyncState sync_state = 13;
+
+  // _Read_ receipt policy override for this contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  message ReadReceiptPolicyOverride {
+    oneof override {
+      // Apply the _read_ receipt policy specified in the settings
+      common.Unit default = 1;
+      // Apply the following _read_ receipt policy
+      ReadReceiptPolicy policy = 2;
+    }
+  }
+  ReadReceiptPolicyOverride read_receipt_policy_override = 16;
+
+  // Typing indicator policy override for this contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  message TypingIndicatorPolicyOverride {
+    oneof override {
+      // Apply the typing indicator policy specified in the settings
+      common.Unit default = 1;
+      // Apply the following typing indicator policy
+      TypingIndicatorPolicy policy = 2;
+    }
+  }
+  TypingIndicatorPolicyOverride typing_indicator_policy_override = 17;
+
+  // Notification trigger policy for the contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  message NotificationTriggerPolicyOverride {
+    message Policy {
+      // Apply the following notification trigger policy
+      enum NotificationTriggerPolicy {
+        // Never trigger a notification message.
+        NEVER = 0;
+      }
+      NotificationTriggerPolicy policy = 1;
+
+      // Unix-ish timestamp in milliseconds when the provided policy should
+      // expire and fall back to the default. If not provided, the policy does
+      // not expire.
+      optional uint64 expires_at = 2;
+    }
+
+    oneof override {
+      // Apply the trigger policy specified in the settings (i.e. trigger on
+      // every _conversation_ message).
+      common.Unit default = 1;
+      // Apply the following notification trigger policy
+      Policy policy = 2;
+    }
+  }
+  NotificationTriggerPolicyOverride notification_trigger_policy_override = 19;
+
+  // Notification sound policy for the contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  //
+  // Custom sounds are not reflected but are to be (re-)applied in case the
+  // policy is _default_.
+  message NotificationSoundPolicyOverride {
+    oneof override {
+      // Apply the notification sound policy specified in the settings (i.e.
+      // always emit a sound when notifying of a _conversation_ message).
+      common.Unit default = 1;
+      // Apply the following notification sound policy
+      NotificationSoundPolicy policy = 2;
+    }
+  }
+  NotificationSoundPolicyOverride notification_sound_policy_override = 20;
+
+  // Contact-defined profile picture as received from the contact in a
+  // `set-profile-picture` message.
+  //
+  // Always optional.
+  common.DeltaImage contact_defined_profile_picture = 14;
+
+  // User-defined profile picture set by the user or imported from the address
+  // book.
+  //
+  // Always optional.
+  common.DeltaImage user_defined_profile_picture = 15;
+
+  // Conversation category of the contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  optional ConversationCategory conversation_category = 11;
+
+  // Conversation visibility of the contact
+  //
+  // Required towards a new device and for a new contact. Optional for an
+  // existing contact.
+  optional ConversationVisibility conversation_visibility = 12;
+}
+
+// Threema contacts associated to a group.
+message Group {
+  // Unique group identity
+  //
+  // Always required.
+  common.GroupIdentity group_identity = 1;
+
+  // Name of the group
+  //
+  // Required towards a new device and for a new group. Optional for an
+  // existing group.
+  //
+  // An empty string is valid. In such a case, the display name of the
+  // group is the list of its members.
+  optional string name = 2;
+
+  // Unix-ish timestamp in milliseconds when the group has been created locally
+  //
+  // Required towards a new device and for a new group. Optional for an
+  // existing group.
+  optional uint64 created_at = 3;
+
+  // The user's state within the group
+  //
+  // Required towards a new device and for a new group. Optional for an
+  // existing group.
+  enum UserState {
+    // The user is a member (or creator) of the group.
+    MEMBER = 0;
+    // The user has been kicked from the group. Implies that the group has been
+    // marked as _left_.
+    KICKED = 1;
+    // The user left the group. Implies that the group has been marked as
+    // _left_.
+    LEFT = 2;
+  }
+  optional UserState user_state = 6;
+
+  // Notification trigger policy for the group
+  //
+  // Required towards a new device and for a new group. Optional for an
+  // existing group.
+  message NotificationTriggerPolicyOverride {
+    message Policy {
+      // Apply the following notification trigger policy
+      enum NotificationTriggerPolicy {
+        // Only trigger a notification if mentioned in a _conversation_ message.
+        MENTIONED = 0;
+        // Never trigger a notification message.
+        NEVER = 1;
+      }
+      NotificationTriggerPolicy policy = 1;
+
+      // Unix-ish timestamp in milliseconds when the provided policy should
+      // expire and fall back to the default. If not provided, the policy does
+      // not expire.
+      optional uint64 expires_at = 2;
+    }
+
+    oneof override {
+      // Apply the trigger policy specified in the settings (i.e. trigger on
+      // every _conversation_ message).
+      common.Unit default = 1;
+      // Apply the following notification trigger policy
+      Policy policy = 2;
+    }
+  }
+  NotificationTriggerPolicyOverride notification_trigger_policy_override = 9;
+
+  // Notification sound policy for the group
+  //
+  // Required towards a new device and for a new group. Optional for an existing
+  // group.
+  //
+  // Custom sounds are not reflected but are to be (re-)applied in case the
+  // policy is _default_.
+  message NotificationSoundPolicyOverride {
+    oneof override {
+      // Apply the notification sound policy specified in the settings (i.e.
+      // always emit a sound when notifying of a _conversation_ message).
+      common.Unit default = 1;
+      // Apply the following notification sound policy
+      NotificationSoundPolicy policy = 2;
+    }
+  }
+  NotificationSoundPolicyOverride notification_sound_policy_override = 10;
+
+  // Group's profile picture as received from the group's creator
+  //
+  // Always optional.
+  common.DeltaImage profile_picture = 7;
+
+  // Group members (**NOT** including the user itself)
+  //
+  // Required towards a new device and for a new group. Optional for an existing
+  // group.
+  //
+  // The concrete semantic of this list depends on the current `user_state`:
+  //
+  // - `MEMBER`: It contains a list of all **current** group members (with the
+  //   user itself implicitly added).
+  // - `KICKED`/`LEFT`: It contains a list of all **previous** group members up
+  //   to that event. If the list is empty, the group must not be visible in the
+  //   UI.
+  //
+  // An empty list is valid.
+  common.Identities member_identities = 8;
+
+  // Conversation category of the group
+  //
+  // Required towards a new device and for a new group. Optional for an
+  // existing group.
+  optional ConversationCategory conversation_category = 4;
+
+  // Conversation visibility of the group
+  //
+  // Required towards a new device and for a new group. Optional for an
+  // existing group.
+  optional ConversationVisibility conversation_visibility = 5;
+}
+
+// Threema contacts associated to a distribution list.
+message DistributionList {
+  // Unique ID of the distribution list
+  //
+  // Always required.
+  fixed64 distribution_list_id = 1;
+
+  // Name of the distribution list
+  //
+  // Required towards a new device and for a new distribution list. Optional
+  // for an existing distribution list.
+  //
+  // An empty string is valid. In such a case, the display name of the
+  // distribution list is the list of its members.
+  optional string name = 2;
+
+  // Unix-ish timestamp in milliseconds when the group has been created
+  //
+  // Required towards a new device and for a new distribution list. Optional
+  // for an existing distribution list.
+  optional uint64 created_at = 3;
+
+  // Distribution list members
+  //
+  // Required towards a new device and for a new distribution list. Optional
+  // for an existing distribution list.
+  //
+  // An empty list is **not** valid. Clearing all members should be prevented
+  // by the UI.
+  common.Identities member_identities = 6;
+
+  // Conversation category of the distribution list
+  //
+  // Required towards a new device and for a new distribution list. Optional
+  // for an existing distribution list.
+  optional ConversationCategory conversation_category = 4;
+
+  // Conversation visibility of the distribution list
+  //
+  // Required towards a new device and for a new distribution list. Optional
+  // for an existing distribution list.
+  optional ConversationVisibility conversation_visibility = 5;
+}
+
+// App settings
+//
+// When the user changes one or more settings:
+//
+// 1. Begin a transaction (scope: `SETTINGS_SYNC`, precondition: none).
+// 2. For each setting that has been modified, run the associated steps of the
+//    setting and include the modified settings.
+// 3. Reflect this message and commit the transaction.
+// 4. Apply the modified settings locally.
+//
+// When reflected from another device:
+//
+// 1. For each setting that is being included by this message, run the
+//    associated steps of the setting and apply the modified setting.
+message Settings {
+  // Contact synchronisation policy
+  //
+  // Required towards a new device. Optional otherwise.
+  enum ContactSyncPolicy {
+    // Not synced
+    NOT_SYNCED = 0;
+    // Synced
+    SYNC = 1;
+  }
+  optional ContactSyncPolicy contact_sync_policy = 1;
+
+  // Unknown contacts policy
+  //
+  // Required towards a new device. Optional otherwise.
+  enum UnknownContactPolicy {
+    // Allowed to contact the user
+    ALLOW_UNKNOWN = 0;
+    // Will be blocked by the user
+    BLOCK_UNKNOWN = 1;
+  }
+  optional UnknownContactPolicy unknown_contact_policy = 2;
+
+  // _Read_ receipt policy (when an unread message has been read)
+  //
+  // Required towards a new device. Optional otherwise.
+  optional ReadReceiptPolicy read_receipt_policy = 3;
+
+  // Typing indicator policy (signal _currently typing_)
+  //
+  // Required towards a new device. Optional otherwise.
+  optional TypingIndicatorPolicy typing_indicator_policy = 4;
+
+  // Threema Call policy
+  //
+  // Required towards a new device. Optional otherwise.
+  enum CallPolicy {
+    // Allow creating/receiving Threema Calls
+    ALLOW_CALL = 0;
+    // Denied from creating/receiving any Threema Calls
+    DENY_CALL = 1;
+  }
+  optional CallPolicy call_policy = 5;
+
+  // Threema Call connection policy
+  //
+  // Required towards a new device. Optional otherwise.
+  enum CallConnectionPolicy {
+    // Allow direct (peer-to-peer) connections for Threema Calls
+    ALLOW_DIRECT = 0;
+    // Require relayed connections for Threema Calls
+    REQUIRE_RELAY = 1;
+  }
+  optional CallConnectionPolicy call_connection_policy = 6;
+
+  // Screenshot policy
+  //
+  // Required towards a new device. Optional otherwise.
+  enum ScreenshotPolicy {
+    // Allow taking screenshots
+    ALLOW_SCREENSHOT = 0;
+    // Deny taking screenshots, if possible
+    DENY_SCREENSHOT = 1;
+  }
+  optional ScreenshotPolicy screenshot_policy = 7;
+
+  // Keyboard data collection policy (e.g. for personalised suggestions)
+  //
+  // Required towards a new device. Optional otherwise.
+  enum KeyboardDataCollectionPolicy {
+    // Allow keyboard input data to be collected
+    ALLOW_DATA_COLLECTION = 0;
+    // Deny collecting of keyboard input data
+    DENY_DATA_COLLECTION = 1;
+  }
+  optional KeyboardDataCollectionPolicy keyboard_data_collection_policy = 8;
+
+  // List of Threema IDs whose messages are blocked
+  //
+  // Required towards a new device. Optional otherwise.
+  //
+  // An empty list is valid.
+  common.Identities blocked_identities = 9;
+
+  // Threema IDs to be excluded when syncing the contact list
+  //
+  // Required towards a new device. Optional otherwise.
+  //
+  // An empty list is valid.
+  common.Identities exclude_from_sync_identities = 10;
+}

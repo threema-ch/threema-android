@@ -21,9 +21,12 @@
 
 package ch.threema.app.grouplinks;
 
+import android.database.SQLException;
 import android.util.SparseBooleanArray;
 
-import net.sqlcipher.SQLException;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +35,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.base.Result;

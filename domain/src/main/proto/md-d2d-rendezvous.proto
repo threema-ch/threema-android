@@ -1,0 +1,329 @@
+// ## Connection Rendezvous Protocol
+//
+// Some mechanisms may request a 1:1 connection between two devices in order to
+// transmit data as direct as possible. Establishing such a connection should
+// always require user interaction.
+//
+// The protocol runs an authentication **handshake** on multiple paths
+// simultaneously and applies a heuristic to determine the best available path.
+// One of the devices is eligible to **nominate** a path after which arbitrary
+// encrypted payloads may be exchanged.
+//
+// ### Terminology
+//
+// - `RID`: Rendezvous Initiator Device
+// - `RRD`: Rendezvous Responder Device
+// - `AK`: Authentication Key
+// - `ETK`: Ephemeral Transport Key
+// - `STK`: Shared Transport Key
+// - `PID`: Path ID
+// - `RPH`: Rendevous Path Hash
+// - `RIDAK`: RID's Authentication Key
+// - `RRDAK`: RRD's Authentication Key
+// - `RIDTK`: RID's Transport Key
+// - `RRDTK`: RRD's Transport Key
+// - `RIDSN`: RID's Sequence Number
+// - `RRDSN`: RRD's Sequence Number
+//
+// ### General Information
+//
+// **Sequence number:** The sequence number starts with `1` and is counted
+// separately for each direction (i.e. there is one sequence number counter for
+// the client and one for the server). We will use `RIDSN+` and `RRDSN+` in this
+// document to denote that the counter should be increased **after** the value
+// has been inserted (i.e. semantically equivalent to `x++` in many languages).
+//
+// **Framing:** An `extra.transport.frame` is being used to frame all
+// transmitted data even if the transport supports datagrams. This
+// intentionally allows to fragment a frame across multiple datagrams (e.g.
+// useful for limited APIs that cannot deliver data in a streamed fashion).
+//
+// ### Key Derivation
+//
+//     RIDAK = BLAKE2b(key=AK.secret, salt='rida', personal='3ma-rendezvous')
+//     RRDAK = BLAKE2b(key=AK.secret, salt='rrda', personal='3ma-rendezvous')
+//
+//     STK = BLAKE2b(
+//       key=
+//           AK.secret
+//        || X25519HSalsa20(<local.ETK>.secret, <remote.ETK>.public)
+//       salt='st',
+//       personal='3ma-rendezvous'
+//     )
+//
+//     RIDTK = BLAKE2b(key=STK.secret, salt='ridt', personal='3ma-rendezvous')
+//     RRDTK = BLAKE2b(key=STK.secret, salt='rrdt', personal='3ma-rendezvous')
+//
+// ### Encryption Schemes
+//
+// RID's encryption scheme is defined in the following way:
+//
+//     ChaCha20-Poly1305(
+//       key=<RID*K.secret>,
+//       nonce=u32-le(PID) || u32-le(RIDSN+) || <4 zero bytes>,
+//     )
+//
+// RRD's encryption scheme is defined in the following way:
+//
+//     ChaCha20-Poly1305(
+//       key=<RRD*K.secret>,
+//       nonce=u32-le(PID) || u32-le(RRDSN+) || <4 zero bytes>,
+//     )
+//
+// ### Rendezvous Path Hash Derivation
+//
+// A Rendezvous Path Hash (RPH) can be used to ensure that both parties are
+// connected to each other and not to some other party who was able to intercept
+// AK:
+//
+//     RPH = BLAKE2b(
+//       out-length=32,
+//       salt='ph',
+//       personal='3ma-rendezvous',
+//       input=STK.secret,
+//     )
+//
+// ### Path Matrix
+//
+//     | Name              | Multiple Paths |
+//     |-------------------|----------------|
+//     | Direct TCP Server | Yes            |
+//     | Relayed WebSocket | No             |
+//
+// ### Protocol Flow
+//
+// Connection paths are formed by transmitting a `rendezvous.RendezvousInit`
+// from RID to RRD as defined in the description of that message.
+//
+// The connections are then simultaneously established in the background and
+// each path must go through the handshake flow with its authentication
+// challenges. While doing so, the peers measure the RTT between challenge and
+// response in order to determine a good path candidate for nomination.
+//
+// One of the peers, defined by the upper-level protocol, nominates one of the
+// established paths. Once nominated, both peers silently close all other paths.
+//
+// Once a path has been nominated, that path will be handed to the upper-level
+// protocol for arbitrary data transmission. That data must be protected by
+// continuing the respective encryption scheme of the associated role.
+//
+// ### Handshake Flow
+//
+// RRD and RID authenticate one another by the following flow:
+//
+//     RRD ---- Handshake.RrdToRid.Hello ---> RID
+//     RRD <- Handshake.RidToRrd.AuthHello -- RID
+//     RRD ---- Handshake.RrdToRid.Auth ----> RID
+//
+// Before the path can be used by the upper-layer protocol, the chosen path must
+// be `Nominate`d by either side. The upper-layer protocol must define which
+// side may `Nominate`.
+//
+//     R*D ------- Handshake.Nominate ------> R*D
+//
+// ### Path Nomination
+//
+// The following algorithm should be used to determine which path is to be
+// nominated. The upper-layer protocol must clearly define whether RRD or RID
+// does nomination.
+//
+// 1. Let `established` be the list of established connection paths.
+// 2. Asynchronously, with each connection becoming established, update
+//    `established` with the RTT that was measured during the handshake.
+// 3. Wait for the first connection path to become established.
+// 4. After a brief timeout (or on a specific user interaction), nominate the
+//    connection path in the following way, highest priority first:
+//    1. Path with the lowest RTT on a mutually unmetered, fast network
+//    2. Path with the lowest RTT on a mutually unmetered, slow network
+//    3. Path with the lowest RTT on any other network
+//
+// Note: It is recommended to warn the user if a metered connection path has
+// been nominated in case large amounts of data are to be transmitted.
+//
+// ### Security
+//
+// To prevent phishing attacks, the CORS `Access-Control-Allow-Origin` of any
+// WebSocket rendezvous relay server should be set to the bare minimum required
+// by the use case.
+//
+// ### Threat Model
+//
+// The security of the protocol relies on the security of the secure channel
+// where the `RendezvousInit` is being exchanged.
+//
+// Arbitrary WebSocket URLs and arbitrary IPv4/IPv6 addresses can be provided by
+// RID where RRD would connect to. It is therefore required that RRD can trust
+// RID to not be malicious.
+//
+// AK must be exchanged over a sufficiently secure channel. Concretely, AK must
+// be sufficiently protected to at least resist a brute-force attack for the
+// time between AK being exchanged and the handshake being fulfilled.
+//
+// A PID must be unique and not be re-used for a specific AK.
+
+syntax = "proto3";
+
+package rendezvous;
+
+option java_package = "ch.threema.protobuf.d2d.rendezvous";
+
+// Contains the data necessary to initialise a 1:1 connection between two
+// devices.
+//
+// When creating this message, run the following sub-steps simultaneously and
+// wait for them to finish:
+//
+// 1. If the device is able to create a TCP server socket:
+//    1. Bind to _any_ IP address with a random port number. Silently ignore
+//       failures.
+//    2. If successful, let `addresses` be the list of available IP addresses on
+//       network interfaces the server has been bound to.
+//    3. Drop any loopback and duplicate IP addresses from `addresses`.
+//    4. Drop link-local IPv6 addresses associated to interfaces that only
+//       provide link-local IPv6 addresses.
+//    5. Sort `addresses` in the following way, highest priority first:
+//         1. IP addresses on unmetered, fast networks
+//         2. IP addresses on unmetered, slow networks
+//         3. IP addresses on metered, fast networks
+//         4. Any other addresses
+//    6. Complete the subroutine and provide `addresses` and other necessary
+//       data in the `direct_tcp_server` field.
+// 2. Connect to a WebSocket relay server:
+//    1. Generate a random 32 byte hex-encoded rendezvous path.
+//    2. Connect to the WebSocket relay server URL as provided by the context
+//       with the generated hex-encoded rendezvous path.
+//    3. Once connected, complete the subroutine and provide the necessary data
+//       in the `relayed_web_socket` field.
+//
+// When receiving this message:
+//
+// 1. If `version` is unsupported, abort these steps.
+// 2. If any `path_id` is not unique, abort these steps.
+// 3. If the device is able to create a TCP client connection:
+//    1. Let `addresses` be the IP addresses of `direct_tcp_server`.
+//    2. Filter `addresses` by discarding IPs with unsupported families (e.g. if
+//       the device has no IPv6 address, drop any IPv6 addresses).
+//    3. For each IP address in `addresses`:
+//       1. Connect to the given IP address in the background.
+//       2. Wait 100ms.
+// 4. Connect to the provided relayed WebSocket server in the background.
+// 5. On each successful direct or relayed connection made in the background,
+//    forward an event to the upper-level protocol in order for it to select one
+//    of the paths for nomination.
+message RendezvousInit {
+  enum Version {
+    // Initial version.
+    V1_0 = 0;
+  }
+  Version version = 1;
+
+  // 32 byte ephemeral secret Authentication Key (AK).
+  bytes ak = 2;
+
+  // Network cost of an interface
+  enum NetworkCost {
+    // It is unknown whether the interface is metered or unmetered
+    UNKNOWN = 0;
+    // The interface is unmetered
+    UNMETERED = 1;
+    // The interface is metered
+    METERED = 2;
+  }
+
+  // Relayed WebSocket path
+  message RelayedWebSocket {
+    // Unique Path ID (PID) of the path
+    uint32 path_id = 1;
+
+    // Network cost
+    NetworkCost network_cost = 2;
+
+    // Full URL to the WebSocket server with a random 32 byte hex-encoded
+    // rendezvous path. Must begin with `wss://``.
+    string url = 3;
+  }
+  RelayedWebSocket relayed_web_socket = 3;
+
+  // Direct path to a TCP server created by the initiator
+  message DirectTcpServer {
+    // Random 16 bit port. Values greater than 65535 are invalid.
+    uint32 port = 1;
+
+    // List of associated IP addresses. Each IP address creates its own path.
+    repeated IpAddress ip_addresses = 2;
+
+    // An IP address
+    message IpAddress {
+      // Unique Path ID (PID) of the path
+      uint32 path_id = 1;
+
+      // Network cost
+      NetworkCost network_cost = 2;
+
+      // IPv4 or IPv6 address
+      string ip = 3;
+    }
+  }
+  DirectTcpServer direct_tcp_server = 4;
+}
+
+// Messages required for the initial lock-step handshake between RRD and RID.
+message Handshake {
+  // Handshake messages from RRD to RID.
+  message RrdToRid {
+    // Initial message from RRD containing its authentication challenge,
+    // encrypted by RRD's encryption scheme with RRDAK.
+    message Hello {
+      // 16 byte random authentication challenge for RID.
+      bytes challenge = 1;
+
+      // 32 byte ephemeral public key (`ETK.public`).
+      bytes etk = 2;
+    }
+
+    // Final message from RRD responding to RID's authentication challenge,
+    // encrypted by RRD's encryption scheme with RRDAK.
+    //
+    // When receiving this message:
+    //
+    // 1. If the challenge `response` from RRD does not match the challenge sent
+    //    by RID, abort the connection and these steps.
+    message Auth {
+      // 16 byte repeated authentication challenge from RRD.
+      bytes response = 1;
+    }
+  }
+
+  // Handshake messages from RID to RRD.
+  message RidToRrd {
+    // Initial message from RID responding to RRD's authentication challenge and
+    // containing RID's authentication challenge, encrypted by RID's encryption
+    // scheme with RIDAK.
+    //
+    // When receiving this message:
+    //
+    // 1. If the challenge `response` from RID does not match the challenge sent
+    //    by RRD, abort the connection and these steps.
+    message AuthHello {
+      // 16 byte repeated authentication challenge from RRD.
+      bytes response = 1;
+
+      // 16 byte random authentication challenge for RRD.
+      bytes challenge = 2;
+
+      // 32 byte ephemeral public key (`ETK.public`).
+      bytes etk = 3;
+    }
+  }
+}
+
+// Nominates the path. The upper-layer protocol defines whether RID or RRD may
+// nominate and is encrypted by the respective encryption scheme with RIDTK or
+// RRDTK.
+//
+// When sending or receiving this message:
+//
+// 1. If the sender was not eligible to `Nominate`, abort the connection and
+//    these steps.
+// 2. Silently close all other pending or established connection paths.
+message Nominate {}

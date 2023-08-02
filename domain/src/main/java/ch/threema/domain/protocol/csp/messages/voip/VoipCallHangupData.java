@@ -48,7 +48,7 @@ public class VoipCallHangupData extends VoipCallData<VoipCallHangupData> {
 				o = new JSONObject(jsonObjectString);
 			} catch (JSONException e) {
 				logger.error("Bad VoipCallHangupData: Invalid JSON string", e);
-				throw new BadMessageException("TM063", true);
+				throw new BadMessageException("TM063");
 			}
 		}
 
@@ -61,7 +61,7 @@ public class VoipCallHangupData extends VoipCallData<VoipCallHangupData> {
 			}
 		} catch (Exception e) {
 			logger.error("Bad VoipCallHangupData: Invalid Call ID", e);
-			throw new BadMessageException("TM063", true);
+			throw new BadMessageException("TM063");
 		}
 
 		return callHangupData;

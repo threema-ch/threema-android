@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.cache.ThumbnailCache;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
@@ -77,7 +78,7 @@ public class QuoteUtil {
 	 */
 	public static @Nullable QuoteContent getQuoteContent(
 		@NonNull AbstractMessageModel messageModel,
-		@MessageReceiverType int receiverType,
+		@NonNull MessageReceiver messageReceiver,
 		boolean includeMessageModel,
 		@Nullable ThumbnailCache thumbnailCache,
 		@NonNull Context context,
@@ -87,7 +88,7 @@ public class QuoteUtil {
 	) {
 		if (messageModel.getQuotedMessageId() != null) {
 			return extractQuoteV2(
-				messageModel, receiverType, includeMessageModel, thumbnailCache,
+				messageModel, messageReceiver, includeMessageModel, thumbnailCache,
 				context, messageService, userService, fileService
 			);
 		} else {
@@ -137,7 +138,7 @@ public class QuoteUtil {
 	 */
 	static @NonNull QuoteContent extractQuoteV2(
 		@NonNull AbstractMessageModel messageModel,
-		@MessageReceiverType int receiverType,
+		MessageReceiver messageReceiver,
 		boolean includeMessageModel,
 		@Nullable ThumbnailCache thumbnailCache,
 		@NonNull Context context,
@@ -150,14 +151,14 @@ public class QuoteUtil {
 		final String placeholder;
 
 		// Retrieve message model referenced by quote
-		final AbstractMessageModel quotedMessageModel = messageService.getMessageModelByApiMessageId(
+		final AbstractMessageModel quotedMessageModel = messageService.getMessageModelByApiMessageIdAndReceiver(
 			quotedMessageId,
-			receiverType
+			messageReceiver
 		);
 
 		if (quotedMessageModel != null) {
 			boolean receiverMatch = false;
-			switch (receiverType) {
+			switch (messageReceiver.getType()) {
 				case Type_CONTACT:
 					receiverMatch = quotedMessageModel.getIdentity().equals(messageModel.getIdentity());
 					break;
@@ -188,7 +189,7 @@ public class QuoteUtil {
 						bodyText,
 						quotedMessageId,
 						includeMessageModel ? quotedMessageModel : null,
-						receiverType,
+						messageReceiver,
 						thumbnail,
 						icon
 				);
@@ -359,7 +360,7 @@ public class QuoteUtil {
 		public @Nullable String identity;
 		public @Nullable String quotedMessageId;
 		public @Nullable AbstractMessageModel quotedMessageModel;
-		public @Nullable @MessageReceiverType Integer receiverType;
+		public @Nullable MessageReceiver messageReceiver;
 		public @Nullable Bitmap thumbnail;
 		public @Nullable @DrawableRes Integer icon;
 
@@ -393,7 +394,7 @@ public class QuoteUtil {
 			@NonNull String bodyText,
 			@NonNull String quotedMessageId,
 			@Nullable AbstractMessageModel quotedMessageModel,
-			@Nullable @MessageReceiverType Integer receiverType,
+			@Nullable MessageReceiver messageReceiver,
 			@Nullable Bitmap thumbnail,
 			@Nullable @DrawableRes Integer icon
 		) {
@@ -401,7 +402,7 @@ public class QuoteUtil {
 			content.identity = identity;
 			content.quotedMessageId = quotedMessageId;
 			content.quotedMessageModel = quotedMessageModel;
-			content.receiverType = receiverType;
+			content.messageReceiver = messageReceiver;
 			content.thumbnail = thumbnail;
 			content.icon = icon;
 			return content;

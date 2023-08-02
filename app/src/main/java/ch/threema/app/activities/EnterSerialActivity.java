@@ -37,12 +37,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.slf4j.Logger;
 
@@ -76,7 +77,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 	private static final String DIALOG_TAG_CHECKING = "check";
 	private TextView stateTextView, privateExplainText = null;
 	private EditText licenseKeyOrUsernameText, passwordText, serverText;
-	private ImageView unlockButton;
+	private MaterialButton unlockButton;
 	private Button loginButton;
 	private LicenseService licenseService;
 	private PreferenceService preferenceService;

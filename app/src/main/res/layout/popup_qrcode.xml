@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/qr_popup_container"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:paddingLeft="@dimen/qrcode_min_margin"
 	android:paddingRight="@dimen/qrcode_min_margin"
 	android:paddingTop="@dimen/qrcode_min_margin"
 	android:paddingBottom="@dimen/qrcode_min_margin"
-	android:background="@drawable/shape_rounded_corner_popup_bg_forced_light">
+	app:cardCornerRadius="24dp"
+	app:strokeColor="@android:color/white"
+	app:strokeWidth="3dp"
+	app:cardBackgroundColor="@android:color/white"
+	app:cardElevation="0dp">
 
 	<ImageView
 		android:id="@+id/image_view"
@@ -21,4 +27,4 @@
 		app:layout_constraintTop_toTopOf="parent"
 		app:layout_constraintBottom_toBottomOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

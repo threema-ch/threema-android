@@ -112,7 +112,6 @@ public class VoipStateServiceTest {
 
 		// Mock services
 		this.mockContactService = PowerMockito.mock(ContactService.class);
-		this.mockMessageService = PowerMockito.mock(MessageService.class);
 		this.mockRingtoneService = PowerMockito.mock(RingtoneService.class);
 		this.mockPreferenceService = PowerMockito.mock(PreferenceService.class);
 		this.mockLifetimeService = PowerMockito.mock(LifetimeService.class);
@@ -130,9 +129,6 @@ public class VoipStateServiceTest {
 		// Set up return values for preference service
 		when(this.mockPreferenceService.isVoipEnabled()).thenReturn(true);
 
-		// Mock message queue
-		this.mockMessageQueue = PowerMockito.mock(MessageQueue.class);
-
 		// Static mocks
 		mockStatic(LogUtil.class);
 		mockStatic(SystemClock.class);
@@ -147,8 +143,6 @@ public class VoipStateServiceTest {
 				this.mockContactService,
 				this.mockRingtoneService,
 				this.mockPreferenceService,
-				this.mockMessageService,
-				this.mockMessageQueue,
 				this.mockLifetimeService,
 				this.mockContext
 		);

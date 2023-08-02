@@ -28,7 +28,10 @@ import android.os.Looper;
 import android.os.PowerManager;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import ch.threema.app.BuildConfig;
@@ -37,10 +40,10 @@ public class RuntimeUtil {
 	private static Boolean isInTestMode;
 	public static Handler handler = new Handler(Looper.getMainLooper());
 
+	private static final ExecutorService workerExecutor = Executors.newCachedThreadPool();
+
 	/**
 	 * check if current running environment is a test suite
-	 *
-	 * @return
 	 */
 	public static boolean isInTest() {
 		if (isInTestMode == null) {
@@ -87,6 +90,19 @@ public class RuntimeUtil {
 				return null;
 			}
 		}.execute();
+	}
+
+	/**
+	 * Run a {@link Runnable} in a background worker thread.
+	 *
+	 * This method is backed by a {@link Executors#newCachedThreadPool()} that will create new threads
+	 * if needed (no thread available).
+	 *
+	 * Threads that have not been used for sixty seconds are terminated and removed from the cache.
+	 */
+	@AnyThread
+	public static void runOnWorkerThread(@NonNull final Runnable runnable) {
+		workerExecutor.execute(runnable);
 	}
 
 	/**

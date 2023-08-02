@@ -90,6 +90,18 @@ public class UrlUtilTest {
 	}
 
 	@Test
+	public void nonIdentifierChars() {
+		// Must contain a non-ascii character, otherwise the hyphen-minus is accepted anyway (ascii)
+		assertLegalUri("a-ü.ch");
+
+		// Accepted as only ascii characters are involved
+		assertLegalUri("-.ch");
+
+		// Don't allow mixing cyrillic a with latin a
+		assertIllegalUri("a-а.ch");
+	}
+
+	@Test
 	public void mixedScriptUris() {
 		assertLegalUri(GREEK + GREEK + ".com");
 

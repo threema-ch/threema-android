@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-	<!-- image preview activity -->
-	<integer name="gridview_num_columns">10</integer>
-	<!-- emoji picker -->
-</resources>

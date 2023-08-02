@@ -45,6 +45,7 @@ import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.BoxAudioMessage;
@@ -52,9 +53,9 @@ import ch.threema.domain.protocol.csp.messages.BoxImageMessage;
 import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
 import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
 import ch.threema.domain.protocol.csp.messages.BoxVideoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactDeleteProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactSetProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
 import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
 import ch.threema.domain.protocol.csp.messages.GroupCreateMessage;
@@ -100,6 +101,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.protobuf.csp.e2e.MessageMetadata;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -131,7 +133,7 @@ public class MessageCoder {
 	 * @throws BadMessageException if the message cannot be decrypted successfully
 	 * @throws MissingPublicKeyException if the sender's public key cannot be obtained
 	 */
-	public AbstractMessage decode(@NonNull MessageBox boxmsg, boolean fetch) throws BadMessageException, MissingPublicKeyException {
+	public @NonNull AbstractMessage decode(@NonNull MessageBox boxmsg, boolean fetch) throws BadMessageException, MissingPublicKeyException {
 
 		if (!boxmsg.getToIdentity().equals(identityStore.getIdentity())) {
 			throw new BadMessageException("Message is not for own identity, cannot decode");
@@ -171,40 +173,38 @@ public class MessageCoder {
 			contactStore.addContact(fetchedContact, result.addHidden);
 		}
 
-		if (result.msg != null) {
-			/* copy header attributes from boxed message */
-			result.msg.setFromIdentity(boxmsg.getFromIdentity());
-			result.msg.setToIdentity(boxmsg.getToIdentity());
-			result.msg.setMessageId(boxmsg.getMessageId());
-			result.msg.setDate(boxmsg.getDate());
-			result.msg.setMessageFlags(boxmsg.getFlags());
-			result.msg.setPushFromName(boxmsg.getPushFromName());
+		/* copy header attributes from boxed message */
+		result.msg.setFromIdentity(boxmsg.getFromIdentity());
+		result.msg.setToIdentity(boxmsg.getToIdentity());
+		result.msg.setMessageId(boxmsg.getMessageId());
+		result.msg.setDate(boxmsg.getDate());
+		result.msg.setMessageFlags(boxmsg.getFlags());
+		result.msg.setPushFromName(boxmsg.getPushFromName());
 
-			// Decrypt metadata, if present
-			if (boxmsg.getMetadataBox() != null) {
-				MetadataCoder coder = new MetadataCoder(identityStore);
-				try {
-					MessageMetadata metadata = coder.decode(boxmsg.getNonce(), boxmsg.getMetadataBox(), fetchedContact.getPublicKey());
+		// Decrypt metadata, if present
+		if (boxmsg.getMetadataBox() != null) {
+			MetadataCoder coder = new MetadataCoder(identityStore);
+			try {
+				MessageMetadata metadata = coder.decode(boxmsg.getNonce(), boxmsg.getMetadataBox(), fetchedContact.getPublicKey());
 
-					// Ensure message ID matches envelope message ID (so the server cannot swap it and
-					// cause messages to be misquoted or delivery receipts to be swapped)
-					if (metadata.getMessageId() != 0) {
-						MessageId metadataMessageId = new MessageId(metadata.getMessageId());
-						if (!metadataMessageId.equals(boxmsg.getMessageId())) {
-							throw new BadMessageException("Metadata message ID does not match envelope message ID");
-						}
+				// Ensure message ID matches envelope message ID (so the server cannot swap it and
+				// cause messages to be misquoted or delivery receipts to be swapped)
+				if (metadata.getMessageId() != 0) {
+					MessageId metadataMessageId = new MessageId(metadata.getMessageId());
+					if (!metadataMessageId.equals(boxmsg.getMessageId())) {
+						throw new BadMessageException("Metadata message ID does not match envelope message ID");
 					}
-
-					// Take date from encrypted metadata
-					if (metadata.getCreatedAt() != 0) {
-						result.msg.setDate(new Date(metadata.getCreatedAt()));
-					}
-
-					// Take nickname from encrypted metadata
-					result.msg.setPushFromName(metadata.getNickname());
-				} catch (InvalidProtocolBufferException | ThreemaException e) {
-					throw new BadMessageException("Metadata decode failed", e);
 				}
+
+				// Take date from encrypted metadata
+				if (metadata.getCreatedAt() != 0) {
+					result.msg.setDate(new Date(metadata.getCreatedAt()));
+				}
+
+				// Take nickname from encrypted metadata
+				result.msg.setPushFromName(metadata.getNickname());
+			} catch (InvalidProtocolBufferException | ThreemaException e) {
+				throw new BadMessageException("Metadata decode failed", e);
 			}
 		}
 
@@ -212,25 +212,51 @@ public class MessageCoder {
 	}
 
 	/**
-	 * Decode an encapsulated message (e.g. inside a forward security payload) that has already
-	 * been decrypted, and return it with the same attributes as the outer (envelope) message.
+	 * Decode a FS encapsulated message that has already been decrypted, and return it with the
+	 * same attributes as the outer (envelope) message.
 	 *
 	 * @param data decrypted body
 	 * @param outer outer message
 	 * @param contact sender contact
+	 * @throws BadMessageException if the message cannot be decoded or if the encapsulated message
+	 *   is not allowed to be encapsulated
 	 */
-	public AbstractMessage decodeEncapsulated(byte[] data, AbstractMessage outer, Contact contact) throws BadMessageException {
+	public @NonNull AbstractMessage decodeEncapsulated(
+		@NonNull byte[] data,
+		@NonNull AbstractMessage outer,
+		@NonNull Version appliedVersion,
+		@NonNull Contact contact
+	) throws BadMessageException {
 		DeserializeDataResult result = deserializeData(data, data.length, outer.getFromIdentity(), outer.getToIdentity(), contact);
 
-		if (result.msg != null) {
-			/* copy header attributes from outer message */
-			result.msg.setFromIdentity(outer.getFromIdentity());
-			result.msg.setToIdentity(outer.getToIdentity());
-			result.msg.setMessageId(outer.getMessageId());
-			result.msg.setDate(outer.getDate());
-			result.msg.setMessageFlags(outer.getMessageFlags());
-			result.msg.setPushFromName(outer.getPushFromName());
+		// Filter messages not allowed by any FS version.
+		if (result.msg instanceof ForwardSecurityEnvelopeMessage) {
+			throw new BadMessageException("Unexpected FS envelope encapsulated by an FS message");
 		}
+
+		// Filter messages based on the applied version.
+		switch (appliedVersion) {
+			case V1_0:
+			case V1_1:
+				// Technically, typing-indicator and delivery-receipts are not allowed for V1.0 but
+				// they don't do any harm, so we'll let this slide through for simplicity.
+				//
+				// Disallow encapsulation of group messages for V1.X
+				if (result.msg instanceof AbstractGroupMessage) {
+					throw new BadMessageException("Unexpected group message encapsulated by an FS message");
+				}
+				break;
+			default:
+				throw new BadMessageException("Unhandled FS version when decapsulating: " + appliedVersion);
+		}
+
+		/* copy header attributes from outer message */
+		result.msg.setFromIdentity(outer.getFromIdentity());
+		result.msg.setToIdentity(outer.getToIdentity());
+		result.msg.setMessageId(outer.getMessageId());
+		result.msg.setDate(outer.getDate());
+		result.msg.setMessageFlags(outer.getMessageFlags());
+		result.msg.setPushFromName(outer.getPushFromName());
 
 		return result.msg;
 	}
@@ -239,7 +265,6 @@ public class MessageCoder {
 	 * Encrypt this message using the given contact and identity store and return the boxed result.
 	 *
 	 * @return boxed message
-	 * @throws ThreemaException
 	 */
 	public @NonNull
 	MessageBox encode(@NonNull AbstractMessage message, @NonNull NonceFactory nonceFactory) throws ThreemaException {
@@ -332,10 +357,10 @@ public class MessageCoder {
 		}
 	}
 
-	private DeserializeDataResult deserializeData(byte[] data, int realDataLength, String fromIdentity, String toIdentity, Contact contact) throws BadMessageException {
+	private @NonNull DeserializeDataResult deserializeData(byte[] data, int realDataLength, String fromIdentity, String toIdentity, Contact contact) throws BadMessageException {
 		/* first byte of data is type */
 		int type = data[0] & 0xFF;
-		AbstractMessage msg = null;
+		AbstractMessage msg;
 
 		// Set this flag to false for message types that should not trigger a contact creation
 		boolean addContact = contact == null;
@@ -777,7 +802,9 @@ public class MessageCoder {
 				groupBallotCreateMessage.setBallotId(new BallotId(data, pos));
 				pos += ProtocolDefines.BALLOT_ID_LEN;
 
-				groupBallotCreateMessage.setData(BallotData.parse(new String(data, pos, realDataLength - pos, UTF_8)));
+				String jsonObjectString = new String(data, pos, realDataLength - pos, UTF_8);
+				groupBallotCreateMessage.setData(BallotData.parse(jsonObjectString));
+				groupBallotCreateMessage.setRawBallotData(jsonObjectString);
 				msg = groupBallotCreateMessage;
 				break;
 			}
@@ -910,20 +937,20 @@ public class MessageCoder {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for contact set photo message");
 				}
 
-				ContactSetPhotoMessage contactSetPhotoMessage = new ContactSetPhotoMessage();
-				contactSetPhotoMessage.setFromIdentity(fromIdentity);
+				ContactSetProfilePictureMessage contactSetProfilePictureMessage = new ContactSetProfilePictureMessage();
+				contactSetProfilePictureMessage.setFromIdentity(fromIdentity);
 
 				int i = 1;
 				byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
 				System.arraycopy(data, i, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
 				i += ProtocolDefines.BLOB_ID_LEN;
-				contactSetPhotoMessage.setBlobId(blobId);
-				contactSetPhotoMessage.setSize(EndianUtils.readSwappedInteger(data, i));
+				contactSetProfilePictureMessage.setBlobId(blobId);
+				contactSetProfilePictureMessage.setSize(EndianUtils.readSwappedInteger(data, i));
 				i += 4;
 				byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
 				System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
-				contactSetPhotoMessage.setEncryptionKey(blobKey);
-				msg = contactSetPhotoMessage;
+				contactSetProfilePictureMessage.setEncryptionKey(blobKey);
+				msg = contactSetProfilePictureMessage;
 
 				break;
 			}
@@ -933,7 +960,7 @@ public class MessageCoder {
 				if (realDataLength != 1) {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for contact delete photo message");
 				}
-				msg = new ContactDeletePhotoMessage();
+				msg = new ContactDeleteProfilePictureMessage();
 
 				break;
 			}
@@ -943,7 +970,7 @@ public class MessageCoder {
 				if (realDataLength != 1) {
 					throw new BadMessageException("Bad length (" + realDataLength + ") for contact request photo message");
 				}
-				msg = new ContactRequestPhotoMessage();
+				msg = new ContactRequestProfilePictureMessage();
 
 				break;
 			}
@@ -996,8 +1023,7 @@ public class MessageCoder {
 			}
 
 			default:
-				MessageCoder.logger.info("Unsupported message type {}", type);
-				break;
+				throw new BadMessageException("Unsupported message type " + type);
 		}
 
 		return new DeserializeDataResult(msg, addContact, addHidden);
@@ -1005,11 +1031,11 @@ public class MessageCoder {
 
 
 	private static class DeserializeDataResult {
-		final AbstractMessage msg;
+		final @NonNull AbstractMessage msg;
 		final boolean addContact;
 		final boolean addHidden;
 
-		public DeserializeDataResult(AbstractMessage msg, boolean addContact, boolean addHidden) {
+		public DeserializeDataResult(@NonNull AbstractMessage msg, boolean addContact, boolean addHidden) {
 			this.msg = msg;
 			this.addContact = addContact;
 			this.addHidden = addHidden;

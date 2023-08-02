@@ -26,9 +26,11 @@ import org.slf4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 public class GroupFileMessage extends AbstractGroupMessage
 	implements FileMessageInterface {
@@ -44,6 +46,12 @@ public class GroupFileMessage extends AbstractGroupMessage
 	@Override
 	public boolean flagSendPush() {
 		return true;
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 
 	@Override

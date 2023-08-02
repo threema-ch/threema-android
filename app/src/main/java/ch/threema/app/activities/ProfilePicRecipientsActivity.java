@@ -65,8 +65,8 @@ public class ProfilePicRecipientsActivity extends MemberChooseActivity {
 	}
 
 	@Override
-	protected boolean getAddNextButton() {
-		return false;
+	protected int getMode() {
+		return MODE_PROFILE_PIC_RECIPIENTS;
 	}
 
 	@Override

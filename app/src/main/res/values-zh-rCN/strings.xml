@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">联系人</string>
     <string name="title_section1">会话</string>
-    <string name="title_compose_message">发起新的会话</string>
+    <string name="title_compose_message">发起新会话</string>
     <string name="title_choose_recipient">选择收件人</string>
     <string name="title_keyfingerprint">密钥指纹</string>
     <string name="title_mythreemaid">我的 Threema ID</string>
@@ -291,7 +291,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="title_select_contacts">选择成员</string>
     <string name="pin_invalid_not_set">PIN 码无效。设置未完成。</string>
     <string name="prefs_group_notifications">群组会话</string>
-    <string name="add_group_members_list">群组成员</string>
     <string name="group_select_at_least_two">需要选择至少一个成员才能继续</string>
     <string name="group_select_max">您不能选择超过%1$d个群组成员</string>
     <string name="search">搜索</string>
@@ -553,7 +552,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
 ，而您的移动运营商也可能会收取额外费用。我们建议
 仅在WiFi网络中上传和下载文件。</string>
     <string name="prefs_theme">设计主题</string>
-    <string name="list_theme_light">浅色（默认）</string>
+    <string name="list_theme_light">浅色</string>
     <string name="list_theme_dark">深色</string>
     <string name="prefs_header_appearance">外观</string>
     <string name="prefs_sum_passphrase">需要密码才能解锁本地加密</string>
@@ -698,7 +697,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="configure">配置</string>
     <string name="file_is_not_audio">不是音频文件</string>
     <!-- restrictions -->
-    <string name="disabled_by_policy">某些设置已被设备策略禁用</string>
+    <string name="disabled_by_policy">某些设置已被管理员禁用</string>
     <string name="select_all">全选</string>
     <string name="deleting_messages">正在删除消息</string>
     <string name="media_gallery_files">文件</string>
@@ -709,7 +708,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_proximity_sensor">使用近距离传感器</string>
     <string name="prefs_proximity_sensor_explain">如果覆盖了近距离传感器，请使用听筒播放语音消息</string>
     <string name="error_creating_group">创建/更新群组时发生错误</string>
-    <string name="no_media_found_generic">在此会话中找不到媒体</string>
+    <string name="no_media_found_generic">在此会话中找不到符合已选择的媒体</string>
     <string name="max_images_reached">一次最多可以编辑%d个项目</string>
     <string name="enter_description">请在这里描述错误/问题。</string>
     <string name="add_caption_hint">添加可选描述</string>
@@ -929,7 +928,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="safe_configure_choose_password_force">请设置一个强密码，以使用 Threema Safe 保护您的 Threema ID。请不要忘记您在这里输入的内容！</string>
     <string name="safe_deactivate">禁用 Threema Safe</string>
     <string name="safe_deactivate_explain">如果您禁用 Threema Safe，任何现有的备份都将在服务器上被删除。是否继续？</string>
-    <string name="add_group_members">添加新成员</string>
+    <string name="add_group_members">添加更多成员</string>
     <string name="contact_add_confirm">您想将新联系人 “%1$s” 添加到您的联系人列表中吗？</string>
     <string name="password_bad">密码强度低</string>
     <string name="prefs_fix_background_data">启用背景数据</string>
@@ -1046,11 +1045,12 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="open_in_maps_app">在地图应用中打开</string>
     <string name="delete">删除</string>
     <string name="continue_recording">继续录音</string>
-    <string name="whatsnew_title">新功能：%1$s 群组通话</string>
-    <string name="whatsnew_headline"><![CDATA[<p>安卓版的 %1$s 现在可以进行端对端加密群组通话了。</p>
-<p>如要发起群组通话，首先打开任意一个群组会话，然后点击顶部的相机图标即可。</p>
-<p>所有群组成员都会收到通知，并可以决定是否加入通话。</p>
-<p><b>请注意：</b>iOS 的群组通话功能将在稍后发布。</p>]]></string>
+    <string name="whatsnew_title">欢迎使用 %1$s 5.1</string>
+    <string name="whatsnew_headline"><![CDATA[
+<p>此版本着重于应用程序的安全性、可用性和现代化。</p>
+<p>应大众要求，此应用经过彻底重新设计，以完全支持 Android 12 推出的 “Material You” 范式设计。可选的 \"动态配色 \"设置可让应用程序适应您的个性化配色风格。</p>
+<p>现在默认为安装了最新 %1$s 版本的所有联系人，启用完全正向保密。</p>
+<p>其他改进包括新的语音消息播放器（当应用程序在后台运行时，语音信息继续在通知中播放）以及请求权限时的新用户指南。</p> ]]></string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">无效的备份路径</string>
@@ -1193,7 +1193,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="no_faces_detected">未检测到面部</string>
     <string name="smiley">笑脸</string>
     <string name="blur">模糊</string>
-    <string name="face_blur_tooltip_title">新增：人脸识别</string>
+    <string name="face_blur_tooltip_title">人脸识别</string>
     <string name="face_blur_tooltip_text">在图片中找出面孔，将脸部模糊或用笑脸覆盖。</string>
     <string name="listened_to">已聆听</string>
     <string name="transcoder_unsupported_audio_format">由于缺少系统支持，音频无法转码。</string>
@@ -1264,7 +1264,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_link_rename">重命名</string>
     <string name="group_link_rename_tag">新名称</string>
     <string name="tap_here_for_more">点击这里查看更多信息</string>
-    <string name="another_connection_instructions">服务器检测到相同的 Threema ID 在两个或更多的设备上同时连接。\n\n相同的 Threema ID 不可以在多个设备上同时使用。新的消息只会发送到最新登录的设备上。\n\n如果您要切换到新设备，请先在旧设备上卸载或禁用 %s，然后重启新设备。</string>
+    <string name="another_connection_instructions"><![CDATA[服务器检测到相同的 Threema ID 在两个或更多的设备上同时连接。<br><br>相同的 Threema ID 不可以在多个设备上同时使用。新的消息只会发送到最新登录的设备上。<br><br>如果您要切换到新设备，请先在旧设备上卸载或禁用 %s，然后重启新设备。]]></string>
     <string name="app_store_error_code">应用商店错误代码：%d</string>
     <string name="backup_restore_type"><![CDATA[您想恢复哪些备份数据？<br/><br/> <a href=%s>了解更多有关 Threema 备份的消息</a>。]]></string>
     <string name="data_backup_info">恢复所有内容，包括会话记录</string>
@@ -1388,20 +1388,21 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="organization_type">单位</string>
     <string name="permission_bluetooth_connect_required">请启用 “附近设备” 权限以定位已连接的蓝牙耳机</string>
     <string name="threema_push_start_webclient_sessions_manually">Threema Push 现在已启用。您需要手动重启 Threema 网页版和桌面版会话。</string>
-    <string name="tooltip_multiple_recipients_title">新功能：一条消息同时发送到多个收件人</string>
+    <string name="tooltip_multiple_recipients_title">一条消息同时发送到多个收件人</string>
     <string name="tooltip_multiple_recipients_text">长按可将一条消息同时发送到多个收件人。</string>
     <string name="synchronizing">同步中…</string>
     <string name="forward_security">以完全正向保密发送消息</string>
     <string name="forward_security_mode">完全正向保密</string>
     <string name="forward_security_mode_none">否</string>
-    <string name="clear_forward_security">清除完全正向保密会话</string>
+    <string name="clear_forward_security">重置对此联系人的 “完全正向保密” 状态</string>
+    <string name="clear_forward_security_warning">仅在 Threema 支持团队的指示下，才执行此操作。</string>
     <string name="forward_security_cleared">与此联系人的完全正向保密会话已被清除</string>
     <string name="message_without_forward_security">您收到一条没有完全正向保密的消息，您可以验证发件人是否主动禁用完美前向保密。</string>
     <string name="forward_security_established">此会话中的消息现正受完全正向保密的保护。</string>
     <string name="forward_security_established_rx">在此会话中收到的消息现正受完全正向保密的保护，您可以在联系人详细信息中启用完全正向保密来保护以后发送的消息。</string>
-    <string name="forward_security_reset">与此联系人的完全正向保密会话已被重置。如果联系人更换了设备或重新安装了此应用程序，就会重置会话。</string>
+    <string name="forward_security_reset">这个之前已启用 “完全正向保密” 的会话，现被重置保密状态。如果对方更换了设备或重新安装此应用程序，就会重置保密状态。</string>
     <string name="forward_security_reset_simple">与此联系人的完全正向保密会话已重置。</string>
-    <string name="forward_security_message_out_of_order">收到的消息发生故障，无法解密。</string>
+    <string name="forward_security_message_out_of_order">解密新收到的消息发生错误，无法解密。</string>
     <string name="self_updater_installation_failed">下载更新失败。请手动从 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下载并安装更新。</string>
     <string name="spam_first_contact">此会话来自一个未知联系人</string>
     <string name="spam_report">举报垃圾消息</string>
@@ -1436,21 +1437,27 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_summary_hibernation_api_32">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “撤销权限并释放空间” 。</string>
     <string name="prefs_summary_hibernation_api">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “暂停未使用应用的活动” 。</string>
     <string name="unable_to_fetch_configuration">无法从配置服务器获取数据，请稍后再试。</string>
-    <string name="rogue_device_warning">服务器检测到有人试图从另一台设备登录现有的 Threema ID。\n\n如果您之前没有在其他设备上登录您的 Threema ID，或者使用旧版本的应用程序，请联系支持人员并发送日志文件。</string>
+    <string name="rogue_device_warning">我们的服务器检测到有人试图从另一台设备登录现有的 Threema ID，您最近是否在其他设备上登录过您的 Threema ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此消息。&lt;br&gt;&lt;br&gt;如果没有，您的私钥可能已经泄露。在创建新ID之前，请<a href="https://threema.ch/en/faq/another_connection">按照我们的建议</a>保护您的设备和数据。</string>
     <string name="fetch2_failure">与配置服务器同步失败。</string>
     <string name="no_members_support_group_calls">此群组中没有成员可以接听群组通话</string>
     <string name="group_calls">群组通话</string>
     <string name="prefs_title_group_calls_enable">启用群组通话</string>
     <string name="group_no_members">此群组不包含任何其他成员</string>
     <string name="group_call">群组通话</string>
-    <string name="checking_compatibility">正在检查兼容性...</string>
+    <string name="checking_compatibility">正在检查兼容性…</string>
     <string name="group_call_mic_permission_rationale">如要进行群组通话，您必须在系统 “权限” 设置下允许 %s 访问麦克风权限。</string>
+    <string name="group_call_mic_permission_description">如要进行群组通话，您必须允许访问麦克风的权限，以便其他人可以听到您的声音。</string>
+    <string name="call_mic_permission_description">如要进行语音通话，您必须允许访问麦克风权限，以便其他人可以听到您的声音。</string>
     <string name="group_call_camera_permission_rationale">为了让其他参与者看到您的照片，您必须在系统 “权限” 设置下允许 %s 访问相机权限。</string>
+    <string name="group_call_phone_permission_description">如要进行群组通话，您必须允许访问电话权限，来防止语音通话中断 Threema 通话。</string>
+    <string name="call_phone_permission_description">如要进行 Threema 通话，您必须允许访问电话权限，来防止语音通话中断 Threema 通话。</string>
+    <string name="group_call_nearby_devices_permission_description">如要使用蓝牙耳机进行群组通话，您必须允许访问 “附近设备” 权限来检测蓝牙耳机。</string>
+    <string name="call_nearby_devices_permission_description">如要使用蓝牙耳机进行 Threema 通话，您必须允许访问 “附近设备” 权限来检测蓝牙耳机。</string>
     <string name="settings">设置</string>
     <string name="leave">退出</string>
     <string name="fs_key_mismatch">密钥不匹配</string>
     <string name="tap_to_resend">点击重新发送</string>
-    <string name="group_calls_tooltip_title">新功能：群组通话</string>
+    <string name="group_calls_tooltip_title">群组通话</string>
     <string name="group_calls_tooltip_text">点击这里可邀请所有群组成员加入通话。所有群组成员都会收到通知，并可以决定是否要加入通话。</string>
     <string name="prefs_title_calls">加密通话</string>
     <string name="prefs_sum_group_calls_vibration">选择是否在群组通话开始时进行振动</string>
@@ -1459,7 +1466,35 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="forward_security_explanation">完全正向保密（PFS）可以保护会话记录不被追溯解密，即使长期加密密钥已被盗用。\n\n如果双方的应用程序都支持完全正向保密的话，就可以启用此选项。</string>
     <string name="group_call_inactivity_left">因为长时间不活动，群组通话自动退出</string>
     <string name="missing_permission_external_storage">无法复制文件，请尝试以下步骤以解決问题：\n1. 打开系统设置。\n2. 前往 “应用程序”，然后点击右上角的三个点，选择 “特殊访问” 权限。\n3. 点击 “所有文件访问”。\n4. 点击右上角的三个点，选择“显示系统应用程序”。\n5. 点击 “外部存储” 并确保授予 “允许访问所有文件” 权限。\n6. 再次尝试恢复备份。</string>
-    <string name="forward_security_downgraded_status_message">此联系人所使用的应用版本并不支持 “完全正向保密” 功能。从现在起，消息将在没有 “完全正向保密” 的情况下发送。</string>
+    <string name="forward_security_downgraded_status_message">因为对方使用的应用程序版本不支持 “完全正向保密” 功能，所以在此会话中已禁用 “完全正向保密” 。</string>
+    <string name="crop_image_title">裁剪图片</string>
+    <string name="scroll_to_bottom">回到底部</string>
+    <string name="scroll_to_top">回到顶部</string>
+    <string name="contact_sync_mdm_rationale">由于您的管理员为您的设备启用了联系人同步的功能，因此我们需要访问联系人的权限。</string>
+    <string name="welcome_back">欢迎回来！</string>
+    <string name="id_restored_successfully">您的 Threema ID 已成功恢復</string>
+    <string name="prefs_dynamic_colors">动态颜色</string>
+    <string name="prefs_dynamic_colors_sum">使用系统颜色</string>
+    <string name="apply_changes">应用更改</string>
+    <string name="prefs_threema_work_summary">您知道 Threema 也为企业提供专业的通信解决方案吗？点击这里了解更多关于 Threema Work 的信息</string>
+    <string name="notification_channel_voice_message_player">语音消息播放器</string>
+    <string name="voice_message_from">来自%s的语音消息</string>
+    <string name="vm_fg_service_not_allowed">语音消息播放错误</string>
+    <string name="vm_fg_service_not_allowed_explain">如果要播放语音消息，请先在手机通知栏点击播放按钮，否则就在会话界面中点击播放按钮。</string>
+    <string name="use_threema_without_this_permission">在没有启用此权限的情况下使用 %s</string>
+    <string name="grant_permission">授予权限</string>
+    <string name="grant_permission_settings">在设置中授予权限</string>
+    <string name="ignore_permission">下次不再提示</string>
+    <string name="permission_nearby_devices">附近设备</string>
+    <string name="permission_bluetooth">蓝牙</string>
+    <string name="permission_camera">相机</string>
+    <string name="permission_microphone">麦克风</string>
+    <string name="permission_read_phone_state">电话</string>
+    <string name="permission_enable_in_settings_rationale">请在设置中启用该权限。先选择 “权限”，然后点击允许 “%s”。</string>
+    <string name="group_name">群组名称</string>
+    <string name="samsung_permission_problem_explain">由于 “外部存储” 权限被禁用，%1$s 无法访问媒体文件。如要修复这个问题，请先在接下来的界面中允许 “外部存储” 权限，然后重启 %1$s。</string>
+    <string name="min_n_chars">至少%d个字符</string>
+    <string name="prefs_title_grant_bluetooth_permission">授予蓝牙权限</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>
@@ -1509,7 +1544,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
         <item quantity="other">%d个会话正在运行</item>
     </plurals>
     <plurals name="really_delete_outgoing_request">
-        <item quantity="other">您确定要删除%d个群组加入请求吗？请注意，删除请求并不会撤销加入请求。如果群组管理员还未回复请求，你仍然可能被接受或拒绝加入群组。</item>
+        <item quantity="other">您确定要删除%d个群组加入请求吗？请注意，删除请求并不会撤销加入请求。如果加入请求还未得到回复，你仍然可能被接受或被其他人邀请加入群组。</item>
     </plurals>
     <plurals name="really_delete_incoming_request">
         <item quantity="other">您确定要删除%d个群组加入请求吗？
@@ -1531,5 +1566,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     </plurals>
     <plurals name="delete_messages">
         <item quantity="other">删除此设备上的%d条消息？</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="other">%d个群组成员</item>
     </plurals>
 </resources>

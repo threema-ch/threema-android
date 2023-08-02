@@ -21,7 +21,6 @@
 
 package ch.threema.app.activities;
 
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -48,7 +47,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -69,6 +70,7 @@ import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.fragments.mediaviews.AudioViewFragment;
 import ch.threema.app.fragments.mediaviews.FileViewFragment;
+import ch.threema.app.fragments.mediaviews.GifViewFragment;
 import ch.threema.app.fragments.mediaviews.ImageViewFragment;
 import ch.threema.app.fragments.mediaviews.MediaPlayerViewFragment;
 import ch.threema.app.fragments.mediaviews.MediaViewFragment;
@@ -78,7 +80,6 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.LockableViewPager;
-import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
@@ -96,7 +97,6 @@ import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 
-
 public class MediaViewerActivity extends ThreemaToolbarActivity implements
 	ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
@@ -109,9 +109,9 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 	public static final String EXTRA_ID_IMMEDIATE_PLAY = "play";
 	public static final String EXTRA_ID_REVERSE_ORDER = "reverse";
 	public static final String EXTRA_FILTER = "filter";
+	public static final String EXTRA_IS_VOICEMESSAGE = "vm";
 
 	private LockableViewPager pager;
-
 	private File currentMediaFile;
 	private ActionBar actionBar;
 
@@ -172,24 +172,29 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		this.actionBar.setTitle(" ");
 
 		ViewCompat.setOnApplyWindowInsetsListener(getToolbar(), (v, insets) -> {
+			Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
 			FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) v.getLayoutParams();
-			lp.topMargin = insets.getSystemWindowInsetTop();
-			lp.leftMargin = insets.getSystemWindowInsetLeft();
-			lp.rightMargin = insets.getSystemWindowInsetRight();
+			lp.topMargin = systemInsets.top;
+			lp.leftMargin = systemInsets.left;
+			lp.rightMargin = systemInsets.right;
 			v.setLayoutParams(lp);
 
 			return insets;
 		});
-		getToolbar().setTitleTextAppearance(this, R.style.TextAppearance_MediaViewer_Title);
-		getToolbar().setSubtitleTextAppearance(this, R.style.TextAppearance_MediaViewer_SubTitle);
+		getToolbar().setTitleTextAppearance(this, R.style.Threema_TextAppearance_MediaViewer_Title);
+		getToolbar().setSubtitleTextAppearance(this, R.style.Threema_TextAppearance_MediaViewer_SubTitle);
 
 		this.caption = findViewById(R.id.caption);
 
 		this.captionContainer = findViewById(R.id.caption_container);
 		ViewCompat.setOnApplyWindowInsetsListener(this.captionContainer, (v, insets) -> {
-			FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) v.getLayoutParams();
-			params.setMargins(insets.getSystemWindowInsetLeft(), 0, insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom() + getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_bottom));
-			v.setLayoutParams(params);
+			Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+			FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) v.getLayoutParams();
+			lp.leftMargin =	systemInsets.left + getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_horizontal);
+			lp.rightMargin = systemInsets.right + getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_horizontal);
+			lp.bottomMargin = systemInsets.bottom + getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_bottom);
+			v.setLayoutParams(lp);
 
 			return insets;
 		});
@@ -501,7 +506,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		if (messageModel == null) {
 			return;
 		}
-		AnimationUtil.startActivityForResult(this, null, IntentDataUtil.getJumpToMessageIntent(this, messageModel), ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+		startActivityForResult(IntentDataUtil.getJumpToMessageIntent(this, messageModel), ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 		finish();
 	}
 
@@ -606,7 +611,6 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void attachAdapter() {
-		//reset adapter!
 		PagerAdapter pageAdapter = new ScreenSlidePagerAdapter(this, getSupportFragmentManager());
 		this.pager.setAdapter(pageAdapter);
 		this.pager.setCurrentItem(this.currentPosition);
@@ -696,7 +700,9 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 						break;
 					case FILE:
 						String mimeType = messageModel.getFileData().getMimeType();
-						if (MimeUtil.isImageFile(mimeType)) {
+						if (MimeUtil.isGifFile(mimeType)) {
+							f = new GifViewFragment();
+						} else if (MimeUtil.isImageFile(mimeType)) {
 							f = new ImageViewFragment();
 						} else if (MimeUtil.isVideoFile(mimeType)) {
 							f = new VideoViewFragment();
@@ -704,6 +710,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 							if (MimeUtil.isMidiFile(mimeType) || MimeUtil.isFlacFile(mimeType)) {
 								f = new MediaPlayerViewFragment();
 							} else {
+								args.putBoolean(EXTRA_IS_VOICEMESSAGE, messageModel.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE);
 								f = new AudioViewFragment();
 							}
 						} else {
@@ -720,18 +727,6 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 				args.putInt("position", position);
 				f.setArguments(args);
 
-				//lock page if media is open (image open = zoom)
-				f.setOnMediaOpenListener(new MediaViewFragment.OnMediaOpenListener() {
-					@Override
-					public void closed() {
-						a.pager.lock(false);
-					}
-
-					@Override
-					public void open() {
-						a.pager.lock(true);
-					}
-				});
 				f.setOnImageLoaded(new MediaViewFragment.OnMediaLoadListener() {
 					@Override
 					public void decrypting() {

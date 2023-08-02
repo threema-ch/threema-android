@@ -1,39 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<!-- accent colors -->
-	<color name="accent_light">#BB2E27</color> //OnPrem Color weight 700//
-	<color name="dark_accent">#D93E34</color> //OnPrem Color weight 900//
-	<color name="accent_secondary">#FBCCD0</color> //OnPrem Color weight 100//
-	<color name="dark_accent_secondary">#E89A98</color> //OnPrem Color weight 200//
-	<color name="accent_alpha">#50BB2E27</color>
-	<color name="dark_accent_alpha">#50D93E34</color>
-
 	<!-- wizard -->
-	<color name="wizard_color_primary">#ffffff</color> //weiss//
-	<color name="wizard_alpha_background">#33ffffff</color> //white//
-	<color name="wizard_color_accent">#E84735</color> //OnPrem Color weight 500/Brand Primary//
-	<color name="wizard_color_accent_dark">#BB2E27</color> //OnPrem Color weight 800//
+	<color name="wizard_alpha_background">#33ffffff</color>
+	<color name="wizard_color_accent">#A52422</color>
+	<color name="wizard_color_accent_dark">#D94745</color>
 	<color name="wizard_color_button_disabled">#66E84735</color> //OnPrem Color weight 500/Brand Primary//
 
 	<!-- chat items light -->
-	<color name="light_bubble_recv">#F4F1F1</color> //very very light red//
-	<color name="light_bubble_send">#FDEBED</color> //OnPrem Color weight 50//
-	<color name="bubble_status">#e9e9e9</color> //light grey//
-	<color name="bubble_selected">#E89A98</color> //OnPrem Color weight 300//
-	<color name="bubble_selected_overlay">#44E89A98</color>
-	<color name="unread_messages_text_color">#88000000</color>
-	<color name="unread_messages_bg_color">#fff7f8f9</color>
-
-	<!-- chat items dark -->
-	<color name="dark_bubble_recv">#666666</color>
-	<color name="dark_bubble_send">#303030</color>
-	<color name="dark_bubble_status">#d4d4d4</color>
-	<color name="bubble_selected_dark">#DC7371</color> //OnPrem Color weight 300//
-	<color name="dark_bubble_selected_overlay">#44DC7371</color>
-	<color name="dark_unread_messages_text_color">#FF000000</color>
-	<color name="dark_unread_messages_bg_color">#FFFBCCD0</color>
-
-	<!-- recently added contact background -->
-	<color name="recently_added_background_light">#fff3f3f3</color>
-	<color name="recently_added_background_dark">#ff551211</color>
+	<color name="bubble_receive">#F4F1F1</color> //very very light red//
 </resources>

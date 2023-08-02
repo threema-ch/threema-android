@@ -25,9 +25,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
+
 import java.util.List;
 
-import androidx.annotation.MainThread;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.TextEntryDialog;
@@ -95,8 +96,8 @@ public class DistributionListAddActivity extends MemberChooseActivity implements
 	}
 
 	@Override
-	protected boolean getAddNextButton() {
-		return true;
+	protected int getMode() {
+		return MODE_NEW_DISTRIBUTION_LIST;
 	}
 
 	@Override

@@ -37,6 +37,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -44,10 +45,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,6 +60,7 @@ import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
@@ -76,6 +80,7 @@ import java.util.concurrent.Executors;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.CropImageActivity;
+import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.managers.ListenerManager;
@@ -101,6 +106,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private static final int REQUEST_CODE_CAMERA_PERMISSION = 43321;
 	private static final int REQUEST_CODE_CAMERA = 43322;
 	private static final int REQUEST_CODE_CROP = 43323;
+	private static final String DIALOG_TAG_SAMSUNG_FIX = "samsung_fix";
 	private ContactService contactService;
 	private GroupService groupService;
 	private FileService fileService;
@@ -381,7 +387,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		MenuBuilder menuBuilder = new MenuBuilder(getContext());
 		new MenuInflater(getContext()).inflate(R.menu.view_avatar_edit, menuBuilder);
 
-		ConfigUtils.themeMenu(menuBuilder, ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorSecondary));
+		ConfigUtils.tintMenu(menuBuilder, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface));
 
 		if (!hasAvatar()) {
 			menuBuilder.removeItem(R.id.menu_remove_picture);
@@ -410,7 +416,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 			}
 		});
 
-		Context wrapper = new ContextThemeWrapper(getContext(), ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK ? R.style.AppBaseTheme_Dark : R.style.AppBaseTheme);
+		Context wrapper = new ContextThemeWrapper(getContext(), R.style.AppBaseTheme);
 		MenuPopupHelper optionsMenu = new MenuPopupHelper(wrapper, menuBuilder, avatarEditOverlay);
 		optionsMenu.setForceShowIcon(true);
 		optionsMenu.show();
@@ -428,8 +434,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 			@Override
 			protected void onPostExecute(Bitmap bitmap) {
-				ImagePopup detailPopup = new ImagePopup(getContext(), parent, R.layout.popup_image_nomargin);
-				detailPopup.show(AvatarEditView.this, bitmap, null);
+				ImagePopup detailPopup = new ImagePopup(getContext(), parent);
+				detailPopup.show(AvatarEditView.this, bitmap);
 			}
 		}.execute();
 
@@ -497,7 +503,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 	private void openCamera() {
 		try {
-			avatarData.setCameraFile(fileService.createTempFile(".camera", ".jpg", !ConfigUtils.useContentUris()));
+			avatarData.setCameraFile(fileService.createTempFile(".camera", ".jpg", false));
 			FileUtil.getCameraFile(getActivity(), getFragment(), avatarData.getCameraFile(), REQUEST_CODE_CAMERA, fileService, true);
 		} catch (Exception e) {
 			logger.error("Exception", e);
@@ -548,7 +554,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 					// return from image picker
 					if (intent != null && intent.getData() != null) {
 						try {
-							avatarData.setCameraFile(fileService.createTempFile(".camera", ".jpg", !ConfigUtils.useContentUris()));
+							avatarData.setCameraFile(fileService.createTempFile(".camera", ".jpg", false));
 							try (InputStream is = getActivity().getContentResolver().openInputStream(intent.getData());
 							    FileOutputStream fos = new FileOutputStream(avatarData.getCameraFile())) {
 								if (is != null) {
@@ -556,6 +562,10 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 								} else {
 									throw new Exception("Unable to open input stream");
 								}
+							} catch (SecurityException e) {
+								logger.error("Unable to open file selected in picker", e);
+								startSamsungPermissionFixFlow();
+								break;
 							}
 							doCrop(avatarData.getCameraFile());
 						} catch (Exception e) {
@@ -619,6 +629,46 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		}
 	}
 
+	/**
+	 * Sams*ng forgot to enable the "all files access" permission for the com.android.externalstorage content provider
+	 * This flow guides users to the system setting allowing them to enable the permission
+	 * https://issuetracker.google.com/issues/258270138
+	 */
+	private void startSamsungPermissionFixFlow() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			FragmentManager fragmentManager;
+			if (getFragment() != null) {
+				fragmentManager = getFragment().getParentFragmentManager();
+			} else {
+				fragmentManager = getActivity().getSupportFragmentManager();
+			}
+			GenericAlertDialog dialog = GenericAlertDialog.newInstance(
+				R.string.prefs_workarounds,
+				getContext().getString(R.string.samsung_permission_problem_explain, getContext().getString(R.string.app_name)),
+				R.string.label_continue,
+				0);
+			dialog.setCallback((tag, data) -> continueSamsungPermissionFixFlow());
+			dialog.show(fragmentManager, DIALOG_TAG_SAMSUNG_FIX);
+		} else {
+			LongToast.makeText(getContext(), R.string.permission_storage_required, Toast.LENGTH_LONG);
+		}
+	}
+
+	@RequiresApi(api = Build.VERSION_CODES.R)
+	private void continueSamsungPermissionFixFlow() {
+		Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+		intent.setData(Uri.parse("package:com.android.externalstorage"));
+		try {
+			if (getFragment() != null) {
+				getFragment().startActivity(intent);
+			} else {
+				getActivity().startActivity(intent);
+			}
+		} catch (Exception e) {
+			logger.error("Unable to start all files accept preference");
+		}
+	}
+
 	@WorkerThread
 	private @Nullable Bitmap getCurrentAvatarBitmap(boolean hires) {
 		if (this.avatarData.getContactModel() != null) {
@@ -653,7 +703,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 			this.avatarImage.invalidate();
 		} else {
 			if (this.avatarData.getGroupModel() == null && this.avatarData.getContactModel() == null) {
-				this.avatarImage.setColorFilter(ConfigUtils.getColorFromAttribute(getContext(), R.attr.textColorSecondary), PorterDuff.Mode.SRC_IN);
+				this.avatarImage.setColorFilter(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface), PorterDuff.Mode.SRC_IN);
 			}
 		}
 	}

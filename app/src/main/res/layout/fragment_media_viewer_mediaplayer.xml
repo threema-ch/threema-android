@@ -30,7 +30,7 @@
 
 	</FrameLayout>
 
-	<ProgressBar
+	<com.google.android.material.progressindicator.CircularProgressIndicator
 		android:id="@+id/progress_bar"
 		android:layout_width="48dp"
 		android:layout_height="48dp"
@@ -51,7 +51,7 @@
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintBottom_toTopOf="@id/filename_view"/>
 
-	<com.google.android.exoplayer2.ui.DefaultTimeBar
+	<androidx.media3.ui.DefaultTimeBar
 		android:id="@+id/time_bar"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
 		android:paddingBottom="5dp"
 		android:paddingTop="5dp"
 		android:textAlignment="center"
-		android:textColor="@color/dark_text_color_secondary"
+		android:textColor="@android:color/white"
 		android:textSize="16sp"
 		android:visibility="visible"
 		app:layout_constraintBottom_toBottomOf="parent"

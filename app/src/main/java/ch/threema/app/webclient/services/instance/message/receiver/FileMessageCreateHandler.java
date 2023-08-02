@@ -23,6 +23,10 @@ package ch.threema.app.webclient.services.instance.message.receiver;
 
 import android.net.Uri;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
+
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
 
@@ -36,16 +40,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.WorkerThread;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
@@ -161,7 +161,7 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 	}
 
 	private File save(final byte[] bytes) throws IOException {
-		final File file = fileService.createTempFile("wcm", "", !ConfigUtils.useContentUris());
+		final File file = fileService.createTempFile("wcm", "", false);
 		try (
 			final FileOutputStream fileOutputStream = new FileOutputStream(file);
 			final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream)

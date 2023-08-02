@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
 
@@ -50,6 +51,8 @@ public class ContactUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactUtil");
 
 	public static final int CHANNEL_NAME_MAX_LENGTH_BYTES = 256;
+
+	public static final long PROFILE_PICTURE_BLOB_CACHE_DURATION = DateUtils.WEEK_IN_MILLIS;
 
 	/**
 	 * check if this contact is *currently* linked to an android contact
@@ -108,18 +111,22 @@ public class ContactUtil {
 		return identity != null && identity.startsWith("*");
 	}
 
-	public static boolean canReceiveProfilePics(ContactModel contactModel) {
+	/**
+	 * Checks whether the contact's id is ECHOECHO or a Channel ID
+	 * @return {@code true} if the contact is ECHOECHO or a channel ID, {@code false} otherwise
+	 */
+	public static boolean isEchoEchoOrChannelContact(ContactModel contactModel) {
 		return contactModel != null
-				&& !isChannelContact(contactModel)
-				&& !contactModel.getIdentity().equals(ThreemaApplication.ECHO_USER_IDENTITY);
+			&& (isChannelContact(contactModel)
+			|| ThreemaApplication.ECHO_USER_IDENTITY.equals(contactModel.getIdentity())
+		);
 	}
 
 	public static boolean canReceiveVoipMessages(ContactModel contactModel, IdListService blackListIdentityService) {
 		return contactModel != null
 				&& blackListIdentityService != null
 				&& !blackListIdentityService.has(contactModel.getIdentity())
-				&& !isChannelContact(contactModel)
-				&& !contactModel.getIdentity().equals(ThreemaApplication.ECHO_USER_IDENTITY);
+				&& !isEchoEchoOrChannelContact(contactModel);
 	}
 
 	public static boolean allowedChangeToState(ContactModel contactModel, ContactModel.State newState) {

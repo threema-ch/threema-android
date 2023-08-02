@@ -62,7 +62,7 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 
 		logger.debug("configureChatMessage - position " + position);
 
-		gifMessagePlayer = (GifMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) getContext(), helper.getMessageReceiver());
+		gifMessagePlayer = (GifMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) getContext(), helper.getMessageReceiver(), null);
 		holder.messagePlayer = gifMessagePlayer;
 
 		/*
@@ -73,6 +73,9 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 				int status = holder.controller.getStatus();
 
 				switch (status) {
+					case ControllerView.STATUS_READY_TO_RETRY:
+						propagateControllerRetryClickToParent();
+						break;
 					case ControllerView.STATUS_READY_TO_PLAY:
 					case ControllerView.STATUS_READY_TO_DOWNLOAD:
 						gifMessagePlayer.open();
@@ -132,7 +135,7 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 			holder.attachmentImage.invalidate();
 		}
 		if (fileData.getRenderingType() == FileData.RENDERING_STICKER) {
-			holder.messageBlockView.setBackground(null);
+			setStickerBackground(holder);
 		} else {
 			setDefaultBackground(holder);
 		}
@@ -141,7 +144,7 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 
 		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, fileData, fileSize));
 
-		setDatePrefix(FileUtil.getFileMessageDatePrefix(getContext(), getMessageModel(), "GIF"), 0);
+		setDatePrefix(FileUtil.getFileMessageDatePrefix(getContext(), getMessageModel(), "GIF"));
 
 		gifMessagePlayer
 				.attachContainer(holder.attachmentImage)

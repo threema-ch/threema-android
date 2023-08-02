@@ -56,7 +56,7 @@ public class GroupId implements Serializable {
 	}
 
 	public GroupId(long groupId) {
-		this.value = Utils.longToByteArray(groupId);
+		this.value = Utils.longToByteArrayBigEndian(groupId);
 	}
 
 	public GroupId(String groupId) {
@@ -73,11 +73,11 @@ public class GroupId implements Serializable {
 	}
 
 	public int toInt() {
-		return Utils.byteArrayToInt(this.value);
+		return Utils.byteArrayToIntBigEndian(this.value);
 	}
 
 	public long toLong() {
-		return Utils.byteArrayToLong(this.value);
+		return Utils.byteArrayToLongBigEndian(this.value);
 	}
 
 	@Override

@@ -24,6 +24,9 @@ package ch.threema.domain.protocol.csp.messages.protobuf;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import androidx.annotation.Nullable;
+import ch.threema.protobuf.csp.e2e.fs.Version;
+
 import static org.junit.Assert.*;
 
 public class AbstractProtobufMessageTest {
@@ -39,7 +42,13 @@ public class AbstractProtobufMessageTest {
 			public int getType() {
 				return 0;
 			}
-		};
+
+				@Nullable
+				@Override
+				public Version getMinimumRequiredForwardSecurityVersion() {
+					return null;
+				}
+			};
 
 		assertArrayEquals(
 			protobufDataStub.toProtobufBytes(),

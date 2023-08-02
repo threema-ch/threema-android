@@ -546,7 +546,7 @@ public class MessageUtil {
 						}
 					}
 
-					return new MessageViewElement(R.drawable.ic_file_filled,
+					return new MessageViewElement(IconUtil.getMimeIcon(messageModel.getFileData().getMimeType()),
 							context.getString(R.string.file_placeholder),
 							TestUtil.empty(messageModel.getFileData().getCaption()) ?
 									messageModel.getFileData().getFileName() :
@@ -675,7 +675,7 @@ public class MessageUtil {
 									context.getString(R.string.voip_gc_call_started),
 									body,
 									null,
-									R.color.group_call_accent
+									null
 								);
 							case GroupCallStatusDataModel.STATUS_ENDED:
 								return new MessageViewElement(
@@ -683,7 +683,7 @@ public class MessageUtil {
 									context.getString(R.string.voip_gc_call_ended),
 									context.getString(R.string.voip_gc_call_ended),
 									null,
-									R.color.group_call_accent
+									null
 								);
 						}
 						break;
@@ -746,6 +746,14 @@ public class MessageUtil {
 									R.drawable.ic_baseline_key_24,
 									context.getString(R.string.forward_security_downgraded_status_message),
 									context.getString(R.string.forward_security_downgraded_status_message),
+									null,
+									null
+								);
+							case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE:
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_off_24,
+									context.getString(R.string.forward_security_illegal_session_status_message),
+									context.getString(R.string.forward_security_illegal_session_status_message),
 									null,
 									null
 								);

@@ -17,8 +17,6 @@
     <string name="new_wizard_info_link">Threema Work, telefon numaranızı ve e-posta adresinizi sağlayarak, telefonlarının adres defterinde mevcutsanız, kişilerinizin sizi otomatik olarak bulmasına yardımcı olur. Veriler, sunucumuzda tek yönlü şifreli (karma veri) bir biçimde saklanacaktır. Threema Work\'ü anonim olarak kullanmak istiyorsanız bu adımı atlayabilirsiniz.</string>
     <string name="threema_contact">Threema Work kişisi</string>
     <string name="menu_about">Threema Work Hakkında</string>
-    <string name="list_theme_light">Açık</string>
-    <string name="list_theme_dark">Koyu (varsayılan)</string>
     <string name="private_threema_download"><![CDATA[<a href= %1$s>Threema Work hakkında daha fazla bilgi edinin</a> <br/> <br/> Özel bir kullanıcıysanız, Threema\'yı indirmek için lütfen <a href=%2$s>buraya dokunun</a>.]]></string>
     <string name="directory_search">Dizinde ara</string>
     <string name="directory_title">Şirket Rehberi</string>

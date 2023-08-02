@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:state_pressed="true">
-		<shape android:shape="rectangle">
-			<solid android:color="?attr/bubble_pressed_overlay" />
+		<shape android:shape="rectangle" android:tint="@color/bubble_pressed">
+			<solid android:color="#44000000" />
 		</shape>
 	</item>
 	<item android:state_activated="true">
-		<shape android:shape="rectangle">
-			<solid android:color="?attr/bubble_selected_overlay" />
+		<shape android:shape="rectangle" android:tint="?attr/colorPrimary">
+			<solid android:color="#44000000"/>
 		</shape>
 	</item>
 	<item>

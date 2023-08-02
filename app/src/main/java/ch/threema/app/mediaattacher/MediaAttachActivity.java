@@ -21,6 +21,11 @@
 
 package ch.threema.app.mediaattacher;
 
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
+import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.ThreemaApplication.getMessageDraft;
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
+
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -45,6 +50,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.slf4j.Logger;
@@ -53,13 +66,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
@@ -91,11 +97,6 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
-
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
-import static ch.threema.app.ThreemaApplication.getMessageDraft;
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
 public class MediaAttachActivity extends MediaSelectionBaseActivity implements View.OnClickListener,
 	MediaAttachAdapter.ItemClickListener,
@@ -380,68 +381,55 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		}
 	}
 
-	@SuppressLint("NonConstantResourceId")
 	@Override
 	public void onClick(View v) {
 		super.onClick(v);
-		int id = v.getId();
-		switch (id) {
-			case R.id.attach_location:
-				if (!ConfigUtils.hasNoMapLibreSupport()) {
-					launchPlacePicker();
-				} else {
-					Toast.makeText(this, "Feature not available due to firmware error", Toast.LENGTH_LONG).show();
+		final int id = v.getId();
+		if (id == R.id.attach_location) {
+			if (!ConfigUtils.hasNoMapLibreSupport()) {
+				launchPlacePicker();
+			} else {
+				Toast.makeText(this, "Feature not available due to firmware error", Toast.LENGTH_LONG).show();
+			}
+		} else if (id == R.id.attach_file) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_ATTACH_FILE)) {
+				attachFile();
+			}
+		} else if (id == R.id.attach_poll) {
+			createBallot();
+		} else if (id == R.id.attach_qr_code) {
+			if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_QR_READER)) {
+				attachQR(v);
+			}
+		} else if (id == R.id.attach_contact) {
+			if (ConfigUtils.requestContactPermissions(this, null, PERMISSION_REQUEST_ATTACH_CONTACT)) {
+				attachContact();
+			}
+		} else if (id == R.id.attach_drawing) {
+			attachDrawing();
+		} else if (id == R.id.edit) {
+			if (mediaAttachAdapter != null) {
+				onEdit(mediaAttachViewModel.getSelectedMediaUris());
+			}
+		} else if (id == R.id.send) {
+			if (mediaAttachAdapter != null) {
+				v.setAlpha(0.3f);
+				v.setClickable(false);
+				// return last filter to potentially re-use it when attaching more media in compose fragment
+				if (mediaAttachViewModel.getLastQueryType() != null) {
+					Intent resultIntent = IntentDataUtil.addLastMediaFilterToIntent(new Intent(),
+						mediaAttachViewModel.getLastQuery(),
+						mediaAttachViewModel.getLastQueryType());
+					setResult(RESULT_OK, resultIntent);
 				}
-				break;
-			case R.id.attach_file:
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_ATTACH_FILE)) {
-					attachFile();
-				}
-				break;
-			case R.id.attach_poll:
-				createBallot();
-				break;
-			case R.id.attach_qr_code:
-				if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_QR_READER)) {
-					attachQR(v);
-				}
-				break;
-			case R.id.attach_contact:
-				if (ConfigUtils.requestContactPermissions(this, null, PERMISSION_REQUEST_ATTACH_CONTACT)) {
-					attachContact();
-				}
-				break;
-			case R.id.attach_drawing:
-				attachDrawing();
-				break;
-			case R.id.edit:
-				if (mediaAttachAdapter != null) {
-					onEdit(mediaAttachViewModel.getSelectedMediaUris());
-				}
-				break;
-			case R.id.send:
-				if (mediaAttachAdapter != null) {
-					v.setAlpha(0.3f);
-					v.setClickable(false);
-					// return last filter to potentially re-use it when attaching more media in compose fragment
-					if (mediaAttachViewModel.getLastQueryType() != null) {
-						Intent resultIntent = IntentDataUtil.addLastMediaFilterToIntent(new Intent(),
-							mediaAttachViewModel.getLastQuery(),
-							mediaAttachViewModel.getLastQueryType());
-						setResult(RESULT_OK, resultIntent);
-					}
-					onSend(mediaAttachViewModel.getSelectedMediaUris());
-				}
-				break;
-			case R.id.attach_gallery:
-				attachFilesFromGallery();
-				break;
-			case R.id.attach_system_camera:
-				if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA)) {
-					attachFromExternalCamera();
-				}
-			default:
-				break;
+				onSend(mediaAttachViewModel.getSelectedMediaUris());
+			}
+		} else if (id == R.id.attach_gallery) {
+			attachFilesFromGallery();
+		} else if (id == R.id.attach_system_camera) {
+			if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA)) {
+				attachFromExternalCamera();
+			}
 		}
 	}
 
@@ -593,7 +581,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 					mediaAttachViewModel.getLastQuery(),
 					mediaAttachViewModel.getLastQueryType());
 			}
-			AnimationUtil.startActivityForResult(this, null, intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
+			startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
 		} else {
 			Toast.makeText(MediaAttachActivity.this, R.string.only_images_or_videos, Toast.LENGTH_LONG).show();
 		}
@@ -634,24 +622,24 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
 		intent.putExtra(ThreemaApplication.INTENT_DATA_PICK_FROM_CAMERA, true);
 		intent.putExtra(SendMediaActivity.EXTRA_USE_EXTERNAL_CAMERA, true);
-		AnimationUtil.startActivityForResult(this, null, intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
+		startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
 	}
 
 	private void createBallot() {
 		Intent intent = new Intent(this, BallotWizardActivity.class);
 		IntentDataUtil.addMessageReceiverToIntent(intent, messageReceiver);
-		AnimationUtil.startActivityForResult(this, null, intent, ThreemaActivity.ACTIVITY_ID_CREATE_BALLOT);
+		startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_CREATE_BALLOT);
 	}
 
 	private void launchPlacePicker() {
 		Intent intent = new Intent(this, LocationPickerActivity.class);
-		AnimationUtil.startActivityForResult(this, null, intent, LOCATION_PICKER_INTENT);
+		startActivityForResult(intent, LOCATION_PICKER_INTENT);
 	}
 
 	private void attachContact() {
 		try {
 			Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-			AnimationUtil.startActivityForResult(this, null, intent, CONTACT_PICKER_INTENT);
+			startActivityForResult(intent, CONTACT_PICKER_INTENT);
 		} catch (ActivityNotFoundException e) {
 			SingleToast.getInstance().showShortText(getString(R.string.no_activity_for_mime_type));
 		}
@@ -681,7 +669,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
 		intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, MediaItem.getFromUris(uriList, this, true));
 		intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
-		AnimationUtil.startActivityForResult(this, null, intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
+		startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
 	}
 
 	private void sendLocationMessage(final Location location, final String poiName) {
@@ -765,4 +753,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			&& this.messageReceiver.validateSendingPermission(errorResId -> RuntimeUtil.runOnUiThread(() -> SingleToast.getInstance().showLongText(getString(errorResId))));
 	}
 	/* end section sending/attachment methods */
+
+	@Override
+	public void finish() {
+		super.finish();
+		overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
+	}
 }

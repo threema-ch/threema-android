@@ -21,6 +21,7 @@
 
 package ch.threema.app.dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,17 +38,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialog;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RatingService;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 
@@ -141,7 +142,6 @@ public class RateDialog extends ThreemaDialogFragment {
 		for (int i = 0; i < starMap.length; i++) {
 			ImageView starView = dialogView.findViewById(starMap[i]);
 			starView.setTag(i + 1);
-			ConfigUtils.themeImageView(activity, starView);
 			starView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -179,6 +179,7 @@ public class RateDialog extends ThreemaDialogFragment {
 		return alertDialog;
 	}
 
+	@SuppressLint("StaticFieldLeak")
 	private void sendReview(final String tag, final int rating, final String text) {
 		new AsyncTask<Void, Void, Boolean>() {
 			@Override

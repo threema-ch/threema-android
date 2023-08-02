@@ -24,6 +24,7 @@ package ch.threema.app.services;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -31,9 +32,15 @@ import android.provider.ContactsContract;
 import android.text.format.DateUtils;
 import android.widget.ImageView;
 
-import com.neilalexander.jnacl.NaCl;
+import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
+import androidx.core.content.ContextCompat;
 
-import net.sqlcipher.Cursor;
+import com.neilalexander.jnacl.NaCl;
 
 import org.slf4j.Logger;
 
@@ -53,13 +60,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
-import androidx.core.content.ContextCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -92,6 +92,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
@@ -104,9 +105,9 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.csp.messages.ContactDeletePhotoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactRequestPhotoMessage;
-import ch.threema.domain.protocol.csp.messages.ContactSetPhotoMessage;
+import ch.threema.domain.protocol.csp.messages.ContactDeleteProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactSetProfilePictureMessage;
 import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -167,13 +168,6 @@ public class ContactServiceImpl implements ContactService {
 			60, 80, 73, 5, 33, 71, 19, 35, 105, -65, 57, 96, -48, -96, -65, 2
 		}
 	};
-
-	static class ContactPhotoUploadResult {
-		public byte[] bitmapArray;
-		public byte[] blobId;
-		public byte[] encryptionKey;
-		public int size;
-	}
 
 	public ContactServiceImpl(
 		Context context,
@@ -538,7 +532,7 @@ public class ContactServiceImpl implements ContactService {
 
 			@Override
 			public boolean apply(@NonNull ContactModel type) {
-				return ContactUtil.canReceiveProfilePics(type);
+				return !ContactUtil.isEchoEchoOrChannelContact(type);
 			}
 		});
 	}
@@ -656,6 +650,38 @@ public class ContactServiceImpl implements ContactService {
 	public boolean isTyping(String identity) {
 		synchronized (this.typingIdentities) {
 			return this.typingIdentities.contains(identity);
+		}
+	}
+
+	@Override
+	public void sendTypingIndicator(String toIdentity, boolean isTyping) {
+		ContactModel contactModel = getByIdentity(toIdentity);
+		if (contactModel == null) {
+			logger.error("Cannot send typing indicator");
+			return;
+		}
+
+		boolean sendTypingIndicator;
+		switch (contactModel.getTypingIndicators()) {
+			case ContactModel.SEND:
+				sendTypingIndicator = true;
+				break;
+			case ContactModel.DONT_SEND:
+				sendTypingIndicator = false;
+				break;
+			default:
+				sendTypingIndicator = preferenceService.isTypingIndicator();
+				break;
+		}
+
+		if (!sendTypingIndicator) {
+			return;
+		}
+
+		try {
+			createReceiver(contactModel).sendTypingIndicatorMessage(isTyping);
+		} catch (ThreemaException e) {
+			logger.error("Could not send typing indicator", e);
 		}
 	}
 
@@ -779,8 +805,6 @@ public class ContactServiceImpl implements ContactService {
 			try {
 				DHSessionStoreInterface dhSessionStore = serviceManager.getDHSessionStore();
 				dhSessionStore.deleteAllDHSessions(userService.getIdentity(), model.getIdentity());
-			} catch (MasterKeyLockedException e) {
-				logger.error("Could not get DH session store", e);
 			} catch (DHSessionStoreException e) {
 				logger.error("Could not delete all DH sessions");
 			}
@@ -1113,8 +1137,9 @@ public class ContactServiceImpl implements ContactService {
 		this.clearAvatarCache(contactModel);
 
 		if (this.userService.isMe(contactModel.getIdentity())) {
-			// Update last profile picture change date
-			this.preferenceService.setProfilePicLastUpdate(new Date());
+			// Update last profile picture upload date
+			this.preferenceService.setProfilePicUploadDate(new Date(0));
+			this.preferenceService.setProfilePicUploadData(null);
 
 			// Notify listeners
 			ListenerManager.profileListeners.handle(ProfileListener::onAvatarChanged);
@@ -1133,9 +1158,6 @@ public class ContactServiceImpl implements ContactService {
 
 				// Notify listeners
 				if (this.userService.isMe(contactModel.getIdentity())) {
-					// Update last profile picture change date
-					this.preferenceService.setProfilePicLastUpdate(new Date());
-
 					ListenerManager.profileListeners.handle(ProfileListener::onAvatarRemoved);
 				}
 				ListenerManager.contactListeners.handle(listener -> listener.onAvatarChanged(contactModel));
@@ -1147,37 +1169,74 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public ContactPhotoUploadResult uploadContactPhoto(Bitmap picture) throws IOException, ThreemaException {
-		/* only upload blob every 7 days */
-		Date uploadDeadline = new Date(preferenceService.getProfilePicUploadDate() + DateUtils.WEEK_IN_MILLIS);
-		Date now = new Date();
+	@NonNull
+	public ProfilePictureUploadData getUpdatedProfilePictureUploadData() {
+		Bitmap contactPhoto = getMyProfilePicture();
+		if (contactPhoto == null) {
+			// If there is no profile picture set, then return empty upload data with an empty
+			// byte array as blob ID.
+			ProfilePictureUploadData data = new ProfilePictureUploadData();
+			data.blobId = ContactModel.NO_PROFILE_PICTURE_BLOB_ID;
+			return data;
+		}
 
-		ContactPhotoUploadResult result = new ContactPhotoUploadResult();
+		/* only upload blob every 7 days */
+		Date uploadDeadline = new Date(preferenceService.getProfilePicUploadDate() + ContactUtil.PROFILE_PICTURE_BLOB_CACHE_DURATION);
+		Date now = new Date();
 
 		if (now.after(uploadDeadline)) {
 			logger.info("Uploading profile picture blob");
 
-			SecureRandom rnd = new SecureRandom();
-			result.encryptionKey = new byte[NaCl.SYMMKEYBYTES];
-			rnd.nextBytes(result.encryptionKey);
+			ProfilePictureUploadData data = uploadContactPhoto(contactPhoto);
 
-			result.bitmapArray = BitmapUtil.bitmapToJpegByteArray(picture);
-			byte[] imageData = NaCl.symmetricEncryptData(result.bitmapArray, result.encryptionKey, ProtocolDefines.CONTACT_PHOTO_NONCE);
-			BlobUploader blobUploader = this.apiService.createUploader(imageData);
-			result.blobId = blobUploader.upload();
-			result.size = imageData.length;
+			if (data == null) {
+				return new ProfilePictureUploadData();
+			}
 
 			preferenceService.setProfilePicUploadDate(now);
-			preferenceService.setProfilePicUploadData(result);
+			preferenceService.setProfilePicUploadData(data);
+
+			return data;
 		} else {
-			result = preferenceService.getProfilePicUploadData(result);
+			ProfilePictureUploadData data = preferenceService.getProfilePicUploadData();
+			if (data != null) {
+				return data;
+			} else {
+				return new ProfilePictureUploadData();
+			}
 		}
-		return result;
+	}
+
+	@Nullable
+	private Bitmap getMyProfilePicture() {
+		ContactModel myContactModel = getByIdentity(getMe().getIdentity());
+		return getAvatar(myContactModel, true, false);
+	}
+
+	@Nullable
+	private ProfilePictureUploadData uploadContactPhoto(@NonNull Bitmap contactPhoto) {
+		ProfilePictureUploadData data = new ProfilePictureUploadData();
+
+		SecureRandom rnd = new SecureRandom();
+		data.encryptionKey = new byte[NaCl.SYMMKEYBYTES];
+		rnd.nextBytes(data.encryptionKey);
+
+		data.bitmapArray = BitmapUtil.bitmapToJpegByteArray(contactPhoto);
+		byte[] imageData = NaCl.symmetricEncryptData(data.bitmapArray, data.encryptionKey, ProtocolDefines.CONTACT_PHOTO_NONCE);
+		try {
+			BlobUploader blobUploader = this.apiService.createUploader(imageData);
+			data.blobId = blobUploader.upload();
+		} catch (ThreemaException | IOException e) {
+			logger.error("Could not upload contact photo", e);
+			return null;
+		}
+		data.size = imageData.length;
+		return data;
 	}
 
 
 	@Override
-	public boolean updateContactPhoto(ContactSetPhotoMessage msg) {
+	public boolean updateProfilePicture(ContactSetProfilePictureMessage msg) {
 		final ContactModel contactModel = this.getContact(msg);
 
 		if (contactModel != null) {
@@ -1210,7 +1269,7 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public boolean deleteContactPhoto(ContactDeletePhotoMessage msg) {
+	public boolean deleteProfilePicture(ContactDeleteProfilePictureMessage msg) {
 		final ContactModel contactModel = this.getContact(msg);
 
 		if (contactModel != null) {
@@ -1224,16 +1283,29 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public boolean requestContactPhoto(ContactRequestPhotoMessage msg) {
+	public boolean requestProfilePicture(ContactRequestProfilePictureMessage msg) {
 		final ContactModel contactModel = this.getContact(msg);
 
 		if (contactModel != null) {
 			logger.info("Received request to re-send profile pic by {}", msg.getFromIdentity());
 
-			contactModel.setProfilePicSentDate(new Date(0));
-			save(contactModel);
+			resetContactPhotoSentState(contactModel);
 		}
 		return true;
+	}
+
+	private void resetContactPhotoSentState(@NonNull ContactModel contactModel) {
+		// Note that setting the blob id to null also triggers a delete-profile-picture message to
+		// be sent again in case there is no profile picture set.
+		contactModel.setProfilePicBlobID(null);
+		save(contactModel);
+	}
+
+	@Override
+	public boolean isContactAllowedToReceiveProfilePicture(@NonNull ContactModel contactModel) {
+		int profilePicRelease = preferenceService.getProfilePicRelease();
+		return profilePicRelease == PreferenceService.PROFILEPIC_RELEASE_EVERYONE ||
+			(profilePicRelease == PreferenceService.PROFILEPIC_RELEASE_SOME && profilePicRecipientsService.has(contactModel.getIdentity()));
 	}
 
 	@Override
@@ -1292,7 +1364,7 @@ public class ContactServiceImpl implements ContactService {
 				if (userService.isMe(contactModel.getIdentity())) {
 					return false;
 				}
-				return contactModel.getIdentityType() == IdentityType.NORMAL && ContactUtil.canReceiveProfilePics(contactModel);
+				return contactModel.getIdentityType() == IdentityType.NORMAL && !ContactUtil.isEchoEchoOrChannelContact(contactModel);
 			} else {
 				return contactModel.getIdentityType() == IdentityType.WORK;
 			}
@@ -1310,6 +1382,9 @@ public class ContactServiceImpl implements ContactService {
 		}
 
 		save(contact);
+
+		// delete share target shortcut as name is different
+		ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(contact));
 	}
 
 	/**
@@ -1414,12 +1489,6 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public void setForwardSecurityState(@NonNull ContactModel contactModel, @ContactModel.ForwardSecurityState int state) {
-		contactModel.setForwardSecurityState(state);
-		this.save(contactModel);
-	}
-
-	@Override
 	@WorkerThread
 	public boolean resetReceiptsSettings() {
 		List<ContactModel> contactModels = find(new Filter() {
@@ -1485,5 +1554,26 @@ public class ContactServiceImpl implements ContactService {
 				}
 			}
 		}).start();
+	}
+
+	@Nullable
+	@Override
+	public ForwardSecuritySessionState getForwardSecurityState(@NonNull ContactModel contactModel) {
+		if (!ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask())) {
+			return ForwardSecuritySessionState.unsupportedByRemote();
+		}
+		try {
+			DHSession session = ThreemaApplication.requireServiceManager().getDHSessionStore()
+				.getBestDHSession(userService.getIdentity(), contactModel.getIdentity());
+			if (session == null) {
+				return ForwardSecuritySessionState.noSession();
+			}
+			DHSession.State dhState = session.getState();
+			DHSession.DHVersions dhVersions = session.getCurrent4DHVersions();
+			return ForwardSecuritySessionState.fromDHState(dhState, dhVersions);
+		} catch (Exception e) {
+			logger.error("Could not get forward security state", e);
+			return null;
+		}
 	}
 }

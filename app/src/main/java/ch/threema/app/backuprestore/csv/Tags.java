@@ -37,6 +37,7 @@ public abstract class Tags {
 	public static final String CONTACT_AVATAR_FILE_PREFIX = "contact_avatar_";
 	public static final String CONTACT_AVATAR_FILE_SUFFIX_ME = "me";
 	public static final String CONTACT_PROFILE_PIC_FILE_PREFIX = "contact_profile_pic_";
+	public static final String NONCE_FILE_NAME = "nonces";
 
 	public static final String DISTRIBUTION_LIST_MESSAGE_MEDIA_FILE_PREFIX = "distribution_list_message_media_";
 	public static final String DISTRIBUTION_LIST_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX = "distribution_list_thumbnail_";
@@ -50,6 +51,8 @@ public abstract class Tags {
 
 	public static final String TAG_INFO_VERSION = "version";
 
+	public static final String TAG_NONCES = "nonces";
+
 	public static final String TAG_CONTACT_IDENTITY = "identity";
 	public static final String TAG_CONTACT_FIRST_NAME = "firstname";
 	public static final String TAG_CONTACT_LAST_NAME = "lastname";
@@ -61,7 +64,6 @@ public abstract class Tags {
 	public static final String TAG_CONTACT_THREEMA_ANDROID_CONTACT_ID = "tacid";
 	public static final String TAG_CONTACT_HIDDEN = "hidden";
 	public static final String TAG_CONTACT_ARCHIVED = "archived";
-	public static final String TAG_CONTACT_FORWARD_SECURITY = "forward_security";
 	public static final String TAG_CONTACT_IDENTITY_ID = "identity_id"; // a unique ID representing the identity of a contact
 
 	public static final String TAG_GROUP_ID = "id";

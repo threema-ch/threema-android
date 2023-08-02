@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="?android:windowBackground"
+              android:background="?android:attr/colorBackground"
               android:orientation="vertical">
 
 	<include layout="@layout/toolbar_view"/>
@@ -11,24 +11,36 @@
 		android:id="@+id/webclient_diagnostics_header"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
 		android:orientation="vertical">
+
 		<TextView
+			style="@style/Threema.TextAppearance.BodyLarge"
 			android:id="@+id/webclient_diagnostics_intro"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_margin="8dp"
+			android:layout_marginTop="8dp"
+			android:layout_marginBottom="8dp"
+			android:layout_marginLeft="16dp"
+			android:layout_marginRight="16dp"
 			android:text="@string/webclient_diagnostics_intro"/>
+
 		<com.google.android.material.button.MaterialButton
+			style="@style/Threema.MaterialButton.Action"
 			android:id="@+id/webclient_diagnostics_start"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="6dp"
+			android:layout_gravity="center_horizontal"
 			android:text="@string/webclient_diagnostics_start"/>
 	</LinearLayout>
 
 	<ListView
 		android:id="@+id/webclient_diagnostics_event_log"
-		android:layout_margin="8dp"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="16dp"
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1"/>
@@ -38,18 +50,23 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical">
-		<ProgressBar
+
+		<com.google.android.material.progressindicator.CircularProgressIndicator
 			android:id="@+id/webclient_diagnostics_loading"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
+			android:indeterminate="true"
 			android:visibility="gone"/>
+
 		<TextView
+			style="@style/Threema.TextAppearance.BodyLarge"
 			android:id="@+id/webclient_diagnostics_done"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="8dp"
-			android:layout_marginLeft="8dp"
+			android:layout_marginLeft="16dp"
+			android:layout_marginRight="16dp"
 			android:layout_marginBottom="8dp"
 			android:text="@string/webclient_diagnostics_done"
 			android:visibility="gone"/>
@@ -58,23 +75,33 @@
 			android:id="@+id/webclient_diagnostics_footer_buttons"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_marginRight="16dp"
+			android:layout_marginLeft="16dp"
 			android:visibility="gone"
 			android:orientation="horizontal">
+
 			<com.google.android.material.button.MaterialButton
+				style="@style/Threema.MaterialButton.Action"
 				android:id="@+id/webclient_diagnostics_copy_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="6dp"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
+				android:layout_marginRight="8dp"
 				android:text="@string/voip_webrtc_debug_copy_clipboard"
 				android:maxLines="3"
 				android:singleLine="false"
 				android:layout_gravity="left"
 				android:layout_weight="1"/>
+
 			<com.google.android.material.button.MaterialButton
+				style="@style/Threema.MaterialButton.Action"
 				android:id="@+id/webclient_diagnostics_send_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="6dp"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
+				android:layout_marginLeft="8dp"
 				android:text="@string/send_to_support"
 				android:maxLines="3"
 				android:singleLine="false"

@@ -11,7 +11,7 @@
 
 	<ch.threema.app.emojis.EmojiConversationTextView
 		android:id="@+id/title"
-		style="@style/Base.MaterialAlertDialog.MaterialComponents.Title.Text"
+		style="@style/MaterialAlertDialog.Material3.Title.Text"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:maxLines="3"

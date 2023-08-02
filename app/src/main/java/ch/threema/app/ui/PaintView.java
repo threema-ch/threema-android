@@ -31,11 +31,11 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.core.view.ViewCompat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import androidx.core.view.ViewCompat;
 
 public class PaintView extends View {
 	private float mX, mY;
@@ -45,8 +45,8 @@ public class PaintView extends View {
 	private TouchListener onTouchListener;
 	private final List<Rect> drawingRect = Collections.singletonList(new Rect());
 
-	private ArrayList<Path> paths = new ArrayList<>();
-	private ArrayList<Paint> paints = new ArrayList<>();
+	private final ArrayList<Path> paths = new ArrayList<>();
+	private final ArrayList<Paint> paints = new ArrayList<>();
 
 	public PaintView(Context context) {
 		super(context);
@@ -240,6 +240,16 @@ public class PaintView extends View {
 				paints.get(i).set(scaledPaint);
 			}
 			invalidate();
+		}
+	}
+
+	public void flip() {
+		Matrix flipMatrix = new Matrix();
+		flipMatrix.setScale(-1, 1);
+		flipMatrix.postTranslate(getWidth(), 0);
+
+		for (Path path : paths) {
+			path.transform(flipMatrix);
 		}
 	}
 

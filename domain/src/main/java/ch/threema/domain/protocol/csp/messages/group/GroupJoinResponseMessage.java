@@ -22,11 +22,19 @@
 package ch.threema.domain.protocol.csp.messages.group;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufMessage;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 public class GroupJoinResponseMessage extends AbstractProtobufMessage<GroupJoinResponseData> {
 	public GroupJoinResponseMessage(@NonNull GroupJoinResponseData payloadData) {
 		super(ProtocolDefines.MSGTYPE_GROUP_JOIN_RESPONSE, payloadData);
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 }

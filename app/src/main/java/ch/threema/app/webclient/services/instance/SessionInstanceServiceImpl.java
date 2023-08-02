@@ -473,7 +473,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 			services.conversationTag
 		));
 		updateDispatcher.addReceiver(new IsTypingHandler(
-			services.user
+			services.contact
 		));
 		updateDispatcher.addReceiver(new ConnectionInfoUpdateHandler());
 		updateDispatcher.addReceiver(new ActiveConversationHandler(

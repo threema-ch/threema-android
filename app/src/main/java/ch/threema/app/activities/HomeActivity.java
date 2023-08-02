@@ -21,6 +21,9 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_UNREAD;
+import static ch.threema.app.utils.PowermanagerUtil.isIgnoringBatteryOptimizations;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -35,6 +38,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
@@ -42,8 +46,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.AnyThread;
@@ -52,22 +56,22 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.shape.MaterialShapeDrawable;
 
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
@@ -132,7 +136,6 @@ import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.app.voip.groupcall.GroupCallManager;
@@ -150,8 +153,6 @@ import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
-
-import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_UNREAD;
 
 public class HomeActivity extends ThreemaAppCompatActivity implements
 	SMSVerificationDialog.SMSVerificationDialogCallback,
@@ -188,9 +189,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	private ActionBar actionBar;
 	private boolean isLicenseCheckStarted = false, isInitialized = false, isWhatsNewShown = false, isUpdating = false;
-	private Toolbar toolbar;
+	private MaterialToolbar toolbar;
 	private View connectionIndicator;
-	private LinearLayout noticeLayout;
+	private View noticeSMSLayout;
 	OngoingCallNoticeView ongoingCallNotice;
 
 	private ServiceManager serviceManager;
@@ -202,7 +203,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private ConversationService conversationService;
 	private GroupCallManager groupCallManager;
 
-	private final ArrayList<AbstractMessageModel> unsentMessages = new ArrayList<>();
+	private enum UnsentMessageAction {
+		ADD,
+		REMOVE,
+	}
+
+	private final List<AbstractMessageModel> unsentMessages = new LinkedList<>();
 
 	private BroadcastReceiver checkLicenseBroadcastReceiver = null;
 	private final BroadcastReceiver currentCheckAppReceiver = new BroadcastReceiver() {
@@ -314,51 +320,51 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	private final ConnectionStateListener connectionStateListener = (connectionState, address) -> updateConnectionIndicator(connectionState);
 
-	private void updateUnsentMessagesList(AbstractMessageModel modifiedMessageModel, boolean add) {
+	private void updateUnsentMessagesList(AbstractMessageModel modifiedMessageModel, UnsentMessageAction action) {
 		int numCurrentUnsent = unsentMessages.size();
 
 		synchronized (unsentMessages) {
 			String uid = modifiedMessageModel.getUid();
 
-			Iterator<AbstractMessageModel> iterator = unsentMessages.iterator();
-			while (iterator.hasNext()) {
-				AbstractMessageModel unsentMessage = iterator.next();
+			// Check whether the message model with the same uid is already in the list or not
+			AbstractMessageModel containedMessageModel = null;
+			for (AbstractMessageModel unsentMessage : unsentMessages) {
 				if (TestUtil.compare(unsentMessage.getUid(), uid)) {
-					iterator.remove();
+					containedMessageModel = unsentMessage;
+					break;
 				}
 			}
 
-			if (add) {
-				unsentMessages.add(modifiedMessageModel);
+			switch (action) {
+				case ADD:
+					// Only add the message model if it is not yet in the list
+					if (containedMessageModel == null) {
+						unsentMessages.add(modifiedMessageModel);
+					}
+					break;
+				case REMOVE:
+					// Remove message model if it is in the list
+					if (containedMessageModel != null) {
+						unsentMessages.remove(containedMessageModel);
+					}
+					break;
 			}
 
 			int numNewUnsent = unsentMessages.size();
 
-			if (notificationService != null && !(numCurrentUnsent == 0 && numNewUnsent == 0)) {
+			// Update the notification if there was a change
+			if (notificationService != null && numCurrentUnsent != numNewUnsent) {
 				notificationService.showUnsentMessageNotification(unsentMessages);
 			}
 		}
-	}
-
-	/**
-	 * Notify the user about the unsent message that are kept in {@link #unsentMessages} and also
-	 * the message passed as argument. The passed message is not kept in the unsent messages and
-	 * therefore is shown only once in a notification.
-	 *
-	 * @param msg the unsent message that should be shown in the notification
-	 */
-	private void notifyUnsentMessages(@NonNull AbstractMessageModel msg) {
-		List<AbstractMessageModel> allUnsentMessages = new ArrayList<>(unsentMessages);
-		allUnsentMessages.add(msg);
-		notificationService.showUnsentMessageNotification(allUnsentMessages);
 	}
 
 	private final SMSVerificationListener smsVerificationListener = new SMSVerificationListener() {
 		@Override
 		public void onVerified() {
 			RuntimeUtil.runOnUiThread(() -> {
-				if (noticeLayout != null) {
-					AnimationUtil.collapse(noticeLayout);
+				if (noticeSMSLayout != null) {
+					AnimationUtil.collapse(noticeSMSLayout);
 				}
 			});
 		}
@@ -366,8 +372,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		@Override
 		public void onVerificationStarted() {
 			RuntimeUtil.runOnUiThread(() -> {
-				if (noticeLayout != null) {
-					AnimationUtil.expand(noticeLayout);
+				if (noticeSMSLayout != null) {
+					AnimationUtil.expand(noticeSMSLayout);
 				}
 			});
 		}
@@ -425,15 +431,11 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 					switch (modifiedMessageModel.getState()) {
 						case SENDFAILED:
-							updateUnsentMessagesList(modifiedMessageModel, true);
-							break;
 						case FS_KEY_MISMATCH:
-							// Only notify and don't keep in unsentMessages to prevent that the
-							// notification is shown every time a message is sent
-							notifyUnsentMessages(modifiedMessageModel);
+							updateUnsentMessagesList(modifiedMessageModel, UnsentMessageAction.ADD);
 							break;
 						default:
-							updateUnsentMessagesList(modifiedMessageModel, false);
+							updateUnsentMessagesList(modifiedMessageModel, UnsentMessageAction.REMOVE);
 							break;
 					}
 				}
@@ -442,19 +444,24 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 		@Override
 		public void onRemoved(AbstractMessageModel removedMessageModel) {
-			updateUnsentMessagesList(removedMessageModel, false);
+			updateUnsentMessagesList(removedMessageModel, UnsentMessageAction.REMOVE);
 		}
 
 		@Override
 		public void onRemoved(List<AbstractMessageModel> removedMessageModels) {
 			for (AbstractMessageModel removedMessageModel: removedMessageModels) {
-				updateUnsentMessagesList(removedMessageModel, false);
+				updateUnsentMessagesList(removedMessageModel, UnsentMessageAction.REMOVE);
 			}
 		}
 
 		@Override
 		public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {
 			//do nothing
+		}
+
+		@Override
+		public void onResendDismissed(@NonNull AbstractMessageModel messageModel) {
+			updateUnsentMessagesList(messageModel, UnsentMessageAction.REMOVE);
 		}
 	};
 
@@ -518,7 +525,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 		AnimationUtil.setupTransitions(this.getApplicationContext(), getWindow());
 
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 
 		super.onCreate(savedInstanceState);
 
@@ -646,7 +653,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						// To not show the same dialog twice, it is only shown if the previous version
 						// is prior to the first version that used this dialog.
 						// Use the version code of the first version where this dialog should be shown.
-						if (previous < 776) { // 776 => Threema v5.0
+						if (previous < 903) { // do not show to users of previous release candidate
 							Intent intent = new Intent(this, WhatsNewActivity.class);
 							startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
 							overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
@@ -675,7 +682,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					threemaSafeService.storeMasterKey(masterkey);
 					preferenceService.setThreemaSafeServerInfo(mdmConfig.getServerInfo());
 					threemaSafeService.setEnabled(true);
-					threemaSafeService.uploadNow(HomeActivity.this, true);
+					threemaSafeService.uploadNow(true);
 				} else {
 					Toast.makeText(HomeActivity.this, R.string.safe_error_preparing, Toast.LENGTH_LONG).show();
 				}
@@ -934,9 +941,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private void initMainActivity(@Nullable Bundle savedInstanceState) {
 		final boolean isAppStart = savedInstanceState == null;
 
-		//refresh StateBitmapUtil
-		StateBitmapUtil.getInstance().refresh();
-
 		// licensing
 		checkApp();
 
@@ -976,9 +980,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		//init custom icon
 		updateAppLogo();
 
-		// reset accent color
-		ConfigUtils.resetAccentColor(this);
-
 		actionBar.setDisplayShowTitleEnabled(false);
 		actionBar.setDisplayUseLogoEnabled(false);
 
@@ -1003,7 +1004,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			// If a non-libre build of Threema cannot find push services, fall back to Threema Push
 			if (!BuildFlavor.forceThreemaPush() && !PushService.servicesInstalled(this)) {
 				this.enableThreemaPush();
-				if (!ConfigUtils.isBlackBerry() && !ConfigUtils.isAmazonDevice() && !ConfigUtils.isWorkBuild()) {
+				if (!ConfigUtils.isAmazonDevice() && !ConfigUtils.isWorkBuild()) {
 					RuntimeUtil.runOnUiThread(() -> {
 						// Show "push not available" dialog
 						int title = R.string.push_not_available_title;
@@ -1017,7 +1018,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			if (BuildFlavor.forceThreemaPush()) {
 				preferenceService.setUseThreemaPush(true);
 
-				if (!DisableBatteryOptimizationsActivity.isIgnoringBatteryOptimizations(this)) {
+				if (!isIgnoringBatteryOptimizations(this)) {
 					final Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
 					intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.threema_push));
 					intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_CONFIRM, true);
@@ -1027,11 +1028,11 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 
 		this.mainContent = findViewById(R.id.main_content);
-		this.noticeLayout = findViewById(R.id.notice_layout);
-		findViewById(R.id.notice_button_enter_code).setOnClickListener(v -> SMSVerificationDialog.newInstance(userService.getLinkedMobile(true)).show(getSupportFragmentManager(), DIALOG_TAG_VERIFY_CODE));
-		findViewById(R.id.notice_button_cancel).setOnClickListener(v -> GenericAlertDialog.newInstance(R.string.verify_title, R.string.really_cancel_verify, R.string.yes, R.string.no)
+		this.noticeSMSLayout = findViewById(R.id.notice_sms_layout);
+		findViewById(R.id.notice_sms_button_enter_code).setOnClickListener(v -> SMSVerificationDialog.newInstance(userService.getLinkedMobile(true)).show(getSupportFragmentManager(), DIALOG_TAG_VERIFY_CODE));
+		findViewById(R.id.notice_sms_button_cancel).setOnClickListener(v -> GenericAlertDialog.newInstance(R.string.verify_title, R.string.really_cancel_verify, R.string.yes, R.string.no)
 			.show(getSupportFragmentManager(), DIALOG_TAG_CANCEL_VERIFY));
-		this.noticeLayout.setVisibility(
+		this.noticeSMSLayout.setVisibility(
 			userService.getMobileLinkingState() == UserService.LinkingState_PENDING ?
 				View.VISIBLE : View.GONE);
 
@@ -1128,30 +1129,44 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 			Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
 			if (currentFragment != null) {
-				switch (item.getItemId()) {
-					case R.id.contacts:
-						if (!FRAGMENT_TAG_CONTACTS.equals(currentFragmentTag)) {
-							getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out).hide(currentFragment).show(contactsFragment).commit();
-							currentFragmentTag = FRAGMENT_TAG_CONTACTS;
-						}
-						return true;
-					case R.id.messages:
-						if (!FRAGMENT_TAG_MESSAGES.equals(currentFragmentTag)) {
-							getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out).hide(currentFragment).show(messagesFragment).commit();
-							currentFragmentTag = FRAGMENT_TAG_MESSAGES;
-						}
-						return true;
-					case R.id.my_profile:
-						if (!FRAGMENT_TAG_PROFILE.equals(currentFragmentTag)) {
-							getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out).hide(currentFragment).show(profileFragment).commit();
-							currentFragmentTag = FRAGMENT_TAG_PROFILE;
-						}
-						return true;
+				if (item.getItemId() == R.id.contacts) {
+					if (!FRAGMENT_TAG_CONTACTS.equals(currentFragmentTag)) {
+						getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out).hide(currentFragment).show(contactsFragment).commit();
+						currentFragmentTag = FRAGMENT_TAG_CONTACTS;
+					}
+					return true;
+				} else if (item.getItemId() == R.id.messages) {
+					if (!FRAGMENT_TAG_MESSAGES.equals(currentFragmentTag)) {
+						getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out).hide(currentFragment).show(messagesFragment).commit();
+						currentFragmentTag = FRAGMENT_TAG_MESSAGES;
+					}
+					return true;
+				} else if (item.getItemId() == R.id.my_profile) {
+					if (!FRAGMENT_TAG_PROFILE.equals(currentFragmentTag)) {
+						getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.fast_fade_in, R.anim.fast_fade_out, R.anim.fast_fade_in, R.anim.fast_fade_out).hide(currentFragment).show(profileFragment).commit();
+						currentFragmentTag = FRAGMENT_TAG_PROFILE;
+					}
+					return true;
 				}
 			}
 			return false;
 		});
-		this.bottomNavigationView.post(() -> bottomNavigationView.setSelectedItemId(initialItemId));
+		this.bottomNavigationView.post(() -> {
+			bottomNavigationView.setSelectedItemId(initialItemId);
+		});
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			Drawable background = bottomNavigationView.getBackground();
+			if (background instanceof MaterialShapeDrawable) {
+				int color = ((MaterialShapeDrawable) background).getResolvedTintColor();
+				Window window = getWindow();
+				if (window != null) {
+					window.setNavigationBarColor(color);
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+						window.setNavigationBarContrastEnforced(false);
+					}
+				}
+			}
+		}
 
 		updateBottomNavigation();
 
@@ -1273,7 +1288,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	@SuppressLint("StaticFieldLeak")
 	private void reallyCancelVerify() {
-		AnimationUtil.collapse(noticeLayout);
+		AnimationUtil.collapse(noticeSMSLayout);
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
@@ -1302,55 +1317,41 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent = null;
-
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				showQRPopup();
-				return true;
-			case R.id.menu_lock:
-				lockAppService.lock();
-				return true;
-			case R.id.menu_new_group:
-				intent = new Intent(this, GroupAddActivity.class);
-				break;
-			case R.id.menu_new_distribution_list:
-				intent = new Intent(this, DistributionListAddActivity.class);
-				break;
-			case R.id.group_requests:
-				intent = new Intent(this, OutgoingGroupRequestActivity.class);
-				break;
-			case R.id.my_backups:
-				intent = new Intent(this, BackupAdminActivity.class);
-				break;
-			case R.id.webclient:
-				intent = new Intent(this, SessionsActivity.class);
-				break;
-			case R.id.scanner:
-				intent = new Intent(this, BaseQrScannerActivity.class);
-				break;
-			case R.id.help:
-				intent = new Intent(this, SupportActivity.class);
-				break;
-			case R.id.settings:
-				AnimationUtil.startActivityForResult(this, null, new Intent(this, SettingsActivity.class), ThreemaActivity.ACTIVITY_ID_SETTINGS);
-				break;
-			case R.id.directory:
-				intent = new Intent(this, DirectoryActivity.class);
-				break;
-			case R.id.threema_channel:
-				confirmThreemaChannel();
-				break;
-			case R.id.archived:
-				intent = new Intent(this, ArchiveActivity.class);
-				break;
-			case R.id.globalsearch:
-				intent = new Intent(this, GlobalSearchActivity.class);
-			default:
-				break;
+		final int id = item.getItemId();
+		if (id == android.R.id.home) {
+			showQRPopup();
+			return true;
+		} else if (id == R.id.menu_lock) {
+			lockAppService.lock();
+			return true;
+		} else if (id == R.id.menu_new_group) {
+			intent = new Intent(this, GroupAddActivity.class);
+		} else if (id == R.id.menu_new_distribution_list) {
+			intent = new Intent(this, DistributionListAddActivity.class);
+		} else if (id == R.id.group_requests) {
+			intent = new Intent(this, OutgoingGroupRequestActivity.class);
+		} else if (id == R.id.my_backups) {
+			intent = new Intent(this, BackupAdminActivity.class);
+		} else if (id == R.id.webclient) {
+			intent = new Intent(this, SessionsActivity.class);
+		} else if (id == R.id.scanner) {
+			intent = new Intent(this, BaseQrScannerActivity.class);
+		} else if (id == R.id.help) {
+			intent = new Intent(this, SupportActivity.class);
+		} else if (id == R.id.settings) {
+			startActivityForResult(new Intent(this, SettingsActivity.class), ThreemaActivity.ACTIVITY_ID_SETTINGS);
+		} else if (id == R.id.directory) {
+			intent = new Intent(this, DirectoryActivity.class);
+		} else if (id == R.id.threema_channel) {
+			confirmThreemaChannel();
+		} else if (id == R.id.archived) {
+			intent = new Intent(this, ArchiveActivity.class);
+		} else if (id == R.id.globalsearch) {
+			intent = new Intent(this, GlobalSearchActivity.class);
 		}
 
 		if (intent != null) {
-			AnimationUtil.startActivity(this, null, intent);
+			startActivity(intent);
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -1366,7 +1367,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		layoutParams.height = ConfigUtils.getActionBarSize(this) / 3;
 		toolbarLogoMain.setLayoutParams(layoutParams);
 		toolbarLogoMain.setImageResource(R.drawable.logo_main);
-		toolbarLogoMain.setColorFilter(ConfigUtils.getColorFromAttribute(this, android.R.attr.textColorSecondary),
+		toolbarLogoMain.setColorFilter(ConfigUtils.getColorFromAttribute(this, R.attr.colorOnSurface),
 			PorterDuff.Mode.SRC_IN);
 		toolbarLogoMain.setContentDescription(getString(R.string.logo));
 		toolbarLogoMain.setOnClickListener(v -> {
@@ -1409,7 +1410,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					privateChatToggleMenuItem.setIcon(R.drawable.ic_outline_visibility_off);
 					privateChatToggleMenuItem.setTitle(R.string.title_hide_private_chats);
 				}
-				ConfigUtils.themeMenuItem(privateChatToggleMenuItem, ConfigUtils.getColorFromAttribute(this, R.attr.textColorSecondary));
+				ConfigUtils.tintMenuItem(this, privateChatToggleMenuItem, R.attr.colorOnSurface);
 			}
 
 			Boolean addDisabled;
@@ -1461,7 +1462,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 			MenuItem webclientMenuItem = menu.findItem(R.id.webclient);
 			if (webclientMenuItem != null) {
-				webclientMenuItem.setVisible(!(webDisabled || ConfigUtils.isBlackBerry()));
+				webclientMenuItem.setVisible(!(webDisabled));
 			}
 
 			return true;
@@ -1718,8 +1719,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 		File customAppIcon = null;
 		try {
-			customAppIcon = serviceManager.getFileService()
-				.getAppLogo(ConfigUtils.getAppTheme(this));
+			customAppIcon = serviceManager.getFileService().getAppLogo(ConfigUtils.getAppThemeSettingFromDayNightMode(ConfigUtils.getCurrentDayNightMode(this)));
 		} catch (FileSystemNotPresentException e) {
 			logger.error("Exception", e);
 		}
@@ -1816,7 +1816,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	private void confirmThreemaChannel() {
 		if (contactService.getByIdentity(THREEMA_CHANNEL_IDENTITY) == null) {
-			GenericAlertDialog.newInstance(R.string.threema_channel, R.string.threema_channel_intro, R.string.ok, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_THREEMA_CHANNEL_VERIFY);
+			GenericAlertDialog.newInstance(R.string.threema_channel, R.string.threema_channel_intro, R.string.ok, R.string.cancel, 0).show(getSupportFragmentManager(), DIALOG_TAG_THREEMA_CHANNEL_VERIFY);
 		} else {
 			launchThreemaChannelChat();
 		}

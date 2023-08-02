@@ -21,6 +21,9 @@
 
 package ch.threema.app.utils;
 
+import static androidx.core.content.pm.ShortcutManagerCompat.FLAG_MATCH_PINNED;
+
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -73,8 +76,6 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 
-import static androidx.core.content.pm.ShortcutManagerCompat.FLAG_MATCH_PINNED;
-
 public final class ShortcutUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ShortcutUtil");
 
@@ -89,6 +90,7 @@ public final class ShortcutUtil {
 
 	private static final String DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY = "ch.threema.app.category.DYNAMIC_SHORTCUT_SHARE_TARGET"; // do not use BuildConfig.APPLICATION_ID
 	private static final String KEY_RECENT_UIDS = "recent_uids";
+	private static final int REQUEST_CODE_SHORTCUT_ADDED = 6311;
 
 	private static class CommonShortcutInfo {
 		Intent intent;
@@ -106,8 +108,12 @@ public final class ShortcutUtil {
 		ShortcutInfoCompat shortcutInfoCompat = getPinnedShortcutInfo(messageReceiver, type);
 
 		if (shortcutInfoCompat != null) {
-			if (ShortcutManagerCompat.requestPinShortcut(getContext(), shortcutInfoCompat, null)) {
-				Toast.makeText(getContext(), R.string.add_shortcut_success, Toast.LENGTH_SHORT).show();
+			Intent pinnedShortcutCallbackIntent = new Intent(ThreemaApplication.INTENT_ACTION_SHORTCUT_ADDED);
+			PendingIntent callback = PendingIntent.getBroadcast(getContext(), REQUEST_CODE_SHORTCUT_ADDED,
+				pinnedShortcutCallbackIntent, IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
+
+			if (ShortcutManagerCompat.requestPinShortcut(getContext(), shortcutInfoCompat, callback.getIntentSender())) {
+				logger.info("Shortcut requested");
 			} else {
 				Toast.makeText(getContext(), R.string.add_shortcut_error, Toast.LENGTH_SHORT).show();
 				logger.info("Failed to add shortcut");

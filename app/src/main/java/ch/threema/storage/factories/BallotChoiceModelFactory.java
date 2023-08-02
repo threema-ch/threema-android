@@ -23,7 +23,7 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
-import net.sqlcipher.Cursor;
+import android.database.Cursor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -261,7 +261,7 @@ public class BallotChoiceModelFactory extends ModelFactory {
 	public String[] getStatements() {
 		return new String[]{
 				"CREATE TABLE `ballot_choice` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `ballotId` INTEGER , `apiBallotChoiceId` INTEGER , `type` VARCHAR , `name` VARCHAR , `voteCount` INTEGER , `order` INTEGER NOT NULL , `createdAt` BIGINT , `modifiedAt` BIGINT )",
-				
+
 				//indices
 				"CREATE UNIQUE INDEX `apiBallotChoiceId` ON `ballot_choice` ( `ballotId`, `apiBallotChoiceId` )"
 		};

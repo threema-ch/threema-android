@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/Threema.CardView.MessageList"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/list_item"
 	android:layout_width="match_parent"
@@ -9,7 +10,6 @@
 	android:clickable="true"
 	android:focusable="true"
 	android:foreground="@drawable/listitem_background_selector"
-	app:cardBackgroundColor="?attr/background_secondary"
 	app:cardCornerRadius="@dimen/messagelist_card_corner_radius"
 	app:cardElevation="0dp"
 	app:cardPreventCornerOverlap="false"
@@ -19,7 +19,7 @@
 		android:id="@+id/list_item_fg"
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/messagelist_item_height"
-		android:background="?android:attr/windowBackground"
+		android:background="?android:attr/colorBackground"
 		android:paddingLeft="@dimen/listitem_message_margin_left_right"
 		android:paddingRight="@dimen/listitem_message_margin_left_right">
 
@@ -47,13 +47,13 @@
 
 			<ImageView
 				android:id="@+id/mute_status"
-				android:layout_width="18dp"
-				android:layout_height="18dp"
+				android:layout_width="20dp"
+				android:layout_height="20dp"
+				android:layout_alignBottom="@+id/from"
 				android:layout_alignParentLeft="true"
 				android:layout_alignWithParentIfMissing="true"
-				android:layout_marginLeft="-1dp"
 				android:layout_marginRight="3dp"
-				android:layout_marginTop="2dp"
+				android:layout_marginBottom="2.5dp"
 				android:visibility="gone"
 				app:srcCompat="@drawable/ic_notifications_active_outline"/>
 
@@ -70,24 +70,23 @@
 
 			<ImageView
 				android:id="@+id/pin_icon"
-				android:layout_width="wrap_content"
+				android:layout_width="24dp"
 				android:layout_height="wrap_content"
 				android:layout_alignBottom="@id/from"
 				android:layout_alignWithParentIfMissing="true"
-				android:layout_marginBottom="1dp"
 				android:layout_marginLeft="3dp"
 				android:layout_toLeftOf="@+id/unread_count"
 				app:srcCompat="@drawable/ic_pin_circle"
 				/>
 
-			<ch.threema.app.ui.CountBoxView
+			<com.google.android.material.button.MaterialButton
+				style="@style/Threema.MaterialButton.CountView"
 				android:id="@+id/unread_count"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
+				android:layout_height="24dp"
 				android:layout_alignBottom="@id/from"
 				android:layout_alignParentRight="true"
 				android:layout_alignWithParentIfMissing="true"
-				android:layout_marginBottom="2dp"
 				android:layout_marginLeft="3dp"
 				android:visibility="visible"/>
 
@@ -116,19 +115,8 @@
 				android:layout_below="@id/from"
 				android:visibility="visible">
 
-				<ImageView
-					android:id="@+id/delivery"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_alignBottom="@+id/date"
-					android:layout_alignParentRight="true"
-					android:layout_marginRight="-2dp"
-					android:layout_marginBottom="-1dp"
-					android:visibility="visible"
-					app:srcCompat="@drawable/ic_attachment"
-					app:tint="?attr/textColorSecondary" />
-
 				<TextView
+					style="@style/Threema.TextAppearance.List.ThirdLine"
 					android:id="@+id/date"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -138,7 +126,7 @@
 					android:layout_marginTop="2sp"
 					android:layout_toLeftOf="@id/delivery"
 					android:singleLine="true"
-					android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine" />
+					android:text="Date" />
 
 				<ch.threema.app.emojis.EmojiTextView
 					android:id="@+id/group_member_name"
@@ -151,14 +139,13 @@
 
 				<ImageView
 					android:id="@+id/attachment"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
+					android:layout_width="20dp"
+					android:layout_height="20dp"
+					android:layout_marginBottom="-0.5dp"
 					android:layout_alignBottom="@id/date"
 					android:layout_alignWithParentIfMissing="true"
-					android:layout_marginLeft="-3dp"
-					android:layout_marginRight="-3dp"
 					android:layout_toRightOf="@id/group_member_name"
-					app:tint="?attr/textColorSecondary"
+					app:tint="?attr/colorOnSurface"
 					android:visibility="visible"
 					app:srcCompat="@drawable/ic_attachment"/>
 
@@ -174,6 +161,17 @@
 					android:ellipsize="none"
 					android:singleLine="true"
 					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
+
+				<ImageView
+					android:id="@+id/delivery"
+					android:layout_width="20dp"
+					android:layout_height="20dp"
+					android:layout_marginBottom="-0.5dp"
+					android:layout_alignBottom="@+id/date"
+					android:layout_alignParentRight="true"
+					android:visibility="visible"
+					app:srcCompat="@drawable/ic_attachment"
+					app:tint="?attr/colorOnSurface" />
 
 			</RelativeLayout>
 
@@ -191,7 +189,7 @@
 					android:layout_alignWithParentIfMissing="true"
 					android:layout_alignBaseline="@+id/ongoing_call_text"
 					android:maxLines="1"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall" />
+					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
 
 				<TextView
 					android:id="@+id/ongoing_call_divider"
@@ -203,7 +201,7 @@
 					android:layout_marginRight="2dp"
 					android:maxLines="1"
 					android:text="|"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall"
+					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
 					tools:ignore="HardcodedText" />
 
 				<TextView
@@ -214,21 +212,22 @@
 					android:layout_toRightOf="@id/ongoing_call_divider"
 					android:ellipsize="end"
 					android:maxLines="1"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine.GroupCall" />
+					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
 
 			</RelativeLayout>
 
 		</RelativeLayout>
 
-		<com.google.android.material.chip.Chip
-			style="@style/Threema.Chip.Action.Material"
+		<com.google.android.material.button.MaterialButton
+			style="@style/Threema.MaterialButton.Action"
 			android:id="@+id/join_group_call_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_marginLeft="0dp"
+			android:layout_marginRight="0dp"
+			android:minWidth="40dp"
 			android:text="@string/voip_gc_join_call"
 			android:visibility="gone"
-			app:chipEndPadding="@dimen/chip_start_padding"
-			app:chipMinHeight="@dimen/avatar_size_small"
 			app:layout_constraintTop_toTopOf="parent"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintStart_toEndOf="@id/content_container"
@@ -241,14 +240,14 @@
 		android:layout_height="match_parent">
 
 		<View
-			android:id="@+id/unread_view"
+			android:id="@+id/unread_bar"
 			android:layout_width="5dp"
 			android:layout_height="match_parent"
 			android:background="@color/messagelist_highlight_color"
 			android:visibility="visible"/>
 
 		<View
-			android:id="@+id/tag_star_on"
+			android:id="@+id/pin_bar"
 			android:layout_width="5dp"
 			android:layout_height="match_parent"
 			android:background="@color/messagelist_pinned_color"

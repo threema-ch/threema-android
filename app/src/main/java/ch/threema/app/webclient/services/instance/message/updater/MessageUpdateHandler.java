@@ -167,7 +167,7 @@ public class MessageUpdateHandler extends MessageUpdater {
 				for (AbstractMessageModel message : entry.getValue()) {
 					data.put(Message.convert(
 						message,
-						receiver.getType(),
+						receiver,
 						this.sendThumbnail(message),
 						Protocol.ARGUMENT_MODE_REMOVED.equals(mode) ? Message.DETAILS_MINIMAL : Message.DETAILS_FULL
 					));
@@ -214,6 +214,11 @@ public class MessageUpdateHandler extends MessageUpdater {
 
 		@Override
 		public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {
+			// Ignore
+		}
+
+		@Override
+		public void onResendDismissed(@NonNull AbstractMessageModel messageModel) {
 			// Ignore
 		}
 

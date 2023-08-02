@@ -42,17 +42,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -67,6 +56,18 @@ import androidx.preference.Preference.SummaryProvider;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
+
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -164,12 +165,23 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 	});
 
 	private final ActivityResultLauncher<String> readPhoneStatePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-		if (isGranted) {
+		if (isGranted != null && isGranted) {
 			updateReadPhoneStatePermissionPref();
 		} else {
 			Context context = getContext();
 			if (context != null) {
 				ConfigUtils.showPermissionRationale(context, fragmentView, R.string.read_phone_state_short_message);
+			}
+		}
+	});
+
+	private final ActivityResultLauncher<String> bluetoothPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+		if (isGranted != null && isGranted) {
+			updateBluetoothPermissionPref();
+		} else {
+			Context context = getContext();
+			if (context != null) {
+				ConfigUtils.showPermissionRationale(context, fragmentView, R.string.permission_bluetooth_connect_required);
 			}
 		}
 	});
@@ -439,14 +451,8 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 			return true;
 		});
 
-		if (ConfigUtils.isWorkRestricted() || ConfigUtils.isBlackBerry()) {
-			Boolean value;
-			if (ConfigUtils.isBlackBerry()) {
-				value = true;
-			} else {
-				value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_calls));
-			}
-
+		if (ConfigUtils.isWorkRestricted()) {
+			Boolean value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_calls));
 			if (value != null && value) {
 				PreferenceCategory preferenceCategory = findPreference("pref_key_voip");
 				if (preferenceCategory != null) {
@@ -468,6 +474,8 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 		super.onResume();
 
 		updateReadPhoneStatePermissionPref();
+
+		updateBluetoothPermissionPref();
 
 		final Context context = getContext();
 		if (context != null) {
@@ -493,6 +501,34 @@ public class SettingsTroubleshootingFragment extends ThreemaPreferenceFragment i
 					return false;
 				}
 				ConfigUtils.requestReadPhonePermission(activity, readPhoneStatePermissionLauncher);
+				return true;
+			});
+		}
+	}
+
+	private void updateBluetoothPermissionPref() {
+		Context context = getContext();
+
+		Preference bluetoothPref = getPrefOrNull(R.string.preferences__grant_bluetooth_permission);
+		if (bluetoothPref == null) {
+			// This preference is not available if th_disable_calls is set to true
+			return;
+		}
+
+		// This permission is not required before Android S, and therefore we do not enable this
+		// preference in this case.
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+			|| (context != null && ConfigUtils.isPermissionGranted(context, Manifest.permission.BLUETOOTH_CONNECT))
+		) {
+			bluetoothPref.setEnabled(false);
+		} else {
+			bluetoothPref.setEnabled(true);
+			bluetoothPref.setOnPreferenceClickListener(preference -> {
+				Activity activity = getActivity();
+				if (activity == null) {
+					return false;
+				}
+				ConfigUtils.requestBluetoothConnectPermission(activity, bluetoothPermissionLauncher);
 				return true;
 			});
 		}

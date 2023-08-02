@@ -21,11 +21,16 @@
 
 package ch.threema.domain.stores;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 
 public interface DHSessionStoreInterface {
+	interface DHSessionStoreErrorHandler {
+		void onInvalidDHSessionState(@NonNull String peerIdentity, @NonNull DHSessionId sessionId);
+	}
+
 	/**
 	 * Get the DH session with the specified contact and session ID.
 	 *
@@ -87,5 +92,17 @@ public interface DHSessionStoreInterface {
 	 */
 	int deleteAllSessionsExcept(String myIdentity, String peerIdentity, DHSessionId excludeSessionId, boolean fourDhOnly) throws DHSessionStoreException;
 
+	/**
+	 * Provide an error handler for dealing with invalid sessions.
+	 *
+	 * @param errorHandler the error handler
+	 */
+	void setDHSessionStoreErrorHandler(@NonNull DHSessionStoreErrorHandler errorHandler);
+
+	/**
+	 * This executes a statement on the database that has no effect. This is used to detect database
+	 * downgrades at the app start and not when using the database the next time. Note that this
+	 * also forces the database upgrades to run.
+	 */
 	void executeNull();
 }

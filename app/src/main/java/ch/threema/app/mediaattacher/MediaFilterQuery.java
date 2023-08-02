@@ -21,19 +21,19 @@
 
 package ch.threema.app.mediaattacher;
 
-import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import java.lang.annotation.Retention;
 
 
 public class MediaFilterQuery {
 
 	@Retention(SOURCE)
 	@IntDef({FILTER_MEDIA_TYPE, FILTER_MEDIA_BUCKET, FILTER_MEDIA_LABEL, FILTER_MEDIA_SELECTED, FILTER_MEDIA_DATE})
-	public @interface FilerType {}
+	public @interface FilterType {}
 	public static final int FILTER_MEDIA_TYPE = 0;
 	public static final int FILTER_MEDIA_BUCKET = 1;
 	public static final int FILTER_MEDIA_LABEL = 2;
@@ -41,9 +41,10 @@ public class MediaFilterQuery {
 	public static final int FILTER_MEDIA_DATE = 4;
 
 	public final String query;
-	@FilerType public final int type;
+	@FilterType
+	public final int type;
 
-	public MediaFilterQuery(@NonNull String query, @FilerType int type) {
+	public MediaFilterQuery(@NonNull String query, @FilterType int type) {
 		this.query = query;
 		this.type = type;
 	}
@@ -52,7 +53,7 @@ public class MediaFilterQuery {
 		return query;
 	}
 
-	@FilerType
+	@FilterType
 	public int getType() {
 		return type;
 	}

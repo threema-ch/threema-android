@@ -25,9 +25,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -46,16 +44,15 @@ import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.transition.Fade;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -153,38 +150,6 @@ public class AnimationUtil {
 			});
 		}
 		v.startAnimation(a);
-	}
-
-	public static void startActivityForResult(Activity activity, @Nullable View v, Intent intent, int requestCode) {
-		logger.debug("start activity for result " + activity + " " + intent + " " + requestCode);
-		if (activity != null) {
-			ActivityOptionsCompat options = null;
-
-			if (v != null) {
-				intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				options = ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
-			}
-
-			if (requestCode != 0) {
-				if (options != null) {
-					ActivityCompat.startActivityForResult(activity, intent, requestCode, options.toBundle());
-				} else {
-					activity.startActivityForResult(intent, requestCode);
-					activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
-				}
-			} else {
-				if (options != null) {
-					ActivityCompat.startActivity(activity, intent, options.toBundle());
-				} else {
-					activity.startActivity(intent);
-					activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
-				}
-			}
-		}
-	}
-
-	public static void startActivity(Activity activity, View v, Intent intent) {
-		startActivityForResult(activity, v, intent, 0);
 	}
 
 	public static void setupTransitions(Context context, Window window) {
@@ -531,7 +496,6 @@ public class AnimationUtil {
 			Transition transition = new Fade();
 			transition.setDuration(170);
 			transition.addTarget(view);
-
 			TransitionManager.endTransitions((ViewGroup) view.getParent());
 			TransitionManager.beginDelayedTransition((ViewGroup) view.getParent(), transition);
 			view.setVisibility(visibility);

@@ -105,15 +105,6 @@ public interface UserService {
 	 */
 	@Nullable String setPublicNickname(String publicNickname);
 
-	/**
-	 * Handle a typing change.
-	 *
-	 * @param toIdentity
-	 * @param isTyping
-	 * @return whether a is typing message was enqueued.
-	 */
-	boolean isTyping(String toIdentity, boolean isTyping);
-
 	boolean restoreIdentity(String backupString, String password) throws Exception;
 
 	boolean restoreIdentity(String identity, byte[] privateKey, byte[] publicKey) throws Exception;

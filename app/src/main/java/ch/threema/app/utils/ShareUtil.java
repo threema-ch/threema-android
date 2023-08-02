@@ -21,6 +21,7 @@
 
 package ch.threema.app.utils;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -55,7 +56,11 @@ public class ShareUtil {
 			shareIntent.setType("text/plain");
 			shareIntent.putExtra(Intent.EXTRA_TEXT, contactName + ": https://" + BuildConfig.contactActionUrl + "/" + identity);
 
-			ActivityCompat.startActivity(context, Intent.createChooser(shareIntent, context.getString(R.string.share_via)), null);
+			try {
+				ActivityCompat.startActivity(context, Intent.createChooser(shareIntent, context.getString(R.string.share_via)), null);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(context, R.string.no_activity_for_mime_type, Toast.LENGTH_LONG).show();
+			}
 		}
 	}
 

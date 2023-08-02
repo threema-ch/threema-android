@@ -21,6 +21,20 @@
 
 package ch.threema.app.utils;
 
+import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
+import static android.os.Build.VERSION_CODES.O_MR1;
+import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+import static android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
+import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+import static ch.threema.app.camera.CameraUtil.isInternalCameraSupported;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
+import static ch.threema.app.services.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -35,7 +49,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -56,43 +69,46 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceGroup;
+import androidx.media3.ui.PlayerView;
 import androidx.preference.PreferenceManager;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.datatheorem.android.trustkit.TrustKit;
+import com.google.android.material.search.SearchBar;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,8 +122,6 @@ import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.HomeActivity;
-import ch.threema.app.backuprestore.csv.BackupService;
-import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
@@ -117,41 +131,30 @@ import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeConfigureActivity;
+import ch.threema.app.workers.RestartWorker;
 import ch.threema.base.utils.LoggingUtil;
-
-import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
-import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-import static android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
-import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-import static ch.threema.app.ThreemaApplication.getAppContext;
-import static ch.threema.app.camera.CameraUtil.isInternalCameraSupported;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
-import static ch.threema.app.services.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class ConfigUtils {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ConfigUtils");
 
-	public static final int THEME_LIGHT = 0;
-	public static final int THEME_DARK = 1;
-	public static final int THEME_SYSTEM = 2;
-	public static final int THEME_NONE = -1;
 	private static final int CONTENT_PROVIDER_BATCH_SIZE = 50;
+	private static final String WORKER_RESTART_AFTER_RESTORE = "restartAfterRestore";
 
-	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({THEME_LIGHT, THEME_DARK})
-	public @interface AppTheme {}
+	/* app theme settings in shared preferences */
+	@StringDef({THEME_LIGHT, THEME_DARK, THEME_FOLLOW_SYSTEM})
+	public @interface AppThemeSetting {}
+	public static final String THEME_LIGHT = "0";
+	public static final String THEME_DARK = "1";
+	public static final String THEME_FOLLOW_SYSTEM = "2";
 
 	public static final int EMOJI_DEFAULT = 0;
 	public static final int EMOJI_ANDROID = 1;
 
-	private static int appTheme = THEME_NONE;
-	private static String localeOverride = null;
-	private static Integer primaryColor = null, accentColor = null, miuiVersion = null;
+	@Deprecated private static String localeOverride = null;
+	private static Integer miuiVersion = null;
 	private static int emojiStyle = 0;
 	private static Boolean isTablet = null, isBiggerSingleEmojis = null, hasMapLibreSupport = null;
-	private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1;
+	private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1, currentDayNightMode;
 
 	private static final float[] NEGATIVE_MATRIX = {
 		-1.0f,     0,     0,    0, 255, // red
@@ -185,18 +188,17 @@ public class ConfigUtils {
 		return context.getResources().getBoolean(R.bool.is_landscape);
 	}
 
-	public static boolean isBlackBerry() {
-		String osName = System.getProperty("os.name");
-
-		return osName != null && osName.equalsIgnoreCase("qnx");
-	}
-
 	public static boolean isAmazonDevice() {
 		return (Build.MANUFACTURER.equals("Amazon"));
 	}
 
 	public static boolean isHuaweiDevice() {
 		return (Build.MANUFACTURER.equalsIgnoreCase("Huawei") && !Build.MODEL.contains("Nexus"));
+	}
+
+
+	public static boolean hasBrokenDeleteNotificationChannelGroup() {
+		return isHuaweiDevice() && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q;
 	}
 
 	public static boolean isOnePlusDevice() {
@@ -233,6 +235,11 @@ public class ConfigUtils {
 
 	public static boolean hasAsyncMediaCodecBug() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ConfigUtils.isSamsungDevice() && Build.MODEL.startsWith("SM-G97");
+	}
+
+	/* device creates distorted audio recordings with a 44.1kHz sampling rate */
+	public static boolean hasBrokenAudioRecorder() {
+		return ConfigUtils.isXiaomiDevice() && Build.MODEL.startsWith("Mi 9T");
 	}
 
 	public static boolean hasScopedStorage() {
@@ -336,30 +343,82 @@ public class ConfigUtils {
 		return miuiVersion;
 	}
 
-	public static int getAppTheme(Context context) {
-		if (appTheme == THEME_NONE) {
-			appTheme = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.preferences__theme), "2"));
-		}
-		if (appTheme == THEME_SYSTEM) {
-			appTheme = (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES ? THEME_DARK : THEME_LIGHT;
-		}
-		return appTheme;
+	/**
+	 * Set the setting for the app wide theme and optionally save to shared prefs and apply setting to system
+	 * @param theme One of THEME_LIGHT, THEME_DARK or THEME_FOLLOW_SYSTEM
+	 */
+	public static void saveAppThemeToPrefs(@AppThemeSetting String theme, Context context) {
+		PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext()).edit().putString(ThreemaApplication.getAppContext().getString(R.string.preferences__theme), String.valueOf(theme)).apply();
+		AppCompatDelegate.setDefaultNightMode(getDayNightModeFromAppThemeSetting(theme));
+		getCurrentDayNightMode(context);
 	}
 
-	public static void setAppTheme(int theme) {
-		appTheme = theme;
-		primaryColor = null;
-	}
-
-	public static void resetAppTheme() {
-		appTheme = THEME_NONE;
-		primaryColor = null;
-	}
-
-	private static void setPrimaryColor(Context context) {
-		if (primaryColor == null) {
-			primaryColor = getColorFromAttribute(context, R.attr.textColorPrimary);
+	public static @AppThemeSetting String getAppThemeSettingFromDayNightMode(@AppCompatDelegate.NightMode int dayNightMode) {
+		switch (dayNightMode) {
+			case MODE_NIGHT_NO:
+				return THEME_LIGHT;
+			case MODE_NIGHT_YES:
+				return THEME_DARK;
+			default:
+				return THEME_FOLLOW_SYSTEM;
 		}
+	}
+
+	public static @AppCompatDelegate.NightMode int getDayNightModeFromAppThemeSetting(@AppThemeSetting String appThemeSetting) {
+		switch (appThemeSetting) {
+			case THEME_DARK:
+				return MODE_NIGHT_YES;
+			case THEME_LIGHT:
+				return MODE_NIGHT_NO;
+			default:
+				return MODE_NIGHT_FOLLOW_SYSTEM;
+		}
+	}
+
+	@SuppressLint("WrongConstant")
+	public static @AppThemeSetting String getAppThemePrefsSettings() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
+
+		// set default day/night setting depending on app type
+		@AppThemeSetting String appThemeSetting = null;
+		if (prefs != null) {
+			appThemeSetting = prefs.getString(ThreemaApplication.getAppContext().getString(R.string.preferences__theme), null);
+		}
+		if (TestUtil.empty(appThemeSetting)) {
+			// fix default setting according to app flavor
+			appThemeSetting = BuildConfig.DEFAULT_APP_THEME;
+			if (prefs != null) {
+				prefs.edit().putString(ThreemaApplication.getAppContext().getString(R.string.preferences__theme), BuildConfig.DEFAULT_APP_THEME).apply();
+			}
+		}
+		return appThemeSetting;
+	}
+
+	public static @AppCompatDelegate.NightMode int getAppThemePrefs() {
+		return getDayNightModeFromAppThemeSetting(getAppThemePrefsSettings());
+	}
+
+	public static boolean isTheDarkSide(@NonNull Context context) {
+		return getCurrentDayNightMode(context) == MODE_NIGHT_YES;
+	}
+
+	/**
+	 * Get current day night of the system
+	 * @return Either MODE_NIGHT_NO or MODE_NIGHT_YES
+	 */
+	public static @AppCompatDelegate.NightMode int getCurrentDayNightMode(@NonNull Context context) {
+		if (context != ThreemaApplication.getAppContext()) {
+			currentDayNightMode = (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES ? MODE_NIGHT_YES : MODE_NIGHT_NO;
+		}
+		return currentDayNightMode;
+	}
+
+	/**
+	 * Store current day/night mode.
+	 * @param dayNightMode must be either MODE_NIGHT_YES or MODE_NIGHT_NO
+	 */
+	public static void setCurrentDayNightMode(@AppCompatDelegate.NightMode int dayNightMode) {
+		currentDayNightMode = dayNightMode;
 	}
 
 	public static @ColorInt int getColorFromAttribute(Context context, @AttrRes int attr) {
@@ -371,54 +430,26 @@ public class ConfigUtils {
 		return color;
 	}
 
-	public static @ColorInt int getPrimaryColor() {
-		return primaryColor != null ? primaryColor : 0xFFFFFFFF;
-	}
-
-	public static Drawable getThemedDrawable(Context context, @DrawableRes int resId) {
-		Drawable drawable = AppCompatResources.getDrawable(context, resId);
-
-		if (drawable != null) {
-			if (appTheme != THEME_LIGHT) {
-				setPrimaryColor(context);
-
-				drawable.setColorFilter(primaryColor, PorterDuff.Mode.SRC_IN);
-				return drawable;
-			} else {
-				drawable.clearColorFilter();
-			}
-		}
-		return drawable;
-	}
-
-	public static void themeImageView(Context context, ImageView view) {
-		if (appTheme != THEME_LIGHT) {
-			if (context == null) {
-				return;
-			}
-
-			setPrimaryColor(context);
-
-			view.setColorFilter(primaryColor, PorterDuff.Mode.SRC_IN);
-		} else {
-			view.clearColorFilter();
-		}
-	}
-
-	public static void themeMenu(Menu menu, @ColorInt int color) {
+	/**
+	 * Tint the icons of a complete menu to the provided color. This is necessary when using MenuInflater which does not support the iconTint attribute
+	 * (SupportMenuInflater / startSupportActionMode respects iconTint)
+	 * @param menu The menu to tint
+	 * @param color The ColorInt to tint the icons
+	 */
+	public static void tintMenu(Menu menu, @ColorInt int color) {
 		for (int i = 0, size = menu.size(); i < size; i++) {
 			final MenuItem menuItem = menu.getItem(i);
-			themeMenuItem(menuItem, color);
+			tintMenuItem(menuItem, color);
 			if (menuItem.hasSubMenu()) {
 				final SubMenu subMenu = menuItem.getSubMenu();
 				for (int j = 0; j < subMenu.size(); j++) {
-					themeMenuItem(subMenu.getItem(j), color);
+					tintMenuItem(subMenu.getItem(j), color);
 				}
 			}
 		}
 	}
 
-	public static void themeMenuItem(final MenuItem menuItem, @ColorInt int color) {
+	public static void tintMenuItem(@Nullable final MenuItem menuItem, @ColorInt int color) {
 		if (menuItem != null) {
 			final Drawable drawable = menuItem.getIcon();
 			if (drawable != null) {
@@ -426,6 +457,10 @@ public class ConfigUtils {
 				drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
 			}
 		}
+	}
+
+	public static void tintMenuItem(@NonNull Context context, @Nullable final MenuItem menuItem, @AttrRes int colorAttr) {
+		tintMenuItem(menuItem, getColorFromAttribute(context, colorAttr));
 	}
 
 	public static void setEmojiStyle(Context context, int newStyle) {
@@ -552,7 +587,12 @@ public class ConfigUtils {
 	private static String getLicenceURL(Context context, @StringRes int url) {
 		String lang = LocaleUtil.getAppLanguage().startsWith("de") ? "de" : "en";
 		String version = ConfigUtils.getAppVersion(context);
-		String theme = ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK ? "dark" : "light";
+		boolean darkModeOverride = false;
+		if (context instanceof AppCompatActivity) {
+			darkModeOverride = ((AppCompatActivity) context).getDelegate().getLocalNightMode() == MODE_NIGHT_YES;
+		}
+
+		String theme = isTheDarkSide(context) || darkModeOverride ? "dark" : "light";
 
 		return String.format(context.getString(url), lang, version, theme);
 	}
@@ -603,23 +643,31 @@ public class ConfigUtils {
 			AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 			manager.set(AlarmManager.RTC, System.currentTimeMillis() + delayMs, pendingIntent);
 		} else {
-			String text = context.getString(R.string.tap_to_start, context.getString(R.string.app_name));
+			if (eventTriggerTitle == null) {
+				// use WorkManager to restart the app in the background
+				final WorkManager workManager = WorkManager.getInstance(ThreemaApplication.getAppContext());
+				final OneTimeWorkRequest workRequest = RestartWorker.Companion.buildOneTimeWorkRequest(delayMs);
+				workManager.enqueueUniqueWork(WORKER_RESTART_AFTER_RESTORE, ExistingWorkPolicy.REPLACE, workRequest);
+			} else {
+				// use a notification to trigger restart (app in background can no longer start activities in Android 12+)
+				String text = context.getString(R.string.tap_to_start, context.getString(R.string.app_name));
 
-			NotificationCompat.Builder builder =
-				new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_ALERT, null)
-					.setSmallIcon(R.drawable.ic_notification_small)
-					.setContentTitle(eventTriggerTitle)
-					.setContentText(eventTriggerTitle)
-					.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
-					.setColor(context.getResources().getColor(R.color.material_green))
-					.setPriority(NotificationCompat.PRIORITY_MAX)
-					.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
-					.setContentIntent(pendingIntent)
-					.setAutoCancel(false);
+				NotificationCompat.Builder builder =
+					new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_ALERT, null)
+						.setSmallIcon(R.drawable.ic_notification_small)
+						.setContentTitle(eventTriggerTitle)
+						.setContentText(eventTriggerTitle)
+						.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
+						.setColor(context.getResources().getColor(R.color.material_green))
+						.setPriority(NotificationCompat.PRIORITY_MAX)
+						.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+						.setContentIntent(pendingIntent)
+						.setAutoCancel(false);
 
-			NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-			if (notificationManager != null) {
-				notificationManager.notify(APP_RESTART_NOTIFICATION_ID, builder.build());
+				NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+				if (notificationManager != null) {
+					notificationManager.notify(APP_RESTART_NOTIFICATION_ID, builder.build());
+				}
 			}
 		}
 	}
@@ -685,7 +733,7 @@ public class ConfigUtils {
 			}
 
 			try {
-				LicenseService licenseService = serviceManager.getLicenseService();
+				LicenseService<?> licenseService = serviceManager.getLicenseService();
 				if (licenseService != null) {
 					return isSerialLicensed() && licenseService.hasCredentials() && licenseService.isLicensed();
 				}
@@ -728,17 +776,9 @@ public class ConfigUtils {
 		}
 	}
 
+	@Deprecated
 	public static @ColorInt int getAccentColor(Context context) {
-		if (accentColor == null) {
-			resetAccentColor(context);
-		}
-		return accentColor;
-	}
-
-	public static void resetAccentColor(Context context) {
-		TypedArray a = context.getTheme().obtainStyledAttributes(new int[]{R.attr.colorAccent});
-		accentColor = a.getColor(0, 0);
-		a.recycle();
+		return getColorFromAttribute(context, R.attr.colorPrimary);
 	}
 
 	@Deprecated
@@ -1057,6 +1097,24 @@ public class ConfigUtils {
 	}
 
 	/**
+	 * Request permission required for checking for connected bluetooth devices in Android S.
+	 *
+	 * @param context            the context
+	 * @param permissionLauncher the permission launcher that is launched if the permission is not
+	 *                           granted yet
+	 */
+	@RequiresApi(api = Build.VERSION_CODES.S)
+	public static void requestBluetoothConnectPermission(
+		@NonNull Context context,
+		@NonNull ActivityResultLauncher<String> permissionLauncher
+	) {
+		final String permission = Manifest.permission.BLUETOOTH_CONNECT;
+		if (checkIfNeedsPermissionRequest(context, new String[]{permission})) {
+			permissionLauncher.launch(permission);
+		}
+	}
+
+	/**
 	 * Request all possibly required permissions of Phone group
 	 * @param activity Activity context for onRequestPermissionsResult callback
 	 * @param fragment Fragment context for onRequestPermissionsResult callback
@@ -1173,96 +1231,45 @@ public class ConfigUtils {
 	}
 
 	/**
-	 * Configure activity and status bar based on user selected theme. Must be called before super.onCreate()
+	 * Configure navigation and status bar color and style of provided activity to look nice on all kinds of older android version.
+	 * Must be called before super.onCreate(). Thanks for the mess, Google.
 	 * @param activity
 	 */
-
-	public static void configureActivityTheme(Activity activity) {
-		configureActivityTheme(activity, THEME_NONE);
-	}
-
-	public static void configureActivityTheme(Activity activity, int themeOverride) {
-		int orgTheme = 0;
-
-		try {
-			orgTheme = activity.getPackageManager().getActivityInfo(activity.getComponentName(), 0).theme;
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-
-		int desiredTheme = themeOverride == THEME_NONE ? getAppTheme(activity) : themeOverride;
-
-		if (desiredTheme == ConfigUtils.THEME_DARK) {
-			int newTheme;
-
-			switch (orgTheme) {
-				case R.style.AppBaseTheme:
-					newTheme = R.style.AppBaseTheme_Dark;
-					break;
-				case R.style.Theme_Threema_WithToolbarAndCheck:
-					newTheme = R.style.Theme_Threema_WithToolbarAndCheck_Dark;
-					break;
-				case R.style.Theme_Threema_TransparentStatusbar:
-					newTheme = R.style.Theme_Threema_TransparentStatusbar_Dark;
-					break;
-				case R.style.Theme_Threema_Translucent:
-					newTheme = R.style.Theme_Threema_Translucent_Dark;
-					break;
-				case R.style.Theme_Threema_VoiceRecorder:
-					newTheme = R.style.Theme_Threema_VoiceRecorder_Dark;
-					break;
-				case R.style.Theme_LocationPicker:
-					newTheme = R.style.Theme_LocationPicker_Dark;
-					break;
-				case R.style.Theme_MediaAttacher:
-					newTheme = R.style.Theme_MediaAttacher_Dark;
-					break;
-				case R.style.Theme_Threema_WhatsNew:
-					newTheme = R.style.Theme_Threema_WhatsNew_Dark;
-					break;
-				case R.style.Theme_Threema_WithToolbar_NoAnim:
-					newTheme = R.style.Theme_Threema_WithToolbar_NoAnim_Dark;
-					break;
-				case R.style.Theme_Threema_BiometricUnlock:
-					newTheme = R.style.Theme_Threema_BiometricUnlock_Dark;
-					break;
-				case R.style.Theme_Threema_NoActionBar:
-				case R.style.Theme_Threema_LowProfile:
-				case R.style.Theme_Threema_Transparent_Background:
-				case R.style.Theme_Threema_MediaViewer:
-					// agnostic themes: leave them alone
-					newTheme = orgTheme;
-					break;
-				default:
-					newTheme = R.style.Theme_Threema_WithToolbar_Dark;
-					break;
+	public static void configureSystemBars(Activity activity) {
+		@ColorInt int statusBarColor = getColorFromAttribute(activity, android.R.attr.colorBackground);
+		@ColorInt int navigationBarColor = statusBarColor;
+		if (Build.VERSION.SDK_INT < O_MR1) {
+			int activityTheme;
+			try {
+				activityTheme = activity.getPackageManager().getActivityInfo(activity.getComponentName(), 0).theme;
+			} catch (Exception e) {
+				logger.error("Exception", e);
+				return;
 			}
 
-			if (newTheme != orgTheme) {
-				activity.setTheme(newTheme);
-			}
-
-			if (orgTheme != R.style.Theme_Threema_TransparentStatusbar) {
-				activity.getWindow().addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-				activity.getWindow().setStatusBarColor(Color.BLACK);
-				if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-					View decorView = activity.getWindow().getDecorView();
-					decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+			if (ConfigUtils.isTheDarkSide(activity)) {
+				if (activityTheme != R.style.Theme_Threema_TransparentStatusbar) {
+					activity.getWindow().addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+					statusBarColor = Color.BLACK;
+					if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+						View decorView = activity.getWindow().getDecorView();
+						decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS & ~SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+					}
 				}
-			}
-		} else {
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-				activity.getWindow().setNavigationBarColor(Color.BLACK);
-				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-					activity.getWindow().setStatusBarColor(Color.BLACK);
-				} else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+			} else {
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+					navigationBarColor = Color.BLACK;
+					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+						statusBarColor = Color.BLACK;
+					} else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+						View decorView = activity.getWindow().getDecorView();
+						decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+					}
+				} else if (activityTheme != R.style.Theme_Threema_MediaViewer && activityTheme != R.style.Theme_Threema_Transparent_Background) {
 					View decorView = activity.getWindow().getDecorView();
-					decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+					decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
+						SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 				}
-			} else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && (orgTheme != R.style.Theme_Threema_MediaViewer && orgTheme != R.style.Theme_Threema_Transparent_Background)) {
-				View decorView = activity.getWindow().getDecorView();
-				decorView.setSystemUiVisibility(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
-					SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 			}
 		}
 
@@ -1270,34 +1277,17 @@ public class ConfigUtils {
 			WindowManager.LayoutParams params = activity.getWindow().getAttributes();
 			params.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
 		}
+
+		activity.getWindow().setStatusBarColor(statusBarColor);
+		activity.getWindow().setNavigationBarColor(navigationBarColor);
 	}
 
 	public static void configureTransparentStatusBar(AppCompatActivity activity) {
 		activity.getWindow().setStatusBarColor(activity.getResources().getColor(R.color.status_bar_detail));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			activity.getWindow().getDecorView().setSystemUiVisibility(
-				activity.getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+				activity.getWindow().getDecorView().getSystemUiVisibility() & ~SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 		}
-	}
-
-	private static void tintPrefIcons(Preference preference, int color) {
-		if (preference != null) {
-			if (preference instanceof PreferenceGroup) {
-				PreferenceGroup group = ((PreferenceGroup) preference);
-				for (int i = 0; i < group.getPreferenceCount(); i++) {
-					tintPrefIcons(group.getPreference(i), color);
-				}
-			} else {
-				Drawable icon = preference.getIcon();
-				if (icon != null) {
-					icon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-				}
-			}
-		}
-	}
-
-	public static void tintPreferencesIcons(Context context, Preference preference) {
-		tintPrefIcons(preference, getColorFromAttribute(context, R.attr.textColorSecondary));
 	}
 
 	public static int getPreferredThumbnailWidth(Context context, boolean reset) {
@@ -1356,101 +1346,6 @@ public class ConfigUtils {
 		return maxSize;
 	}
 
-	public static int getCurrentScreenOrientation(Activity activity) {
-		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-		DisplayMetrics dm = new DisplayMetrics();
-		activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-		int width = dm.widthPixels;
-		int height = dm.heightPixels;
-		int orientation;
-		// if the device's natural orientation is portrait:
-		if ((rotation == Surface.ROTATION_0
-			|| rotation == Surface.ROTATION_180) && height > width ||
-			(rotation == Surface.ROTATION_90
-				|| rotation == Surface.ROTATION_270) && width > height) {
-			switch(rotation) {
-				case Surface.ROTATION_0:
-					orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-					break;
-				case Surface.ROTATION_90:
-					orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-					break;
-				case Surface.ROTATION_180:
-					orientation =
-						ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-					break;
-				case Surface.ROTATION_270:
-					orientation =
-						ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-					break;
-				default:
-					orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-					break;
-			}
-		}
-		// if the device's natural orientation is landscape or if the device
-		// is square:
-		else {
-			switch(rotation) {
-				case Surface.ROTATION_0:
-					orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-					break;
-				case Surface.ROTATION_90:
-					orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-					break;
-				case Surface.ROTATION_180:
-					orientation =
-						ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-					break;
-				case Surface.ROTATION_270:
-					orientation =
-						ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-					break;
-				default:
-					orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-					break;
-			}
-		}
-
-		return orientation;
-	}
-
-	/**
-	 * Set app theme according to device theme if theme setting is set to "system"
-	 * @param context
-	 * @return
-	 */
-	public static boolean refreshDeviceTheme(Context context) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-			if (!BackupService.isRunning() && !RestoreService.isRunning()) {
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getAppContext());
-				int themeIndex = Integer.parseInt(prefs.getString(context.getResources().getString(R.string.preferences__theme), String.valueOf(THEME_LIGHT)));
-				if (themeIndex == THEME_SYSTEM) {
-					int newTheme = (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES ? THEME_DARK : THEME_LIGHT;
-					int oldTheme = ConfigUtils.getAppTheme(context);
-
-					if (oldTheme != newTheme) {
-						ConfigUtils.setAppTheme(newTheme);
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Request desired orientation ignoring IllegalStateException on API 26 with targetApi == 28.
-	 * Workaround for Android bug https://issuetracker.google.com/issues/68454482
-	 * @param activity activity to request orientation for
-	 * @param requestedOrientation requested orientation
-	 */
-	public static void setRequestedOrientation(@NonNull Activity activity, int requestedOrientation) {
-		try {
-			activity.setRequestedOrientation(requestedOrientation);
-		} catch (IllegalStateException ignore) {}
-	}
-
 	/**
 	 * Check if a particular app with packageName is installed on the system
 	 * @param packageName
@@ -1467,7 +1362,7 @@ public class ConfigUtils {
 
 	/**
 	 * Configure menu to display icons and dividers. Call this in onCreateOptionsMenu()
-	 * @param context Context - required for themeing, set to null if you want the icon color not to be touched
+	 * @param context Context - required for theming, set to null if you want the icon color not to be touched
 	 * @param menu Menu to configure
 	 */
 	@SuppressLint("RestrictedApi")
@@ -1481,7 +1376,7 @@ public class ConfigUtils {
 				menuBuilder.setOptionalIconsVisible(true);
 
 				if (context != null) {
-					ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(context, R.attr.textColorSecondary));
+					ConfigUtils.tintMenu(menu, ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurface));
 				}
 			}
 		} catch (Exception ignored) {}
@@ -1560,5 +1455,63 @@ public class ConfigUtils {
 			logger.error("Quantity String not found.", e);
 		}
 		return result;
+	}
+
+	/**
+	 * Adjust padding of SearchView so that the search icon is no longer cut off
+	 * @param searchView The instance of a appcompat SearchView
+	 */
+	public static void adjustSearchViewPadding(@NonNull SearchView searchView) {
+		LinearLayout searchFrame = searchView.findViewById(R.id.search_edit_frame);
+		if (searchFrame != null) {
+			LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) searchFrame.getLayoutParams();
+			if (layoutParams != null) {
+				layoutParams.setMargins(0, layoutParams.topMargin, layoutParams.rightMargin, layoutParams.bottomMargin);
+				searchFrame.setLayoutParams(layoutParams);
+			}
+			TextView searchSrcTextView = searchView.findViewById(R.id.search_src_text);
+			if (searchSrcTextView != null) {
+				searchSrcTextView.setPadding(0, 0, 0, 0);
+			}
+			searchView.setPadding(0, 0, 0, 0);
+		}
+	}
+
+	/**
+	 * Adjust the left margin of a search bar text view so that it matches the search action view's text view
+	 * @param context A context
+	 * @param searchBar The search bar
+	 */
+	public static void adjustSearchBarTextViewMargin(@NonNull Context context, @NonNull SearchBar searchBar) {
+		TextView searchBarTextView = searchBar.findViewById(R.id.search_bar_text_view);
+		if (searchBarTextView != null) {
+			try {
+				SearchBar.LayoutParams layoutParams = (SearchBar.LayoutParams) searchBarTextView.getLayoutParams();
+				layoutParams.setMargins(context.getResources().getDimensionPixelSize(R.dimen.search_bar_text_view_margin), layoutParams.topMargin, layoutParams.rightMargin, layoutParams.bottomMargin);
+				searchBarTextView.setLayoutParams(layoutParams);
+			} catch (Exception e) {
+				logger.debug("Unable to get layout params for search bar");
+			}
+		}
+	}
+
+	public static void adjustExoPlayerControllerMargins(@NonNull Context context, @NonNull PlayerView audioView) {
+		final View controllerView = audioView.findViewById(R.id.exo_bottom_bar);
+		ViewCompat.setOnApplyWindowInsetsListener(controllerView, (v, insets) -> {
+			ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+			params.leftMargin = insets.getSystemWindowInsetLeft();
+			params.rightMargin = insets.getSystemWindowInsetRight();
+			params.bottomMargin = insets.getSystemWindowInsetBottom();
+			return insets;
+		});
+
+		final View exoTimeBar = audioView.findViewById(R.id.exo_progress);
+		ViewCompat.setOnApplyWindowInsetsListener(exoTimeBar, (v, insets) -> {
+			ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+			params.leftMargin = insets.getSystemWindowInsetLeft();
+			params.rightMargin = insets.getSystemWindowInsetRight();
+			params.bottomMargin = insets.getSystemWindowInsetBottom() + context.getResources().getDimensionPixelSize(R.dimen.exo_styled_progress_margin_bottom);
+			return insets;
+		});
 	}
 }

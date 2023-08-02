@@ -26,9 +26,11 @@ import org.slf4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A group ballot creation message.
@@ -41,6 +43,8 @@ public class GroupBallotCreateMessage extends AbstractGroupMessage
 	private BallotId ballotId;
 	private String ballotCreatorId;
 	private BallotData ballotData;
+	// This is only used for debugging
+	private String rawBallotData;
 
 	public GroupBallotCreateMessage() {
 		super();
@@ -49,6 +53,12 @@ public class GroupBallotCreateMessage extends AbstractGroupMessage
 	@Override
 	public boolean flagSendPush() {
 		return true;
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 
 	@Override
@@ -106,6 +116,16 @@ public class GroupBallotCreateMessage extends AbstractGroupMessage
 	@Override
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_GROUP_BALLOT_CREATE;
+	}
+
+	// This is only used for debugging
+	public void setRawBallotData(String rawBallotData) {
+		this.rawBallotData = rawBallotData;
+	}
+
+	// This is only used for debugging
+	public String getRawBallotData() {
+		return this.rawBallotData;
 	}
 
 }

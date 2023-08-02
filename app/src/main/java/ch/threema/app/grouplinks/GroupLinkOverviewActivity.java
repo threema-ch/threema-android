@@ -21,26 +21,14 @@
 
 package ch.threema.app.grouplinks;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import net.sqlcipher.SQLException;
-
-import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -49,6 +37,17 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
@@ -337,7 +336,6 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			logger.debug("onCreateActionMode");
 			mode.getMenuInflater().inflate(R.menu.action_group_url, menu);
-			ConfigUtils.themeMenu(menu, ConfigUtils.getColorFromAttribute(GroupLinkOverviewActivity.this, R.attr.colorAccent));
 			return true;
 		}
 
@@ -351,23 +349,20 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
 			return false;
 		}
 
-		@SuppressLint("NonConstantResourceId")
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			switch (item.getItemId()) {
-				case R.id.menu_select_all:
-					if (viewModel.selectAll()) {
-						mode.setTitle(Integer.toString(viewModel.getCheckedItemsCount()));
-					}
-					else {
-						actionMode.finish();
-					}
-					return true;
-				case R.id.menu_delete:
-					delete(viewModel.getCheckedItems());
-					return true;
-				default:
-					return false;
+			if (item.getItemId() == R.id.menu_select_all) {
+				if (viewModel.selectAll()) {
+					mode.setTitle(Integer.toString(viewModel.getCheckedItemsCount()));
+				} else {
+					actionMode.finish();
+				}
+				return true;
+			} else if (item.getItemId() == R.id.menu_delete) {
+				delete(viewModel.getCheckedItems());
+				return true;
+			} else {
+				return false;
 			}
 		}
 

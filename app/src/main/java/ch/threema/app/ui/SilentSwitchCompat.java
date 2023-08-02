@@ -25,14 +25,15 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import androidx.appcompat.widget.SwitchCompat;
+import com.google.android.material.materialswitch.MaterialSwitch;
+
 import ch.threema.app.R;
 
 /**
  *  Add setCheckedSilent() to Switch to prevent listener from firing when there's no user interaction
  */
 
-public class SilentSwitchCompat extends SwitchCompat {
+public class SilentSwitchCompat extends MaterialSwitch {
 	private OnCheckedChangeListener listener = null;
 	private TextView label = null;
 

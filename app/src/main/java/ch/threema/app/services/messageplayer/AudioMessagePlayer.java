@@ -21,35 +21,39 @@
 
 package ch.threema.app.services.messageplayer;
 
-import static android.media.AudioManager.STREAM_MUSIC;
+import static android.text.format.DateUtils.SECOND_IN_MILLIS;
+import static androidx.media3.common.C.TIME_UNSET;
+import static ch.threema.app.ThreemaApplication.getAppContext;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 
-import androidx.core.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.Player;
+import androidx.media3.session.MediaController;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.listeners.SensorListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.SensorService;
-import ch.threema.app.utils.MediaPlayerStateWrapper;
+import ch.threema.app.utils.BitmapUtil;
+import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.SoundUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -58,58 +62,88 @@ import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
-public class AudioMessagePlayer extends MessagePlayer implements AudioManager.OnAudioFocusChangeListener, SensorListener {
+public class AudioMessagePlayer extends MessagePlayer {
 	private final Logger logger = LoggingUtil.getThreemaLogger("AudioMessagePlayer");
 
-	private static final int SEEKBAR_UPDATE_FREQUENCY = 100;
-	private MediaPlayerStateWrapper mediaPlayer;
+	private static final int SEEKBAR_UPDATE_FREQUENCY = 50;
 	private File decryptedFile = null;
-	private int duration = 0;
-	private int position = 0;
+	private Uri decryptedFileUri = null;
+	private int duration = 0; // duration in milliseconds
+	private int position = 0; // position in milliseconds
 	private Thread mediaPositionListener;
-	private final AudioManager audioManager;
-	private int streamType = STREAM_MUSIC;
-	private int audioStreamType = STREAM_MUSIC;
 	private final PreferenceService preferenceService;
-	private final SensorService sensorService;
 	private final FileService fileService;
-	private final boolean micPermission;
+	private final DeadlineListService hiddenChatsListService;
+	private final ListenableFuture<MediaController> mediaControllerFuture;
 
 	protected AudioMessagePlayer(Context context,
-	                             MessageService messageService,
-	                             FileService fileService,
-	                             PreferenceService preferenceService,
-	                             MessageReceiver messageReceiver,
-	                             AbstractMessageModel messageModel) {
+								 MessageService messageService,
+								 FileService fileService,
+								 PreferenceService preferenceService,
+								 DeadlineListService hiddenChatsListService,
+								 MessageReceiver<?> messageReceiver,
+								 ListenableFuture<MediaController> mediaControllerFuture,
+								 AbstractMessageModel messageModel) {
 		super(context, messageService, fileService, messageReceiver, messageModel);
 
 		this.preferenceService = preferenceService;
-		this.audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
-		this.sensorService = ThreemaApplication.getServiceManager().getSensorService();
 		this.fileService = fileService;
-		this.mediaPlayer = null;
-		this.micPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+		this.hiddenChatsListService = hiddenChatsListService;
+		this.mediaControllerFuture = mediaControllerFuture;
 
-		String UID = messageModel.getUid();
-		logger.info("New MediaPlayer instance: {}", UID);
+		logger.info("New AudioMediaPlayer instance: {}", messageModel.getId());
 
-		// Set logger prefix
 		if (logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(String.valueOf(UID));
+			((ThreemaLogger) logger).setPrefix(String.valueOf(messageModel.getId()));
 		}
 	}
 
-	/**
-	 * Get default volume level. Reduce level if mic permission has not been granted.
-	 * Workaround for Android bug that causes the OS to play extra loud through earpiece.
-	 * @return volume level
-	 */
-	private float getDefaultVolumeLevel() {
-		if (streamType ==  AudioManager.STREAM_VOICE_CALL) {
-			return micPermission ? 0.7f : 0.1f;
+	private final Player.Listener playerListener = new Player.Listener() {
+			@Override
+			public void onIsLoadingChanged(boolean isLoading) {
+				logger.debug(isLoading ? "@ onLoading" : "@ onLoaded");
+			}
+
+			@Override
+			public void onIsPlayingChanged(boolean isPlaying) {
+				MediaController mediaController = getMediaController();
+				if (mediaController != null) {
+					if (isPlaying) {
+						logger.debug("@ onPlay");
+						makeResume(SOURCE_UI_TOGGLE);
+					} else if (mediaController.getPlaybackState() != Player.STATE_ENDED && playerMediaMatchesControllerMedia()) {
+						logger.debug("@ onPause");
+						makePause(SOURCE_UI_TOGGLE);
+					}
+				}
+			}
+
+		@Override
+		public void onPlaybackStateChanged(int playbackState) {
+			if (playbackState == Player.STATE_ENDED) {
+				logger.debug("@ onStopped");
+				AudioMessagePlayer.super.stop();
+				ListenerManager.messagePlayerListener.handle(listener -> listener.onAudioPlayEnded(getMessageModel()));
+			} else if (playbackState == Player.STATE_READY) {
+				logger.debug("@ onReady");
+				markAsConsumed();
+				prepared();
+			}
 		}
-		return 1.0f;
-	}
+
+		@Override
+		public void onPositionDiscontinuity(@NonNull Player.PositionInfo oldPosition, @NonNull Player.PositionInfo newPosition, int reason) {
+			if (reason == Player.DISCONTINUITY_REASON_SEEK) {
+				logger.debug("@ onSeekEnded {} {} {}", reason, oldPosition.positionMs, newPosition.positionMs);
+
+				// seek ended
+				if (oldPosition != newPosition) {
+					position = (int) newPosition.positionMs;
+					onSeekCompleted();
+				}
+			}
+		}
+	};
 
 	@Override
 	public MediaMessageDataInterface getData() {
@@ -131,238 +165,197 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 		return messageModel;
 	}
 
-	private AudioAttributes getAudioAttributes(int stream) {
-		if (stream == AudioManager.STREAM_VOICE_CALL) {
-			return SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION);
-		} else {
-			return SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_MEDIA);
-		}
-	}
-
-	private void open(File decryptedFile, final boolean resume) {
-		this.decryptedFile = decryptedFile;
-		final Uri uri = fileService.getShareFileUri(decryptedFile, null);
-		this.position = 0;
-
-		logger.debug("open uri = {}", uri);
-
-		if (mediaPlayer != null) {
-			logger.debug("stopping existing player {}", Thread.currentThread().getId());
-
-			if (resume && isPlaying()) {
-				position = mediaPlayer.getCurrentPosition();
-			}
-			releasePlayer();
-			abandonFocus(resume);
-		}
-
-		logger.debug("starting new player {}", Thread.currentThread().getId());
-		mediaPlayer = new MediaPlayerStateWrapper();
-
-		try {
-			logger.debug("starting prepare - streamType = {}", streamType);
-			setOutputStream(streamType);
-			mediaPlayer.setDataSource(getContext(), uri);
-			mediaPlayer.prepare();
-			prepared(mediaPlayer, resume);
-			markAsConsumed();
-		} catch (Exception e) {
-			if (e instanceof IllegalArgumentException) {
-				showError(getContext().getString(R.string.file_is_not_audio));
-			}
-			logger.error("Could not prepare media player", e);
-			stop();
-		}
-	}
-
-	private void setOutputStream(int streamType) {
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-			mediaPlayer.setAudioAttributes(getAudioAttributes(streamType));
-		} else {
-			mediaPlayer.setAudioStreamType(streamType);
-		}
-
-		logger.info("Speakerphone state = {} newStreamType = {}",
-			this.audioManager.isSpeakerphoneOn(), streamType);
-
-		this.audioManager.setSpeakerphoneOn(false);
-/*
-		if (streamType == STREAM_VOICE_CALL) {
-			this.audioManager.setBluetoothScoOn(false);
-			this.audioManager.setSpeakerphoneOn(false);
-		} else {
-			this.audioManager.setSpeakerphoneOn(true);
-		}
-*/	}
-
 	@Override
 	protected void open(File decryptedFile) {
-		open(decryptedFile, false);
+		this.decryptedFile = decryptedFile;
+		this.decryptedFileUri = fileService.getShareFileUri(decryptedFile, null);
+		this.position = 0;
+		this.duration = 0;
+
+		logger.debug("open uri = {}", decryptedFileUri);
+
+		MediaController mediaController = getMediaController();
+		if (mediaController != null) {
+
+			String displayName;
+			Bitmap artworkBitmap = null;
+			if (!this.preferenceService.isShowMessagePreview() || this.hiddenChatsListService.has(currentMessageReceiver.getUniqueIdString())) {
+				displayName = getContext().getString(R.string.notification_channel_voice_message_player);
+			} else {
+				displayName = currentMessageReceiver.getDisplayName();
+				artworkBitmap = currentMessageReceiver.getAvatar();
+			}
+
+			MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder()
+				.setTitle(displayName)
+				.setArtist(getContext().getString(R.string.voice_message_from,
+						LocaleUtil.formatTimeStampStringAbsolute(getAppContext(), getMessageModel().getCreatedAt().getTime())));
+
+			if (artworkBitmap != null) {
+				metadataBuilder.setArtworkData(BitmapUtil.bitmapToByteArray(artworkBitmap, Bitmap.CompressFormat.JPEG, 80), MediaMetadata.PICTURE_TYPE_FRONT_COVER);
+			}
+
+			final MediaItem mediaItem = new MediaItem.Builder()
+				.setMediaMetadata(metadataBuilder.build())
+				.setMediaId(decryptedFileUri.toString())
+				.setUri(decryptedFileUri)
+				.build();
+
+			// cleanup old media player instance
+			if (this.mediaPositionListener != null) {
+				this.mediaPositionListener.interrupt();
+			}
+			mediaController.stop();
+			mediaController.removeListener(playerListener);
+			mediaController.clearMediaItems();
+
+			// add new item and prepare
+			mediaController.addMediaItem(mediaItem);
+			mediaController.setPlayWhenReady(false);
+			mediaController.addListener(playerListener);
+			mediaController.prepare();
+		}
 	}
 
 	/**
-	 * called, after the media player was prepared
+	 * called after the media player was prepared
 	 */
-	private void prepared(MediaPlayerStateWrapper mp, final boolean resume) {
+	private void prepared() {
 		logger.debug("prepared");
 
-		//do not play if state is changed! (not playing)
-		if (this.getState() != State_PLAYING) {
-			logger.debug("not in playing state");
+		MediaController mediaController = getMediaController();
+		if (mediaController == null) {
 			return;
 		}
 
-		if (mp != this.mediaPlayer) {
-			//another mediaplayer
+		if (!playerMediaMatchesControllerMedia()) {
+			// another media player
 			logger.debug("another player instance");
 			return;
 		}
 
-		duration = mediaPlayer.getDuration();
-
-		if (duration == 0) {
+		final long longDuration = mediaController.getDuration();
+		duration = (int) longDuration;
+		if (longDuration == TIME_UNSET) {
 			MediaMessageDataInterface d = this.getData();
 			if (d instanceof AudioDataModel) {
-				duration = ((AudioDataModel) d).getDuration();
+				duration = (int) (((AudioDataModel) d).getDuration() * SECOND_IN_MILLIS);
 			} else if (d instanceof FileDataModel) {
-				duration = (int) ((FileDataModel) d).getDurationSeconds();
+				duration = (int) (((FileDataModel) d).getDurationSeconds() * SECOND_IN_MILLIS);
 			}
 		}
 		logger.debug("duration = {}", duration);
 
-		if (this.position >= 0) {
-			this.mediaPlayer.setOnSeekCompleteListener(mp1 -> onSeekCompleted(resume));
-			this.mediaPlayer.seekTo(this.position);
+		if (this.position > mediaController.getCurrentPosition()) {
+			mediaController.seekTo(this.position);
 		} else {
-			onSeekCompleted(resume);
+			onSeekCompleted();
 		}
 	}
 
-	private void onSeekCompleted(final boolean resume) {
+	private void onSeekCompleted() {
 		logger.debug("play from position {}", this.position);
 
-		this.mediaPlayer.setOnSeekCompleteListener(null);
+		MediaController mediaController = getMediaController();
+		if (mediaController != null) {
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			float audioPlaybackSpeed = preferenceService.getAudioPlaybackSpeed();
-			float newPlaybackSpeed = mediaPlayer.setPlaybackSpeed(audioPlaybackSpeed);
+			mediaController.setPlaybackSpeed(audioPlaybackSpeed);
+
+			float newPlaybackSpeed = mediaController.getPlaybackParameters().speed;
 
 			if (audioPlaybackSpeed != newPlaybackSpeed) {
 				preferenceService.setAudioPlaybackSpeed(newPlaybackSpeed);
 			}
-		}
 
-		if (requestFocus(resume)) {
-			logger.debug("request focus done");
+			mediaController.play();
 
-			if (this.mediaPlayer != null) {
-				this.mediaPlayer.setVolume(getDefaultVolumeLevel(), getDefaultVolumeLevel());
-				this.mediaPlayer.start();
-				initPositionListener(true);
-			}
+			initPositionListener();
 		}
 	}
 
-	private void initPositionListener(boolean hard) {
-		logger.debug("initPositionListener hard = {}", hard);
-
-		if (!hard && this.mediaPositionListener != null && this.mediaPositionListener.isAlive()) {
-			return;
-		}
+	private void initPositionListener() {
+		logger.debug("initPositionListener");
 
 		if (this.mediaPositionListener != null) {
 			this.mediaPositionListener.interrupt();
 		}
 
-		this.mediaPositionListener = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				boolean cont = true;
-				while (cont) {
-					try {
-						cont = false;
-						Thread.sleep(SEEKBAR_UPDATE_FREQUENCY);
+		this.mediaPositionListener = new Thread(() -> {
+			logger.debug("initPositionListener Thread started");
 
-						if (mediaPlayer != null && getState() == State_PLAYING && isPlaying()) {
-							int newposition = mediaPlayer.getCurrentPosition();
-							if (newposition > position) {
-								position = newposition;
+			boolean cont = true;
+			while (cont) {
+				try {
+					Thread.sleep(SEEKBAR_UPDATE_FREQUENCY);
+
+					RuntimeUtil.runOnUiThread(() -> {
+						MediaController mediaController = getMediaController();
+						if (mediaController != null && mediaController.isConnected() && mediaController.isPlaying()) {
+							int newPosition = (int) mediaController.getCurrentPosition();
+							if (newPosition > position) {
+								position = newPosition;
+								this.updatePlayState();
 							}
-							AudioMessagePlayer.this.updatePlayState();
-							cont = !Thread.interrupted();
 						}
-					} catch (Exception e) {
-						cont = false;
-					}
+					});
+
+					cont = !Thread.interrupted();
+				} catch (Exception e) {
+					cont = false;
 				}
 			}
+			logger.debug("initPositionListener Thread ended");
 		});
-
 		this.mediaPositionListener.start();
+	}
 
-		//reset old listeners
-		this.mediaPlayer.setStateListener(null);
-		//configure new one
-		this.mediaPlayer.setStateListener(new MediaPlayerStateWrapper.StateListener() {
-			@Override
-			public void onCompletion(MediaPlayer mp) {
-				stop();
-				ListenerManager.messagePlayerListener.handle(listener -> listener.onAudioPlayEnded(getMessageModel()));
-			}
-
-			@Override
-			public void onPrepared(MediaPlayer mp) {
-			}
-		});
+	@Override
+	public void pause(int source) {
+		MediaController mediaController = getMediaController();
+		if (mediaController != null && playerMediaMatchesControllerMedia()) {
+			mediaController.pause();
+		}
 	}
 
 	@Override
 	protected void makePause(int source) {
 		logger.info("makePause with source {}", source);
-
-		if (source != SOURCE_LIFECYCLE) {
-			if (this.mediaPlayer != null) {
-				playerPause();
-				if (this.getState() != State_INTERRUPTED_PLAY) {
-					abandonFocus(false);
-				}
-			}
-		} else {
-			// the app has been put to the background
-			if (preferenceService.isUseProximitySensor()) {
-				sensorService.unregisterSensors(this.getMessageModel().getUid());
-			}
-			if (audioStreamType != STREAM_MUSIC) {
-				ListenerManager.messagePlayerListener.handle(listener -> listener.onAudioStreamChanged(STREAM_MUSIC));
-				changeAudioOutput(STREAM_MUSIC);
-				audioStreamType = STREAM_MUSIC;
+		this.state = State_PAUSE;
+		synchronized (this.playbackListeners) {
+			for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
+				l.getValue().onPause(
+					getMessageModel()
+				);
 			}
 		}
 	}
 
 	@Override
-	protected void makeResume(int source) {
-		logger.debug("makeResume");
-
-		if (source != SOURCE_LIFECYCLE) {
-			if (this.mediaPlayer != null) {
-				if (this.duration > 0 && !isPlaying()) {
-					if (requestFocus(false)) {
-						playerStart();
-						initPositionListener(true);
-					}
+	protected void play(final boolean autoPlay) {
+		logger.debug("play");
+		if (this.state == State_PAUSE) {
+			MediaController mediaController = getMediaController();
+			if (mediaController != null) {
+				if (playerMediaMatchesControllerMedia()) {
+					mediaController.play();
+				} else {
+					open(decryptedFile);
 				}
-			} else {
-				this.stop();
-				this.open();
 			}
-		} else {
-			// the app was brought to the foreground
-			if (this.mediaPlayer != null) {
-				initPositionListener(false);
-				if (preferenceService.isUseProximitySensor()) {
-					sensorService.registerSensors(this.getMessageModel().getUid(), this);
-				}
+			return;
+		}
+
+		super.play(autoPlay);
+	}
+
+	@Override
+	protected void makeResume(int source) {
+		logger.info("makeResume with source {} state (should be != 5) {}", source, state);
+		this.state = State_PLAYING;
+		synchronized (this.playbackListeners) {
+			for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
+				l.getValue().onPlay(getMessageModel(), false);
 			}
 		}
 	}
@@ -376,48 +369,54 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 			mediaPositionListener = null;
 		}
 
-		if (mediaPlayer != null) {
-
-			try {
-				logger.debug("stop");
-				mediaPlayer.stop();
-			} catch (Exception e) {
-				logger.error("Could not stop media player", e);
-			}
-
-			try {
-				logger.debug("reset");
-				mediaPlayer.reset();
-			} catch (Exception e) {
-				logger.error("Could not reset media player", e);
-			}
-
-			try {
-				logger.debug("release");
-				mediaPlayer.release();
-				mediaPlayer = null;
-			} catch (Exception e) {
-				logger.error("Could not release media player", e);
+		MediaController mediaController = getMediaController();
+		if (mediaController != null) {
+			if (playerMediaMatchesControllerMedia()) {
+				logger.debug("mediaController stopped and cleared");
+				mediaController.stop();
+				mediaController.clearMediaItems();
+				this.position = 0;
+				this.duration = 0;
+			} else {
+				mediaController.removeListener(playerListener);
+				synchronized (this.playbackListeners) {
+					for (Map.Entry<String, PlaybackListener> l : this.playbackListeners.entrySet()) {
+						l.getValue().onStop(getMessageModel());
+					}
+				}
 			}
 		}
-		logger.debug("Player released");
+	}
+
+	private boolean playerMediaMatchesControllerMedia() {
+		if (decryptedFile != null && decryptedFileUri != null) {
+			MediaController mediaController = getMediaController();
+			if (mediaController != null && mediaController.getMediaItemCount() > 0) {
+				return decryptedFileUri.toString().equals(mediaController.getMediaItemAt(0).mediaId);
+			}
+		}
+		return false;
 	}
 
 	@Override
 	public boolean stop() {
-		logger.debug("Stop player called from stop() {}", Thread.currentThread().getId());
-		releasePlayer();
-		abandonFocus(false);
-
-		return super.stop();
+		if (!playerMediaMatchesControllerMedia()) {
+			logger.debug("stop");
+			super.stop();
+			releasePlayer();
+		}
+		return true;
 	}
 
 	@Override
-	public float togglePlaybackSpeed() {
-		float newSpeed = 1f;
+	public float togglePlaybackSpeed(float preferenceSpeed) {
+		float currentSpeed = preferenceSpeed;
+		MediaController mediaController = getMediaController();
+		if (mediaController != null) {
+			currentSpeed = mediaController.getPlaybackParameters().speed;
+		}
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mediaPlayer != null) {
-			float currentSpeed = mediaPlayer.getPlaybackSpeed();
+		float newSpeed = 1f;
 
 			if (currentSpeed == 1f) {
 				newSpeed = 1.5f;
@@ -427,166 +426,49 @@ public class AudioMessagePlayer extends MessagePlayer implements AudioManager.On
 				newSpeed = 0.5f;
 			}
 
-			if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-				newSpeed = mediaPlayer.setPlaybackSpeed(newSpeed);
-			}
+		if (mediaController != null) {
+			mediaController.setPlaybackSpeed(newSpeed);
 		}
-
 		preferenceService.setAudioPlaybackSpeed(newSpeed);
 		return newSpeed;
 	}
 
 	@Override
 	public void seekTo(int pos) {
-		logger.debug("seekTo");
-
 		if (pos >= 0) {
-			if (this.mediaPlayer != null) {
-				this.mediaPlayer.seekTo(pos);
-				this.position = this.mediaPlayer.getCurrentPosition();
+			MediaController mediaController = getMediaController();
+			if (mediaController != null && playerMediaMatchesControllerMedia()) {
+				mediaController.seekTo(pos);
 			}
-			this.updatePlayState();
 		}
 	}
 
 	@Override
 	public int getDuration() {
-		if (this.mediaPlayer != null) {
-			return this.duration;
-		}
-		return 0;
+		return this.duration;
 	}
 
 	@Override
 	public int getPosition() {
-		if (this.getState() == State_PLAYING || this.getState() == State_PAUSE || this.getState() == State_INTERRUPTED_PLAY) {
+		if (this.getState() == State_PLAYING || this.getState() == State_PAUSE) {
 			return this.position;
 		}
-
 		return 0;
 	}
 
-	private void changeAudioOutput(int streamType) {
-		logger.debug("changeAudioOutput");
-
-		this.streamType = streamType;
-		if (this.mediaPlayer != null && isPlaying()) {
-			if (this.decryptedFile != null) {
-				this.open(this.decryptedFile, true);
-			} else {
-				logger.debug("decrypted file not available");
+	@Nullable
+	public MediaController getMediaController() {
+		if (mediaControllerFuture.isDone()) {
+			try {
+				return mediaControllerFuture.get();
+			} catch (ExecutionException e) {
+				logger.error("Media Controller exception", e);
+			} catch (InterruptedException e) {
+				logger.error("Media Controller interrupted exception", e);
+				Thread.currentThread().interrupt();
 			}
 		}
-	}
-
-	@Override
-	public void onAudioFocusChange(int focusChange) {
-		switch (focusChange) {
-			case AudioManager.AUDIOFOCUS_GAIN:
-				// resume playback
-				logger.debug("AUDIOFOCUS_GAIN");
-				this.resume(SOURCE_AUDIOFOCUS);
-				if (mediaPlayer != null) {
-					mediaPlayer.setVolume(getDefaultVolumeLevel(), getDefaultVolumeLevel());
-				}
-				break;
-
-			case AudioManager.AUDIOFOCUS_LOSS:
-				// Lost focus for an unbounded amount of time: stop playback and release media player
-				logger.debug("AUDIOFOCUS_LOSS");
-				this.stop();
-				break;
-
-			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-				// Lost focus for a short time, but we have to stop
-				// playback. We don't release the media player because playback
-				// is likely to resume
-				logger.info("AUDIOFOCUS_LOSS_TRANSIENT");
-				this.pause(true, SOURCE_AUDIOFOCUS);
-				break;
-
-			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-				// Lost focus for a short time, but it's ok to keep playing
-				// at an attenuated level
-				logger.debug("AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
-				if (mediaPlayer != null) {
-					mediaPlayer.setVolume(0.2f, 0.2f);
-				}
-				break;
-		}
-	}
-
-	private boolean requestFocus(boolean resume) {
-		logger.debug("requestFocus resume = {} streamType = {}", resume, streamType);
-
-		if (audioManager.requestAudioFocus(this, this.streamType, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-			if (preferenceService.isUseProximitySensor() && !resume) {
-				sensorService.registerSensors(this.getMessageModel().getUid(), this);
-			}
-			return true;
-		} else {
-			logger.debug("Focus request not granted");
-		}
-		return false;
-	}
-
-	private void abandonFocus(boolean resume) {
-		logger.debug("abandonFocus resume = {}", resume);
-		if (!resume) {
-			audioManager.abandonAudioFocus(this);
-			if (preferenceService.isUseProximitySensor()) {
-				sensorService.unregisterSensors(this.getMessageModel().getUid());
-				ListenerManager.messagePlayerListener.handle(listener -> listener.onAudioStreamChanged(STREAM_MUSIC));
-			}
-		}
-	}
-
-	@Override
-	public void onSensorChanged(String key, boolean value) {
-		logger.info("SensorService onSensorChanged: {}", value);
-
-		RuntimeUtil.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if (key.equals(SensorListener.keyIsNear)) {
-
-					int newStreamType = value ?
-							AudioManager.STREAM_VOICE_CALL :
-							AudioManager.STREAM_MUSIC;
-
-					if (newStreamType != audioStreamType) {
-						logger.info("New Audio stream: {}", newStreamType);
-
-						ListenerManager.messagePlayerListener.handle(listener -> listener.onAudioStreamChanged(newStreamType));
-						changeAudioOutput(newStreamType);
-
-						audioStreamType = newStreamType;
-					}
-				}
-			}
-		});
-	}
-
-	private boolean isPlaying() {
-		boolean isPlaying = false;
-
-		if (this.mediaPlayer != null) {
-			isPlaying = this.mediaPlayer.isPlaying();
-		}
-
-		return isPlaying;
-	}
-
-	private void playerStart() {
-		if (this.mediaPlayer != null) {
-			this.mediaPlayer.start();
-		}
-	}
-
-	private void playerPause() {
-		if (this.mediaPlayer != null) {
-			this.mediaPlayer.pause();
-		}
+		return null;
 	}
 }
 

@@ -1,78 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:orientation="vertical">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<com.google.android.material.appbar.AppBarLayout
-		android:id="@+id/appbar"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-		<androidx.appcompat.widget.Toolbar
-		                                   android:id="@+id/crop_toolbar"
-		                                   android:layout_width="match_parent"
-		                                   android:layout_height="wrap_content"
-		                                   android:background="?android:windowBackground"
-		                                   app:contentInsetEnd="0dp"
-		                                   app:contentInsetStart="0dp">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/crop_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/crop_image_title"
+            app:contentInsetEnd="0dp"
+            app:contentInsetStart="0dp" />
 
-			<LinearLayout
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:orientation="horizontal"
-				android:divider="?android:attr/dividerVertical"
-				android:dividerPadding="12dip"
-				android:showDividers="middle">
+    </com.google.android.material.appbar.AppBarLayout>
 
-				<!-- id must match corresponding menu item id -->
-				<LinearLayout
-					android:id="@+id/action_cancel"
-					style="@style/Crop.ActionButton">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/crop_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-					<ImageView
-						app:srcCompat="@drawable/ic_close"
-						style="@style/Crop.ActionButtonImage"
-						android:contentDescription="@string/cancel"/>
+        <com.canhub.cropper.CropImageView
+            android:id="@+id/crop_image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="?android:attr/colorBackground"
+            app:cropBorderCornerLength="20dp"
+            app:cropBorderCornerOffset="0dp"
+            app:cropBorderLineColor="#88FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-					<TextView
-						android:text="@string/cancel"
-						style="@style/Crop.ActionButtonText"/>
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/floating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/floating_button_margin"
+            android:clickable="true"
+            android:contentDescription="@string/crop"
+            android:text="@string/crop"
+            app:icon="@drawable/ic_crop_outline"
+            app:layout_anchor="@id/crop_parent"
+            app:layout_anchorGravity="bottom|right"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
-				</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-				<!-- id must match corresponding menu item id -->
-				<LinearLayout
-					android:id="@+id/action_done"
-					style="@style/Crop.ActionButton">
-
-					<ImageView
-						app:srcCompat="@drawable/ic_check"
-						style="@style/Crop.ActionButtonImage"
-						android:contentDescription="@string/save_image"/>
-
-					<TextView
-						android:text="@string/crop"
-						style="@style/Crop.ActionButtonText"/>
-
-				</LinearLayout>
-			</LinearLayout>
-		</androidx.appcompat.widget.Toolbar>
-
-	</com.google.android.material.appbar.AppBarLayout>
-
-
-	<com.canhub.cropper.CropImageView
-		android:id="@+id/crop_image"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:background="?android:windowBackground"
-		app:cropBorderCornerOffset="0dp"
-		app:cropBorderCornerLength="20dp"
-		app:cropBorderLineColor="#88FFFFFF"
-		/>
-
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

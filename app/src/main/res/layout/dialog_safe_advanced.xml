@@ -14,29 +14,31 @@
 		android:paddingRight="24dp">
 
 		<TextView
+			style="@style/Threema.TextAppearance.Dialog"
 			android:id="@+id/safe_enable_explain"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:textColor="?attr/textColorPrimary"
+			android:textColor="?attr/colorOnBackground"
 			android:layout_marginTop="8dp"
 			android:text="@string/safe_configure_server_explain"
 			android:textSize="16sp"/>
 
-		<androidx.appcompat.widget.SwitchCompat
+		<com.google.android.material.materialswitch.MaterialSwitch
 			android:id="@+id/safe_switch_server"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="16dp"
+			android:layout_marginTop="8dp"
 			android:checked="true"
 			android:enabled="true"
 			android:text="@string/safe_use_default_server"
+			android:textAppearance="@style/Threema.TextAppearance.Dialog"
 			android:textSize="16sp"/>
 
 		<LinearLayout
 			android:id="@+id/safe_server_container"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="16dp"
+			android:layout_marginTop="8dp"
 			android:orientation="vertical"
 			android:visibility="gone">
 
@@ -62,10 +64,11 @@
 			</com.google.android.material.textfield.TextInputLayout>
 
 			<TextView
+				style="@style/Threema.TextAppearance.Dialog"
 				android:id="@+id/safe_credentials_title"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textColor="?attr/textColorPrimary"
+				android:textColor="?attr/colorOnBackground"
 				android:layout_marginTop="8dp"
 				android:text="@string/safe_configure_server_credentials_title"
 				android:textSize="16sp"/>

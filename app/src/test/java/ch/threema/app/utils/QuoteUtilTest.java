@@ -23,6 +23,7 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -30,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
@@ -75,7 +75,7 @@ public class QuoteUtilTest {
 		assertNull(content.thumbnail);
 		assertNull(content.quotedMessageId);
 		assertNull(content.quotedMessageModel);
-		assertNull(content.receiverType);
+		assertNull(content.messageReceiver);
 	}
 
 	@Test
@@ -98,18 +98,24 @@ public class QuoteUtilTest {
 
 	// Quotes V2
 
+	private final MessageReceiver mockContactReceiver = Mockito.mock(MessageReceiver.class);
+
+	@Before
+	public void initMockReceiver() {
+		Mockito.when(mockContactReceiver.getType()).thenReturn(MessageReceiver.Type_CONTACT);
+	}
+
 	/**
 	 * Helper function for v2 quotes.
 	 *
 	 * @param quoterModel The model that contains the quote.
 	 * @param quotedModel The quoted model.
-	 * @param receiverType The receiver type.
 	 */
 	private static QuoteContent extractQuoteV2(
 		@NonNull AbstractMessageModel quoterModel,
 		@Nullable AbstractMessageModel quotedModel,
 		boolean includeMessageModel,
-		@MessageReceiverType int receiverType
+		MessageReceiver receiver
 	) {
 		// Mocks
 		final Context mockContext = Mockito.mock(Context.class);
@@ -118,10 +124,10 @@ public class QuoteUtilTest {
 		final FileService mockFileService = Mockito.mock(FileService.class);
 
 		// Ensure that message service returns the correct models
-		Mockito.when(mockMessageService.getMessageModelByApiMessageId(quoterModel.getApiMessageId(), receiverType))
+		Mockito.when(mockMessageService.getMessageModelByApiMessageIdAndReceiver(quoterModel.getApiMessageId(), receiver))
 			.thenReturn(quoterModel);
 		if (quotedModel != null) {
-			Mockito.when(mockMessageService.getMessageModelByApiMessageId(quotedModel.getApiMessageId(), receiverType))
+			Mockito.when(mockMessageService.getMessageModelByApiMessageIdAndReceiver(quotedModel.getApiMessageId(), receiver))
 				.thenReturn(quotedModel);
 		}
 
@@ -132,7 +138,7 @@ public class QuoteUtilTest {
 
 		// Return quote contents
 		return QuoteUtil.extractQuoteV2(
-			quoterModel, receiverType, includeMessageModel, null,
+			quoterModel, receiver, includeMessageModel, null,
 			mockContext, mockMessageService, mockUserService, mockFileService
 		);
 	}
@@ -146,7 +152,6 @@ public class QuoteUtilTest {
 		final String quoteMessageId = "8899889988998899";
 		final String quotedBody = "Shall we eat lunch?";
 		final String quoteComment = "That's a great idea!";
-		final int receiverType = MessageReceiver.Type_CONTACT;
 
 		// Create quoted model
 		final AbstractMessageModel quotedModel = new MessageModel(false);
@@ -164,15 +169,15 @@ public class QuoteUtilTest {
 		quoterModel.setType(MessageType.TEXT);
 
 		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, false, receiverType);
+		final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, false, mockContactReceiver);
 		assertNotNull(content);
 		assertTrue(content.isQuoteV2());
 		assertFalse(content.isQuoteV1());
-		assertEquals(content.quotedText, quotedBody);
-		assertEquals(content.bodyText, quoteComment);
-		assertEquals(content.identity, quotedIdentity);
-		assertEquals(content.quotedMessageId, quotedMessageId);
-		assertEquals(content.receiverType, (Integer) receiverType);
+		assertEquals(quotedBody, content.quotedText);
+		assertEquals(quoteComment, content.bodyText);
+		assertEquals(quotedIdentity, content.identity);
+		assertEquals(quotedMessageId, content.quotedMessageId);
+		assertEquals(mockContactReceiver, content.messageReceiver);
 		assertNull(content.quotedMessageModel);
 		assertNull(content.thumbnail);
 		assertNull(content.icon);
@@ -187,7 +192,6 @@ public class QuoteUtilTest {
 		final String quoteMessageId = "8899889988998899";
 		final String quotedBody = "Shall we eat lunch?";
 		final String quoteComment = "That's a great idea!";
-		final int receiverType = MessageReceiver.Type_CONTACT;
 
 		// Create quoted model
 		final AbstractMessageModel quotedModel = new MessageModel(false);
@@ -205,7 +209,7 @@ public class QuoteUtilTest {
 		quoterModel.setType(MessageType.TEXT);
 
 		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, false, receiverType);
+		final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, false, mockContactReceiver);
 		assertNotNull(content);
 		assertTrue(content.isQuoteV2());
 		assertFalse(content.isQuoteV1());
@@ -213,7 +217,7 @@ public class QuoteUtilTest {
 		assertEquals(content.bodyText, quoteComment);
 		assertEquals(content.quotedMessageId, quotedMessageId);
 		assertNotEquals(content.identity, quotedIdentity);
-		assertNull(content.receiverType);
+		assertNull(content.messageReceiver);
 		assertNull(content.quotedMessageModel);
 		assertNull(content.thumbnail);
 		assertNull(content.icon);
@@ -227,7 +231,6 @@ public class QuoteUtilTest {
 		final String quotedMessageId = "0011223344556677";
 		final String quoteMessageId = "8899889988998899";
 		final String quoteComment = "That's a great idea!";
-		final int receiverType = MessageReceiver.Type_CONTACT;
 
 		// Create quoted model
 		final AbstractMessageModel quotedModel = new MessageModel(false);
@@ -245,7 +248,7 @@ public class QuoteUtilTest {
 		quoterModel.setType(MessageType.TEXT);
 
 		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, true, receiverType);
+		final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, true, mockContactReceiver);
 		assertNotNull(content);
 		assertTrue(content.isQuoteV2());
 		assertFalse(content.isQuoteV1());
@@ -254,7 +257,7 @@ public class QuoteUtilTest {
 		assertEquals(quotedIdentity, content.identity);
 		assertEquals(quotedMessageId, content.quotedMessageId);
 		assertEquals(quotedModel, content.quotedMessageModel);
-		assertEquals(content.receiverType, (Integer) receiverType);
+		assertEquals(mockContactReceiver, content.messageReceiver);
 		assertNull(content.thumbnail);
 		assertEquals((Integer) R.drawable.ic_movie_filled, content.icon);
 	}
@@ -266,7 +269,6 @@ public class QuoteUtilTest {
 		final String quotedMessageId = "0000000000000000";
 		final String quoteMessageId = "8899889988998899";
 		final String quoteComment = "That's a great idea!";
-		final int receiverType = MessageReceiver.Type_CONTACT;
 
 		// Create quoter model with an invalid message id
 		final AbstractMessageModel quoterModel = new MessageModel(false);
@@ -277,16 +279,16 @@ public class QuoteUtilTest {
 		quoterModel.setType(MessageType.TEXT);
 
 		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, null, true, receiverType);
+		final QuoteContent content = extractQuoteV2(quoterModel, null, true, mockContactReceiver);
 		assertNotNull(content);
 		assertTrue(content.isQuoteV2());
 		assertFalse(content.isQuoteV1());
-		assertEquals(content.quotedText, "Deleted");
-		assertEquals(content.bodyText, quoteComment);
+		assertEquals("Deleted", content.quotedText);
+		assertEquals(quoteComment, content.bodyText);
 		assertNull(content.identity);
-		assertEquals(content.quotedMessageId, quotedMessageId);
+		assertEquals(quotedMessageId, content.quotedMessageId);
 		assertNull(content.quotedMessageModel);
-		assertNull(content.receiverType);
+		assertNull(content.messageReceiver);
 		assertNull(content.thumbnail);
 		assertNull(content.icon);
 	}
@@ -297,7 +299,6 @@ public class QuoteUtilTest {
 		final String quoterIdentity = "AABBCCDD";
 		final String quoteMessageId = "8899889988998899";
 		final String quoteComment = "That's a great idea!";
-		final int receiverType = MessageReceiver.Type_CONTACT;
 
 		// Create model where the quote references itself
 		final AbstractMessageModel quoterModel = new MessageModel(false);
@@ -308,7 +309,7 @@ public class QuoteUtilTest {
 		quoterModel.setType(MessageType.TEXT);
 
 		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, null, false, receiverType);
+		final QuoteContent content = extractQuoteV2(quoterModel, null, false, mockContactReceiver);
 		assertNotNull(content);
 		assertTrue(content.isQuoteV2());
 		assertFalse(content.isQuoteV1());
@@ -317,7 +318,7 @@ public class QuoteUtilTest {
 		assertEquals(content.identity, quoterIdentity);
 		assertEquals(content.quotedMessageId, quoteMessageId);
 		assertNull(content.quotedMessageModel);
-		assertEquals((Integer) receiverType, content.receiverType);
+		assertEquals(content.messageReceiver, mockContactReceiver);
 		assertNull(content.thumbnail);
 		assertNull(content.icon);
 	}

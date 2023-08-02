@@ -1,56 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/container"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_marginTop="16dp"
-	android:background="@drawable/shape_mediaviewer_caption_background"
-	android:paddingBottom="4dp"
-	android:paddingLeft="16dp"
-	android:paddingRight="16dp"
-	android:paddingTop="4dp"
-	android:visibility="visible">
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Threema.CardView.MediaViewerCaption"
+    android:id="@+id/container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    app:contentPaddingLeft="16dp"
+    app:contentPaddingTop="4dp"
+    app:contentPaddingRight="16dp"
+    app:contentPaddingBottom="4dp"
+    android:visibility="visible">
 
-	<FrameLayout
-		android:layout_width="18dp"
-		android:layout_height="18dp"
-		android:layout_gravity="center_vertical"
-		android:layout_marginRight="8dp">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-	<ImageView
-		android:layout_width="18dp"
-		android:layout_height="18dp"
-		app:srcCompat="@drawable/ic_circle"
-		app:tint="@color/material_red" />
+        <FrameLayout
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="8dp">
 
-	<com.google.android.material.progressindicator.CircularProgressIndicator
-		style="?attr/circularProgressIndicatorStyle"
-		android:id="@+id/progress_circular"
-		android:layout_width="18dp"
-		android:layout_height="18dp"
-		app:trackThickness="2dp"
-		app:trackColor="@android:color/transparent"
-		app:indicatorColor="@android:color/white"
-		app:indicatorSize="14dp"
-		app:indicatorInset="2dp"
-		app:indicatorDirectionCircular="clockwise"
-		app:showAnimationBehavior="none"
-		app:hideAnimationBehavior="none"
-		android:clickable="false"
-		android:layout_gravity="center"/>
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                app:srcCompat="@drawable/ic_circle"
+                app:tint="@color/material_red" />
 
-	</FrameLayout>
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_circular"
+                style="?attr/circularProgressIndicatorStyle"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:clickable="false"
+                app:hideAnimationBehavior="none"
+                app:indicatorColor="@android:color/white"
+                app:indicatorDirectionCircular="clockwise"
+                app:indicatorInset="2dp"
+                app:indicatorSize="14dp"
+                app:showAnimationBehavior="none"
+                app:trackColor="@android:color/transparent"
+                app:trackThickness="2dp" />
 
-	<TextView
-		android:id="@+id/counter"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center_horizontal"
-		android:text="0:00"
-		android:textColor="@android:color/white"
-		android:textSize="18dp"/>
+        </FrameLayout>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="0:00"
+            android:textColor="@android:color/white"
+            android:textSize="18dp" />
 
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

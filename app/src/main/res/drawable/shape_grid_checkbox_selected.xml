@@ -2,6 +2,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
 	   android:shape="oval">
 	<!-- older android version will not accept ?attrs here -->
-	<solid android:color="@color/dark_accent"/>
+	<solid android:color="?attr/colorPrimary"/>
 
 </shape>

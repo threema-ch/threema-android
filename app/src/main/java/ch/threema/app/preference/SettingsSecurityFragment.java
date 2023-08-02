@@ -34,6 +34,13 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.biometric.BiometricPrompt;
+import androidx.fragment.app.DialogFragment;
+import androidx.preference.DropDownPreference;
+import androidx.preference.Preference;
+import androidx.preference.TwoStatePreference;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
@@ -41,12 +48,6 @@ import org.slf4j.Logger;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
-import androidx.annotation.NonNull;
-import androidx.biometric.BiometricPrompt;
-import androidx.fragment.app.DialogFragment;
-import androidx.preference.DropDownPreference;
-import androidx.preference.Preference;
-import androidx.preference.TwoStatePreference;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
@@ -60,7 +61,6 @@ import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.BiometricUtil;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -113,7 +113,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 		uiLockSwitchPreference.setChecked(preferenceService.isAppLockEnabled());
 
 		CharSequence[] entries = lockMechanismPreference.getEntries();
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ConfigUtils.isBlackBerry()) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 			// remove system screen lock option
 			lockMechanismPreference.setEntries(Arrays.copyOf(entries, 2));
 		} else {

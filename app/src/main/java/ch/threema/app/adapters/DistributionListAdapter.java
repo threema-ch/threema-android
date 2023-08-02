@@ -43,6 +43,7 @@ import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.CheckableConstraintLayout;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.DistributionListModel;
 
 public class DistributionListAdapter extends FilterableListAdapter {
@@ -51,14 +52,16 @@ public class DistributionListAdapter extends FilterableListAdapter {
 	private List<DistributionListModel> ovalues;
 	private DistributionListFilter groupListFilter;
 	private final DistributionListService distributionListService;
+	private final FilterResultsListener filterResultsListener;
 
-	public DistributionListAdapter(Context context, List<DistributionListModel> values, List<Integer> checkedItems, DistributionListService distributionListService) {
+	public DistributionListAdapter(Context context, List<DistributionListModel> values, List<Integer> checkedItems, DistributionListService distributionListService, FilterResultsListener filterResultsListener) {
 		super(context, R.layout.item_distribution_list, (List<Object>) (Object) values);
 
 		this.context = context;
 		this.values = values;
 		this.ovalues = values;
 		this.distributionListService = distributionListService;
+		this.filterResultsListener = filterResultsListener;
 
 		if (checkedItems != null && checkedItems.size() > 0) {
 			// restore checked items
@@ -161,6 +164,9 @@ public class DistributionListAdapter extends FilterableListAdapter {
 		@Override
 		protected void publishResults(CharSequence constraint, FilterResults results) {
 			values = (List<DistributionListModel>) results.values;
+			if (filterResultsListener != null) {
+				filterResultsListener.onResultsAvailable(TestUtil.empty(constraint) ? 0 : results.count);
+			}
 			notifyDataSetChanged();
 		}
 

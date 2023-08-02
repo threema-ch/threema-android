@@ -43,7 +43,7 @@ import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.logging.LoggerManager;
 import ch.threema.logging.backend.DebugLogFileBackend;
 import ch.threema.storage.DatabaseServiceNew;
-import ch.threema.storage.NonceDatabaseBlobService;
+import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.factories.BallotModelFactory;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.data.media.FileDataModel;
@@ -74,7 +74,7 @@ public class LayerDependenciesTest {
 		)
 		.ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationFailedException.class)
 		.ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationLockedException.class)
-		.ignoreDependency(NonceDatabaseBlobService.class, DatabaseMigrationFailedException.class)
+		.ignoreDependency(DatabaseNonceStore.class, DatabaseMigrationFailedException.class)
 		.ignoreDependency(ConversationModel.class, MessageReceiver.class)
 		.ignoreDependency(ConversationModel.class, GroupMessageReceiver.class)
 		.ignoreDependency(ConversationModel.class, DistributionListMessageReceiver.class)

@@ -21,8 +21,10 @@
 
 package ch.threema.domain.protocol.csp.messages.group;
 
+import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufMessage;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 public class GroupJoinRequestMessage extends AbstractProtobufMessage<GroupJoinRequestData> {
 
@@ -30,5 +32,9 @@ public class GroupJoinRequestMessage extends AbstractProtobufMessage<GroupJoinRe
 		super(ProtocolDefines.MSGTYPE_GROUP_JOIN_REQUEST, payloadData);
 	}
 
-
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
+	}
 }

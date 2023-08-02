@@ -110,6 +110,7 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_AUTH_TOKEN = 0xff;
 
 	/* message flags */
+	// Note: Do not forget to update AbstractMessage#getMessageTypeDefaultFlags when adding a flag
 	public static final int MESSAGE_FLAG_SEND_PUSH = 0x01;
 	public static final int MESSAGE_FLAG_NO_SERVER_QUEUING = 0x02;
 	public static final int MESSAGE_FLAG_NO_SERVER_ACK = 0x04;

@@ -6,19 +6,19 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:paddingLeft="@dimen/tablet_additional_padding_left_right"
-                android:paddingRight="@dimen/tablet_additional_padding_left_right">
+                android:paddingRight="@dimen/tablet_additional_padding_left_right"
+				android:background="?android:attr/colorBackground">
 
 	<TextView
+		style="@style/Threema.TextAppearance.Headline"
 		android:id="@+id/wizard_title"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="16dp"
-		android:fontFamily="sans-serif-medium"
 		android:paddingLeft="16dp"
 		android:paddingRight="16dp"
 		android:text="@string/ballot_add_choices"
-		android:textColor="?attr/textColorPrimary"
-		android:textSize="24sp"
+		android:textColor="?attr/colorPrimary"
 		/>
 
 	<androidx.recyclerview.widget.RecyclerView
@@ -39,7 +39,7 @@
 		android:paddingLeft="16dp"
 		android:paddingRight="16dp"
 		android:layout_marginTop="2dp"
-		android:background="?attr/background_secondary"
+		android:background="?android:attr/colorBackground"
 		android:minHeight="@dimen/ballotchoice_list_entry_height">
 
 		<ch.threema.app.ui.ComposeEditText
@@ -63,7 +63,7 @@
 			android:singleLine="true"
 			android:textSize="16sp"
 			android:inputType="text"
-			android:background="?compose_edittext_bubble" />
+			android:background="@drawable/bubble_compose_surface_variant" />
 
 		<ImageButton
 			style="?android:attr/borderlessButtonStyle"
@@ -75,7 +75,7 @@
 			android:contentDescription="@string/insert_date"
 			app:srcCompat="@drawable/ic_event"
 			android:background="@drawable/selector_compose_button"
-			app:tint="?attr/textColorSecondary" />
+			app:tint="?attr/colorOnSurface" />
 
 		<ImageButton
 			style="?android:attr/borderlessButtonStyle"
@@ -87,7 +87,7 @@
 			android:contentDescription="@string/insert_datetime"
 			app:srcCompat="@drawable/ic_schedule"
 			android:background="@drawable/selector_compose_button"
-			app:tint="?attr/textColorSecondary" />
+			app:tint="?attr/colorOnSurface" />
 
 		<ImageButton
 			style="?android:attr/borderlessButtonStyle"

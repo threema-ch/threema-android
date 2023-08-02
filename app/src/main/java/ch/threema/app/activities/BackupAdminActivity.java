@@ -24,6 +24,8 @@ package ch.threema.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -35,10 +37,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.R;
+import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.fragments.BackupDataFragment;
 import ch.threema.app.services.DeadlineListService;
+import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.BackupThreemaSafeFragment;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
+import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
@@ -73,6 +78,13 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
 			return;
 		}
 
+		if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
+			logger.debug("Not licensed.");
+			this.finish();
+			System.exit(0);
+			return;
+		}
+
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
 			actionBar.setDisplayHomeAsUpEnabled(true);
@@ -83,6 +95,18 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
 		ViewPager viewPager = findViewById(R.id.pager);
 		viewPager.setAdapter(new BackupAdminPagerAdapter(getSupportFragmentManager()));
 		tabLayout.setupWithViewPager(viewPager);
+
+		if (preferenceService.getBackupWarningDismissedTime() == 0L) {
+			((TextView) findViewById(R.id.notice_text)).setText(R.string.backup_explain_text);
+			final View noticeLayout = findViewById(R.id.notice_layout);
+			noticeLayout.setVisibility(View.VISIBLE);
+			findViewById(R.id.close_button).setOnClickListener(v -> {
+				preferenceService.setBackupWarningDismissedTime(System.currentTimeMillis());
+				AnimationUtil.collapse(noticeLayout);
+			});
+		} else {
+			findViewById(R.id.notice_layout).setVisibility(View.GONE);
+		}
 
 		// recover lock state after rotation
 		if (savedInstanceState != null) {

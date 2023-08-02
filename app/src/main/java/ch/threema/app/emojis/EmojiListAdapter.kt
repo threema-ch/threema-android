@@ -42,7 +42,7 @@ class EmojiListAdapter(
 	private var emojiItemPaddingSize = 0
 
 	@ColorInt
-	private val diverseHintColor: Int = ConfigUtils.getColorFromAttribute(context, R.attr.emoji_picker_hint)
+	private val diverseHintColor: Int = context.resources.getColor(R.color.emoji_picker_hint)
 	private var emojis: List<EmojiInfo> = emptyList()
 
 	init {

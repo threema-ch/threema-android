@@ -21,7 +21,7 @@
 
 package ch.threema.storage;
 
-import net.sqlcipher.database.SQLiteQueryBuilder;
+import net.zetetic.database.sqlcipher.SQLiteQueryBuilder;
 
 public class QueryBuilder extends SQLiteQueryBuilder {
 	private int whereCount = 0;

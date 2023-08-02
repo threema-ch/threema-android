@@ -21,6 +21,11 @@
 
 package ch.threema.app;
 
+import static android.app.NotificationManager.ACTION_NOTIFICATION_CHANNEL_GROUP_BLOCK_STATE_CHANGED;
+import static android.app.NotificationManager.ACTION_NOTIFICATION_POLICY_CHANGED;
+import static android.app.NotificationManager.EXTRA_BLOCKED_STATE;
+import static android.app.NotificationManager.EXTRA_NOTIFICATION_CHANNEL_GROUP_ID;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -36,6 +41,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
+import android.database.sqlite.SQLiteException;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Environment;
@@ -66,9 +72,9 @@ import androidx.work.WorkManager;
 
 import com.datatheorem.android.trustkit.TrustKit;
 import com.datatheorem.android.trustkit.reporting.BackgroundReporter;
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.DynamicColorsOptions;
 import com.mapbox.mapboxsdk.Mapbox;
-
-import net.sqlcipher.database.SQLiteException;
 
 import org.slf4j.Logger;
 
@@ -79,6 +85,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +98,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import ch.threema.app.backuprestore.csv.BackupService;
-import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.grouplinks.IncomingGroupJoinRequestListener;
 import ch.threema.app.listeners.BallotVoteListener;
@@ -113,6 +119,7 @@ import ch.threema.app.push.PushService;
 import ch.threema.app.receivers.ConnectivityChangeReceiver;
 import ch.threema.app.receivers.PinningFailureReportBroadcastReceiver;
 import ch.threema.app.receivers.RestrictBackgroundChangedReceiver;
+import ch.threema.app.receivers.ShortcutAddedReceiver;
 import ch.threema.app.routines.OnFirstConnectRoutine;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.AppRestrictionService;
@@ -170,11 +177,13 @@ import ch.threema.domain.models.AppVersion;
 import ch.threema.domain.protocol.csp.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.connection.ConnectionStateListener;
 import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
+import ch.threema.domain.stores.DHSessionStoreInterface;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.logging.backend.DebugLogFileBackend;
+import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseServiceNew;
-import ch.threema.storage.NonceDatabaseBlobService;
+import ch.threema.storage.SQLDHSessionStore;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -189,13 +198,6 @@ import ch.threema.storage.models.ballot.IdentityBallotModel;
 import ch.threema.storage.models.ballot.LinkBallotModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
-
-import static android.app.NotificationManager.ACTION_NOTIFICATION_CHANNEL_GROUP_BLOCK_STATE_CHANGED;
-import static android.app.NotificationManager.ACTION_NOTIFICATION_POLICY_CHANGED;
-import static android.app.NotificationManager.EXTRA_BLOCKED_STATE;
-import static android.app.NotificationManager.EXTRA_NOTIFICATION_CHANNEL_GROUP_ID;
-import static ch.threema.app.services.PreferenceService.Theme_DARK;
-import static ch.threema.app.services.PreferenceService.Theme_LIGHT;
 
 public class ThreemaApplication extends MultiDexApplication implements DefaultLifecycleObserver {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaApplication");
@@ -230,6 +232,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String INTENT_DATA_PIN = "ppin";
 	public static final String INTENT_DATA_HIDE_RECENTS = "hiderec";
 	public static final String INTENT_ACTION_FORWARD = "ch.threema.app.intent.FORWARD";
+	public static final String INTENT_ACTION_SHORTCUT_ADDED = "ch.threema.app.intent.SHORTCUT_ADDED";
 
 	public static final String CONFIRM_TAG_CLOSE_BALLOT = "cb";
 
@@ -259,7 +262,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String PHONE_LINKED_PLACEHOLDER = "***";
 	public static final String EMAIL_LINKED_PLACEHOLDER = "***@***";
 
-	private static final String ACTIVITY_CONNECTION_TAG = "threemaApplication";
+	public static final String ACTIVITY_CONNECTION_TAG = "threemaApplication";
 	private static final long ACTIVITY_CONNECTION_LIFETIME = 60000;
 
 	public static final int MAX_BLOB_SIZE_MB = 100;
@@ -292,6 +295,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	private static Date lastLoggedIn;
 	private static boolean isDeviceIdle;
 	private static boolean ipv6 = false;
+	public static boolean isResumed = false;
+
 	private static HashMap<String, String> messageDrafts = new HashMap<>();
 	private static HashMap<String, String> quoteDrafts = new HashMap<>();
 
@@ -365,6 +370,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 */		}
 
 		super.onCreate();
+
+		applyDynamicColorsIfEnabled();
 
 		// always log database migration
 		setupLogging(null);
@@ -444,15 +451,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 						logger.info("master key is missing or does not match. rename database files.");
 
-						File databaseFile = getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME);
-						if (databaseFile.exists()) {
-							File databaseBackup = new File(databaseFile.getPath() + ".backup");
-							if (!databaseFile.renameTo(databaseBackup)) {
-								FileUtil.deleteFileOrWarn(databaseFile, "threema database", logger);
-							}
-						}
-
-						databaseFile = getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME_V4);
+						File databaseFile = getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME_V4);
 						if (databaseFile.exists()) {
 							File databaseBackup = new File(databaseFile.getPath() + ".backup");
 							if (!databaseFile.renameTo(databaseBackup)) {
@@ -460,14 +459,14 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 							}
 						}
 
-						databaseFile = getAppContext().getDatabasePath(NonceDatabaseBlobService.DATABASE_NAME);
-						if (databaseFile.exists()) {
-							FileUtil.deleteFileOrWarn(databaseFile, "nonce database", logger);
-						}
-
-						databaseFile = getAppContext().getDatabasePath(NonceDatabaseBlobService.DATABASE_NAME_V4);
+						databaseFile = getAppContext().getDatabasePath(DatabaseNonceStore.DATABASE_NAME_V4);
 						if (databaseFile.exists()) {
 							FileUtil.deleteFileOrWarn(databaseFile, "nonce4 database", logger);
+						}
+
+						databaseFile = getAppContext().getDatabasePath(SQLDHSessionStore.DATABASE_NAME);
+						if (databaseFile.exists()) {
+							FileUtil.deleteFileOrWarn(databaseFile, "sql dh session database", logger);
 						}
 
 						//remove all settings!
@@ -490,6 +489,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 					if (!masterKey.isLocked()) {
 						reset();
+					} else {
+						setupDayNightMode();
 					}
 				} catch (IOException e) {
 					logger.error("IOException", e);
@@ -615,8 +616,28 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					}, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
 				}
 
+				// register a receiver for shortcuts that have been added to the launcher
+				registerReceiver(new ShortcutAddedReceiver(), new IntentFilter(INTENT_ACTION_SHORTCUT_ADDED));
+
 				// Start the Threema Push Service (if enabled in config)
 				ThreemaPushService.tryStart(logger, getAppContext());
+			}
+		}
+	}
+
+	private void applyDynamicColorsIfEnabled() {
+		if (DynamicColors.isDynamicColorAvailable()) {
+			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+			if (sharedPreferences != null && sharedPreferences.getBoolean("pref_dynamic_color", false)) {
+				DynamicColorsOptions dynamicColorsOptions = new DynamicColorsOptions.Builder().setPrecondition(new DynamicColors.Precondition() {
+					@Override
+					public boolean shouldApplyDynamicColors(@NonNull Activity activity, int theme) {
+						SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
+						return sharedPreferences != null && sharedPreferences.getBoolean("pref_dynamic_color", false);
+					}
+				}).build();
+
+				DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions);
 			}
 		}
 	}
@@ -648,6 +669,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	@Override
 	public void onResume(@NonNull LifecycleOwner owner) {
 		logger.info("*** Lifecycle: App now resumed");
+		isResumed = true;
+
 		if (serviceManager != null && serviceManager.getLifetimeService() != null) {
 			serviceManager.getLifetimeService().acquireConnection(ACTIVITY_CONNECTION_TAG);
 		}
@@ -656,6 +679,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	@Override
 	public void onPause(@NonNull LifecycleOwner owner) {
 		logger.info("*** Lifecycle: App now paused");
+		isResumed = false;
+
 		if (serviceManager != null && serviceManager.getLifetimeService() != null) {
 			serviceManager.getLifetimeService().releaseConnectionLinger(ACTIVITY_CONNECTION_TAG, ACTIVITY_CONNECTION_LIFETIME);
 		}
@@ -831,16 +856,14 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			logger.error("Exception", e);
 		}
 
-		// set default theme depending on app type
-		if (prefs != null) {
-			if (TestUtil.empty(prefs.getString(getAppContext().getString(R.string.preferences__theme), null))) {
-				prefs.edit().putString(getAppContext().getString(R.string.preferences__theme), String.valueOf(
-					ConfigUtils.isWorkBuild() ?
-						Theme_DARK:
-						Theme_LIGHT)
-				).apply();
-			}
-		}
+		setupDayNightMode();
+	}
+
+	/**
+	 * Setup day / night theme for application depending on preferences
+	 */
+	private static void setupDayNightMode() {
+		AppCompatDelegate.setDefaultNightMode(ConfigUtils.getAppThemePrefs());
 	}
 
 	private static void setupLogging(PreferenceStore preferenceStore) {
@@ -888,35 +911,25 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			// Make database key from master key
 			String databaseKey = "x\"" + Utils.byteArrayToHexString(masterKey.getKey()) + "\"";
 
-			// Migrate database to v4 format if necessary
-			int sqlcipherVersion = 4;
-			try {
-				DatabaseServiceNew.tryMigrateToV4(getAppContext(), databaseKey);
-			} catch (DatabaseMigrationFailedException m) {
-				logger.error("Exception", m);
-				Toast.makeText(getAppContext(), "Database migration failed. Please free some space on your internal memory.", Toast.LENGTH_LONG).show();
-				sqlcipherVersion = 3;
-			}
-
 			UpdateSystemService updateSystemService = new UpdateSystemServiceImpl();
 
-			DatabaseServiceNew databaseServiceNew = new DatabaseServiceNew(getAppContext(), databaseKey, updateSystemService, sqlcipherVersion);
+			System.loadLibrary("sqlcipher");
+			DatabaseServiceNew databaseServiceNew = new DatabaseServiceNew(getAppContext(), databaseKey, updateSystemService);
 			databaseServiceNew.executeNull();
 
-			// Migrate nonce database to unencrypted DB
-			int nonceSqlcipherVersion = 4;
-
-			// do not attempt a nonce DB migration if the main DB is still on version 3
-			if (sqlcipherVersion == 4) {
-				try {
-					NonceDatabaseBlobService.tryMigrateToV4(getAppContext(), databaseKey);
-				} catch (DatabaseMigrationFailedException m) {
-					logger.error("Exception", m);
-					Toast.makeText(getAppContext(), "Nonce database migration failed. Please free some space on your internal memory.", Toast.LENGTH_LONG).show();
-					nonceSqlcipherVersion = 3;
+			// We create the DH session store here and execute a null operation on it to prevent
+			// the app from being launched when the database is downgraded.
+			DHSessionStoreInterface dhSessionStore = new SQLDHSessionStore(context, masterKey.getKey(), updateSystemService);
+			try {
+				dhSessionStore.executeNull();
+			} catch (Exception e) {
+				logger.error("Could not execute a statement on the database", e);
+				// The database file seems to be corrupt, therefore we delete the file
+				File databaseFile = getAppContext().getDatabasePath(SQLDHSessionStore.DATABASE_NAME);
+				if (databaseFile.exists()) {
+					FileUtil.deleteFileOrWarn(databaseFile, "sql dh session database", logger);
 				}
-			} else {
-				nonceSqlcipherVersion = 3;
+				dhSessionStore = new SQLDHSessionStore(context, masterKey.getKey(), updateSystemService);
 			}
 
 			logger.info("*** App launched");
@@ -935,7 +948,9 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 							}
 
 							if (exitInfo.getTimestamp() > timestampOfLastLog) {
-								logger.info(String.format(Locale.US, "*** App last exited at %s with reason: %d, description: %s", DateUtils.formatDateTime(getAppContext(), exitInfo.getTimestamp(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME), exitInfo.getReason(), exitInfo.getDescription()));
+								SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
+								logger.info(String.format(Locale.US, "*** App last exited at %s with reason: %d, description: %s", simpleDateFormat.format(exitInfo.getTimestamp()),
+									exitInfo.getReason(), exitInfo.getDescription()));
 								if (exitInfo.getReason() == ApplicationExitInfo.REASON_ANR) {
 									try {
 										InputStream traceInputStream = exitInfo.getTraceInputStream();
@@ -968,12 +983,13 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			IdentityStore identityStore = new IdentityStore(preferenceStore);
 
-			NonceDatabaseBlobService nonceDatabaseBlobService = new NonceDatabaseBlobService(getAppContext(), masterKey, nonceSqlcipherVersion, identityStore);
-			logger.info("Nonce count: " + nonceDatabaseBlobService.getCount());
+			DatabaseNonceStore databaseNonceStore = new DatabaseNonceStore(getAppContext(), identityStore);
+			databaseNonceStore.executeNull();
+			logger.info("Nonce count: {}", databaseNonceStore.getCount());
 
 			final ThreemaConnection connection = new ThreemaConnection(
 					identityStore,
-					new NonceFactory(nonceDatabaseBlobService),
+					new NonceFactory(databaseNonceStore),
 					null,
 					getIPv6());
 
@@ -1000,6 +1016,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			serviceManager = new ServiceManager(
 					connection,
 					databaseServiceNew,
+					dhSessionStore,
 					identityStore,
 					preferenceStore,
 					masterKey,
@@ -1007,7 +1024,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			);
 
 			connection.setServerAddressProvider(serviceManager.getServerAddressProviderService().getServerAddressProvider());
-
 			connection.setDeviceCookieManager(new DeviceCookieManagerImpl(serviceManager));
 
 			// get application restrictions
@@ -1070,7 +1086,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			SessionWakeUpServiceImpl.getInstance().processPendingWakeupsAsync();
 
 			// start threema safe scheduler
-			serviceManager.getThreemaSafeService().scheduleUpload();
+			serviceManager.getThreemaSafeService().schedulePeriodicUpload();
 
 			new Thread(() -> {
 				// schedule work synchronization
@@ -1088,10 +1104,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			// setup locale override
 			ConfigUtils.setLocaleOverride(getAppContext(), serviceManager.getPreferenceService());
-		} catch (MasterKeyLockedException e) {
-			logger.error("Exception", e);
-		} catch (SQLiteException e) {
-			logger.error("Exception", e);
+		} catch (MasterKeyLockedException | SQLiteException e) {
+			logger.error("Exception opening database", e);
 		} catch (ThreemaException e) {
 			// no identity
 			logger.info("No valid identity.");
@@ -1157,7 +1171,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					.setInitialDelay(1000, TimeUnit.MILLISECONDS)
 					.build();
 
-				workManager.enqueueUniquePeriodicWork(WORKER_IDENTITY_STATES_PERIODIC_NAME, ExistingPeriodicWorkPolicy.REPLACE, workRequest);
+				workManager.enqueueUniquePeriodicWork(WORKER_IDENTITY_STATES_PERIODIC_NAME, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, workRequest);
 				return true;
 			}
 		} catch (IllegalStateException e) {
@@ -1177,7 +1191,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		try {
 			WorkManager workManager = WorkManager.getInstance(context);
 			ExistingPeriodicWorkPolicy policy = WorkManagerUtil.shouldScheduleNewWorkManagerInstance(workManager, WORKER_PERIODIC_WORK_SYNC, schedulePeriodMs) ?
-				ExistingPeriodicWorkPolicy.REPLACE :
+				ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE :
 				ExistingPeriodicWorkPolicy.KEEP;
 			logger.info("{}: {} existing periodic work", WORKER_PERIODIC_WORK_SYNC, policy);
 			PeriodicWorkRequest workRequest = WorkSyncWorker.Companion.buildPeriodicWorkRequest(schedulePeriodMs);
@@ -1217,7 +1231,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					.setInitialDelay(3, TimeUnit.MINUTES)
 					.build();
 
-				workManager.enqueueUniquePeriodicWork(WORKER_SHARE_TARGET_UPDATE, ExistingPeriodicWorkPolicy.REPLACE, workRequest);
+				workManager.enqueueUniquePeriodicWork(WORKER_SHARE_TARGET_UPDATE, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, workRequest);
 			} else {
 				logger.debug("Reusing existing worker");
 			}
@@ -1539,7 +1553,12 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			@Override
 			public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {
-				//ingore
+				// Ignore
+			}
+
+			@Override
+			public void onResendDismissed(@NonNull AbstractMessageModel messageModel) {
+				// Ignore
 			}
 
 			private void showConversationNotification(AbstractMessageModel newMessage, boolean updateExisting) {
@@ -2147,10 +2166,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 	public static AppVersion getAppVersion() {
 		return appVersion;
-	}
-
-	public static int getFeatureLevel() {
-		return 3;
 	}
 
 	public static Context getAppContext() {

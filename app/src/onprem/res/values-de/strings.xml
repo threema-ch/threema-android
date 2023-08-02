@@ -28,8 +28,6 @@
 	</string>
 	<string name="threema_contact">Threema OnPrem-Kontakt</string>
 	<string name="menu_about">Über Threema OnPrem</string>
-	<string name="list_theme_light">Hell</string>
-	<string name="list_theme_dark">Dunkel (standard)</string>
 	<string name="private_threema_download"><![CDATA[Wenn Sie die App privat nutzen möchten, laden Sie Threema bitte <a href="https://play.google.com/store/apps/details?id=ch.threema.app">hier</a> herunter.]]></string>
 	<string name="safe_configure_server_explain">Speichern Sie Ihr Threema Safe-Backup auf dem Server Ihrer Organisation, oder legen Sie einen anderen Backup-Server fest.</string>
 	<string name="directory_search">Im Verzeichnis suchen</string>

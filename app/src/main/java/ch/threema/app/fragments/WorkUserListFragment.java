@@ -172,7 +172,8 @@ public class WorkUserListFragment extends RecipientListFragment {
 					contactService,
 					blacklistService,
 					hiddenChatsListService,
-					preferenceService
+					preferenceService,
+					WorkUserListFragment.this
 				);
 				setListAdapter(adapter);
 				if (listInstanceState != null) {

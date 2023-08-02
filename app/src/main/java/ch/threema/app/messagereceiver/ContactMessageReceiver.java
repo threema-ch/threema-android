@@ -24,6 +24,9 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.sql.SQLException;
@@ -32,8 +35,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.ContactService;
@@ -46,15 +47,20 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
 import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
+import ch.threema.domain.protocol.csp.messages.ContactDeleteProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.ContactSetProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
+import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
@@ -62,6 +68,16 @@ import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.file.FileMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
+import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
+import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -158,16 +174,14 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		innerMsg.setToIdentity(this.contactModel.getIdentity());
 
 		MessageBox boxmsg = wrapAndEnqueueMessage(innerMsg, messageModel);
-		if (boxmsg != null) {
-			messageModel.setIsQueued(true);
-			MessageId id = boxmsg.getMessageId();
+		messageModel.setIsQueued(true);
+		MessageId id = boxmsg.getMessageId();
 
-			if(id != null) {
-				messageModel.setApiMessageId(id.toString());
-				contactService.setIsHidden(innerMsg.getToIdentity(), false);
-				contactService.setIsArchived(innerMsg.getToIdentity(), false);
-				return true;
-			}
+		if (id != null) {
+			messageModel.setApiMessageId(id.toString());
+			contactService.setIsHidden(innerMsg.getToIdentity(), false);
+			contactService.setIsArchived(innerMsg.getToIdentity(), false);
+			return true;
 		}
 		logger.error("createBoxedTextMessage failed");
 		return false;
@@ -187,15 +201,13 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		innerMsg.setPoiAddress(locationDataModel.getAddress());
 
 		MessageBox boxmsg = wrapAndEnqueueMessage(innerMsg, messageModel);
-		if (boxmsg != null) {
-			messageModel.setIsQueued(true);
-			MessageId id = boxmsg.getMessageId();
-			if (id!= null) {
-				messageModel.setApiMessageId(id.toString());
-				contactService.setIsHidden(innerMsg.getToIdentity(), false);
-				contactService.setIsArchived(innerMsg.getToIdentity(), false);
-				return true;
-			}
+		messageModel.setIsQueued(true);
+		MessageId id = boxmsg.getMessageId();
+		if (id != null) {
+			messageModel.setApiMessageId(id.toString());
+			contactService.setIsHidden(innerMsg.getToIdentity(), false);
+			contactService.setIsArchived(innerMsg.getToIdentity(), false);
+			return true;
 		}
 		return false;
 	}
@@ -227,21 +239,19 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		fileMessage.setToIdentity(contactModel.getIdentity());
 
 		MessageBox messageBox = wrapAndEnqueueMessage(fileMessage, messageModel);
-		if(messageBox != null) {
-			messageModel.setIsQueued(true);
-			MessageId id = messageBox.getMessageId();
-			if (id!= null) {
-				messageModel.setApiMessageId(id.toString());
-				contactService.setIsHidden(fileMessage.getToIdentity(), false);
-				contactService.setIsArchived(fileMessage.getToIdentity(), false);
-				return true;
-			}
+		messageModel.setIsQueued(true);
+		MessageId id = messageBox.getMessageId();
+		if (id != null) {
+			messageModel.setApiMessageId(id.toString());
+			contactService.setIsHidden(fileMessage.getToIdentity(), false);
+			contactService.setIsArchived(fileMessage.getToIdentity(), false);
+			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public boolean createBoxedBallotMessage(
+	public void createBoxedBallotMessage(
 											BallotData ballotData,
 											BallotModel ballotModel,
 											final String[] filteredIdentities,
@@ -256,24 +266,20 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		innerMsg.setData(ballotData);
 
 		MessageBox messageBox = wrapAndEnqueueMessage(innerMsg, messageModel);
-		if(messageBox != null) {
-			messageModel.setIsQueued(true);
-			messageModel.setApiMessageId(messageBox.getMessageId().toString());
-			contactService.setIsHidden(innerMsg.getToIdentity(), false);
-			contactService.setIsArchived(innerMsg.getToIdentity(), false);
-			return true;
-		}
-		return false;
+		messageModel.setIsQueued(true);
+		messageModel.setApiMessageId(messageBox.getMessageId().toString());
+		contactService.setIsHidden(innerMsg.getToIdentity(), false);
+		contactService.setIsArchived(innerMsg.getToIdentity(), false);
 	}
 
 	@Override
-	public boolean createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException {
+	public void createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException {
 		final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
 		if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE) {
 			//if i am the creator do not send anything
 			if (TestUtil.compare(ballotModel.getCreatorIdentity(), identityStore.getIdentity())) {
-				return true;
+				return;
 			}
 		}
 
@@ -286,14 +292,147 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 			innerMsg.getBallotVotes().add(v);
 		}
 
-		MessageBox messageBox = wrapAndEnqueueMessage(innerMsg, null);
-		if (messageBox != null) {
-			contactService.setIsHidden(innerMsg.getToIdentity(), false);
-			contactService.setIsArchived(innerMsg.getToIdentity(), false);
-			return true;
-		}
-		return false;
+		wrapAndEnqueueMessage(innerMsg, null);
+		contactService.setIsHidden(innerMsg.getToIdentity(), false);
+		contactService.setIsArchived(innerMsg.getToIdentity(), false);
+	}
 
+	/**
+	 * Send a typing indicator to the receiver.
+	 *
+	 * @param isTyping true if the user is typing, false otherwise
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendTypingIndicatorMessage(boolean isTyping) throws ThreemaException {
+		TypingIndicatorMessage typingIndicatorMessage = new TypingIndicatorMessage();
+		typingIndicatorMessage.setTyping(isTyping);
+		typingIndicatorMessage.setToIdentity(contactModel.getIdentity());
+		wrapAndEnqueueMessage(typingIndicatorMessage, null);
+	}
+
+	/**
+	 * Send request profile picture message to the receiver.
+	 *
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendRequestProfilePictureMessage() throws ThreemaException {
+		ContactRequestProfilePictureMessage msg = new ContactRequestProfilePictureMessage();
+		msg.setToIdentity(contactModel.getIdentity());
+		wrapAndEnqueueMessage(msg, null);
+	}
+
+	/**
+	 * Send a set profile picture message to the receiver.
+	 *
+	 * @param data the profile picture upload data
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendSetProfilePictureMessage(@NonNull ContactService.ProfilePictureUploadData data) throws ThreemaException {
+		ContactSetProfilePictureMessage msg = new ContactSetProfilePictureMessage();
+		msg.setBlobId(data.blobId);
+		msg.setEncryptionKey(data.encryptionKey);
+		msg.setSize(data.size);
+		msg.setToIdentity(contactModel.getIdentity());
+
+		wrapAndEnqueueMessage(msg, null);
+	}
+
+	/**
+	 * Send a delete profile picture message to the receiver.
+	 *
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendDeleteProfilePictureMessage() throws ThreemaException {
+		ContactDeleteProfilePictureMessage msg = new ContactDeleteProfilePictureMessage();
+		msg.setToIdentity(contactModel.getIdentity());
+
+		wrapAndEnqueueMessage(msg, null);
+	}
+
+	/**
+	 * Send a delivery receipt to the receiver.
+	 *
+	 * @param receiptType the type of the delivery receipt
+	 * @param messageIds  the message ids
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendDeliveryReceipt(int receiptType, @NonNull MessageId[] messageIds) throws ThreemaException {
+		DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
+		receipt.setReceiptType(receiptType);
+		receipt.setReceiptMessageIds(messageIds);
+		receipt.setToIdentity(contactModel.getIdentity());
+
+		wrapAndEnqueueMessage(receipt, null);
+	}
+
+	/**
+	 * Send a voip call offer message to the receiver.
+	 *
+	 * @param callOfferData the call offer data
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendVoipCallOfferMessage(@NonNull VoipCallOfferData callOfferData) throws ThreemaException {
+		VoipCallOfferMessage voipCallOfferMessage = new VoipCallOfferMessage();
+		voipCallOfferMessage.setData(callOfferData);
+		voipCallOfferMessage.setToIdentity(contactModel.getIdentity());
+
+		wrapAndEnqueueMessage(voipCallOfferMessage, null);
+	}
+
+	/**
+	 * Send a voip call answer message to the receiver.
+	 *
+	 * @param callAnswerData the call answer data
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendVoipCallAnswerMessage(@NonNull VoipCallAnswerData callAnswerData) throws ThreemaException {
+		VoipCallAnswerMessage voipCallAnswerMessage = new VoipCallAnswerMessage();
+		voipCallAnswerMessage.setData(callAnswerData);
+		voipCallAnswerMessage.setToIdentity(contactModel.getIdentity());
+
+		wrapAndEnqueueMessage(voipCallAnswerMessage, null);
+	}
+
+	/**
+	 * Send a voip ICE candidates message to the receiver.
+	 *
+	 * @param voipICECandidatesData the voip ICE candidate data
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendVoipICECandidateMessage(@NonNull VoipICECandidatesData voipICECandidatesData) throws ThreemaException {
+		VoipICECandidatesMessage voipICECandidatesMessage = new VoipICECandidatesMessage();
+		voipICECandidatesMessage.setData(voipICECandidatesData);
+		voipICECandidatesMessage.setToIdentity(contactModel.getIdentity());
+
+		wrapAndEnqueueMessage(voipICECandidatesMessage, null);
+	}
+
+	/**
+	 * Send a voip call hangup message to the receiver.
+	 *
+	 * @param callHangupData the call hangup data
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendVoipCallHangupMessage(@NonNull VoipCallHangupData callHangupData) throws ThreemaException {
+		VoipCallHangupMessage voipCallHangupMessage = new VoipCallHangupMessage();
+		voipCallHangupMessage.setData(callHangupData);
+		voipCallHangupMessage.setToIdentity(contactModel.getIdentity());
+
+		wrapAndEnqueueMessage(voipCallHangupMessage, null);
+	}
+
+	/**
+	 * Send a voip call ringing message to the receiver.
+	 *
+	 * @param callRingingData the call ringing data
+	 * @throws ThreemaException if enqueuing the message fails
+	 */
+	public void sendVoipCallRingingMessage(@NonNull VoipCallRingingData callRingingData) throws ThreemaException {
+		VoipCallRingingMessage voipCallRingingMessage = new VoipCallRingingMessage();
+		voipCallRingingMessage.setToIdentity(contactModel.getIdentity());
+		voipCallRingingMessage.setData(callRingingData);
+
+		wrapAndEnqueueMessage(voipCallRingingMessage, null);
 	}
 
 	@Override
@@ -366,6 +505,15 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	public Bitmap getNotificationAvatar() {
 		if(avatar == null && contactService != null) {
 			avatar = contactService.getAvatar(contactModel, false);
+		}
+		return avatar;
+	}
+
+	@Override
+	@Nullable
+	public Bitmap getAvatar() {
+		if(avatar == null && contactService != null) {
+			avatar = contactService.getAvatar(contactModel, true, true);
 		}
 		return avatar;
 	}
@@ -475,23 +623,42 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		}
 	}
 
+	@NonNull
 	private MessageBox wrapAndEnqueueMessage(@NonNull AbstractMessage innerMsg, @Nullable MessageModel messageModel) throws ThreemaException {
 		// Check whether peer contact supports forward security
 		if (ConfigUtils.isForwardSecurityEnabled() &&
-			ThreemaFeature.canForwardSecurity(this.getContact().getFeatureMask()) &&
-			this.getContact().isForwardSecurityEnabled()) {
+			ThreemaFeature.canForwardSecurity(this.getContact().getFeatureMask())) {
 
 			// Synchronize FS wrapping and enqueuing to ensure the order stays correct
 			synchronized (fsmp) {
-				AbstractMessage wrappedMessage = fsmp.makeMessage(this.getContact(), innerMsg);
+				AbstractMessage message;
+				try {
+					message = fsmp.makeMessage(this.getContact(), innerMsg);
+					logger.info(
+						"Enqueue FS wrapped message {} of type {} to {}",
+						message.getMessageId(),
+						Utils.byteToHex((byte) innerMsg.getType(), true, true),
+						message.getToIdentity()
+					);
+				} catch (ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession e) {
+					logger.info(
+						"Message {} for {} of type {} is not supported in FS session with negotiated version {}",
+						innerMsg.getMessageId(),
+						innerMsg.getToIdentity(),
+						Utils.byteToHex((byte) innerMsg.getType(), true, true),
+						e.getNegotiatedVersion()
+					);
+					// If the message is not supported to be sent in the session, then send it
+					// without forward security.
+					message = innerMsg;
+				}
 
 				if (messageModel != null) {
 					// Save model before enqueuing new message (fixes ANDR-512)
-					initNewAbstractMessage(messageModel, wrappedMessage);
+					initNewAbstractMessage(messageModel, message);
 				}
 
-				logger.info("Enqueue FS wrapped {} message ID {} to {}", innerMsg.getClass().getSimpleName(), wrappedMessage.getMessageId(), wrappedMessage.getToIdentity());
-				return messageQueue.enqueue(wrappedMessage);
+				return messageQueue.enqueue(message);
 			}
 		} else {
 			// No forward security support or not enabled
@@ -502,7 +669,11 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 				initNewAbstractMessage(messageModel, innerMsg);
 			}
 
-			logger.info("Enqueue {} message ID {} to {}", innerMsg.getClass().getSimpleName(), innerMsg.getMessageId(), innerMsg.getToIdentity());
+			logger.info("Enqueue message {} of type {} to {}",
+				innerMsg.getMessageId(),
+				Utils.byteToHex((byte) innerMsg.getType(), true, true),
+				innerMsg.getToIdentity()
+			);
 			return messageQueue.enqueue(innerMsg);
 		}
 	}

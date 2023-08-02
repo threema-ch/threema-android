@@ -31,6 +31,13 @@ object UrlUtil {
     private val ascii: Pattern = Pattern.compile("^[\\x00-\\x7F]*$")
 
     /**
+     * Characters that are excluded from the identifier check.
+     */
+    private val nonIdentifierExceptions = setOf(
+        Char(0x002D),   // the hyphen-minus character '-'
+    )
+
+    /**
      * Sets of scripts that may be mixed without a warning.
      *
      * For example, Hiragana, Katakana, Han and Latin are frequently mixed, this is OK.
@@ -107,7 +114,8 @@ object UrlUtil {
         }
 
         // Check that every character belongs to the allowed identifiers per UTS 39
-        if (component.any { !Character.isUnicodeIdentifierPart(it) }) {
+        if (component.filter { !nonIdentifierExceptions.contains(it) }
+                .any { !Character.isUnicodeIdentifierPart(it) }) {
             return false
         }
 

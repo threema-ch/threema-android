@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<declare-styleable name="PreferenceHeader">
-		<attr name="title"/>
-		<attr name="summary" format="string"/>
-		<attr name="breadCrumbTitle" format="string"/>
-		<attr name="breadCrumbShortTitle" format="string"/>
-		<attr name="icon"/>
-		<attr name="fragment" format="string"/>
-	</declare-styleable>
+
 </resources>

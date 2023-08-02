@@ -27,7 +27,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -38,15 +37,16 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		ConfigUtils.configureActivityTheme(this);
+		ConfigUtils.configureSystemBars(this);
 
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_whatsnew);
 
-		// TODO(ANDR-2065): Replace with correct placeholders `getString(R.string.app_name)` instead of "Threema"
-		((TextView) findViewById(R.id.whatsnew_title)).setText(getString(R.string.whatsnew_title, "Threema"));
-		((TextView) findViewById(R.id.whatsnew_body)).setText(Html.fromHtml(getString(R.string.whatsnew_headline, "Threema")));
+		String appName = getString(R.string.app_name);
+
+		((TextView) findViewById(R.id.whatsnew_title)).setText(getString(R.string.whatsnew_title, appName));
+		((TextView) findViewById(R.id.whatsnew_body)).setText(Html.fromHtml(getString(R.string.whatsnew_headline, appName)));
 
 		findViewById(R.id.next_text).setOnClickListener(v -> {
 /*			startActivity(new Intent(WhatsNewActivity.this, WhatsNew2Activity.class));

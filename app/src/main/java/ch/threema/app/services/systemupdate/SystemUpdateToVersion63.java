@@ -30,7 +30,6 @@ import java.io.File;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
 public class SystemUpdateToVersion63 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
@@ -51,9 +50,7 @@ public class SystemUpdateToVersion63 extends UpdateToVersion implements UpdateSy
 		// delete obsolete temporary dirs
 		deleteDir(new File(context.getFilesDir(), "tmp"));
 		deleteDir(new File(context.getExternalFilesDir(null), "data.blob"));
-		if (ConfigUtils.useContentUris()) {
-			deleteDir(new File(context.getExternalFilesDir(null), "tmp"));
-		}
+		deleteDir(new File(context.getExternalFilesDir(null), "tmp"));
 
 		return true;
 	}

@@ -29,9 +29,9 @@
 			android:layout_marginRight="16dp"
 			android:contentDescription="@string/group_link_administered"
 			app:srcCompat="@drawable/ic_reply_filled"
-			app:tint="?attr/textColorSecondary" />
+			app:tint="?attr/colorOnSurface" />
 
-		<androidx.appcompat.widget.AppCompatCheckBox
+		<com.google.android.material.checkbox.MaterialCheckBox
 			android:id="@+id/administration_checkbox"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
 			android:layout_marginRight="16dp"
 			android:contentDescription="@string/linked_email"
 			app:srcCompat="@drawable/ic_timelapse_outline"
-			app:tint="?attr/textColorSecondary" />
+			app:tint="?attr/colorOnSurface" />
 
 		<LinearLayout
 			android:id="@+id/expiration_date_container"

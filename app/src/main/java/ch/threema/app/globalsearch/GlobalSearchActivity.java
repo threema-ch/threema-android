@@ -21,18 +21,18 @@
 
 package ch.threema.app.globalsearch;
 
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_SETTLING;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.chip.Chip;
-
-import org.slf4j.Logger;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -42,6 +42,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.shape.MaterialShapeDrawable;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
@@ -54,18 +62,11 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.ThreemaSearchView;
-import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
-
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_SETTLING;
 
 public class GlobalSearchActivity extends ThreemaToolbarActivity implements ThreemaSearchView.OnQueryTextListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalSearchActivity");
@@ -80,7 +81,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 	private GlobalSearchViewModel chatsViewModel;
 	private TextView emptyTextView;
 	private ThreemaSearchView searchView;
-	private ProgressBar progressBar;
+	private CircularProgressIndicator progressBar;
 	private DeadlineListService hiddenChatsListService;
 	private ContactService contactService;
 	private GroupService groupService;
@@ -157,13 +158,18 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 						break;
 					case STATE_EXPANDED:
 						findViewById(R.id.drag_handle).setVisibility(View.INVISIBLE);
-						getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_expanded));
+						Drawable background = bottomSheetLayout.getBackground();
+						if (background instanceof MaterialShapeDrawable) {
+							getWindow().setStatusBarColor(((MaterialShapeDrawable) background).getResolvedTintColor());
+						} else {
+							getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_expanded));
+						}
 						break;
 					case STATE_SETTLING:
 						findViewById(R.id.drag_handle).setVisibility(View.VISIBLE);
 						break;
 					case STATE_DRAGGING:
-						getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_collapsed));
+						getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
 					default:
 						break;
 				}
@@ -182,7 +188,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 			}
 		});
 
-		getWindow().setStatusBarColor(ConfigUtils.getColorFromAttribute(GlobalSearchActivity.this, R.attr.attach_status_bar_color_collapsed));
+		getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
 
 		searchView = findViewById(R.id.search);
 		searchView.setOnQueryTextListener(this);
@@ -275,7 +281,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 		intent.putExtra(ComposeMessageFragment.EXTRA_API_MESSAGE_ID, messageModel.getApiMessageId());
 		intent.putExtra(ComposeMessageFragment.EXTRA_SEARCH_QUERY, queryText);
 
-		AnimationUtil.startActivityForResult(this, view, intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+		startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 
 		finish();
 	}

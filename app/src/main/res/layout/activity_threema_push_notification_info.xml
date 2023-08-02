@@ -1,66 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:padding="16dp"
-	android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-	<ScrollView
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:background="@android:color/transparent">
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical">
-			<!-- Headline -->
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/threema_push"
-				android:textSize="24sp"
-				android:textColor="?attr/colorAccent"
-				android:fontFamily="sans-serif" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent">
 
-			<!-- Info text -->
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="16dp"
-				android:text="@string/threema_push_notification_info_text_1"
-				android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="16dp"
-				android:text="@string/threema_push_notification_info_text_2"
-				android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="16dp"
-				android:text="@string/threema_push_notification_info_text_3"
-				android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
-		</LinearLayout>
-	</ScrollView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-	<!-- Close button -->
-	<LinearLayout
-		android:id="@+id/button_bar_layout"
-		style="?android:attr/buttonBarStyle"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="right"
-		android:orientation="horizontal">
+            <!-- Headline -->
+            <TextView
+                style="@style/Threema.TextAppearance.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/threema_push" />
 
-		<com.google.android.material.button.MaterialButton
-			android:id="@+id/close_button"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/close" />
-	</LinearLayout>
+            <!-- Info text -->
+            <TextView
+                style="@style/Threema.TextAppearance.BodyLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/threema_push_notification_info_text_1" />
+
+            <TextView
+                style="@style/Threema.TextAppearance.BodyLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/threema_push_notification_info_text_2" />
+
+            <TextView
+                style="@style/Threema.TextAppearance.BodyLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/threema_push_notification_info_text_3" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Close button -->
+    <LinearLayout
+        android:id="@+id/button_bar_layout"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/close_button"
+            style="@style/Threema.MaterialButton.Action"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/close" />
+
+    </LinearLayout>
 
 </LinearLayout>

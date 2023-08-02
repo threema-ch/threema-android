@@ -23,9 +23,13 @@ package ch.threema.app.ui;
 
 import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
 import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
+import static ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL;
+import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
+import static ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -55,13 +59,12 @@ public class MediaItem implements Parcelable {
 	@MediaType private int type;
 	private Uri originalUri; // Uri of original media item before creating a local copy
 	private Uri uri;
-	private int rotation; // Rotation in Degrees
+	private Orientation orientation;
 	private int exifRotation;
 	private long durationMs;
 	private String caption;
 	private long startTimeMs;
 	private long endTimeMs;
-	@BitmapUtil.FlipType private int flip;
 	@BitmapUtil.FlipType private int exifFlip;
 	private String mimeType;
 	@FileData.RenderingType int renderingType;
@@ -88,6 +91,110 @@ public class MediaItem implements Parcelable {
 	public static final int TYPE_LOCATION = 8;
 
 	public static final long TIME_UNDEFINED = Long.MIN_VALUE;
+
+	public static class Orientation {
+		private int rotation;
+		private int flip;
+
+		public static Orientation getMixedOrientation(@NonNull Orientation first, @NonNull Orientation second) {
+			int mixedRotation = first.getRotation() + second.getRotation();
+			int mixedFlip = FLIP_NONE;
+			mixedFlip |= first.isHorizontalFlip() ^ second.isHorizontalFlip() ? FLIP_HORIZONTAL : FLIP_NONE;
+			mixedFlip |= first.isVerticalFlip() ^ second.isVerticalFlip() ? FLIP_VERTICAL : FLIP_NONE;
+			return new Orientation(mixedRotation, mixedFlip);
+		}
+
+		public Orientation() {
+			this(0, FLIP_NONE);
+		}
+
+		public Orientation(int rotation, int flip) {
+			this.rotation = rotation;
+			this.flip = flip;
+		}
+
+		public int getRotation() {
+			return rotation;
+		}
+
+		public void setRotation(int rotation) {
+			this.rotation = rotation;
+			clampRotation();
+		}
+
+		public void rotateBy(int degrees) {
+			this.rotation += degrees;
+			clampRotation();
+		}
+
+		public int getFlip() {
+			return flip;
+		}
+
+		public void setFlip(int flip) {
+			this.flip = flip;
+		}
+
+		public void flip() {
+			int currentFlip = flip;
+			if (getRotation() == 90 || getRotation() == 270) {
+				if ((currentFlip & FLIP_VERTICAL) == FLIP_VERTICAL) {
+					// clear vertical flag
+					currentFlip &= ~FLIP_VERTICAL;
+				} else {
+					currentFlip |= FLIP_VERTICAL;
+				}
+			} else {
+				if ((currentFlip & FLIP_HORIZONTAL) == FLIP_HORIZONTAL) {
+					// clear horizontal flag
+					currentFlip &= ~FLIP_HORIZONTAL;
+				} else {
+					currentFlip |= FLIP_HORIZONTAL;
+				}
+			}
+			flip = currentFlip;
+		}
+
+		public Orientation getInverse() {
+			Orientation inverse = new Orientation(-rotation, FLIP_NONE);
+			if (rotation == 90 || rotation == 270) {
+				inverse.flip |= isVerticalFlip() ? FLIP_HORIZONTAL : FLIP_NONE;
+				inverse.flip |= isHorizontalFlip() ? FLIP_VERTICAL : FLIP_NONE;
+			} else {
+				inverse.flip = flip;
+			}
+			return inverse;
+		}
+
+		/**
+		 * Get the transformation matrix based on rotation and flip.
+		 */
+		@NonNull
+		public Matrix getTransformationMatrix() {
+			Matrix matrix = new Matrix();
+			boolean flipHorizontal = (getFlip() & FLIP_HORIZONTAL) == FLIP_HORIZONTAL;
+			boolean flipVertical = (getFlip() & FLIP_VERTICAL) == FLIP_VERTICAL;
+			matrix.postScale(flipHorizontal ? -1 : 1, flipVertical ? -1 : 1);
+			matrix.postRotate(getRotation());
+			return matrix;
+		}
+
+		public boolean isHorizontalFlip() {
+			return (flip & FLIP_HORIZONTAL) == FLIP_HORIZONTAL;
+		}
+
+		public boolean isVerticalFlip() {
+			return (flip & FLIP_VERTICAL) == FLIP_VERTICAL;
+		}
+
+		private void clampRotation() {
+			rotation %= 360;
+			if (rotation < 0) {
+				rotation += 360;
+			}
+		}
+
+	}
 
 	public static ArrayList<MediaItem> getFromUris(List<Uri> uris, Context context) {
 		return getFromUris(uris, context, false);
@@ -167,13 +274,12 @@ public class MediaItem implements Parcelable {
 	}
 
 	private void init() {
-		this.rotation = 0;
+		this.orientation = new Orientation();
 		this.exifRotation = 0;
 		this.durationMs = 0;
 		this.caption = null;
 		this.startTimeMs = 0;
 		this.endTimeMs = TIME_UNDEFINED;
-		this.flip = BitmapUtil.FLIP_NONE;
 		this.exifFlip = BitmapUtil.FLIP_NONE;
 		this.mimeType = MimeUtil.MIME_TYPE_DEFAULT;
 		this.renderingType = FileData.RENDERING_MEDIA;
@@ -186,15 +292,16 @@ public class MediaItem implements Parcelable {
 
 
 	public MediaItem(Parcel in) {
+		orientation = new Orientation();
 		type = in.readInt();
 		uri = in.readParcelable(Uri.class.getClassLoader());
-		rotation = in.readInt();
+		orientation.rotation = in.readInt();
 		exifRotation = in.readInt();
 		durationMs = in.readLong();
 		caption = in.readString();
 		startTimeMs = in.readLong();
 		endTimeMs = in.readLong();
-		flip = in.readInt();
+		orientation.flip = in.readInt();
 		exifFlip = in.readInt();
 		mimeType = in.readString();
 		renderingType = in.readInt();
@@ -210,13 +317,13 @@ public class MediaItem implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(type);
 		dest.writeParcelable(uri, flags);
-		dest.writeInt(rotation);
+		dest.writeInt(orientation.rotation);
 		dest.writeInt(exifRotation);
 		dest.writeLong(durationMs);
 		dest.writeString(caption);
 		dest.writeLong(startTimeMs);
 		dest.writeLong(endTimeMs);
-		dest.writeInt(flip);
+		dest.writeInt(orientation.flip);
 		dest.writeInt(exifFlip);
 		dest.writeString(mimeType);
 		dest.writeInt(renderingType);
@@ -263,11 +370,11 @@ public class MediaItem implements Parcelable {
 	}
 
 	public int getRotation() {
-		return rotation;
+		return orientation.getRotation();
 	}
 
 	public void setRotation(int rotation) {
-		this.rotation = rotation;
+		this.orientation.setRotation(rotation);
 	}
 
 	public int getExifRotation() {
@@ -336,12 +443,20 @@ public class MediaItem implements Parcelable {
 		this.endTimeMs = endTimeMs;
 	}
 
+	public Orientation getOrientation() {
+		return orientation;
+	}
+
 	public int getFlip() {
-		return flip;
+		return orientation.getFlip();
 	}
 
 	public void setFlip(int flip) {
-		this.flip = flip;
+		this.orientation.setFlip(flip);
+	}
+
+	public void flip() {
+		orientation.flip();
 	}
 
 	@BitmapUtil.FlipType
@@ -462,7 +577,7 @@ public class MediaItem implements Parcelable {
 	 */
 	public boolean hasChanges() {
 		if (type == TYPE_IMAGE) {
-			return isEdited() || rotation != 0 || flip != BitmapUtil.FLIP_NONE;
+			return isEdited() || orientation.getRotation() != 0 || orientation.getFlip() != BitmapUtil.FLIP_NONE;
 		} else if (type == TYPE_VIDEO) {
 			return needsTrimming() || muted;
 		} else {

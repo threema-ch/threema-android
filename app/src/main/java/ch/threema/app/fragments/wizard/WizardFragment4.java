@@ -106,12 +106,16 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
 
 	void initValues() {
 		if (isResumed()) {
-			String email = callback.getEmail();
-			String phone = callback.getPhone();
+			String email = TestUtil.empty(callback.getEmail()) ? callback.getPresetEmail() : callback.getEmail();
+			String phone = TestUtil.empty(callback.getPhone()) ? callback.getPresetPhone() : callback.getPhone();
 
 			nicknameText.setText(callback.getNickname());
-			emailText.setText(TestUtil.empty(email) ? getString(R.string.not_linked) : EMAIL_LINKED_PLACEHOLDER.equals(email) ? getString(R.string.unchanged) : email);
-			phoneText.setText(TestUtil.empty(phone) ? getString(R.string.not_linked) : PHONE_LINKED_PLACEHOLDER.equals(phone) ? getString(R.string.unchanged) : phone);
+			emailText.setText(TestUtil.empty(email) ?
+				getString(R.string.not_linked) :
+				(EMAIL_LINKED_PLACEHOLDER.equals(email) ? getString(R.string.unchanged) : email));
+			phoneText.setText(TestUtil.empty(phone) ?
+				getString(R.string.not_linked) :
+				(PHONE_LINKED_PLACEHOLDER.equals(phone) ? getString(R.string.unchanged) : phone));
 			syncContactsText.setText(callback.getSyncContacts() ? R.string.on : R.string.off);
 			setThreemaSafeInProgress(false, null);
 		}

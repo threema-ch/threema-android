@@ -182,9 +182,7 @@ public class MediaPlayerStateWrapper {
 					stateListener.onPrepared(mp);
 				}
 			}
-/*			mediaPlayer.start();
-			currentState = State.STARTED;
-*/		}
+		}
 	};
 
 	private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
@@ -309,49 +307,5 @@ public class MediaPlayerStateWrapper {
 
 	public void setOnCompletionListener(MediaPlayer.OnCompletionListener onCompletionListener) {
 		mediaPlayer.setOnCompletionListener(onCompletionListener);
-	}
-
-	/**
-	 * Set desired playback speed of MediaPlayer instance (without affecting pitch)
-	 * @param audioPlaybackSpeed desired playback speed
-	 * @return new playback speed. also returns 1f if setting playback speed was unsuccessful
-	 */
-	@RequiresApi(Build.VERSION_CODES.M)
-	public float setPlaybackSpeed(float audioPlaybackSpeed) throws IllegalStateException {
-		if (EnumSet.of(State.INITIALIZED, State.PREPARED, State.STARTED, State.PAUSED, State.PLAYBACK_COMPLETE, State.ERROR).contains(
-			currentState)) {
-			if (setPlaybackParamsForSpeed(audioPlaybackSpeed)) {
-				return audioPlaybackSpeed;
-			}
-
-			// fall back to regular speed if setting the desired speed failed
-			setPlaybackParamsForSpeed(1f);
-		}
-		return 1f;
-	}
-
-	@RequiresApi(Build.VERSION_CODES.M)
-	private boolean setPlaybackParamsForSpeed(float audioPlaybackSpeed) {
-		try {
-			mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(audioPlaybackSpeed).setPitch(1f));
-			return true;
-		} catch (IllegalArgumentException e) {
-			logger.error("Unable to set playback speed to {}", audioPlaybackSpeed, e);
-		}
-		return false;
-	}
-
-	@RequiresApi(Build.VERSION_CODES.M)
-	public float getPlaybackSpeed() {
-		try {
-			return mediaPlayer.getPlaybackParams().getSpeed();
-		} catch (IllegalStateException e) {
-			logger.error("Unable to get current playback speed", e);
-			return 1f;
-		}
-	}
-
-	public void setOnSeekCompleteListener(@Nullable MediaPlayer.OnSeekCompleteListener listener) {
-		mediaPlayer.setOnSeekCompleteListener(listener);
 	}
 }

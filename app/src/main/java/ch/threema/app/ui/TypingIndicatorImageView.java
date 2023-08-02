@@ -30,6 +30,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
+
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 
@@ -53,7 +54,7 @@ public class TypingIndicatorImageView extends androidx.appcompat.widget.AppCompa
 
 	private void init() {
 		animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.typing_indicator);
-		animatedVectorDrawableCompat.setTint(ConfigUtils.getAppTheme(getContext()) == ConfigUtils.THEME_DARK ? Color.WHITE: Color.BLACK);
+		animatedVectorDrawableCompat.setTint(ConfigUtils.isTheDarkSide(getContext()) ? Color.WHITE: Color.BLACK);
 		setImageDrawable(animatedVectorDrawableCompat);
 	}
 

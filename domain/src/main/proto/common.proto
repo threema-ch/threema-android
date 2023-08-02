@@ -91,3 +91,163 @@ message Resolution {
   uint32 width = 1;
   uint32 height = 2;
 }
+
+// CSP features supported by a device or available for a contact (64 bit mask).
+//
+// IMPORTANT: The flags determine what a device/contact is capable of, not
+// whether the settings allow for it. For example, group calls may be supported
+// but ignored if disabled in the settings.
+enum CspFeatureMaskFlag {
+  // No features available
+  NONE = 0x00;
+  // Can handle voice messages.
+  VOICE_MESSAGE_SUPPORT = 0x01;
+  // Can handle groups.
+  GROUP_SUPPORT = 0x02;
+  // Can handle polls.
+  POLL_SUPPORT = 0x04;
+  // Can handle file messages.
+  FILE_MESSAGE_SUPPORT = 0x08;
+  // Can handle 1:1 audio calls.
+  O2O_AUDIO_CALL_SUPPORT = 0x10;
+  // Can handle 1:1 video calls.
+  O2O_VIDEO_CALL_SUPPORT = 0x20;
+  // Can handle forward security.
+  FORWARD_SECURITY_SUPPORT = 0x40;
+  // Can handle group calls.
+  GROUP_CALL_SUPPORT = 0x80;
+}
+
+// E2E message type as defined by the Chat Server Protocol.
+enum CspE2eMessageType {
+  // Invalid message type
+  _INVALID_TYPE = 0x00;
+
+  // Conversation messages
+  // ---------------------
+
+  // [`text`](ref:e2e.text)
+  TEXT = 0x01;
+  // [`deprecated-image`](ref:e2e.deprecated-image)
+  DEPRECATED_IMAGE = 0x02;
+  // [`location`](ref:e2e.location)
+  LOCATION = 0x10;
+  // [`deprecated-audio`](ref:e2e.deprecated-audio)
+  DEPRECATED_AUDIO = 0x14;
+  // [`deprecated-video`](ref:e2e.deprecated-video)
+  DEPRECATED_VIDEO = 0x13;
+  // [`file`](ref:e2e.file)
+  FILE = 0x17;
+  // [`poll-setup`](ref:e2e.poll-setup)
+  POLL_SETUP = 0x15;
+  // [`poll-vote`](ref:e2e.poll-vote)
+  POLL_VOTE = 0x16;
+  // [`call-offer`](ref:e2e.call-offer)
+  CALL_OFFER = 0x60;
+  // [`call-answer`](ref:e2e.call-answer)
+  CALL_ANSWER = 0x61;
+  // [`call-ice-candidate`](ref:e2e.call-ice-candidate)
+  CALL_ICE_CANDIDATE = 0x62;
+  // [`call-hangup`](ref:e2e.call-hangup)
+  CALL_HANGUP = 0x63;
+  // [`call-ringing`](ref:e2e.call-ringing)
+  CALL_RINGING = 0x64;
+
+  // Status updates
+  // --------------
+
+  // [`delivery-receipt`](ref:e2e.delivery-receipt)
+  DELIVERY_RECEIPT = 0x80;
+  // [`typing-indicator`](ref:e2e.typing-indicator)
+  TYPING_INDICATOR = 0x90;
+
+  // Contact control
+  // ---------------
+
+  // [`set-profile-picture`](ref:e2e.set-profile-picture) of a contact
+  CONTACT_SET_PROFILE_PICTURE = 0x18;
+  // [`delete-profile-picture`](ref:e2e.delete-profile-picture) of a contact
+  CONTACT_DELETE_PROFILE_PICTURE = 0x19;
+  // [`contact-request-profile-picture`](ref:e2e.contact-request-profile-picture)
+  CONTACT_REQUEST_PROFILE_PICTURE = 0x1a;
+
+  // Group invitations
+  // -----------------
+
+  // `csp-e2e.GroupJoinRequest`
+  GROUP_JOIN_REQUEST = 0x4d;
+  // `csp-e2e.GroupJoinResponse`
+  GROUP_JOIN_RESPONSE = 0x4e;
+
+  // Group control
+  // -------------
+
+  // [`group-setup`](ref:e2e.group-setup) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_SETUP = 0x4a;
+  // [`group-name`](ref:e2e.group-name) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_NAME = 0x4b;
+  // [`group-leave`](ref:e2e.group-leave) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_LEAVE = 0x4c;
+  // [`set-profile-picture`](ref:e2e.set-profile-picture) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_SET_PROFILE_PICTURE = 0x50;
+  // [`delete-profile-picture`](ref:e2e.delete-profile-picture) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_DELETE_PROFILE_PICTURE = 0x54;
+  // [`group-sync-request`](ref:e2e.group-sync-request) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_SYNC_REQUEST = 0x51;
+  // `csp-e2e.GroupCallStart` wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_CALL_START = 0x4f;
+
+  // Group conversation messages
+  // ---------------------------
+
+  // `0x41`: [`text`](ref:e2e.text) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_TEXT = 0x41;
+  // [`location`](ref:e2e.location) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_LOCATION = 0x42;
+  // [`deprecated-group-image`](ref:e2e.deprecated-group-image) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_IMAGE = 0x43;
+  // [`deprecated-audio`](ref:e2e.deprecated-audio) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_AUDIO = 0x45;
+  // [`deprecated-video`](ref:e2e.deprecated-video) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_VIDEO = 0x44;
+  // [`file`](ref:e2e.file) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_FILE = 0x46;
+  // [`poll-setup`](ref:e2e.poll-setup) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_POLL_SETUP = 0x52;
+  // [`poll-vote`](ref:e2e.poll-vote) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_POLL_VOTE = 0x53;
+
+  // Group status updates
+  // --------------------
+
+  // [`delivery-receipt`](ref:e2e.delivery-receipt) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_DELIVERY_RECEIPT = 0x81;
+
+  // Forward security
+  // ----------------
+
+  // `csp-e2e-fs.Envelope`
+  FORWARD_SECURITY_ENVELOPE = 0xa0;
+
+  // Push control
+  // ------------
+
+  // [`web-session-resume`](ref:e2e.web-session-resume)
+  WEB_SESSION_RESUME = 0xfe;
+}

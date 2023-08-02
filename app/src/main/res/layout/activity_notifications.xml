@@ -12,30 +12,35 @@
 		android:layout_height="wrap_content"
 		android:layout_marginLeft="@dimen/tablet_standard_padding_left_right"
 		android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
-		app:cardBackgroundColor="?attr/background_secondary"
-		app:cardElevation="0dp"
-		app:contentPaddingBottom="4dp"
-		app:contentPaddingLeft="12dp"
-		app:contentPaddingRight="12dp"
-		app:contentPaddingTop="4dp">
+		app:cardBackgroundColor="?attr/colorSurface"
+		app:cardElevation="1dp"
+		app:contentPaddingBottom="8dp"
+		app:contentPaddingLeft="8dp"
+		app:contentPaddingRight="8dp"
+		app:contentPaddingTop="4dp"
+		app:strokeWidth="0dp">
 
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:paddingLeft="4dp"
+		android:paddingRight="4dp"
 		android:orientation="vertical">
 
-		<LinearLayout
+		<com.google.android.material.card.MaterialCardView
 			android:id="@+id/work_life_warning"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:background="?attr/background_primary"
-			android:orientation="vertical"
-			android:paddingLeft="4dp"
-			android:paddingRight="4dp"
-			android:paddingTop="8dp"
-			android:paddingBottom="8dp"
 			android:layout_marginTop="8dp"
-			android:visibility="gone">
+			android:clickable="false"
+			android:focusable="false"
+			app:contentPadding="8dp"
+			app:cardBackgroundColor="?attr/colorTertiaryContainer"
+			app:cardCornerRadius="@dimen/cardview_border_radius"
+			app:cardElevation="8dp"
+			app:strokeWidth="0dp"
+			android:visibility="gone"
+			android:outlineProvider="none">
 
 			<LinearLayout
 				android:layout_width="wrap_content"
@@ -48,34 +53,48 @@
 				android:layout_marginLeft="4dp"
 				android:layout_gravity="left|center_vertical"
 				app:srcCompat="@drawable/ic_info_outline"
-				app:tint="?attr/textColorPrimary" />
+				app:tint="?attr/colorOnTertiaryContainer" />
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center_vertical"
-				android:layout_marginLeft="4dp"
+				android:layout_marginLeft="8dp"
 				android:singleLine="true"
+				android:textColor="?attr/colorOnTertiaryContainer"
 				android:text="@string/work_life_dnd_active"/>
 
 			</LinearLayout>
 
-		</LinearLayout>
+		</com.google.android.material.card.MaterialCardView>
 
-		<LinearLayout
+		<com.google.android.material.card.MaterialCardView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:background="?attr/background_primary"
-			android:orientation="vertical"
-			android:paddingLeft="4dp"
-			android:paddingRight="4dp"
-			android:paddingTop="8dp"
-			android:paddingBottom="8dp"
-			android:layout_marginTop="8dp">
+			android:layout_marginTop="8dp"
+			android:clickable="false"
+			android:focusable="false"
+			app:contentPadding="8dp"
+			app:contentPaddingLeft="8dp"
+			app:contentPaddingRight="4dp"
+			app:contentPaddingTop="8dp"
+			app:contentPaddingBottom="8dp"
+			app:cardBackgroundColor="?attr/colorSurface"
+			app:cardCornerRadius="@dimen/cardview_border_radius"
+			app:cardElevation="8dp"
+			app:strokeWidth="0dp"
+			android:outlineProvider="none">
 
-			<TextView
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:orientation="vertical">
+
+			<TextView
+				style="@style/Threema.Text.Overline"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="4dp"
 				android:layout_marginBottom="4dp"
 				android:layout_marginLeft="4dp"
 				android:text="@string/prefs_notification_sound"/>
@@ -86,6 +105,7 @@
 
 				<RadioGroup
 					android:id="@+id/sound_radio_group"
+					android:layout_marginTop="4dp"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
 					android:layout_marginLeft="0dp">
@@ -132,35 +152,49 @@
 
 				</RadioGroup>
 
-				<ImageButton
+				<com.google.android.material.button.MaterialButton
+					style="@style/Threema.MaterialButton.Minimal"
 					android:id="@+id/prefs_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="right|top"
-					android:background="?android:attr/selectableItemBackground"
 					android:contentDescription="@string/menu_settings"
-					android:padding="4dp"
-					app:srcCompat="@drawable/ic_settings_outline_24dp"
+					app:icon="@drawable/ic_settings_outline_24dp"
 					android:visibility="visible"/>
 
 			</FrameLayout>
 
-		</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-		<LinearLayout
+		</com.google.android.material.card.MaterialCardView>
+
+		<com.google.android.material.card.MaterialCardView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="8dp"
-			android:background="?attr/background_primary"
-			android:orientation="vertical"
-			android:paddingLeft="4dp"
-			android:paddingRight="4dp"
-			android:paddingTop="8dp"
-			android:paddingBottom="8dp">
+			android:clickable="false"
+			android:focusable="false"
+			app:contentPadding="8dp"
+			app:contentPaddingLeft="8dp"
+			app:contentPaddingRight="4dp"
+			app:contentPaddingTop="8dp"
+			app:contentPaddingBottom="8dp"
+			app:cardBackgroundColor="?attr/colorSurface"
+			app:cardCornerRadius="@dimen/cardview_border_radius"
+			app:cardElevation="8dp"
+			app:strokeWidth="0dp"
+			android:outlineProvider="none">
 
-			<TextView
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:orientation="vertical">
+
+			<TextView
+				style="@style/Threema.Text.Overline"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="4dp"
 				android:layout_marginBottom="4dp"
 				android:layout_marginLeft="4dp"
 				android:text="@string/dnd"/>
@@ -173,6 +207,8 @@
 					android:id="@+id/duration_radio_group"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:layout_marginTop="4dp"
+					android:layout_marginBottom="6dp"
 					android:layout_gravity="left">
 
 					<RadioButton
@@ -205,40 +241,41 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="right|bottom"
-					android:gravity="right"
+					android:gravity="right|bottom"
 					android:orientation="horizontal">
 
-					<ImageButton
+					<com.google.android.material.button.MaterialButton
+						style="@style/Threema.MaterialButton.Minimal"
 						android:id="@+id/duration_minus"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginLeft="4dp"
-						android:layout_marginRight="12dp"
-						android:background="?android:attr/selectableItemBackground"
 						android:contentDescription="@string/minus"
-						android:padding="4dp"
-						app:srcCompat="@drawable/ic_remove_circle_black_24dp"
+						app:icon="@drawable/ic_remove_circle_black_24dp"
 						android:visibility="visible"/>
 
-					<ImageButton
+					<com.google.android.material.button.MaterialButton
+						style="@style/Threema.MaterialButton.Minimal"
 						android:id="@+id/duration_plus"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:background="?android:attr/selectableItemBackground"
+						android:layout_marginBottom="0dp"
 						android:contentDescription="@string/plus"
-						android:padding="4dp"
-						app:srcCompat="@drawable/ic_add_circle_black_24dp"
+						app:icon="@drawable/ic_add_circle_black_24dp"
 						android:visibility="visible"/>
 
 				</LinearLayout>
 
 			</FrameLayout>
 
-		</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
+
+		</com.google.android.material.card.MaterialCardView>
 
 		<com.google.android.material.button.MaterialButton
 			android:id="@+id/done_button"
-			style="@style/Threema.AlertDialog.ButtonStyle"
+			style="@style/Threema.MaterialButton.Action"
+			android:layout_marginTop="4dp"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="right"

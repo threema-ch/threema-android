@@ -28,24 +28,26 @@ import org.junit.Test;
 
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.protobuf.csp.e2e.fs.ForwardSecurityEnvelope;
+import ch.threema.protobuf.csp.e2e.fs.Envelope;
+import ch.threema.protobuf.csp.e2e.fs.Terminate;
 
 public class ForwardSecurityDataTerminateTest {
-	static final DHSessionId TEST_SESSION_ID = new DHSessionId();
+	private static final DHSessionId TEST_SESSION_ID = new DHSessionId();
+	private static final Terminate.Cause TEST_CAUSE = Terminate.Cause.UNKNOWN_SESSION;
 
-	static final ForwardSecurityEnvelope TEST_PROTOBUF_MESSAGE = ForwardSecurityEnvelope.newBuilder()
+	private static final Envelope TEST_PROTOBUF_MESSAGE = Envelope.newBuilder()
 		.setSessionId(ByteString.copyFrom(TEST_SESSION_ID.get()))
-		.setTerminate(ForwardSecurityEnvelope.Terminate.newBuilder()
+		.setTerminate(Terminate.newBuilder()
 			.build())
 		.build();
 
-	static void assertEqualsTestProperties(ForwardSecurityDataTerminate data) {
+	private static void assertEqualsTestProperties(ForwardSecurityDataTerminate data) {
 		Assert.assertEquals(TEST_SESSION_ID, data.getSessionId());
 	}
 
 	@Test
 	public void testValidData() {
-		final ForwardSecurityDataTerminate data = new ForwardSecurityDataTerminate(TEST_SESSION_ID);
+		final ForwardSecurityDataTerminate data = new ForwardSecurityDataTerminate(TEST_SESSION_ID, TEST_CAUSE);
 		assertEqualsTestProperties(data);
 	}
 
@@ -58,8 +60,8 @@ public class ForwardSecurityDataTerminateTest {
 
 	@Test
 	public void testToProtobufMessage() {
-		final ForwardSecurityDataTerminate data = new ForwardSecurityDataTerminate(TEST_SESSION_ID);
-		final ForwardSecurityEnvelope generatedProtobufMessage = data.toProtobufMessage();
+		final ForwardSecurityDataTerminate data = new ForwardSecurityDataTerminate(TEST_SESSION_ID, TEST_CAUSE);
+		final Envelope generatedProtobufMessage = data.toProtobufMessage();
 
 		Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
 	}

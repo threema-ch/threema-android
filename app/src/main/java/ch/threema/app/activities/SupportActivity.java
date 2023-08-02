@@ -21,23 +21,11 @@
 
 package ch.threema.app.activities;
 
-
-import android.annotation.SuppressLint;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.widget.ProgressBar;
-
 import org.slf4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
@@ -45,64 +33,26 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.UrlUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-public class SupportActivity extends ThreemaToolbarActivity {
+public class SupportActivity extends SimpleWebViewActivity {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SupportActivity");
-	private ProgressBar progressBar;
 
-	@SuppressLint("SetJavaScriptEnabled")
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.support);
-		}
-
-		progressBar = findViewById(R.id.progress);
-
-		WebView wv = findViewById(R.id.simple_webview);
-		wv.getSettings().setJavaScriptEnabled(true);
-		wv.setWebChromeClient(new WebChromeClient() {
-			@Override
-			public void onProgressChanged(WebView view, int newProgress) {
-				if (newProgress >= 99) {
-					progressBar.setVisibility(View.INVISIBLE);
-				} else {
-					progressBar.setProgress(newProgress);
-			}
-		}
-	});
-
-		wv.loadUrl(getURL());
-	}
-
-	public int getLayoutResource() {
-		return R.layout.activity_simple_webview;
+	@Override
+	protected boolean requiresConnection() {
+		return true;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-//				ActivityCompat.finishAfterTransition(this);
-				finish();
-				break;
-		}
-		return false;
+	protected boolean requiresJavaScript() {
+		return true;
 	}
 
-	private String getIdentity() {
-		try {
-			return URLEncoder.encode(serviceManager.getUserService().getIdentity(), LocaleUtil.UTF8_ENCODING);
-		} catch (UnsupportedEncodingException e) {
-			logger.error("Encoding exception", e);
-		}
-		return "";
+	@Override
+	protected int getWebViewTitle() {
+		return R.string.support;
 	}
 
-	private String getURL() {
-		//try to load the custom url!
+	@Override
+	protected String getWebViewUrl() {
 		String baseURL = null;
 
 		if(ConfigUtils.isWorkBuild()) {
@@ -118,10 +68,12 @@ public class SupportActivity extends ThreemaToolbarActivity {
 			+ "&identity=" + getIdentity();
 	}
 
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-
-		ConfigUtils.adjustToolbar(this, getToolbar());
+	private String getIdentity() {
+		try {
+			return URLEncoder.encode(serviceManager.getUserService().getIdentity(), LocaleUtil.UTF8_ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			logger.error("Encoding exception", e);
+		}
+		return "";
 	}
 }

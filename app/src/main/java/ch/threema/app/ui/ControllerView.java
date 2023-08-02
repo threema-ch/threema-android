@@ -23,31 +23,33 @@ package ch.threema.app.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.shape.ShapeAppearanceModel;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatImageView;
+
 import ch.threema.app.R;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
-public class ControllerView extends FrameLayout {
+public class ControllerView extends MaterialCardView {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ControllerView");
 
-	private ProgressBar progressBarIndeterminate;
-	private CircularProgressIndicator progressBarDeterminate;
+	private CircularProgressIndicator progressBarIndeterminate, progressBarDeterminate;
 	private AppCompatImageView icon;
+	private @ColorInt int foregroundColor;
 	private int status, progressMax = 100;
 
 	public final static int STATUS_NONE = 0;
@@ -57,10 +59,7 @@ public class ControllerView extends FrameLayout {
 	public final static int STATUS_PLAYING = 4;
 	public final static int STATUS_READY_TO_RETRY = 5;
 	public final static int STATUS_PROGRESSING_NO_CANCEL = 6;
-	public final static int STATUS_BROKEN = 7;
 	public final static int STATUS_TRANSCODING = 8;
-
-	private OnVisibilityChangedListener visibilityChangedListener;
 
 	public ControllerView(Context context) {
 		super(context);
@@ -81,6 +80,10 @@ public class ControllerView extends FrameLayout {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.conversation_list_item_controller_view, this);
+
+		this.setShapeAppearanceModel(ShapeAppearanceModel.builder(context, 0, R.style.ShapeAppearance_Material3_Corner_Medium).build());
+		this.setStrokeWidth(0);
+		this.foregroundColor = ConfigUtils.getColorFromAttribute(context, R.attr.colorOnBackground);
 	}
 
 	@Override
@@ -92,19 +95,6 @@ public class ControllerView extends FrameLayout {
 		icon = this.findViewById(R.id.icon);
 
 		setBackgroundImage(null);
-	}
-
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-		int padding = getMeasuredWidth() / 6;
-
-		icon.setPadding(padding, padding, padding, padding);
-/*
-		int size = getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
-		setMeasuredDimension(size, size);
-*/
 	}
 
 	private void reset() {
@@ -125,7 +115,6 @@ public class ControllerView extends FrameLayout {
 	public void setNeutral() {
 		logger.debug("setNeutral");
 		reset();
-		icon.setVisibility(INVISIBLE);
 		status = STATUS_NONE;
 	}
 
@@ -140,16 +129,6 @@ public class ControllerView extends FrameLayout {
 		logger.debug("setPlay");
 		if (status != STATUS_READY_TO_PLAY) {
 			setImageResource(R.drawable.ic_play);
-			setContentDescription(getContext().getString(R.string.play));
-			status = STATUS_READY_TO_PLAY;
-		}
-	}
-
-	@UiThread
-	public void setBroken() {
-		logger.debug("setBroken");
-		if (status != STATUS_BROKEN) {
-			setImageResource(R.drawable.ic_close);
 			setContentDescription(getContext().getString(R.string.play));
 			status = STATUS_READY_TO_PLAY;
 		}
@@ -222,14 +201,14 @@ public class ControllerView extends FrameLayout {
 
 	public void setRetry() {
 		logger.debug("setRetry");
-		setImageResource(R.drawable.ic_refresh_white_36dp);
+		setImageResource(R.drawable.outline_refresh_24);
 		setContentDescription(getContext().getString(R.string.retry));
 		status = STATUS_READY_TO_RETRY;
 	}
 
 	public void setReadyToDownload() {
 		logger.debug("setReadyToDownload");
-		setImageResource(R.drawable.ic_file_download_white_36dp);
+		setImageResource(R.drawable.outline_file_download_24);
 		setContentDescription(getContext().getString(R.string.download));
 		status = STATUS_READY_TO_DOWNLOAD;
 	}
@@ -237,42 +216,21 @@ public class ControllerView extends FrameLayout {
 	public void setImageResource(@DrawableRes int resource) {
 		logger.debug("setImageResource");
 		reset();
+		icon.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN);
+		icon.setScaleType(ImageView.ScaleType.CENTER);
 		icon.setImageResource(resource);
-		icon.setColorFilter(Color.WHITE);
-		icon.requestLayout();
 	}
 
 	public void setBackgroundImage(Bitmap bitmap) {
 		logger.debug("setBackgroundImage");
-		if (bitmap == null) {
-			setBackgroundResource(R.drawable.circle_status_icon_color);
-		} else {
-			setBackground(new BitmapDrawable(getResources(), bitmap));
+		if (bitmap != null) {
+			icon.clearColorFilter();
+			icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+			icon.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
 		}
 	}
 
 	public int getStatus() {
 		return status;
-	}
-
-	@Override
-	public void setVisibility(int visibility) {
-		super.setVisibility(visibility);
-	}
-
-	protected void onVisibilityChanged(@NonNull View view, int visibility) {
-		super.onVisibilityChanged(view, visibility);
-
-		if (visibilityChangedListener != null) {
-			visibilityChangedListener.visibilityChanged(visibility);
-		}
-	}
-
-	public void setVisibilityListener(OnVisibilityChangedListener listener) {
-		this.visibilityChangedListener = listener;
-	}
-
-	public interface OnVisibilityChangedListener {
-		void visibilityChanged(int visibility);
 	}
 }

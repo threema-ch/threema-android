@@ -79,6 +79,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.app.utils.PowermanagerUtil;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -187,15 +188,11 @@ public class SessionsActivity extends ThreemaToolbarActivity
 		}
 
 		private void updateView(final boolean notifyDataSetChanged) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				@UiThread
-				public void run() {
-					if (notifyDataSetChanged && SessionsActivity.this.listAdapter != null) {
-						SessionsActivity.this.listAdapter.notifyDataSetChanged();
-					}
-					SessionsActivity.this.updateView();
+			RuntimeUtil.runOnUiThread(() -> {
+				if (notifyDataSetChanged && SessionsActivity.this.listAdapter != null) {
+					SessionsActivity.this.listAdapter.notifyDataSetChanged();
 				}
+				SessionsActivity.this.updateView();
 			});
 		}
 	};
@@ -237,18 +234,14 @@ public class SessionsActivity extends ThreemaToolbarActivity
 		@Override
 		@AnyThread
 		public void onRemoved(@NonNull final WebClientSessionModel model) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				@UiThread
-				public void run() {
-					if (listAdapter != null) {
-						final SessionListAdapter listAdapter = SessionsActivity.this.listAdapter;
-						for (int pos = 0; pos < listAdapter.getItemCount(); pos++) {
-							if (listAdapter.getEntity(pos).getId() == model.getId()) {
-								// Remove session from list
-								SessionsActivity.this.closeAllDialogs();
-								listAdapter.deleteEntity(pos);
-							}
+			RuntimeUtil.runOnUiThread(() -> {
+				if (listAdapter != null) {
+					final SessionListAdapter listAdapter = SessionsActivity.this.listAdapter;
+					for (int pos = 0; pos < listAdapter.getItemCount(); pos++) {
+						if (listAdapter.getEntity(pos).getId() == model.getId()) {
+							// Remove session from list
+							SessionsActivity.this.closeAllDialogs();
+							listAdapter.deleteEntity(pos);
 						}
 					}
 				}
@@ -258,15 +251,12 @@ public class SessionsActivity extends ThreemaToolbarActivity
 		@Override
 		@AnyThread
 		public void onCreated(@NonNull final WebClientSessionModel model) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					final SessionListAdapter listAdapter = SessionsActivity.this.listAdapter;
-					if (listAdapter != null) {
-						// Move session to top
-						SessionsActivity.this.closeAllDialogs();
-						listAdapter.addEntity(0, model);
-					}
+			RuntimeUtil.runOnUiThread(() -> {
+				final SessionListAdapter listAdapter = SessionsActivity.this.listAdapter;
+				if (listAdapter != null) {
+					// Move session to top
+					SessionsActivity.this.closeAllDialogs();
+					listAdapter.addEntity(0, model);
 				}
 			});
 		}
@@ -420,7 +410,11 @@ public class SessionsActivity extends ThreemaToolbarActivity
 				// Show wizard
 				this.startActivityForResult(new Intent(this, SessionsIntroActivity.class), REQUEST_ID_INTRO_WIZARD);
 			} else {
-				this.startBatteryOptimizationFlow();
+				if (PowermanagerUtil.isIgnoringBatteryOptimizations(this)) {
+					this.activityInitialized();
+				} else {
+					this.startBatteryOptimizationFlow();
+				}
 			}
 		}
 	}
@@ -936,22 +930,16 @@ public class SessionsActivity extends ThreemaToolbarActivity
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				this.finish();
-				break;
-			case R.id.menu_help:
-				this.startActivity(new Intent(this, SessionsIntroActivity.class));
-				break;
-			case R.id.menu_clear_all:
-				GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.webclient_clear_all_sessions,
-					getString(R.string.webclient_clear_all_sessions_confirm),
-					R.string.ok,
-					R.string.cancel);
-				dialog.show(getSupportFragmentManager(), DIALOG_TAG_REALLY_DELETE_ALL_SESSIONS);
-				break;
-			default:
-				break;
+		if (item.getItemId() == android.R.id.home) {
+			this.finish();
+		} else if (item.getItemId() == R.id.menu_help) {
+			this.startActivity(new Intent(this, SessionsIntroActivity.class));
+		} else if (item.getItemId() == R.id.menu_clear_all) {
+			GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.webclient_clear_all_sessions,
+				getString(R.string.webclient_clear_all_sessions_confirm),
+				R.string.ok,
+				R.string.cancel);
+			dialog.show(getSupportFragmentManager(), DIALOG_TAG_REALLY_DELETE_ALL_SESSIONS);
 		}
 		return super.onOptionsItemSelected(item);
 	}

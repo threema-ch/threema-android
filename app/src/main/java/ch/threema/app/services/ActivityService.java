@@ -122,7 +122,6 @@ public class ActivityService {
 	}
 
 	private boolean timeLocking() {
-		logger.debug("timeLocking");
 		if(this.lockAppService.isLockingEnabled()) {
 			if(!this.lockAppService.isLocked()) {
 				this.lockAppService.resetLockTimer(true);

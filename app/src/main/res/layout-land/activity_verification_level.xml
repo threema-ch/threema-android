@@ -13,14 +13,14 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:clipToPadding="false"
-		android:background="?android:windowBackground">
+		android:background="?android:attr/colorBackground">
 
 		<androidx.constraintlayout.widget.ConstraintLayout
 			android:id="@id/constraint_layout"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:clipToPadding="false"
-			android:background="?android:windowBackground">
+			android:background="?android:attr/colorBackground">
 
 			<TextView
 				android:id="@id/verification_description"
@@ -30,8 +30,8 @@
 				android:layout_marginStart="16dp"
 				android:layout_marginTop="16dp"
 				android:text="@string/verification_settings_desc"
-				android:textAppearance="@style/Threema.TextAppearance.Subtitle1"
-				android:textColor="?android:textColorPrimary"
+				android:textAppearance="@style/Threema.TextAppearance.Subtitle"
+				android:textColor="?attr/colorOnBackground"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toTopOf="parent" />
@@ -54,11 +54,13 @@
 					android:layout_weight="1"
 					android:clickable="false"
 					android:focusable="false"
-					app:cardBackgroundColor="?attr/cardview_background"
+					app:cardBackgroundColor="?attr/colorOnSurfaceInverse"
 					app:cardCornerRadius="@dimen/cardview_border_radius"
 					app:cardElevation="4dp"
+					app:strokeWidth="0dp"
 					app:layout_constraintEnd_toEndOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/verification_description">
+					app:layout_constraintTop_toBottomOf="@id/verification_description"
+					android:outlineProvider="none">
 
 					<androidx.constraintlayout.widget.ConstraintLayout
 						android:layout_width="match_parent"
@@ -90,8 +92,8 @@
 							app:layout_constraintWidth_percent="0.8"
 							android:gravity="center"
 							android:text="@string/verification_level3_explain"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
-							android:textColor="?android:attr/textColorSecondary"
+							android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+							android:textColor="?attr/colorOnSurface"
 							app:layout_constraintEnd_toEndOf="parent"
 							app:layout_constraintStart_toStartOf="parent"
 							app:layout_constraintBottom_toBottomOf="parent"
@@ -108,9 +110,11 @@
 					android:layout_weight="1"
 					android:clickable="false"
 					android:focusable="false"
-					app:cardBackgroundColor="?attr/cardview_background"
+					app:cardBackgroundColor="?attr/colorOnSurfaceInverse"
 					app:cardCornerRadius="@dimen/cardview_border_radius"
-					app:cardElevation="4dp">
+					app:cardElevation="4dp"
+					app:strokeWidth="0dp"
+					android:outlineProvider="none">
 
 					<androidx.constraintlayout.widget.ConstraintLayout
 						android:layout_width="match_parent"
@@ -142,8 +146,8 @@
 							app:layout_constraintWidth_percent="0.8"
 							android:gravity="center"
 							android:text="@string/verification_level2_explain"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
-							android:textColor="?android:attr/textColorSecondary"
+							android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+							android:textColor="?attr/colorOnSurface"
 							app:layout_constraintEnd_toEndOf="parent"
 							app:layout_constraintStart_toStartOf="parent"
 							app:layout_constraintBottom_toBottomOf="parent"
@@ -162,9 +166,11 @@
 					android:layout_marginRight="16dp"
 					android:clickable="false"
 					android:focusable="false"
-					app:cardBackgroundColor="?attr/cardview_background"
+					app:cardBackgroundColor="?attr/colorOnSurfaceInverse"
 					app:cardCornerRadius="@dimen/cardview_border_radius"
-					app:cardElevation="4dp">
+					app:cardElevation="4dp"
+					app:strokeWidth="0dp"
+					android:outlineProvider="none">
 
 					<androidx.constraintlayout.widget.ConstraintLayout
 						android:layout_width="match_parent"
@@ -196,8 +202,8 @@
 							app:layout_constraintWidth_percent="0.8"
 							android:gravity="center"
 							android:text="@string/verification_level1_explain"
-							android:textAppearance="@style/Threema.TextAppearance.Body1"
-							android:textColor="?android:attr/textColorSecondary"
+							android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+							android:textColor="?attr/colorOnSurface"
 							app:layout_constraintEnd_toEndOf="parent"
 							app:layout_constraintStart_toStartOf="parent"
 							app:layout_constraintBottom_toBottomOf="parent"

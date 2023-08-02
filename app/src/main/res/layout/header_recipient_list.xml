@@ -25,7 +25,7 @@
 			android:scaleType="center"
 			app:srcCompat="@drawable/ic_person_add_outline"
 			android:contentDescription="@string/menu_add_contact"
-			app:tint="?attr/textColorSecondary" />
+			app:tint="?attr/colorOnSurface" />
 
 		<TextView
 			android:id="@+id/text_view"

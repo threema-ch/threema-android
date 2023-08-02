@@ -190,12 +190,6 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
 	}
 
 	@Override
-	public void finish() {
-		super.finish();
-		overridePendingTransition(0, 0);
-	}
-
-	@Override
 	public boolean getVideoEnable() {
 		return ConfigUtils.supportsVideoCapture() && !noVideo;
 	}

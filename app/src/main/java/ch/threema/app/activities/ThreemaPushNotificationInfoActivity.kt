@@ -36,7 +36,7 @@ class ThreemaPushNotificationInfoActivity : ThreemaActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         logger.debug("onCreate")
 
-        ConfigUtils.configureActivityTheme(this)
+        ConfigUtils.configureSystemBars(this)
 
         super.onCreate(savedInstanceState)
 

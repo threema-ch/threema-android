@@ -19,9 +19,10 @@
 		android:orientation="horizontal"
 		android:visibility="gone">
 
-		<ProgressBar
+		<com.google.android.material.progressindicator.CircularProgressIndicator
 			android:id="@+id/progress_bar"
-			style="?android:attr/progressBarStyleSmall"
+			android:indeterminate="true"
+			style="@style/Widget.Material3.CircularProgressIndicator.Small"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="2dp"/>
@@ -34,17 +35,16 @@
 			android:textColor="@android:color/white"/>
 	</LinearLayout>
 
-	<FrameLayout
+	<com.google.android.material.card.MaterialCardView
+		style="@style/Threema.CardView.MediaViewerCaption"
 		android:id="@+id/caption_container"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginBottom="@dimen/mediaviewer_caption_border_bottom"
 		android:layout_gravity="bottom|center_horizontal"
-		android:background="@drawable/shape_mediaviewer_caption_background"
-		android:paddingBottom="4dp"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:paddingTop="4dp"
+		app:contentPaddingTop="8dp"
+		app:contentPaddingBottom="8dp"
+		app:contentPaddingLeft="16dp"
+		app:contentPaddingRight="16dp"
 		android:visibility="gone">
 
 		<ch.threema.app.emojis.EmojiTextView
@@ -56,9 +56,9 @@
 			android:textColor="@android:color/white"
 			android:textSize="18sp"/>
 
-	</FrameLayout>
+	</com.google.android.material.card.MaterialCardView>
 
-	<androidx.appcompat.widget.Toolbar
+	<com.google.android.material.appbar.MaterialToolbar
 		android:id="@+id/toolbar"
 		android:layout_width="match_parent"
 		android:layout_height="?attr/actionBarSize"

@@ -134,7 +134,7 @@ public class MessageRequestHandler extends MessageReceiver {
 			}
 
 			// Convert and send messages
-			List<MsgpackBuilder> data = Message.convert(messages, receiver.getType(), true);
+			List<MsgpackBuilder> data = Message.convert(messages, receiver, true);
 			logger.debug("Sending message response");
 			this.send(this.dispatcher, data, args);
 		} catch (ConversionException e) {

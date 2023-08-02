@@ -78,7 +78,7 @@ public class DeleteDistributionListHandler extends MessageReceiver {
 			this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
 			return;
 		}
-		final int distributionListId = Integer.parseInt(args.get(Receiver.ID).asStringValue().toString());
+		final long distributionListId = Long.parseLong(args.get(Receiver.ID).asStringValue().toString());
 
 		// Get distribution list
 		final DistributionListModel distributionListModel = this.distributionListService.getById(distributionListId);

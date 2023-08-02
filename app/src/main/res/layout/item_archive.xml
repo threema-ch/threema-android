@@ -72,7 +72,7 @@
 				android:layout_alignBottom="@+id/date"
 				android:layout_alignParentRight="true"
 				android:layout_marginLeft="2dip"
-				android:tint="?attr/textColorSecondary"
+				android:tint="?attr/colorOnSurface"
 				android:visibility="visible"
 				app:srcCompat="@drawable/ic_attachment"/>
 
@@ -108,7 +108,7 @@
 				android:layout_marginLeft="-3dp"
 				android:layout_marginRight="-3dp"
 				android:layout_toRightOf="@id/group_member_name"
-				android:tint="?attr/textColorSecondary"
+				android:tint="?attr/colorOnSurface"
 				android:visibility="visible"
 				app:srcCompat="@drawable/ic_attachment"/>
 

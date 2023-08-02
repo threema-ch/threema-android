@@ -53,7 +53,8 @@
 								 android:layout_gravity="right"
 								 android:background="@color/material_green"/>
 
-					<ProgressBar android:id="@+id/progressbar"
+					<com.google.android.material.progressindicator.CircularProgressIndicator
+								 android:id="@+id/progressbar"
 								 android:layout_width="wrap_content"
 								 android:layout_height="match_parent"
 								 android:padding="2dp"
@@ -71,12 +72,12 @@
 								 android:layout_alignParentLeft="true"
 								 android:layout_centerVertical="true"
 								 android:layout_marginRight="6dp"
-								 android:background="?attr/textColorPrimary">
+								 android:background="?attr/colorOnBackground">
 
 						<View android:layout_width="9dp"
 							  android:layout_height="9dp"
 							  android:layout_gravity="center"
-							  android:background="?android:windowBackground"/>
+							  android:background="?android:attr/colorBackground"/>
 
 					</FrameLayout>
 
@@ -85,13 +86,17 @@
 							  android:layout_toRightOf="@id/legend_total"
 							  android:layout_toLeftOf="@+id/total_view"
 							  android:ellipsize="end"
-							  android:text="@string/storage_total"/>
+							  android:text="@string/storage_total"
+						android:textAppearance="?android:textAppearanceMedium"
+						/>
 
 					<TextView android:id="@+id/total_view"
 							  android:layout_width="wrap_content"
 							  android:layout_height="wrap_content"
 							  android:layout_alignParentRight="true"
-							  android:text=""/>
+							  android:text=""
+						android:textAppearance="?android:textAppearanceMedium"
+						/>
 
 				</RelativeLayout>
 
@@ -111,13 +116,17 @@
 							  android:layout_toRightOf="@id/legend_in_use"
 							  android:layout_toLeftOf="@+id/in_use_view"
 							  android:ellipsize="end"
-							  android:text="@string/storage_total_in_use"/>
+							  android:text="@string/storage_total_in_use"
+						android:textAppearance="?android:textAppearanceMedium"
+						/>
 
 					<TextView android:id="@+id/in_use_view"
 							  android:layout_width="wrap_content"
 							  android:layout_height="wrap_content"
 							  android:layout_alignParentRight="true"
-							  android:text=""/>
+							  android:text=""
+						android:textAppearance="?android:textAppearanceMedium"
+						/>
 
 				</RelativeLayout>
 
@@ -137,13 +146,17 @@
 							  android:layout_toRightOf="@id/legend_free"
 							  android:layout_toLeftOf="@+id/free_view"
 							  android:ellipsize="end"
-							  android:text="@string/storage_total_free"/>
+							  android:text="@string/storage_total_free"
+						android:textAppearance="?android:textAppearanceMedium"
+						/>
 
 					<TextView android:id="@+id/free_view"
 							  android:layout_width="wrap_content"
 							  android:layout_height="wrap_content"
 							  android:layout_alignParentRight="true"
-							  android:text=""/>
+							  android:text=""
+						android:textAppearance="?android:textAppearanceMedium"
+						/>
 
 				</RelativeLayout>
 
@@ -163,18 +176,22 @@
 							  android:layout_toRightOf="@id/legend_usage"
 							  android:layout_toLeftOf="@+id/usage_view"
 							  android:ellipsize="end"
-							  android:text="@string/storage_threema"/>
+							  android:text="@string/storage_threema"
+						android:textAppearance="?android:textAppearanceMedium"
+						/>
 
 					<TextView android:id="@+id/usage_view"
 							  android:layout_width="wrap_content"
 							  android:layout_height="wrap_content"
 							  android:layout_alignParentRight="true"
-							  android:text=""/>
+							  android:text=""
+						android:textAppearance="?android:textAppearanceMedium"
+						/>
 
 				</RelativeLayout>
 
 				<com.google.android.material.textfield.TextInputLayout
-					style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+					style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="16dp"
@@ -192,7 +209,7 @@
 				</com.google.android.material.textfield.TextInputLayout>
 
 				<com.google.android.material.button.MaterialButton
-						style="@style/Threema.Chip.Action"
+						style="@style/Threema.MaterialButton.Action"
 						android:id="@+id/delete_button"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -222,18 +239,20 @@
 							  android:layout_alignParentLeft="true"
 							  android:layout_toLeftOf="@+id/num_messages_view"
 							  android:ellipsize="end"
-							  android:text="@string/num_messages"/>
+							android:textAppearance="?android:textAppearanceMedium"
+							android:text="@string/num_messages"/>
 
 					<TextView android:id="@+id/num_messages_view"
 							  android:layout_width="wrap_content"
 							  android:layout_height="wrap_content"
 							  android:layout_alignParentRight="true"
-							  android:text=""/>
+							android:textAppearance="?android:textAppearanceMedium"
+							android:text=""/>
 
 				</RelativeLayout>
 
 				<com.google.android.material.textfield.TextInputLayout
-					style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+					style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="16dp"
@@ -251,21 +270,26 @@
 				</com.google.android.material.textfield.TextInputLayout>
 
 				<com.google.android.material.button.MaterialButton
-						style="@style/Threema.Chip.Action"
+						style="@style/Threema.MaterialButton.Action"
 						android:id="@+id/delete_button_messages"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:text="@string/delete_message"
 						android:layout_gravity="right"/>
 
+				<com.google.android.material.divider.MaterialDivider
+					android:id="@+id/groupack_divider"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="8dp"
+					android:layout_marginBottom="8dp" />
+
 				<com.google.android.material.button.MaterialButton
 					style="@style/Threema.MaterialButton.Fatal"
 					android:id="@+id/delete_everything_button"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="16dp"
 					android:layout_marginBottom="16dp"
-
 					android:text="@string/delete_id_title"
 					android:layout_gravity="left"/>
 

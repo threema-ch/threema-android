@@ -27,8 +27,10 @@ import org.slf4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A group message that has an image (stored on the blob server) as its content.
@@ -59,6 +61,12 @@ public class GroupImageMessage extends AbstractGroupMessage {
 	@Override
 	public boolean flagSendPush() {
 		return true;
+	}
+
+	@Override
+	@Nullable
+	public Version getMinimumRequiredForwardSecurityVersion() {
+		return null;
 	}
 
 	@Override

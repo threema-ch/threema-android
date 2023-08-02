@@ -43,7 +43,6 @@ import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SystemScreenLockService;
 import ch.threema.app.utils.BiometricUtil;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -63,10 +62,6 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		logger.debug("onCreate");
-
-		if (ConfigUtils.getAppTheme(this) == ConfigUtils.THEME_DARK) {
-			setTheme(R.style.Theme_Threema_BiometricUnlock_Dark);
-		}
 
 		super.onCreate(savedInstanceState);
 

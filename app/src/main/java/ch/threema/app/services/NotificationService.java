@@ -69,6 +69,7 @@ public interface NotificationService {
 	String NOTIFICATION_CHANNEL_GROUP_JOIN_REQUEST = "jreq";
 	String NOTIFICATION_CHANNEL_THREEMA_PUSH = "tpush";
 	String NOTIFICATION_CHANNEL_GROUP_CALL = "gcall"; // virtual notification channel used by wrapper
+	String NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER = "vmp";
 
 	// TODO(ANDR-2065): temporary - remove after beta
 	String NOTIFICATION_CHANNEL_GROUP_CALL_OLD = "gca";

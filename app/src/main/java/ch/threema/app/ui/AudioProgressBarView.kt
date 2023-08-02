@@ -22,10 +22,21 @@
 package ch.threema.app.ui
 
 import android.content.Context
-import android.graphics.*
+import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.Rect
+import android.graphics.RectF
+import android.os.Build
 import android.util.AttributeSet
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.applyCanvas
 import androidx.transition.ChangeClipBounds
 import androidx.transition.Transition
@@ -33,6 +44,7 @@ import androidx.transition.TransitionManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.cache.ThumbnailCache
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
@@ -47,10 +59,12 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
     private var spaceWidth: Int = 3
     private var barMinHeight = 4
     private var halfBarMinHeight = 2F
+    private var state = 0
 
-    var barColor = Color.TRANSPARENT
+    private lateinit var barColor: ColorStateList
     var barColorActivated = Color.TRANSPARENT
     private lateinit var barPaint: Paint
+    private lateinit var barPaintChecked: Paint
     private lateinit var barPaintActivated: Paint
     private var viewWidth: Int = 0
     private var viewHeight: Int = 0
@@ -79,6 +93,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
     }
 
     fun init(attrs: AttributeSet?) {
+        barColor = ContextCompat.getColorStateList(context, R.color.bubble_text_colorstatelist)!!
         val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.AudioProgressBarView, 0, 0)
 
         with(typedArray) {
@@ -87,14 +102,28 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
             spaceWidth = getDimensionPixelSize(R.styleable.AudioProgressBarView_spaceWidth, spaceWidth)
             barMinHeight = getDimensionPixelSize(R.styleable.AudioProgressBarView_barMinHeight, barMinHeight)
             halfBarMinHeight = barMinHeight / 2F
-            barColor = getColor(R.styleable.AudioProgressBarView_barColor, barColor)
+            barColor = getColorStateList(R.styleable.AudioProgressBarView_barColor)!!
             barColorActivated = getColor(R.styleable.AudioProgressBarView_barColorActivated, barColorActivated)
             recycle()
         }
 
         barPaint = Paint().apply {
             isAntiAlias = true
-            color = barColor
+            color = if (Build.VERSION.SDK_INT >= 23) {
+                barColor.defaultColor
+            } else {
+                ConfigUtils.getColorFromAttribute(context, R.attr.colorOnBackground)
+            }
+        }
+
+        barPaintChecked = Paint().apply {
+            isAntiAlias = true
+            val checkedColor: Int = if (Build.VERSION.SDK_INT >= 23) {
+                barColor.getColorForState(intArrayOf(android.R.attr.state_activated), barColor.defaultColor)
+            } else {
+                ConfigUtils.getColorFromAttribute(context, R.attr.colorOnPrimary)
+            }
+            colorFilter = PorterDuffColorFilter(checkedColor, PorterDuff.Mode.SRC_IN)
         }
 
         barPaintActivated = Paint().apply {
@@ -105,6 +134,8 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
         changeBounds.duration = 800
         changeBounds.interpolator = DecelerateInterpolator()
         changeBounds.addTarget(this)
+
+        visibility = View.INVISIBLE
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -136,18 +167,28 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
         }
 
         if (drawBitmap != null) {
-            canvas.apply {
-                save()
-                clipRect((viewWidth * progress / max), 0, viewWidth, viewHeight)
-                drawBitmap(drawBitmap, 0F, 0F, barPaint)
-                restore()
-            }
+            if (state == 1) {
+                canvas.apply {
+                    save()
+                    clipRect(0, 0, viewWidth, viewHeight)
+                    drawBitmap(drawBitmap, 0F, 0F, barPaintChecked)
+                    restore()
+                }
 
-            canvas.apply {
-                save()
-                clipRect(0, 0, (viewWidth * progress / max), viewHeight)
-                drawBitmap(drawBitmap, 0F, 0F, barPaintActivated)
-                restore()
+            } else {
+                canvas.apply {
+                    save()
+                    clipRect((viewWidth * progress / max), 0, viewWidth, viewHeight)
+                    drawBitmap(drawBitmap, 0F, 0F, barPaint)
+                    restore()
+                }
+
+                canvas.apply {
+                    save()
+                    clipRect(0, 0, (viewWidth * progress / max), viewHeight)
+                    drawBitmap(drawBitmap, 0F, 0F, barPaintActivated)
+                    restore()
+                }
             }
         }
         super.onDraw(canvas)
@@ -238,6 +279,16 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
         super.onDetachedFromWindow()
     }
 
+
+    override fun onCreateDrawableState(extraSpace: Int): IntArray {
+        val drawableState = super.onCreateDrawableState(extraSpace)
+
+        if (::barPaint.isInitialized) {
+            state = if (drawableState.contains(android.R.attr.state_activated)) 1 else 0
+        }
+        return drawableState
+    }
+
     fun setMessageModel(newMessageModel: AbstractMessageModel?, thumbnailCache: ThumbnailCache<Any>?) {
         if (newMessageModel == null) {
             return
@@ -266,6 +317,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
             waveBitmap = cachedBitmap
 
             postInvalidate()
+            visibility = VISIBLE
         } else {
             waveFormTask?.let {
                 if (it.getMessageId() == newMessageModel.id) {

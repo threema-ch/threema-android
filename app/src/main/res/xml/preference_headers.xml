@@ -48,12 +48,15 @@
 		app:key="pref_key_about"
 		app:title="@string/menu_about" />
 	<Preference
-		app:icon="@drawable/ic_work_outline"
-		app:key="pref_key_work"
-		app:title="@string/threema_work" />
-	<Preference
 		app:fragment="ch.threema.app.preference.SettingsDeveloperFragment"
-		app:icon="@drawable/ic_directions_bike_grey600_24dp"
+		app:icon="@drawable/ic_directions_bike"
 		app:key="pref_key_developers"
 		app:title="@string/prefs_developers" />
+	<Preference
+		app:icon="@drawable/icon_work_square"
+		app:key="pref_key_work"
+		app:layout="@layout/preference_notice_material3"
+		app:title="@string/threema_work"
+		app:summary="@string/prefs_threema_work_summary"/>
+
 </PreferenceScreen>

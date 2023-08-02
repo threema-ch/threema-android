@@ -25,12 +25,13 @@ import java.io.Serializable;
 
 public class BackupRestoreDataConfig implements Serializable {
 	private final String password;
-	private Boolean backupIdentity = true;
-	private Boolean backupContactAndMessages = true;
-	private Boolean backupMedia = true;
-	private Boolean backupAvatars = true;
-	private Boolean backupThumbnails = false;
-	private Boolean backupVideoAndFiles = false;
+	private boolean backupIdentity = true;
+	private boolean backupContactAndMessages = true;
+	private boolean backupMedia = true;
+	private boolean backupAvatars = true;
+	private boolean backupThumbnails = false;
+	private boolean backupVideoAndFiles = false;
+	private boolean backupNonces = true;
 
 	public BackupRestoreDataConfig(String password) {
 		this.password = password;
@@ -40,69 +41,78 @@ public class BackupRestoreDataConfig implements Serializable {
 		return this.password;
 	}
 
-	public Boolean backupIdentity() {
+	public boolean backupIdentity() {
 		return backupIdentity;
 	}
 
-	public BackupRestoreDataConfig setBackupIdentity(Boolean backupIdentity) {
+	public BackupRestoreDataConfig setBackupIdentity(boolean backupIdentity) {
 		this.backupIdentity = backupIdentity;
 		return this;
 	}
 
-	public Boolean backupContactAndMessages() {
+	public boolean backupContactAndMessages() {
 		return this.backupContactAndMessages;
 	}
 
-	public Boolean backupGroupsAndMessages() {
+	public boolean backupGroupsAndMessages() {
 		 return this.backupContactAndMessages();
 	}
 
-	public Boolean backupDistributionLists() {
+	public boolean backupDistributionLists() {
 		return this.backupContactAndMessages();
 	}
 
-	public Boolean backupBallots() {
+	public boolean backupBallots() {
 		return  this.backupContactAndMessages();
 	}
 
-	public BackupRestoreDataConfig setBackupContactAndMessages(Boolean backupContactAndMessages) {
+	public BackupRestoreDataConfig setBackupContactAndMessages(boolean backupContactAndMessages) {
 		this.backupContactAndMessages = backupContactAndMessages;
 		return this;
 	}
 
-	public Boolean backupMedia() {
+	public boolean backupMedia() {
 		return this.backupMedia;
 	}
 
-	public Boolean backupVideoAndFiles() {
+	public boolean backupVideoAndFiles() {
 		return this.backupVideoAndFiles;
 	}
 
-	public Boolean backupThumbnails() {
+	public boolean backupThumbnails() {
 		return this.backupThumbnails;
 	}
 
-	public Boolean backupAvatars() {
+	public boolean backupAvatars() {
 		return this.backupAvatars;
 	}
 
-	public BackupRestoreDataConfig setBackupMedia(Boolean backupMedia) {
+	public boolean backupNonces() {
+		return this.backupNonces;
+	}
+
+	public BackupRestoreDataConfig setBackupMedia(boolean backupMedia) {
 		this.backupMedia = backupMedia;
 		return this;
 	}
 
-	public BackupRestoreDataConfig setBackupVideoAndFiles(Boolean backupVideoAndFiles) {
+	public BackupRestoreDataConfig setBackupVideoAndFiles(boolean backupVideoAndFiles) {
 		this.backupVideoAndFiles = backupVideoAndFiles;
 		return this;
 	}
 
-	public BackupRestoreDataConfig setBackupThumbnails(Boolean backupThumbnails) {
+	public BackupRestoreDataConfig setBackupThumbnails(boolean backupThumbnails) {
 		this.backupThumbnails = backupThumbnails;
 		return this;
 	}
 
-	public BackupRestoreDataConfig setBackupAvatars(Boolean backupAvatars) {
+	public BackupRestoreDataConfig setBackupAvatars(boolean backupAvatars) {
 		this.backupAvatars = backupAvatars;
+		return this;
+	}
+
+	public BackupRestoreDataConfig setBackupNonces(boolean backupNonces) {
+		this.backupNonces = backupNonces;
 		return this;
 	}
 }

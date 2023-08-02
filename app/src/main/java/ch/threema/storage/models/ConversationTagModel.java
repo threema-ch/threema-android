@@ -23,13 +23,6 @@ package ch.threema.storage.models;
 
 import java.util.Date;
 
-import ch.threema.app.messagereceiver.ContactMessageReceiver;
-import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
-import ch.threema.app.messagereceiver.GroupMessageReceiver;
-import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.utils.ConversationUtil;
-
-
 public class ConversationTagModel {
 	public static final String TABLE = "conversation_tag";
 	public static final String COLUMN_CONVERSATION_UID = "conversationUid";

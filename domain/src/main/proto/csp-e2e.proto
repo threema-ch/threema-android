@@ -13,15 +13,17 @@ option java_multiple_files = true;
 
 import "common.proto";
 
-// Metadata sent within a CSP payload `message-with-meta` struct.
+// Metadata sent within a CSP payload `message-with-metadata-box` struct.
 message MessageMetadata {
   // Padding that is ignored by the receiver.
   // Recommended to be chosen such that the total length of padding + nickname
   // is at least 16 bytes. May be empty if the nickname is long enough.
   bytes padding = 1;
 
-  // The nickname associated to the sender's Threema ID. Recommended to not
-  // exceed 32 graphemes.
+  // Optional nickname associated to the sender's Threema ID.
+  //
+  // Recommended to not exceed 32 grapheme clusters. Should not contain
+  // whitespace characters at the beginning or the end of string.
   string nickname = 2;
 
   // Unique message ID. Must match the message ID of the outer struct
@@ -37,47 +39,30 @@ message MessageMetadata {
 
 // Announces and immediately starts a group call.
 //
-// **Flags:**
+// **Properties**:
+// - Flags:
 //   - `0x01`: Send push notification.
-//
-// **Delivery receipts:** Automatic: No. Manual: No.
-//
-// **User profile distribution:** Yes.
-//
-// **Reflect:** Incoming: Yes. Outgoing: Yes.
+// - User profile distribution: Yes
+// - Exempt from blocking: Yes
+// - Implicit _direct_ contact creation: No
+// - Protect against replay: Yes
+// - Reflect:
+//   - Incoming: Yes
+//   - Outgoing: Yes
+// - Delivery receipts:
+//   - Automatic: N/A
+//   - Manual: No
 //
 // When creating this message to start a call within the group:
 //
-// 1. Run the _Group Call Refresh Steps_ and let `chosen-call` be the result.
-// 2. If `chosen-call` is defined, abort these steps. (`chosen-call` will be
-//    joined instead.)
-// 3. Create the message but don't send it yet:
-//    1. Generate a random GCK and set `gck` appropriately.
-//    2. Set `sfu_base_url` to the _SFU Base URL_ obtained from the Directory
-//       Server API.
-// 4. Join the call matching the Call ID of the created message and wait until
-//    the SFU sent the initial `Hello` message via the associated data channel.
-//    Let `hello` be that message. An implementation may add an artificial wait
-//    period to enforce a minimum 2s execution time of this step to prevent a
-//    butter-fingered user from accidentally starting a group call. This is an
-//    asynchronous process.
-//
-//    If this step has been cancelled by the _Group Call Refresh Steps_
-//    determining another `chosen-call` in the meantime, cancel the call we have
-//    started to create and abort these steps. (`chosen-call` will be joined
-//    instead.)
-// 5. If `hello.participants` is not an empty list, exceptionally abort the call
-//    and these steps.
-// 6. Send the message to the group.
-// 7. Add the created call to the list of group calls that are currently
-//    considered running.
-// 8. Trigger the _Group Call Refresh Steps_ again (to start displaying the call
-//    in the UI and starting the refresh timer).
+// 1. Generate a random GCK and set `gck` appropriately.
+// 2. Set `sfu_base_url` to the _SFU Base URL_ obtained from the Directory
+//    Server API.
 //
 // When receiving this message:
 //
-// 1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the received
-//    message has been discarded, abort these steps.
+// 1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the message
+//    has been discarded, abort these steps.
 // 2. If the hostname of `sfu_base_url` does not use the scheme `https` or does
 //    not end with one of the set of _Allowed SFU Hostname Suffixes_, log a
 //    warning, discard the message and abort these steps.
@@ -86,12 +71,14 @@ message MessageMetadata {
 // 4. If another call with the same GCK exists in `running`, log a warning,
 //    discard the message and abort these steps.
 // 5. Add the received call to the list of group calls that are currently
-//    considered running (even if `protocol_version` is unsupported; this is to
-//    allow the user to join an ongoing call after an app update where support
-//    for `protocol_version` has been added).
-// 6. Run the _Group Call Refresh Steps_ and let `chosen-call` be the result.
-//    (`chosen-call` will be joined if the user is currently participating in a
-//    group call of this group.)
+//    considered running (even if `protocol_version` is unsupported¹).
+// 6. Start a task to run the _Group Call Refresh Steps_.²
+//
+// ¹: Adding unsupported `protocol_version`s allows the user to join an ongoing
+//    call after an app update where support for `protocol_version` has been
+//    added.
+// ²: This ensures that the user automatically switches to the chosen call if it
+//    is currently participating in a group call of this group.
 message GroupCallStart {
   // Protocol version used for group calls of this group. The current version
   // number is `1`.
@@ -114,14 +101,19 @@ message GroupCallStart {
 // This message is sent to the administrator of a group. The required
 // information is provided by a `GroupInvite` URL payload.
 //
-// **Flags:**
+// **Properties**:
+// - Flags:
 //   - `0x01`: Send push notification.
-//
-// **Delivery receipts:** Automatic: No. Manual: No.
-//
-// **User profile distribution:** Yes.
-//
-// **Reflect:** Incoming: Yes. Outgoing: Yes.
+// - User profile distribution: Yes
+// - Exempt from blocking: Yes
+// - Implicit _direct_ contact creation: Yes
+// - Protect against replay: Yes
+// - Reflect:
+//   - Incoming: Yes
+//   - Outgoing: Yes
+// - Delivery receipts:
+//   - Automatic: No
+//   - Manual: No
 //
 // When receiving this message:
 //
@@ -129,24 +121,24 @@ message GroupCallStart {
 // 2. If the group invitation could not be found, discard the message and abort
 //    these steps.
 // 3. If the sender is already part of the group, send an accept response and
-//    then respond as if the sender had sent a `group-sync-request` (i.e. send
-//    a `group-setup`, `group-name`, etc.). Finally, abort these steps.
+//    then respond as if the sender had sent a `group-sync-request` (i.e. send a
+//    `group-setup`, `group-name`, etc.). Finally, abort these steps.
 // 4. If the group name does not match the name in the originally sent group
 //    invitation, discard the message and abort these steps.
 // 5. If the group invitation has expired, send the respective response and
 //    abort these steps.
 // 6. If the group invitation requires the admin to accept the request, show
 //    this information in the user interface and pause these steps until the
-//    admin manually confirmed of rejected the request. Note that the date of
-//    the decision is allowed to extend beyond the expiration date of the
-//    group invitation. Continue with the following sub-steps once the admin
-//    made a decision on the request:
-//     1. If the admin manually rejected the request, send the respective
+//    user manually confirmed of rejected the request. Note that the date of the
+//    decision is allowed to extend beyond the expiration date of the group
+//    invitation. Continue with the following sub-steps once the user made a
+//    decision on the request:
+//     1. If the user manually rejected the request, send the respective
 //        response and abort these steps.
 // 7. If the group is full, send the respective response and abort these steps.
 // 8. Send an accept response.
-// 9. Add the sender of the group invitation request to the group and follow
-//    the group protocol from there.
+// 9. Add the sender of the group invitation request to the group and follow the
+//    group protocol from there.
 message GroupJoinRequest {
   // The group invite token, 16 bytes
   bytes token = 1;
@@ -168,13 +160,18 @@ message GroupJoinRequest {
 // Response sent by the admin of a group towards a sender of a valid group join
 // request.
 //
-// **Flags:** None.
-//
-// **Delivery receipts:** Automatic: No. Manual: No.
-//
-// **User profile distribution:** Yes.
-//
-// **Reflect:** Incoming: Yes. Outgoing: Yes.
+// **Properties**:
+// - Flags: None
+// - User profile distribution: Yes
+// - Exempt from blocking: Yes
+// - Implicit _direct_ contact creation: Yes
+// - Protect against replay: Yes
+// - Reflect:
+//   - Incoming: Yes
+//   - Outgoing: Yes
+// - Delivery receipts:
+//   - Automatic: No
+//   - Manual: No
 //
 // When receiving this message:
 //
@@ -195,8 +192,9 @@ message GroupJoinResponse {
     // Accept a group invite request
     message Accept {
       // Group ID (little-endian) as chosen by the group creator
-      // Note: Combined with the Threema ID of the administrator, this forms
-      //       the `GroupIdentity`.
+      //
+      // Note: Combined with the Threema ID of the administrator, this forms the
+      // `GroupIdentity`.
       fixed64 group_id = 1;
     }
 

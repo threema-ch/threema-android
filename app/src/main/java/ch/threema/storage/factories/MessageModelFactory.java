@@ -23,7 +23,7 @@ package ch.threema.storage.factories;
 
 import android.content.ContentValues;
 
-import net.sqlcipher.Cursor;
+import android.database.Cursor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,23 +66,16 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 				});
 	}
 
-
-	public MessageModel getByApiMessageIdAndIsOutbox(MessageId apiMessageId, boolean isOutbox) {
+	public MessageModel getByApiMessageIdAndIdentityAndIsOutbox(MessageId apiMessageId, @NonNull String recipientIdentity, boolean isOutbox) {
 		return getFirst(
-				MessageModel.COLUMN_API_MESSAGE_ID + "=?" +
-						" AND " + MessageModel.COLUMN_OUTBOX + "=?",
-				new String[]{
-						apiMessageId.toString(),
-						isOutbox ? "1" : "0"
-				});
-	}
-
-	public MessageModel getByApiMessageId(MessageId apiMessageId) {
-		return getFirst(
-				GroupMessageModel.COLUMN_API_MESSAGE_ID + "=?",
-				new String[]{
-						apiMessageId.toString(),
-				});
+			MessageModel.COLUMN_API_MESSAGE_ID + "=?"
+				+ " AND " + MessageModel.COLUMN_IDENTITY + "=?"
+				+ " AND " + MessageModel.COLUMN_OUTBOX + "=?",
+			new String[]{
+				apiMessageId.toString(),
+				recipientIdentity,
+				isOutbox ? "1" : "0"
+			});
 	}
 
 	public MessageModel getById(int id) {

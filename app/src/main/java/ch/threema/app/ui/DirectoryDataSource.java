@@ -25,13 +25,14 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.paging.PageKeyedDataSource;
+
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.paging.PageKeyedDataSource;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
@@ -196,6 +197,9 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 				if (workDirectory != null) {
 					logger.debug("Fetch results {}", workDirectory.workContacts);
 					callback.onResult(workDirectory.workContacts, workDirectory, workDirectory);
+				} else {
+					logger.debug("Empty fetch result");
+					callback.onResult(new ArrayList<>(), null, null);
 				}
 			}
 		}.execute();

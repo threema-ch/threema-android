@@ -34,11 +34,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
-import androidx.appcompat.widget.SwitchCompat;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -67,7 +68,7 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 	private Button positiveButton;
 	private EditText serverUrlEditText, usernameEditText, passwordEditText;
 	private LinearLayout serverContainer;
-	private SwitchCompat defaultServerSwitch;
+	private MaterialSwitch defaultServerSwitch;
 
 	public static ThreemaSafeAdvancedDialog newInstance(ThreemaSafeServerInfo serverInfo, boolean plainStyle) {
 		ThreemaSafeAdvancedDialog dialog = new ThreemaSafeAdvancedDialog();

@@ -75,9 +75,9 @@ public class GroupJoinRequestData implements ProtobufDataInterface<GroupJoinRequ
 				protobufMessage.getMessage()
 			);
 		} catch (InvalidProtocolBufferException e) {
-			throw new BadMessageException("Invalid Group Join Request Protobuf Data", true);
+			throw new BadMessageException("Invalid Group Join Request Protobuf Data");
 		} catch (GroupInviteToken.InvalidGroupInviteTokenException e) {
-			throw new BadMessageException("Invalid Group Invite Token Length", true);
+			throw new BadMessageException("Invalid Group Invite Token Length");
 		}
 	}
 

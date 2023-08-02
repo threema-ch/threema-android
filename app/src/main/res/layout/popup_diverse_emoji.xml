@@ -14,7 +14,8 @@
 		android:layout_marginLeft="@dimen/emoji_popup_cardview_margin_horizontal"
 		android:layout_marginRight="@dimen/emoji_popup_cardview_margin_horizontal"
 		card_view:cardCornerRadius="6dp"
-		card_view:cardElevation="4dp">
+		card_view:cardElevation="4dp"
+		card_view:strokeWidth="0dp">
 
 		<LinearLayout
 			android:layout_width="wrap_content"
@@ -34,7 +35,7 @@
 			<View
 				android:layout_width="1dp"
 				android:layout_height="match_parent"
-				android:background="?divider_color"
+				android:background="@color/file_picker_divider_color"
 				/>
 
 			<ImageView

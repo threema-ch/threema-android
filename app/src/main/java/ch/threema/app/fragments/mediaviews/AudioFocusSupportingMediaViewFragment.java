@@ -29,6 +29,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
@@ -41,7 +43,7 @@ public abstract class AudioFocusSupportingMediaViewFragment extends MediaViewFra
 	private AudioManager audioManager;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.audioManager = (AudioManager) getContext().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
 		return super.onCreateView(inflater, container, savedInstanceState);

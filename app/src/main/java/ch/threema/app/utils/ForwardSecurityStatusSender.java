@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
@@ -36,12 +37,16 @@ import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityStatusListener;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataReject;
+import ch.threema.protobuf.csp.e2e.fs.Version;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageType;
-import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
+import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.ForwardSecurityStatusType;
 
 public class ForwardSecurityStatusSender implements ForwardSecurityStatusListener {
 	private final static Logger logger = LoggingUtil.getThreemaLogger("ForwardSecurityStatusSender");
@@ -58,150 +63,236 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 	}
 
 	@Override
-	public void newSessionInitiated(DHSession session, Contact contact) {
-		if (debug) {
-			postStatusMessageDebug("New initiator DH session (ID " + session.getId() + ")", contact);
-		}
+	public void newSessionInitiated(@Nullable DHSession session, @NonNull Contact contact) {
+		postStatusMessageDebug(String.format("New initiator session %s", session), contact);
 	}
 
 	@Override
-	public void responderSessionEstablished(DHSession session, Contact contact, boolean existingSessionPreempted) {
-		if (debug) {
-			postStatusMessageDebug("Responder DH session established (ID " + session.getId() + ")", contact);
-		}
+	public void responderSessionEstablished(@NonNull DHSession session, @NonNull Contact contact, boolean existingSessionPreempted) {
+		postStatusMessageDebug(String.format("Responder session established %s", session), contact);
 
 		if (existingSessionPreempted) {
-			postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET);
+			postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_RESET);
+		}
+
+		// If a new session has been established with V1.1 or higher, we display the message,
+		// that forward security has been enabled (by both participants) immediately.
+		//
+		// Rationale for local/outgoing applied version: Should be identical to remote/incoming
+		// version after initial negotiation.
+		if (session.getOutgoingAppliedVersion().getNumber() >= Version.V1_1.getNumber()) {
+			postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED);
 		}
 	}
 
 	@Override
-	public void initiatorSessionEstablished(DHSession session, Contact contact) {
-		if (debug) {
-			postStatusMessageDebug("Initiator DH session established (ID " + session.getId() + ")", contact);
+	public void initiatorSessionEstablished(@NonNull DHSession session, @NonNull Contact contact) {
+		postStatusMessageDebug(String.format("Initiator session established %s", session), contact);
+
+		// Rationale for local/outgoing applied version: Should be identical to remote/incoming
+		// version after initial negotiation.
+		if (session.getOutgoingAppliedVersion().getNumber() >= Version.V1_1.getNumber()) {
+			// If a new session has been established with V1.1 or higher, we display the message,
+			// that forward security has been enabled (by both participants) in this chat.
+			postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED);
 		}
 	}
 
 	@Override
-	public void rejectReceived(DHSessionId sessionId, Contact contact, MessageId rejectedMessageId) {
-		if (debug) {
-			postStatusMessageDebug("Reject received for DH session (ID " + sessionId + "), message ID " + rejectedMessageId, contact);
-		}
+	public void rejectReceived(@NonNull ForwardSecurityDataReject rejectData, @NonNull Contact contact, @Nullable DHSession session, boolean hasForwardSecuritySupport) {
+		postStatusMessageDebug(String.format(
+			"Reject received for session %s (session-id=%s, rejected-message-id=%s, cause=%s)",
+			session,
+			rejectData.getSessionId(),
+			rejectData.getRejectedApiMessageId(),
+			rejectData.getCause()
+		), contact);
 
-		// Refresh feature mask now, in case contact downgraded to a build without PFS
-		updateFeatureMask(contact);
-
-		postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET);
-	}
-
-	@Override
-	public void sessionNotFound(DHSessionId sessionId, Contact contact) {
-		if (debug) {
-			postStatusMessageDebug("DH session not found (ID " + sessionId + ")", contact);
-		}
-	}
-
-	@Override
-	public void sessionBadDhState(DHSessionId sessionId, Contact contact) {
-		if (debug) {
-			postStatusMessageDebug("Bad DH session state (ID " + sessionId + ")", contact);
+		// Only show status message for sessions that are known. Otherwise, all sent (and rejected) messages produce
+		// this status message, which is very verbose.
+		if (session != null) {
+			if (hasForwardSecuritySupport) {
+				postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_RESET);
+			} else {
+				postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE);
+			}
 		}
 	}
 
 	@Override
-	public void sessionTerminated(DHSessionId sessionId, Contact contact) {
-		if (debug) {
-			postStatusMessageDebug("DH session terminated (ID " + sessionId + ")", contact);
-		}
-
-		// Refresh feature mask now, in case contact downgraded to a build without PFS
-		updateFeatureMask(contact);
-
-		postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET);
+	public void sessionNotFound(@Nullable DHSessionId sessionId, @NonNull Contact contact) {
+		postStatusMessageDebug(String.format("Session not found (session-id=%s)", sessionId), contact);
 	}
 
 	@Override
-	public void messagesSkipped(DHSessionId sessionId, Contact contact, int numSkipped) {
-		if (debug) {
-			postStatusMessageDebug(numSkipped + " messages skipped (ID " + sessionId + ")", contact);
-		}
-
-		postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED, numSkipped);
+	public void sessionForMessageNotFound(@Nullable DHSessionId sessionId, @Nullable MessageId messageId, @NonNull Contact contact) {
+		postStatusMessageDebug(String.format("Session not found (session-id=%s, message-id=%s)", sessionId, messageId), contact);
 	}
 
 	@Override
-	public void messageOutOfOrder(DHSessionId sessionId, Contact contact, MessageId messageId) {
-		if (debug) {
-			postStatusMessageDebug("Message out of order (ID " + sessionId + ")", contact);
-		}
+	public void sessionTerminated(@Nullable DHSessionId sessionId, @NonNull Contact contact, boolean sessionUnknown, boolean hasForwardSecuritySupport) {
+		postStatusMessageDebug(String.format("Session terminated (session-id=%s)", sessionId), contact);
 
-		if (contact != null && messageId != null && hasLastMessageId(contact, messageId)) {
+		// Only show status message for sessions that are known. It doesn't make sense to report a terminated session
+		// we don't even know about.
+		if (!sessionUnknown) {
+			if (hasForwardSecuritySupport) {
+				postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_RESET);
+			} else {
+				postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE);
+			}
+		}
+	}
+
+	@Override
+	public void messagesSkipped(@Nullable DHSessionId sessionId, @NonNull Contact contact, int numSkipped) {
+		postStatusMessageDebug(String.format("Skipped %s messages (session-id=%s)", numSkipped, sessionId), contact);
+	}
+
+	@Override
+	public void messageOutOfOrder(@Nullable DHSessionId sessionId, @NonNull Contact contact, @Nullable MessageId messageId) {
+		postStatusMessageDebug(String.format("Message out of order (session-id=%s, message-id=%s)", sessionId, messageId), contact);
+
+		if (messageId != null && hasLastMessageId(contact, messageId)) {
 			// If the latest message of a contact is processed again, it cannot be decrypted again due to FS. It is very
 			// likely that the message has been processed but could not be acknowledged on the server. Therefore we do
 			// not show a warning if the message is already displayed in the chat.
 			logger.warn("The latest message with id '{}' was processed twice. Ignoring the second message.", messageId);
 			if (debug) {
-				postStatusMessageDebug(String.format("The latest message with id '%s' was processed twice.", messageId), contact);
+				postStatusMessageDebug(String.format("The latest message with was processed twice (message-id=%s)", messageId), contact);
 			}
 		} else {
-			postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER);
+			postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER);
 		}
 	}
 
 	@Override
-	public void messageDecryptionFailed(DHSessionId sessionId, Contact contact, MessageId failedMessageId) {
-		if (debug) {
-			postStatusMessageDebug("Message decryption failed (ID " + sessionId + "), message ID " + failedMessageId, contact);
+	public void first4DhMessageReceived(@NonNull DHSession session, @NonNull Contact contact) {
+		postStatusMessageDebug(String.format("First 4DH message received in session %s", session), contact);
+
+		// If we received a message with forward security in a session of version 1.0, then we
+		// inform that forward security has been enabled (by both participants). Note that this is
+		// only necessary for version 1.0, as forward security is enabled by default starting in
+		// version 1.1 and therefore the status is shown as soon as the session has been established
+		// TODO(ANDR-2452): Remove this status message when most of clients support 1.1 anyway
+		//
+		// Rationale for local/outgoing applied version: We expect both sides to speak the version
+		// eventually if it was offered by remote (but not yet applied).
+		if (session.getOutgoingAppliedVersion() == Version.V1_0) {
+			postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED);
+
+			// Set the forward security state to on (only required in version 1.0)
+			ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
+			if (contactModel != null) {
+				contactService.save(contactModel.setForwardSecurityState(ContactModel.FS_ON));
+			}
 		}
 	}
 
 	@Override
-	public void first4DhMessageReceived(DHSessionId sessionId, Contact contact) {
-		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
-		if (contactModel != null) {
-			contactService.setForwardSecurityState(contactModel, ContactModel.FS_ON);
+	public void versionsUpdated(@NonNull DHSession session, @NonNull DHSession.UpdatedVersionsSnapshot versionsSnapshot, @NonNull Contact contact) {
+		postStatusMessageDebug(String.format("Updated versions %s %s", versionsSnapshot, session), contact);
 
-			if (debug) {
-				postStatusMessageDebug("First 4DH message received in session (ID " + sessionId + ")", contact);
+		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
+
+		// If we update a session from version 1.0 to 1.1 (or newer), then we show a status message,
+		// that forward security has been enabled (by both participants). Note that this message is
+		// only shown, when no 4DH message has been received in the session with version 1.0 because
+		// the status message has already been shown at this point.
+		// TODO(ANDR-2452): Remove this status message when most of clients support 1.1 anyway
+		if (versionsSnapshot.before.local == Version.V1_0
+			&& versionsSnapshot.after.local.getNumber() >= Version.V1_1.getNumber()
+			&& contactModel != null
+			&& contactModel.getForwardSecurityState() == ContactModel.FS_OFF
+		) {
+			postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED);
+		}
+	}
+
+	@Override
+	public void messageWithoutFSReceived(@NonNull Contact contact, @NonNull DHSession session, @NonNull AbstractMessage message) {
+		logger.warn("Received message {} from {} without forward security of type {} despite having a session with remote/incoming minimum applied version {}",
+			message.getMessageId(),
+			contact.getIdentity(),
+			message.getClass().getSimpleName(),
+			session.getMinimumIncomingAppliedVersion()
+		);
+
+		// Rationale for local/outgoing applied version: We expect both sides to speak the version
+		// eventually if it was offered by remote (but not yet applied) and we also use it in
+		// `first4DhMessageReceived`.
+		if (session.getOutgoingAppliedVersion() == Version.V1_0) {
+			// For sessions of version 1.0 show warning only once
+			ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
+			if (contactModel != null && contactModel.getForwardSecurityState() == ContactModel.FS_ON) {
+				contactService.save(contactModel.setForwardSecurityState(ContactModel.FS_OFF));
+				postStatusMessage(contact, ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY);
 			}
+		} else if (session.getOutgoingAppliedVersion().getNumber() >= Version.V1_1.getNumber()) {
+			// TODO(ANDR-2452): Do not distinguish between 1.0 and newer versions when enough
+			// clients have updated. Show this status message for every message without FS.
 
-			// Check if FS for sent messages is also enabled on this contact
-			if (contactModel.isForwardSecurityEnabled()) {
-				postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED);
-			} else {
-				postStatusMessage(contact, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX);
-			}
+			// For sessions with version 1.1 or newer, inform for every message without fs
+			postStatusMessage(contact, ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY);
 		}
 	}
 
-	private void postStatusMessageDebug(String message, Contact contact) {
+	@Override
+	public boolean hasForwardSecuritySupport(@NonNull Contact contact) {
 		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
-		if (contactModel != null) {
-			ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
-			messageService.createForwardSecurityStatus(receiver, ForwardSecurityStatusDataModel.ForwardSecurityStatusType.STATIC_TEXT, 0, "PFS: " + message);
+		if (contactModel == null) {
+			return false;
 		}
+		return ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask());
 	}
 
-	private void postStatusMessage(Contact contact, @ForwardSecurityStatusDataModel.ForwardSecurityStatusType int type) {
-		postStatusMessage(contact, type, 0);
-	}
-
-	private void postStatusMessage(Contact contact, @ForwardSecurityStatusDataModel.ForwardSecurityStatusType int type, int quantity) {
+	@Override
+	public void updateFeatureMask(@NonNull Contact contact) {
 		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
-		if (contactModel != null) {
-			ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
-			messageService.createForwardSecurityStatus(receiver, type, quantity, null);
+		if (contactModel == null) {
+			return;
 		}
-	}
 
-	private void updateFeatureMask(Contact contact) {
-		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
+		// Force a feature mask re-fetch
 		UpdateFeatureLevelRoutine.removeTimeCache(contactModel);
 		new UpdateFeatureLevelRoutine(
 			contactService,
 			apiConnector,
 			Collections.singletonList(contactModel)
 		).run();
+	}
+
+	@Override
+	public void postIllegalSessionState(@NonNull DHSessionId sessionId, @NonNull Contact contact) {
+		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
+		if (contactModel == null) {
+			return;
+		}
+
+		postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE);
+	}
+
+	private void postStatusMessageDebug(@NonNull String message, @NonNull Contact contact) {
+		if (debug) {
+			ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
+			if (contactModel != null) {
+				ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
+				messageService.createForwardSecurityStatus(receiver, ForwardSecurityStatusType.STATIC_TEXT, 0, "PFS: " + message);
+			}
+		}
+		logger.info("PFS: {}", message);
+	}
+
+	private void postStatusMessage(@NonNull Contact contact, @ForwardSecurityStatusType int type) {
+		postStatusMessage(contact, type, 0);
+	}
+
+	private void postStatusMessage(@NonNull Contact contact, @ForwardSecurityStatusType int type, int quantity) {
+		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
+		if (contactModel != null) {
+			ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
+			messageService.createForwardSecurityStatus(receiver, type, quantity, null);
+		}
 	}
 
 	private boolean hasLastMessageId(@NonNull Contact contact, @NonNull MessageId messageId) {

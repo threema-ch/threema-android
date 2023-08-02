@@ -21,6 +21,9 @@
 
 package ch.threema.app.services;
 
+import static android.app.Activity.RESULT_OK;
+import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -38,6 +41,14 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.fragment.app.Fragment;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -52,13 +63,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.crypto.CipherInputStream;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.activities.CropImageActivity;
 import ch.threema.app.dialogs.BottomSheetAbstractDialog;
@@ -78,9 +82,6 @@ import ch.threema.localcrypto.MasterKey;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.function.Supplier;
 import kotlin.jvm.functions.Function0;
-
-import static android.app.Activity.RESULT_OK;
-import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 
 public class WallpaperServiceImpl implements WallpaperService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WallpaperServiceImpl");
@@ -161,7 +162,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 	}
 
 	@AnyThread
-	private CompletableFuture<Bitmap> getWallpaperBitmap(MessageReceiver messageReceiver, boolean landscape) {
+	private CompletableFuture<Bitmap> getWallpaperBitmap(MessageReceiver messageReceiver, boolean landscape, final boolean isTheDarkside) {
 		return CompletableFuture.supplyAsync(new Supplier<Bitmap>() {
 			@Override
 			public Bitmap get() {
@@ -189,7 +190,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 				if (bitmap == null && preferenceService.isCustomWallpaperEnabled()) {
 					path = fileService.getGlobalWallpaperFilePath();
 					if (!TestUtil.empty(path)) {
-						try (FileInputStream fis = new FileInputStream(new File(path)); CipherInputStream cis = masterKey.getCipherInputStream(fis)) {
+						try (FileInputStream fis = new FileInputStream(path); CipherInputStream cis = masterKey.getCipherInputStream(fis)) {
 							bitmap = BitmapFactory.decodeStream(cis, null, options);
 						} catch (Exception e) {
 							//
@@ -206,8 +207,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 					noptions.inPreferredConfig = Bitmap.Config.ALPHA_8;
 					noptions.inSampleSize = 1;
 
-					int resource = ConfigUtils.getAppTheme(context) == ConfigUtils.THEME_DARK ?
-						R.drawable.wallpaper_dark : R.drawable.wallpaper_light;
+					int resource = isTheDarkside ? R.drawable.wallpaper_dark : R.drawable.wallpaper_light;
 					try {
 						bitmap = BitmapFactory.decodeResource(context.getResources(), resource, noptions);
 					} catch (Exception e) {
@@ -241,12 +241,12 @@ public class WallpaperServiceImpl implements WallpaperService {
 
 	@Override
 	@UiThread
-	public boolean setupWallpaperBitmap(MessageReceiver messageReceiver, ImageView wallpaperView, boolean landscape) {
+	public boolean setupWallpaperBitmap(MessageReceiver messageReceiver, ImageView wallpaperView, boolean landscape, boolean isTheDarkside) {
 		if (TestUtil.required(messageReceiver, wallpaperView)) {
 			Bitmap bitmap = null;
 			try {
 				if (!hasEmptyWallpaper(messageReceiver).get()) {
-					bitmap = getWallpaperBitmap(messageReceiver, landscape).get();
+					bitmap = getWallpaperBitmap(messageReceiver, landscape, isTheDarkside).get();
 				}
 				return setImageView(wallpaperView, bitmap);
 			} catch (InterruptedException e) {

@@ -280,7 +280,6 @@
     <string name="title_select_contacts">Выбар удзельнікаў</string>
     <string name="pin_invalid_not_set">Няправільны PIN-код.</string>
     <string name="prefs_group_notifications">Супольны чат</string>
-    <string name="add_group_members_list">Удзельнікі суполкі</string>
     <string name="group_select_at_least_two">Каб працягнуць, трэба абраць як мінімум аднаго ўдзельніка</string>
     <string name="group_select_max">Вы не можаце абраць больш за %1$d удзельнікаў суполкі</string>
     <string name="search">Пошук</string>
@@ -534,7 +533,7 @@
     <string name="send_as_files">Адправіць як файл</string>
     <string name="send_as_files_warning">Перадача несціснутых файлаў і відарысаў можа ствараць значны аб\'ём трафіку і прывесці да дадатковых выдаткаў на сувязь. Мы рэкамендуем загружаць і спампоўваць файлы толькі ў сетках WiFi.</string>
     <string name="prefs_theme">Тэма</string>
-    <string name="list_theme_light">Светлая (па змаўчанні)</string>
+    <string name="list_theme_light">Светлая</string>
     <string name="list_theme_dark">Цёмная</string>
     <string name="prefs_header_appearance">Выгляд</string>
     <string name="prefs_sum_passphrase">Патрабаваць кодавую фразу для разблакавання лакальнага шыфравання</string>
@@ -662,7 +661,7 @@
     <string name="configure">Наладзіць</string>
     <string name="file_is_not_audio">Няма гукавога файла</string>
     <!-- restrictions -->
-    <string name="disabled_by_policy">Некаторыя налады былі адключаныя палітыкай прылады</string>
+    <string name="disabled_by_policy">Некаторыя налады былі адключаны адміністратарам</string>
     <string name="select_all">Выбраць усе</string>
     <string name="deleting_messages">Выдаленне паведамленняў</string>
     <string name="media_gallery_files">Файлы</string>
@@ -673,7 +672,7 @@
     <string name="prefs_proximity_sensor">Ужываць датчык набліжэння</string>
     <string name="prefs_proximity_sensor_explain">Ужываць гутарковы дынамік для прайгравання галасавых паведамленняў, калі датчык набліжэння зачынены</string>
     <string name="error_creating_group">Памылка стварэння суполкі</string>
-    <string name="no_media_found_generic">Медыяфайлаў у гэтым чаце не знойдзена</string>
+    <string name="no_media_found_generic">У гэтым чаце не знойдзена мультымедыя, якое адпавядае выбару.</string>
     <string name="max_images_reached">Макс.  %d элементаў можна рэдагаваць адначасова</string>
     <string name="enter_description">Калі ласка, апішыце памылку/праблему тут.</string>
     <string name="add_caption_hint">Дадаць подпіс</string>
@@ -893,7 +892,7 @@
     <string name="safe_configure_choose_password_force">Задайце надзейны пароль, каб абараніць свой ID Threema з дапамогай Threema Safe. Абавязкова запомніце пароль!</string>
     <string name="safe_deactivate">Адключыць Threema Safe</string>
     <string name="safe_deactivate_explain">Калі адключыць Threema Safe, усе існуючыя рэзервовыя копіі будуць выдалены з сэрвера. Працягнуць?</string>
-    <string name="add_group_members">Новы удзельнік</string>
+    <string name="add_group_members">Дадаць больш удзельнікаў</string>
     <string name="contact_add_confirm">Вы хочаце дадаць новы кантакт «%1$s» у ваш сьпіс кантактаў?</string>
     <string name="password_bad">Ненадзейны пароль</string>
     <string name="prefs_fix_background_data">Уключыць фонавую перадачу даных</string>
@@ -1011,11 +1010,14 @@
     <string name="open_in_maps_app">Адк-ць у праграме \"Мапы\"</string>
     <string name="delete">Выдаліць</string>
     <string name="continue_recording">Працягнуць запіс</string>
-    <string name="whatsnew_title">Навінка: супольныя званкі %1$s</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Супольныя званкі са скразным шыфраваннем цяпер даступныя ў %1$s для Android.</p>
- <p>Каб пачаць званок, адкрыйце супольны чат і краніце значок камеры ўверсе.</p>
- <p>Усе ўдзельнікі суполкі атрымаюць апавяшчэнне і змогуць самі вырашыць, ці жадаюць яны далучыцца да званка.</p>
- <p><b>Звярніце ўвагу:</b> для iOS-дадатку функцыя супольнага званка будзе рэалізавана пазней.</p>]]></string>
+    <string name="whatsnew_title">Вітаем у %1$s 5.1</string>
+    <string name="whatsnew_headline"><![CDATA[<p>This release focuses on security, usability and modernization of the app.</p>
+
+<p>By popular demand, the app has been redesigned completely to fully support the “Material You” paradigm introduced with Android 12. An optional “Dynamic Colors” setting allows the app to adapt to your personalized color scheme.</p>
+
+<p>Perfect Forward Secrecy цяпер уключана па змаўчанні для ўсіх кантактаў, у якіх усталявана апошняя версія %1$s.</p>
+
+<p>Іншыя паляпшэнні ўключаюць новы прайгравальнік галасавых паведамленняў, які працягвае прайгравацца ў апавяшчэнні, калі праграма пераходзіць у фонавы рэжым, і новыя інструкцыі карыстальніка пры запыце дазволаў.</p>]]></string>
     <string name="tap_to_start">Націсьніце тут, каб запусціць %s.</string>
     <string name="two_years">2 года</string>
     <string name="invalid_backup_path">Нядзейнічае.шлях да рэз.копіі</string>
@@ -1158,7 +1160,7 @@
     <string name="no_faces_detected">Твары не распазнаныя</string>
     <string name="smiley">Смайл</string>
     <string name="blur">Размыццё</string>
-    <string name="face_blur_tooltip_title">Навінка: распазнанне твараў</string>
+    <string name="face_blur_tooltip_title">Распазнаванне твараў</string>
     <string name="face_blur_tooltip_text">Выяўляйце твары на відарысе і размывайце іх або закрывайце смайламі.</string>
     <string name="listened_to">праслухана</string>
     <string name="transcoder_unsupported_audio_format">Не атрымалася перакадаваць аўдыё, прычына - адсутнасць падтрымкі сістэмы.</string>
@@ -1194,7 +1196,7 @@
     <string name="group_response_full">Ваш запыт уступлення ў суполку %s адхілены, т.я. суполка перапоўнена</string>
     <string name="group_response_rejected">Ваш запыт уступлення ў суполку %s адхілены</string>
     <string name="group_link_expiration_none">Без абмежаванняў</string>
-    <string name="group_request_hint">Прывітанне! Гэта я</string>
+    <string name="group_request_hint">Прывет! Гэта я</string>
     <string name="group_request_send_title">Адпр. запыт уступлення ў суполку</string>
     <string name="group_request_message_empty">Тэкст запыту ўступлення ў суполку не можа быць пустым</string>
     <string name="group_requests_all_title">Усе запыты ў суполкі</string>
@@ -1229,7 +1231,11 @@
     <string name="group_link_rename">Перайм-ць</string>
     <string name="group_link_rename_tag">Новае імя</string>
     <string name="tap_here_for_more">Націсніце тут для атрым. падрабязных звестак</string>
-    <string name="another_connection_instructions">Сэрвер выявіў два ці больш падключэння з розных прылад з аднолькавым Threema ID.\n\nВыкарыстоўваць адзін і той жа Threema ID на некалькіх прыладах адначасова нельга. Новыя паведамленні дастаўляюцца толькі на прыладу, якая апошняй выканала ўваход на сэрвер.\n\nКалі вы пачалі выкарыстоўваць новую прыладу, выдаліце ​​або адключыце %s на старой прыладзе і перазапусціце новую.</string>
+    <string name="another_connection_instructions"><![CDATA[Сэрвер выявіў два ці больш падключэння з розных прылад з аднолькавым Threema ID.
+
+Выкарыстоўваць адзін і той жа Threema ID на некалькіх прыладах адначасова нельга. Новыя паведамленні дастаўляюцца толькі на прыладу, якая апошняй выканала ўваход на сэрвер.
+
+Калі вы пачалі выкарыстоўваць новую прыладу, выдаліце ​​або адключыце %s на старой прыладзе і перазапусціце новую.]]></string>
     <string name="app_store_error_code">Код памылкі крамы праграм: %d</string>
     <string name="backup_restore_type"><![CDATA[Якую рэзервовую копію вы жадаеце аднавіць?  <br/><br/> <a href=%s>Больш падрабязна аб рэзервовых копіях у Threema</a>]]></string>
     <string name="data_backup_info">Аднавіць усё, у т.л. чаты</string>
@@ -1359,12 +1365,12 @@
     <string name="forward_security">Адпраўляйце паведамленні ў рэжыме PFS</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">не</string>
-    <string name="clear_forward_security">Ачысціце сеансы сакрэтнасці Perfect Forward</string>
+    <string name="clear_forward_security">Скінуць Perfect Forward Secrecy для гэтага кантакту</string>
     <string name="forward_security_cleared">Сеансы Perfect Forward Secrecy з гэтым кантактам ачышчаны</string>
     <string name="message_without_forward_security">Атрымана паведамленне без Perfect Forward Secrecy.  Пераканайцеся, што адпраўнік наўмысна адключыў Perfect Forward Secrecy.</string>
     <string name="forward_security_established">Паведамленні ў гэтым чаце цяпер абаронены Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Паведамленні, атрыманыя ў гэтым чаце, цяпер абаронены Perfect Forward Secrecy.  Уключыце Perfect Forward Secrecy у кантактных дадзеных, каб таксама абараніць адпраўленыя паведамленні.</string>
-    <string name="forward_security_reset">Сеанс Perfect Forward Secrecy з гэтым кантактам быў скінуты.  Гэта можа адбыцца, калі кантакт змяніў прыладу або пераўсталяваў праграму.</string>
+    <string name="forward_security_reset">Сеанс Perfect Forward Secrecy быў скінуты.  Гэта можа адбыцца, калі партнёр па чаце мяняе прылады або пераўсталёўвае праграму.</string>
     <string name="forward_security_reset_simple">Сеанс Perfect Forward Secrecy з гэтым кантактам быў скінуты.</string>
     <string name="forward_security_message_out_of_order">Паведамленне было атрымана не ўшкаджонае і не можа быць расшыфравана.</string>
     <string name="self_updater_installation_failed">Не атрымалася загрузіць абнаўленне.  Спампуйце і ўсталюйце абнаўленне з <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ўручную.</string>
@@ -1401,7 +1407,7 @@
     <string name="prefs_summary_hibernation_api_32">Каб прадухіліць прыпыненне Threema сістэмай пасля працяглай бяздзейнасці, адключыце сістэмны параметр «Выдаліць дазволы і вызваліць месца».</string>
     <string name="prefs_summary_hibernation_api">Каб прадухіліць прыпыненне Threema сістэмай пасля працяглай бяздзейнасці, адключыце сістэмны параметр «Прыпыніць дзейнасць праграмы, калі яна не выкарыстоўваецца».</string>
     <string name="unable_to_fetch_configuration">Немагчыма атрымаць дадзеныя з сервера.  Паўтарыце спробу пазней.</string>
-    <string name="rogue_device_warning">Сервер выявіў злучэнне з іншай прылады з такім жа ID Threema.\n\nКалі вы тым часам не выкарыстоўвалі свой ідэнтыфікатар Threema на іншай прыладзе або са старой версіяй праграмы, звярніцеся ў службу падтрымкі і, калі магчыма, адпраўце файл журнала.</string>
+    <string name="rogue_device_warning">Было выяўлена злучэнне з іншай прылады з такім жа ID Threema.  Ці выкарыстоўвалі вы нядаўна свой ідэнтыфікатар Threema на іншай прыладзе?  &lt;br&gt;&lt;br&gt; Калі ёсць, то можаце праігнараваць гэтае паведамленне.  &lt;br&gt;&lt;br&gt; Калі вы гэтага не зрабілі, ваш асабісты ключ можа быць узламаны.  Калі ласка, <a href="https://threema.ch/en/faq/another_connection">прытрымлівайцеся нашых рэкамендацый</a>, каб абараніць вашу прыладу і даныя перад стварэннем новага ідэнтыфікатара.</string>
     <string name="fetch2_failure">Збой сінхранізацыі з серверам забеспячэння.</string>
     <string name="no_members_support_group_calls">У гэтай суполцы няма іншых удзельнікаў, якія могуць адказваць на супольныя выклікі</string>
     <string name="group_calls">Супольныя званкі</string>
@@ -1415,7 +1421,7 @@
     <string name="leave">Пакінуць</string>
     <string name="fs_key_mismatch">несупадзенне ключоў</string>
     <string name="tap_to_resend">Націсніце, каб адправіць яшчэ раз</string>
-    <string name="group_calls_tooltip_title">Новае: супольныя званкі</string>
+    <string name="group_calls_tooltip_title">Супольныя званкі.</string>
     <string name="group_calls_tooltip_text">Націсніце тут, каб запрасіць усіх удзельнікаў суполкі далучыцца да размовы. Усе удзельнікі суполкі атрымаюць апавяшчэнне і змогуць вырашыць, жадаюць яны далучыцца да размовы ці не.</string>
     <string name="prefs_title_calls">Бяспечныя званкі</string>
     <string name="prefs_sum_group_calls_vibration">Выберыце, ці трэба вібраваць пры пачатку супольнага выкліку</string>
@@ -1424,7 +1430,21 @@
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) абараняе запісанае паведамленне ад дэшыфравання заднім лікам, нават калі доўгатэрміновы ключ шыфравання скампраметаваны.\n\nОпцыю можна ўключыць, калі праграма з абодвух бакоў падтрымлівае PFS.</string>
     <string name="group_call_inactivity_left">Суполкавы выклік пакінуты з-за бяздзейнасці</string>
     <string name="missing_permission_external_storage">Немагчыма скапіяваць файл. Паспрабуйце наступныя крокі:\n 1. Адкрыйце праграму налад.\n 2. Перайдзіце ў раздзел «Праграмы» і абярыце «Доступ да спецыяльных праграм».\n 3. Націсніце на «Доступ да ўсіх файлаў».\n 4. Націсніце на тры кропкі ў правым верхнім куце і абярыце «Паказаць сістэму».\n 5. Націсніце на «Знешняе сховішча» і пераканайцеся, што «Дазволены доступ для кіравання ўсімі файламі».\n 6. Паспрабуйце яшчэ раз аднавіць рэзервовую копію.</string>
-    <string name="forward_security_downgraded_status_message">Гэты кантакт пачаў выкарыстоўваць версію праграмы, якая не падтрымлівае Perfect Forward Secrecy.  З гэтага часу паведамленні будуць адпраўляцца без PFS.</string>
+    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy быў адключаны ў гэтай размове, таму што версія праграмы вашага партнёра па чаце не падтрымлівае яе.</string>
+    <string name="crop_image_title">Абрэзаць відарыс</string>
+    <string name="scroll_to_bottom">Пракруціце ўніз</string>
+    <string name="scroll_to_top">Пракруціце ўверх</string>
+    <string name="contact_sync_mdm_rationale">Ваш адміністратар уключыў сінхранізацыю кантактаў для вашай прылады.  Таму патрабуецца дазвол на доступ да кантактаў.</string>
+    <string name="welcome_back">З вяртаннем!</string>
+    <string name="id_restored_successfully">Ваш Threema ID быў паспяхова адноўлены</string>
+    <string name="prefs_dynamic_colors">Дынамічны колер</string>
+    <string name="prefs_dynamic_colors_sum">Выкарыстоўвайце сістэмныя колеры</string>
+    <string name="apply_changes">Прымяніць змены</string>
+    <string name="prefs_threema_work_summary">Ці ведаеце вы, што Threema таксама прапануе прафесійнае камунікацыйнае рашэнне для бізнесу?  Націсніце тут, каб даведацца больш пра Threema Work.</string>
+    <string name="notification_channel_voice_message_player">Плэер галасавых паведамленняў</string>
+    <string name="voice_message_from">Галасавое паведамленне ад %s</string>
+    <string name="vm_fg_service_not_allowed">Памылка прайграв. галасавога паведамлення</string>
+    <string name="vm_fg_service_not_allowed_explain">Націсніце кнопку прайгравання ў медыяапавяшчэнні, калі яно ўсё яшчэ прысутнічае, у адваротным выпадку адкрыйце праграму, каб пачаць прайграванне з чата.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d кантактаў</item>
         <item quantity="many">%d кантакты</item>
@@ -1474,10 +1494,10 @@
         <item quantity="other">Выдаліць апытанні</item>
     </plurals>
     <plurals name="ballot_really_delete_text">
-        <item quantity="few">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
-        <item quantity="many">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
-        <item quantity="one">Вы сапраўды хочаце выдаліць %1$d апытанне? Вы не зможаце аднавіць галасы.</item>
-        <item quantity="other">Вы сапраўды хочаце выдаліць %1$d апытанні? Вы не зможаце аднавіць галасы.</item>
+        <item quantity="few">Вы сапраўды хочаце выдаліць %1$d апытанні?  Вы не зможаце аднавіць галасы.</item>
+        <item quantity="many">Вы сапраўды хочаце выдаліць %1$d апытанні?  Вы не зможаце аднавіць галасы.</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %1$d апытанне?  Вы не зможаце аднавіць галасы.</item>
+        <item quantity="other">Вы сапраўды хочаце выдаліць %1$d апытанні?  Вы не зможаце аднавіць галасы.</item>
     </plurals>
     <plurals name="message_deleted">
         <item quantity="few">%d паведамленні выдалены</item>
@@ -1556,5 +1576,11 @@
         <item quantity="many">Выдаліць %d паведамленні на гэтай прыладзе?</item>
         <item quantity="one">Выдаліць %d паведамленне на гэтай прыладзе?</item>
         <item quantity="other">Выдаліць %d паведамленняў на гэтай прыладзе?</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="few">%d удзельнікаў суполкі</item>
+        <item quantity="many">%d удзельнікаў суполкі</item>
+        <item quantity="one">%d удзельнік суполкі</item>
+        <item quantity="other">%d удзельнікаў суполкі</item>
     </plurals>
 </resources>

@@ -20,7 +20,7 @@
 				android:layout_marginRight="4dp"
 				android:scaleType="centerInside"
 				android:contentDescription="@string/app_name"
-				android:tint="?attr/textColorSecondary"
+				android:tint="?attr/colorOnSurface"
 				android:src="@drawable/ic_folder"/>
 
 		<LinearLayout
@@ -58,7 +58,7 @@
 						android:singleLine="true"
 						android:text="Date"
 						android:textAppearance="?android:attr/textAppearanceSmall"
-						android:textColor="?android:attr/textColorSecondary">
+						android:textColor="?attr/colorOnSurface">
 				</TextView>
 
 				<TextView
@@ -71,7 +71,7 @@
 						android:singleLine="true"
 						android:text="Size"
 						android:textAppearance="?android:attr/textAppearanceSmall"
-						android:textColor="?android:attr/textColorSecondary">
+						android:textColor="?attr/colorOnSurface">
 				</TextView>
 
 				<TextView
@@ -84,7 +84,7 @@
 						android:visibility="gone"
 						android:text="ID"
 						android:textAppearance="?android:attr/textAppearanceSmall"
-						android:textColor="?android:attr/textColorSecondary">
+						android:textColor="?attr/colorOnSurface">
 				</TextView>
 
 			</RelativeLayout>

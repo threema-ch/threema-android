@@ -6,18 +6,38 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:clickable="false"
-	android:background="?attr/background_secondary">
+	android:background="@android:color/transparent">
 
 	<View
-		android:id="@id/divider"
+		android:id="@+id/divider1"
 		android:layout_width="match_parent"
 		android:layout_height="1dp"
-		android:background="@color/control_panel_divider" />
+		android:background="#03777777"
+		android:importantForAccessibility="no" />
+
+	<View
+		android:id="@+id/divider2"
+		android:layout_marginTop="1dp"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="#12777777"
+		android:importantForAccessibility="no" />
+
+	<View
+		android:id="@+id/divider3"
+		android:layout_marginTop="2dp"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="#40777777"
+		android:importantForAccessibility="no" />
 
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:id="@+id/select_panel"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:layout_marginTop="@dimen/media_attach_control_panel_shadow_size"
+		android:background="?attr/colorSurface"
+		android:importantForAccessibility="no"
 		android:clickable="false">
 
 		<LinearLayout
@@ -35,7 +55,7 @@
 			<ch.threema.app.mediaattacher.ControlPanelButton
 				android:id="@+id/cancel"
 				android:layout_width="@dimen/media_attach_button_width"
-				android:layout_height="@dimen/media_attach_button_height"
+				android:layout_height="wrap_content"
 				app:fillColor="@color/media_attach_button_background_default"
 				app:labelIcon="@drawable/ic_close"
 				app:labelText="@string/cancel" />
@@ -43,12 +63,12 @@
 			<ch.threema.app.mediaattacher.ControlPanelButton
 				android:id="@+id/select"
 				android:layout_width="@dimen/media_attach_button_width"
-				android:layout_height="@dimen/media_attach_button_height"
+				android:layout_height="wrap_content"
 				app:labelIcon="@drawable/ic_baseline_add_24"
 				app:labelText="@string/add"
-				app:fillColor="?attr/colorAccent"
+				app:fillColor="?attr/colorPrimary"
 				app:fillColorAlpha="@integer/chip_alpha"
-				app:foregroundColor="?attr/colorAccent"/>
+				app:foregroundColor="?attr/colorPrimary"/>
 
 		</LinearLayout>
 

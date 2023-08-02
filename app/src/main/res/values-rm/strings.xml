@@ -279,7 +279,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="title_select_contacts">Commembers</string>
     <string name="pin_invalid_not_set">Il PIN è nunvalaivel</string>
     <string name="prefs_group_notifications">Chat da gruppa</string>
-    <string name="add_group_members_list">Commembers da la gruppa</string>
     <string name="group_select_at_least_two">P.pl. tscherner almain in commember</string>
     <string name="group_select_max">Ti pos agiuntar a la gruppa maximalmain %1$d commembers</string>
     <string name="search">Tschertga</string>
@@ -521,7 +520,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="send_as_files">Trametter sco datoteca</string>
     <string name="send_as_files_warning">Trametter e retschaiver datotecas e maletgs nuncumprimids chaschuna in diever da datas augmentà. Quai po dar custs supplementars dal purschider da la telefonia mobila. Nus cussegliain perquai da telechargiar datas mo sch\'il WLAN è activ.</string>
     <string name="prefs_theme">Stil dal design</string>
-    <string name="list_theme_light">Cler (standard)</string>
+    <string name="list_theme_light">Cler</string>
     <string name="list_theme_dark">Stgir</string>
     <string name="prefs_header_appearance">Cumparsa</string>
     <string name="prefs_sum_passphrase">Pretender ina frasa secreta per la codaziun locala</string>
@@ -1134,7 +1133,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="no_faces_detected">Chattà naginas fatschas</string>
     <string name="smiley">Smiley</string>
     <string name="blur">Disfar</string>
-    <string name="face_blur_tooltip_title">Nov: identificaziun da fatschas</string>
+    <string name="face_blur_tooltip_title">Identificaziun da fatschas</string>
     <string name="face_blur_tooltip_text">Tschertga las fatschas sin la fotografia e disfa ellas u cuvra ellas cun in smiley.</string>
     <string name="listened_to">tedlà</string>
     <string name="transcoder_unsupported_audio_format">Betg reussì da convertir il format da l\'audio, perquai ch\'il sistem na vegn betg sustegnì.</string>
@@ -1326,7 +1325,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="organization_type">Organisaziun</string>
     <string name="permission_bluetooth_connect_required">Activescha l\'autorisaziun «apparats en la vischinanza» per chattar apparats da bluetooth colliads.</string>
     <string name="threema_push_start_webclient_sessions_manually">Activà Threema Push. Threema Web e sesidas da dektop stos ti perquai avrir manualmain.</string>
-    <string name="tooltip_multiple_recipients_title">Nov: plirs retschaviders</string>
+    <string name="tooltip_multiple_recipients_title">Plirs retschaviders</string>
     <string name="tooltip_multiple_recipients_text">Tippar ditg per tscherner plirs retschaviders e trametter a tuts il medem messadi.</string>
     <string name="synchronizing">Sincronisaziun ...</string>
     <string name="self_updater_installation_failed">Betg reussì da chargiar giu l\'update. P.pl. chargiar giu l\'update da la pagina-web <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ed installar el manualmain.</string>

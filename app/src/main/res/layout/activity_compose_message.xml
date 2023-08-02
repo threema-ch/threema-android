@@ -1,17 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
 		android:id="@+id/compose_activity_parent"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
 		android:orientation="vertical">
 
-	<include layout="@layout/toolbar_view_no_margin"/>
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/appbar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:elevation="0dp"
+		app:liftOnScroll="false"
+		android:outlineProvider="none">
+
+		<FrameLayout android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<com.google.android.material.appbar.MaterialToolbar
+				android:id="@+id/toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="?attr/actionBarSize"
+				android:background="?android:attr/colorBackground"
+				app:contentInsetStartWithNavigation="0dp"/>
+
+			<include layout="@layout/connection_indicator"/>
+
+		</FrameLayout>
+
+	</com.google.android.material.appbar.AppBarLayout>
 
 	<FrameLayout android:id="@+id/compose"
 				 android:layout_weight="1"
 				 android:layout_height="0dp"
-				 android:layout_width="fill_parent"/>
+				 android:layout_width="match_parent" />
 
 	<ViewStub
 		android:id="@+id/emoji_stub"

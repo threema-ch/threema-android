@@ -14,7 +14,6 @@
 	<domain-config cleartextTrafficPermitted="false">
 		<domain includeSubdomains="true">threema.ch</domain>
 		<pin-set>
-			<pin digest="SHA-256">8SLubAXo6MrrGziVya6HjCS/Cuc7eqtzw1v6AfIW57c=</pin>
 			<pin digest="SHA-256">8kTK9HP1KHIP0sn6T2AFH3Bq+qq3wn2i/OJSMjewpFw=</pin>
 			<pin digest="SHA-256">KKBJHJn1PQSdNTmoAfhxqWTO61r8O8bPi/JeGtP/6gg=</pin>
 			<pin digest="SHA-256">h2gHawxPZyMCiZSkJN0dQ4RsDxowVuTmuiNQyjeU+Sk=</pin>

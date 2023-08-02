@@ -37,10 +37,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.neovisionaries.ws.client.DualStackMode;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -123,7 +123,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 	@Nullable private ContactService contactService;
 
 	// Views
-	@Nullable private ProgressBar progressBar;
+	@Nullable private CircularProgressIndicator progressBar;
 	@Nullable private TextView introText;
 	@Nullable private TextView doneText;
 	@Nullable private Button copyButton;

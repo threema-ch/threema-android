@@ -26,6 +26,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
+import android.os.PowerManager;
 
 import org.slf4j.Logger;
 
@@ -33,8 +35,9 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
 import ch.threema.base.utils.LoggingUtil;
+
+import static android.content.Context.POWER_SERVICE;
 
 public class PowermanagerUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("PowermanagerUtil");
@@ -129,6 +132,28 @@ public class PowermanagerUtil {
 	}
 
 	public static boolean needsFixing(Context context) {
-		return !DisableBatteryOptimizationsActivity.isIgnoringBatteryOptimizations(context) || hasAutostartOption(context) || hasPowerManagerOption(context);
+		return !isIgnoringBatteryOptimizations(context) || hasAutostartOption(context) || hasPowerManagerOption(context);
+	}
+
+	/**
+	 * Try to find out whether battery optimizations are already disabled for our app.
+	 * If this fails (e.g. on devices older than Android M), `true` will be returned.
+	 */
+	public static boolean isIgnoringBatteryOptimizations(@NonNull Context context) {
+		// App is always whitelisted in unit tests
+		if (RuntimeUtil.isInTest()) {
+			return true;
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			final PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(POWER_SERVICE);
+			try {
+				return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
+			} catch (Exception e) {
+				logger.error("Exception while checking if battery optimization is disabled", e);
+				// don't care about buggy phones not implementing this API
+				return true;
+			}
+		}
+		return true;
 	}
 }

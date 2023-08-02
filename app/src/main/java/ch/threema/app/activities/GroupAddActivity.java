@@ -25,12 +25,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -81,8 +82,8 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
 	}
 
 	@Override
-	protected boolean getAddNextButton() {
-		return true;
+	protected int getMode() {
+		return appendMembers ? MODE_ADD_TO_GROUP : MODE_NEW_GROUP;
 	}
 
 	@Override
@@ -113,7 +114,7 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
 		initList();
 
 		if (!appendMembers) {
-			ShowOnceDialog.newInstance(R.string.title_select_contacts, R.string.note_group_howto ).show(getSupportFragmentManager(), DIALOG_TAG_NOTE_GROUP_HOWTO);
+			ShowOnceDialog.newInstance(R.string.title_addgroup, R.string.note_group_howto, 0).show(getSupportFragmentManager(), DIALOG_TAG_NOTE_GROUP_HOWTO);
 		}
 	}
 
@@ -132,7 +133,7 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
 			createOrUpdateGroup(Collections.emptyList());
 		} else {
 			// Adding group members to new group (none selected)
-			GenericAlertDialog.newInstance(R.string.title_addgroup, R.string.group_create_no_members, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_NO_MEMBERS);
+			GenericAlertDialog.newInstance(R.string.title_addgroup, R.string.group_create_no_members, R.string.yes, R.string.no, 0).show(getSupportFragmentManager(), DIALOG_TAG_NO_MEMBERS);
 		}
 	}
 
@@ -155,19 +156,15 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-			case ThreemaActivity.ACTIVITY_ID_GROUP_ADD:
-				if (resultCode != RESULT_CANCELED) {
-					finish();
-				}
-				break;
-			default:
-				break;
+		if (requestCode == ThreemaActivity.ACTIVITY_ID_GROUP_ADD) {
+			if (resultCode != RESULT_CANCELED) {
+				finish();
+			}
 		}
 	}
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putStringArrayList(BUNDLE_EXISTING_MEMBERS, this.excludedIdentities);
 	}

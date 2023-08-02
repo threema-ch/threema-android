@@ -21,49 +21,57 @@
 
 package ch.threema.app.fragments.mediaviews;
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.ui.PlayerControlView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.media3.common.AudioAttributes;
+import androidx.media3.common.C;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
+import androidx.media3.common.util.Util;
+import androidx.media3.datasource.DataSource;
+import androidx.media3.datasource.DefaultDataSourceFactory;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.ui.PlayerControlView;
+import androidx.media3.ui.PlayerView;
+
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.core.view.ViewCompat;
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
-import ch.threema.app.ui.ZoomableExoPlayerView;
+import ch.threema.app.ui.ExoPlayerZoomGestureDetector;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment implements Player.Listener {
+@SuppressLint("UnsafeOptInUsageError")
+public class VideoViewFragment extends MediaViewFragment implements Player.Listener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoViewFragment");
 
 	private WeakReference<ImageView> previewImageViewRef;
-	private WeakReference<ProgressBar> progressBarRef;
-	private WeakReference<ZoomableExoPlayerView> videoViewRef;
+	private WeakReference<CircularProgressIndicator> progressBarRef;
+	private WeakReference<PlayerView> videoViewRef;
 	private ExoPlayer videoPlayer;
 	private boolean isImmediatePlay, isPreparing;
 
@@ -73,13 +81,20 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		logger.debug("onCreateView");
 
 		this.isImmediatePlay = getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
 
+		AudioAttributes audioAttributes = new AudioAttributes.Builder()
+			.setUsage(C.USAGE_MEDIA)
+			.setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+			.setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_NONE)
+			.build();
+
 		try {
 			this.videoPlayer = VideoUtil.getExoPlayer(requireContext());
+			this.videoPlayer.setAudioAttributes(audioAttributes, true);
 			this.videoPlayer.addListener(this);
 		} catch (OutOfMemoryError e) {
 			logger.error("Exception", e);
@@ -144,16 +159,18 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 			this.videoViewRef.get().setControllerShowTimeoutMs(MediaViewerActivity.ACTIONBAR_TIMEOUT);
 			this.videoViewRef.get().setControllerAutoShow(true);
 
+			final ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(getContext(), new ExoPlayerZoomGestureDetector(this.videoViewRef.get()));
+			videoViewRef.get().setOnTouchListener(new View.OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					scaleGestureDetector.onTouchEvent(event);
+					return false;
+				}
+			});
+
 			logger.debug("View Type: " + (this.videoViewRef.get().getVideoSurfaceView() instanceof TextureView ? "Texture" : "Surface"));
 
-			View controllerView = this.videoViewRef.get().findViewById(R.id.position_container);
-			ViewCompat.setOnApplyWindowInsetsListener(controllerView, (v, insets) -> {
-				ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-				params.leftMargin = insets.getSystemWindowInsetLeft();
-				params.rightMargin = insets.getSystemWindowInsetRight();
-				params.bottomMargin = insets.getSystemWindowInsetBottom();
-				return insets;
-			});
+			ConfigUtils.adjustExoPlayerControllerMargins(getContext(), this.videoViewRef.get());
 
 			this.progressBarRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.progress_bar));
 		}
@@ -219,8 +236,6 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 	public void onDestroyView() {
 		logger.debug("onDestroyView");
 
-		abandonFocus();
-
 		if (this.videoPlayer != null) {
 			this.videoPlayer.release();
 			this.videoPlayer = null;
@@ -231,12 +246,6 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 
 	@Override
 	public void onIsPlayingChanged(boolean isPlaying) {
-		if (isPlaying) {
-			requestFocus();
-		} else {
-			abandonFocus();
-		}
-
 		keepScreenOn(isPlaying);
 	}
 
@@ -273,23 +282,11 @@ public class VideoViewFragment extends AudioFocusSupportingMediaViewFragment imp
 
 		// stop player if fragment comes out of view
 		if (!isVisibleToUser && this.videoPlayer != null &&
-				(this.videoPlayer.isLoading() ||
-				this.videoPlayer.getPlaybackState() != Player.STATE_IDLE)) {
+				(this.videoPlayer.isLoading() || this.videoPlayer.isPlaying())) {
 			this.videoPlayer.setPlayWhenReady(false);
+			this.videoPlayer.pause();
 		}
 	}
 
-	@Override
-	public void onPause() {
-		setUserVisibleHint(false);
-		super.onPause();
-	}
 
-	@Override
-	public void setVolume(float volume) {
-		// ducking
-		if (this.videoPlayer != null) {
-			this.videoPlayer.setVolume(volume);
-		}
-	}
 }

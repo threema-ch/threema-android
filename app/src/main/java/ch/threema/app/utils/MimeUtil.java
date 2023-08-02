@@ -69,6 +69,7 @@ public class MimeUtil {
 	public static final String MIME_TYPE_AUDIO_XMIDI = "audio/x-midi";
 	public static final String MIME_TYPE_AUDIO_FLAC = "audio/flac";
 	public static final String MIME_TYPE_AUDIO_XFLAC = "audio/x-flac";
+	public static final String MIME_TYPE_AUDIO_OGG = "audio/ogg";
 	public static final String MIME_TYPE_ZIP = "application/zip";
 	public static final String MIME_TYPE_PDF = "application/pdf";
 	public static final String MIME_TYPE_VCARD = "text/x-vcard";
@@ -77,6 +78,8 @@ public class MimeUtil {
 	public static final String MIME_TYPE_HTML = "text/html";
 	public static final String MIME_TYPE_DEFAULT = "application/octet-stream";
 	public static final String MIME_TYPE_EMAIL = "message/rfc822";
+	public static final String MIME_TYPE_GPX = "application/gpx+xml";
+	public static final String MIME_TYPE_APPLE_PKPASS = "application/vnd.apple.pkpass";
 
 	public static final String MIME_VIDEO = "video/";
 	public static final String MIME_AUDIO = "audio/";

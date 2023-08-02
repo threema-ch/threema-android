@@ -36,7 +36,7 @@ public class KDFRatchet {
 	/**
 	 * Upper limit on how many times we are willing to turn the ratchet to catch up with a peer.
 	 */
-	private static final long MAX_COUNTER_INCREMENT = 10000;
+	private static final long MAX_COUNTER_INCREMENT = 25000;
 
 	private static final String KDF_SALT_CK = "kdf-ck";
 	private static final String KDF_SALT_AEK = "kdf-aek";

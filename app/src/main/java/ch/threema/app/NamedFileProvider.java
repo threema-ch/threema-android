@@ -89,6 +89,7 @@ public class NamedFileProvider extends FileProvider {
 		mStrategy = getPathStrategy(context, info.authority);
 	}
 
+	@NonNull
 	@Override
 	public Cursor query(@NonNull final Uri uri, String[] projection, final String selection,
 	                    final String[] selectionArgs, final String sortOrder) {
@@ -141,7 +142,7 @@ public class NamedFileProvider extends FileProvider {
 	 *            {@code <provider>} element in your app's manifest.
 	 * @param file A {@link File} pointing to the filename for which you want a
 	 * <code>content</code> {@link Uri}.
-	 * @param filename File name to be used for this file. Will be provided to consumers in the DISPLAY_NAME xolumn
+	 * @param filename File name to be used for this file. Will be provided to consumers in the DISPLAY_NAME column
 	 * @return A content URI for the file.
 	 * @throws IllegalArgumentException When the given {@link File} is outside
 	 * the paths supported by the provider.

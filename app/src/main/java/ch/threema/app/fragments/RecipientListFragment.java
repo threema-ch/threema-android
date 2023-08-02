@@ -33,14 +33,21 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.ListFragment;
 
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
@@ -50,14 +57,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.ListFragment;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.RecipientListBaseActivity;
+import ch.threema.app.adapters.FilterResultsListener;
 import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
@@ -81,7 +84,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 
-public abstract class RecipientListFragment extends ListFragment implements ListView.OnItemLongClickListener {
+public abstract class RecipientListFragment extends ListFragment implements ListView.OnItemLongClickListener, FilterResultsListener {
 	public static final String ARGUMENT_MULTI_SELECT = "ms";
 	public static final String ARGUMENT_MULTI_SELECT_FOR_COMPOSE = "msi";
 
@@ -96,9 +99,9 @@ public abstract class RecipientListFragment extends ListFragment implements List
 	protected DeadlineListService hiddenChatsListService;
 	protected FragmentActivity activity;
 	protected Parcelable listInstanceState;
-	protected FloatingActionButton floatingActionButton;
+	protected ExtendedFloatingActionButton floatingActionButton;
 	protected Snackbar snackbar;
-	protected ProgressBar progressBar;
+	protected CircularProgressIndicator progressBar;
 	protected View topLayout;
 	protected boolean multiSelect = true, multiSelectIdentity = false;
 	protected FilterableListAdapter adapter;
@@ -167,7 +170,6 @@ public abstract class RecipientListFragment extends ListFragment implements List
 					Intent intent = getAddIntent();
 					if (intent != null) {
 						startActivity(intent);
-						activity.overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
 					}
 				}
 			});
@@ -188,8 +190,8 @@ public abstract class RecipientListFragment extends ListFragment implements List
 			});
 
 			if (multiSelectIdentity) {
-				floatingActionButton.setImageResource(R.drawable.ic_arrow_left);
-				floatingActionButton.setRotation(180);
+				floatingActionButton.setIcon(getResources().getDrawable(R.drawable.ic_keyboard_arrow_right));
+				floatingActionButton.setText(R.string.label_continue);
 
 				if (preferenceService.getMultipleRecipientsTooltipCount() < 1) {
 					preferenceService.incrementMultipleRecipientsTooltipCount();
@@ -207,16 +209,18 @@ public abstract class RecipientListFragment extends ListFragment implements List
 								location[0] + 200 + itemHeight,
 								location[1] + (itemHeight * 2));
 
+							final @ColorInt int textColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnPrimary);
+
 							TapTargetView.showFor(requireActivity(),
 								TapTarget.forBounds(rect, getString(R.string.tooltip_multiple_recipients_title), getString(R.string.tooltip_multiple_recipients_text))
-									.outerCircleColor(ConfigUtils.getAppTheme(getActivity()) == ConfigUtils.THEME_DARK ? R.color.dark_accent : R.color.accent_light)      // Specify a color for the outer circle
+									.outerCircleColorInt(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary))      // Specify a color for the outer circle
 									.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
 									.targetCircleColor(android.R.color.transparent)   // Specify a color for the target circle
 									.titleTextSize(24)                  // Specify the size (in sp) of the title text
-									.titleTextColor(android.R.color.white)      // Specify the color of the title text
+									.titleTextColorInt(textColor)      // Specify the color of the title text
 									.descriptionTextSize(18)            // Specify the size (in sp) of the description text
-									.descriptionTextColor(android.R.color.white)  // Specify the color of the description text
-									.textColor(android.R.color.white)            // Specify a color for both the title and description text
+									.descriptionTextColorInt(textColor)  // Specify the color of the description text
+									.textColorInt(textColor)            // Specify a color for both the title and description text
 									.textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
 									.dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
 									.drawShadow(true)                   // Whether to draw a drop shadow or not
@@ -273,8 +277,8 @@ public abstract class RecipientListFragment extends ListFragment implements List
 		getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 		if (isVisible) {
 			snackbar = SnackbarUtil.make(topLayout, "", Snackbar.LENGTH_INDEFINITE, 4);
-			snackbar.setBackgroundTint(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorAccent));
-			snackbar.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondary));
+//			snackbar.setBackgroundTint(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
+//			snackbar.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondary));
 			snackbar.getView().getLayoutParams().width = AppBarLayout.LayoutParams.MATCH_PARENT;
 			snackbar.show();
 			snackbar.getView().post(new Runnable() {
@@ -440,6 +444,13 @@ public abstract class RecipientListFragment extends ListFragment implements List
 				getListView().setEmptyView(emptyView);
 			} catch (IllegalStateException ignored) {
 			}
+		}
+	}
+
+	@Override
+	public void onResultsAvailable(int count) {
+		if (isAdded() && activity != null) {
+			((RecipientListBaseActivity) activity).onQueryResultChanged(this, count);
 		}
 	}
 

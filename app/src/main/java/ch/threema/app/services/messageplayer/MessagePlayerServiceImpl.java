@@ -24,15 +24,20 @@ package ch.threema.app.services.messageplayer;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.media3.session.MediaController;
+
+import com.google.common.util.concurrent.ListenableFuture;
+
 import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
@@ -45,72 +50,78 @@ import ch.threema.storage.models.MessageType;
 public class MessagePlayerServiceImpl implements MessagePlayerService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MessagePlayerServiceImpl");
 
-	private final Map<String, MessagePlayer> messagePlayers = new HashMap<>();
+	private final Map<Integer, MessagePlayer> messagePlayers = new HashMap<>();
 	private final Context context;
 	private final MessageService messageService;
 	private final FileService fileService;
 	private final PreferenceService preferenceService;
+	private final DeadlineListService hiddenChatsListService;
 
-	public MessagePlayerServiceImpl(Context context, MessageService messageService, FileService fileService, PreferenceService preferenceService) {
+	public MessagePlayerServiceImpl(Context context, MessageService messageService, FileService fileService, PreferenceService preferenceService, DeadlineListService hiddenChatsListService) {
 		this.context = context;
 		this.messageService = messageService;
 		this.fileService = fileService;
 		this.preferenceService = preferenceService;
+		this.hiddenChatsListService = hiddenChatsListService;
 	}
 
 	@Override
-	public MessagePlayer createPlayer(AbstractMessageModel m, Activity activity, MessageReceiver messageReceiver) {
-		String key = m.getUid();
+	public MessagePlayer createPlayer(AbstractMessageModel messageModel, Activity activity, MessageReceiver<?> messageReceiver, ListenableFuture<MediaController> mediaControllerFuture) {
+		int key = messageModel.getId();
 		MessagePlayer o = null;
 
 		synchronized (this.messagePlayers) {
 			o = this.messagePlayers.get(key);
 
 			if (o == null) {
-				if (m.getType() == MessageType.IMAGE) {
+				if (messageModel.getType() == MessageType.IMAGE) {
 					o = new ImageMessagePlayer(
 							this.context,
 							this.messageService,
 							this.fileService,
 							messageReceiver,
-							m
+							messageModel
 					);
-				} else if (m.getType() == MessageType.VOICEMESSAGE) {
+				} else if (messageModel.getType() == MessageType.VOICEMESSAGE) {
 					o = new AudioMessagePlayer(
 							this.context,
 							this.messageService,
 							this.fileService,
 							this.preferenceService,
+							this.hiddenChatsListService,
 							messageReceiver,
-							m
+							mediaControllerFuture,
+							messageModel
 					);
-				} else if (m.getType() == MessageType.VIDEO) {
+				} else if (messageModel.getType() == MessageType.VIDEO) {
 					o = new VideoMessagePlayer(
 							this.context,
 							this.messageService,
 							this.fileService,
 							messageReceiver,
-							m
+							messageModel
 					);
-				} else if (m.getType() == MessageType.FILE) {
-					if (MimeUtil.isGifFile(m.getFileData().getMimeType())) {
+				} else if (messageModel.getType() == MessageType.FILE) {
+					if (MimeUtil.isGifFile(messageModel.getFileData().getMimeType())) {
 						o = new GifMessagePlayer(
 							this.context,
 							this.messageService,
 							this.fileService,
 							this.preferenceService,
 							messageReceiver,
-							m
+							messageModel
 						);
-					} else if (MimeUtil.isAudioFile(m.getFileData().getMimeType())
-							&& m.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
+					} else if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())
+							&& messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
 						o = new AudioMessagePlayer(
 							this.context,
 							this.messageService,
 							this.fileService,
 							this.preferenceService,
+							this.hiddenChatsListService,
 							messageReceiver,
-							m
+							mediaControllerFuture,
+							messageModel
 						);
 					} else {
 						o = new FileMessagePlayer(
@@ -118,21 +129,22 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 								this.messageService,
 								this.fileService,
 								messageReceiver,
-								m
+								messageModel
 						);
 					}
 				}
 				logger.debug("creating new player " + key);
 			} else {
 				// make sure data model is updated as its status may have changed after the player has been created
-				if (m.getType() == MessageType.VOICEMESSAGE) {
-					o.setData(m.getAudioData());
+				if (messageModel.getType() == MessageType.VOICEMESSAGE) {
+					o.setData(messageModel.getAudioData());
 				}
-				if (m.getType() == MessageType.FILE &&
-					MimeUtil.isAudioFile(m.getFileData().getMimeType())	&&
-					m.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
-					o.setData(m.getFileData());
+				if (messageModel.getType() == MessageType.FILE &&
+					MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())	&&
+					messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
+					o.setData(messageModel.getFileData());
 				}
+				logger.debug("recycling existing player " + key);
 			}
 			if (o != null) {
 				if (activity != null) {
@@ -177,10 +189,10 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 	private void stopOtherPlayers(AbstractMessageModel messageModel) {
 		logger.debug("stopOtherPlayers");
 		synchronized (this.messagePlayers) {
-			for (Map.Entry<String, MessagePlayer> entry : messagePlayers.entrySet()) {
-				if (!entry.getKey().equals(messageModel.getUid())) {
+			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+				if (!entry.getKey().equals(messageModel.getId())) {
 					if (!(entry.getValue() instanceof GifMessagePlayer)) {
-						logger.debug("stopping player " + entry.getKey());
+						logger.debug("maybe stopping player {} if not running ", entry.getKey());
 
 						entry.getValue().stop();
 					}
@@ -194,10 +206,10 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 	public void release() {
 		logger.debug("release all players");
 		synchronized (this.messagePlayers) {
-			Iterator iterator = messagePlayers.entrySet().iterator();
+			Iterator<Map.Entry<Integer, MessagePlayer>> iterator = messagePlayers.entrySet().iterator();
 			while (iterator.hasNext()) {
-				Map.Entry pair = (Map.Entry) iterator.next();
-				MessagePlayer mp = (MessagePlayer) pair.getValue();
+				Map.Entry<Integer, MessagePlayer> pair = iterator.next();
+				MessagePlayer mp = pair.getValue();
 				mp.stop();
 				if (mp.release()) {
 					iterator.remove();
@@ -216,7 +228,7 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 	public void stopAll() {
 		logger.debug("stop all players");
 		synchronized (this.messagePlayers) {
-			for (Map.Entry<String, MessagePlayer> entry : messagePlayers.entrySet()) {
+			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
 				entry.getValue().stop();
 			}
 		}
@@ -226,8 +238,8 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 	public void pauseAll(int source) {
 		logger.debug("pause all players");
 		synchronized (this.messagePlayers) {
-			for (Map.Entry<String, MessagePlayer> entry : messagePlayers.entrySet()) {
-				entry.getValue().pause(true, source);
+			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+				entry.getValue().pause(source);
 			}
 		}
 	}
@@ -236,7 +248,7 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 	public void resumeAll(Activity activity, MessageReceiver messageReceiver, int source) {
 		logger.debug("resume all players");
 		synchronized (this.messagePlayers) {
-			for (Map.Entry<String, MessagePlayer> entry : messagePlayers.entrySet()) {
+			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
 				// re-attach message players to current activity
 				if (entry.getValue().isReceiverMatch(messageReceiver)) {
 					entry.getValue().setCurrentActivity(activity, messageReceiver);
@@ -251,8 +263,8 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 	@Override
 	public void setTranscodeProgress(@NonNull AbstractMessageModel messageModel, int progress) {
 		synchronized (this.messagePlayers) {
-			for (Map.Entry<String, MessagePlayer> entry : messagePlayers.entrySet()) {
-				if (entry.getKey().equals(messageModel.getUid())) {
+			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+				if (entry.getKey().equals(messageModel.getId())) {
 					entry.getValue().setTranscodeProgress(progress);
 					return;
 				}
@@ -263,8 +275,8 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 	@Override
 	public void setTranscodeStart(@NonNull AbstractMessageModel messageModel) {
 		synchronized (this.messagePlayers) {
-			for (Map.Entry<String, MessagePlayer> entry : messagePlayers.entrySet()) {
-				if (entry.getKey().equals(messageModel.getUid())) {
+			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+				if (entry.getKey().equals(messageModel.getId())) {
 					entry.getValue().setTranscodeStart();
 					return;
 				}
@@ -275,8 +287,8 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 	@Override
 	public void setTranscodeFinished(@NonNull AbstractMessageModel messageModel, boolean success, @Nullable String message) {
 		synchronized (this.messagePlayers) {
-			for (Map.Entry<String, MessagePlayer> entry : messagePlayers.entrySet()) {
-				if (entry.getKey().equals(messageModel.getUid())) {
+			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+				if (entry.getKey().equals(messageModel.getId())) {
 					entry.getValue().setTranscodeFinished(success, message);
 					return;
 				}
