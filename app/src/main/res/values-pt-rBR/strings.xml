@@ -541,7 +541,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="prefs_sum_passphrase">Exige uma frase secreta para desbloquear criptografia local</string>
     <string name="prefs_title_masterkey_change_passphrase">Alterar frase secreta</string>
     <string name="storage_total">Espaço em armazenamento interno</string>
-    <string name="storage_threema">Usao pelo Threema</string>
+    <string name="storage_threema">Usao pelo %s</string>
     <string name="storage_total_free">Espaço livre total</string>
     <string name="storage_total_in_use">Em uso</string>
     <string name="one_year">1 ano</string>
@@ -1365,7 +1365,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="forward_security_cleared">As sessões com Perfect Forward Secrecy deste contato foram apagadas</string>
     <string name="message_without_forward_security">Uma mensagem sem Perfect Forward Secrecy foi recebida. Verifique se o remetente desativou o FPS intencionalmente.</string>
     <string name="forward_security_established">As mensagens nesta conversa estão protegidas pelo Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">As mensagens recebidas nesta conversa estão protegidas pelo Perfect Forward Secrecy (PFS). Ative o PFS nos detalhes de contato para proteger também as mensagens enviadas.</string>
+    <string name="forward_security_established_rx">As mensagens recebidas nesta conversa estão protegidas pelo Perfect Forward Secrecy (PFS).</string>
     <string name="forward_security_reset">A sessão com Perfect Forward Secrecy foi redefinida. Isso pode acontecer quando o contato do chat muda de dispositivo ou reinstala o app.</string>
     <string name="forward_security_reset_simple">A sessão com Perfect Forward Secrecy deste contato foi redefinida.</string>
     <string name="forward_security_message_out_of_order">Uma mensagem foi recebida incorretamente e não pôde ser descodificada.</string>

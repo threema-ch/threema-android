@@ -542,7 +542,7 @@
     <string name="prefs_sum_passphrase">Jelszó megkövetelése a helyi titkosításhoz</string>
     <string name="prefs_title_masterkey_change_passphrase">Jelszó módosítása</string>
     <string name="storage_total">Belső tároló</string>
-    <string name="storage_threema">Threema által használt</string>
+    <string name="storage_threema">%s által használt</string>
     <string name="storage_total_free">Szabad tárhely</string>
     <string name="storage_total_in_use">Felhasznált</string>
     <string name="one_year">1 év</string>

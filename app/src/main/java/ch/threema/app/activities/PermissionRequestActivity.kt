@@ -274,7 +274,7 @@ class PermissionRequestActivity : ThreemaActivity() {
         }
 
         permissionSettingsExplanation.visibility =
-            visibleOrInvisible(shouldShowGoToSettingsExplanation(permissionState))
+            visibleOrGone(shouldShowGoToSettingsExplanation(permissionState))
 
         when {
             permissionState.granted -> {

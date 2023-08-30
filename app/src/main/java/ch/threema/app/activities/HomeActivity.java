@@ -161,7 +161,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("HomeActivity");
 
-	private static final String THREEMA_CHANNEL_IDENTITY = "*THREEMA";
+	public static final String THREEMA_CHANNEL_IDENTITY = "*THREEMA";
 	private static final String THREEMA_CHANNEL_INFO_COMMAND = "Info";
 	private static final String THREEMA_CHANNEL_START_NEWS_COMMAND = "Start News";
 	private static final String THREEMA_CHANNEL_START_ANDROID_COMMAND = "Start Android";

@@ -277,11 +277,13 @@ public class DNDUtil {
 					NotificationChannelGroupCompat notificationChannelGroupCompat = notificationManagerCompat.getNotificationChannelGroupCompat(groupName);
 					if (notificationChannelGroupCompat != null) {
 						if (notificationChannelGroupCompat.isBlocked()) {
+							logger.info("Notification channel group is blocked");
 							return true;
 						}
 					}
 				}
 				canBypassDND = notificationChannelCompat.canBypassDnd();
+				logger.info("Notification channel can bypass DND = {}", canBypassDND);
 			}
 		}
 
@@ -290,10 +292,13 @@ public class DNDUtil {
 				/* we do not play a ringtone sound if system-wide DND is enabled - except for starred contacts */
 				switch (notificationManager.getCurrentInterruptionFilter()) {
 					case NotificationManager.INTERRUPTION_FILTER_NONE:
+						logger.info("Interruption filter set to NONE");
 						isSystemMuted = true;
 						break;
 					case NotificationManager.INTERRUPTION_FILTER_PRIORITY:
+						logger.info("Interruption filter set to PRIORITY");
 						isSystemMuted = !isStarredContact(messageReceiver);
+						logger.info("Contact is starred = {}", !isSystemMuted);
 						break;
 					default:
 						break;

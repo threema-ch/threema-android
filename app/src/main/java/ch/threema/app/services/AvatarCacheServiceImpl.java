@@ -197,6 +197,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 			}
 			return requestBuilder.submit().get();
 		} catch (ExecutionException | InterruptedException e) {
+			logger.error("Error while getting avatar bitmap", e);
 			Thread.currentThread().interrupt();
 			return null;
 		}

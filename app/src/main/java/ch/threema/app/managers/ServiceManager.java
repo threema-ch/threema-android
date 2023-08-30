@@ -310,6 +310,10 @@ public class ServiceManager {
 			this.connection.setMessageProcessor(this.getMessageProcessor());
 		}
 
+		if (this.connection.getForwardSecurityMessageProcessor() == null) {
+			this.connection.setForwardSecurityMessageProcessor(this.getForwardSecurityMessageProcessor());
+		}
+
 		//add message ACK processor
 		getMessageAckProcessor().setMessageService(this.getMessageService());
 		connection.addMessageAckListener(getMessageAckProcessor());

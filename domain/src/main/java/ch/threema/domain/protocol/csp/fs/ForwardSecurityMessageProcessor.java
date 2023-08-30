@@ -68,6 +68,63 @@ public class ForwardSecurityMessageProcessor {
 	private final @NonNull MessageQueue messageQueue;
 	private final @NonNull ForwardSecurityFailureListener failureListener;
 
+	/**
+	 * When decrypting a message, we get this decryption result. It contains the unencrypted message
+	 * as well as information about the forward security session. This information is used to
+	 * finalize the peer ratchet state after the message has been completely processed.
+	 */
+	public static class ForwardSecurityDecryptionResult {
+		/**
+		 * The unencrypted message. Null if it is a forward security control message.
+		 */
+		public final @Nullable AbstractMessage message;
+
+		/**
+		 * The information to identify the ratchet that was used to decrypt the message.
+		 */
+		public final @Nullable PeerRatchetIdentifier peerRatchetIdentifier;
+
+		public static final ForwardSecurityDecryptionResult NONE = new ForwardSecurityDecryptionResult(null, null);
+
+		public ForwardSecurityDecryptionResult(
+			@Nullable AbstractMessage message,
+			@Nullable PeerRatchetIdentifier peerRatchetIdentifier
+		) {
+			this.message = message;
+			this.peerRatchetIdentifier = peerRatchetIdentifier;
+		}
+	}
+
+	/**
+	 * Contains the information about the session and ratchet that was used to decrypt a message.
+	 */
+	public static class PeerRatchetIdentifier {
+		/**
+		 * The session id of the dh session.
+		 */
+		public final @NonNull DHSessionId sessionId;
+
+		/**
+		 * The peer identity of the session.
+		 */
+		public final @NonNull String peerIdentity;
+
+		/**
+		 * The dh type of the received message.
+		 */
+		public final @NonNull Encapsulated.DHType dhType;
+
+		public PeerRatchetIdentifier(
+			@NonNull DHSessionId sessionId,
+			@NonNull String peerIdentity,
+			@NonNull Encapsulated.DHType dhType
+		) {
+			this.sessionId = sessionId;
+			this.peerIdentity = peerIdentity;
+			this.dhType = dhType;
+		}
+	}
+
 	private interface ForwardSecurityStatusWrapper extends ForwardSecurityStatusListener {
 		void setStatusListener(ForwardSecurityStatusListener forwardSecurityStatusListener);
 	}
@@ -222,7 +279,9 @@ public class ForwardSecurityMessageProcessor {
 				logger.error("Unable to delete DH session", e);
 			}
 			// Show a status message to the user
-			statusListener.postIllegalSessionState(sessionId, contact);
+			if (contact != null) {
+				statusListener.postIllegalSessionState(sessionId, contact);
+			}
 		});
 	}
 
@@ -234,7 +293,7 @@ public class ForwardSecurityMessageProcessor {
 	 *
 	 * @return Decapsulated message, if any, or null in case of a control message that has been consumed and does not need further processing
 	 */
-	public synchronized @Nullable AbstractMessage processEnvelopeMessage(
+	public synchronized @NonNull ForwardSecurityDecryptionResult processEnvelopeMessage(
 		@NonNull Contact sender,
 		@NonNull ForwardSecurityEnvelopeMessage envelopeMessage
 	) throws ThreemaException, BadMessageException {
@@ -255,7 +314,7 @@ public class ForwardSecurityMessageProcessor {
 			throw new UnknownMessageTypeException("Unsupported message type");
 		}
 
-		return null;
+		return ForwardSecurityDecryptionResult.NONE;
 	}
 
 	public synchronized @NonNull ForwardSecurityEnvelopeMessage makeMessage(
@@ -395,11 +454,46 @@ public class ForwardSecurityMessageProcessor {
 	}
 
 	/**
+	 * Turn and commit the peer ratchet. Call this method after an incoming message has been
+	 * processed completely.
+	 *
+	 * @param peerRatchetIdentifier the information needed to identify the corresponding ratchet
+	 */
+	public synchronized void commitPeerRatchet(@NonNull PeerRatchetIdentifier peerRatchetIdentifier) throws DHSessionStoreException {
+		DHSessionId sessionId = peerRatchetIdentifier.sessionId;
+		String peerIdentity = peerRatchetIdentifier.peerIdentity;
+		Encapsulated.DHType dhType = peerRatchetIdentifier.dhType;
+
+		DHSession session = dhSessionStoreInterface.getDHSession(identityStoreInterface.getIdentity(), peerIdentity, sessionId);
+		if (session == null) {
+			logger.warn("Could not find session {}. Ratchet of type {} can not be turned for the last received message from {}", sessionId, dhType, peerIdentity);
+			return;
+		}
+
+		KDFRatchet ratchet = null;
+		switch (dhType) {
+			case TWODH:
+				ratchet = session.getPeerRatchet2DH();
+				break;
+			case FOURDH:
+				ratchet = session.getPeerRatchet4DH();
+				break;
+		}
+		if (ratchet == null) {
+			logger.warn("Ratchet of type {} is null in session {} with contact {}", dhType, sessionId, peerIdentity);
+			return;
+		}
+
+		ratchet.turn();
+		dhSessionStoreInterface.storeDHSession(session);
+	}
+
+	/**
 	 * Clear all sessions with the peer contact and send a terminate message for each of those.
 	 *
 	 * @param contact the peer contact
 	 */
-	public void clearAndTerminateAllSessions(@NonNull Contact contact, @NonNull Terminate.Cause cause) {
+	public synchronized void clearAndTerminateAllSessions(@NonNull Contact contact, @NonNull Terminate.Cause cause) {
 		try {
 			String myIdentity = identityStoreInterface.getIdentity();
 			String peerIdentity = contact.getIdentity();
@@ -507,19 +601,19 @@ public class ForwardSecurityMessageProcessor {
 		statusListener.rejectReceived(reject, contact, session, statusListener.hasForwardSecuritySupport(contact));
 	}
 
-	private @Nullable AbstractMessage processMessage(@NonNull Contact contact, @NonNull ForwardSecurityEnvelopeMessage envelopeMessage)
+	private @NonNull ForwardSecurityDecryptionResult processMessage(@NonNull Contact contact, @NonNull ForwardSecurityEnvelopeMessage envelopeMessage)
 		throws ThreemaException, BadMessageException {
 
-		ForwardSecurityDataMessage message = (ForwardSecurityDataMessage)envelopeMessage.getData();
+		final ForwardSecurityDataMessage message = (ForwardSecurityDataMessage)envelopeMessage.getData();
 
-		DHSession session = dhSessionStoreInterface.getDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), message.getSessionId());
+		final DHSession session = dhSessionStoreInterface.getDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), message.getSessionId());
 		if (session == null) {
 			// Session not found, probably lost local data or old message
 			logger.warn("No DH session found for message {} in session ID {} from {}", envelopeMessage.getMessageId(), message.getSessionId(), contact.getIdentity());
 			ForwardSecurityDataReject reject = new ForwardSecurityDataReject(message.getSessionId(), envelopeMessage.getMessageId(), Reject.Cause.UNKNOWN_SESSION);
 			sendMessageToContact(contact, reject);
 			statusListener.sessionForMessageNotFound(message.getSessionId(), envelopeMessage.getMessageId(), contact);
-			return null;
+			return ForwardSecurityDecryptionResult.NONE;
 		}
 
 		// Validate offered and applied version
@@ -534,7 +628,7 @@ public class ForwardSecurityMessageProcessor {
 			dhSessionStoreInterface.deleteDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), session.getId());
 			// TODO(SE-354): Should we supply an error cause for the UI here? Otherwise this looks as if the remote willingly terminated.
 			statusListener.sessionTerminated(message.getSessionId(), contact, false, true);
-			return null;
+			return ForwardSecurityDecryptionResult.NONE;
 		}
 
 		// Obtain appropriate ratchet and turn to match the message's counter value
@@ -561,7 +655,7 @@ public class ForwardSecurityMessageProcessor {
 			dhSessionStoreInterface.deleteDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), session.getId());
 			// TODO(SE-354): Should we supply an error cause for the UI here? Otherwise this looks as if the remote willingly terminated.
 			statusListener.sessionTerminated(message.getSessionId(), contact, false, true);
-			return null;
+			return ForwardSecurityDecryptionResult.NONE;
 		}
 
 		// We should already be at the correct ratchet count since we increment it after
@@ -588,7 +682,7 @@ public class ForwardSecurityMessageProcessor {
 			dhSessionStoreInterface.deleteDHSession(identityStoreInterface.getIdentity(), contact.getIdentity(), session.getId());
 			// TODO(SE-354): Should we supply an error cause for the UI here? Otherwise this looks as if the remote willingly terminated.
 			statusListener.sessionTerminated(message.getSessionId(), contact, false, true);
-			return null;
+			return ForwardSecurityDecryptionResult.NONE;
 		}
 
 		logger.debug("Decapsulated message from {} (message-id={}, mode={}, session={}, offered-version={}, applied-version={})",
@@ -605,10 +699,6 @@ public class ForwardSecurityMessageProcessor {
 		if (updatedVersionsSnapshot != null) {
 			statusListener.versionsUpdated(session, updatedVersionsSnapshot, contact);
 		}
-
-		// Turn the ratchet once, as we will not need the current encryption key anymore and the
-		// next message from the peer must have a ratchet count of at least one higher
-		ratchet.turn();
 
 		if (mode == ForwardSecurityMode.FOURDH) {
 			// If this was a 4DH message, then we should erase the 2DH peer ratchet, as we shall not
@@ -632,14 +722,21 @@ public class ForwardSecurityMessageProcessor {
 			}
 		}
 
-		// Save session, as ratchets and negotiated version may have changed
+		// Save session, as ratchets and negotiated version may have changed. Note that the peer
+		// ratchet is not yet turned at this point. This is required for being able to reprocess the
+		// last message when processing it is aborted.
 		dhSessionStoreInterface.storeDHSession(session);
 
-		// Decode inner message and pass it to processor
+		// Decode inner message
 		AbstractMessage innerMsg = new MessageCoder(contactStore, identityStoreInterface)
 			.decodeEncapsulated(plaintext, envelopeMessage, processedVersions.appliedVersion, contact);
 		innerMsg.setForwardSecurityMode(mode);
-		return innerMsg;
+
+		// Collect the information needed to identify the used ratchet
+		PeerRatchetIdentifier ratchetIdentifier = new PeerRatchetIdentifier(session.getId(), contact.getIdentity(), message.getType());
+
+		// Pass the inner message and the ratchet information to the message processor
+		return new ForwardSecurityDecryptionResult(innerMsg, ratchetIdentifier);
 	}
 
 	private void processTerminate(@NonNull Contact contact, @NonNull ForwardSecurityDataTerminate message) throws DHSessionStoreException {

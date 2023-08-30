@@ -378,6 +378,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 * picture set, the blob ID is {@link ContactModel#NO_PROFILE_PICTURE_BLOB_ID}.
 	 */
 	@NonNull
+	@WorkerThread
 	ProfilePictureUploadData getUpdatedProfilePictureUploadData();
 	boolean updateProfilePicture(ContactSetProfilePictureMessage msg);
 	boolean deleteProfilePicture(ContactDeleteProfilePictureMessage msg);

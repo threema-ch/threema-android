@@ -1566,6 +1566,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		final Uri ringtoneUri = this.ringtoneService.getVoiceCallRingtone(messageReceiver.getUniqueIdString());
 
 		if (ringtoneUri != null) {
+			logger.info("Ringtone Uri = {}", ringtoneUri);
 			if (ringtonePlayer != null) {
 				stopRingtone();
 			}
@@ -1585,6 +1586,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 						if (ringtonePlayer != null) {
 							try {
 								ringtonePlayer.start();
+								logger.info("Ringtone player playing {}", ringtoneUri);
 							} catch (IllegalStateException e) {
 								logger.error("Unable to play ringtone", e);
 							}
@@ -1602,14 +1604,21 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 					ringtonePlayer.setDataSource(appContext, ringtoneUri);
 					ringtonePlayer.prepareAsync();
 				} catch (Exception e) {
+					logger.error("Exception preparing ringtone player", e);
 					stopRingtone();
 				}
+			} else {
+				logger.info("Not playing ringtone. isMuted = {}, isSystemMuted = {}", isMuted, isSystemMuted);
 			}
+		} else {
+			logger.info("No ringtone selected");
 		}
 	}
 
 	private synchronized void stopRingtone() {
 		if (ringtonePlayer != null) {
+			logger.info("Stopping ringtone player");
+
 			ringtonePlayer.stop();
 			ringtonePlayer.reset();
 			ringtonePlayer.release();

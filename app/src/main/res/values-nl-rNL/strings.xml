@@ -544,7 +544,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="prefs_sum_passphrase">Wachtwoordzin nodig om lokale versleuteling vrij te geven</string>
     <string name="prefs_title_masterkey_change_passphrase">Wachtwoordzin wijzigen</string>
     <string name="storage_total">Ruimte op interne opslag</string>
-    <string name="storage_threema">Gebruikt door Threema</string>
+    <string name="storage_threema">Gebruikt door %s</string>
     <string name="storage_total_free">Totale vrije ruimte</string>
     <string name="storage_total_in_use">In gebruik</string>
     <string name="one_year">1 jaar</string>
@@ -1368,7 +1368,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="forward_security_cleared">De Perfect Forward Secrecy-sessies met deze contactpersoon zijn gewist</string>
     <string name="message_without_forward_security">Er is een bericht zonder Perfect Forward Secrecy ontvangen. Controleer of de afzender Perfect Forward Secrecy opzettelijk heeft uitgeschakeld.</string>
     <string name="forward_security_established">De berichten in deze chat zijn nu beschermd met Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">De ontvangen berichten in deze chat zijn nu beschermd met Perfect Forward Secrecy. Door Perfect Forward Secrecy in de contactgegevens in te schakelen, zijn verzonden berichten ook beschermd.</string>
+    <string name="forward_security_established_rx">De ontvangen berichten in deze chat zijn nu beschermd met Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">De Perfect Forward Secrecy-sessie is gereset. Dit kan gebeuren wanneer de gesprekspartner een ander apparaat gebruikt of de app opnieuw installeert.</string>
     <string name="forward_security_reset_simple">De Perfect Forward Secrecy-sessie met deze contactpersoon is gereset.</string>
     <string name="forward_security_message_out_of_order">Er is een bericht buiten de volgorde ontvangen dat niet is versleuteld.</string>

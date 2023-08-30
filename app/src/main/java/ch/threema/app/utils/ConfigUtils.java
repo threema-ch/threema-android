@@ -239,7 +239,7 @@ public class ConfigUtils {
 
 	/* device creates distorted audio recordings with a 44.1kHz sampling rate */
 	public static boolean hasBrokenAudioRecorder() {
-		return ConfigUtils.isXiaomiDevice() && Build.MODEL.startsWith("Mi 9T");
+		return ConfigUtils.isXiaomiDevice() && "Mi 9T".equals(Build.MODEL);
 	}
 
 	public static boolean hasScopedStorage() {
@@ -334,8 +334,12 @@ public class ConfigUtils {
 						miuiVersion = 10;
 					} else if (version.startsWith("V11")) {
 						miuiVersion = 11;
-					} else if (version.startsWith("V12") || version.startsWith("V13")) {
+					} else if (version.startsWith("V12")) {
 						miuiVersion = 12;
+					} else if (version.startsWith("V13")) {
+						miuiVersion = 13;
+					} else if  (version.startsWith("V14")) {
+						miuiVersion = 14;
 					}
 				}
 			} catch (Exception ignored) { }

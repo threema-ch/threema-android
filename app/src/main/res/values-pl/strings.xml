@@ -542,7 +542,7 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="prefs_sum_passphrase">Wymagaj hasła w celu odblokowania lokalnego szyfrowania</string>
     <string name="prefs_title_masterkey_change_passphrase">Zmień hasło</string>
     <string name="storage_total">Przestrzeń w pamięci wewnętrznej</string>
-    <string name="storage_threema">Wykorzystana przez Threema</string>
+    <string name="storage_threema">Wykorzystana przez %s</string>
     <string name="storage_total_free">Wolna przestrzeń łącznie</string>
     <string name="storage_total_in_use">Wykorzystana</string>
     <string name="one_year">1 rok</string>
@@ -1380,7 +1380,7 @@ anonimowo?</string>
     <string name="forward_security_cleared">Sesje Perfect Forward Secrecy z tym kontaktem zostały wyczyszczone</string>
     <string name="message_without_forward_security">Odebrano wiadomość bez Perfect Forward Secrecy. Sprawdź, że nadawca rozmyślnie wyłączył Perfect Forward Secrecy.</string>
     <string name="forward_security_established">Wiadomości w tym czacie są teraz chronione przez Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">Wiadomości odbierane w tym czacie są teraz chronione przez Perfect Forward Secrecy. Włącz Perfect Forward Secrecy w danych kontaktu, aby chronić również wysyłane wiadomości.</string>
+    <string name="forward_security_established_rx">Wiadomości odbierane w tym czacie są teraz chronione przez Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Zresetowano sesję Perfect Forward Secrecy. Może się to zdarzyć, gdy partner na czacie zmienił urządzenia lub ponownie zainstalował aplikację.</string>
     <string name="forward_security_reset_simple">Zresetowano sesję Perfect Forward Secrecy z tym kontaktem.</string>
     <string name="forward_security_message_out_of_order">Wiadomość została odebrana poza kolejnością i nie można jej odszyfrować.</string>

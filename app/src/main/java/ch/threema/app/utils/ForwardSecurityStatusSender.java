@@ -146,24 +146,12 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 
 	@Override
 	public void messagesSkipped(@Nullable DHSessionId sessionId, @NonNull Contact contact, int numSkipped) {
-		postStatusMessageDebug(String.format("Skipped %s messages (session-id=%s)", numSkipped, sessionId), contact);
+		logger.info("Skipped {} messages from contact {} (session-id={})", numSkipped, contact.getIdentity(), sessionId);
 	}
 
 	@Override
 	public void messageOutOfOrder(@Nullable DHSessionId sessionId, @NonNull Contact contact, @Nullable MessageId messageId) {
-		postStatusMessageDebug(String.format("Message out of order (session-id=%s, message-id=%s)", sessionId, messageId), contact);
-
-		if (messageId != null && hasLastMessageId(contact, messageId)) {
-			// If the latest message of a contact is processed again, it cannot be decrypted again due to FS. It is very
-			// likely that the message has been processed but could not be acknowledged on the server. Therefore we do
-			// not show a warning if the message is already displayed in the chat.
-			logger.warn("The latest message with id '{}' was processed twice. Ignoring the second message.", messageId);
-			if (debug) {
-				postStatusMessageDebug(String.format("The latest message with was processed twice (message-id=%s)", messageId), contact);
-			}
-		} else {
-			postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER);
-		}
+		postStatusMessageDebug(String.format("Message out of order (session-id=%s, message-id=%s). Please report this to the Android Team!", sessionId, messageId), contact);
 	}
 
 	@Override
@@ -293,58 +281,6 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 			ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
 			messageService.createForwardSecurityStatus(receiver, type, quantity, null);
 		}
-	}
-
-	private boolean hasLastMessageId(@NonNull Contact contact, @NonNull MessageId messageId) {
-		ContactMessageReceiver r = contactService.createReceiver(contactService.getByIdentity(contact.getIdentity()));
-
-		List<AbstractMessageModel> messageModels = this.messageService.getMessagesForReceiver(r, new MessageService.MessageFilter() {
-			@Override
-			public long getPageSize() {
-				return 1;
-			}
-
-			@Override
-			public Integer getPageReferenceId() {
-				return null;
-			}
-
-			@Override
-			public boolean withStatusMessages() {
-				return false;
-			}
-
-			@Override
-			public boolean withUnsaved() {
-				return false;
-			}
-
-			@Override
-			public boolean onlyUnread() {
-				return false;
-			}
-
-			@Override
-			public boolean onlyDownloaded() {
-				return false;
-			}
-
-			@Override
-			public MessageType[] types() {
-				return null;
-			}
-
-			@Override
-			public int[] contentTypes() {
-				return null;
-			}
-		});
-
-		if (messageModels != null && !messageModels.isEmpty()) {
-			return messageId.toString().equals(messageModels.get(0).getApiMessageId());
-		}
-
-		return false;
 	}
 
 }

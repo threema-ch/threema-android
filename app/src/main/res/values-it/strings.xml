@@ -561,7 +561,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="prefs_sum_passphrase">È richiesta una passphrase per sbloccare il criptaggio locale</string>
     <string name="prefs_title_masterkey_change_passphrase">Cambia passphrase</string>
     <string name="storage_total">"Spazio nella memoria interna "</string>
-    <string name="storage_threema">Usato da Threema</string>
+    <string name="storage_threema">Usato da %s</string>
     <string name="storage_total_free">Spazio libero totale</string>
     <string name="storage_total_in_use">In uso</string>
     <string name="one_year">1 anno</string>
@@ -1376,7 +1376,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="forward_security_cleared">Le sessioni Perfect Forward Secrecy con questo contatto sono state cancellate</string>
     <string name="message_without_forward_security">È stato ricevuto un messaggio senza Perfect Forward Secrecy. Assicurati che il mittente abbia volutamente disattivato il Perfect Forward Secrecy.</string>
     <string name="forward_security_established">I messaggi di questa chat sono d\'ora in poi protetti da Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">I messaggi ricevuti in questa chat sono d\'ora in poi protetti da Perfect Forward Secrecy. Attiva Perfect Forward Secrecy nei dettagli contatto per proteggere anche i messaggi inviati.</string>
+    <string name="forward_security_established_rx">I messaggi ricevuti in questa chat sono d\'ora in poi protetti da Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">La sessione Perfect Forward Secrecy con questo contatto è stata reimpostata. Ciò può succedere se il contatto ha cambiato dispositivo o reinstallato l\'app.</string>
     <string name="forward_security_reset_simple">La sessione di Perfect Forward Secrecy con questo contatto è stata reimpostata.</string>
     <string name="forward_security_message_out_of_order">Un messaggio è stato ricevuto nell\'ordine sbagliato e quindi non è potuto essere criptato.</string>

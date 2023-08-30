@@ -57,6 +57,8 @@ import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
 import ch.threema.domain.protocol.csp.connection.MessageProcessorInterface;
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor.ForwardSecurityDecryptionResult;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor.PeerRatchetIdentifier;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
@@ -178,42 +180,53 @@ public class MessageProcessor implements MessageProcessorInterface {
 				if (this.blackListService != null && this.blackListService.has(msg.getFromIdentity())) {
 					logger.debug("Direct message from {}: Contact blacklisted. Ignoring", msg.getFromIdentity());
 					//ignore message of blacklisted member
-					return ProcessIncomingResult.processed(msg.getType());
+					return ProcessIncomingResult.processed(msg.getType(), null);
 				}
 			}
 
 			this.contactService.setActive(msg.getFromIdentity());
 
+			PeerRatchetIdentifier peerRatchet = null;
+
 			if (msg instanceof ForwardSecurityEnvelopeMessage) {
 				if (!ConfigUtils.isForwardSecurityEnabled()) {
 					logger.debug("PFS is disabled in build");
-					return ProcessIncomingResult.processed(msg.getType());
+					return ProcessIncomingResult.processed(msg.getType(), null);
 				}
 
 				// Decapsulate PFS message
 				final Contact contact = this.contactService.getByIdentity(msg.getFromIdentity());
 				if (contact == null) {
 					logger.debug("Ignoring FS message from unknown identity {}", msg.getFromIdentity());
-					return ProcessIncomingResult.processed();
+					return ProcessIncomingResult.processed(null);
 				}
-				AbstractMessage decapMessage = forwardSecurityMessageProcessor.processEnvelopeMessage(contact, (ForwardSecurityEnvelopeMessage) msg);
-				if (decapMessage != null) {
+				ForwardSecurityDecryptionResult result = forwardSecurityMessageProcessor.processEnvelopeMessage(contact, (ForwardSecurityEnvelopeMessage) msg);
+				peerRatchet = result.peerRatchetIdentifier;
+				if (result.message != null) {
 					// Replace current abstract message with decapsulated version
-					msg = decapMessage;
+					msg = result.message;
 				} else {
 					// Control message processed; nothing left to do
-					return ProcessIncomingResult.processed();
+					return ProcessIncomingResult.processed(null, peerRatchet);
 				}
+
+				logger.info(
+					"Processing decrypted message {} from {} to {} (type {})",
+					msg.getMessageId(),
+					msg.getFromIdentity(),
+					msg.getToIdentity(),
+					Utils.byteToHex((byte) msg.getType(), true, true)
+				);
 			} else {
 				forwardSecurityMessageProcessor.warnIfMessageWithoutForwardSecurityReceived(msg);
 			}
 
 			if (msg instanceof TypingIndicatorMessage) {
-				return processTypingIndicatorMessage((TypingIndicatorMessage) msg);
+				return processTypingIndicatorMessage((TypingIndicatorMessage) msg, peerRatchet);
 			} else if (msg instanceof DeliveryReceiptMessage) {
-				return processDeliveryReceiptMessage((DeliveryReceiptMessage)msg);
+				return processDeliveryReceiptMessage((DeliveryReceiptMessage)msg, peerRatchet);
 			} else if (msg instanceof GroupDeliveryReceiptMessage) {
-				return processGroupDeliveryReceiptMessage((GroupDeliveryReceiptMessage)msg);
+				return processGroupDeliveryReceiptMessage((GroupDeliveryReceiptMessage)msg, peerRatchet);
 			}
 
 			/* send delivery receipt (but not for non-queued messages or delivery receipts) */
@@ -229,7 +242,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 					)
 				) {
 					logger.info("Message {} discarded - from hidden contact with block unknown enabled", boxmsg.getMessageId());
-					return ProcessIncomingResult.processed(msg.getType());
+					return ProcessIncomingResult.processed(msg.getType(), peerRatchet);
 				}
 
 				switch(this.processAbstractMessage(msg)) {
@@ -239,21 +252,21 @@ public class MessageProcessor implements MessageProcessorInterface {
 					case FAILED:
 						return ProcessIncomingResult.failed();
 					case IGNORED:
-						return ProcessIncomingResult.processed(msg.getType());
+						return ProcessIncomingResult.processed(msg.getType(), peerRatchet);
 				}
 			}
 
-			return ProcessIncomingResult.processed(msg.getType());
+			return ProcessIncomingResult.processed(msg.getType(), peerRatchet);
 
 		} catch (MissingPublicKeyException e) {
 			if(this.preferenceService.isBlockUnknown()) {
 				//its ok, return true and save nothing
-				return ProcessIncomingResult.processed();
+				return ProcessIncomingResult.processed(null);
 			}
 
 			if(this.blackListService != null && this.blackListService.has(boxmsg.getFromIdentity())) {
 				//its ok, a black listed identity, save NOTHING
-				return ProcessIncomingResult.processed();
+				return ProcessIncomingResult.processed(null);
 			}
 
 			logger.error("Missing public key", e);
@@ -262,7 +275,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 		} catch (BadMessageException e) {
 			logger.error("Bad message", e);
 			logger.warn("Message {} error: invalid - dropping msg.", boxmsg.getMessageId());
-			return ProcessIncomingResult.processed();
+			return ProcessIncomingResult.processed(null);
 
 		} catch (Exception e) {
 			logger.error("Unknown exception while processing BoxedMessage", e);
@@ -270,16 +283,16 @@ public class MessageProcessor implements MessageProcessorInterface {
 		}
 	}
 
-	private ProcessIncomingResult processTypingIndicatorMessage(@NonNull TypingIndicatorMessage msg) {
+	private ProcessIncomingResult processTypingIndicatorMessage(@NonNull TypingIndicatorMessage msg, @Nullable PeerRatchetIdentifier peerRatchet) {
 		if (this.contactService.getByIdentity(msg.getFromIdentity()) != null) {
 			this.contactService.setIsTyping(msg.getFromIdentity(), msg.isTyping());
 		} else {
 			logger.debug("Ignoring typing indicator message from unknown identity {}", msg.getFromIdentity());
 		}
-		return ProcessIncomingResult.processed(msg.getType());
+		return ProcessIncomingResult.processed(msg.getType(), peerRatchet);
 	}
 
-	private ProcessIncomingResult processDeliveryReceiptMessage(@NonNull DeliveryReceiptMessage msg) {
+	private ProcessIncomingResult processDeliveryReceiptMessage(@NonNull DeliveryReceiptMessage msg, @Nullable PeerRatchetIdentifier peerRatchet) {
 		final @Nullable MessageState state;
 		switch (msg.getReceiptType()) {
 			case ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED:
@@ -309,10 +322,10 @@ public class MessageProcessor implements MessageProcessorInterface {
 		} else {
 			logger.warn("Message {} error: unknown delivery receipt type", msg.getMessageId());
 		}
-		return ProcessIncomingResult.processed(msg.getType());
+		return ProcessIncomingResult.processed(msg.getType(), peerRatchet);
 	}
 
-	private ProcessIncomingResult processGroupDeliveryReceiptMessage(@NonNull GroupDeliveryReceiptMessage msg) {
+	private ProcessIncomingResult processGroupDeliveryReceiptMessage(@NonNull GroupDeliveryReceiptMessage msg, @Nullable PeerRatchetIdentifier peerRatchet) {
 		final @Nullable MessageState state;
 		switch (msg.getReceiptType()) {
 			case ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK:
@@ -328,7 +341,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 		if (state != null) {
 			if (groupService.runCommonGroupReceiveSteps(msg) != SUCCESS) {
 				// If the common group receive steps did not succeed, ignore this delivery receipt
-				return ProcessIncomingResult.processed(msg.getType());
+				return ProcessIncomingResult.processed(msg.getType(), peerRatchet);
 			}
 			for (MessageId msgId : msg.getReceiptMessageIds()) {
 				logger.info("Message {}: group delivery receipt for {} (state = {})", msg.getMessageId(), msgId, state);
@@ -337,7 +350,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 		} else {
 			logger.warn("Message {} error: unknown or unsupported delivery receipt type", msg.getMessageId());
 		}
-		return ProcessIncomingResult.processed(msg.getType());
+		return ProcessIncomingResult.processed(msg.getType(), peerRatchet);
 	}
 
 	private boolean processBallotVoteInterface(BallotVoteInterface msg) throws NotAllowedException {

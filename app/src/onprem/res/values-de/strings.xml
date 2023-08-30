@@ -31,8 +31,8 @@
 	<string name="private_threema_download"><![CDATA[Wenn Sie die App privat nutzen möchten, laden Sie Threema bitte <a href="https://play.google.com/store/apps/details?id=ch.threema.app">hier</a> herunter.]]></string>
 	<string name="safe_configure_server_explain">Speichern Sie Ihr Threema Safe-Backup auf dem Server Ihrer Organisation, oder legen Sie einen anderen Backup-Server fest.</string>
 	<string name="directory_search">Im Verzeichnis suchen</string>
-	<string name="directory_title">Firmenverzeichnis</string>
-	<string name="directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Firmenverzeichnis zu beginnen oder wählen Sie eine Kategorie, indem Sie auf das Filter-Symbol tippen.</string>
+	<string name="directory_title">Unternehmensverzeichnis</string>
+	<string name="directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Unternehmensverzeichnis zu beginnen oder wählen Sie eine Kategorie, indem Sie auf das Filter-Symbol tippen.</string>
 	<string name="share_with_app">Mit Threema OnPrem teilen</string>
 </resources>
 

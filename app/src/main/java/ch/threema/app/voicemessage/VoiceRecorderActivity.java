@@ -376,6 +376,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 		if (mediaRecorder != null) {
 			mediaRecorder.reset();   // clear recorder configuration
 			mediaRecorder.release(); // release the recorder object
+			logger.info("MediaRecorder released {}", mediaRecorder);
 			mediaRecorder = null;
 		}
 	}
@@ -484,13 +485,13 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 
 		audioRecorder = new AudioRecorder(this);
 		audioRecorder.setOnStopListener(this);
-		logger.info("new audioRecorder instance {}", audioRecorder);
 		try {
+			logger.info("Now recording to {}", uri);
 			mediaRecorder = audioRecorder.prepare(uri, MAX_VOICE_MESSAGE_LENGTH_MILLIS,
 				scoAudioState == AudioManager.SCO_AUDIO_STATE_CONNECTED ?
 				BLUETOOTH_SAMPLING_RATE_HZ :
 				getDefaultSamplingRate());
-			logger.info("Started recording with mediaRecorder instance {}", this.mediaRecorder);
+			logger.info("Started recording with {}", this.mediaRecorder);
 			if (mediaRecorder != null) {
 				startTimestamp = System.nanoTime();
 				mediaRecorder.start();
@@ -526,6 +527,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 			// stop recording and release recorder
 			try {
 				if (mediaRecorder != null) {
+					logger.info("Stopped recording with {}", mediaRecorder);
 					mediaRecorder.stop();  // stop the recording
 				}
 				recordingDuration = getRecordingDuration() + 1;
@@ -557,7 +559,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 					try {
 						mediaRecorder.pause();  // pause the recording
 					} catch (Exception e) {
-						logger.warn(
+						logger.error(
 							"Unexpected MediaRecorder Exception while pausing recording audio",
 							e
 						);
@@ -571,7 +573,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 					try {
 						mediaPlayer.pause();  // pause the recording
 					} catch (Exception e) {
-						logger.warn(
+						logger.error(
 							"Unexpected MediaRecorder Exception while pausing playing audio",
 							e
 						);
@@ -610,6 +612,7 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	 * @return Duration in ms or 0 if the media player was unable to open this file
 	 */
 	private int getDurationFromFile() {
+		logger.info("Attempting to retrieve duration from file {}", uri);
 		MediaPlayer durationCheckMediaPlayer = MediaPlayer.create(this, uri);
 		if (durationCheckMediaPlayer != null) {
 			int duration = durationCheckMediaPlayer.getDuration();
@@ -617,6 +620,8 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 				logger.info("Duration check returned 0");
 			}
 			durationCheckMediaPlayer.release();
+			logger.info("Duration in ms {}", duration);
+
 			return duration;
 		}
 		logger.info("Unable to create a media player for checking size. File already deleted by OS?");

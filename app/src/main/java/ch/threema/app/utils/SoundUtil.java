@@ -56,7 +56,7 @@ public class SoundUtil {
 				.setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
 				.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
 				.build());
-			mediaPlayer.setVolume(0.3f, 0.3f);
+			mediaPlayer.setVolume(0.1f, 0.1f);
 			mediaPlayer.setStateListener(new MediaPlayerStateWrapper.StateListener() {
 				@Override
 				public void onCompletion(MediaPlayer mp) {
@@ -98,7 +98,7 @@ public class SoundUtil {
 	 */
 	public static AudioAttributes getAudioAttributesForCallNotification() {
 		return new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-			.setUsage(AudioAttributes.USAGE_NOTIFICATION)
+			.setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
 			.setFlags(FLAG_BYPASS_INTERRUPTION_POLICY)
 			.build();
 	}

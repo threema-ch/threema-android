@@ -1169,12 +1169,21 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
+	@WorkerThread
 	@NonNull
 	public ProfilePictureUploadData getUpdatedProfilePictureUploadData() {
-		Bitmap contactPhoto = getMyProfilePicture();
+		Bitmap contactPhoto;
+		try {
+			contactPhoto = getMyProfilePicture();
+		} catch (ThreemaException e) {
+			logger.error("Could not get my profile picture", e);
+			// Returning empty profile picture upload data means no set or delete profile picture
+			// message will be sent.
+			return new ProfilePictureUploadData();
+		}
 		if (contactPhoto == null) {
-			// If there is no profile picture set, then return empty upload data with an empty
-			// byte array as blob ID.
+			// If there is no profile picture set, then return empty upload data with an empty byte
+			// array as blob ID. This means, that a delete-profile-picture message will be sent.
 			ProfilePictureUploadData data = new ProfilePictureUploadData();
 			data.blobId = ContactModel.NO_PROFILE_PICTURE_BLOB_ID;
 			return data;
@@ -1207,10 +1216,15 @@ public class ContactServiceImpl implements ContactService {
 		}
 	}
 
+	@WorkerThread
 	@Nullable
-	private Bitmap getMyProfilePicture() {
-		ContactModel myContactModel = getByIdentity(getMe().getIdentity());
-		return getAvatar(myContactModel, true, false);
+	private Bitmap getMyProfilePicture() throws ThreemaException {
+		ContactModel myContactModel = getMe();
+		Bitmap myProfilePicture = getAvatar(myContactModel, true, false);
+		if (myProfilePicture == null && fileService.hasContactAvatarFile(myContactModel)) {
+			throw new ThreemaException("Could not load profile picture despite having set one");
+		}
+		return myProfilePicture;
 	}
 
 	@Nullable

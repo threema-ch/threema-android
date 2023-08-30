@@ -539,7 +539,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="prefs_sum_passphrase">Yerel şifrelemenin kilidini açmak için bir parola iste</string>
     <string name="prefs_title_masterkey_change_passphrase">Parolayı değiştir</string>
     <string name="storage_total">Dahili depolama alanı</string>
-    <string name="storage_threema">Threema tarafından kullanılan</string>
+    <string name="storage_threema">%s tarafından kullanılan</string>
     <string name="storage_total_free">Toplam boş alan</string>
     <string name="storage_total_in_use">Kullanımda</string>
     <string name="one_year">1 yıl</string>
@@ -1361,7 +1361,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="forward_security_cleared">Bu kişiyle Mükemmel İletme Gizliliği oturumları temizlendi</string>
     <string name="message_without_forward_security">Mükemmel İletme Gizliliği olmayan bir mesaj alındı. Gönderenin Mükemmel İletme Gizliliğini kasıtlı olarak devre dışı bıraktığını doğrulayın.</string>
     <string name="forward_security_established">Bu sohbetteki mesajlar artık Mükemmel İletme Gizliliği ile korunmaktadır.</string>
-    <string name="forward_security_established_rx">Bu sohbette alınan mesajlar artık Mükemmel İletme Gizliliği ile korunmaktadır. Gönderilen mesajları da korumak için iletişim ayrıntılarında Mükemmel İletme Gizliliğini etkinleştirin.</string>
+    <string name="forward_security_established_rx">Bu sohbette alınan mesajlar artık Mükemmel İletme Gizliliği ile korunmaktadır.</string>
     <string name="forward_security_reset">Mükemmel İletme Gizliliği oturumu sıfırlandı. Bu, sohbet ortağı cihazları değiştirdiğinde veya uygulamayı yeniden yüklediğinde meydana gelebilir.</string>
     <string name="forward_security_reset_simple">Bu kişiyle Mükemmel İletme Gizliliği oturumu sıfırlandı.</string>
     <string name="forward_security_message_out_of_order">Düzensiz bir mesaj alındı ​​ve şifresi çözülemedi.</string>

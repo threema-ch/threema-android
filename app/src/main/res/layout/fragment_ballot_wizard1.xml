@@ -36,34 +36,42 @@
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/ballotchoice_list_entry_height"
 		android:layout_marginBottom="@dimen/ballotchoice_bottom_margin"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"
 		android:layout_marginTop="2dp"
 		android:background="?android:attr/colorBackground"
 		android:minHeight="@dimen/ballotchoice_list_entry_height">
 
-		<ch.threema.app.ui.ComposeEditText
-			android:id="@+id/create_choice_name"
+		<com.google.android.material.textfield.TextInputLayout
+			style="@style/Threema.TextInputLayout.Compose"
+			android:id="@+id/textinputlayout_compose"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true"
 			android:layout_centerVertical="true"
-			android:layout_marginLeft="0dp"
-			android:layout_marginRight="4dp"
-			android:layout_toLeftOf="@+id/add_date"
+			android:layout_toLeftOf="@+id/create_choice"
+			android:layout_gravity="bottom"
+			android:outlineProvider="none">
+
+		<ch.threema.app.ui.ComposeEditText
+			style="@style/Threema.EditText.Compose"
+			android:id="@+id/create_choice_name"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
 			android:hint="@string/ballot_choice_add"
 			android:imeActionId="@integer/ime_wizard_add_choice"
 			android:imeActionLabel="+"
 			android:minHeight="@dimen/input_text_height"
-			android:paddingLeft="12dp"
+			android:paddingLeft="16dp"
 			android:paddingTop="3dp"
-			android:paddingRight="12dp"
+			android:paddingRight="80dp"
 			android:paddingBottom="4dp"
 			android:nextFocusDown="@id/create_choice_name"
 			android:singleLine="true"
 			android:textSize="16sp"
-			android:inputType="text"
-			android:background="@drawable/bubble_compose_surface_variant" />
+			android:inputType="text" />
+
+		</com.google.android.material.textfield.TextInputLayout>
 
 		<ImageButton
 			style="?android:attr/borderlessButtonStyle"

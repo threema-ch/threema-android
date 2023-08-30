@@ -77,7 +77,7 @@ public class MentionSelectorPopup extends PopupWindow implements MentionSelector
 	private final ContactModel allContactModel;
 	private final MentionSelectorListener mentionSelectorListener;
 	private ComposeEditText editText;
-	private int dividersHeight, viewableSpaceHeight;
+	private int viewableSpaceHeight;
 	private final TextWatcher textWatcher = new TextWatcher() {
 		private void run() {
 			dismiss();

@@ -526,7 +526,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_sum_passphrase">Pretender ina frasa secreta per la codaziun locala</string>
     <string name="prefs_title_masterkey_change_passphrase">Midar la frasa secreta</string>
     <string name="storage_total">Capacitad da memorisar interna</string>
-    <string name="storage_threema">Utilisà per Threema</string>
+    <string name="storage_threema">Utilisà per %s</string>
     <string name="storage_total_free">Arcun liber</string>
     <string name="storage_total_in_use">Vegn utilisà</string>
     <string name="one_year">1 onn</string>

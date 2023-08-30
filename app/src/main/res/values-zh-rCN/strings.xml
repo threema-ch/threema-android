@@ -558,7 +558,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="prefs_sum_passphrase">需要密码才能解锁本地加密</string>
     <string name="prefs_title_masterkey_change_passphrase">更改密码</string>
     <string name="storage_total">内部存储空间</string>
-    <string name="storage_threema">Threema 占用的空间</string>
+    <string name="storage_threema">%s 占用的空间</string>
     <string name="storage_total_free">总可用空间</string>
     <string name="storage_total_in_use">正在使用</string>
     <string name="one_year">1年</string>
@@ -1399,7 +1399,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="forward_security_cleared">与此联系人的完全正向保密会话已被清除</string>
     <string name="message_without_forward_security">您收到一条没有完全正向保密的消息，您可以验证发件人是否主动禁用完美前向保密。</string>
     <string name="forward_security_established">此会话中的消息现正受完全正向保密的保护。</string>
-    <string name="forward_security_established_rx">在此会话中收到的消息现正受完全正向保密的保护，您可以在联系人详细信息中启用完全正向保密来保护以后发送的消息。</string>
+    <string name="forward_security_established_rx">在此会话中收到的消息现正受完全正向保密的保护。</string>
     <string name="forward_security_reset">这个之前已启用 “完全正向保密” 的会话，现被重置保密状态。如果对方更换了设备或重新安装此应用程序，就会重置保密状态。</string>
     <string name="forward_security_reset_simple">与此联系人的完全正向保密会话已重置。</string>
     <string name="forward_security_message_out_of_order">解密新收到的消息发生错误，无法解密。</string>

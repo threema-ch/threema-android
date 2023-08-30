@@ -11,26 +11,24 @@
 
 	<LinearLayout
         android:id="@+id/permission_progress"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-		android:orientation="horizontal"
-		android:gravity="center_vertical"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintBottom_toTopOf="@id/permission_title" />
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:gravity="center_horizontal"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintWidth_percent="0.2"/>
 
 	<TextView
 		android:id="@+id/permission_title"
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="16dp"
 		android:gravity="center_horizontal|bottom"
 		android:textAlignment="center"
 		style="@style/Threema.TextAppearance.Title"
 		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintVertical_bias="0.4" />
+		app:layout_constraintStart_toEndOf="@id/permission_progress"
+		app:layout_constraintEnd_toEndOf="parent"/>
 
 	<ScrollView
 		android:layout_width="0dp"
@@ -38,8 +36,8 @@
 		android:layout_marginTop="16dp"
 		android:padding="16dp"
 		app:layout_constraintTop_toBottomOf="@id/permission_title"
+		app:layout_constraintStart_toEndOf="@id/permission_progress"
 		app:layout_constraintBottom_toTopOf="@id/permission_continue"
-		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintEnd_toEndOf="parent">
 
 		<LinearLayout
@@ -74,7 +72,7 @@
 		android:layout_height="wrap_content"
 		android:text="@string/next"
 		style="@style/Threema.MaterialButton.Action"
-		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintStart_toEndOf="@id/permission_progress"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintBottom_toTopOf="@id/ignore_permission" />
 
@@ -84,7 +82,7 @@
 		android:layout_height="wrap_content"
 		android:text="@string/grant_permission_settings"
 		style="@style/Threema.MaterialButton.Action"
-		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintStart_toEndOf="@id/permission_progress"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintBottom_toTopOf="@id/ignore_permission" />
 
@@ -94,7 +92,7 @@
         android:layout_height="wrap_content"
         android:text="@string/grant_permission"
         style="@style/Threema.MaterialButton.Action"
-        app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintStart_toEndOf="@id/permission_progress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/ignore_permission" />
 
@@ -105,7 +103,7 @@
 		android:text="@string/ignore_permission"
 		style="@style/Threema.MaterialButton.Minimal"
 		app:layout_constraintBottom_toTopOf="@id/skip_permission"
-		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintStart_toEndOf="@id/permission_progress"
 		app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.button.MaterialButton
@@ -115,7 +113,7 @@
         android:text="@string/use_threema_without_this_permission"
         style="@style/Threema.MaterialButton.Minimal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+	    app:layout_constraintStart_toEndOf="@id/permission_progress"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

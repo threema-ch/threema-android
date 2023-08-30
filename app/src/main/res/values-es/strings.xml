@@ -543,7 +543,7 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="prefs_sum_passphrase">Requerir frase de seguridad para desbloquear cifrado local</string>
     <string name="prefs_title_masterkey_change_passphrase">Cambiar frase de seguridad</string>
     <string name="storage_total">Espacio de almacenamiento interno</string>
-    <string name="storage_threema">Utilizado por Threema</string>
+    <string name="storage_threema">Utilizado por %s</string>
     <string name="storage_total_free">Espacio libre total</string>
     <string name="storage_total_in_use">En uso</string>
     <string name="one_year">1 año</string>
@@ -681,7 +681,7 @@ almacenado.</string>
     <string name="action_clone_group">Clonar grupo</string>
     <string name="clone_group_message">Se creará un clon del grupo contigo como admiistrador. ¿Continuar?</string>
     <string name="prefs_proximity_sensor">Utilizar sensor de proximidad</string>
-    <string name="prefs_proximity_sensor_explain">Utilziar auricular para reproducir mensajes de voz si el sensor de proximidad está tapado</string>
+    <string name="prefs_proximity_sensor_explain">Utilizar auricular para reproducir mensajes de voz si el sensor de proximidad está tapado</string>
     <string name="error_creating_group">Error al crear el grupo</string>
     <string name="no_media_found_generic">No hay elementos multimedia en este chat que coincidan con la selección.</string>
     <string name="max_images_reached">Se pueden editar un máximo de %d elementos a la vez.</string>
@@ -1374,7 +1374,7 @@ almacenado.</string>
     <string name="forward_security_cleared">Se han borrado las sesiones Perfect Forward Secrecy con este contacto</string>
     <string name="message_without_forward_security">Se ha recibido un mensaje sin Perfect Forward Secrecy. Comprueba que el remitente ha desactivado el Perfect Forward Secrecy intencionadamente.</string>
     <string name="forward_security_established">Los mensajes de este chat están protegidos con Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">Los mensajes recibidos en este chat están protegidos con Perfect Forward Secrecy. Activa Perfect Forward Secrecy en los datos de los contactos para proteger también los mensajes enviados.</string>
+    <string name="forward_security_established_rx">Los mensajes recibidos en este chat están protegidos con Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Se ha restablecido la sesión de Perfect Forward Secrecy. Esto puede ocurrir si el compañero de chat cambia de dispositivo o reinstala la app.</string>
     <string name="forward_security_reset_simple">Se ha restablecido la sesión Perfect Forward Secrecy con este contacto.</string>
     <string name="forward_security_message_out_of_order">Se ha recibido un mensaje inadecuado y no se ha podido descifrar.</string>

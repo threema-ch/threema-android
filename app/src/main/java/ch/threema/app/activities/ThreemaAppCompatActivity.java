@@ -72,7 +72,7 @@ public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
 
 	@Override
 	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		int newDayNightMode = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+		int newDayNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
 		if (savedDayNightMode != newDayNightMode) {
 			savedDayNightMode = newDayNightMode;
 			ConfigUtils.setCurrentDayNightMode(newDayNightMode == UI_MODE_NIGHT_YES ? MODE_NIGHT_YES : MODE_NIGHT_NO);

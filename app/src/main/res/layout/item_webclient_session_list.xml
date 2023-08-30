@@ -38,6 +38,7 @@
 				android:visibility="gone"/>
 
 			<com.google.android.material.progressindicator.CircularProgressIndicator
+				style="@style/Widget.Material3.CircularProgressIndicator.Small"
 				android:id="@+id/session_loading"
 				android:indeterminate="true"
 				android:layout_width="@dimen/avatar_size_small"

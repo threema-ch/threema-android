@@ -101,7 +101,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 	private final Player.Listener playerListener = new Player.Listener() {
 			@Override
 			public void onIsLoadingChanged(boolean isLoading) {
-				logger.debug(isLoading ? "@ onLoading" : "@ onLoaded");
+				logger.info(isLoading ? "onLoading" : "onLoaded");
 			}
 
 			@Override
@@ -109,10 +109,10 @@ public class AudioMessagePlayer extends MessagePlayer {
 				MediaController mediaController = getMediaController();
 				if (mediaController != null) {
 					if (isPlaying) {
-						logger.debug("@ onPlay");
+						logger.info("onPlay");
 						makeResume(SOURCE_UI_TOGGLE);
 					} else if (mediaController.getPlaybackState() != Player.STATE_ENDED && playerMediaMatchesControllerMedia()) {
-						logger.debug("@ onPause");
+						logger.info("onPause");
 						makePause(SOURCE_UI_TOGGLE);
 					}
 				}
@@ -121,11 +121,11 @@ public class AudioMessagePlayer extends MessagePlayer {
 		@Override
 		public void onPlaybackStateChanged(int playbackState) {
 			if (playbackState == Player.STATE_ENDED) {
-				logger.debug("@ onStopped");
+				logger.info("onStopped");
 				AudioMessagePlayer.super.stop();
 				ListenerManager.messagePlayerListener.handle(listener -> listener.onAudioPlayEnded(getMessageModel()));
 			} else if (playbackState == Player.STATE_READY) {
-				logger.debug("@ onReady");
+				logger.info("onReady");
 				markAsConsumed();
 				prepared();
 			}
@@ -134,7 +134,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 		@Override
 		public void onPositionDiscontinuity(@NonNull Player.PositionInfo oldPosition, @NonNull Player.PositionInfo newPosition, int reason) {
 			if (reason == Player.DISCONTINUITY_REASON_SEEK) {
-				logger.debug("@ onSeekEnded {} {} {}", reason, oldPosition.positionMs, newPosition.positionMs);
+				logger.info("onSeekEnded {} {} {}", reason, oldPosition.positionMs, newPosition.positionMs);
 
 				// seek ended
 				if (oldPosition != newPosition) {
@@ -172,11 +172,10 @@ public class AudioMessagePlayer extends MessagePlayer {
 		this.position = 0;
 		this.duration = 0;
 
-		logger.debug("open uri = {}", decryptedFileUri);
+		logger.info("Open voice message file {}", decryptedFileUri);
 
 		MediaController mediaController = getMediaController();
 		if (mediaController != null) {
-
 			String displayName;
 			Bitmap artworkBitmap = null;
 			if (!this.preferenceService.isShowMessagePreview() || this.hiddenChatsListService.has(currentMessageReceiver.getUniqueIdString())) {
@@ -214,6 +213,10 @@ public class AudioMessagePlayer extends MessagePlayer {
 			mediaController.setPlayWhenReady(false);
 			mediaController.addListener(playerListener);
 			mediaController.prepare();
+
+			logger.info("MediaController prepared");
+		} else {
+			logger.info("Unable to get MediaController");
 		}
 	}
 
@@ -221,7 +224,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 	 * called after the media player was prepared
 	 */
 	private void prepared() {
-		logger.debug("prepared");
+		logger.info("Media Player is prepared");
 
 		MediaController mediaController = getMediaController();
 		if (mediaController == null) {
@@ -230,7 +233,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 
 		if (!playerMediaMatchesControllerMedia()) {
 			// another media player
-			logger.debug("another player instance");
+			logger.info("Player media does not match controller media");
 			return;
 		}
 
@@ -244,7 +247,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 				duration = (int) (((FileDataModel) d).getDurationSeconds() * SECOND_IN_MILLIS);
 			}
 		}
-		logger.debug("duration = {}", duration);
+		logger.info("Duration = {}", duration);
 
 		if (this.position > mediaController.getCurrentPosition()) {
 			mediaController.seekTo(this.position);
@@ -254,7 +257,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 	}
 
 	private void onSeekCompleted() {
-		logger.debug("play from position {}", this.position);
+		logger.info("Seek completed. Play from position {}", this.position);
 
 		MediaController mediaController = getMediaController();
 		if (mediaController != null) {
@@ -333,7 +336,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 
 	@Override
 	protected void play(final boolean autoPlay) {
-		logger.debug("play");
+		logger.info("Play button pressed");
 		if (this.state == State_PAUSE) {
 			MediaController mediaController = getMediaController();
 			if (mediaController != null) {
@@ -361,7 +364,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 	}
 
 	private void releasePlayer() {
-		logger.debug("releasePlayer");
+		logger.info("Release Player");
 
 		if (mediaPositionListener != null) {
 			logger.debug("mediaPositionListener.interrupt()");
@@ -372,7 +375,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 		MediaController mediaController = getMediaController();
 		if (mediaController != null) {
 			if (playerMediaMatchesControllerMedia()) {
-				logger.debug("mediaController stopped and cleared");
+				logger.info("MediaController stopped and cleared");
 				mediaController.stop();
 				mediaController.clearMediaItems();
 				this.position = 0;

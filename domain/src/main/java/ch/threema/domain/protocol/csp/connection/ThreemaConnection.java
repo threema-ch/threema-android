@@ -54,6 +54,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceCounter;
@@ -68,6 +69,7 @@ import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.Version;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ove.crypto.digest.Blake2b;
 
@@ -88,8 +90,9 @@ public class ThreemaConnection implements Runnable {
 
 	/* Delegate objects */
 	private final IdentityStoreInterface identityStore;
-	private final NonceFactory nonceFactory;
+	private final @NonNull NonceFactory nonceFactory;
 	private MessageProcessorInterface messageProcessor;
+	private @Nullable ForwardSecurityMessageProcessor forwardSecurityMessageProcessor;
 	private DeviceCookieManager deviceCookieManager;
 
 	/* Server address object */
@@ -134,7 +137,7 @@ public class ThreemaConnection implements Runnable {
 	 * @param ipv6 whether to use IPv4+IPv6 for connection, or only IPv4
 	 */
 	public ThreemaConnection(IdentityStoreInterface identityStore,
-							 NonceFactory nonceFactory,
+							 @NonNull NonceFactory nonceFactory,
 	                         ServerAddressProvider serverAddressProvider,
 	                         boolean ipv6) {
 		this.identityStore = identityStore;
@@ -149,7 +152,7 @@ public class ThreemaConnection implements Runnable {
 		timer = new Timer(/*"ThreemaConnectionTimer", */true);
 
 		ackListeners = new HashSet<>();
-		connectionStateListeners = new HashSet<>();
+		connectionStateListeners = new CopyOnWriteArraySet<>();
 		queueSendCompleteListeners = new CopyOnWriteArraySet<>();
 
 		lastAlertMessages = new HashSet<>();
@@ -165,6 +168,14 @@ public class ThreemaConnection implements Runnable {
 
 	public void setMessageProcessor(MessageProcessorInterface messageProcessor) {
 		this.messageProcessor = messageProcessor;
+	}
+
+	public @Nullable ForwardSecurityMessageProcessor getForwardSecurityMessageProcessor() {
+		return forwardSecurityMessageProcessor;
+	}
+
+	public void setForwardSecurityMessageProcessor(@NonNull ForwardSecurityMessageProcessor forwardSecurityMessageProcessor) {
+		this.forwardSecurityMessageProcessor = forwardSecurityMessageProcessor;
 	}
 
 	public void setServerAddressProvider(ServerAddressProvider serverAddressProvider) {
@@ -612,28 +623,22 @@ public class ThreemaConnection implements Runnable {
 	}
 
 	public void addConnectionStateListener(ConnectionStateListener listener) {
-		synchronized (connectionStateListeners) {
-			connectionStateListeners.add(listener);
-		}
+		connectionStateListeners.add(listener);
 	}
 
 	public void removeConnectionStateListener(ConnectionStateListener listener) {
-		synchronized (connectionStateListeners) {
-			connectionStateListeners.remove(listener);
-		}
+		connectionStateListeners.remove(listener);
 	}
 
 	private void setConnectionState(ConnectionState state) {
 		this.state = state;
 
 		if (curSocketAddressIndex < serverSocketAddresses.size()) {
-			synchronized (connectionStateListeners) {
-				for (ConnectionStateListener listener : connectionStateListeners) {
-					try {
-						listener.updateConnectionState(state, serverSocketAddresses.get(curSocketAddressIndex));
-					} catch (Exception e) {
-						logger.warn("Exception while invoking connection state listener", e);
-					}
+			for (ConnectionStateListener listener : connectionStateListeners) {
+				try {
+					listener.updateConnectionState(state, serverSocketAddresses.get(curSocketAddressIndex));
+				} catch (Exception e) {
+					logger.warn("Exception while invoking connection state listener", e);
 				}
 			}
 		}
@@ -784,8 +789,15 @@ public class ThreemaConnection implements Runnable {
 						this.nonceFactory.store(boxmsg.getNonce());
 					}
 
+					// As soon as the result has been processed and the nonce has been saved, we
+					// turn the peer ratchet and store it.
+					if (forwardSecurityMessageProcessor != null && result.wasProcessed() && result.getPeerRatchetIdentifier() != null) {
+						forwardSecurityMessageProcessor.commitPeerRatchet(result.getPeerRatchetIdentifier());
+					}
+
 					ackMessage = result.wasProcessed();
 				} else {
+					logger.info("Skipped processing message {} as its nonce has already been used", boxmsg.getMessageId());
 					// auto ack a already nonce'd message
 					ackMessage = true;
 				}

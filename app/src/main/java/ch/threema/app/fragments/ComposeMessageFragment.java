@@ -23,6 +23,7 @@ package ch.threema.app.fragments;
 
 import static android.view.WindowManager.LayoutParams.FLAG_SECURE;
 import static ch.threema.app.ThreemaApplication.getAppContext;
+import static ch.threema.app.activities.HomeActivity.THREEMA_CHANNEL_IDENTITY;
 import static ch.threema.app.adapters.ComposeMessageAdapter.MIN_CONSTRAINT_LENGTH;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_AUDIORECORDER;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_LIFECYCLE;
@@ -124,7 +125,9 @@ import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.elevation.ElevationOverlayProvider;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.slf4j.Logger;
@@ -1110,6 +1113,13 @@ public class ComposeMessageFragment extends Fragment implements
 				};
 				scrollList(0);
 			});
+
+			// tint the edittext manually as TextInputLayout does not currently support elevation
+			ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(activity);
+			TextInputLayout textInputLayout = fragmentView.findViewById(R.id.textinputlayout_compose);
+			textInputLayout.setBoxBackgroundColor(elevationOverlayProvider.compositeOverlayIfNeeded(
+				ConfigUtils.getColorFromAttribute(activity, R.attr.colorSurface),
+				getResources().getDimension(R.dimen.compose_edittext_elevation)));
 
 			this.getValuesFromBundle(savedInstanceState);
 			this.handleIntent(activity.getIntent());
@@ -2337,6 +2347,10 @@ public class ComposeMessageFragment extends Fragment implements
 			return false;
 		}
 
+		if (THREEMA_CHANNEL_IDENTITY.equals(contactModel.getIdentity())) {
+			return false;
+		}
+
 		if (composeMessageAdapter == null) {
 			return false;
 		}
@@ -3559,7 +3573,9 @@ public class ComposeMessageFragment extends Fragment implements
 				this.actionBarSubtitleTextView,
 				this.actionBarTitleTextView,
 				this.emojiMarkupUtil,
-				this.messageReceiver) || !requiredInstances()) {
+				this.messageReceiver,
+				isAdded(),
+				getActivity() != null) || !requiredInstances()) {
 			return;
 		}
 
@@ -4067,6 +4083,8 @@ public class ComposeMessageFragment extends Fragment implements
 			boolean hasDefaultRendering = false;
 
 			for (AbstractMessageModel message: selectedMessages) {
+				if (message == null) continue;
+
 				isQuotable = isQuotable && isQuotable(message);
 				showAsQRCode = showAsQRCode && canShowAsQRCode(message);
 				showAsText = showAsText && canShowAsText(message);

@@ -217,8 +217,8 @@
     <string name="prefs_header_other">Інше</string>
     <string name="an_error_occurred">Сталася помилка</string>
     <string name="an_error_occurred_more">Сталася помилка: \"%1$s\"</string>
-    <string name="acknowledge">Подобається</string>
-    <string name="decline">Не подобається</string>
+    <string name="acknowledge">Погоджуюся</string>
+    <string name="decline">Не погоджуюся</string>
     <string name="forward_message">Переслати повідомлення</string>
     <string name="file_is_not_a_image">Вибраний файл не є зображенням</string>
     <string name="connection_error">Не вдалося підключитися. Повторіть спробу пізніше.</string>
@@ -310,8 +310,8 @@
     <string name="backup_delete_confirm">Файл резервної копії видалено</string>
     <string name="message_log_title">Про повідомлення</string>
     <string name="state_read">прочитано</string>
-    <string name="state_ack">подобається</string>
-    <string name="state_dec">не подобається</string>
+    <string name="state_ack">погоджуюся</string>
+    <string name="state_dec">не погоджуюся</string>
     <string name="state_delivered">доставлено</string>
     <string name="state_sending">надсилання</string>
     <string name="state_pending">очікування</string>
@@ -492,7 +492,7 @@
     <string name="back">Назад</string>
     <string name="wearable_reply">Відповісти</string>
     <string name="wearable_reply_label">Відповісти \"%s\"</string>
-    <string name="message_acknowledged">\"Подобається\" надіслано</string>
+    <string name="message_acknowledged">\"Погоджуюся\" надіслано</string>
     <string name="push_disable_text">Якщо продовжити, замість системного сервісу push-сповіщень буде використовуватися сервіс Threema Push. Він допомагає зменшити цифровий слід, але для його роботи потрібно дозволити додатку працювати у фоновому режимі. Якщо ви не знайшли, як це зробити, у налаштуваннях системи, зверніться за допомогою до служби підтримки виробника пристрою.</string>
     <string name="ballot_intermediate_results_show">Показувати попередні результати</string>
     <string name="converting_video">Обробка відео</string>
@@ -562,7 +562,7 @@
     <string name="prefs_sum_passphrase">Запитувати парольну фразу для розшифрування локальних даних</string>
     <string name="prefs_title_masterkey_change_passphrase">Змінити парольну фразу</string>
     <string name="storage_total">Об\'єм внутрішньої пам\'яті</string>
-    <string name="storage_threema">Використовується Threema</string>
+    <string name="storage_threema">Використовується %s</string>
     <string name="storage_total_free">Вільно</string>
     <string name="storage_total_in_use">Зайнято</string>
     <string name="one_year">1 рік</string>
@@ -616,7 +616,7 @@
     <string name="permission_storage_required">Щоб зберігати та надсилати медіафайли, надайте Threema доступ до сховища.</string>
     <string name="permission_location_required">Щоб надіслати розташування, надайте Threema доступ до геоданих.</string>
     <string name="permission_contacts_required">Щоб надіслати контакти, надайте Threema доступ до них.</string>
-    <string name="message_declined">\"Не подобається\" надіслано</string>
+    <string name="message_declined">\"Не погоджуюся\" надіслано</string>
     <string name="notifications_settings">Налаштування сповіщень</string>
     <string name="notifications_default">Налаштування за умовчанням</string>
     <string name="notifications_until">До %s</string>
@@ -1599,13 +1599,13 @@
     </plurals>
     <plurals name="really_delete_outgoing_request">
         <item quantity="few">Справді видалити %d запити на приєднання до групи?
-			Зауважте, що запити не буде відкликано і вас можуть усе одно прийняти до групи,
+			Зауважте, що запити не буде відкликано і вас можуть усе одно прийняти або запросити до групи,
 			якщо на запити ще не відповіли.</item>
         <item quantity="many">Справді видалити %d запитів на приєднання до групи?
-			Зауважте, що запити не буде відкликано і вас можуть усе одно прийняти до групи,
+			Зауважте, що запити не буде відкликано і вас можуть усе одно прийняти або запросити до групи,
 			якщо на запити ще не відповіли.</item>
-        <item quantity="one">Справді видалити %d запит на приєднання до групи? Зауважте, що запит не буде відкликано і вас можуть усе одно прийняти до групи, якщо на запит ще не відповіли.</item>
-        <item quantity="other">Справді видалити %d запита на приєднання до групи? Зауважте, що запити не буде відкликано і вас можуть усе одно прийняти до групи, якщо на запити ще не відповіли.</item>
+        <item quantity="one">Справді видалити %d запит на приєднання до групи? Зауважте, що запит не буде відкликано і вас можуть усе одно прийняти або запросити до групи, якщо на запит ще не відповіли.</item>
+        <item quantity="other">Справді видалити %d запита на приєднання до групи? Зауважте, що запити не буде відкликано і вас можуть усе одно прийняти або запросити до групи, якщо на запити ще не відповіли.</item>
     </plurals>
     <plurals name="really_delete_incoming_request">
         <item quantity="few">Справді видалити %d запити на приєднання до групи?

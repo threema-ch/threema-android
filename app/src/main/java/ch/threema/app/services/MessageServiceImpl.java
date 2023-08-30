@@ -561,9 +561,12 @@ public class MessageServiceImpl implements MessageService {
 		return messageModel;
 	}
 
+	@WorkerThread
 	@Override
 	public void executeProfilePictureDistribution(@NonNull AbstractMessage message) {
-		// Step 1: abort if message does not allow user profile distribution
+		final String prefix = "Profile picture distribution";
+
+		// Step 1: Abort if message does not allow user profile distribution
 		if (!message.allowUserProfileDistribution()) {
 			return;
 		}
@@ -572,13 +575,13 @@ public class MessageServiceImpl implements MessageService {
 
 		ContactModel contactModel = contactService.getByIdentity(toIdentity);
 		if (contactModel == null) {
-			logger.warn("Cannot send profile picture: ");
+			logger.warn("{}: Contact model not found", prefix);
 			return;
 		}
 
-		// Step 2: abort if the contact's id is ECHOECHO or a Gateway ID
+		// Step 2: Abort if the contact's id is ECHOECHO or a Gateway ID
 		if (ContactUtil.isEchoEchoOrChannelContact(contactModel)) {
-			logger.info("Contact {} should not receive the profile picture", toIdentity);
+			logger.info("{}: Contact {} should not receive the profile picture", prefix, toIdentity);
 			return;
 		}
 
@@ -591,43 +594,47 @@ public class MessageServiceImpl implements MessageService {
 			}
 		}
 
-		// Step 3: abort the contact should not receive the profile picture according to settings
+		// Step 3: Abort if the contact should not receive the profile picture according to settings
 		if (!contactService.isContactAllowedToReceiveProfilePicture(contactModel)) {
-			logger.info("Contact {} should not receive the profile picture", toIdentity);
+			logger.info("{}: Contact {} is not allowed to receive the profile picture", prefix, toIdentity);
 			return;
 		}
 
-		// Step 4: upload profile picture to blob server if no valid cached blob id exists
+		// Step 4: Upload profile picture to blob server if no valid cached blob id exists
 		ContactService.ProfilePictureUploadData data = contactService.getUpdatedProfilePictureUploadData();
 		if (data.blobId == null) {
-			logger.warn("Blob ID is null; abort profile picture distribution");
+			logger.warn("{}: Blob ID is null; abort", prefix);
 			return;
 		}
 
 		// Step 5: If the currently cached blob ID equals the blob ID that was most recently
 		// distributed to the contact, abort these steps
 		if (Arrays.equals(data.blobId, contactModel.getProfilePicBlobID())) {
-			logger.debug("Contact {} already has the latest profile picture", toIdentity);
+			logger.debug("{}: Contact {} already has the latest profile picture", prefix, toIdentity);
 			return;
 		}
 
 		// Step 6 and 7: Send a set-profile-picture message to the contact using the cached blob ID
 		// and store the blob ID as the most recently used blob ID for this contact
 		if (data.blobId != ContactModel.NO_PROFILE_PICTURE_BLOB_ID) {
-			if (!sendContactSetProfilePictureMessage(data, contactModel)) {
-				logger.warn("Could not enqueue set profile picture message");
-				return;
+			if (sendContactSetProfilePictureMessage(data, contactModel)) {
+				logger.info("{}: Profile picture successfully enqueued for {}", prefix, toIdentity);
+			} else {
+				logger.warn("{}: Could not enqueue set profile picture message", prefix);
 			}
 		} else {
-			if (!sendContactDeleteProfilePictureMessage(contactModel)) {
-				logger.warn("Could not enqueue delete profile picture message");
-				return;
+			if (sendContactDeleteProfilePictureMessage(contactModel)) {
+				logger.info("{}: Profile picture deletion successfully enqueued for {}", prefix, toIdentity);
+			} else {
+				logger.warn("{}: Could not enqueue delete profile picture message", prefix);
 			}
 		}
-
-		logger.info("Profile picture successfully sent to {}", toIdentity);
 	}
 
+	/**
+	 * Send a set-profile-picture or delete-profile-picture message to the specified contact.
+	 */
+	@WorkerThread
 	@Override
 	public boolean sendProfilePicture(@NonNull ContactModel contactModel) {
 		ContactService.ProfilePictureUploadData data = contactService.getUpdatedProfilePictureUploadData();

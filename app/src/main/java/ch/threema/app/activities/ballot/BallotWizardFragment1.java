@@ -36,6 +36,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.elevation.ElevationOverlayProvider;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
 
 import java.util.Calendar;
@@ -49,6 +51,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.adapters.ballot.BallotWizard1Adapter;
 import ch.threema.app.dialogs.FormatTextEntryDialog;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
@@ -136,6 +139,12 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
 		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
 		itemTouchHelper.attachToRecyclerView(choiceRecyclerView);
 
+		// tint the edittext manually as TextInputLayout does not currently support elevation
+		ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(requireContext());
+		TextInputLayout textInputLayout = rootView.findViewById(R.id.textinputlayout_compose);
+		textInputLayout.setBoxBackgroundColor(elevationOverlayProvider.compositeOverlayIfNeeded(
+			ConfigUtils.getColorFromAttribute(requireContext(), R.attr.colorSurface),
+			getResources().getDimension(R.dimen.compose_edittext_elevation)));
 		this.createChoiceEditText = rootView.findViewById(R.id.create_choice_name);
 		this.createChoiceEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			@Override

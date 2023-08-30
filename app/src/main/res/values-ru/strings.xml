@@ -540,7 +540,7 @@
     <string name="prefs_sum_passphrase">Требовать кодовую фразу для разблокирования локального шифрования</string>
     <string name="prefs_title_masterkey_change_passphrase">Изменить кодовую фразу</string>
     <string name="storage_total">Место на внутренней памяти</string>
-    <string name="storage_threema">Используется Threema</string>
+    <string name="storage_threema">Используется %s</string>
     <string name="storage_total_free">Всего свободного места</string>
     <string name="storage_total_in_use">Используется</string>
     <string name="one_year">1 года</string>
@@ -1364,7 +1364,7 @@
     <string name="forward_security_cleared">Сессии Perfect Forward Secrecy с этим контактом очищены</string>
     <string name="message_without_forward_security">Получено сообщение, в котором не использовался протокол Perfect Forward Secrecy. Убедитесь, что отправитель намеренно отключил Perfect Forward Secrecy.</string>
     <string name="forward_security_established">Сообщения в этом чате теперь защищены протоколом Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">Сообщения, получаемые в этом чате, теперь защищены протоколом Perfect Forward Secrecy. Включите Perfect Forward Secrecy в сведениях о контакте, чтобы защитить также отправляемые сообщения.</string>
+    <string name="forward_security_established_rx">Сообщения, получаемые в этом чате, теперь защищены протоколом Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Сессия Perfect Forward Secrecy сброшена. Это может произойти, если собеседник в чате переходит на другое устройство или переустанавливает приложение.</string>
     <string name="forward_security_reset_simple">Сессия Perfect Forward Secrecy с этим контактом сброшена.</string>
     <string name="forward_security_message_out_of_order">Получено сообщение, которое невозможно расшифровать.</string>

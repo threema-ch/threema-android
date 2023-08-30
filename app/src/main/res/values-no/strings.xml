@@ -540,7 +540,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_sum_passphrase">Krever en passfrase for å låse opp lokal kryptering</string>
     <string name="prefs_title_masterkey_change_passphrase">Endre passfrase</string>
     <string name="storage_total">Lagringsplass på intern lagring</string>
-    <string name="storage_threema">I bruk av Threema</string>
+    <string name="storage_threema">I bruk av %s</string>
     <string name="storage_total_free">Tilgjengelig plass</string>
     <string name="storage_total_in_use">I bruk</string>
     <string name="one_year">1 år</string>
@@ -1371,7 +1371,7 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="forward_security_cleared">Perfect Forward Secrecy-økt med denne kontakten har blitt fjernet</string>
     <string name="message_without_forward_security">En melding uten Perfect Forward Secrecy er mottatt. Verifiser at avsender har skrudd av Perfect Forward Secrecy med vilje.</string>
     <string name="forward_security_established">Meldinger i denne samtalen er nå beskyttet av Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">Meldinger mottatt i denne samtalen blir nå beskyttet av Perfect Forward Secrecy. Skru på Perfect Forward Secrecy i kontaktdetaljer for å beskytte sendte medlinger også.</string>
+    <string name="forward_security_established_rx">Meldinger mottatt i denne samtalen blir nå beskyttet av Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Perfect Forward Secrecy-økten har blitt resatt. Dette kan skje om den du chattet med har byttet enhet eller reinstallert appen.</string>
     <string name="forward_security_reset_simple">Økten med Perfect Forward Secrecy som du har med denne kontakten har blitt resatt.</string>
     <string name="forward_security_message_out_of_order">En melding ble mottatt ute av rekkefølge og kunne derfor ikke bli dekryptert.</string>

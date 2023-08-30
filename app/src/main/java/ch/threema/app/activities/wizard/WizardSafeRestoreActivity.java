@@ -23,7 +23,6 @@ package ch.threema.app.activities.wizard;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -48,6 +47,7 @@ import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
+import ch.threema.app.ui.LongToast;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -205,7 +205,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 		}
 
 		if (TestUtil.empty(password)) {
-			Toast.makeText(this, R.string.wrong_backupid_or_password_or_no_internet_connection, Toast.LENGTH_LONG).show();
+			LongToast.makeText(this, R.string.wrong_backupid_or_password_or_no_internet_connection, Toast.LENGTH_LONG).show();
 			return;
 		}
 
@@ -265,7 +265,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 							() -> {
 								// On fail
 								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
-								RuntimeUtil.runOnUiThread(() -> Toast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
+								RuntimeUtil.runOnUiThread(() -> LongToast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
 								logger.info("Unable to post work request for fetch2");
 								try {
 									userService.removeIdentity();
@@ -278,7 +278,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 						onSuccessfulRestore();
 					}
 				} else {
-					Toast.makeText(WizardSafeRestoreActivity.this, getString(R.string.safe_restore_failed) + ". " + failureMessage, Toast.LENGTH_LONG).show();
+					LongToast.makeText(WizardSafeRestoreActivity.this, getString(R.string.safe_restore_failed) + ". " + failureMessage, Toast.LENGTH_LONG).show();
 					if (safeMDMConfig.isRestoreForced()) {
 						finish();
 					}

@@ -619,7 +619,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_sum_passphrase">Passphrase für lokale Verschlüsselung verlangen</string>
 	<string name="prefs_title_masterkey_change_passphrase">Passphrase ändern</string>
 	<string name="storage_total">Interner Speicherplatz</string>
-	<string name="storage_threema">Von Threema genutzt</string>
+	<string name="storage_threema">Von %s genutzt</string>
 	<string name="storage_total_free">Freier Speicher</string>
 	<string name="storage_total_in_use">In Benutzung</string>
 	<string name="one_year">1 Jahr</string>
@@ -1461,7 +1461,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="forward_security_cleared">Perfect Forward Secrecy-Sitzungen mit diesem Kontakt wurden gelöscht</string>
 	<string name="message_without_forward_security">Eine Nachricht ohne Perfect Forward Secrecy wurde empfangen. Stellen Sie sicher, dass der Absender absichtlich Perfect Forward Secrecy deaktiviert hat.</string>
 	<string name="forward_security_established">Nachrichten in diesem Chat sind nun durch Perfect Forward Secrecy geschützt.</string>
-	<string name="forward_security_established_rx">Nachrichten, die in diesem Chat empfangen werden, sind nun durch Perfect Forward Secrecy geschützt. Aktivieren Sie Perfect Forward Secrecy in den Kontaktdetails, um auch gesendete Nachrichten zu schützen.</string>
+	<string name="forward_security_established_rx">Nachrichten, die in diesem Chat empfangen werden, sind nun durch Perfect Forward Secrecy geschützt.</string>
 	<string name="forward_security_reset">Die Perfect Forward Secrecy-Sitzung wurde zurückgesetzt. Dies kann geschehen, wenn der Chat-Partner ein neues Gerät verwendet oder die App neu installiert.</string>
 	<string name="forward_security_reset_simple">Die Perfect Forward Secrecy-Sitzung mit diesem Kontakt wurde zurückgesetzt.</string>
 	<string name="forward_security_message_out_of_order">Eine Nachricht wurde in falscher Reihenfolge empfangen und konnte nicht entschlüsselt werden.</string>
@@ -1484,7 +1484,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="messages_cannot_be_recovered">Die Nachrichten können nicht wiederhergestellt werden.</string>
 	<string name="contact_deleted">Kontakt wurde gelöscht</string>
 	<string name="last_added_contact">Zuletzt hinzugefügt</string>
-	<string name="directory_explain_text">Suchen Sie im Firmenverzeichnis nach beliebigen Mitarbeitern, die sich noch nicht in Ihrer Kontaktliste befinden.</string>
+	<string name="directory_explain_text">Suchen Sie im Unternehmensverzeichnis nach beliebigen Mitarbeitern, die sich noch nicht in Ihrer Kontaktliste befinden.</string>
 	<string name="cannot_display_location">Dieser Ort kann nicht angezeigt werden.</string>
 	<string name="draw_reply">Zeichnungsantwort</string>
 	<string name="drawing">Zeichnung</string>
@@ -1568,7 +1568,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="permission_camera">Kamera</string>
 	<string name="permission_microphone">Mikrofon</string>
 	<string name="permission_read_phone_state">Telefon</string>
-	<string name="permission_enable_in_settings_rationale">Bitte erlauben Sie die Berechtigung in den Einstellungen. Wählen Sie «Berechtigungen» aus und lassen Sie danach “%s” zu.</string>
+	<string name="permission_enable_in_settings_rationale">Bitte erlauben Sie die Berechtigung in den Einstellungen. Wählen Sie «Berechtigungen» aus und lassen Sie danach «%s» zu.</string>
     <string name="group_name">Name der Gruppe</string>
 	<string name="samsung_permission_problem_explain">%1$s hat keinen Zugriff auf Mediendaten aufgrund der fehlenden Berechtigung einer System-App. Um das Problem zu beheben, stellen Sie sicher, dass der Schalter neben «Externer Speicher» im folgenden Bildschirm aktiviert ist, und starten Sie %1$s neu.</string>
 	<string name="min_n_chars">min. %d Zeichen</string>

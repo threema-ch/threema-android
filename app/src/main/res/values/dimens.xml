@@ -319,4 +319,5 @@
 	<dimen name="notice_views_elevation">3dp</dimen>
 	<dimen name="notice_views_vertical_margin">2dp</dimen>
     <dimen name="media_gallery_container_radius">3dp</dimen>
+    <dimen name="compose_edittext_elevation">3dp</dimen>
 </resources>

@@ -3,6 +3,7 @@
 	android:layout_width="60dp"
 	android:layout_height="60dp"
 	android:padding="5dp"
+	android:layout_gravity="center_horizontal"
 	xmlns:app="http://schemas.android.com/apk/res-auto">
 
 	<!-- This frame layout is needed for backwards compatibility before api 23 -->

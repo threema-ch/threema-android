@@ -35,10 +35,13 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import ch.threema.app.R;
 
 public class EmptyView extends LinearLayout {
 	private TextView emptyText;
+	private CircularProgressIndicator loadingView;
 
 	public EmptyView(Context context) {
 		this(context, null, 0);
@@ -65,7 +68,8 @@ public class EmptyView extends LinearLayout {
 		LayoutInflater.from(context).inflate(R.layout.view_empty, this, true);
 		setVisibility(View.GONE);
 
-		this.emptyText = (TextView) getChildAt(0);
+		this.loadingView = (CircularProgressIndicator) getChildAt(0);
+		this.emptyText = (TextView) getChildAt(1);
 	}
 
 	public void setup(int label) {
@@ -84,5 +88,10 @@ public class EmptyView extends LinearLayout {
 	public void setColorsInt(@ColorInt int background, @ColorInt int foreground) {
 		this.setBackgroundColor(background);
 		this.emptyText.setTextColor(foreground);
+	}
+
+	public void setLoading(boolean isLoading) {
+		this.loadingView.setVisibility(isLoading ? VISIBLE : GONE);
+		this.emptyText.setVisibility(isLoading ? GONE : VISIBLE);
 	}
 }

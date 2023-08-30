@@ -563,7 +563,7 @@
 	<string name="prefs_sum_passphrase">Require a passphrase to unlock local encryption</string>
 	<string name="prefs_title_masterkey_change_passphrase">Change passphrase</string>
 	<string name="storage_total">Space on internal storage</string>
-	<string name="storage_threema">Used by Threema</string>
+	<string name="storage_threema">Used by %s</string>
 	<string name="storage_total_free">Total free space</string>
 	<string name="storage_total_in_use">In use</string>
 	<string name="one_year">1 year</string>
@@ -1414,7 +1414,7 @@
 	<string name="forward_security_cleared">Perfect Forward Secrecy sessions with this contact have been cleared</string>
 	<string name="message_without_forward_security">A message without Perfect Forward Secrecy has been received. Verify that the sender has intentionally disabled Perfect Forward Secrecy.</string>
 	<string name="forward_security_established">Messages in this chat are now protected by Perfect Forward Secrecy.</string>
-	<string name="forward_security_established_rx">Messages received in this chat are now protected by Perfect Forward Secrecy. Enable Perfect Forward Secrecy in contact details to protect sent messages as well.</string>
+	<string name="forward_security_established_rx">Messages received in this chat are now protected by Perfect Forward Secrecy.</string>
 	<string name="forward_security_reset">The Perfect Forward Secrecy session was reset. This can happen when the chat partner changes devices or reinstalls the app.</string>
 	<string name="forward_security_reset_simple">The Perfect Forward Secrecy session with this contact has been reset.</string>
 	<string name="forward_security_message_out_of_order">A message was received out of order and could not be decrypted.</string>

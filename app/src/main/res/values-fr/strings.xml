@@ -541,7 +541,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="prefs_sum_passphrase">Nécessite une phrase secrète pour débloquer le chiffrement local</string>
     <string name="prefs_title_masterkey_change_passphrase">Changer la phrase secrète</string>
     <string name="storage_total">Espace sur le stockage interne</string>
-    <string name="storage_threema">Utilisé par Threema</string>
+    <string name="storage_threema">Utilisé par %s</string>
     <string name="storage_total_free">Espace libre total</string>
     <string name="storage_total_in_use">Utilisé</string>
     <string name="one_year">1 an</string>
@@ -1365,7 +1365,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="forward_security_cleared">Les sessions de confidentialité persistante avec ce contact ont été effacées</string>
     <string name="message_without_forward_security">Un message sans confidentialité persistante a été reçu. Vérifiez que l\'émetteur a délibérément désactivé la confidentialité persistante.</string>
     <string name="forward_security_established">Les messages de ce chat sont maintenant protégés par la confidentialité persistante.</string>
-    <string name="forward_security_established_rx">Les messages reçus dans ce chat sont maintenant protégés par la confidentialité persistante. Activez la confidentialité persistante dans les détails du contact pour protéger également les messages envoyés.</string>
+    <string name="forward_security_established_rx">Les messages reçus dans ce chat sont maintenant protégés par la confidentialité persistante.</string>
     <string name="forward_security_reset">La session de confidentialité persistante a été réinitialisée. Cela peut se produire lorsque le partenaire de discussion change d\'appareil ou réinstalle l\'application.</string>
     <string name="forward_security_reset_simple">La session de confidentialité persistante avec ce contact a été réinitialisée.</string>
     <string name="forward_security_message_out_of_order">Un message a été reçu en désordre et n\'a pas pu être déchiffré.</string>

@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor.PeerRatchetIdentifier;
 
 /**
  * Interface for objects that wish to process incoming messages from the server.
@@ -33,10 +34,12 @@ public interface MessageProcessorInterface {
 	class ProcessIncomingResult {
 		private final boolean processed;
 		private final @Nullable Integer type;
+		private final @Nullable PeerRatchetIdentifier peerRatchet;
 
-		private ProcessIncomingResult(boolean processed, @Nullable Integer type) {
+		private ProcessIncomingResult(boolean processed, @Nullable Integer type, @Nullable PeerRatchetIdentifier peerRatchet) {
 			this.processed = processed;
 			this.type = type;
+			this.peerRatchet = peerRatchet;
 		}
 
 		/**
@@ -45,15 +48,15 @@ public interface MessageProcessorInterface {
 		 */
 		@NonNull
 		public static ProcessIncomingResult failed() {
-			return new ProcessIncomingResult(false, null);
+			return new ProcessIncomingResult(false, null, null);
 		}
 
 		/**
 		 * A message was successfully processed. It should be acked towards the chat server.
 		 */
 		@NonNull
-		public static ProcessIncomingResult processed() {
-			return new ProcessIncomingResult(true, null);
+		public static ProcessIncomingResult processed(@Nullable PeerRatchetIdentifier peerRatchet) {
+			return new ProcessIncomingResult(true, null, peerRatchet);
 		}
 
 		/**
@@ -62,8 +65,8 @@ public interface MessageProcessorInterface {
 		 * @param type The type of the message if known.
 		 */
 		@NonNull
-		public static ProcessIncomingResult processed(@Nullable Integer type) {
-			return new ProcessIncomingResult(true, type);
+		public static ProcessIncomingResult processed(@Nullable Integer type, @Nullable PeerRatchetIdentifier peerRatchet) {
+			return new ProcessIncomingResult(true, type, peerRatchet);
 		}
 
 		public boolean wasProcessed() {
@@ -72,6 +75,10 @@ public interface MessageProcessorInterface {
 
 		public boolean hasType(int type) {
 			return this.type != null && this.type == type;
+		}
+
+		public @Nullable PeerRatchetIdentifier getPeerRatchetIdentifier() {
+			return this.peerRatchet;
 		}
 	}
 

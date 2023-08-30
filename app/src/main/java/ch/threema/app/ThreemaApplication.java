@@ -232,7 +232,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String INTENT_DATA_PIN = "ppin";
 	public static final String INTENT_DATA_HIDE_RECENTS = "hiderec";
 	public static final String INTENT_ACTION_FORWARD = "ch.threema.app.intent.FORWARD";
-	public static final String INTENT_ACTION_SHORTCUT_ADDED = "ch.threema.app.intent.SHORTCUT_ADDED";
+	public static final String INTENT_ACTION_SHORTCUT_ADDED = BuildConfig.APPLICATION_ID + ".intent.SHORTCUT_ADDED";
 
 	public static final String CONFIRM_TAG_CLOSE_BALLOT = "cb";
 

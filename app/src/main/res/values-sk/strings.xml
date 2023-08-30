@@ -541,7 +541,7 @@ https://myid.threema.ch/revoke v prípade, že ho stratíte alebo vám bude odcu
     <string name="prefs_sum_passphrase">Na odomknutie lokálneho úložiska sa vyžaduje heslo</string>
     <string name="prefs_title_masterkey_change_passphrase">Zmeniť heslo</string>
     <string name="storage_total">Miesto na ínternom úložisku</string>
-    <string name="storage_threema">Využité Threemou</string>
+    <string name="storage_threema">Využité %s</string>
     <string name="storage_total_free">Volné miesto</string>
     <string name="storage_total_in_use">Využité</string>
     <string name="one_year">1 rok</string>
@@ -1366,7 +1366,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="forward_security_cleared">Relácie Perfect Forward Secrecy s týmto kontaktom boli odstránené</string>
     <string name="message_without_forward_security">Bola prijatá správa bez Perfect Forward Secrecy. Overte, či odosielateľ úmyselne zakázal funkciu Perfect Forward Secrecy.</string>
     <string name="forward_security_established">Správy v tomto rozhovore sú teraz chránené systémom Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">Správy prijaté v tejto konverzácii sú odteraz chránené systémom Perfect Forward Secrecy (PFS). Povoľte PFS po kliknútí na ikonu kontaktu, aby ste zabezpečili aj odosielané správy.</string>
+    <string name="forward_security_established_rx">Správy prijaté v tejto konverzácii sú odteraz chránené systémom Perfect Forward Secrecy (PFS).</string>
     <string name="forward_security_reset">Relácia Perfect Forward Secrecy bola resetovaná. Môže sa to stať, keď partner rozhovoru zmení zariadenie alebo preinštaluje aplikáciu.</string>
     <string name="forward_security_reset_simple">Relácia Perfect Forward Secrecy s týmto kontaktom bola resetovaná.</string>
     <string name="forward_security_message_out_of_order">Správa bola prijatá ako nefunkčná a nedá sa dešifrovať.</string>
@@ -1545,6 +1545,16 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
         <item quantity="many">%d spustených relácií</item>
         <item quantity="one">%d spustená relácia</item>
         <item quantity="other">%d spustených relácií</item>
+    </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="few">Naozaj chcete odstrániť %d skupinové žiadosti?
+    Uvedomte si, že žiadosti nebudú odvolané a stále môžete byť akceptovaní alebo vyžiadaní,
+    ak žiadosti ešte neboli zodpovedané.</item>
+        <item quantity="many">Naozaj chcete odstrániť %d skupinových žiadostí?
+    Uvedomte si, že žiadosti nebudú odvolané a stále môžete byť akceptovaní alebo vyžiadaní,
+    ak žiadosti ešte neboli zodpovedané.</item>
+        <item quantity="one">Naozaj chcete odstrániť %d skupinovú žiadosť? Uvedomte si, že žiadosť nebude odvolaná a ak na žiadosť ešte nebolo odpovedané, môžete byť stále prijatý alebo vyžiadaný.</item>
+        <item quantity="other">Naozaj chcete odstrániť %d skupinových žiadostí? Uvedomte si, že žiadosti nebudú odvolané a stále môžete byť akceptovaní alebo vyžiadaní, ak žiadosti ešte neboli zodpovedané.</item>
     </plurals>
     <plurals name="really_delete_incoming_request">
         <item quantity="few">Naozaj chcete odstrániť %d skupinové žiadosťi? Po odstránení nemôžete na žiadosti odpovedať.</item>

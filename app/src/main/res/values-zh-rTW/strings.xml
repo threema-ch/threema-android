@@ -558,7 +558,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="prefs_sum_passphrase">需要密碼才能解鎖本地加密</string>
     <string name="prefs_title_masterkey_change_passphrase">變更密碼</string>
     <string name="storage_total">內部儲存空間</string>
-    <string name="storage_threema">Threema 佔用的空間</string>
+    <string name="storage_threema">%s 佔用的空間</string>
     <string name="storage_total_free">總可用空間</string>
     <string name="storage_total_in_use">正在使用</string>
     <string name="one_year">1年</string>
@@ -1393,7 +1393,7 @@ Threema 支援的所有表情符號。</string>
     <string name="forward_security_cleared">與此聯絡人的完全正向保密對話已被清除</string>
     <string name="message_without_forward_security">您收到一則沒有完全正向保密的訊息，您可以驗證寄件者是否主動停用完美前向保密。</string>
     <string name="forward_security_established">此對話中的訊息現正受完全正向保密的保護。</string>
-    <string name="forward_security_established_rx">在此對話中收到的訊息現正受完全正向保密的保護，您可以在聯絡人詳細資訊中啟用完全正向保密來保護以後傳送的訊息。</string>
+    <string name="forward_security_established_rx">在此對話中收到的訊息現正受完全正向保密的保護。</string>
     <string name="forward_security_reset">這個之前已啟用「完全正向保密」的對話，現被重設保密狀態。如果聯絡人更換了裝置或重新安裝此應用程式，就會重設保密狀態。</string>
     <string name="forward_security_reset_simple">與此聯絡人的完全正向保密對話已重設。</string>
     <string name="forward_security_message_out_of_order">解密新收到的訊息發生錯誤，無法解密。</string>

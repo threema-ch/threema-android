@@ -27,8 +27,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.PendingIntent.*
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.media.AudioManager
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.net.Uri
@@ -39,8 +41,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.media3.common.*
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.audio.AudioSink
 import androidx.media3.session.*
@@ -59,6 +61,14 @@ import com.google.common.util.concurrent.ListenableFuture
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudioFocusChangeListener {
     private val logger = LoggingUtil.getThreemaLogger(TAG)
+    private val audioBecomingNoisyFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+    private val audioBecomingNoisyReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
+                player.pause()
+            }
+        }
+    }
 
     private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaSession
@@ -97,6 +107,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
 
     override fun onUpdateNotification(session: MediaSession, startInForegroundRequired: Boolean) {
         if (player.playbackState == Player.STATE_ENDED && !startInForegroundRequired) {
+            logger.info("Playback ended. Dismissing service.")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 stopForeground(STOP_FOREGROUND_REMOVE)
             } else {
@@ -143,20 +154,24 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
                 .build()
 
         preferenceService?.let {
-            if (it.isUseProximitySensor) {
-                player.addListener(object : Player.Listener {
-                    override fun onIsPlayingChanged(isPlaying: Boolean) {
-                        logger.debug("onIsPlayingChanged {}", isPlaying)
-                        if (isPlaying) {
+            player.addListener(object : Player.Listener {
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    logger.debug("onIsPlayingChanged {}", isPlaying)
+                    if (isPlaying) {
+                        logger.info("Start playing")
+                        if (it.isUseProximitySensor) {
                             sensorService?.registerSensors(TAG, this@VoiceMessagePlayerService)
-                            requestAudioFocus()
-                        } else {
-                            sensorService?.unregisterSensors(TAG)
-                            releaseAudioFocus()
                         }
+                        requestAudioFocus()
+                    } else {
+                        logger.info("Stop playing")
+                        if (it.isUseProximitySensor) {
+                            sensorService?.unregisterSensors(TAG)
+                        }
+                        releaseAudioFocus()
                     }
-                })
-            }
+                }
+            })
         }
 
         val mediaSessionCallback = (object : Callback {
@@ -233,7 +248,11 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
                         getString(R.string.vm_fg_service_not_allowed),
                         NotificationManager.IMPORTANCE_DEFAULT
                 )
-        notificationManagerCompat.createNotificationChannel(channel)
+        try {
+            notificationManagerCompat.createNotificationChannel(channel)
+        } catch (e: Exception) {
+            logger.error("Unable to create notification channel.", e)
+        }
     }
 
     override fun onSensorChanged(key: String?, value: Boolean) {
@@ -251,14 +270,25 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
             audioManager.requestAudioFocus(
                 this,
                 AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE
+                // we intentionally use a transient audio focus here, as the use expects playback of
+                // previous audio (e.g. music playback) to continue after listening to the voice message.
+                // ducking allows notification sounds to go through.
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
             )
             hasAudioFocus = true
+            registerReceiver(audioBecomingNoisyReceiver, audioBecomingNoisyFilter)
         }
     }
 
     private fun releaseAudioFocus() {
         audioManager.abandonAudioFocus(this)
+        if (hasAudioFocus) {
+            try {
+                unregisterReceiver(audioBecomingNoisyReceiver)
+            } catch (e: IllegalArgumentException) {
+                // not registered... ignore exceptions
+            }
+        }
         hasAudioFocus = false
     }
 

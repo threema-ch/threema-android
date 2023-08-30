@@ -171,14 +171,14 @@
 						  android:layout_marginRight="6dp"
 						  android:background="@color/material_red"/>
 
-					<TextView android:layout_width="wrap_content"
-							  android:layout_height="wrap_content"
-							  android:layout_toRightOf="@id/legend_usage"
-							  android:layout_toLeftOf="@+id/usage_view"
-							  android:ellipsize="end"
-							  android:text="@string/storage_threema"
-						android:textAppearance="?android:textAppearanceMedium"
-						/>
+					<TextView
+						android:id="@+id/used_by_threema"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_toLeftOf="@+id/usage_view"
+						android:layout_toRightOf="@id/legend_usage"
+						android:ellipsize="end"
+						android:textAppearance="?android:textAppearanceMedium" />
 
 					<TextView android:id="@+id/usage_view"
 							  android:layout_width="wrap_content"

@@ -135,6 +135,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 		progressBar = findViewById(R.id.progressbar);
 		selectedSpinnerItem = 0;
 		selectedMessageSpinnerItem = 0;
+		((TextView) findViewById(R.id.used_by_threema)).setText(getString(R.string.storage_threema, getString(R.string.app_name)));
 
 		if (deleteButton == null) {
 			logger.info("deleteButton is null");

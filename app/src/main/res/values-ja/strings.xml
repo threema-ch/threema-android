@@ -548,7 +548,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_sum_passphrase">端末に保存されるデータの復号化にパスフレーズを要求します</string>
     <string name="prefs_title_masterkey_change_passphrase">パスフレーズを変更</string>
     <string name="storage_total">内部ストレージの容量</string>
-    <string name="storage_threema">Threemaで使用</string>
+    <string name="storage_threema">%sで使用</string>
     <string name="storage_total_free">ストレージの空き容量</string>
     <string name="storage_total_in_use">使用中</string>
     <string name="one_year">1年</string>
@@ -1365,7 +1365,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="forward_security_cleared">この連絡先とのPerfect Forward Secrecyセッションはクリアされました</string>
     <string name="message_without_forward_security">Perfect Forward Secrecyを使用しないメッセージを受信しました。送信者がPerfect Forward Secrecyを意図的に無効にしていることを確認してください。</string>
     <string name="forward_security_established">このトークのメッセージはPerfect Forward Secrecyによって保護されるようになりました。</string>
-    <string name="forward_security_established_rx">このトークで受信したメッセージはPerfect Forward Secrecyによって保護されるようになりました。送信するメッセージも保護するには、連絡先の詳細でPerfect Forward Secrecyを有効にしてください。</string>
+    <string name="forward_security_established_rx">このトークで受信したメッセージはPerfect Forward Secrecyによって保護されるようになりました。</string>
     <string name="forward_security_reset">この連絡先とのPerfect Forward Secrecyセッションはリセットされました。その連絡先がデバイスを変更したか、アプリを再インストールした可能性があります。</string>
     <string name="forward_security_reset_simple">この連絡先とのPerfect Forward Secrecyセッションはリセットされました。</string>
     <string name="forward_security_message_out_of_order">メッセージが間違った順序で受信されたため、復号化できませんでした。</string>

@@ -320,7 +320,7 @@ public class QuoteUtil {
 	 * @param messageModel
 	 * @return true if the message can be quoted, false otherwise
 	 */
-	public static boolean isQuoteable(AbstractMessageModel messageModel) {
+	public static boolean isQuoteable(@NonNull AbstractMessageModel messageModel) {
 		switch (messageModel.getType()) {
 			case IMAGE:
 			case FILE:

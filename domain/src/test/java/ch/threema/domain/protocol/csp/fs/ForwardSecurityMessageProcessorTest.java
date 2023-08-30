@@ -31,9 +31,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
+import ch.threema.domain.fs.KDFRatchet;
 import ch.threema.domain.helpers.DummyUsers;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
@@ -224,7 +226,9 @@ public class ForwardSecurityMessageProcessorTest {
 
 		// Let Bob process all the messages that he has received from Alice.
 		// The decapsulated message should be the text message from Alice.
-		receiveAndAssertSingleMessage(aliceContext.messageQueue, bobContext, ALICE_MESSAGE_4, ForwardSecurityMode.FOURDH);
+		AbstractMessage msg = processOneReceivedMessage(aliceContext.messageQueue, bobContext, 1, false);
+		Assert.assertEquals(ALICE_MESSAGE_4, ((BoxTextMessage)msg).getText());
+		Assert.assertEquals(ForwardSecurityMode.FOURDH, msg.getForwardSecurityMode());
 
 		// At this point, Bob should not have enqueued any further messages
 		Assert.assertEquals(0, bobContext.messageQueue.getQueueSize());
@@ -394,7 +398,7 @@ public class ForwardSecurityMessageProcessorTest {
 		Assert.assertEquals(Version.V1_0.getNumber(), DHSession.SUPPORTED_VERSION_RANGE.getMax());
 		// Note that Bob only processes one message, i.e. the init message. He does not yet process
 		// the text message
-		processOneReceivedMessage(aliceContext.messageQueue, bobContext);
+		processOneReceivedMessage(aliceContext.messageQueue, bobContext, 0, false);
 
 		// Alice should process the accept message now (while supporting version 1.1)
 		setSupportedVersionRange(
@@ -557,12 +561,12 @@ public class ForwardSecurityMessageProcessorTest {
 
 		// Now Bob processes the text message from Alice. Note that the message should be rejected
 		// and therefore return an empty list.
-		Assert.assertEquals(0, processReceivedMessages(aliceContext.messageQueue, bobContext).size());
+		Assert.assertNull(processOneReceivedMessage(aliceContext.messageQueue, bobContext, 0, true));
 		Assert.assertNull(bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentity(), aliceContext.identityStore.getIdentity()));
 
 		// Assert that Alice did receive a session reject
 		Assert.assertEquals(1, bobContext.messageQueue.getQueueSize());
-		Assert.assertNull(processOneReceivedMessage(bobContext.messageQueue, aliceContext));
+		Assert.assertNull(processOneReceivedMessage(bobContext.messageQueue, aliceContext, 0, true));
 		Assert.assertNull(aliceContext.dhSessionStore.getBestDHSession(
 			DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity()
 		));
@@ -580,7 +584,7 @@ public class ForwardSecurityMessageProcessorTest {
 		Assert.assertEquals(DHSession.State.L20, aliceInitialSession.getState());
 
 		// Bob processes the init and should now have a session in state R24
-		processOneReceivedMessage(aliceContext.messageQueue, bobContext);
+		processOneReceivedMessage(aliceContext.messageQueue, bobContext, 0, false);
 
 		DHSession bobInitialSession = bobContext.dhSessionStore.getBestDHSession(
 			DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity()
@@ -592,7 +596,7 @@ public class ForwardSecurityMessageProcessorTest {
 		receiveAndAssertSingleMessage(aliceContext.messageQueue, bobContext, ALICE_MESSAGE_1, ForwardSecurityMode.TWODH);
 
 		// Alice should now process the accept from Bob and update the state to L44
-		processOneReceivedMessage(bobContext.messageQueue, aliceContext);
+		processOneReceivedMessage(bobContext.messageQueue, aliceContext, 0, false);
 
 		DHSession aliceFinalSession = aliceContext.dhSessionStore.getBestDHSession(
 			DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity()
@@ -796,7 +800,7 @@ public class ForwardSecurityMessageProcessorTest {
 	private List<AbstractMessage> processReceivedMessages(MessageQueue sourceQueue, UserContext recipientContext) throws BadMessageException, ThreemaException, MissingPublicKeyException {
 		List<AbstractMessage> decapsulatedMessages = new LinkedList<>();
 		while (sourceQueue.getQueueSize() > 0) {
-			AbstractMessage decapMsg = processOneReceivedMessage(sourceQueue, recipientContext);
+			AbstractMessage decapMsg = processOneReceivedMessage(sourceQueue, recipientContext, 0, false);
 			if (decapMsg != null) {
 				decapsulatedMessages.add(decapMsg);
 			}
@@ -804,17 +808,71 @@ public class ForwardSecurityMessageProcessorTest {
 		return decapsulatedMessages;
 	}
 
-	private AbstractMessage processOneReceivedMessage(MessageQueue sourceQueue, UserContext recipientContext) throws BadMessageException, ThreemaException, MissingPublicKeyException {
+	private AbstractMessage processOneReceivedMessage(
+		MessageQueue sourceQueue,
+		UserContext recipientContext,
+		long numSkippedMessages,
+		boolean shouldSessionBeDeleted
+	) throws BadMessageException, ThreemaException, MissingPublicKeyException {
 		MessageBox messageBox = sourceQueue.getQueue().remove(0);
 		Assert.assertNotNull(messageBox);
 
 		MessageCoder messageCoder = new MessageCoder(recipientContext.contactStore, recipientContext.identityStore);
-		AbstractMessage msg = messageCoder.decode(messageBox, false);
+		ForwardSecurityEnvelopeMessage msg = (ForwardSecurityEnvelopeMessage) messageCoder.decode(messageBox, false);
 
-		return recipientContext.fsmp.processEnvelopeMessage(
+		long counterBeforeProcessing = getRatchetCounterInSession(recipientContext, msg);
+
+		ForwardSecurityMessageProcessor.ForwardSecurityDecryptionResult result = recipientContext.fsmp.processEnvelopeMessage(
 			Objects.requireNonNull(recipientContext.contactStore.getContactForIdentity(msg.getFromIdentity())),
-			(ForwardSecurityEnvelopeMessage) msg
+			msg
 		);
+
+		long counterAfterProcessing = getRatchetCounterInSession(recipientContext, msg);
+
+		if (result.peerRatchetIdentifier != null) {
+			recipientContext.fsmp.commitPeerRatchet(result.peerRatchetIdentifier);
+		}
+
+		long counterAfterCommittingRatchet = getRatchetCounterInSession(recipientContext, msg);
+
+		if (!shouldSessionBeDeleted) {
+			Assert.assertEquals("Ratchet counter should be exactly increased by the number of skipped messages:", counterBeforeProcessing + numSkippedMessages, counterAfterProcessing);
+		}
+
+		if (result.peerRatchetIdentifier != null) {
+			if (shouldSessionBeDeleted) {
+				Assert.assertEquals("Session should be deleted:", -1, counterAfterCommittingRatchet);
+			} else {
+				Assert.assertEquals("Ratchet counter should be increased when turning the ratchet:", counterAfterProcessing + 1, counterAfterCommittingRatchet);
+			}
+		}
+
+		return result.message;
+	}
+
+	private long getRatchetCounterInSession(@NonNull UserContext ctx, @NonNull ForwardSecurityEnvelopeMessage msg) throws DHSessionStoreException {
+		if (!(msg.getData() instanceof ForwardSecurityDataMessage)) {
+			return 0;
+		}
+
+		DHSession session = ctx.dhSessionStore.getDHSession(ctx.identityStore.getIdentity(), msg.getFromIdentity(), msg.getData().getSessionId());
+		if (session == null) {
+			return -1;
+		}
+		KDFRatchet ratchet = null;
+		switch (((ForwardSecurityDataMessage)msg.getData()).getType()) {
+			case TWODH:
+				ratchet = session.getPeerRatchet2DH();
+				break;
+			case FOURDH:
+				ratchet = session.getPeerRatchet4DH();
+				break;
+		}
+		if (ratchet == null) {
+			return -1;
+		} else {
+			return ratchet.getCounter();
+		}
 	}
 
 	private AbstractMessage sendTextMessage(String message, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException, ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession {

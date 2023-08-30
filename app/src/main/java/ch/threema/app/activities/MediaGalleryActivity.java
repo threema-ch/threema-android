@@ -304,15 +304,17 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
 		recyclerView.setLayoutManager(gridLayoutManager);
 		recyclerView.addItemDecoration(new MediaGridItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
-		EmptyView emptyView = new EmptyView(this);
+		final EmptyView emptyView = new EmptyView(this);
 		emptyView.setColorsInt(ConfigUtils.getColorFromAttribute(this, android.R.attr.colorBackground), ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground));
 		emptyView.setup(getString(R.string.no_media_found_generic));
 		((ViewGroup) recyclerView.getParent()).addView(emptyView);
 		recyclerView.setEmptyView(emptyView);
+		emptyView.setLoading(true);
 		mediaGalleryAdapter = new MediaGalleryAdapter(this, this, messageReceiver, gridLayoutManager.getSpanCount());
 		recyclerView.setAdapter(mediaGalleryAdapter);
 
 		final Observer<List<AbstractMessageModel>> messageObserver = abstractMessageModels -> {
+			emptyView.setLoading(false);
 			mediaGalleryAdapter.setItems(abstractMessageModels);
 			if (actionMode != null) {
 				actionMode.invalidate();
