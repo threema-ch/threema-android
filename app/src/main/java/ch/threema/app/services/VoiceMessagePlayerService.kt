@@ -40,6 +40,9 @@ import android.widget.Toast.LENGTH_LONG
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.media.AudioAttributesCompat
+import androidx.media.AudioFocusRequestCompat
+import androidx.media.AudioManagerCompat
 import androidx.media3.common.*
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
@@ -53,6 +56,7 @@ import ch.threema.app.listeners.SensorListener
 import ch.threema.app.listeners.SensorListener.keyIsNear
 import ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.SoundUtil
 import ch.threema.app.voicemessage.SamsungQuirkAudioSink
 import ch.threema.base.utils.LoggingUtil
 import com.google.common.util.concurrent.Futures
@@ -73,6 +77,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
     private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaSession
     private lateinit var audioManager: AudioManager
+    private lateinit var audioFocusRequestCompat: AudioFocusRequestCompat
 
     private var sensorService: SensorService? = null
     private var preferenceService: PreferenceService? = null
@@ -85,6 +90,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
     }
 
     override fun onCreate() {
+        logger.info("onCreate")
         super.onCreate()
 
         ThreemaApplication.getServiceManager()?.let {
@@ -93,10 +99,19 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
         }
 
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+        audioFocusRequestCompat =
+            AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN_TRANSIENT)
+                .setAudioAttributes(
+                    AudioAttributesCompat.Builder()
+                        .setLegacyStreamType(AudioManager.STREAM_MUSIC).build()
+                )
+                .setOnAudioFocusChangeListener(this)
+                .build()
 
         val mediaNotificationProvider = DefaultMediaNotificationProvider.Builder(this)
             .setChannelName(R.string.notification_channel_voice_message_player)
             .setChannelId(NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER)
+            .setNotificationIdProvider { ThreemaApplication.VOICE_MSG_PLAYER_NOTIFICATION_ID }
             .build()
         mediaNotificationProvider.setSmallIcon(R.drawable.ic_notification_small)
         setMediaNotificationProvider(mediaNotificationProvider)
@@ -107,15 +122,9 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
 
     override fun onUpdateNotification(session: MediaSession, startInForegroundRequired: Boolean) {
         if (player.playbackState == Player.STATE_ENDED && !startInForegroundRequired) {
-            logger.info("Playback ended. Dismissing service.")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                stopForeground(STOP_FOREGROUND_REMOVE)
-            } else {
-                stopForeground(true)
-            }
-        } else {
-            super.onUpdateNotification(session, startInForegroundRequired)
+            logger.info("Playback ended.")
         }
+        super.onUpdateNotification(session, true)
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
@@ -123,12 +132,14 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        logger.info("onTaskRemoved")
         if (!player.playWhenReady) {
             stopSelf()
         }
     }
 
     override fun onDestroy() {
+        logger.info("onDestroy")
         preferenceService?.let {
             if (it.isUseProximitySensor) {
                 sensorService?.unregisterSensors(TAG)
@@ -159,7 +170,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
                     logger.debug("onIsPlayingChanged {}", isPlaying)
                     if (isPlaying) {
                         logger.info("Start playing")
-                        if (it.isUseProximitySensor) {
+                        if (it.isUseProximitySensor && !SoundUtil.isHeadsetOn(audioManager)) {
                             sensorService?.registerSensors(TAG, this@VoiceMessagePlayerService)
                         }
                         requestAudioFocus()
@@ -267,29 +278,29 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
 
     private fun requestAudioFocus() {
         if (!hasAudioFocus) {
-            audioManager.requestAudioFocus(
-                this,
-                AudioManager.STREAM_MUSIC,
-                // we intentionally use a transient audio focus here, as the use expects playback of
-                // previous audio (e.g. music playback) to continue after listening to the voice message.
-                // ducking allows notification sounds to go through.
-                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
-            )
-            hasAudioFocus = true
-            registerReceiver(audioBecomingNoisyReceiver, audioBecomingNoisyFilter)
+            if (
+                AudioManagerCompat.requestAudioFocus(
+                    audioManager,
+                    audioFocusRequestCompat
+                )
+                == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+            ) {
+                hasAudioFocus = true
+                registerReceiver(audioBecomingNoisyReceiver, audioBecomingNoisyFilter)
+            }
         }
     }
 
     private fun releaseAudioFocus() {
-        audioManager.abandonAudioFocus(this)
         if (hasAudioFocus) {
+            AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocusRequestCompat)
+            hasAudioFocus = false
             try {
                 unregisterReceiver(audioBecomingNoisyReceiver)
             } catch (e: IllegalArgumentException) {
                 // not registered... ignore exceptions
             }
         }
-        hasAudioFocus = false
     }
 
     override fun onAudioFocusChange(focusChange: Int) {

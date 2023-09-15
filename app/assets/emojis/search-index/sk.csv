@@ -66,43 +66,6 @@
 〰️|interpunkcia|vlnovka|vlnovková pomlčka|vlnovkovitá
 ㊗️|blahoželám|blahoželanie|ideograf|japončina|japonský ideograf blahoželám
 ㊙️|ideograf|japončina|japonský ideograf tajomstvo|tajomstvo
-🥹|nahnevaná|odolávanie|plač|pyšná|smútok|tvár zadržujúca slzy
-🧌|fantasy|obluda|obor|rozprávka
-🩻|kosti|kostra|lekár|röntgen|zdravie
-🩼|barla|palica|podpera|postihnutie|zdravotná pomôcka|zranenie
-🪩|blyšťanie|disko|párty|tanec|zrkadlová guľa
-🪪|bezpečnosť|doklady|preukaz totožnosti|vodičský preukaz
-🪫|elektronika|málo energie|slabá batéria
-🪬|amulet|fatima|fatimina ruka|hamsa|mária|ochrana|ruka
-🪷|budhizmus|čistota|hinduizmus|india|kvet|lotos|vietnam
-🪸|koral|oceán|útes
-🪹|hniezdenie|prázdne hniezdo
-🪺|hniezdenie|hniezdo s vajcami
-🫃|brucho|nafúknuté|plné|tehotná|tehotný muž
-🫄|brucho|nafúknuté|plné|tehotná osoba|tehotný
-🫅|kráľovský|kráľovstvo|monarcha|osoba s korunou|vládca
-🫗|liatie|nápoj|pohár|prázdny|rozliať
-🫘|fazuľa|jedlo|strukovina
-🫙|nádoba|pohár|prázdny|pyré|zásoby|zaváranina
-🫠|rozpustiť|roztiecť|roztopená tvár|roztopiť|zmiznúť
-🫡|ako povieš|áno|salutovať|salutujúca tvár|slnko v očiach|zdravím
-🫢|nevera|prekvapenie|strach|tvár s otvorenými očami a rukou na ústach|úžas|v rozpakoch|zdesenie
-🫣|pokukávanie|tvár vykúkajúca pomedzi prsty|uchvátená|zízanie
-🫤|ach|neistá|pochybovačná|sklamanie|tvár so šikmými ústami
-🫥|introvert|neviditeľná|skľúčená|skryť|tvár s prerušovanou čiarou|zmiznúť
-🫦|flirt|nepohodlie|nervy|obavy|strach|úzkosť|zahryznutie do pery
-🫧|bubliny|čistota|grgnutie|mydlo|pod vodou
-🫰|drahé|láska|lusknutie|peniaze|ruka s prekríženým ukazovákom a palcom|srdce
-🫱|doprava|ruka|vpravo
-🫲|doľava|ruka|vľavo
-🫳|heš|pustiť|ruka dlaňou nadol|zahodiť
-🫴|chytiť|mávať|poď|ponúkať|ruka dlaňou nahor
-🫵|na teba|ukazovanie ukazovákom
-🫶|láska|srdce z dlaní
-🛝|hra|ihrisko|šmykľavka
-🛞|koleso|kruh|otáčanie|pneumatika
-🛟|bezpečnosť|koleso|pomoc|vznášanie|záchrana|záchranné koleso
-🟰|matematika|rovné|rovnosť
 😀|škeriaca sa tvár|tvár|úškľabok|úškrn
 😃|otvorené|škeriaca sa tvár s veľkými očami|tvár|úsmev|ústa
 😄|oko|prižmúrené|škeriaca sa tvár s prižmúrenými očami|tvár|úsmev|ústa
@@ -113,6 +76,7 @@
 😂|plačem od smiechu|radosť|slza|smiech|tvár
 🙂|tvár|úsmev|usmievajúca sa tvár
 🙃|otočená|prevrátená|tvár
+🫠|rozpustiť|roztiecť|roztopená tvár|roztopiť|zmiznúť
 😉|tvár|žmurkajúca tvár|žmurkanie|žmurknutie
 😊|oko|smejúca sa tvár s prižmúrenými očami|tvár|úsmev|zapýrenie
 😇|anjel|nevinná|smejúca sa tvár so svätožiarou|svätá|svätožiara|tvár|úsmev
@@ -133,13 +97,17 @@
 🤑|peniaze|tvár s peniazmi na jazyku|ústa
 🤗|objatie|objímajúca tvár|objímanie|tvár
 🤭|chi|joj|tvár s rukou na ústach
+🫢|nevera|prekvapenie|strach|tvár s otvorenými očami a rukou na ústach|úžas|v rozpakoch|zdesenie
+🫣|pokukávanie|tvár vykúkajúca pomedzi prsty|uchvátená|zízanie
 🤫|čit|pst|ticho|tvár s prstom na ústach
 🤔|premýšľajúca tvár|premýšľať|tvár
+🫡|ako povieš|áno|salutovať|salutujúca tvár|slnko v očiach|zdravím
 🤐|mlčať|tvár so zazipsovanými ústami|ústa
 🤨|nedôvera|pochyba|skeptik|tvár so zdvihnutým obočím
 😐|kamenná|neutrálna|tvár
 😑|bezvýrazná|neurčitá|tvár
 😶|nemá|tichá|tvár bez úst|ústa
+🫥|introvert|neviditeľná|skľúčená|skryť|tvár s prerušovanou čiarou|zmiznúť
 😶‍🌫️|hlava v oblakoch|neprítomná|nesústredená|tvár v hmle|tvár v oblakoch
 😏|samoľúba|tvár
 😒|nespokojná|nuda|tvár|znudená
@@ -147,6 +115,7 @@
 😬|grimasa|tvár|vyškerená
 😮‍💨|hvízdať|pískať|šepkať|úľava|vydýchnuť|vydychujúca tvár|vzdychať
 🤥|klamať|klamstvo|lož|tvár s dlhým nosom
+🫨|roztrasená tvár|šok|trasenie|tvár|vibrovanie|zemetrasenie
 😌|tvár vyjadrujúca úľavu|úľava|upokojená
 😔|deprimovaná|tvár|zamyslená
 😪|ospalá|tvár|únava
@@ -171,6 +140,7 @@
 🤓|bifľloš|čudák|šprták|tvár|vedátor
 🧐|staromódna|tvár s monoklom
 😕|neviem|tvár|zmätená|zmätok
+🫤|ach|neistá|pochybovačná|sklamanie|tvár so šikmými ústami
 😟|obavy|tvár|ustaraná
 🙁|trochu zamračená tvár|tvár|zamračená
 😮|otvorené|súcit|tvár s otvorenými ústami|ústa
@@ -178,6 +148,7 @@
 😲|absolútne|šokovaná|tvár|udivená
 😳|sčervenená|tvár|zapýrená
 🥺|prosebná tvár|prosím|psie oči|zľutovanie
+🥹|nahnevaná|odolávanie|plač|pyšná|smútok|tvár zadržujúca slzy
 😦|otvorené|tvár|ústa|zamračená tvár s otvorenými ústami
 😧|tvár|utrápená
 😨|bojazlivá|strach|tvár|vystrašená
@@ -220,7 +191,6 @@
 🙈|gesto|nevidím|opica|tvár|zakázané|zlé|zlo
 🙉|gesto|nepočujem|opica|tvár|zakázané|zlé|zlo
 🙊|gesto|nehovorím|opica|tvár|zakázané|zlé|zlo
-💋|bozk|odtlačok pier|pery
 💌|láska|list|ľúbostný list|pošta|srdce
 💘|kupido|šíp|srdce so šípom
 💝|srdce so stuhou|stuha|valentín
@@ -233,14 +203,18 @@
 💔|srdce|zlomené|zlomiť
 ❤️‍🔥|horiace srdce|láska|oheň|srdce|túžba
 ❤️‍🩹|dobre|lepšie|srdce s obväzom|uzdravovať sa|zdravšie|zotavovať sa
+🩷|láska|páči|roztomilé|ružové|srdce
 🧡|oranžové|srdce
 💛|srdce|žlté
 💚|srdce|zelené
 💙|modré|srdce
+🩵|azúrové|sivozelené|srdce|svetlomodré
 💜|fialové|srdce
 🤎|hnedé|srdce
 🖤|čierne|podlosť|srdce|zlo
+🩶|šedé|sivé|srdce|strieborné
 🤍|biele|srdce
+💋|bozk|odtlačok pier|pery
 💯|100|plný počet|sto bodov
 💢|hnev|komiks|symbol hnevu|zlosť
 💥|buch|bum|komiks|zrážka
@@ -248,7 +222,6 @@
 💦|komiks|kvapky potu|pot
 💨|bežať|komiks|trieliť|utekám|utekať
 🕳️|diera|jama|kanál
-💣|bomba|komiks
 💬|bublina|hovoriť|komiks|reč
 👁️‍🗨️|bublina|dialóg|oko v bubline|reč
 🗨️|dialóg|komiks|ľavá bublina|reč
@@ -260,11 +233,18 @@
 🖐️|prst|roztiahnutá|ruka
 ✋|ruka|stáť|stop|zdvihnutá ruka
 🖖|prst|ruka|spock|vulkánsky pozdrav
+🫱|doprava|ruka|vpravo
+🫲|doľava|ruka|vľavo
+🫳|heš|pustiť|ruka dlaňou nadol|zahodiť
+🫴|chytiť|mávať|poď|ponúkať|ruka dlaňou nahor
+🫷|čakať|high five|ruka tlačiaca vľavo|stop|tlačiť|vľavo|zákaz
+🫸|čakať|high five|ruka tlačiaca vpravo|stop|tlačiť|vpravo|zákaz
 👌|ok|ruka|výborne
 🤌|málo|prsty|štipka|trocha|troška
 🤏|malé množstvo|málo|trocha|troška
 ✌️|ruka|víťazstvo
 🤞|držať|držím palce|palce|ruka|šťastie
+🫰|drahé|láska|lusknutie|peniaze|ruka s prekríženým ukazovákom a palcom|srdce
 🤟|ľúbim ťa|ľúbiť|ruka
 🤘|paroháč|prst|ruka
 🤙|hovor|ruka|telefonovať|zavoláme si|zavolať
@@ -274,6 +254,7 @@
 🖕|prostredník|prst|ruka
 👇|nadol|prst|ruka|spakruky|ukazovák|ukazovať
 ☝️|nahor|prst|ruka|ukazovák|ukazovať
+🫵|na teba|ukazovanie ukazovákom
 👍|+1|nahor|palec|ruka
 👎|-1|nadol|palec|ruka
 ✊|päsť|ruka|úder|zdvihnutá päsť|zovretá
@@ -282,6 +263,7 @@
 🤜|doprava|päsť
 👏|potlesk|ruka|tlieskajúce ruky|tlieskať
 🙌|gesto|hurá|oslava|ruka|zdvihnuté ruky
+🫶|láska|srdce z dlaní
 👐|otvorená|roztvorené dlane|ruka
 🤲|modliť sa|modlitba|zdvihnuté dlane
 🤝|dohoda|dohodnuté|podať|potrasenie rukami|potriasť|ruka
@@ -306,6 +288,7 @@
 👁️|oko|telo
 👅|jazyk|telo
 👄|pery|ústa
+🫦|flirt|nepohodlie|nervy|obavy|strach|úzkosť|zahryznutie do pery
 👶|bábätko
 🧒|decko|dieťa
 👦|chalan|chlapec
@@ -413,6 +396,7 @@
 👷|čapica|pracovník na stavbe|stavba
 👷‍♂️|muž|robotník|stavba|stavbár
 👷‍♀️|robotníčka|stavba|stavbárka|žena
+🫅|kráľovský|kráľovstvo|monarcha|osoba s korunou|vládca
 🤴|princ
 👸|princezná|rozprávka
 👳|človek s turbanom|turban
@@ -427,6 +411,8 @@
 👰‍♂️|muž so závojom|závoj
 👰‍♀️|závoj|žena so závojom
 🤰|tehotenstvo|tehotná žena|žena
+🫃|brucho|nafúknuté|plné|tehotná|tehotný muž
+🫄|brucho|nafúknuté|plné|tehotná osoba|tehotný
 🤱|bábä|dojčenie|dojčiť
 👩‍🍼|bábätko|kojenie|kŕmenie|žena kŕmiaca bábätko
 👨‍🍼|bábätko|kŕmenie|muž kŕmiaci bábätko
@@ -462,6 +448,7 @@
 🧟|mátoha|mŕtvola|zombia
 🧟‍♂️|mátoha|mŕtvola|mužská zombia
 🧟‍♀️|mátoha|mŕtvola|ženská zombia
+🧌|fantasy|obluda|obor|rozprávka
 💆|masáž tváre|salón|tvár
 💆‍♂️|masáž|muž dostáva masáž tváre|tvár
 💆‍♀️|masáž|tvár|žena dostáva masáž tváre
@@ -581,6 +568,8 @@
 🐅|tiger
 🐆|leopard
 🐴|hlava koňa|kôň
+🫎|cicavec|los|parohy|zviera
+🫏|blbec|cicavec|osol|pako|somár|tvrdohlavec|zviera
 🐎|dostihový kôň|dostihy|jazdec|kôň
 🦄|hlava|jednorožec
 🦓|pruhy|zebra
@@ -643,6 +632,8 @@
 🦩|nápadný|okázalý|plameniak|tropický
 🦚|nadutý|nafúkaný|páv|pyšný
 🦜|papagáj|pirát|rozprávať|vták
+🪽|anjelské|krídlo|lietanie|mytológia|vták
+🪿|gagotať|hlúpy|hus|hydina|vták
 🐸|hlava|žaba
 🐊|krokodíl
 🐢|korytnačka
@@ -662,6 +653,8 @@
 🦈|ryba|žralok
 🐙|chobotnica
 🐚|mušľa|špirálovitá
+🪸|koral|oceán|útes
+🪼|bezstavovec|bolesť|medúza|more|popáliť|želé|žihadlo
 🐌|slimák
 🦋|hmyz|motýľ
 🐛|hmyz|húsenica
@@ -681,6 +674,7 @@
 💐|kvetina|kytica|rastlina|romanca
 🌸|čerešňa|čerešňový kvet|kvetina|rastlina
 💮|biely kvet|kvetina|rastlina|romanca
+🪷|budhizmus|čistota|hinduizmus|india|kvet|lotos|vietnam
 🏵️|rastlina|ružička
 🌹|kvetina|rastlina|ruža
 🥀|kvetina|zvädnutá
@@ -688,6 +682,7 @@
 🌻|kvetina|rastlina|slnečnica|slnko
 🌼|kvetina|rastlina
 🌷|kvetina|rastlina|tulipán
+🪻|hyacint|kvet|levanduľa|lupina|papuľka|pyštek
 🌱|mladá|rastlina|sadenica
 🪴|doma|kvetináč|rás´´ť|rastlina|zalievať
 🌲|ihličnatý strom|neopadavý|rastlina|strom
@@ -700,6 +695,9 @@
 🍁|javorový list|list|opadavý|rastlina
 🍂|list|opadavý|opadnutý list|rastlina
 🍃|fúkať|list vo vetre|rastlina|vánok|vietor
+🪹|hniezdenie|prázdne hniezdo
+🪺|hniezdenie|hniezdo s vajcami
+🍄|hríb|huba
 🍇|hrozno|ovocie|rastlina
 🍈|cukrový melón|ovocie|rastlina
 🍉|melón|ovocie|rastlina
@@ -731,9 +729,11 @@
 🥦|brokolica|kapusta
 🧄|cesnak|dochutenie|korenie|ochutenie|zelenina
 🧅|cibuľa|dochutenie|korenie|ochutenie|zelenina
-🍄|hríb|huba
 🥜|arašidy|jedlo|orech|zelenina
+🫘|fazuľa|jedlo|strukovina
 🌰|gaštan|rastlina
+🫚|koreň ďumbiera|pivo|štipľavý
+🫛|edamame|fazuľa|hrachový struk|strukovina|zelenina
 🍞|bochník|chlieb|peceň
 🥐|croissant|francúzske|jedlo|pečivo
 🥖|bageta|francúzske|jedlo|pečivo
@@ -817,6 +817,7 @@
 🍻|bar|drink|pivo|pohár|štrngajúce pivové poháre|štrngať
 🥂|nápoj|oslavovať|pohár|prípitok|štrngajúce poháriky|štrngať
 🥃|alkohol|pohár na whisky|pohárik|whisky
+🫗|liatie|nápoj|pohár|prázdny|rozliať
 🥤|džús|limonáda|pohár so slamkou
 🧋|bublinky|čaj|mlieko|perlivý čaj
 🧃|džús v krabičke|krabicový džús|nápoj v krabičke|nápojová krabička|pitie v krabičke
@@ -827,6 +828,7 @@
 🍴|nôž|varenie|vidlička a nôž
 🥄|lyžica|príbor
 🔪|kuchynský nôž|nástroj|nôž|varenie|zbraň
+🫙|nádoba|pohár|prázdny|pyré|zásoby|zaváranina
 🏺|amfora|krčah|nádoba|nápoj|varenie
 🌍|afrika|európa|glóbus|svet|zemeguľa s európou a afrikou
 🌎|amerika|glóbus|svet|zemeguľa s amerikou
@@ -888,6 +890,7 @@
 🌇|budova|počasie|slnko|západ slnka|zotmenie
 🌉|most v noci|noc|počasie
 🎠|kolotočový kôň|kôň
+🛝|hra|ihrisko|šmykľavka
 🎡|koleso|lunapark|ruské
 🎢|dráha|horská dráha|lunapark
 💈|holič|pútač holičstva|účes
@@ -936,11 +939,13 @@
 🛤️|vlak|železnica|železničná trať
 🛢️|barel|ropa|sud
 ⛽|benzín|čerpacia stanica|čerpacie zariadenie|palivo|pumpa|stanica
+🛞|koleso|kruh|otáčanie|pneumatika
 🚨|auto|dopravný prostriedok|maják|otáčajúce sa|policajný maják|polícia|svetlo
 🚥|premávka|signál|svetlo|vodorovný semafor
 🚦|premávka|signál|svetlo|zvislý semafor
 🛑|osemuholník|stop|zastaviť|značka
 🚧|bariéra|práce na ceste
+🛟|bezpečnosť|koleso|pomoc|vznášanie|záchrana|záchranné koleso
 ⛵|dopravný prostriedok|jachta|loď|more|plachetnica|stredisko
 🛶|kanoe|loď
 🚤|čln|loď|motorový čln|rýchly čln
@@ -1089,10 +1094,10 @@
 🎯|cieľ|hra|oko|presný stred|presný zásah|šípka|stred|zásah
 🪀|cievka|hračka|jo-jo|jojo|kolísanie
 🪁|let|lietanie|papierový šarkan|púšťanie|stúpanie|vzlietnutie
+🔫|nástroj|pištoľ|revolver|vodná pištoľ|zbraň
 🎱|8|biliardová guľa č. 8|guľa č. 8|hra|osem
 🔮|fantasy|krištáľová guľa|rozprávka|veštenie
 🪄|čarodejníčka|čarodejník|kúzelná palička|kúzlo
-🧿|amulet|korálka|modré oko|nazar|prívesok|talizman
 🎮|hra|ovládač|videohra
 🕹️|hra|joystick|páka|videohra
 🎰|hazard|hra|výherný automat|výhra
@@ -1100,6 +1105,7 @@
 🧩|dieliky|puzzle|skladačka
 🧸|hračka|medvedík|plyšiak|plyšový
 🪅|oslava|párty|piñata|večierok
+🪩|blyšťanie|disko|párty|tanec|zrkadlová guľa
 🪆|bábika|matrioška|matriošky|ruská
 ♟️|figúrka|pešiak|šach
 🃏|hracie|karta|žolík
@@ -1132,6 +1138,7 @@
 🩳|jednodielne|kraťasy|krátke nohavice|plavky|šortky|spodky|trenírky
 👙|bikini|oblečenie|plávanie|plávať
 👚|dámske oblečenie|oblečenie|žena
+🪭|chladenie|hanblivosť|horúco|kmitavý pohyb|skladací vejár|tanec|vejár
 👛|koruna|oblečenie|peňaženka
 👜|kabelka|oblečenie|taška
 👝|malá kabelka|oblečenie|taška
@@ -1146,6 +1153,7 @@
 👡|dámsky sandál|oblečenie|sandál|topánka|žena
 🩰|baletné špice|tanec
 👢|čižma|dámska čižma|oblečenie|obuv|žena
+🪮|afro|česať|hrebeň na kučeravé vlasy|vlasy
 👑|koruna|kráľovná|oblečenie
 👒|dámsky klobúk|klobúk|oblečenie|žena
 🎩|cylinder|klobúk|oblečenie|vysoký
@@ -1184,6 +1192,8 @@
 🪕|banjo|bendžo|hudba|nástroj|strunový
 🥁|bubenícke|bubon|hudba|paličky
 🪘|bubenícke|bubon|kongo|rytmus
+🪇|hrkať|hudba|nástroj|perkusie|rumbagule|triasť
+🪈|drevený dychový hudobný nástroj|flauta|hudba|pikola|píšťalka|záznamník
 📱|mobilný|telefón
 📲|hovor|mobil so šípkou|mobilný|prijímať|šípka|telefón
 ☎️|telefón
@@ -1191,6 +1201,7 @@
 📟|pager|pejdžer
 📠|fax|telefax
 🔋|batéria
+🪫|elektronika|málo energie|slabá batéria
 🔌|elektrická|elektrina|prípojka|zástrčka
 💻|osobný|pc|počítač|prenosný počítač
 🖥️|stolný počítač
@@ -1296,7 +1307,7 @@
 ⛏️|dolovanie|krompáč|nástroj
 🛠️|francúzsky kľúč|kladivo a kľúč|nástroj
 🗡️|dýka|nôž|zbraň
-🔫|nástroj|pištoľ|revolver|vodná pištoľ|zbraň
+💣|bomba|komiks
 🪃|austrálsky|bumerang|následky|návrat
 🏹|luk a šíp|lukostrelec|šíp|strelec|zbraň|zverokruh
 🛡️|štít|zbraň
@@ -1322,7 +1333,9 @@
 🩸|darcovstvo|darovanie|krv|kvapka krvi|lekárstvo|medicína|menštruácia
 💊|choroba|doktor|medicína|tabletka
 🩹|leukoplast|náplasť|obväz
+🩼|barla|palica|podpera|postihnutie|zdravotná pomôcka|zranenie
 🩺|doktor|lekárstvo|medicína|srdce|stetoskop
+🩻|kosti|kostra|lekár|röntgen|zdravie
 🚪|dvere
 🛗|výťah
 🪞|odraz|zrkadlenie|zrkadlo
@@ -1343,6 +1356,7 @@
 🧻|papierová utierka|rolka papiera|toaletný papier
 🪣|nádoba|súdok|vedro
 🧼|kúpanie|mydlo|pena|sprchovanie|umývanie
+🫧|bubliny|čistota|grgnutie|mydlo|pod vodou
 🪥|čistiť|kefka|kúpeľňa|zubná kefka|zuby
 🧽|čistiť|kúpať|špongia|sprchovať|vsať
 🧯|hasiaci prístroj|hasiť|požiar
@@ -1351,8 +1365,11 @@
 ⚰️|rakva|smrť
 🪦|cintorín|hrobka|náhrobok
 ⚱️|pohrebná urna|smrť
+🧿|amulet|korálka|modré oko|nazar|prívesok|talizman
+🪬|amulet|fatima|fatimina ruka|hamsa|mária|ochrana|ruka
 🗿|moai|socha|tvár
 🪧|demonštrácia|protest|štrajk|tabuľa|transparent
+🪪|bezpečnosť|doklady|preukaz totožnosti|vodičský preukaz
 🏧|automat|banka|bankomat|hotovosť
 🚮|odpadkový kôš|odpadky|smeti|symbol odpadkového koša
 🚰|pitie|pitná|voda
@@ -1399,6 +1416,7 @@
 ☮️|mier|symbol mieru
 🕎|menóra|náboženstvo|svietnik|židovstvo
 🔯|hviezda|šesťcípa hviezda s bodkou uprostred|šťastie
+🪯|khanda|náboženstvo|sikhizmus
 ♊|dvojičky|znamenie blížencov|zverokruh
 ♋|rak|znamenie raka|zverokruh
 ♌|lev|znamenie leva|zverokruh
@@ -1428,9 +1446,11 @@
 🔅|jas|stlmiť|tlačidlo stlmenia jasu|znížiť
 🔆|jasný|tlačidlo jasu
 📶|anténa|mobilné|pás|signál|sila signálu|telefón
+🛜|bezdrôtový|internet|počítač|sieť
 📳|mobilný|režim|telefón|vibrácia|vibračný režim
 📴|mobilý|telefón|vypnuté|vypnutý mobil
 ⚧️|transgenderový symbol
+🟰|matematika|rovné|rovnosť
 ♾️|navždy|nekonečno|večný
 ‼️|!!|dvojitý výkričník|interpunkcia|výkričník|znak|zvolanie
 💱|banka|mena|peniaze|zmenáreň

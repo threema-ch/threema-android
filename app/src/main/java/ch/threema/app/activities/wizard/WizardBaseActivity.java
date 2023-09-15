@@ -311,7 +311,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 			if (booleanPreset != null) {
 				if (booleanPreset) {
 					skipWizard = true;
-					viewPager.setCurrentItem(WizardFragment4.PAGE_ID);
+					viewPager.post(() -> viewPager.setCurrentItem(WizardFragment4.PAGE_ID));
 				}
 			}
 		} else {

@@ -22,6 +22,10 @@
 package ch.threema.app.utils;
 
 
+import static ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT;
+import static ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST;
+import static ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -38,7 +42,6 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
@@ -49,10 +52,6 @@ import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
-
-import static ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT;
-import static ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST;
-import static ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP;
 
 public class QuoteUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("QuoteUtil");
@@ -321,18 +320,22 @@ public class QuoteUtil {
 	 * @return true if the message can be quoted, false otherwise
 	 */
 	public static boolean isQuoteable(@NonNull AbstractMessageModel messageModel) {
-		switch (messageModel.getType()) {
-			case IMAGE:
-			case FILE:
-			case VIDEO:
-			case VOICEMESSAGE:
-			case TEXT:
-			case BALLOT:
-			case LOCATION:
-				return messageModel.getApiMessageId() != null;
-			default:
-				return false;
+		MessageType messageType = messageModel.getType();
+		if (messageType != null) {
+			switch (messageModel.getType()) {
+				case IMAGE:
+				case FILE:
+				case VIDEO:
+				case VOICEMESSAGE:
+				case TEXT:
+				case BALLOT:
+				case LOCATION:
+					return messageModel.getApiMessageId() != null;
+				default:
+					return false;
+			}
 		}
+		return false;
 	}
 
 	/**

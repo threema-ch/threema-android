@@ -93,7 +93,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.floor
@@ -885,7 +884,12 @@ class CameraFragment : Fragment() {
             RuntimeUtil.runOnUiThread {
                 timerView?.start(durationSeconds * DateUtils.SECOND_IN_MILLIS) { _: Long -> stopVideoRecording() }
             }
-            videoRecording = pendingRecording?.start(RuntimeUtil.MainThreadExecutor(), videoEventConsumer)
+            try {
+                videoRecording =
+                    pendingRecording?.start(RuntimeUtil.MainThreadExecutor(), videoEventConsumer)
+            } catch (e: IllegalStateException) {
+                logger.error("Unable to start recording", e)
+            }
         }
     }
 

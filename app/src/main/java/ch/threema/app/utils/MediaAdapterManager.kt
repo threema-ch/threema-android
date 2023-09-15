@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.adapters.SendMediaAdapter
 import ch.threema.app.adapters.SendMediaPreviewAdapter
 import ch.threema.app.ui.MediaItem
-import java.util.*
+import java.util.Collections
 
 const val NOTIFY_LISTENER: Int = 1
 const val NOTIFY_ADAPTER: Int = 2
@@ -74,6 +74,10 @@ class MediaAdapterManager(private val mediaAdapterListener: MediaAdapterListener
     }
 
     fun remove(index: Int, notify: Int = NOTIFY_ALL) {
+        if (index < 0 || index >= items.size) {
+            return
+        }
+
         items.removeAt(index)
         if (isNotifyListener(notify)) {
             mediaAdapterListener.onItemCountChanged(size())

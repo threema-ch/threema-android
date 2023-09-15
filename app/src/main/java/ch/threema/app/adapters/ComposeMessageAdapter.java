@@ -21,6 +21,8 @@
 
 package ch.threema.app.adapters;
 
+import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DEFAULT;
+
 import android.animation.LayoutTransition;
 import android.content.Context;
 import android.text.TextUtils;
@@ -97,8 +99,6 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DateSeparatorMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.MessageType;
-
-import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DEFAULT;
 
 public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageAdapter");
@@ -344,7 +344,9 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	@Override
 	public AbstractMessageModel getItem(int position) {
 		if (position < values.size()) {
-			return super.getItem(position);
+			if (position >= 0) {
+				return super.getItem(position);
+			}
 		}
 		return null;
 	}

@@ -72,18 +72,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getkeepsafe.taptargetview.TapTarget;
-import com.getkeepsafe.taptargetview.TapTargetView;
-
-import org.slf4j.Logger;
-import org.webrtc.RendererCommon;
-import org.webrtc.SurfaceViewRenderer;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.concurrent.ExecutionException;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.AnyThread;
@@ -105,6 +93,19 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.transition.ChangeBounds;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
+
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
+
+import org.slf4j.Logger;
+import org.webrtc.RendererCommon;
+import org.webrtc.SurfaceViewRenderer;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.concurrent.ExecutionException;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -137,6 +138,7 @@ import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.PermissionUtilsKt;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.AudioSelectorButton;
 import ch.threema.app.voip.CallStateSnapshot;
@@ -668,7 +670,7 @@ public class CallActivity extends ThreemaActivity implements
 				if (currentAudioDevice == AudioDevice.SPEAKER_PHONE) {
 					setVolumeControlStream(AudioManager.STREAM_MUSIC);
 				} else {
-					setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+					setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 				}
 			}
 		}
@@ -1805,7 +1807,7 @@ public class CallActivity extends ThreemaActivity implements
 	private void rejectOrCancelCall(byte reason) {
 		final long callId = this.voipStateService.getCallState().getCallId();
 		logger.info("{}: rejectOrCancelCall", callId);
-		if (this.activityMode == MODE_INCOMING_CALL) {
+		if (this.activityMode == MODE_INCOMING_CALL && contact != null) {
 			final Intent rejectIntent = new Intent(this, CallRejectService.class);
 			rejectIntent.putExtra(VoipCallService.EXTRA_CONTACT_IDENTITY, contact.getIdentity());
 			rejectIntent.putExtra(VoipCallService.EXTRA_CALL_ID, callId);
@@ -1980,13 +1982,7 @@ public class CallActivity extends ThreemaActivity implements
 	public void setPreferredAudioDevice(@NonNull AudioDevice device) {
 		logger.info("setPreferredAudioDevice {}", device);
 
-		if (audioManager.isWiredHeadsetOn()) {
-			logger.info("Wired headset is connected, not overriding audio device selection");
-			return;
-		}
-
-		if (this.audioManager.isBluetoothScoOn()) {
-			logger.info("Bluetooth headset is connected, not overriding audio device selection");
+		if (SoundUtil.isHeadsetOn(audioManager)) {
 			return;
 		}
 

@@ -998,16 +998,21 @@ public class MessageServiceImpl implements MessageService {
 		String[] memberIdentities = groupService.getGroupIdentities(groupModel);
 		for (String memberIdentity: memberIdentities) {
 			if (!identityStore.getIdentity().equals(memberIdentity)) {
-				GroupDeliveryReceiptMessage receipt = new GroupDeliveryReceiptMessage();
-				receipt.setApiGroupId(groupModel.getApiGroupId());
-				receipt.setGroupCreator(groupModel.getCreatorIdentity());
-				receipt.setReceiptType(receiptType);
-				receipt.setReceiptMessageIds(new MessageId[]{MessageId.fromString(messageModel.getApiMessageId())});
-				receipt.setFromIdentity(identityStore.getIdentity());
-				receipt.setToIdentity(memberIdentity);
-				logger.info("Enqueue group delivery receipt ({}) message ID {} to {} for message ID {}",
-					receiptType, receipt.getMessageId(), receipt.getToIdentity(), receipt.getReceiptMessageIds()[0]);
-				messageQueue.enqueue(receipt);
+				try {
+					GroupDeliveryReceiptMessage receipt = new GroupDeliveryReceiptMessage();
+					receipt.setApiGroupId(groupModel.getApiGroupId());
+					receipt.setGroupCreator(groupModel.getCreatorIdentity());
+					receipt.setReceiptType(receiptType);
+					receipt.setReceiptMessageIds(new MessageId[]{MessageId.fromString(messageModel.getApiMessageId())});
+					receipt.setFromIdentity(identityStore.getIdentity());
+					receipt.setToIdentity(memberIdentity);
+					messageQueue.enqueue(receipt);
+					logger.info("Enqueue group delivery receipt ({}) message ID {} to {} for message ID {}",
+						receiptType, receipt.getMessageId(), receipt.getToIdentity(), receipt.getReceiptMessageIds()[0]);
+				} catch (ThreemaException e) {
+					logger.error("Could not enqueue delivery receipt ({}) to {} for message ID {}",
+						receiptType, memberIdentity, messageModel.getApiMessageId());
+				}
 			}
 		}
 		return true;

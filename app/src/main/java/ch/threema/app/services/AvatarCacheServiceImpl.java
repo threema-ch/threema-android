@@ -27,6 +27,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.widget.ImageView;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -40,11 +46,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import ch.threema.app.R;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.utils.AvatarConverterUtil;
@@ -197,7 +198,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 			}
 			return requestBuilder.submit().get();
 		} catch (ExecutionException | InterruptedException e) {
-			logger.error("Error while getting avatar bitmap", e);
+			logger.error("Error while getting avatar bitmap for configuration " + config, e);
 			Thread.currentThread().interrupt();
 			return null;
 		}
@@ -209,7 +210,11 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 		if (config.options.disableCache) {
 			requestBuilder = requestBuilder.skipMemoryCache(true);
 		}
-		requestBuilder.into(view);
+		try {
+			requestBuilder.into(view);
+		} catch (Exception e) {
+			logger.debug("Glide failure", e);
+		}
 	}
 
 	/**

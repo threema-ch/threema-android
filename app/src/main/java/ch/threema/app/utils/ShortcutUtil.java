@@ -108,15 +108,19 @@ public final class ShortcutUtil {
 		ShortcutInfoCompat shortcutInfoCompat = getPinnedShortcutInfo(messageReceiver, type);
 
 		if (shortcutInfoCompat != null) {
-			Intent pinnedShortcutCallbackIntent = new Intent(ThreemaApplication.INTENT_ACTION_SHORTCUT_ADDED);
-			PendingIntent callback = PendingIntent.getBroadcast(getContext(), REQUEST_CODE_SHORTCUT_ADDED,
-				pinnedShortcutCallbackIntent, IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
-
-			if (ShortcutManagerCompat.requestPinShortcut(getContext(), shortcutInfoCompat, callback.getIntentSender())) {
-				logger.info("Shortcut requested");
+			if (updatePinnedShortcut(messageReceiver, type)) {
+				Toast.makeText(getContext(), R.string.add_shortcut_exists, Toast. LENGTH_LONG).show();
 			} else {
-				Toast.makeText(getContext(), R.string.add_shortcut_error, Toast.LENGTH_SHORT).show();
-				logger.info("Failed to add shortcut");
+				Intent pinnedShortcutCallbackIntent = new Intent(ThreemaApplication.INTENT_ACTION_SHORTCUT_ADDED);
+				PendingIntent callback = PendingIntent.getBroadcast(getContext(), REQUEST_CODE_SHORTCUT_ADDED,
+					pinnedShortcutCallbackIntent, IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
+
+				if (ShortcutManagerCompat.requestPinShortcut(getContext(), shortcutInfoCompat, callback.getIntentSender())) {
+					logger.info("Shortcut requested");
+				} else {
+					Toast.makeText(getContext(), R.string.add_shortcut_error, Toast.LENGTH_SHORT).show();
+					logger.info("Failed to add shortcut");
+				}
 			}
 		}
 	}
@@ -140,6 +144,34 @@ public final class ShortcutUtil {
 				ShortcutManagerCompat.updateShortcuts(getContext(), matchingShortcuts);
 			}
 		}
+	}
+
+	/**
+	 * Check if a pinned shortcut already exists that matches the specified MessageReceiver and type.
+	 * If yes, the shortcut will be updated with new information for the MessageReceiver.
+	 * @param messageReceiver The MessageReceiver to check for matches
+	 * @param type The shortcut type (call or chat)
+	 * @return true if a shortcut exists, false otherwise
+	 */
+	@WorkerThread
+	public static boolean updatePinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
+		String uniqueId = messageReceiver.getUniqueIdString();
+
+		if (!TestUtil.empty(uniqueId)) {
+			List<ShortcutInfoCompat> matchingShortcuts = new ArrayList<>();
+
+			for (ShortcutInfoCompat shortcutInfo : ShortcutManagerCompat.getShortcuts(getContext(), FLAG_MATCH_PINNED)) {
+				if (shortcutInfo.getId().equals(type + uniqueId)) {
+					matchingShortcuts.add(getPinnedShortcutInfo(messageReceiver, TYPE_CHAT));
+				}
+			}
+
+			if (matchingShortcuts.size() > 0) {
+				ShortcutManagerCompat.updateShortcuts(getContext(), matchingShortcuts);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@WorkerThread

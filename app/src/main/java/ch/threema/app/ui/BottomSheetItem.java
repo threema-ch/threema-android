@@ -24,14 +24,15 @@ package ch.threema.app.ui;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.DrawableRes;
 
 public class BottomSheetItem implements Parcelable {
 
-	private Bitmap bitmap;
-	private String title;
-	private String tag;
-	private @DrawableRes int resource;
+	private final Bitmap bitmap;
+	private final String title;
+	private final String tag;
+	private final @DrawableRes int resource;
 
 	public BottomSheetItem(Bitmap bitmap, String title, String tag) {
 		this.bitmap = bitmap;
@@ -77,7 +78,11 @@ public class BottomSheetItem implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeValue(bitmap);
+		try {
+			dest.writeValue(bitmap);
+		} catch (RuntimeException e) {
+			dest.writeValue(null);
+		}
 		dest.writeString(title);
 		dest.writeString(tag);
 		dest.writeInt(resource);

@@ -66,43 +66,6 @@
 〰️|çizgi|dalgalı|uzun ses işareti
 ㊗️|japonca "tebrikler" düğmesi|kutlama|sembol|tebrik
 ㊙️|japonca "sır" düğmesi|sembol|sır
-🥹|ağlamaklı|direnmek|gözleri dolmuş yüz|gurur|kızgın|üzgün
-🧌|fantezi|peri masalı|trol|yaratık
-🩻|doktor|iskelet|kemik|röntgen|tıbbi|x ışını
-🩼|baston|değnek|engellilik|koltuk değneği|yürüme yardımı
-🪩|aynalı küre|dans|disko|parlak|parti
-🪪|güvenlik|kimlik bilgisi|kimlik kartı|lisans
-🪫|düşük enerji|düşük pil|elektronik
-🪬|fatıma’nın eli|meryem|muska|nazarlık
-🪷|budizm|çiçek|hindistan|hinduizm|nilüfer|saflık|vietnam
-🪸|mercan|okyanus|resif
-🪹|boş yuva|yuva
-🪺|yumurta bulunan yuva|yuva
-🫃|göbekli|hamile adam|şişmiş
-🫄|göbekli|hamile kişi|şişmiş
-🫅|kraliyet|soylu|taç takmış insan
-🫗|bardak|dökme|dökülen sıvı|içecek|sıvı boş
-🫘|baklagil|fasulye|gıda
-🫙|baharatlık|boş|kavanoz|saklama kabı|sos
-🫠|çözülme|erime|eriyen yüz|kaybolma|sıvılaşma
-🫡|asker|güneşli|onay|selamlayan yüz
-🫢|el ağızdayken gözler açık yüz|hayret|inanamama|korku|şaşkınlık|sürpriz|utanma
-🫣|dikizleme|gizlice bakan yüz|gizlice bakma|gözetleme
-🫤|hayal kırıklığına uğramış|hüsran|kırgın|şüpheli yüz
-🫥|depresif|gizlenme|görünmez|içe dönük|kaybolma|noktalı çizgili yüz
-🫦|davetkar|endişeli|gergin|ısırılan dudak|korku|rahatsız
-🫧|baloncuk|kabarcık|sabun|su altı|temiz
-🫰|aşk|işaret parmağı ve baş parmak birbirine geçmiş el|kalp|pahalı|para
-🫱|el|sağa bakan el
-🫲|el|sola bakan el
-🫳|atmak|avuç içi aşağı bakan el|düşürmek|kışkışlamak
-🫴|avuç içi yukarı bakan el|çağırmak|el etmek|yakalamak
-🫵|işaret|karşıyı işaret eden işaret parmağı|sen
-🫶|aşk|kalp oluşturan eller|sevgi
-🛝|eğlence parkı|kaydırak|oyun
-🛞|çark|dönüş|lastik|tekerlek
-🛟|cankurtaran simidi|güvenlik|hayat kurtaran|yüzme
-🟰|eşitlik|kalın eşittir işareti|matematik
 😀|gülen yüz|gülme|lol|neşeli|sırıtan yüz|yüz
 😃|ağzı açık gülen yüz|ağzı açık sırıtma|gülen yüz|gülme|gülümseme|lol|neşeli|yüz
 😄|ağzı açık gülen gözler|gülen gözlerle ağzı açık sırıtma|gülen yüz|gülme|gülümseme|lol|neşeli
@@ -113,6 +76,7 @@
 😂|gözyaşları|sevinç gözyaşları olan yüz|yüz
 🙂|gülme|hafifçe gülümseyen yüz|yüz
 🙃|ters yüz|yüz
+🫠|çözülme|erime|eriyen yüz|kaybolma|sıvılaşma
 😉|göz kırpan yüz|göz kırpma|yüz
 😊|ağzı açık gülme|gülümseyen gözler|gülümseyen yüz ve gözler|yüz
 😇|gülümseme|ışık halkalı gülümseme|ışık halkası|yüz
@@ -133,13 +97,17 @@
 🤑|ağız|para ağızlı yüz|yüz
 🤗|kucaklama|kucaklayarak gülümseme|sarılma|yüz
 🤭|eliyle ağzını kapatan yüz|tüh
+🫢|gözleri açık ve eliyle ağzını kapatan yüz|hayret|inanamama|korku|şaşkınlık|sürpriz|utanma
+🫣|dikizleme|gizlice bakan yüz|gizlice bakma|gözetleme
 🤫|sessiz|şişt|sus işareti yapan yüz
 🤔|düşünen yüz|düşünme|yüz
+🫡|asker|başüstüne|güneşli|onay|selamlayan yüz
 🤐|ağız|ağzı fermuarlı yüz|fermuar|yüz
 🤨|güvenmeyen|şüpheci|tek kaşı çatık yüz
 😐|duygusuz|nötr|yorum yok|yüz
 😑|ifadesiz yüz|yorum yok|yüz
 😶|ağız|ağzı olmayan yüz|sakin|sessiz|yüz
+🫥|depresif|gizlenme|görünmez|içe dönük|kaybolma|noktalı çizgili yüz
 😶‍🌫️|bulutlardaki kafa|bulutlardaki yüz|dalgın|sisler arasındaki yüz
 😏|imalı gülümseme|yapmacık gülümseyen yüz|yüz
 😒|keyifsiz yüz|mutsuz|yüz
@@ -147,6 +115,7 @@
 😬|dişlerini gösteren yüz|yüz
 😮‍💨|fısıldama|ıslık|nefes veren yüz|nefes verme|rahatlama|sızlanma
 🤥|pinokyo|yalan söyleme|yalan söyleyen yüz|yüz
+🫨|deprem|sallanan yüz|sallanma|şok|titreme|yüz
 😌|rahatlamış|yüz
 😔|düşünceli|karamsar|yüz
 😪|uykulu yüz|yüz
@@ -171,6 +140,7 @@
 🤓|bilgili|inek öğrenci|ukala|yüz
 🧐|kendini beğenmiş|tek cam gözlüklü yüz
 😕|kafası karışık yüz|kafası karışmış|yüz
+🫤|hayal kırıklığına uğramış|hüsran|kırgın|şüpheli yüz|yamuk ağızlı yüz
 😟|endişeli yüz|yüz
 🙁|asık surat|biraz asık surat|yüz
 😮|ağız|ağzı açık yüz|yüz
@@ -178,6 +148,7 @@
 😲|afallamış|şoke olmuş|tamamen şoke olmuş|yüz
 😳|kızarmış ve şaşkın yüz|kızarmış yüz|şaşırmış|şaşkınlık içinde|yüz
 🥺|acıklı bakışlar|merhamet|yalvaran yüz|yalvarma
+🥹|ağlamaklı|direnme|gözleri dolmuş yüz|gözyaşlarını tutan yüz|gurur|kızgın|üzgün
 😦|açık ağızlı hoşnutsuz yüz|ağzı açık|hoşnutsuz|yüz
 😧|acı çeken|kederli yüz|yüz
 😨|korkmuş|korkulu yüz|yüz
@@ -220,7 +191,6 @@
 🙈|görmedim|görmeyen maymun|maymun
 🙉|duymadım|duymayan maymun|maymun
 🙊|bilmiyorum|maymun|söylemeyen maymun
-💋|dudaklar|öpücük izi|romantizm
 💌|aşk mektubu|kalpli mektup|mektup|romantizm
 💘|aşk|duygu|kalp|ok saplanmış kalp
 💝|duygu|kalp|kurdeleli kalp|sevgililer günü
@@ -233,14 +203,18 @@
 💔|duygu|kalp|kırık kalp|kırılmış|kırma
 ❤️‍🔥|alev|arzu|aşk|ateşli kalp|kalp|kutsal kalp|tutku
 ❤️‍🩹|daha sağlıklı|iyileşen kalp|onarılan
+🩷|aşk|beğen|kalp|pembe|şirin
 🧡|portakal|turuncu kalp
 💛|duygu|kalp|sarı
 💚|duygu|kalp|yeşil
 💙|duygu|kalp|mavi
+🩵|açık mavi kalp|camgöbeği|deniz mavisi|kalp
 💜|duygu|kalp|mor
 🤎|kahverengi|kalp
 🖤|fena|kalp|kötü|siyah
+🩶|gri|gümüş|kalp|kurşun|taş
 🤍|beyaz|kalp
+💋|dudaklar|öpücük izi|romantizm
 💯|100 puan|skor|yüz puan
 💢|çizgi roman|duygu|öfke işareti|öfke simgesi|öfkeli
 💥|çarpışma işareti|çizgi roman|duygu
@@ -248,7 +222,6 @@
 💦|çizgi roman|duygu|ter damlası|terli
 💨|çizgi roman|duygu|hızla fırlama|kaçma|koşma
 🕳️|delik
-💣|bomba|çizgi roman|duygu
 💬|balon|çizgi roman|iletişim balonu|konuşma balonu
 👁️‍🗨️|göz|konuşma balonunda göz|tanıklık
 🗨️|diyalog|konuşma|sol konuşma balonu
@@ -260,11 +233,18 @@
 🖐️|avuç|beden|el|parmaklar açık el kaldırma
 ✋|el kaldırma|havada el
 🖖|beden|el|parmak|spock|vulcan selamı|vulkan selamı
+🫱|el|sağa bakan el
+🫲|el|sola bakan el
+🫳|atmak|avuç içi aşağı bakan el|düşürmek|kışkışlamak
+🫴|avuç içi yukarı bakan el|çağırmak|el etmek|gel|sunmak|yakalamak
+🫷|bekletme|çak|durdurma|itme|reddetme|sola iten el
+🫸|bekletme|çak|durdurma|itme|reddetme|sağa iten el
 👌|el|işaret|tamam el işareti|tamam işareti
 🤌|bravo|çok güzel|harika|kıstırma hareketi yapan parmaklar|lezzetli|parmaklar
 🤏|azıcık|bir tutam|kıstırma hareketi yapan el
 ✌️|oleey|zafer eli|zafer işareti
 🤞|çapraz|el|parmak|şans dileme
+🫰|aşk|işaret parmağı ve baş parmak birbirine geçmiş el|kalp|pahalı|para
 🤟|el|seni seviyorum işareti|ss
 🤘|beden|boynuz işareti|el|parmak|rock
 🤙|ara|beni ara işareti|el
@@ -274,6 +254,7 @@
 🖕|beden|el|orta parmak|parmak
 👇|aşağıyı gösteren parmak|elin arkası|elinin tersiyle aşağıyı gösteren işaret parmağı|işaret parmağı|parmak
 ☝️|beden|el|gösterme|işaret parmağı|parmak|yukarıyı gösteren işaret parmağı
+🫵|işaret|karşıyı işaret eden işaret parmağı|sen
 👍|baş parmak yukarıda|el|işaret|yukarı
 👎|aşağı|baş parmak aşağıda|el|işaret
 ✊|havada yumruk|yumruk kaldırma
@@ -282,6 +263,7 @@
 🤜|sağa bakan yumruk|sağa doğru|yumruk
 👏|çırpma|el çırpma|eller|işaret
 🙌|eller havaya|her iki el|kutlamak için iki eli birden kaldırma
+🫶|aşk|kalp oluşturan eller|sevgi
 👐|açık|eller açık işareti|işaret
 🤲|dua eden eller|iki avuç açık
 🤝|anlaşma|el sıkışma|sallama|toplantı
@@ -306,6 +288,7 @@
 👁️|beden|göz
 👅|dil|gövde|yüz
 👄|ağız|dudaklar|gövde|yüz
+🫦|davetkâr|endişeli|flört|gergin|ısırılan dudak|korku|rahatsız
 👶|bebek|kişiler
 🧒|çocuk|genç|kişi
 👦|erkek çocuk|kişiler
@@ -413,6 +396,7 @@
 👷|inşaat işçisi|işçi|kişiler
 👷‍♂️|adam|erkek inşaat işçisi|inşaat|işçi
 👷‍♀️|bayan|inşaat|işçi|kadın inşaat işçisi
+🫅|kraliyet|soylu|taç takmış insan
 🤴|prens
 👸|kişiler|peri masalı|prenses
 👳|kişiler|sarıklı erkek|sarıklı kişi
@@ -427,6 +411,8 @@
 👰‍♂️|adam|duvaklı adam|duvaklı erkek
 👰‍♀️|duvaklı kadın|kadın
 🤰|hamile|kadın
+🫃|göbekli|hamile adam|şişmiş
+🫄|göbekli|hamile kişi|şişmiş
 🤱|bebek|emziren kadın|emzirme|göğüs
 👩‍🍼|bakım|bebek emziren kadın|emzirme|kadın
 👨‍🍼|bakıcılık|bebek emziren erkek|emzirme|erkek
@@ -462,6 +448,7 @@
 🧟|hortlak|yürüyen ölü|zombi
 🧟‍♂️|erkek zombi|hortlak|yürüyen ölü
 🧟‍♀️|hortlak|kadın zombi|yürüyen ölü
+🧌|fantezi|peri masalı|trol|yaratık
 💆|masaj|salon|yüz masajı
 💆‍♂️|adam|erkek|masaj|yüz masajı yaptıran erkek
 💆‍♀️|bayan|kadın|masaj|yüz masajı yaptıran kadın
@@ -581,6 +568,8 @@
 🐅|kaplan
 🐆|leopar
 🐴|at yüzü|hayvan|yüz
+🫎|elk|geyik boynuzları|hayvan|memeli|sığın
+🫏|eşek|hayvan|inatçı|katır|memeli|merkep
 🐎|at|yarış atı
 🦄|tek boynuzlu at|unicorn|yüz
 🦓|çizgili|şeritli|zebra
@@ -643,6 +632,8 @@
 🦩|flamingo|gösterişli|tropikal
 🦚|dişi tavus kuşu|gösterişli|gururlu|kuş|tavus kuşu
 🦜|konuşma|korsan|kuş|papağan
+🪽|kanat|kuş|melek gibi|mitoloji|uçma|uçuş
+🪿|kaz sesi|kümes hayvanı|kuş|şapşal
 🐸|kurbağa|yüz
 🐊|hayvan|timsah
 🐢|hayvan|kaplumbağa
@@ -662,6 +653,8 @@
 🦈|balık|köpek balığı
 🐙|ahtapot|hayvan
 🐚|deniz kabuğu|hayvan|spiral deniz kabuğu
+🪸|mercan|okyanus|resif
+🪼|ahh|denizanası|iğne|medüz|omurgasız|yanma
 🐌|salyangoz
 🦋|böcek|kelebek|şirin
 🐛|böcek|hayvan|kırkayak|tırtıl
@@ -681,6 +674,7 @@
 💐|buket|çiçek|romantizm
 🌸|çiçek izleme|kiraz çiçeği
 💮|beyaz çiçek|çiçek|damga|iyi çalışma damgası
+🪷|budizm|çiçek|hindistan|hinduizm|nilüfer|saflık|vietnam
 🏵️|bitki|çiçek rozet|gülce
 🌹|bitki|çiçek|gül
 🥀|çiçek|solmuş
@@ -688,6 +682,7 @@
 🌻|ayçiçeği|bitki|çiçek|güneş
 🌼|bitki|çiçek açma
 🌷|bitki|çiçek|lale
+🪻|acı bakla|aslanağzı|çiçek|lavanta|lupin|sümbül
 🌱|fide|filizlenme|genç
 🪴|bitki|ev bitkisi|saksı bitkisi|yetiştirme
 🌲|ağaç|yaprak dökmeyen ağaç
@@ -700,6 +695,9 @@
 🍁|akçaağaç yaprağı|düşen yaprak|yaprak
 🍂|düşen|düşmüş|yapraklar
 🍃|esen|rüzgardaki yaprak|yaprak
+🪹|boş yuva|yuva
+🪺|yumurta bulunan yuva|yuva
+🍄|bitki|mantar
 🍇|meyve|üzüm
 🍈|kavun|meyve
 🍉|karpuz|meyve
@@ -731,9 +729,11 @@
 🥦|brokoli|yabani lahana
 🧄|baharat|sarımsak
 🧅|baharat|soğan
-🍄|bitki|mantar
 🥜|fındık|fıstık|sebze|yer fıstığı|yiyecek
+🫘|baklagil|barbunya|fasulye|gıda
 🌰|bitki|kestane
+🫚|baharat|bira|kök zencefil|yumru
+🫛|baklagil|barbunya|bezelye|edamame|fasulye|kabuklu bezelye|sebze
 🍞|ekmek dilimi|restoran
 🥐|ay çöreği|ekmek|fransız|kruvasan|yiyecek
 🥖|baget|ekmek|fransız|yiyecek
@@ -817,6 +817,7 @@
 🍻|bar|bira kupaları tokuşturma|kupalar|restoran
 🥂|bardak|içecek|kadeh tokuşturma|kutlama|tokuşturma
 🥃|bardak|kısa ve geniş bardak|likör|tek içki|viski
+🫗|bardak|boş|dökme|dökülen sıvı|içecek|sıvı
 🥤|pipetli bardak
 🧋|baloncuk|bubble tea|çay|inci çayı|süt
 🧃|içecek kutusu|kutu meyve suyu
@@ -827,6 +828,7 @@
 🍴|bıçak|çatal ve bıçak|restoran
 🥄|kaşık|yemek takımı
 🔪|bıçak|mutfak bıçağı
+🫙|baharatlık|boş|kavanoz|saklama kabı|sos
 🏺|alet|amfora|antika|içecek|kap|silah
 🌍|afrika|avrupa|dünya|yerkürede avrupa-afrika
 🌎|amerika bölgeleri|dünya|yerkürede amerika
@@ -834,7 +836,7 @@
 🌐|boylamlar|dünya|meridyenli yerküre|yerküre
 🗺️|dünya haritası|harita
 🗾|harita|japonya haritası
-🧭|hedef bulma|manyetik|navigasyon|pusula|yön bulma
+🧭|hedef bulma|manyetik|navigasyon|oryantiring|pusula|yön bulma
 🏔️|dağ|karla kaplı dağ|soğuk
 ⛰️|dağ
 🌋|dağ|volkan|yanardağ patlaması
@@ -883,11 +885,12 @@
 🌃|gece|yıldızlar|yıldızlı gece
 🏙️|bina|şehir manzarası
 🌄|dağların arasından güneşin doğuşu|dağların ardında güneş|sabah güneşi
-🌅|güneşin doğuşu|sabah güneşi|şafak
+🌅|gün doğumu|güneşin doğuşu|sabah güneşi|şafak
 🌆|akşam|alacakaranlık|bina|gün batımı|manzara|şehirde alacakaranlık
 🌇|alacakaranlık|binaların üzerinden gün batımı|gün batımı
 🌉|gece vakti köprü
 🎠|atlıkarınca atı|eğlence
+🛝|eğlence parkı|kaydırak|oyun
 🎡|dolap|dönme|eğlence parkı
 🎢|eğlence parkı|hız treni|tren
 💈|berber dükkanı|berber işareti|işaret
@@ -936,11 +939,13 @@
 🛤️|tren yolu
 🛢️|benzin|fıçı|petrol varili|varil
 ⛽|akaryakıt istasyonu|benzin|istasyon|yakıt pompası
+🛞|çark|dönüş|lastik|tekerlek
 🚨|polis arabası|polis lambası|polis tepe lambası
 🚥|ışık|trafik sinyalleri|yatay trafik ışığı|yatay trafik ışıkları
 🚦|dikey trafik ışığı|dikey trafik ışıkları|ışık|trafik sinyalleri
 🛑|dur işareti|işaret|sekizgen
 🚧|inşaat işareti|işaret
+🛟|can simidi|cankurtaran simidi|güvenlik|hayat kurtaran|yüzme
 ⛵|deniz tatil yeri|tatil yeri|tekne|yat|yelkenli tekne
 🛶|bot|kano
 🚤|sürat teknesi|taşıt|tekne
@@ -1089,10 +1094,10 @@
 🎯|hedefe isabet|isabet|oyun|tam isabet
 🪀|inip çıkma|oyuncak|yoyo
 🪁|süzülme|uçma|uçurtma
+🔫|revolver|silah|su tabancası|tabanca
 🎱|bilardo|oyun|sekiz top
 🔮|fal bakma|kristal|küre
 🪄|büyücü|cadı|sihirli asa
-🧿|boncuk|kem göz|mavi boncuk|muska|nazarlık|tılsım
 🎮|kontrol cihazı|oyun kontrol cihazı|video oyunu
 🕹️|oyun çubuğu|video oyunu
 🎰|kumar makinesi|oyun
@@ -1100,6 +1105,7 @@
 🧩|ipucu|kenetleme|parça|puzzle|yapboz parçası
 🧸|dolgu|oyuncak ayı|pelüş
 🪅|kutlama|parti|pinyata
+🪩|aynalı küre|dans|disko|parlak|parti
 🪆|bebek|iç içe|matruşka|rusya
 ♟️|harcanabilir|kullanılma|piyon|satranç
 🃏|iskambil kartı|joker|kart
@@ -1132,6 +1138,7 @@
 🩳|alt|mayo|şort
 👙|bikini|deniz giysisi|giyim
 👚|giyim|giysiler|kadın giysisi
+🪭|dans|heyecan|serinletme|sıcak|utangaç|yelpaze
 👛|bozuk para çantası|cüzdan|giyim
 👜|çanta|el çantası|giyim
 👝|çanta|giyim|para kesesi
@@ -1146,6 +1153,7 @@
 👡|giyim|kadın sandaleti|sandalet
 🩰|bale ayakkabıları|dans
 👢|bot|giyim|kadın botu
+🪮|afro saç|kıvırcık saç|perma tarağı|saç|seçme|tarak
 👑|giyim|taç
 👒|giyim|kadın şapkası|şapka
 🎩|eğlence|şapka|silindir şapka
@@ -1184,6 +1192,8 @@
 🪕|banjo|müzik|yaylı
 🥁|davul|müzik|tokmak
 🪘|conga|davul|ritm|tempo|uzun davul|vuruş
+🪇|alet|çıngırak|marakas|müzik aleti|perküsyon|sallama|vurmalı
+🪈|ahşap üflemeli|boru|fife|flüt|kaval|müzik|nefesli|recorder
 📱|cep telefonu|mobil telefon|telefon
 📲|çağrı yapmak|mobil telefon|ok işaretli cep telefonu|telefon
 ☎️|telefon
@@ -1191,6 +1201,7 @@
 📟|çağrı cihazı|iletişim
 📠|faks makinesi|iletişim
 🔋|pil
+🪫|düşük enerji|düşük pil|elektronik
 🔌|elektrik fişi
 💻|bilgisayar|dizüstü bilgisayar|kişisel
 🖥️|bilgisayar|masaüstü
@@ -1296,7 +1307,7 @@
 ⛏️|alet|kazma|maden
 🛠️|alet|çekiç ve ingiliz anahtarı|çekiç ve somun anahtarı|ingiliz anahtarı
 🗡️|bıçak|hançer|silah
-🔫|revolver|silah|su tabancası|tabanca
+💣|bomba|çizgi roman|duygu
 🪃|avustralya|bumerang|geri tepme|sekme|tepki
 🏹|araç|burç|ok ve yay|okçu|silah|yay
 🛡️|kalkan|silah
@@ -1322,7 +1333,9 @@
 🩸|âdet|aybaşı|ilaç|kan bağışı|kan damlası|mens|regl
 💊|doktor|hap|ilaç
 🩹|bandaj|bant|yapışkanlı bandaj|yara bandı
+🩼|baston|değnek|engellilik|koltuk değneği|yürüme yardımı
 🩺|doktor|kalp|stetoskop|tıp
+🩻|doktor|iskelet|kemik|röntgen|tıbbi|x ışını
 🚪|kapı
 🛗|asansör|erişilebilirlik|lift
 🪞|ayna|reflektör|spekulum|yansıma|yansıtıcı
@@ -1343,6 +1356,7 @@
 🧻|kağıt havlu|kağıt rulosu|tuvalet kağıdı
 🪣|fıçı|kap|kepçe|kova
 🧼|banyo|kalıp|köpük|sabunluk|temizlik
+🫧|baloncuk|kabarcık|sabun|su altı|temiz
 🪥|banyo|dental|diş fırçası|fırça|hijyen|lavabo
 🧽|emici|gözenekli|sünger|temizlik
 🧯|ateş|söndürme|yangın söndürücü
@@ -1351,8 +1365,11 @@
 ⚰️|cenaze|ölüm|tabut
 🪦|defin|mezar taşı|mezarlık
 ⚱️|cenaze|kül kavanozu|ölüm|vazo
+🧿|boncuk|kem göz|mavi boncuk|muska|nazarlık|tılsım
+🪬|fatıma’nın eli|fatma ana’nın eli|fatma’nın eli|meryem|muska|nazarlık
 🗿|heykel|moyai heykeli
 🪧|gösteri|işaret|protesto|tabela
+🪪|güvenlik|kimlik bilgisi|kimlik kartı|lisans
 🏧|atm işareti|otomatik|vezne
 🚮|çöp kutusu işareti|çöpü yerine atın|işaret
 🚰|içilebilir su|içme suyu|işaret
@@ -1399,6 +1416,7 @@
 ☮️|barış sembolü
 🕎|din|menora|mum|şamdan|yahudi şamdanı
 🔯|altı köşeli yıldız|fal bakma|yıldız
+🪯|din|khanda|sih
 ♊|burçlar|ikizler burcu
 ♋|burçlar|yengeç burcu
 ♌|aslan burcu|burçlar
@@ -1428,9 +1446,11 @@
 🔅|düşük parlaklık işareti|karanlık|parlaklık
 🔆|parlaklık|yüksek parlaklık işareti
 📶|anten|çubuk işaretli anten|mobil|sinyal gücü|telefon
+🛜|ağ|bilgisayar|internet|kablosuz
 📳|cep telefonu|mobil|mod|telefon|titreşim modu
 📴|cep telefonu kapalı|kapalı|mobil|telefon
 ⚧️|transgender sembolü|transseksüel
+🟰|eşitlik|kalın eşittir işareti|matematik
 ♾️|evrensel|sınırsız|sonsuzluk
 ‼️|!!|çift ünlem|işaret|noktalama|ünlem
 💱|bozdurma|döviz|kambiyo|para

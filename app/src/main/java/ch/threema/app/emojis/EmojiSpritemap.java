@@ -354,6 +354,12 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// shaking face (1fae8)
+		list.add(new EmojiInfo("\uD83E\uDEE8",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// relieved face (1f60c)
 		list.add(new EmojiInfo("\uD83D\uDE0C",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -816,12 +822,6 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
-		// kiss mark (1f48b)
-		list.add(new EmojiInfo("\uD83D\uDC8B",
-			EmojiSpritemap.DIVERSITY_NONE, null,
-			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
-		));
 		// love letter (1f48c)
 		list.add(new EmojiInfo("\uD83D\uDC8C",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -906,6 +906,12 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// pink heart (1fa77)
+		list.add(new EmojiInfo("\uD83E\uDE77",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// orange heart (1f9e1)
 		list.add(new EmojiInfo("\uD83E\uDDE1",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -930,6 +936,12 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// light blue heart (1fa75)
+		list.add(new EmojiInfo("\uD83E\uDE75",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// purple heart (1f49c)
 		list.add(new EmojiInfo("\uD83D\uDC9C",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -948,8 +960,20 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// grey heart (1fa76)
+		list.add(new EmojiInfo("\uD83E\uDE76",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// white heart (1f90d)
 		list.add(new EmojiInfo("\uD83E\uDD0D",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// kiss mark (1f48b)
+		list.add(new EmojiInfo("\uD83D\uDC8B",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -992,12 +1016,6 @@ public class EmojiSpritemap {
 		));
 		// hole (1f573)
 		list.add(new EmojiInfo("\uD83D\uDD73\uFE0F",
-			EmojiSpritemap.DIVERSITY_NONE, null,
-			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
-		));
-		// bomb (1f4a3)
-		list.add(new EmojiInfo("\uD83D\uDCA3",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -1358,6 +1376,78 @@ public class EmojiSpritemap {
 		));
 		// palm up hand: dark skin tone (1faf4-1f3ff)
 		list.add(new EmojiInfo("\uD83E\uDEF4\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// leftwards pushing hand (1faf7)
+		list.add(new EmojiInfo("\uD83E\uDEF7",
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83E\uDEF7\uD83C\uDFFB","\uD83E\uDEF7\uD83C\uDFFC","\uD83E\uDEF7\uD83C\uDFFD","\uD83E\uDEF7\uD83C\uDFFE","\uD83E\uDEF7\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// leftwards pushing hand: light skin tone (1faf7-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDEF7\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// leftwards pushing hand: medium-light skin tone (1faf7-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDEF7\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// leftwards pushing hand: medium skin tone (1faf7-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDEF7\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// leftwards pushing hand: medium-dark skin tone (1faf7-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDEF7\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// leftwards pushing hand: dark skin tone (1faf7-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDEF7\uD83C\uDFFF",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// rightwards pushing hand (1faf8)
+		list.add(new EmojiInfo("\uD83E\uDEF8",
+			EmojiSpritemap.DIVERSITY_PARENT, new String[] { "\uD83E\uDEF8\uD83C\uDFFB","\uD83E\uDEF8\uD83C\uDFFC","\uD83E\uDEF8\uD83C\uDFFD","\uD83E\uDEF8\uD83C\uDFFE","\uD83E\uDEF8\uD83C\uDFFF" },
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// rightwards pushing hand: light skin tone (1faf8-1f3fb)
+		list.add(new EmojiInfo("\uD83E\uDEF8\uD83C\uDFFB",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// rightwards pushing hand: medium-light skin tone (1faf8-1f3fc)
+		list.add(new EmojiInfo("\uD83E\uDEF8\uD83C\uDFFC",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// rightwards pushing hand: medium skin tone (1faf8-1f3fd)
+		list.add(new EmojiInfo("\uD83E\uDEF8\uD83C\uDFFD",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// rightwards pushing hand: medium-dark skin tone (1faf8-1f3fe)
+		list.add(new EmojiInfo("\uD83E\uDEF8\uD83C\uDFFE",
+			EmojiSpritemap.DIVERSITY_CHILD, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// rightwards pushing hand: dark skin tone (1faf8-1f3ff)
+		list.add(new EmojiInfo("\uD83E\uDEF8\uD83C\uDFFF",
 			EmojiSpritemap.DIVERSITY_CHILD, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -13854,6 +13944,12 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// bomb (1f4a3)
+		list.add(new EmojiInfo("\uD83D\uDCA3",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		return list;
 	}
 
@@ -13975,6 +14071,18 @@ public class EmojiSpritemap {
 		));
 		// horse face (1f434)
 		list.add(new EmojiInfo("\uD83D\uDC34",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// moose (1face)
+		list.add(new EmojiInfo("\uD83E\uDECE",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// donkey (1facf)
+		list.add(new EmojiInfo("\uD83E\uDECF",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -14351,6 +14459,24 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// wing (1fabd)
+		list.add(new EmojiInfo("\uD83E\uDEBD",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// black bird (1f426-2b1b)
+		list.add(new EmojiInfo("\uD83D\uDC26\u200D\u2B1B",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// goose (1fabf)
+		list.add(new EmojiInfo("\uD83E\uDEBF",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// frog (1f438)
 		list.add(new EmojiInfo("\uD83D\uDC38",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -14467,6 +14593,12 @@ public class EmojiSpritemap {
 		));
 		// coral (1fab8)
 		list.add(new EmojiInfo("\uD83E\uDEB8",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// jellyfish (1fabc)
+		list.add(new EmojiInfo("\uD83E\uDEBC",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -14633,6 +14765,12 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// hyacinth (1fabb)
+		list.add(new EmojiInfo("\uD83E\uDEBB",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// seedling (1f331)
 		list.add(new EmojiInfo("\uD83C\uDF31",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -14728,6 +14866,12 @@ public class EmojiSpritemap {
 
 	private static ArrayList<EmojiInfo> getfood() {
 		final ArrayList<EmojiInfo> list = new ArrayList<>();
+		// mushroom (1f344)
+		list.add(new EmojiInfo("\uD83C\uDF44",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// grapes (1f347)
 		list.add(new EmojiInfo("\uD83C\uDF47",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -14914,12 +15058,6 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
-		// mushroom (1f344)
-		list.add(new EmojiInfo("\uD83C\uDF44",
-			EmojiSpritemap.DIVERSITY_NONE, null,
-			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
-		));
 		// peanuts (1f95c)
 		list.add(new EmojiInfo("\uD83E\uDD5C",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -14934,6 +15072,18 @@ public class EmojiSpritemap {
 		));
 		// chestnut (1f330)
 		list.add(new EmojiInfo("\uD83C\uDF30",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// ginger root (1fada)
+		list.add(new EmojiInfo("\uD83E\uDEDA",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// pea pod (1fadb)
+		list.add(new EmojiInfo("\uD83E\uDEDB",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -17198,18 +17348,6 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
-		// nazar amulet (1f9ff)
-		list.add(new EmojiInfo("\uD83E\uDDFF",
-			EmojiSpritemap.DIVERSITY_NONE, null,
-			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
-		));
-		// hamsa (1faac)
-		list.add(new EmojiInfo("\uD83E\uDEAC",
-			EmojiSpritemap.DIVERSITY_NONE, null,
-			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
-		));
 		// video game (1f3ae)
 		list.add(new EmojiInfo("\uD83C\uDFAE",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -17354,11 +17492,29 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// nazar amulet (1f9ff)
+		list.add(new EmojiInfo("\uD83E\uDDFF",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// hamsa (1faac)
+		list.add(new EmojiInfo("\uD83E\uDEAC",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		return list;
 	}
 
 	private static ArrayList<EmojiInfo> getobjects() {
 		final ArrayList<EmojiInfo> list = new ArrayList<>();
+		// water pistol (1f52b)
+		list.add(new EmojiInfo("\uD83D\uDD2B",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// glasses (1f453)
 		list.add(new EmojiInfo("\uD83D\uDC53",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -17479,6 +17635,12 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// folding hand fan (1faad)
+		list.add(new EmojiInfo("\uD83E\uDEAD",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// purse (1f45b)
 		list.add(new EmojiInfo("\uD83D\uDC5B",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -17559,6 +17721,12 @@ public class EmojiSpritemap {
 		));
 		// woman’s boot (1f462)
 		list.add(new EmojiInfo("\uD83D\uDC62",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// hair pick (1faae)
+		list.add(new EmojiInfo("\uD83E\uDEAE",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -17787,6 +17955,18 @@ public class EmojiSpritemap {
 		));
 		// long drum (1fa98)
 		list.add(new EmojiInfo("\uD83E\uDE98",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// maracas (1fa87)
+		list.add(new EmojiInfo("\uD83E\uDE87",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// flute (1fa88)
+		list.add(new EmojiInfo("\uD83E\uDE88",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -18501,12 +18681,6 @@ public class EmojiSpritemap {
 		));
 		// crossed swords (2694)
 		list.add(new EmojiInfo("\u2694\uFE0F",
-			EmojiSpritemap.DIVERSITY_NONE, null,
-			EmojiSpritemap.GENDER_NONE, null,
-            EmojiSpritemap.DISPLAY_YES
-		));
-		// water pistol (1f52b)
-		list.add(new EmojiInfo("\uD83D\uDD2B",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
@@ -19248,6 +19422,12 @@ public class EmojiSpritemap {
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES
 		));
+		// khanda (1faaf)
+		list.add(new EmojiInfo("\uD83E\uDEAF",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
 		// Aries (2648)
 		list.add(new EmojiInfo("\u2648",
 			EmojiSpritemap.DIVERSITY_NONE, null,
@@ -19454,6 +19634,12 @@ public class EmojiSpritemap {
 		));
 		// antenna bars (1f4f6)
 		list.add(new EmojiInfo("\uD83D\uDCF6",
+			EmojiSpritemap.DIVERSITY_NONE, null,
+			EmojiSpritemap.GENDER_NONE, null,
+            EmojiSpritemap.DISPLAY_YES
+		));
+		// wireless (1f6dc)
+		list.add(new EmojiInfo("\uD83D\uDEDC",
 			EmojiSpritemap.DIVERSITY_NONE, null,
 			EmojiSpritemap.GENDER_NONE, null,
             EmojiSpritemap.DISPLAY_YES

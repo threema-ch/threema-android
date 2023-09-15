@@ -643,7 +643,11 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			handleNewCandidate(contactIdentity, candidatesData);
 		} else {
 			// Otherwise, we handle a new call.
-			handleNewCall(callId, contactIdentity, intent);
+			try {
+				handleNewCall(callId, contactIdentity, intent);
+			} catch (IllegalStateException e) {
+				logger.error("Unable to handle call", e);
+			}
 		}
 
 		return RESTART_BEHAVIOR;
@@ -803,7 +807,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	 * Handle a new incoming or outgoing call.
 	 */
 	@UiThread
-	private void handleNewCall(final long callId, final String contactIdentity, final Intent intent) {
+	private void handleNewCall(final long callId, final String contactIdentity, final Intent intent) throws IllegalStateException {
 		logger.trace("handleNewCall ({} / {})", callId, contactIdentity);
 
 		if (this.voipStateService == null) {

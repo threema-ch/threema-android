@@ -1573,6 +1573,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="samsung_permission_problem_explain">%1$s hat keinen Zugriff auf Mediendaten aufgrund der fehlenden Berechtigung einer System-App. Um das Problem zu beheben, stellen Sie sicher, dass der Schalter neben «Externer Speicher» im folgenden Bildschirm aktiviert ist, und starten Sie %1$s neu.</string>
 	<string name="min_n_chars">min. %d Zeichen</string>
 	<string name="prefs_title_grant_bluetooth_permission">Bluetooth-Berechtigung erteilen</string>
+	<string name="add_shortcut_exists">Eine Verknüpfung für dieses Ziel existiert bereits.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>

@@ -87,6 +87,8 @@ public class MediaRepository {
 				null
 			)) {
 				addToMediaResults(imageCursor, mediaList, false);
+			} catch (SecurityException e) {
+				logger.debug("Cannot access content resolver", e);
 			}
 
 			// Process videos
@@ -97,6 +99,8 @@ public class MediaRepository {
 				null
 			)) {
 				addToMediaResults(videoCursor, mediaList, true);
+			} catch (SecurityException e) {
+				logger.debug("Cannot access content resolver", e);
 			}
 		}
 		else {

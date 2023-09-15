@@ -129,6 +129,18 @@ public class AvatarOptions {
 		return hashCode;
 	}
 
+	@NonNull
+	@Override
+	public String toString() {
+		return String.format(
+			"'highRes=%s; defaultAvatarPolicy=%s; disableCache=%s; darkerBackground=%s'",
+			this.highRes,
+			this.defaultAvatarPolicy,
+			this.disableCache,
+			this.darkerBackground
+		);
+	}
+
 	/**
 	 * Helper class to build an avatar options object more easily.
 	 */

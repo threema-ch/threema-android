@@ -102,7 +102,6 @@ import ch.threema.app.fragments.RecentListFragment;
 import ch.threema.app.fragments.RecipientListFragment;
 import ch.threema.app.fragments.UserListFragment;
 import ch.threema.app.fragments.WorkUserListFragment;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
@@ -112,7 +111,6 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.ui.ThreemaSearchView;
@@ -1380,7 +1378,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 				.sendTextMessage(messageReceivers, text, new SendAction.ActionHandler() {
 					@Override
 					public void onError(final String errorMessage) {
-						RuntimeUtil.runOnUiThread(() -> Toast.makeText(RecipientListBaseActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
+						if (!TestUtil.empty(errorMessage)) {
+							RuntimeUtil.runOnUiThread(() -> Toast.makeText(RecipientListBaseActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
+						}
 						if (hideUi) {
 							finish();
 						}

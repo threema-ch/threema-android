@@ -1511,6 +1511,7 @@
     <string name="samsung_permission_problem_explain">%1$s cannot access media files due to a missing permission on a system app. To fix it, make sure, the switch next to “External Storage” is enabled in the screen that follows and restart %1$s.</string>
 	<string name="min_n_chars">min. %d chars</string>
 	<string name="prefs_title_grant_bluetooth_permission">Grant Bluetooth permission</string>
+	<string name="add_shortcut_exists">A shortcut for this target already exists.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>

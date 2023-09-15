@@ -95,6 +95,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
@@ -842,7 +843,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	private final MessagePlayerListener messagePlayerListener = new MessagePlayerListener() {
 		@Override
-		public void onAudioPlayEnded(AbstractMessageModel messageModel) {
+		public void onAudioPlayEnded(AbstractMessageModel messageModel, ListenableFuture<MediaController> mediaControllerFuture) {
 			// Play next audio message, if any
 			RuntimeUtil.runOnUiThread(() -> {
 				if (composeMessageAdapter != null) {
@@ -854,6 +855,18 @@ public class ComposeMessageFragment extends Fragment implements
 						if (holder.messagePlayer != null) {
 							holder.messagePlayer.open();
 							composeMessageAdapter.notifyDataSetChanged();
+						}
+					} else {
+						if (mediaControllerFuture != null) {
+							try {
+								MediaController mediaController = mediaControllerFuture.get();
+								if (mediaController != null) {
+									mediaController.stop();
+									mediaController.clearMediaItems();
+								}
+							} catch (Exception e) {
+								logger.error("Unable to clear MediaController", e);
+							}
 						}
 					}
 				}
@@ -3594,7 +3607,7 @@ public class ComposeMessageFragment extends Fragment implements
 			actionBarSubtitleTextView.setVisibility(View.VISIBLE);
 			groupService.loadAvatarIntoImage(groupModel, actionBarAvatarView.getAvatarView(), AvatarOptions.PRESET_DEFAULT_FALLBACK);
 			actionBarAvatarView.setBadgeVisible(false);
-			actionBarAvatarView.setContentDescription(getString(R.string.prefs_group_notifications));
+			setAvatarContentDescription(R.string.prefs_group_notifications);
 		} else if (this.isDistributionListChat) {
 			actionBarSubtitleTextView.setText(this.distributionListService.getMembersString(this.distributionListModel));
 			actionBarSubtitleTextView.setVisibility(View.VISIBLE);
@@ -3605,7 +3618,7 @@ public class ComposeMessageFragment extends Fragment implements
 				distributionListService.loadAvatarIntoImage(distributionListModel, actionBarAvatarView.getAvatarView(), AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE);
 			}
 			actionBarAvatarView.setBadgeVisible(false);
-			actionBarAvatarView.setContentDescription(getString(R.string.distribution_list));
+			setAvatarContentDescription(R.string.distribution_list);
 		} else {
 			if (contactModel != null) {
 				this.actionBarSubtitleImageView.setContactModel(contactModel);
@@ -3613,11 +3626,19 @@ public class ComposeMessageFragment extends Fragment implements
 				contactService.loadAvatarIntoImage(contactModel, this.actionBarAvatarView.getAvatarView(), AvatarOptions.PRESET_RESPECT_SETTINGS);
 				this.actionBarAvatarView.setBadgeVisible(contactService.showBadge(contactModel));
 			}
-			actionBarAvatarView.setContentDescription(getString(R.string.prefs_header_chat));
+			setAvatarContentDescription(R.string.prefs_header_chat);
 		}
 		this.actionBarTitleTextView.invalidate();
 		this.actionBarSubtitleTextView.invalidate();
 		this.actionBarSubtitleImageView.invalidate();
+	}
+
+	private void setAvatarContentDescription(@StringRes int stringRes) {
+		try {
+			actionBarAvatarView.setContentDescription(getString(stringRes));
+		} catch (IllegalStateException e) {
+			logger.error("Can't set content description", e);
+		}
 	}
 
 	@Override
@@ -4726,7 +4747,11 @@ public class ComposeMessageFragment extends Fragment implements
 
 	private void dismissMentionPopup() {
 		if (messageText != null) {
-			messageText.dismissMentionPopup();
+			try {
+				messageText.dismissMentionPopup();
+			} catch (Exception e) {
+				logger.error("Error dismissing mention popup", e);
+			}
 		}
 	}
 
@@ -4915,6 +4940,14 @@ public class ComposeMessageFragment extends Fragment implements
 
 		if (mediaControllerFuture != null) {
 			MediaController.releaseFuture(mediaControllerFuture);
+		}
+
+		try {
+			if (!getAppContext().stopService(new Intent(getAppContext(), VoiceMessagePlayerService.class))) {
+				logger.debug("VoiceMessagePlayer already stopped.");
+			}
+		} catch (Exception e) {
+			logger.error("Unable to stop VoiceMessagePlayer", e);
 		}
 	}
 }

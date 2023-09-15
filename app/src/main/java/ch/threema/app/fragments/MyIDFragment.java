@@ -79,7 +79,6 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.AvatarEditView;
-import ch.threema.app.ui.ImagePopup;
 import ch.threema.app.ui.QRCodePopup;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -442,7 +441,7 @@ public class MyIDFragment extends MainFragment
 
 						@Override
 						protected void onPostExecute(String result) {
-							if (isAdded() && !isDetached() && !isRemoving() && getContext() != null) {
+							if (isAdded() && !isDetached() && !isRemoving() && getContext() != null && textView != null) {
 								textView.setText(result);
 							}
 						}
@@ -478,7 +477,7 @@ public class MyIDFragment extends MainFragment
 
 				@Override
 				protected void onPostExecute(String result) {
-					if (isAdded() && !isDetached() && !isRemoving() && getContext() != null) {
+					if (isAdded() && !isDetached() && !isRemoving() && getContext() != null && textView != null) {
 						textView.setText(result);
 					}
 				}

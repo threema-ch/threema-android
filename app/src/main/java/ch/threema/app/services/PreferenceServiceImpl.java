@@ -284,33 +284,33 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public String getLicenseUsername() {
-		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__license_username));
+	public synchronized String getLicenseUsername() {
+		return this.preferenceStore.getStringCompat(this.getKeyName(R.string.preferences__license_username));
 	}
 
 	@Override
 	public void setLicenseUsername(String username) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__license_username), username);
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__license_username), username, true);
 	}
 
 	@Override
-	public String getLicensePassword() {
-		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__license_password));
+	public synchronized String getLicensePassword() {
+		return this.preferenceStore.getStringCompat(this.getKeyName(R.string.preferences__license_password));
 	}
 
 	@Override
 	public void setLicensePassword(String password) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__license_password), password);
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__license_password), password, true);
 	}
 
 	@Override
-	public String getOnPremServer() {
-		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__onprem_server));
+	public synchronized String getOnPremServer() {
+		return this.preferenceStore.getStringCompat(this.getKeyName(R.string.preferences__onprem_server));
 	}
 
 	@Override
 	public void setOnPremServer(String server) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__onprem_server), server);
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__onprem_server), server, true);
 	}
 
 	@Override

@@ -21,6 +21,9 @@
 
 package ch.threema.app.locationpicker;
 
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -91,9 +94,6 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
-
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LAT;
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
 
 public class LocationPickerActivity extends ThreemaActivity implements
 	LocationPickerAdapter.OnClickItemListener {
@@ -581,7 +581,11 @@ public class LocationPickerActivity extends ThreemaActivity implements
 			zoomToCurrentLocationWithPermission();
 			firstLocationZoom = false;
 		} else {
-			locationPermissionRequest.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+			try {
+				locationPermissionRequest.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+			} catch (IllegalStateException e) {
+				logger.debug("Unable to launch permission request", e);
+			}
 		}
 	}
 

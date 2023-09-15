@@ -1744,11 +1744,6 @@ public class RestoreService extends Service {
 			}
 			stopSelf();
 		} else {
-			try {
-				this.userService.removeIdentity();
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
 			showRestoreErrorNotification(message);
 
 			new DeleteIdentityAsyncTask(null, () -> {

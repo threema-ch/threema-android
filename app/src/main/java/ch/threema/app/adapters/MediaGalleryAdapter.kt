@@ -298,7 +298,9 @@ class MediaGalleryAdapter(
         val items: MutableList<AbstractMessageModel> = ArrayList(checkedItems.size())
         checkedItems.forEach { key, _ ->
             messageModels?.let {
-                items.add(it[key])
+                if (key >= 0 && key < it.size) {
+                    items.add(it[key])
+                }
             }
         }
         return items

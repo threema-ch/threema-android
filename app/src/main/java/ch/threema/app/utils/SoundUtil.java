@@ -24,15 +24,26 @@ package ch.threema.app.utils;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 
 import org.slf4j.Logger;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.base.utils.LoggingUtil;
+
+import static android.media.AudioDeviceInfo.TYPE_BLE_HEADSET;
+import static android.media.AudioDeviceInfo.TYPE_BLE_SPEAKER;
+import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP;
+import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO;
+import static android.media.AudioDeviceInfo.TYPE_USB_HEADSET;
+import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES;
+import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET;
 
 public class SoundUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SoundUtil");
@@ -101,5 +112,41 @@ public class SoundUtil {
 			.setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
 			.setFlags(FLAG_BYPASS_INTERRUPTION_POLICY)
 			.build();
+	}
+
+	/**
+	 * Check if device is currently connected to a headset or external speaker, either wired or via bluetooth
+	 * @param audioManager An instance of AudioManager
+	 * @return true if some audio device is connected, false otherwise
+	 */
+	public static boolean isHeadsetOn(@NonNull AudioManager audioManager) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			AudioDeviceInfo[] audioDeviceInfos = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+			if (audioDeviceInfos != null) {
+				for (AudioDeviceInfo audioDeviceInfo : audioDeviceInfos) {
+					if (audioDeviceInfo.getType() == TYPE_BLUETOOTH_SCO ||
+						audioDeviceInfo.getType() == TYPE_BLE_HEADSET ||
+						audioDeviceInfo.getType() == TYPE_BLE_SPEAKER ||
+						audioDeviceInfo.getType() == TYPE_BLUETOOTH_A2DP ||
+						audioDeviceInfo.getType() == TYPE_WIRED_HEADPHONES ||
+						audioDeviceInfo.getType() == TYPE_WIRED_HEADSET ||
+						audioDeviceInfo.getType() == TYPE_USB_HEADSET) {
+						logger.info("Headphones are connected.");
+						return true;
+					}
+				}
+			}
+		} else {
+			if (audioManager.isWiredHeadsetOn()) {
+				logger.info("Wired headset is connected.");
+				return true;
+			}
+
+			if (audioManager.isBluetoothScoOn() || audioManager.isBluetoothA2dpOn()) {
+				logger.info("Bluetooth headset is connected.");
+				return true;
+			}
+		}
+		return false;
 	}
 }

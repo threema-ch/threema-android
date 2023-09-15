@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 import ch.threema.app.R;
@@ -123,7 +124,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 			if (playbackState == Player.STATE_ENDED) {
 				logger.info("onStopped");
 				AudioMessagePlayer.super.stop();
-				ListenerManager.messagePlayerListener.handle(listener -> listener.onAudioPlayEnded(getMessageModel()));
+				ListenerManager.messagePlayerListener.handle(listener -> listener.onAudioPlayEnded(getMessageModel(), mediaControllerFuture));
 			} else if (playbackState == Player.STATE_READY) {
 				logger.info("onReady");
 				markAsConsumed();
@@ -469,6 +470,8 @@ public class AudioMessagePlayer extends MessagePlayer {
 			} catch (InterruptedException e) {
 				logger.error("Media Controller interrupted exception", e);
 				Thread.currentThread().interrupt();
+			} catch (CancellationException e) {
+				logger.error("Media Controller cancelled", e);
 			}
 		}
 		return null;

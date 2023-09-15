@@ -24,6 +24,12 @@ package ch.threema.app.stores;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,15 +59,11 @@ import java.util.Set;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 import ch.threema.app.listeners.PreferenceListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.localcrypto.MasterKey;
@@ -387,6 +389,20 @@ public class PreferenceStore implements PreferenceStoreInterface {
 			}
 			return value;
 		}
+	}
+
+	@Override
+	@Nullable
+	public String getStringCompat(String key) {
+		String value = getString(key, true);
+		if (TestUtil.empty(value)) {
+			value = getString(key);
+			if (value != null) {
+				save(key, value, true);
+				remove(key);
+			}
+		}
+		return value;
 	}
 
 	@Override

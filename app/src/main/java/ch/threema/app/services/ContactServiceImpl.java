@@ -801,15 +801,16 @@ public class ContactServiceImpl implements ContactService {
 		}
 
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
+		String identity = userService.getIdentity();
+		if (serviceManager != null && identity != null && model.getIdentity() != null) {
 			try {
 				DHSessionStoreInterface dhSessionStore = serviceManager.getDHSessionStore();
-				dhSessionStore.deleteAllDHSessions(userService.getIdentity(), model.getIdentity());
+				dhSessionStore.deleteAllDHSessions(identity, model.getIdentity());
 			} catch (DHSessionStoreException e) {
 				logger.error("Could not delete all DH sessions");
 			}
 		} else {
-			logger.warn("Could not delete DH sessions because the service manager is null");
+			logger.warn("Could not delete DH sessions because the service manager or identity is null");
 		}
 
 		return true;

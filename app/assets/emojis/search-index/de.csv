@@ -17,7 +17,7 @@
 ☕|dampfend|getränk|heißgetränk|kaffee|tee|trinken|heissgetränk
 ☘️|kleeblatt|pflanze
 ☠️|gesicht|piratenflagge|tod|totenkopf mit gekreuzten knochen
-☢️|radioaktiv
+☢️|radioaktivität
 ☣️|biogefährdung|zeichen
 ☦️|christentum|kreuz|orthodoxes kreuz|religion
 ☸️|buddhismus|dharma-rad
@@ -39,7 +39,7 @@
 ⚖️|gerechtigkeit|gewicht|waage|werkzeug|wiegen
 ⚗️|destillierapparat|werkzeug|labor
 ⚙️|werkzeug|zahnrad
-✂️|schere
+✂️|schere|basteln|schneiden
 ✅|abgehakt|erledigt|weißes häkchen|weisses häkchen
 ✈️|flieger|flugzeug
 ✉️|briefumschlag|e-mail
@@ -66,43 +66,6 @@
 〰️|gewellt|linie|wellenlinie
 ㊗️|gratulation|japanisches schriftzeichen|schriftzeichen für gratulation
 ㊙️|geheimnis|japanisches schriftzeichen|schriftzeichen für geheimnis
-🥹|aufgebracht|erbost|gesicht, das tränen zurückhält|tränen zurückhalten|traurig|weinen|zurückhalten
-🧌|fantasy|kobold|märchen|monster|troll|ungeheuer
-🩻|knochen|medizin|radiologie|röntgenbild|skelett|arzt|bildgebung
-🩼|behinderung|gehhilfe|gehstütze|krücke|schmerzen|stock|verletzt
-🪩|discokugel|lichtreflexe|party|spiegelkugel|tanzen
-🪪|ausweis|führerschein|personalausweis|plakette|id|sicheriet
-🪫|elektronik|niedriger akkustand|schwache batterie|schwacher akku|akku leer|batterie leer
-🪬|amulett|fatima|glückssymbol|hamsa|hand|maria|miriam|schutz
-🪷|blume|buddhismus|hinduismus|indien|lotusblüte|reinheit|vietnam
-🪸|korallenriff|ozean|riff
-🪹|leeres nest|nestbau|nisten|vogelnest
-🪺|nest mit eiern|nestbau|nisten|vogelnest
-🫃|aufgebläht|bauch|dick|schwangerer mann
-🫄|aufgebläht|bauch|dick|schwangere person
-🫅|adelig|königliche hoheit|monarchin|person mit krone
-🫗|ausgießen|flüssigkeit ausgießen|getränk|gießen|glas|leer|trinken|verschütten|ausgiessen|flüssigkeit ausgiessen|giessen
-🫘|bohnen|essen|hülsenfrucht|kidney-bohne|lebensmittel
-🫙|einmachglas|einweckglas|gewürzglas|leer|marmeladeglas
-🫠|auflösen|flüssig|gesicht|schmelzendes gesicht|verschwinden|verflüssigen
-🫡|aye, aye|gesicht|grüßendes gesicht|jawohl|militär|ok|respekt|salutieren|aye aye|grüssendes gesicht|truppen
-🫢|erschrecken|erstaunen|furcht|gesicht mit offenen augen und hand über dem mund|überraschung|unglauben|verlegenheit
-🫣|gebannt|gesicht mit durch die finger linsendem auge|linsen|spähen|starren
-🫤|enttäuscht|gesicht mit schrägem mund|langweilig|na ja|skeptisch|unsicher
-🫥|depressiv|gesicht mit gestrichelter linie|introvertiert|unsichtbar|verschwinden|verstecken
-🫦|angst|ängstlich|auf lippe beißen|besorgt|flirtend|nervös|unbehaglich|auf lippe beissen
-🫧|blasen|reinigen|seifenblasen|unter wasser|wasserblasen|sauber|schaum
-🫰|fingerherz|geld|hand mit gekreuztem zeigefinger und daumen|handgeste|teuer
-🫱|hand|nach rechts weisende hand|rechts
-🫲|hand|links|nach links weisende hand
-🫳|abweisen|hand mit handfläche nach unten|handgeste|hau ab|scheuchen|von sich weisen|wegscheuchen|wegschicken
-🫴|anbieten|bieten|darbieten|einladen|hand mit handfläche nach oben|handgeste|kommen|locken
-🫵|auf betrachter zeigender zeigefinger|du|handgeste|mit finger zeigen|sie|zeigen
-🫶|hände, die herz bilden|händeherz|handgeste|herz|liebe
-🛝|rutsche|spielen|spielplatzrutsche|vergnügungspark
-🛞|autorad|drehen|rad|reifen|rotieren
-🛟|leben retten|retten|rettungsring|schwimmring|sicherheit
-🟰|gleichheitszeichen extrafett|mathematik
 😀|gesicht|grinsendes gesicht|lol|lustig
 😃|gesicht|grinsendes gesicht mit großen augen|lächeln|lol|lustig|grinsendes gesicht mit grossen augen
 😄|gesicht|grinsendes gesicht mit lachenden augen|lol|lustig
@@ -113,6 +76,7 @@
 😂|gesicht mit freudentränen|lachen|tränen
 🙂|gesicht|lächelnd|leicht lächelndes gesicht
 🙃|auf dem kopf stehen|gesicht|umgekehrtes gesicht
+🫠|auflösen|flüssig|gesicht|schmelzendes gesicht|verschwinden|verflüssigen
 😉|gesicht|zwinkerndes gesicht
 😊|erröten|freude|gesicht|lächelndes gesicht mit lachenden augen|rote wangen
 😇|gesicht|heiligenschein|lächelndes gesicht mit heiligenschein
@@ -128,18 +92,22 @@
 😋|gesicht|leckeres essen|sich die lippen leckendes gesicht
 😛|gesicht mit herausgestreckter zunge|herausgestreckte zunge
 😜|gesicht|herausgestreckte zunge|zwinkerndes gesicht mit herausgestreckter zunge
-🤪|auge|groß|irres gesicht|klein
+🤪|auge|groß|irres gesicht|klein|gross
 😝|gesicht mit herausgestreckter zunge und zusammengekniffenen augen|herausgestreckte zunge
 🤑|geld|gesicht mit dollarzeichen|zunge
 🤗|gesicht mit umarmenden händen|umarmen|umarmung
 🤭|huch|verlegen kicherndes gesicht
+🫢|erschrecken|erstaunen|gesicht mit offenen augen und hand über dem mund|überraschung|unglauben|verlegenheit
+🫣|gebannt|gesicht mit durch die finger linsendem auge|linsen|spähen|starren
 🤫|ermahnendes gesicht|leise|pst
 🤔|gesicht|nachdenkendes gesicht|nachdenklich
+🫡|aye, aye|gesicht|militär|ok|respekt|salutierendes gesicht|aye aye|grüssendes gesicht|jawohl|truppen
 🤐|gesicht mit reißverschlussmund|mund|reißverschluss|reissverschluss|smiley mit reissverschlussmund
 🤨|argwöhnisch|gesicht mit hochgezogenen augenbrauen|skeptisch
 😐|gesicht|kein kommentar|neutrales gesicht
 😑|ausdrucksloses gesicht|gesicht|kein kommentar
 😶|gesicht ohne mund|kein mund|sprachlos
+🫥|deprimiert|gesicht|gestricheltes gesicht|introvertiert|unsichtbar|verschwinden|verstecken
 😶‍🌫️|gesicht in wolken|kopf in den wolken
 😏|gesicht|süffisant lächelndes gesicht
 😒|gesicht|unglücklich|verstimmtes gesicht
@@ -147,6 +115,7 @@
 😬|gesicht|grimassen schneidendes gesicht|zähne
 😮‍💨|gesicht, das ausatmet|ausatmendes gesicht
 🤥|gesicht|lügendes gesicht|pinocchio-nase
+🫨|erdbeben|gesicht|schock|zitterndes doppelgesicht
 😌|erleichtertes gesicht|geschlossene augen|gesicht
 😔|gesicht|nachdenkliches gesicht
 😪|gesicht|müde|schläfriges gesicht
@@ -171,6 +140,7 @@
 🤓|gesicht|nerd|strebergesicht
 🧐|gesicht mit monokel|monokel
 😕|gesicht|verwundertes gesicht
+🫤|enttäuscht|gesicht mit schrägem mund|langweilig|na ja|skeptisch|unsicher
 😟|besorgtes gesicht|gesicht
 🙁|betrübtes gesicht|gesicht|traurig
 😮|erstaunt|gesicht mit offenem mund|offener mund
@@ -178,6 +148,7 @@
 😲|erstauntes gesicht|gesicht
 😳|errötetes gesicht mit großen augen|gesicht|rote wangen|überrascht|erröteter smiley mit grossen augen
 🥺|bettelndes gesicht|gnade|welpenaugen
+🥹|aufgebracht|gesicht, das tränen zurückhält|stolz|tränen zurückhalten|traurig|weinen
 😦|entsetztes gesicht|gesicht|offener mund|verwundert
 😧|gesicht|leidend|qualvolles gesicht
 😨|ängstliches gesicht|gesicht|angst
@@ -220,7 +191,6 @@
 🙈|affe|nichts sehen|sich die augen zuhaltendes affengesicht|verboten
 🙉|affe|nichts hören|sich die ohren zuhaltendes affengesicht|verboten
 🙊|affe|nichts sagen|sich den mund zuhaltendes affengesicht|verboten
-💋|kussabdruck|lippen
 💌|brief|herz|liebesbrief
 💘|herz mit pfeil|liebe|pfeil
 💝|herz mit schleife|schleife|valentinstag
@@ -233,14 +203,18 @@
 💔|gebrochenes herz|schmerz|trennung
 ❤️‍🔥|herz in flammen|brennendes herz
 ❤️‍🩹|herz mit verband|herz mit pflaster
+🩷|flirten|herz|pinkes herz|süß|verliebt
 🧡|oranges herz
 💛|gelbes herz|herz
 💚|grünes herz|herz
 💙|blaues herz|herz
+🩵|aquamarin|hellblaues herz|herz|türkis
 💜|herz|lila|violett
 🤎|braunes herz|herz
 🖤|böse|herz|schwarzes herz
+🩶|graues herz|herz|schieferfarben|silberfarben
 🤍|herz|weißes herz|weisses herz
+💋|kussabdruck|lippen
 💯|100 punkte|punktestand|volle punktzahl
 💢|ärger|comic|wut
 💥|comic|kollision|zusammenstoß|zusammenstoss
@@ -248,7 +222,6 @@
 💦|comic|schweißtropfen|schweisstropfen
 💨|comic|rennen|staubwolke|weglaufen
 🕳️|loch|schwarz
-💣|bombe|comic
 💬|dialog|gespräch|sprechblase mit drei punkten|unterhaltung
 👁️‍🗨️|auge in sprechblase|dialog|reden|sprechen
 🗨️|dialog|reden|sprechblase links|sprechen|unterhaltung
@@ -260,11 +233,18 @@
 🖐️|5|finger|fünf|gespreizt|hand mit gespreizten fingern
 ✋|erhobene hand|hand
 🖖|lebe lang und in frieden|spock|spreizen|star trek|vulkanischer gruß|finger|hand|vulkanier(in)|vulkanischer gruss
+🫱|hand|nach rechts weisende hand|rechts
+🫲|hand|links|nach links weisende hand
+🫳|abweisen|hand mit handfläche nach unten|handgeste|hau ab|von sich weisen|wegscheuchen|wegschicken
+🫴|anbieten|darbieten|einladen|hand mit handfläche nach oben|handgeste|kommen|locken
+🫷|high five|nach links schiebende hand|schieben|stopp|warte mal|drücken|nach links drückende hand|nein|warten
+🫸|high 5|high five|nach rechts schiebende hand|schieben|stopp|warte mal|drücken|nach rechts drückende hand|nein|warten
 👌|exzellent|hand|in ordnung|ok-zeichen|perfekt
 🤌|bündelhand|geht’s noch?|handgeste|was soll das?|was willst du?|zusammengedrückte finger|zusammengelegte fingerspitzen
 🤏|kleine menge|kleiner betrag|unbedeutend|wenig-geste
 ✌️|sieg|victory-geste
 🤞|finger|gekreuzt|hand mit gekreuzten fingern
+🫰|fingerherz|geld|hand mit gekreuztem zeigefinger und daumen|handgeste|teuer
 🤟|hand|ich liebe dich|ich-liebe-dich-geste
 🤘|finger|hand|hörner|rock|teufelsgruß|teufelsgruss
 🤙|anrufen|hand|ruf-mich-an-handzeichen
@@ -274,6 +254,7 @@
 🖕|finger|hand|mittelfinger
 👇|abwärts|finger|handrückseite|nach unten weisender zeigefinger|runter
 ☝️|finger|handvorderseite|nach oben weisender zeigefinger von vorne|zeigefinger|hoch
+🫵|auf betrachter zeigender zeigefinger|du|handgeste|mit finger zeigen|sie|zeigen
 👍|daumen hoch|gut|hand|nach oben|hoch
 👎|daumen runter|hand|nach unten|schlecht|runter
 ✊|erhobene faust|faust
@@ -282,6 +263,7 @@
 🤜|faust nach rechts|nach rechts
 👏|applaudieren|beifall|hände|klatschende hände
 🙌|feiern|zwei erhobene handflächen
+🫶|hände, die herz bilden|händeherz|handgeste|herz|liebe
 👐|hände|offene hände
 🤲|beten|handflächen nach oben
 🤝|händeschütteln|handschlag|vereinbarung
@@ -306,6 +288,7 @@
 👁️|auge|körperteil
 👅|körperteil|zunge
 👄|körperteil|lippen|mund
+🫦|angst|ängstlich|auf lippe beißen|besorgt|flirtend|nervös|unbehaglich|auf lippe beissen
 👶|baby|gesicht
 🧒|geschlechtsneutral|jung|kind
 👦|gesicht|junge|männlich
@@ -413,6 +396,7 @@
 👷|bauarbeiter(in)|gesicht|helm
 👷‍♂️|bauarbeiter|baustelle|helm
 👷‍♀️|bauarbeiterin|baustelle|helm|mann|männlich
+🫅|adelig|königliche hoheit|monarchin|person mit krone
 🤴|prinz
 👸|gesicht|krone|märchen|prinzessin
 👳|person mit turban|turban
@@ -427,6 +411,8 @@
 👰‍♂️|mann mit schleier|schleier|männlich
 👰‍♀️|frau mit schleier|schleier|weiblich
 🤰|frau|schwangere frau|weiblich
+🫃|aufgebläht|bauch|dick|schwangerer mann
+🫄|aufgebläht|bauch|dick|schwangere person
 🤱|baby|brust|stillen
 👩‍🍼|baby|frau|stillende frau|weiblich
 👨‍🍼|baby|mann|stillender mann|männlich
@@ -435,7 +421,7 @@
 🎅|weihnachten|weihnachtsmann|samichlaus
 🤶|weihnachten|weihnachtsfrau
 🧑‍🎄|weihnachten|weihnachtsperson
-🦸|comic|gut|held|superheld(in)|superheldin|superkraft|übermensch
+🦸|comic|held|superheld(in)|superheldin|superkraft|übermensch
 🦸‍♂️|held|superheld
 🦸‍♀️|heldin|superheldin
 🦹|bösewicht
@@ -462,6 +448,7 @@
 🧟|untoter|wandelnder toter|zombie
 🧟‍♂️|männlicher zombie|untoter|wandelnder toter|zombiemann
 🧟‍♀️|untote|wandelnde tote|weiblicher zombie|zombie
+🧌|fantasy|kobold|märchen|monster|troll|ungeheuer
 💆|massage|person, die eine kopfmassage bekommt|salon
 💆‍♂️|kopfmassage|mann, der eine kopfmassage bekommt|männlich
 💆‍♀️|frau, die eine kopfmassage bekommt|kopfmassage|weiblich
@@ -581,6 +568,8 @@
 🐅|tier|tiger
 🐆|leopard|tier
 🐴|gesicht|pferdegesicht|tier
+🫎|elch|geweih|säugetier|tier
+🫏|dummkopf|esel|maultier|säugetier|störrisch|stur|tier|grautier
 🐎|pferd|rennen|rennpferd|tier
 🦄|einhorngesicht|gesicht
 🦓|streifen|zebra
@@ -622,7 +611,7 @@
 🦥|faultier|langsam
 🦦|fischen|otter|verspielt
 🦨|skunk|stinken|stinktier
-🦘|australien|hüpfen|känguru
+🦘|hüpfen|känguru
 🦡|dachse
 🐾|abdruck|tatzenabdrücke|tier
 🦃|geflügel|truthahn
@@ -643,6 +632,8 @@
 🦩|bunt|farbenfroh|flamingo|tropen|tropisch
 🦚|pfau|stolzieren|vogel
 🦜|papagei|pirat|vogel|wiederholen
+🪽|engelsflügel|federn|fliegen|flügel|mythologie|vogel
+🪿|blöd|dumm|gans|geflügel|vogel|schnattern
 🐸|froschgesicht|gesicht|tier
 🐊|krokodil|tier
 🐢|schildkröte|tier
@@ -662,6 +653,8 @@
 🦈|haifisch
 🐙|krake|oktopus|tier|tintenfisch
 🐚|muschel|schneckenhaus|tier
+🪸|korallenriff|ozean|riff
+🪼|autsch|brennen|gallert|glibber|meerestier|nesseltier|qualle|gift|invertebrate|stechen
 🐌|schnecke|tier
 🦋|schmetterling|schön|insekt
 🐛|insekt|raupe|tier
@@ -681,6 +674,7 @@
 💐|blumenstrauß|bouquet|blumenstrauss
 🌸|blume|blüte|kirschblüte|kirsche|pflanze
 💮|blumenstempel
+🪷|blume|buddhismus|hinduismus|lotusblüte|reinheit
 🏵️|pflanze|rosette
 🌹|blume|blüte|pflanze|rose
 🥀|blume|verwelkt|welke blume
@@ -688,6 +682,7 @@
 🌻|blume|blüte|pflanze|sonnenblume
 🌼|blume|blüte|gelbe blüte|pflanze
 🌷|blume|blüte|pflanze|tulpe
+🪻|blaue wiesenlupine|blume|blüte|hyazinthe|löwenmaul|lupine|lavendel
 🌱|junge pflanze|spross
 🪴|haus|langweilig|nutzlos|pflanze|pflegen|topfpflanze|wachsen
 🌲|baum|nadelbaum|pflanze
@@ -700,6 +695,9 @@
 🍁|ahornblatt|blatt|herbst|laub|pflanze
 🍂|blatt|blätter|herbst|laub|pflanze
 🍃|blatt|blätter im wind|laub|pflanze|wind
+🪹|leeres nest|nestbau|nisten|vogelnest
+🪺|nest mit eiern|nestbau|nisten|vogelnest
+🍄|fliegenpilz|pilz
 🍇|frucht|obst|trauben
 🍈|frucht|honigmelone|obst
 🍉|frucht|melone|obst|wassermelone
@@ -731,9 +729,11 @@
 🥦|brokkoli|gemüsekohl
 🧄|geschmack|knoblauch
 🧅|geschmack|zwiebel
-🍄|fliegenpilz|pilz
 🥜|erdnuss|essen
+🫘|bohnen|essen|hülsenfrucht|kidney-bohne|lebensmittel
 🌰|kastanie|marone
+🫚|gewürz|ginger ale|ingwerbier|wurzel|ginger beer|ingwerwurzel|scharf
+🫛|edamame|erbsenschote|gemüse|hülsenfrucht|schote|bohne|hülsenfrüchte
 🍞|brotlaib|laib brot
 🥐|croissant|französisch|frühstückshörnchen|brot
 🥖|baguette|französisch|frühstück|brot
@@ -774,7 +774,7 @@
 🍚|reis in schüssel
 🍛|curry|reis mit curry
 🍜|dampfend|eiernudeln|nudeln|schüssel und essstäbchen|stäbchen|suppe
-🍝|nudeln mit tomatensoße|pasta|spaghetti|nudeln mit tomatensaue
+🍝|nudeln mit tomatensoße|pasta|spaghetti|nudeln mit tomatensauce
 🍠|geröstete süßkartoffel|süßkartoffel|geröstete süsskartoffel|süsskartoffel
 🍢|japanisches gericht|oden|restaurant
 🍣|japanisches gericht|restaurant|sushi
@@ -817,6 +817,7 @@
 🍻|anstoßen|bierkrüge|anstossen|getränk
 🥂|anstoßen|feiern|getränk|sektgläser|anstossen|champagner
 🥃|bar|trinkglas|whiskey|getränk
+🫗|ausgießen|flüssigkeit ausgießen|getränk|gießen|glas|leer|verschütten|ausgiessen|flüssigkeit ausgiessen|giessen|trinken
 🥤|becher mit strohhalm|saft|selters|getränk
 🧋|blase|bubble tea|milch|perle|tee|getränk
 🧃|getränk|saftpackung|trinkpäckchen
@@ -827,6 +828,7 @@
 🍴|besteck|gabel und messer|messer und gabel
 🥄|besteck|löffel
 🔪|küchenmesser|messer
+🫙|einmachglas|einweckglas|gewürzglas|leer|marmeladeglas
 🏺|amphore|gefäß|kochen|krug|vase|wassermann|gefäss
 🌍|afrika|europa|globus mit europa und afrika|weltkugel
 🌎|globus mit amerika|nordamerika|südamerika|weltkugel
@@ -888,6 +890,7 @@
 🌇|hochhäuser|sonnenuntergang in der stadt
 🌉|brücke vor nachthimmel|golden gate|nachts
 🎠|karussellpferd|pferd
+🛝|rutsche|spielen|spielplatzrutsche|vergnügungspark
 🎡|freizeitpark|rad|riesenrad|volksfest
 🎢|achterbahn|freizeitpark|volksfest
 💈|barbershop-säule|herrenfriseur|säule
@@ -936,11 +939,13 @@
 🛤️|bahngleis|schienen
 🛢️|fass|ölfass
 ⛽|benzin|tanken|tanksäule|tankstelle
+🛞|autorad|drehen|rad|reifen|rotieren
 🚨|polizeilicht
 🚥|ampel|horizontale verkehrsampel|verkehrsampel|vertikal
 🚦|ampel|horizontal|verkehrsampel|vertikale verkehrsampel
 🛑|achteckig|schild|stoppschild
 🚧|baustellenabsperrung|schild
+🛟|leben retten|retten|rettungsring|schwimmring|sicherheit
 ⛵|boot|segelboot
 🛶|boot|kanu|wassersport
 🚤|boot|schnellboot
@@ -1089,10 +1094,10 @@
 🎯|darts|spiel|volltreffer|zielscheibe
 🪀|jo-jo|spielzeug
 🪁|drachen|fliegen|steigen
+🔫|pistole|revolver|waffe|wasserpistole
 🎱|8-ball|billardkugel|kugel|spiel
 🔮|kristallkugel|wahrsager
 🪄|hexer|zauberei|zauberer|zauberin|zauberstab
-🧿|glücksbringer|nazar-amulett|talisman
 🎮|gamepad|gaming|videospiel
 🕹️|gaming|joystick|videospiel
 🎰|glücksspiel|spielautomat
@@ -1100,6 +1105,7 @@
 🧩|puzzlestück|puzzleteil
 🧸|kuscheltier|plüschteddy|plüschtier|spielzeug|teddybär
 🪅|feier|party|piñata
+🪩|discokugel|lichtreflexe|party|spiegelkugel|tanzen
 🪆|matrioschka|matroschka|puppe|russland
 ♟️|bauer schach|schach
 🃏|jokerkarte|spielkarte
@@ -1132,6 +1138,7 @@
 🩳|badebekleidung|boxershorts|schwimmshorts|shorts
 👙|badeanzug|bikini|kleidung
 👚|bluse|damenmode|kleidung|oberbekleidung
+🪭|faltfächer|fächer
 👛|accessoire|brieftasche|geldbörse|portemonnaie
 👜|accessoire|handtasche|tasche
 👝|accessoire|clutch|tasche
@@ -1146,6 +1153,7 @@
 👡|damensandale|sandale|schuh
 🩰|ballettschuhe|tanz
 👢|damenstiefel|schuh|stiefel
+🪮|haarkamm|afro pick
 👑|königin|krone
 👒|damenhut mit schleife|hut|kopfbedeckung|schleife
 🎩|hut|kopfbedeckung|zylinderhut
@@ -1184,6 +1192,8 @@
 🪕|banjo|musik|streichinstrument
 🥁|trommelstöcke
 🪘|afrikanische trommel|conga|rhythmus
+🪇|maracas
+🪈|flöte
 📱|handy|mobiltelefon|smartphone
 📲|anruf|mobiltelefon mit pfeil|pfeil
 ☎️|festnetz|telefon
@@ -1191,6 +1201,7 @@
 📟|pager
 📠|faxgerät
 🔋|akku|batterie
+🪫|elektronik|niedriger akkustand|schwache batterie|schwacher akku|akku leer|batterie leer
 🔌|netzstecker|stecker|stromstecker
 💻|computer|laptop|notebook|pc
 🖥️|bildschirm|desktopcomputer|monitor
@@ -1296,8 +1307,8 @@
 ⛏️|pickel|werkzeug
 🛠️|hammer und schraubenschlüssel|schraubenschlüssel|werkzeug
 🗡️|dolch|waffe
-🔫|pistole|revolver|waffe|wasserpistole
-🪃|australien|boomerang|bumerang
+💣|bombe|comic
+🪃|boomerang|bumerang
 🏹|bogen|pfeil und bogen
 🛡️|schild|schutzschild
 🪚|handsäge|holz|säge|tischler|werkzeug
@@ -1322,7 +1333,9 @@
 🩸|blutspende|blutstropfen|medizin|menstruation
 💊|arzt|kapsel|medizin|tabletten
 🩹|heftpflaster|pflaster
+🩼|behinderung|gehhilfe|gehstütze|krücke|schmerzen|stock|verletzt
 🩺|arzt|herz|medizin|stethoskop
+🩻|knochen|medizin|radiologie|röntgenbild|skelett|arzt|bildgebung
 🚪|eingang|geschlossen|tür|ausgang
 🛗|aufzug|fahrstuhl|lift
 🪞|reflexion|spiegelbild
@@ -1343,6 +1356,7 @@
 🧻|klopapier|küchenrolle|papiertücher|toilettenpapier
 🪣|behälter|bottich|eimer|kübel
 🧼|baden|säubern|seifenschale
+🫧|blasen|reinigen|seifenblasen|unter wasser|wasserblasen|sauber|schaum
 🪥|badezimmer|bürste|sauber|zahnbürste|zähne|zahnhygiene
 🧽|absorbieren|aufsaugen|porös|schwamm
 🧯|feuerlöscher|löschen
@@ -1351,8 +1365,11 @@
 ⚰️|beerdigung|sarg|tod|tot
 🪦|friedhof|grabstein
 ⚱️|beerdigung|tod|tot|urne
+🧿|glücksbringer|nazar-amulett|talisman
+🪬|amulett|fatima|glückssymbol|hamsa|maria|miriam|schutz
 🗿|gesicht|maske|osterinsel|statue
 🪧|demonstration|mahnwache|plakat|protestschild|schild
+🪪|ausweis|führerschein|personalausweis|plakette|fahrausweis|id
 🏧|atm|symbol geldautomat|geldautomat
 🚮|müll|sauberkeit|symbol papierkorb|papierkorb
 🚰|trinkwasser|wasser
@@ -1399,6 +1416,7 @@
 ☮️|friedensbewegung|friedenssymbol|friedenszeichen
 🕎|leuchter|menora|religion
 🔯|hexagramm mit punkt|wahrsager
+🪯|religion|schwert|sikhismus|khanda-emblem
 ♊|sternzeichen|zwillinge (sternzeichen)
 ♋|krebs (sternzeichen)|sternzeichen
 ♌|löwe (sternzeichen)|sternzeichen
@@ -1428,9 +1446,11 @@
 🔅|dimmen|gedimmt|helligkeit|schwache helligkeit|taste dimmen
 🔆|heller-taste|helligkeit|starke helligkeit
 📶|balkenförmige signalstärkenanzeige|empfang|mobilfunksignal|mobiltelefon|signalstärke
+🛜|computer|drahtlos|internet|kabellos|netzwerk|wlan|network|wifi
 📳|mobiltelefon|vibrationsmodus
 📴|ausschalten|handy aus|mobiltelefon aus
 ⚧️|symbol für transgender|transgender-symbol
+🟰|gleichheitszeichen extrafett|mathematik
 ♾️|ewig|grenzenlos|unendlichkeit
 ‼️|ausrufezeichen|doppeltes ausrufezeichen|rot|satzzeichen
 💱|geldwechsel|währung|wechsel

@@ -1824,7 +1824,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
-		super.onSaveInstanceState(outState);
+		try {
+			super.onSaveInstanceState(outState);
+		} catch (Exception e) {
+			if (logger != null) {
+				logger.error("Exception saving state", e);
+			}
+		}
 
 		if (currentFragmentTag != null) {
 			outState.putString(BUNDLE_CURRENT_FRAGMENT_TAG, currentFragmentTag);

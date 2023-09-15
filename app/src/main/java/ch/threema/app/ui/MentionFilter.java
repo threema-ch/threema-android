@@ -28,10 +28,14 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
 
+import org.slf4j.Logger;
+
 import ch.threema.app.emojis.EmojiMarkupUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class MentionFilter implements InputFilter {
 	Context context;
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MentionFilter");
 
 	public MentionFilter(Context context) {
 		super();
@@ -54,11 +58,15 @@ public class MentionFilter implements InputFilter {
 				}
 			}
 
-		Spannable spannable = (Spannable) EmojiMarkupUtil.getInstance().addMentionMarkup(context, insertText, isStrikeThrough);
-		if (source instanceof Spanned && spannable != null) {
-			TextUtils.copySpansFrom((Spanned) source, start, end, null, spannable, 0);
+		try {
+			Spannable spannable = (Spannable) EmojiMarkupUtil.getInstance().addMentionMarkup(context, insertText, isStrikeThrough);
+			if (source instanceof Spanned && spannable != null) {
+				TextUtils.copySpansFrom((Spanned) source, start, end, null, spannable, 0);
+			}
+			return spannable;
+		} catch (Exception e) {
+			logger.error("Spannable exception", e);
 		}
-
-		return spannable;
+		return source;
 	}
 }

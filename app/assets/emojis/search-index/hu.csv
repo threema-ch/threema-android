@@ -66,43 +66,6 @@
 〰️|gondolatjel|hullámos|központozás
 ㊗️|gratuláció|japán gratuláció gomb|képírásjel|祝
 ㊙️|titok|japán titok gomb|képírásjel|秘
-🥹|büszke|dühös|ellenáll|könnyeivel küszködő arc|sír|szomorú
-🧌|képzelet|szörny|troll|tündérmese
-🩻|csontok|csontváz|orvosi|röntgen
-🩼|bot|fogyatékosság|mankó|mozgássegítő|sérülés|sétapálca
-🪩|buli|csillám|diszkó|tánc|tükörgömb
-🪪|azonosító|biztonság|engedély|hitelesítő adatok|személyi igazolvány
-🪫|alacsony energiaszint|alacsony töltöttség|elektronikus
-🪬|amulett|fatima|hamsza|kéz|mária|mirjam|védelem
-🪷|buddhizmus|hinduizmus|india|lótusz|tisztaság|vietnam|virág
-🪸|korall|óceán|zátony
-🪹|fészekrakás|üres fészek
-🪺|fészek tojásokkal|fészekrakás
-🫃|has|puffadt|teli|terhes férfi
-🫄|has|puffadt|teli|terhes személy
-🫅|koronás személy|méltóság|nemes|uralkodói
-🫗|ital|kiönt|ömlő folyadék|pohár|üres
-🫘|bab|étel|hüvelyes növény|vese
-🫙|befőttesüveg|fűszer|szósz|tárolás|tároló|üres
-🫠|elolvadó arc|eloszlik|eltűnik|folyékony|olvad
-🫡|derűs|igen|katonák|oké|tisztelgés|tisztelgő arc
-🫢|ámulat|csodálkozás|hitetlenkedés|ijedt|meglep|nyitott szemű, száját takaró arc|zavarba hoz
-🫣|bámul|kémlelő szemű arc|megbabonázott|pillant
-🫤|átlós szájú arc|azta|bizonytalan|csalódott|kétkedő
-🫥|elrejtőzik|eltűnik|introvertált|láthatatlan|levert|pontozott vonalas arc
-🫦|aggódó|ajkába harapó száj|félelem|flört|ideges|kényelmetlen|nyugtalan
-🫧|böfi|buborékok|szappan|tiszta|víz alatti
-🫰|csettint|drága|keresztezett mutató- és hüvelykujjú kéz|pénz|szeretet|szív
-🫱|jobbra néző kéz|kéz
-🫲|balra néző kéz|kéz
-🫳|elejt|hess|lefelé néző kéz|mellőz
-🫴|elkap|felajánl|felfelé néző kéz|hív|int
-🫵|felhasználóra mutató ujj|mutat|te
-🫶|szeretet|szívet formázó kezek
-🛝|játék|játszótéri csúszda|vidámpark
-🛞|abroncs|fordul|kerék|kör
-🛟|biztonság|életmentő|lebeg|megment|mentőöv
-🟰|egyenlőség|matematika|vastag egyenlőségjel
 😀|arc|nevetés|nevető arc
 😃|arc|mosoly|nagyra nyílt szemmel mosolygó arc|nyitott száj|vidámság
 😄|arc|mosoly|nevető arc mosolygó szemmel|száj|szem
@@ -113,6 +76,7 @@
 😂|arc örömkönnyekkel|könnyek|nevetés|öröm
 🙂|arc|finoman mosolygó arc|mosoly
 🙃|arc|fejjel lefelé fordult arc
+🫠|elolvadó arc|eloszlik|eltűnik|folyékony|olvad
 😉|arc|kacsintás|kacsintó arc
 😊|elpirul|elvörösödik|mosolygó arc mosolygó szemmel|vidám szemek
 😇|angyal|arc|ártatlanság|glória|mese|mosolygó arc glóriával
@@ -133,13 +97,17 @@
 🤑|arc dollárjelekkel|dollár|pénz|száj
 🤗|arc|ölelés
 🤭|arc szájra tett kézzel|hoppá
+🫢|ámulat|csodálkozás|hitetlenkedés|ijedt|meglep|nyitott szemű, száját takaró arc|zavarba hoz
+🫣|bámul|kémlelő szemű arc|megbabonázott|pillant
 🤫|csend|csitító arc|csitt
 🤔|arc|elgondolkodó|gondolkodó arc
+🫡|derűs|igen|katonák|oké|tisztelgés|tisztelgő arc
 🤐|arc összecipzározott szájjal|cipzár|száj
 🤨|bizalmatlan|felhúzott szemöldökű arc|kételkedő
 😐|arc|pókerarc|semleges
 😑|arc|érzéketlen|kifejezéstelen|semleges
 😶|arc|csendes|néma|nincs szája|száj nélküli arc
+🫥|elrejtőzik|eltűnik|introvertált|láthatatlan|levert|pontozott vonalas arc
 😶‍🌫️|arc a felhőben
 😏|arc|önelégült|vigyor
 😒|arc|szomorú
@@ -147,6 +115,7 @@
 😬|arc|grimaszoló arc
 😮‍💨|levegőt kifújó arc
 🤥|arc|hazudik|hazudós|pinokkió
+🫨|arc|földrengés|meglepődés|rázkódó|rezeg
 😌|arc|megkönnyebbült
 😔|arc|elgondolkodó|tűnődő
 😪|álmos|arc|ásít
@@ -171,6 +140,7 @@
 🤓|arc|gépmániás|kockaarc
 🧐|arc monoklival|mérges
 😕|arc|zavart
+🫤|átlós szájú arc|bizonytalan|csalódott|kétkedő|meh
 😟|aggodalmas|aggódó arc|arc
 🙁|arc|kissé komor arc|rosszallás
 😮|arc nyitott szájjal|csodálkozás|nyitott száj
@@ -178,6 +148,7 @@
 😲|arc|csodálkozó|lenyűgözött
 😳|arc|elpirult arc|elvörösödik
 🥺|bociszemek|esedező arc|kérlelő|könyörgős
+🥹|büszke|dühös|ellenáll|könnyeivel küszködő arc|sír|szomorú
 😦|arc|nyitott száj|rosszallás|rosszalló arc nyitott szájjal
 😧|arc|elgyötört|elkínzott
 😨|arc|félelemmel teli arc|rémült
@@ -220,7 +191,6 @@
 🙈|majom|nem lát semmit|nem láttam semmit|tilos
 🙉|majom|nem hall semmit|nem hallottam semmit|tilos
 🙊|majom|nem szól semmit|nem szólok semmit|tilos
-💋|ajkak|csóknyom|romantika|szenvedély
 💌|levél|romantika|szerelem|szerelmes levél|szív
 💘|cupido|nyíllal átlőtt szív|romantika|szerelem
 💝|ajándék|szalag|szív szalaggal|valentin-nap
@@ -233,14 +203,18 @@
 💔|összetört|szív
 ❤️‍🔥|égő|lángoló|szerelem|szív|vágy
 ❤️‍🩹|gyógyuló szív
+🩷|cuki|rózsaszín|szerelem|szív|tetszik
 🧡|narancssárga szív
 💛|sárga|szív
 💚|szív|zöld
 💙|kék|szív
+🩵|cián|pávakék|szív|világoskék
 💜|lila|szív
 🤎|barna|szív
 🖤|fekete|gonosz|szív
+🩶|ezüst|pala|szív|szürke
 🤍|fehér|szív
+💋|ajkak|csóknyom|romantika|szenvedély
 💯|100|száz pont|teljes pontszám
 💢|a düh szimbóluma|dühös|képregény|mérges
 💥|bumm|képregény|ütközés
@@ -248,7 +222,6 @@
 💦|izzadságcseppek|képregény
 💨|futás|képregény|rohanás
 🕳️|lyuk
-💣|bomba|képregény
 💬|beszéd|buborék|képregény|párbeszéd|szövegbuborék
 👁️‍🗨️|párbeszéd|szem szövegbuborékban|szövegbuborék|tanú
 🗨️|balra nyíló szövegbuborék|beszéd|buborék|képregény|párbeszéd
@@ -260,11 +233,18 @@
 🖐️|felemelt kéz szétálló ujjakkal|kéz|szétálló|test|ujj
 ✋|felemelt kéz|kéz|test
 🖖|kéz|spock|star trek-üdvözlet|test|ujj|vulcan
+🫱|jobbra néző kéz|kéz
+🫲|balra néző kéz|kéz
+🫳|elejt|hess|lefelé néző kéz|mellőz
+🫴|elkap|felajánl|felfelé néző kéz|hív|int
+🫷|balra toló kéz|elutasít|pacsi|stop|tol|vár
+🫸|elutasít|jobbra toló kéz|pacsi|stop|tol|vár
 👌|kéz|ok jel|oké|rendben|test
 🤌|gúnyos|kézmozdulat|kihallgatás|összecsippentett|ujjak
 🤏|csippentő kéz|kis összeg
 ✌️|betű|győzelmi jelet mutató kéz|jel|kézjel|test
 🤞|keresztezett ujjak|szerencse|ujj
+🫰|csettint|drága|keresztezett mutató- és hüvelykujjú kéz|pénz|szeretet|szív
 🤟|kéz|szeretlek kézmozdulat
 🤘|kéz|metálvilla|ördögvilla|szarvak
 🤙|hívj fel kézjel|hívás|kéz
@@ -274,6 +254,7 @@
 🖕|kéz|középső ujj|test|ujj
 👇|kéz|lefelé|mutatóujj|tenyér lefelé mutató ujjal|test|ujj
 ☝️|felfelé|kéz felfelé mutató ujjal|mutatóujj|test|ujj
+🫵|felhasználóra mutató ujj|mutat|te
 👍|felfelé mutató hüvelykujj|hüvelykujj felfelé|kéz|oké|rendben|test
 👎|hüvelykujj lefelé|kéz|lefelé mutató hüvelykujj|test
 ✊|felemelt|ököl|test|ütés
@@ -282,6 +263,7 @@
 🤜|jobb szélső|jobbra néző ököl|ököl
 👏|kéz|tapsoló kéz|test
 🙌|kéz|kezét felemelő ember|test|ünneplés|vidámság
+🫶|szeretet|szívet formázó kezek
 👐|kéz|kitárva|széttárt kéz|test
 🤲|felfelé fordított tenyerek|ima
 🤝|kézfogás|megállapodás|találkozás|üdvözlés
@@ -306,6 +288,7 @@
 👁️|szem|test
 👅|nyelv|test
 👄|ajkak|száj|test
+🫦|aggódó|ajkába harapó száj|félelem|flört|ideges|kényelmetlen|nyugtalan
 👶|baba|kisbaba
 🧒|gyerek|gyermek
 👦|fiú|kisfiú|srác
@@ -413,6 +396,7 @@
 👷|építkezés|építőmunkás|sisak|védősisak
 👷‍♂️|építkezés|építőmunkás|férfi|munkás
 👷‍♀️|építkezés|építőmunkásnő|munkás|nő
+🫅|koronás személy|méltóság|nemes|uralkodói
 🤴|herceg
 👸|fantasy|hercegnő|mesehős
 👳|ember|turbános ember
@@ -427,6 +411,8 @@
 👰‍♂️|fátyol|férfi fátyollal
 👰‍♀️|fátyol|nő fátyollal
 🤰|nő|terhes|várandós
+🫃|has|puffadt|teli|terhes férfi
+🫄|has|puffadt|teli|terhes személy
 🤱|baba|mell|szoptatás
 👩‍🍼|etetés|gondozás|kisbaba|kisbabát etető nő|nő
 👨‍🍼|etetés|férfi|gondozás|kisbaba|kisbabát etető férfi
@@ -462,6 +448,7 @@
 🧟|élőhalott|élőholt|sétáló halott|zombi
 🧟‍♂️|élőhalott|élőholt|férfi zombi|sétáló halott
 🧟‍♀️|élőhalott|élőholt|női zombi|sétáló halott
+🧌|képzelet|szörny|troll|tündérmese
 💆|arcmasszázs|masszázs
 💆‍♂️|arc|férfi arcmasszázson|masszázs
 💆‍♀️|arc|masszázs|nő arcmasszázson
@@ -581,6 +568,8 @@
 🐅|állat|tigris
 🐆|állat|leopárd
 🐴|fej|lófej
+🫎|agancs|állat|emlős|jávorszarvas
+🫏|állat|csacsi|emlős|makacs|öszvér|szamár
 🐎|lóverseny|versenyló
 🦄|egyszarvú|fej|unikornisfej
 🦓|csík|zebra
@@ -643,6 +632,8 @@
 🦩|flamingó|színpompás|trópusi
 🦚|büszke|hivalkodó|madár|pávatyúk
 🦜|beszél|kalóz|madár|papagáj
+🪽|angyal|madár|mitológia|repülés|szárny
+🪿|bolondos|gágog|liba|madár|szárnyas
 🐸|békafej|fej
 🐊|krokodil
 🐢|teknőc|teknősbéka
@@ -662,6 +653,8 @@
 🦈|cápa|hal
 🐙|oktopusz|polip
 🐚|kagyló|spirális|tengeri csiga
+🪸|korall|óceán|zátony
+🪼|csíp|gerinctelen|jaj|kocsonyás|medúza|szúrószerv|tengeri
 🐌|csiga
 🦋|pillangó|rovar|szép
 🐛|bogár|rovar
@@ -681,6 +674,7 @@
 💐|csokor|romantika|virágcsokor
 🌸|cseresznyevirág|virág
 💮|fehér virág|növény|virág
+🪷|buddhizmus|hinduizmus|india|lótusz|tisztaság|vietnam|virág
 🏵️|növény|rozetta|virág
 🌹|növény|rózsa|virág
 🥀|hervadt|virág
@@ -688,6 +682,7 @@
 🌻|napraforgó|növény|virág
 🌼|növény|virágzás
 🌷|növény|tulipán|virág
+🪻|búzavirág|csillagfürt|jácint|levendula|tátika|virág
 🌱|növény|palánta
 🪴|cserepes növény|gondozás|hasztalan|növény|szoba|unalmas
 🌲|fa|növény|örökzöld
@@ -700,6 +695,9 @@
 🍁|juharlevél|levél|növény
 🍂|lehullott|levél|növény
 🍃|hulló|lebegő|levél|növény|szélfútta levél
+🪹|fészekrakás|üres fészek
+🪺|fészek tojásokkal|fészekrakás
+🍄|gomba|növény
 🍇|gyümölcs|növény|szőlő
 🍈|gyümölcs|növény|sárgadinnye
 🍉|görögdinnye|gyümölcs|növény
@@ -731,9 +729,11 @@
 🥦|brokkoli|vadkáposzta
 🧄|fokhagyma|ízesítés
 🧅|hagyma|ízesítés
-🍄|gomba|növény
 🥜|étel|földimogyoró|mogyoró
+🫘|bab|étel|hüvelyes növény|vese
 🌰|gesztenye|növény
+🫚|fűszer|gyökér|gyömbérgyökér|sör
+🫛|bab|borsóhüvely|edamame|hüvelyes|zöldség
 🍞|kenyér|vekni
 🥐|croissant|étel|francia|reggeli
 🥖|bagett|étel|francia|kenyér
@@ -817,6 +817,7 @@
 🍻|bár|ital|koccintás|korsó|összekoccanó söröskorsók|sör
 🥂|ivás|koccintás|koccintó poharak|pohár|ünneplés
 🥃|alkohol|feles pohár|tömény|whisky
+🫗|ital|kiönt|ömlő folyadék|pohár|üres
 🥤|dzsúz|ivólé|pohár szívószállal|szóda
 🧋|buborékos tea|gyöngy|tea|tej
 🧃|gyümölcsleves doboz|italos doboz
@@ -827,6 +828,7 @@
 🍴|kés és villa|tálalás|villa
 🥄|evőeszköz|kanál
 🔪|eszköz|felszerelés|kés|konyhakés
+🫙|befőttesüveg|fűszer|szósz|tárolás|tároló|üres
 🏺|amfora|edény|váza|vízöntő
 🌍|afrika|európa|európát és afrikát mutató földgömb|földgömb|világ
 🌎|amerika|amerikát mutató földgömb|földgömb|földrajz|világ
@@ -888,6 +890,7 @@
 🌇|alkonyat|épületek|lemenő nap|naplemente
 🌉|éjszaka|híd
 🎠|játék|körhinta|ló a körhintáról|vidámpark
+🛝|játék|játszótéri csúszda|vidámpark
 🎡|játék|óriáskerék|vidámpark
 🎢|hullámnvasút|hullámvasút|játék|vidámpark
 💈|borbély|cégér|fodrászcégér|hajvágás
@@ -936,11 +939,13 @@
 🛤️|vasúti sín|vonat
 🛢️|hordó|olajoshordó
 ⛽|benzinkút|dízel|kút|tank|töltőállomás
+🛞|abroncs|fordul|kerék|kör
 🚨|autó|forgó|jármű|lámpa|rendőrautó villogója|villogó
 🚥|közlekedési|lámpa|vízszintes közlekedési lámpa
 🚦|függőleges közlekedési lámpa|közlekedési|lámpa
 🛑|nyolcszög|stoptábla
 🚧|sorompó|útépítés
+🛟|biztonság|életmentő|lebeg|megment|mentőöv
 ⛵|hajó|jacht|tenger|vitorlás|vízi jármű
 🛶|csónak|kenu
 🚤|csónak|motoros siklócsónak|vízi jármű
@@ -1089,10 +1094,10 @@
 🎯|bullseye|játék|találat|telitalálat
 🪀|játék|jojózik
 🪁|papírsárkány|repül|szárnyal
+🔫|fegyver|pisztoly|revolver|vízipisztoly
 🎱|8-as|biliárdgolyó|golyó
 🔮|jövendőmondás|kristálygömb|mese
 🪄|boszorkány|varázslat|varázsló|varázspálca
-🧿|bűbáj|gonoszűző|nazar amulett|szem|talizmán
 🎮|játék|kontroller|videojáték
 🕹️|játék|joystick|videojáték
 🎰|játékgép|nyerőgép|pénzbedobós
@@ -1100,6 +1105,7 @@
 🧩|darab|kirakó|nyom|összekapcsolódó|puzzle
 🧸|játék|játszótárs|plüssmaci|tömött
 🪅|buli|pinyáta|ünnepség
+🪩|buli|csillám|diszkó|tánc|tükörgömb
 🪆|baba|egymásba rakható|matrjoska|orosz
 ♟️|feláldozható|gyalog|paraszt|sakk
 🃏|dzsóker|francia kártya|játék
@@ -1132,6 +1138,7 @@
 🩳|alsó|fürdőnadrág|rövidnadrág
 👙|bikini|fürdő|ruha|ruházat|úszás
 👚|női ruha|nők|ruha|ruházat
+🪭|félénk|forróság|hűtés|legyező|összecsukható kézi legyező|tánc
 👛|kiegészítő|pénztárca
 👜|kiegészítő|női táska|táska
 👝|kiegészítő|táska
@@ -1146,6 +1153,7 @@
 👡|női szandál|nők|ruha|ruházat|szandál
 🩰|balettcipő|tánc
 👢|csizma|lábbeli|női csizma|nők|ruha|ruházat
+🪮|afro|fésű|fogú|haj|hosszú
 👑|kiegészítő|királynő|korona
 👒|kalap|női kalap|nők|ruha|ruházat
 🎩|cilinder|kalap|ruha|ruházat
@@ -1184,6 +1192,8 @@
 🪕|bendzsó|húros|zene
 🥁|dobverő|zene
 🪘|dob|hosszú dob|konga|ritmus|ütem
+🪇|csörgő|hangszer|ráz|rumbatök|ütőhangszer|zene
+🪈|blockflöte|fafúvós|fife|furulya|fuvola|zene
 📱|mobiltelefon|rádiótelefon|telefon
 📲|hívás|mobiltelefon nyíllal|nyíl|rádiótelefon|telefon
 ☎️|telefon
@@ -1191,6 +1201,7 @@
 📟|személyhívó
 📠|faxkészülék
 🔋|akkumulátor|elem
+🪫|alacsony energiaszint|alacsony töltöttség|elektronikus
 🔌|dugó|elektromos dugó|elektronika|villamosság
 💻|laptop|notebook|számítógép
 🖥️|asztali|pc|számítógép
@@ -1296,7 +1307,7 @@
 ⛏️|bányászat|csákány|szerszám
 🛠️|csavarkulcs|kalapács és csavarkulcs|szerszám|villáskulcs
 🗡️|fegyver|szúrás|tőr
-🔫|fegyver|pisztoly|revolver|vízipisztoly
+💣|bomba|képregény
 🪃|ausztrália|bumeráng|visszajön|visszarepül
 🏹|fegyver|íj és nyíl|nyíl|nyilas
 🛡️|fegyver|pajzs
@@ -1322,7 +1333,9 @@
 🩸|gyógyszer|menstruáció|véradás|vércsepp
 💊|betegség|doktor|gyógyszer|orvos|pirula|tabletta
 🩹|kötszer|ragtapasz
+🩼|bot|fogyatékosság|mankó|mozgássegítő|sérülés|sétapálca
 🩺|gyógyszer|orvos|szív|sztetoszkóp
+🩻|csontok|csontváz|orvosi|röntgen
 🚪|ajtó
 🛗|akadálymentesítés|felvonó|lift
 🪞|tükör|tükröződés|visszaverődés
@@ -1343,6 +1356,7 @@
 🧻|papírtekercs|papírtörölköző|wc-papír
 🪣|felmosó|vödör
 🧼|darab|fürdés|szappanhab|szappantartó|tisztálkodás
+🫧|böfi|buborékok|szappan|tiszta|víz alatti
 🪥|fogak|fogászat|fogkefe|fogmosás|fürdőszoba|higiénia|kefe|tisztítás
 🧽|nedvszívó|porózus|szivacs|tisztítás
 🧯|elfojt|elolt|tűzoltó készülék
@@ -1351,8 +1365,11 @@
 ⚰️|halál|koporsó
 🪦|fejfa|sírkő|temető
 ⚱️|halál|halotti urna|temetés|urna
+🧿|bűbáj|gonoszűző|nazar amulett|szem|talizmán
+🪬|amulett|fatima|hamsza|kéz|mária|mirjam|védelem
 🗿|arc|japán|moai|szobor
 🪧|demonstráció|sztrájk|tábla|transzparens|tüntetés
+🪪|azonosító|biztonság|engedély|hitelesítő adatok|személyi igazolvány
 🏧|atm-jel|bankautomata
 🚮|környezettudatosság|szemét a kukában szimbólum|szemetes
 🚰|fogyasztható víz|iható|ivóvíz
@@ -1399,6 +1416,7 @@
 ☮️|békejel
 🕎|gyertyatartó|menóra|vallás
 🔯|csillag|hatágú csillag ponttal|szerencse
+🪯|khanda|szikh|vallás
 ♊|horoszkóp|ikrek csillagjegy
 ♋|horoszkóp|rák csillagjegy
 ♌|horoszkóp|oroszlán csillagjegy
@@ -1428,9 +1446,11 @@
 🔅|fényerő|sötétítés gomb
 🔆|fényerő|világosítás gomb
 📶|antennasávok|mobiltelefon|térerő
+🛜|hálózat|internet|számítógép|vezeték nélküli
 📳|mobiltelefon|rádiótelefon|rezgés|rezgő mód|telefon|tiltott
 📴|kikapcsolva|mobiltelefon|rádiótelefon|telefon|tiltott
 ⚧️|transznemű szimbólum
+🟰|egyenlőség|matematika|vastag egyenlőségjel
 ♾️|korlátlan|örökké|univerzális|végtelen
 ‼️|dupla felkiáltójel|felkiáltás|írásjel|központozás
 💱|átváltás|bank|pénzváltás|pénzváltó|valuta

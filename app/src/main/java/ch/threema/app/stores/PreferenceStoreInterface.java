@@ -21,6 +21,9 @@
 
 package ch.threema.app.stores;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,9 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public interface PreferenceStoreInterface {
 
@@ -120,6 +120,17 @@ public interface PreferenceStoreInterface {
 	byte[] getBytes(String key);
 
 	byte[] getBytes(String key, boolean crypted);
+
+	/**
+	 * Get encrypted string preferences in a backwards compatible way.
+	 * If no encrypted prefs with given key exist, the current (unencrypted) value will be migrated
+	 * @param key Key of preference
+	 * @return Value of preference or null if neither an encrypted or an unencrypted value is found
+	 */
+	@Nullable
+	default String getStringCompat(String key) {
+		return null;
+	}
 
 	String[] getStringArray(String key);
 

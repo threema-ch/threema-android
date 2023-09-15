@@ -25,10 +25,11 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.widget.AbsListView;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.adapters.UserListAdapter;
 import ch.threema.app.collections.Functional;
@@ -119,26 +120,28 @@ public class WorkUserMemberListFragment extends MemberListFragment {
 
 			@Override
 			protected void onPostExecute(List<ContactModel> contactModels) {
-				adapter = new UserListAdapter(
-					activity,
-					contactModels,
-					preselectedIdentities,
-					checkedItemPositions,
-					contactService,
-					blacklistService,
-					hiddenChatsListService,
-					preferenceService,
-					WorkUserMemberListFragment.this
-				);
-				setListAdapter(adapter);
-				getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-				if (listInstanceState != null) {
-					if (isAdded() && getView() != null && getActivity() != null) {
-						getListView().onRestoreInstanceState(listInstanceState);
+				if (isAdded()) {
+					adapter = new UserListAdapter(
+						activity,
+						contactModels,
+						preselectedIdentities,
+						checkedItemPositions,
+						contactService,
+						blacklistService,
+						hiddenChatsListService,
+						preferenceService,
+						WorkUserMemberListFragment.this
+					);
+					setListAdapter(adapter);
+					getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+					if (listInstanceState != null) {
+						if (isAdded() && getView() != null && getActivity() != null) {
+							getListView().onRestoreInstanceState(listInstanceState);
+						}
+						listInstanceState = null;
 					}
-					listInstanceState = null;
+					onAdapterCreated();
 				}
-				onAdapterCreated();
 			}
 		}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}

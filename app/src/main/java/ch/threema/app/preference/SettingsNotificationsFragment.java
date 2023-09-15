@@ -316,7 +316,7 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		groupCallsRingtonePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(@NonNull Preference preference) {
-				chooseRingtone(RingtoneManager.TYPE_RINGTONE|RingtoneManager.TYPE_NOTIFICATION,
+				chooseRingtone(RingtoneManager.TYPE_RINGTONE,
 					getRingtoneFromRingtonePref(R.string.preferences__group_calls_ringtone),
 					RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
 					getString(R.string.prefs_voice_call_sound),

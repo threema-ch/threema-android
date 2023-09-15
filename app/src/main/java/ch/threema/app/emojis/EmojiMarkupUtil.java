@@ -32,11 +32,12 @@ import android.text.style.StrikethroughSpan;
 import android.util.Pair;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import androidx.annotation.ColorInt;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.ContactService;
@@ -124,13 +125,17 @@ public class EmojiMarkupUtil {
 
 			for (int i = 0; i < length; i++) {
 				// Try to find emoji at the specified index
-				final EmojiParser.ParseResult result = EmojiParser.parseAt(text, i);
+				try {
+					final EmojiParser.ParseResult result = EmojiParser.parseAt(text, i);
 
-				if (result != null && result.length > 0) {
-					// An emoji was found!
-					results.add(new Pair<>(result, i));
-					i += result.length - 1;
-				} else {
+					if (result != null && result.length > 0) {
+						// An emoji was found!
+						results.add(new Pair<>(result, i));
+						i += result.length - 1;
+					} else {
+						containsRegularText = true;
+					}
+				} catch (Exception e) {
 					containsRegularText = true;
 				}
 			}

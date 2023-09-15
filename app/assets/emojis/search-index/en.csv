@@ -12,7 +12,7 @@
 ☂️|clothing|rain|umbrella
 ☃️|cold|snowman
 ☄️|comet|space
-☑️|✓|box|check box with check|ballot|tick box with tick
+☑️|✓|box|check box with check|tick box with tick|ballot
 ☔|clothing|drop|rain|umbrella with rain drops
 ☕|beverage|coffee|drink|hot|steaming|tea
 ☘️|plant|shamrock
@@ -41,10 +41,10 @@
 ⚙️|cogwheel|gear|tool
 ✂️|cutting|scissors|tool
 ✅|✓|button|check|mark|tick
-✈️|aeroplane|airplane
+✈️|aeroplane|airplane|flight
 ✉️|email|envelope|letter|e-mail
 ✒️|black nib|nib|pen
-✔️|✓|mark|check mark|heavy tick mark|tick
+✔️|✓|mark|tick|check mark|heavy tick mark
 ✖️|×|cancel|multiplication|multiply|sign|x|heavy multiplication sign
 ✡️|david|jewish|religion|star of david|judaism
 ✨|*|sparkles|star
@@ -58,7 +58,7 @@
 ❗|!|exclamation|mark|punctuation|red exclamation mark
 ❣️|exclamation|heart exclamation|mark|punctuation
 ❤️|heart|red heart
-➕|+|plus|sign|addition|maths
+➕|+|plus|sign|maths|addition
 ➖|-|−|minus|sign|heavy minus sign|maths|–|subtraction
 ➗|÷|divide|division|math|sign
 ⤴️|arrow|right arrow curving up
@@ -66,43 +66,6 @@
 〰️|dash|punctuation|wavy
 ㊗️|congratulations|ideograph|japanese congratulations button|祝
 ㊙️|secret|ideograph|japanese secret button|秘
-🥹|angry|cry|face holding back tears|proud|resist|sad
-🧌|fairy tale|fantasy|monster|troll
-🩻|bones|doctor|medical|skeleton|x-ray
-🩼|cane|crutch|disability|hurt|mobility aid|stick
-🪩|dance|disco|glitter|mirror ball|party
-🪪|credentials|identification card|license|security|driving|licence
-🪫|electronic|low battery|low energy
-🪬|amulet|fatima|hamsa|hand|mary|miriam|protection
-🪷|buddhism|flower|hinduism|india|lotus|purity|vietnam
-🪸|coral|ocean|reef
-🪹|empty nest|nesting
-🪺|nest with eggs|nesting
-🫃|belly|bloated|full|pregnant man
-🫄|belly|bloated|full|pregnant person
-🫅|monarch|noble|person with crown|regal|royalty
-🫗|drink|empty|glass|pouring liquid|spill
-🫘|beans|food|legume|kidney beans
-🫙|condiment|container|empty|jar|sauce|store
-🫠|disappear|dissolve|liquid|melting face
-🫡|ok|salute|saluting face|sunny|troops|yes
-🫢|amazement|awe|disbelief|embarrass|face with open eyes and hand over mouth|scared|surprise
-🫣|captivated|face with peeking eye|peep|stare
-🫤|disappointed|face with diagonal mouth|meh|skeptical|unsure|sceptical
-🫥|depressed|disappear|dotted line face|hide|introvert|invisible
-🫦|anxious|biting lip|fear|flirting|nervous|uncomfortable|worried
-🫧|bubbles|burp|clean|soap|underwater
-🫰|expensive|hand with index finger and thumb crossed|heart|love|money|snap
-🫱|hand|rightwards hand
-🫲|hand|leftwards hand
-🫳|dismiss|drop|palm down hand|shoo
-🫴|beckon|catch|come|offer|palm up hand
-🫵|index pointing at the viewer|point|you
-🫶|heart hands|love
-🛝|amusement park|playground slide
-🛞|circle|tire|turn|wheel|tyre
-🛟|float|life preserver|life saver|rescue|ring buoy|safety|buoy
-🟰|equality|heavy equals sign|maths
 😀|face|grinning face
 😃|face|grinning face with big eyes|mouth|open|smile
 😄|eye|face|grinning face with smiling eyes|mouth|open|smile
@@ -113,6 +76,7 @@
 😂|face with tears of joy|joy|laugh|tear
 🙂|face|slightly smiling face|smile
 🙃|face|upside down|upside-down face
+🫠|disappear|dissolve|liquid|melting face
 😉|face|winking face
 😊|blush|eye|face|smile|smiling face with smiling eyes
 😇|angel|face|fantasy|halo|innocent|smiling face with halo
@@ -132,14 +96,18 @@
 😝|eye|face|horrible|squinting face with tongue|taste|tongue
 🤑|face|money-mouth face|mouth
 🤗|face|hugging|open hands|smiling face with open hands
-🤭|face with hand over mouth|whoops|oops|embarrassed
+🤭|face with hand over mouth|whoops|embarrassed|oops
+🫢|amazement|awe|disbelief|embarrass|face with open eyes and hand over mouth|scared|surprise
+🫣|captivated|face with peeking eye|peep|stare
 🤫|quiet|shushing face|shooshing face
 🤔|face|thinking
+🫡|ok|salute|saluting face|sunny|troops|yes
 🤐|face|mouth|zipper-mouth face
 🤨|distrust|face with raised eyebrow|skeptic
 😐|deadpan|face|meh|neutral
 😑|expressionless|face|inexpressive|meh|unexpressive
 😶|face without mouth|mouth|quiet|silent
+🫥|depressed|disappear|dotted line face|hide|introvert|invisible|dotted-line face
 😶‍🌫️|absentminded|face in clouds|face in the fog|head in clouds|absent-minded
 😏|face|smirking face
 😒|face|unamused|unhappy
@@ -147,6 +115,7 @@
 😬|face|grimace|grimacing face
 😮‍💨|exhale|face exhaling|gasp|groan|relief|whisper|whistle
 🤥|face|lie|lying face|pinocchio
+🫨|earthquake|face|shaking|shock|vibrate
 😌|face|relieved
 😔|dejected|face|pensive
 😪|face|good night|sleepy face
@@ -164,13 +133,14 @@
 😵|crossed-out eyes|dead|face with crossed-out eyes|knocked out
 😵‍💫|dizzy|face with spiral eyes|hypnotized|spiral|trouble|whoa|hypnotised
 🤯|exploding head|mind blown|shocked
-🤠|cowboy|cowgirl|face|hat
+🤠|cowgirl|face|hat|cowboy-hat face
 🥳|celebration|hat|horn|partying face
 🥸|disguised face|face|glasses|incognito|nose
 😎|bright|cool|face|smiling face with sunglasses|sunglasses
 🤓|face|geek|nerd
 🧐|face with monocle|monocle|stuffy
 😕|confused|face|meh
+🫤|disappointed|face with diagonal mouth|meh|skeptical|unsure|sceptical
 😟|face|worried
 🙁|face|frown|slightly frowning face
 😮|face with open mouth|mouth|open|sympathy
@@ -178,6 +148,7 @@
 😲|astonished|face|shocked|totally
 😳|dazed|face|flushed
 🥺|begging|mercy|pleading face|puppy eyes
+🥹|angry|cry|face holding back tears|proud|resist|sad
 😦|face|frowning face with open mouth|mouth|open
 😧|anguished|face
 😨|face|fearful|scared
@@ -205,13 +176,13 @@
 👹|creature|face|fairy tale|fantasy|monster|ogre
 👺|creature|face|fairy tale|fantasy|goblin|monster
 👻|creature|face|fairy tale|fantasy|ghost|monster
-👽|alien|creature|extraterrestrial|face|fantasy|ufo
-👾|alien|creature|extraterrestrial|face|monster|ufo
+👽|alien|creature|extraterrestrial|face|fantasy|ufo|et
+👾|alien|creature|extraterrestrial|face|monster|ufo|et
 🤖|face|monster|robot
 😺|cat|face|grinning|mouth|open|smile
 😸|cat|eye|face|grinning cat with smiling eyes|smile
 😹|cat with tears of joy|face|joy|tear
-😻|cat|eye|face|heart|love|smile|smiling cat with heart-eyes|smiling cat face with heart eyes|smiling cat face with heart-eyes
+😻|cat|eye|face|heart|love|smile|smiling cat with heart-eyes|smiling cat face with heart eyes
 😼|cat with wry smile|face|ironic|smile|wry
 😽|cat|eye|face|kissing cat
 🙀|cat|face|oh|surprised|weary
@@ -220,7 +191,6 @@
 🙈|evil|face|forbidden|monkey|see-no-evil monkey
 🙉|evil|face|forbidden|hear-no-evil monkey|monkey
 🙊|evil|face|forbidden|monkey|speak-no-evil monkey
-💋|kiss mark|lips
 💌|heart|letter|love|mail
 💘|arrow|cupid|heart with arrow
 💝|heart with ribbon|ribbon|valentine
@@ -233,23 +203,26 @@
 💔|break|broken heart
 ❤️‍🔥|burn|heart on fire|love|lust|sacred heart
 ❤️‍🩹|healthier|improving|mending heart|recovering|recuperating|well
+🩷|cute|heart|like|love|pink
 🧡|orange heart
 💛|yellow heart
 💚|green heart
 💙|blue heart
+🩵|cyan|heart|light blue heart|teal
 💜|purple heart
 🤎|brown|heart
 🖤|black heart|evil|wicked
+🩶|gray|grey heart|heart|silver|slate
 🤍|heart|white
-💯|100|full|hundred points|score
+💋|kiss mark|lips
+💯|100|full|hundred points|score|hundred percent|one hundred
 💢|anger symbol|angry|comic|mad
 💥|boom|collision|comic
 💫|comic|dizzy|star
 💦|comic|splashing|sweat droplets
 💨|comic|dashing away|running
 🕳️|hole
-💣|bomb|comic
-💬|balloon|bubble|comic|dialog|speech
+💬|balloon|bubble|comic|speech|dialogue
 👁️‍🗨️|balloon|bubble|eye in speech bubble|speech|witness
 🗨️|balloon|bubble|left speech bubble|speech|dialogue
 🗯️|angry|balloon|bubble|mad|right anger bubble
@@ -260,11 +233,18 @@
 🖐️|finger|hand with fingers splayed|splayed
 ✋|hand|high 5|high five|raised hand
 🖖|finger|hand|spock|vulcan salute
+🫱|hand|rightwards hand
+🫲|hand|leftwards hand
+🫳|dismiss|drop|palm down hand|shoo|palm-down hand
+🫴|beckon|catch|come|offer|palm up hand|palm-up hand
+🫷|high five|leftwards pushing hand|push|refuse|stop|wait|leftward pushing hand|leftward-pushing hand
+🫸|high five|push|refuse|rightwards pushing hand|stop|wait|rightward pushing hand|rightward-pushing hand
 👌|hand|ok|perfect
 🤌|fingers|hand gesture|interrogation|pinched|sarcastic
 🤏|pinching hand|small amount
 ✌️|hand|victory
 🤞|crossed fingers|finger|hand|luck|good luck
+🫰|expensive|hand with index finger and thumb crossed|heart|love|money|snap
 🤟|hand|ily|love-you gesture|love you gesture
 🤘|finger|hand|horns|rock-on|sign of the horns|rock on
 🤙|call me hand|hand|hang loose|shaka|call-me hand
@@ -274,6 +254,7 @@
 🖕|finger|hand|middle finger
 👇|backhand index pointing down|down|finger|hand|point
 ☝️|finger|hand|index pointing up|point|up
+🫵|index pointing at the viewer|point|you
 👍|+1|hand|thumbs up|up
 👎|-1|down|hand|thumbs down
 ✊|clenched|fist|hand|punch|raised fist
@@ -282,6 +263,7 @@
 🤜|fist|right-facing fist|rightwards
 👏|clapping hands|hand
 🙌|celebration|gesture|hand|hooray|raised|raising hands|woo hoo|yay
+🫶|heart hands|love
 👐|hand|open hands
 🤲|palms up together|prayer
 🤝|agreement|handshake|meeting|shake
@@ -306,6 +288,7 @@
 👁️|body|eye
 👅|body|tongue
 👄|lips|mouth
+🫦|anxious|biting lip|fear|flirting|nervous|uncomfortable|worried
 👶|baby|young
 🧒|child|gender-neutral|unspecified gender|young
 👦|boy|young person|male
@@ -397,7 +380,7 @@
 🧑‍🚀|astronaut|rocket
 👨‍🚀|astronaut|man|rocket|male
 👩‍🚀|astronaut|rocket|woman|female
-🧑‍🚒|firefighter|firetruck|engine|truck|fire engine|fire truck
+🧑‍🚒|firefighter|firetruck|fire engine|fire truck|engine|truck
 👨‍🚒|firefighter|firetruck|man|fire truck|fireman|male
 👩‍🚒|firefighter|firetruck|woman|fire truck|engine|firewoman|truck|female
 👮|cop|officer|police
@@ -413,7 +396,8 @@
 👷|construction|hat|worker
 👷‍♂️|construction|man|worker
 👷‍♀️|construction|woman|worker|male
-🤴|prince
+🫅|monarch|noble|person with crown|regal|royalty
+🤴|prince|fairy tale|fantasy
 👸|fairy tale|fantasy|princess
 👳|person wearing turban|turban
 👳‍♂️|man wearing turban|turban|male
@@ -427,6 +411,8 @@
 👰‍♂️|man with veil|veil|male
 👰‍♀️|veil|woman with veil|bride|female
 🤰|pregnant|woman|female
+🫃|belly|bloated|full|pregnant man
+🫄|belly|bloated|full|pregnant person
 🤱|baby|breast-feeding|nursing
 👩‍🍼|baby|feeding|nursing|woman|female
 👨‍🍼|baby|feeding|man|nursing|male
@@ -434,7 +420,7 @@
 👼|angel|baby|face|fairy tale|fantasy
 🎅|celebration|christmas|claus|santa claus|father christmas
 🤶|celebration|christmas|claus|mother|mrs. claus|mrs claus|mrs santa claus
-🧑‍🎄|claus, christmas|mx claus|mx. claus
+🧑‍🎄|christmas|mx claus|claus, christmas|mx. claus
 🦸|good|heroine|superhero|superpower
 🦸‍♂️|good|hero|man superhero|superpower
 🦸‍♀️|good|heroine|superpower|woman superhero
@@ -462,10 +448,11 @@
 🧟|undead|walking dead|zombie
 🧟‍♂️|man zombie|undead|walking dead|zombie|male
 🧟‍♀️|undead|walking dead|woman zombie|zombie|female
+🧌|fairy tale|fantasy|monster|troll
 💆|face|massage|person getting massage|salon
 💆‍♂️|face|man getting massage|massage|male
 💆‍♀️|face|massage|woman getting massage|female
-💇|barber|beauty|haircut|parlor|person getting haircut|parlour
+💇|barber|beauty|haircut|parlor|person getting haircut|parlour|salon
 💇‍♂️|haircut|man getting haircut|hairdresser|male
 💇‍♀️|haircut|woman getting haircut|hairdresser|female
 🚶|hike|person walking|walking
@@ -480,9 +467,9 @@
 🧑‍🦯|accessibility|blind|person with white cane|person with guide cane|person with long mobility cane
 👨‍🦯|accessibility|blind|man with white cane|man with guide cane|male
 👩‍🦯|accessibility|blind|woman with white cane|woman with guide cane|female
-🧑‍🦼|accessibility|person in motorized wheelchair|wheelchair|person in motorised wheelchair|person in powered wheelchair
-👨‍🦼|accessibility|man in motorized wheelchair|wheelchair|man in motorised wheelchair|man in powered wheelchair|male
-👩‍🦼|accessibility|wheelchair|woman in motorized wheelchair|woman in motorised wheelchair|woman in powered wheelchair|female
+🧑‍🦼|accessibility|person in motorized wheelchair|wheelchair|person in powered wheelchair|person in motorised wheelchair
+👨‍🦼|accessibility|man in motorized wheelchair|wheelchair|man in powered wheelchair|man in motorised wheelchair|male
+👩‍🦼|accessibility|wheelchair|woman in motorized wheelchair|woman in powered wheelchair|woman in motorised wheelchair|female
 🧑‍🦽|accessibility|person in manual wheelchair|wheelchair
 👨‍🦽|accessibility|man in manual wheelchair|wheelchair|male
 👩‍🦽|accessibility|wheelchair|woman in manual wheelchair|female
@@ -581,6 +568,8 @@
 🐅|tiger
 🐆|leopard
 🐴|face|horse
+🫎|animal|antlers|elk|mammal|moose
+🫏|animal|ass|burro|donkey|mammal|mule|stubborn
 🐎|equestrian|horse|racehorse|racing
 🦄|face|unicorn
 🦓|stripe|zebra
@@ -622,7 +611,7 @@
 🦥|lazy|sloth|slow
 🦦|fishing|otter|playful
 🦨|skunk|stink
-🦘|australia|joey|jump|kangaroo|marsupial
+🦘|joey|jump|kangaroo|marsupial
 🦡|badger|honey badger|pester
 🐾|feet|paw prints|print
 🦃|bird|turkey|poultry
@@ -643,6 +632,8 @@
 🦩|flamboyant|flamingo|tropical
 🦚|bird|ostentatious|peacock|peahen|proud
 🦜|bird|parrot|pirate|talk
+🪽|angelic|aviation|bird|flying|mythology|wing
+🪿|bird|fowl|goose|honk|silly
 🐸|face|frog
 🐊|crocodile
 🐢|terrapin|tortoise|turtle
@@ -662,6 +653,8 @@
 🦈|fish|shark
 🐙|octopus
 🐚|shell|spiral
+🪸|coral|ocean|reef
+🪼|burn|invertebrate|jellyfish|marine|ouch|stinger
 🐌|snail|mollusc
 🦋|butterfly|insect|pretty|moth
 🐛|bug|insect|caterpillar|worm
@@ -681,6 +674,7 @@
 💐|bouquet|flower
 🌸|blossom|cherry|flower
 💮|flower|white flower
+🪷|buddhism|flower|hinduism|lotus|purity
 🏵️|plant|rosette
 🌹|flower|rose
 🥀|flower|wilted
@@ -688,6 +682,7 @@
 🌻|flower|sunflower
 🌼|blossom|flower
 🌷|flower|tulip
+🪻|bluebonnet|flower|hyacinth|lavender|lupine|snapdragon
 🌱|seedling|young
 🪴|boring|grow|house|nurturing|plant|potted plant|useless|pot plant
 🌲|evergreen tree|tree
@@ -700,6 +695,9 @@
 🍁|falling|leaf|maple
 🍂|fallen leaf|falling|leaf
 🍃|blow|flutter|leaf fluttering in wind|wind
+🪹|empty nest|nesting
+🪺|nest with eggs|nesting
+🍄|mushroom|toadstool
 🍇|fruit|grapes
 🍈|fruit|melon
 🍉|fruit|watermelon
@@ -731,16 +729,18 @@
 🥦|broccoli|wild cabbage
 🧄|flavoring|garlic|flavouring
 🧅|flavoring|onion|flavouring
-🍄|mushroom|toadstool
 🥜|food|peanuts|vegetable|nuts
+🫘|beans|food|legume|kidney beans
 🌰|chestnut|plant|nut
+🫚|beer|ginger root|root|spice
+🫛|beans|edamame|legume|pea|pod|vegetable
 🍞|bread|loaf
-🥐|bread|breakfast|croissant|food|french|roll|crescent roll
+🥐|bread|breakfast|croissant|food|french|roll|crescent
 🥖|baguette|bread|food|french stick
 🫓|arepa|flatbread|lavash|naan|pita|bread
 🥨|pretzel|twisted
 🥯|bagel|bakery|breakfast|schmear|bread
-🥞|breakfast|crêpe|food|hotcake|pancakes
+🥞|breakfast|crêpe|food|hotcake|pancakes|crepe
 🧇|breakfast|indecisive|iron|unclear|vague|waffle with butter
 🧀|cheese wedge
 🍖|bone|meat on bone
@@ -784,13 +784,13 @@
 🍡|dango|dessert|japanese|skewer|stick|sweet
 🥟|dumpling|empanada|gyōza|jiaozi|pierogi|potsticker|pastie|samosa
 🥠|fortune cookie|prophecy
-🥡|oyster pail|takeout box|takeaway container|takeaway box
+🥡|oyster pail|takeout box|takeaway box|takeaway container
 🦀|cancer|crab|zodiac|crustacean|seafood|shellfish
 🦞|bisque|claws|lobster|seafood|shellfish
 🦐|food|shellfish|shrimp|small|prawn|seafood
 🦑|food|molusc|squid|decapod|seafood
 🦪|diving|oyster|pearl
-🍦|cream|dessert|icecream|sweet|ice cream|soft serve
+🍦|cream|dessert|icecream|sweet|ice cream|soft serve|soft-serve ice cream
 🍧|dessert|ice|shaved|sweet|granita
 🍨|cream|dessert|sweet|ice cream
 🍩|breakfast|dessert|donut|doughnut|sweet
@@ -809,16 +809,17 @@
 🫖|drink|pot|teapot
 🍵|beverage|cup|drink|teacup without handle
 🍶|bar|beverage|bottle|cup|drink|sake|saké
-🍾|bar|bottle with popping cork|cork|drink|popping
+🍾|bar|bottle with popping cork|cork|drink|popping|bubbly
 🍷|bar|beverage|drink|glass|wine
 🍸|bar|cocktail|drink|glass
 🍹|bar|drink|tropical
 🍺|bar|beer|drink|mug
-🍻|bar|beer|clinking beer mugs|drink|mug
-🥂|celebrate|clinking glasses|drink|glass
-🥃|glass|liquor|shot|tumbler|whisky
+🍻|bar|beer|clinking beer mugs|drink|mug|cheers
+🥂|celebrate|clinking glasses|drink|glass|cheers
+🥃|glass|liquor|shot|tumbler|whisky|whiskey
+🫗|drink|empty|glass|pouring liquid|spill
 🥤|cup with straw|juice|soda
-🧋|bubble|milk|pearl|tea
+🧋|bubble|milk|pearl|tea|boba
 🧃|beverage|box|straw|sweet|drink carton|juice box|popper
 🧉|drink|mate|maté
 🧊|cold|ice cube|iceberg
@@ -827,6 +828,7 @@
 🍴|cooking|cutlery|fork and knife|knife and fork
 🥄|spoon|tableware
 🔪|cooking|hocho|kitchen knife|knife|tool|weapon
+🫙|condiment|container|empty|jar|sauce|store
 🏺|amphora|aquarius|cooking|drink|jug|zodiac|jar
 🌍|africa|earth|europe|globe showing europe-africa|world
 🌎|americas|earth|globe showing americas|world
@@ -880,24 +882,25 @@
 ⛲|fountain
 ⛺|camping|tent
 🌁|foggy
-🌃|night with stars|star
-🏙️|cityscape
+🌃|night with stars|starry night
+🏙️|cityscape|skyline
 🌄|morning|mountain|sunrise over mountains
 🌅|morning|sunrise
-🌆|cityscape at dusk|dusk|evening|landscape|sunset
+🌆|cityscape at dusk|dusk|evening|landscape|sunset|skyline at dusk
 🌇|dusk|sunset
 🌉|bridge at night|night
 🎠|carousel|horse|merry-go-round
+🛝|amusement park|playground slide
 🎡|amusement park|ferris|wheel|theme park
 🎢|amusement park|coaster|roller
 💈|barber|haircut|pole
 🎪|circus|tent|big top
 🚂|engine|locomotive|railway|steam|train
-🚃|car|electric|train|tram|trolleybus|trolley bus|railway carriage
+🚃|car|electric|tram|trolleybus|railway carriage|train carriage|trolley bus
 🚄|high-speed train|railway|shinkansen|speed|train
 🚅|bullet|railway|shinkansen|speed|train
 🚆|railway|train
-🚇|metro|subway
+🚇|metro|subway|tube|underground
 🚈|light rail|railway
 🚉|railway|station|train
 🚊|trolleybus|light rail|oncoming light rail|car|streetcar|tramcar|trolley bus
@@ -925,7 +928,7 @@
 🏍️|motorcycle|racing
 🛵|motor|scooter
 🦽|accessibility|manual wheelchair
-🦼|accessibility|motorized wheelchair|mobility scooter|powered wheelchair
+🦼|accessibility|motorized wheelchair|powered wheelchair|mobility scooter
 🛺|auto rickshaw|tuk tuk|tuk-tuk|tuktuk
 🚲|bicycle|bike
 🛴|kick|scooter
@@ -936,11 +939,13 @@
 🛤️|railway track|train
 🛢️|drum|oil
 ⛽|diesel|fuelpump|gas|pump|station|petrol pump
+🛞|circle|tire|turn|wheel|tyre
 🚨|beacon|car|light|police|revolving
 🚥|signal|traffic|horizontal traffic lights|lights
 🚦|signal|traffic|lights|vertical traffic lights
 🛑|octagonal|sign|stop
 🚧|barrier|construction
+🛟|float|life preserver|life saver|rescue|ring buoy|safety|buoy
 ⛵|boat|resort|sailboat|sea|yacht
 🛶|boat|canoe
 🚤|boat|speedboat
@@ -948,9 +953,9 @@
 ⛴️|boat|ferry|passenger
 🛥️|boat|motor boat|motorboat
 🚢|boat|passenger|ship
-🛩️|aeroplane|airplane|small airplane
-🛫|aeroplane|airplane|check-in|departures|take-off
-🛬|aeroplane|airplane arrival|arrivals|arriving|landing
+🛩️|aeroplane|airplane|small airplane|small plane
+🛫|aeroplane|airplane|check-in|departures|take-off|flight departure|plane departure
+🛬|aeroplane|airplane arrival|arrivals|arriving|landing|flight arrival|plan arrival
 🪂|hang-glide|parachute|parasail|skydive|parascend
 💺|chair|seat
 🚁|helicopter|vehicle
@@ -959,7 +964,7 @@
 🚡|aerial|cable|car|gondola|tramway
 🛰️|satellite|space
 🚀|rocket|space
-🛸|flying saucer|ufo
+🛸|flying saucer|ufo|spaceship
 🛎️|bellhop|hotel|porter
 🧳|luggage|packing|travel
 ⌛|hourglass done|sand|timer
@@ -970,29 +975,29 @@
 ⏲️|clock|timer
 🕰️|clock|mantelpiece clock
 🕛|00|12:00|clock|o’clock|twelve
-🕧|12:30|clock|thirty|twelve-thirty|half past twelve|12.30
+🕧|12:30|clock|thirty|twelve-thirty|12.30|half past twelve
 🕐|00|1:00|clock|o’clock|one
-🕜|1:30|clock|one-thirty|thirty|half past one|1.30
+🕜|1:30|clock|one-thirty|thirty|1.30|half past one
 🕑|00|2:00|clock|o’clock|two
-🕝|2:30|clock|thirty|two-thirty|half past two|2.30
+🕝|2:30|clock|thirty|two-thirty|2.30|half past two
 🕒|00|3:00|clock|o’clock|three
-🕞|3:30|clock|thirty|three-thirty|half past three|3.30
+🕞|3:30|clock|thirty|three-thirty|3.30|half past three
 🕓|00|4:00|clock|four|o’clock
-🕟|4:30|clock|four-thirty|thirty|half past four|4.30
+🕟|4:30|clock|four-thirty|thirty|4.30|half past four
 🕔|00|5:00|clock|five|o’clock
-🕠|5:30|clock|five-thirty|thirty|half past five|5.30
+🕠|5:30|clock|five-thirty|thirty|5.30|half past five
 🕕|00|6:00|clock|o’clock|six
-🕡|6:30|clock|six-thirty|thirty|half past six|6.30
+🕡|6:30|clock|six-thirty|thirty|6.30|half past six
 🕖|00|7:00|clock|o’clock|seven
-🕢|7:30|clock|seven-thirty|thirty|half past seven|7.30
+🕢|7:30|clock|seven-thirty|thirty|7.30|half past seven
 🕗|00|8:00|clock|eight|o’clock
-🕣|8:30|clock|eight-thirty|thirty|half past eight|8.30
+🕣|8:30|clock|eight-thirty|thirty|8.30|half past eight
 🕘|00|9:00|clock|nine|o’clock
-🕤|9:30|clock|nine-thirty|thirty|half past nine|9.30
+🕤|9:30|clock|nine-thirty|thirty|9.30|half past nine
 🕙|00|10:00|clock|o’clock|ten
-🕥|10:30|clock|ten-thirty|thirty|half past ten|10.30
+🕥|10:30|clock|ten-thirty|thirty|10.30|half past ten
 🕚|00|11:00|clock|eleven|o’clock
-🕦|11:30|clock|eleven-thirty|thirty|half past eleven|11.30
+🕦|11:30|clock|eleven-thirty|thirty|11.30|half past eleven
 🌑|dark|moon|new moon
 🌒|crescent|moon|waxing
 🌓|first quarter moon|moon|quarter
@@ -1073,26 +1078,26 @@
 🏑|ball|field|game|hockey|stick
 🏒|game|hockey|ice|puck|stick
 🥍|ball|goal|lacrosse|stick
-🏓|ball|bat|game|paddle|ping pong|table tennis
+🏓|ball|bat|game|paddle|ping pong|table tennis|ping-pong
 🏸|badminton|birdie|game|racquet|shuttlecock
 🥊|boxing|glove
-🥋|judo|karate|martial arts uniform|taekwondo|uniform
+🥋|judo|karate|martial arts uniform|taekwondo|uniform|mma
 🥅|net|goal cage
 ⛳|flag in hole|golf|hole
 ⛸️|skate|ice skating
-🎣|fishing pole|pole|rod
+🎣|fishing pole|pole|rod|fishing rod
 🤿|diving mask|scuba|snorkeling|snorkelling
 🎽|athletics|running|sash|shirt
 🎿|skis|snow|skiing
 🛷|sledge|sleigh
 🥌|curling stone|game|rock|stone|curling rock
-🎯|bullseye|dart|direct hit|game|hit|target
+🎯|bullseye|dart|direct hit|game|hit|target|bull’s-eye
 🪀|fluctuate|toy|yo-yo
 🪁|fly|kite|soar
-🎱|8|ball|billiard|eight|game|pool 8 ball
+🔫|gun|handgun|pistol|revolver|tool|weapon|toy|water pistol
+🎱|8|ball|billiard|eight|game|pool 8 ball|magic 8 ball
 🔮|ball|crystal|fairy tale|fantasy|fortune|tool
 🪄|magic wand|witch|wizard
-🧿|bead|charm|evil-eye|nazar amulet|talisman|amulet|evil eye
 🎮|controller|game|video game
 🕹️|game|joystick|video game
 🎰|game|slot machine|pokies
@@ -1100,6 +1105,7 @@
 🧩|clue|interlocking|jigsaw|piece|puzzle
 🧸|plaything|plush|stuffed|teddy bear|toy
 🪅|celebration|party|piñata
+🪩|dance|disco|glitter|mirror ball|party
 🪆|doll|nesting dolls|babushka|matryoshka|russian dolls
 ♟️|chess pawn|dupe|expendable
 🃏|card|game|joker|wildcard
@@ -1128,10 +1134,11 @@
 👘|clothing|kimono
 🥻|clothing|dress|sari
 🩱|bathing suit|one-piece swimsuit|swimming costume
-🩲|bathing suit|briefs|one-piece|swimsuit|underwear|bathers|speedos|pants
-🩳|bathing suit|pants|shorts|underwear|boardies|boardshorts|swim shorts
+🩲|bathing suit|briefs|one-piece|swimsuit|underwear|pants|bathers|speedos
+🩳|bathing suit|pants|shorts|underwear|boardshorts|swim shorts|boardies
 👙|bikini|clothing|swim suit|two-piece
 👚|clothing|woman’s clothes|blouse|top
+🪭|cooling|dance|fan|flutter|folding hand fan|hot|shy
 👛|clothing|coin|purse|accessories
 👜|bag|clothing|handbag|purse|accessories|tote
 👝|bag|clothing|clutch bag|pouch|accessories
@@ -1142,10 +1149,11 @@
 👟|athletic|clothing|running shoe|shoe|sneaker|runners|trainer
 🥾|backpacking|boot|camping|hiking
 🥿|ballet flat|flat shoe|slip-on|slipper|pump
-👠|clothing|heel|high-heeled shoe|shoe|woman
+👠|clothing|heel|high-heeled shoe|shoe|woman|stiletto
 👡|clothing|sandal|shoe|woman’s sandal
 🩰|ballet shoes|dance
 👢|boot|clothing|shoe|woman’s boot
+🪮|afro|comb|hair|pick
 👑|clothing|crown|king|queen
 👒|clothing|hat|woman’s hat
 🎩|clothing|hat|tophat
@@ -1184,6 +1192,8 @@
 🪕|banjo|music|stringed
 🥁|drumsticks|music|percussions
 🪘|beat|conga|drum|long drum|rhythm
+🪇|instrument|maracas|music|percussion|rattle|shake
+🪈|fife|flute|music|pipe|recorder|woodwind
 📱|cell|mobile|phone|telephone
 📲|arrow|cell|mobile phone with arrow|phone|receive
 ☎️|phone|telephone|landline
@@ -1191,6 +1201,7 @@
 📟|pager
 📠|fax machine
 🔋|battery
+🪫|electronic|low battery|low energy
 🔌|electricity|plug
 💻|computer|laptop|pc|personal
 🖥️|computer|desktop
@@ -1210,7 +1221,7 @@
 📷|camera|video
 📸|camera with flash|flash|video
 📹|camera|video
-📼|tape|vhs|videocassette
+📼|tape|vhs|videocassette|videotape
 🔍|glass|magnifying glass tilted left|search|tool
 🔎|glass|magnifying glass tilted right|search|tool
 🕯️|candle|light
@@ -1234,7 +1245,7 @@
 🗞️|newspaper|paper|rolled-up newspaper
 📑|bookmark|marker|tabs
 🔖|bookmark|mark
-🏷️|label
+🏷️|label|tag
 💰|bag|dollar|moneybag
 🪙|coin|gold|metal|money|silver|treasure
 💴|banknote|bill|currency|money|note|yen
@@ -1284,7 +1295,7 @@
 📐|ruler|triangle|triangular ruler|set square
 🗃️|box|card|file
 🗄️|cabinet|file|filing
-🗑️|wastebasket
+🗑️|wastebasket|rubbish bin|trash|waste paper basket
 🔒|closed|locked|padlock
 🔓|lock|open|unlocked|padlock
 🔏|ink|locked with pen|nib|pen|privacy
@@ -1296,8 +1307,8 @@
 ⛏️|mining|pick|tool
 🛠️|hammer and wrench|spanner|tool|wrench|hammer and spanner
 🗡️|dagger|knife|weapon
-🔫|gun|handgun|pistol|revolver|tool|weapon|toy|water pistol
-🪃|australia|boomerang|rebound|repercussion
+💣|bomb|comic
+🪃|boomerang|rebound|repercussion
 🏹|archer|arrow|bow and arrow|sagittarius|zodiac
 🛡️|shield|weapon
 🪚|carpenter|carpentry saw|lumber|saw|tool
@@ -1320,9 +1331,11 @@
 📡|antenna|dish|satellite
 💉|medicine|needle|shot|sick|syringe|ill|injection
 🩸|bleed|blood donation|drop of blood|injury|medicine|menstruation
-💊|doctor|medicine|pill|sick
+💊|doctor|medicine|pill|sick|capsule
 🩹|adhesive bandage|bandage|injury|plaster|sticking plaster|bandaid|dressing
+🩼|cane|crutch|disability|hurt|mobility aid|stick
 🩺|doctor|heart|medicine|stethoscope
+🩻|bones|doctor|medical|skeleton|x-ray
 🚪|door
 🛗|accessibility|elevator|hoist|lift
 🪞|mirror|reflection|reflector|speculum|looking glass
@@ -1343,16 +1356,20 @@
 🧻|paper towels|roll of paper|toilet paper|toilet roll
 🪣|bucket|cask|pail|vat
 🧼|bar|bathing|cleaning|lather|soapdish
+🫧|bubbles|burp|clean|soap|underwater
 🪥|bathroom|brush|clean|dental|hygiene|teeth|toothbrush
 🧽|absorbing|cleaning|porous|sponge
 🧯|extinguish|fire extinguisher|quench
 🛒|cart|shopping|trolley|basket
 🚬|cigarette|smoking
-⚰️|coffin|death
+⚰️|coffin|death|casket
 🪦|cemetery|graveyard|headstone|tombstone
 ⚱️|ashes|death|funeral|urn
+🧿|bead|charm|evil-eye|nazar amulet|talisman|amulet|evil eye
+🪬|amulet|fatima|hamsa|hand|mary|miriam|protection
 🗿|face|moai|moyai|statue
 🪧|demonstration|picket|placard|protest|sign
+🪪|credentials|identification card|license|security|driving|licence
 🏧|atm sign|automated|bank|teller
 🚮|litter bin|litter in bin sign|garbage|trash
 🚰|drinking|potable|water
@@ -1399,6 +1416,7 @@
 ☮️|peace symbol
 🕎|candelabrum|candlestick|menorah|religion
 🔯|dotted six-pointed star|fortune|star
+🪯|khanda|religion|sikh
 ♊|gemini|twins|zodiac
 ♋|cancer|crab|zodiac
 ♌|leo|lion|zodiac
@@ -1416,9 +1434,9 @@
 ◀️|arrow|left|reverse button|triangle
 ⏪|arrow|double|fast reverse button|rewind
 ⏮️|arrow|last track button|previous scene|previous track|triangle
-🔼|arrow|button|red|upwards button|upward button
+🔼|arrow|button|upwards button|red|upward button
 ⏫|arrow|double|fast up button
-🔽|arrow|button|downwards button|red|downward button
+🔽|arrow|button|downwards button|downward button|red
 ⏬|arrow|double|down|fast down button
 ⏸️|bar|double|pause button|vertical
 ⏹️|square|stop button
@@ -1428,9 +1446,11 @@
 🔅|brightness|dim button|low
 🔆|bright button|brightness button
 📶|antenna bars|bar|cell|mobile|phone
+🛜|computer|internet|network|wireless|wi-fi|wifi
 📳|cell|mobile|mode|phone|telephone|vibration|vibrate
 📴|cell|mobile|off|phone|telephone
 ⚧️|transgender symbol
+🟰|equality|heavy equals sign|maths
 ♾️|forever|infinity|unbounded|universal|eternal
 ‼️|!!|bangbang|double exclamation mark|exclamation|mark|punctuation
 💱|bank|currency|exchange|money
@@ -1463,7 +1483,7 @@
 🆖|ng button
 🅾️|blood type|o button (blood type)
 🆗|ok button
-🅿️|p button|parking
+🅿️|p button|parking|car park|carpark
 🆘|help|sos button
 🆙|mark|up! button
 🆚|versus|vs button
@@ -1774,3 +1794,4 @@
 🏴󠁧󠁢󠁥󠁮󠁧󠁿|england
 🏴󠁧󠁢󠁳󠁣󠁴󠁿|scotland
 🏴󠁧󠁢󠁷󠁬󠁳󠁿|wales
+🐦‍⬛|bird|black|crow|raven|rook

@@ -40,14 +40,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -321,6 +318,12 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		}
 
 		this.collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+		if (this.collapsingToolbar == null) {
+			logger.debug("Collapsing Toolbar not available");
+			finish();
+			return;
+		}
+
 		this.collapsingToolbar.setTitle(" ");
 		@ColorInt int scrimColor = contactService.getAvatarColor(contact);
 		this.collapsingToolbar.setContentScrimColor(scrimColor);

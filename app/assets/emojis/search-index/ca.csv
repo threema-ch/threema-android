@@ -1,4 +1,4 @@
-⁉️|!?|?|exclamació|interrogació|pregunta|puntuació|signe d’exclamació i d’interrogació
+⁉️|!?|?|exclamació|interrogació|puntuació|signe d’exclamació i d’interrogació
 ℹ️|informació|punt d’informació
 ↔️|dreta|esquerra|fletxa cap a l’esquerra i cap a la dreta
 ↕️|amunt|avall|fletxa cap amunt i cap avall
@@ -66,43 +66,6 @@
 〰️|guió|ondulat|puntuació
 ㊗️|botó japonès "enhorabona"|enhorabona|ideograma|japonès|kanji
 ㊙️|"secret"|botó japonès "secret"|ideograma|japonès|kanji
-🥹|cara que s’aguanta les llàgrimes|dolor|emoció|enuig|orgull|resistir|tristesa
-🧌|conte|fades|fantasia|monstre|trol
-🩻|diagnòstic|esquelet|medicina|ossos|radiografia
-🩼|ajuda a la mobilitat|bastó|crossa|discapacitat|lesió
-🪩|ballar|bola de miralls|brillant|discoteca|festa
-🪪|carnet|credencials|identificació|seguretat|targeta d’identificació
-🪫|bateria baixa|electrònica|poca bateria
-🪬|amulet|mà de fàtima|mà de míriam|protecció
-🪷|budisme|flor|hinduisme|índia|lotus|puresa|vietnam
-🪸|corall|escullera|mar|oceà
-🪹|covar|niu buit
-🪺|covar|niu amb ous|ous
-🫃|embaràs|embarassat|home embarassat|panxa|prenyat
-🫄|embaràs|embarassada|embarassat|panxa|persona embarassada|prenyada|prenyat
-🫅|monarca|noblesa|persona amb corona|reialesa
-🫗|abocar|beguda|buit|got que aboca un líquid|rajar|vessar
-🫘|fesols|llegum|menjar|mongeta|ronyó
-🫙|buit|condiment|contenidor|emmagatzemar|pot|salsa|vidre
-🫠|cara que es desfà|desaparèixer|desfer-se|dissoldre’s|fondre’s|líquid
-🫡|cara que saluda|exèrcit|ordre|salutació|sí|val
-🫢|al·lucinar|cara amb els ulls oberts i la mà sobre la boca|increïble|sorpresa|vergonya
-🫣|cara tapada que espia amb un ull|espiar|fascinació|mirada|mirar
-🫤|cara amb la boca en diagonal|cara d’escepticisme|cara d’inseguretat|cara de decepció|decepcionat|escèptic|insegur|meh
-🫥|amagar-se|cara amb línia de punts|depressió|desaparèixer|introversió|invisible
-🫦|boca que es mossega el llavi|flirteig|incomoditat|nervis|por|preocupació
-🫧|bombolles|net|sabó|subaquàtic|submarí
-🫰|car|diners|fregar els dits|mà amb el dit índex i el polze creuats|petar els dits
-🫱|a la dreta|dreta|mà cap a la dreta
-🫲|a l’esquerra|esquerra|mà cap a l’esquerra
-🫳|abaixa|descarta|mà amb el palmell cap avall|no|rebutja
-🫴|acosta’t|dona’m|mà amb el palmell cap amunt|ofereix|vine
-🫵|apuntar|assenyalar|índex que assenyala l’espectador|tu
-🫶|amor|mans que formen un cor
-🛝|divertit|jugar|lliscar|parc|togoban
-🛞|cercle|girar|pneumàtic|rodar
-🛟|cèrcol|flotador|rescat|salvament|salvavides|seguretat
-🟰|igualtat|matemàtiques|signe d’igual gran
 😀|cara molt somrient|rialla|somriure|ulls
 😃|boca oberta|cara molt somrient amb els ulls ben oberts|somriure
 😄|boca oberta|cara amb rialla i els ulls somrients|somriure
@@ -113,6 +76,7 @@
 😂|alegria|cara amb llàgrimes d’alegria|llàgrimes
 🙂|cara que somriu una mica|somriure tímid
 🙃|cara de cap per avall|revés
+🫠|cara que es desfà|desaparèixer|desfer-se|dissoldre’s|fondre’s|líquid
 😉|cara que pica l’ullet|ullet
 😊|cara somrient amb els ulls alegres|galtes vermelles|somriure
 😇|angelet|aurèola|cara somrient amb aurèola|halo|santa
@@ -125,7 +89,7 @@
 😚|cara que fa un petó amb els ulls tancats|petó|ulls tancats
 😙|cara que fa un petó amb els ulls alegres|petó|ulls alegres
 🥲|agraïment|alleujament|cara somrient amb una llàgrima|emoció|llàgrima|orgull|somriure
-😋|cara d’assaborir un menjar deliciós|deliciós|llépol cara d’assaborir un menjar deliciós|nyam|somriure
+😋|cara que assaboreix menjar|deliciós|llengua|llépol|nyam|somriure
 😛|cara que fa llengotes|llengota|llengua fora
 😜|cara que fa llengotes i pica l’ullet|llengota|llengua|ullet
 🤪|boig|boja|cara de bogeria|ull gran|ull petit
@@ -133,13 +97,17 @@
 🤑|cara de diners|diners|llengua|ulls
 🤗|abraçada|cara amb abraçada
 🤭|cara amb la mà sobre la boca|tapant-se la boca|ups
+🫢|al·lucinar|cara amb els ulls oberts i la mà sobre la boca|cara amb ulls oberts i mà sobre la boca|estupefacció|incredulitat|por|sorpresa|vergonya
+🫣|cara tapada que espia amb un ull|espiar|fascinació|mirada|mirar
 🤫|callar|cara que demana silenci|silenci
 🤔|cara|pensant|pensatiu|pensativa
+🫡|cara que saluda|exèrcit|ordre|salutació|sí|val
 🤐|boca tancada|cara amb cremallera a la boca|cremallera
 🤨|cara amb una cella aixecada|desconfiada|desconfiat|escèptica
 😐|cara neutra|neutral
 😑|cara|inexpressió|inexpressiu|inexpressiva
 😶|callada|callat|cara sense boca|sense boca|silenci
+🫥|amagar-se|cara amb línia de punts|depressió|desaparèixer|introversió|invisible
 😶‍🌫️|cap als núvols|cara entre núvols|distracció|distret
 😏|cara somrient amb superioritat|somriure astut|superioritat
 😒|avorriment|cara de desaprovació|desaprovació
@@ -147,6 +115,7 @@
 😬|cara que fa una ganyota amb les dents|dents|ganyota
 😮‍💨|alleujament|cara que exhala|exhalar|xiulet|xiuxiueig
 🤥|cara de mentider|mentider|nas|pinotxo
+🫨|cara que tremola|terratrèmol|tremolar|tremolor|vibració
 😌|alleujament|cara d’alleujament
 😔|abatuda|cara|desanimada|pensativa
 😪|cara de son|son
@@ -171,6 +140,7 @@
 🤓|aplicada|aplicat|cara de setciències|estudiar|estudiós|estudiosa
 🧐|cara amb monocle|estirada|estirat|monocle
 😕|cara de confusió|confós|confosa|confusió
+🫤|cara amb la boca en diagonal|cara d’escepticisme|cara d’inseguretat|cara de decepció|decepcionat|insegur|meh
 😟|cara de preocupació|preocupació|preocupada|preocupat
 🙁|cara una mica arrufada|emmurriat|empipat|enfadat
 😮|boca oberta|cara amb la boca oberta
@@ -178,6 +148,7 @@
 😲|cara|estupefacta|estupefacte
 😳|cara|enrojolada|galtes vermelles|vergonya
 🥺|cara de súplica|pietat|súplica|ulls de cadell
+🥹|cara que s’aguanta les llàgrimes|dolor|emoció|enuig|orgull|resistir|tristesa
 😦|boca oberta|cara emmurriada amb la boca oberta|emmurriada
 😧|angoixada|angoixat|cara d’angoixa
 😨|atemorida|atemorit|cara de por|espantada|espantat|por
@@ -220,7 +191,6 @@
 🙈|mona que no mira|ulls tapats
 🙉|mona que no escolta|orelles tapades
 🙊|boca tapada|mona que no parla
-💋|marca de petó|petó
 💌|amor|carta d’amor
 💘|cor amb fletxa|cupido|fletxa
 💝|cor amb un llaç|llaç|sant valentí
@@ -233,14 +203,18 @@
 💔|cor|trencar|trencat
 ❤️‍🔥|amor|cor en flames|cor sagrat|foc|luxúria
 ❤️‍🩹|cor embenat|millora|recuperació|salut
+🩷|agradar|amor|cor|rosa
 🧡|cor taronja|taronja
 💛|cor groc
 💚|cor verd
 💙|cor blau
+🩵|blau cel|cian|cor blau cel|turquesa
 💜|cor lila
 🤎|cor|marró
 🖤|cor negre
+🩶|cor|gris|plata|platejat
 🤍|blanc|cor
+💋|marca de petó|petó
 💯|100|cent punts|punts|puntuació
 💢|còmic|enfadat|enuig|malhumorat|símbol d’enuig
 💥|col·lisió|còmic|esclat
@@ -248,7 +222,6 @@
 💦|gotes de suor|suor
 💨|còmic|córrer|pressa|sortir corrent
 🕳️|forat
-💣|bomba|còmic
 💬|bafarada de parlar|còmic|diàleg|parlar
 👁️‍🗨️|bafarada|testimoni|ull dins d’una bafarada|vist
 🗨️|bafarada de parlar cap a l’esquerra|esquerra|parlar
@@ -260,11 +233,18 @@
 🖐️|dits oberts|mà amb els dits oberts|mà oberta
 ✋|cos|mà aixecada
 🖖|dit|mà|salutació vulcaniana|spock|vulcanià
+🫱|a la dreta|dreta|mà cap a la dreta
+🫲|a l’esquerra|esquerra|mà cap a l’esquerra
+🫳|abaixa|descarta|mà amb el palmell cap avall|no|rebutja
+🫴|acosta’t|dona’m|mà amb el palmell cap amunt|ofereix|vine
+🫷|aturar|empènyer|esperar|esquerra|mà que empeny cap a l’esquerra|prou|rebutjar
+🫸|aturar|dreta|empènyer|esperar|mà que empeny cap a la dreta|prou|rebutjar
 👌|acceptació|mà d’acceptació|ok|senyal d’aprovació amb la mà
 🤌|dits junts|gest de la mà|interrogació|sarcàstic
 🤏|mà que pessiga|quantitat petita
 ✌️|senyal de la victòria|victòria
 🤞|creuats|dits|sort
+🫰|car|diners|fregar els dits|mà amb el dit índex i el polze creuats|petar els dits
 🤟|dits|gest de t’estimo|mà|t’estimo
 🤘|banyes|dits en forma de banyes|rock
 🤙|mà que representa una trucada|trucada
@@ -274,6 +254,7 @@
 🖕|dit cor|dit del cor|dit del mig|mà
 👇|avall|dit índex que apunta cap avall|índex
 ☝️|amunt|índex que apunta cap amunt
+🫵|apuntar|assenyalar|índex que assenyala l’espectador|tu
 👍|amunt|polze cap amunt
 👎|avall|polze cap avall
 ✊|mà|puny alçat
@@ -282,16 +263,17 @@
 🤜|esquerre|puny|salutació
 👏|aplaudiment|aplaudint|mans que aplaudeixen
 🙌|celebració|hurra|mans aixecades|mans enlaire
+🫶|amor|mans que formen un cor
 👐|cos|mà|mans obertes|oberta
 🤲|mans juntes amb els palmells cap amunt|pregària
 🤝|acord|encaixada de mans|mans|salutació
-🙏|gràcies|mans en oració|pregar|si us plau
+🙏|gràcies|mans ajuntades|pregar|si us plau
 ✍️|escriure|mà que escriu
 💅|cosmètics|esmalt d’ungles|manicura|ungla
 🤳|autofoto|càmera|foto|mòbil|selfie
 💪|bíceps tensat|flexió de bíceps|forçut|múscul
 🦾|accessibilitat|pròtesi de braç
-🦿|accessibilitat|pr`òtesi de cama|pròtesi
+🦿|accessibilitat|pròtesi de cama
 🦵|cama|extremitat|puntada de peu
 🦶|peu|puntada de peu|trepitjada
 👂|cos|orella
@@ -306,6 +288,7 @@
 👁️|cos|ull
 👅|cos|llengua
 👄|boca|cos|llavis
+🫦|boca que es mossega el llavi|flirteig|incomoditat|nervis|por|preocupació
 👶|bebè|nadó|nounat
 🧒|criatura|infant
 👦|jove|nen|noi
@@ -413,6 +396,7 @@
 👷|construcció|paleta|treballador de la construcció
 👷‍♂️|construcció|home paleta|masculí|treballador
 👷‍♀️|construcció|dona paleta|femení|treballadora
+🫅|monarca|noblesa|persona amb corona|reialesa
 🤴|príncep
 👸|conte|fades|fantasia|princesa
 👳|persona amb turbant|turbant
@@ -427,6 +411,8 @@
 👰‍♂️|home amb vel|vel
 👰‍♀️|dona amb vel|vel
 🤰|dona|embaràs|embarassada|prenyada
+🫃|embaràs|embarassat|home embarassat|panxa|prenyat
+🫄|embaràs|embarassada|embarassat|panxa|persona embarassada|prenyada|prenyat
 🤱|alletar|dona que alleta|lactància|nadó
 👩‍🍼|alimentar|alletar|bebè|dona que alleta un bebè
 👨‍🍼|alimentar|alletar|bebè|home que alleta un bebè
@@ -450,7 +436,7 @@
 🧛|dràcula|mort vivent|morta vivent|vampir
 🧛‍♂️|dràcula|home vampir|mort vivent
 🧛‍♀️|dona vampir|morta vivent|vampiressa
-🧜|dona sirena|persona sirena|sirena
+🧜|persona sirena|sirena|tritó
 🧜‍♂️|home sirena|tritó
 🧜‍♀️|dona sirena|sirena
 🧝|elf|màgic
@@ -462,7 +448,8 @@
 🧟|mort vivent|walking dead|zombi
 🧟‍♂️|home zombi|mort vivent
 🧟‍♀️|dona zombi|morta vivent
-💆|cara|massatge|persona que rep un massatge facial|saló
+🧌|conte|fades|fantasia|monstre|trol
+💆|bellesa|cara|massatge|persona que rep un massatge al cap|saló
 💆‍♂️|cara|home|masculí|massatge facial a un home
 💆‍♀️|cara|dona|femení|massatge facial a una dona
 💇|cabells|persona a la perruqueria|persona que es talla els cabells|tallada de cabells
@@ -581,6 +568,8 @@
 🐅|tigre
 🐆|lleopard|pantera
 🐴|cara de cavall|cavall
+🫎|animal|ant|banyes|mamífer|uapití
+🫏|animal|ase|mamífer|mula|ruc|somer|tossut
 🐎|cavall|curses|eqüestre
 🦄|cara|unicorn
 🦓|ratlla|zebra
@@ -620,7 +609,7 @@
 🐨|coala|os
 🐼|cara|panda
 🦥|lent|mandrós|peresós
-🦦|juganera|llúdria|pescadora
+🦦|juganera|llúdria|llúdriga|pescadora
 🦨|mofeta|pudor
 🦘|austràlia|cangur|marsupial|salt
 🦡|teixó|toixó
@@ -643,6 +632,8 @@
 🦩|cridaner|flamenc|tropical
 🦚|cua|ocell|orgull|ostentós|paó
 🦜|lloro|ocell|parlar|pirata
+🪽|ala|angelical|aviació|mitologia|ocell|volar
+🪿|au|clacar|oca|ocell
 🐸|cara|granota
 🐊|cocodril
 🐢|tortuga
@@ -662,7 +653,9 @@
 🦈|animal|peix|tauró
 🐙|pop
 🐚|cargol de mar|mar
-🐌|cargol
+🪸|corall|escullera|mar|oceà
+🪼|coïssor|cremada|dolor|invertebrat|marí|medusa|picada
+🐌|caragol|cargol
 🦋|animal|insecte|papallona
 🐛|eruga|insecte
 🐜|formiga|insecte
@@ -681,6 +674,7 @@
 💐|flor|planta|ram de flors
 🌸|cirerer|flor de cirerer
 💮|blanca|flor
+🪷|budisme|flor|hinduisme|índia|lotus|puresa|vietnam
 🏵️|planta|roseta
 🌹|flor|planta|rosa
 🥀|flor|marcida|mústia|pansida|rosa
@@ -688,6 +682,7 @@
 🌻|flor|gira-sol|planta|sol
 🌼|flor|planta
 🌷|flor|planta|tulipa
+🪻|antirrínum|flor|jacint|lavanda|lupinus
 🌱|brot|nou|planta
 🪴|avorrit|casa|créixer|inútil|planta amb test
 🌲|arbre de fulla perenne|perenne
@@ -700,6 +695,9 @@
 🍁|auró|fulla d’auró
 🍂|fulla que cau|seca
 🍃|fulla que vola amb el vent|vent
+🪹|covar|niu buit
+🪺|covar|niu amb ous|ous
+🍄|bolet|planta
 🍇|fruita|planta|raïm
 🍈|fruita|meló|planta
 🍉|fruita|meló d’aigua|meló de moro|planta|síndria
@@ -729,11 +727,13 @@
 🥒|cogombret|hortalissa|menjar
 🥬|bleda xinesa|col|enciam|fulla verda|kale
 🥦|bròcoli|bròquil|col
-🧄|all|aromatitzant
-🧅|aromatitzant|ceba
-🍄|bolet|planta
+🧄|all|aromatitzant|condiment
+🧅|aromatitzant|ceba|condiment
 🥜|cacauets|fruit|llegum|menjar|sec
+🫘|fesols|llegum|menjar|mongeta|ronyó
 🌰|castanya|planta
+🫚|arrel de gingebre|beguda|espècia|gínger
+🫛|beina de pèsol|edamame|llegum|mongeta|pèsol|verdura
 🍞|llesca|pa
 🥐|brioixeria|croissant|menjar
 🥖|baguet|barra|menjar|pa
@@ -808,7 +808,7 @@
 🥛|beguda|got de llet|llet
 🫖|beguda|tetera
 🍵|tassa de te|te
-🍶|ampolla|bar|beguda|sake|tassa
+🍶|ampolla|bar|beguda|got|sake
 🍾|ampolla de cava|cava|suro|tap
 🍷|copa de vi|vi
 🍸|bar|còctel|copa de còctel
@@ -817,6 +817,7 @@
 🍻|brindis amb gerra de cervesa|cervesa|gerra
 🥂|brindis|cava|copes|xampany|xin-xin
 🥃|beguda|copeta|got de licor|licor|whisky
+🫗|abocar|beguda|buit|got que aboca un líquid|rajar|vessar
 🥤|beguda|canya|got amb canya|refresc|suc
 🧋|bombolla|llet|perla|te amb bombolles
 🧃|bric de suc
@@ -827,6 +828,7 @@
 🍴|cobert|forquilla i ganivet|ganivet
 🥄|cobert|cullera
 🔪|arma|cuina|ganivet de cuina
+🫙|buit|condiment|contenidor|emmagatzemar|pot|salsa|vidre
 🏺|àmfora|aquari|beguda|gerra|zodíac
 🌍|àfrica|europa|globus terraqüi amb europa i àfrica|món
 🌎|amèrica|globus terraqüi amb amèrica|món
@@ -888,6 +890,7 @@
 🌇|ciutat|crepuscle|posta de sol
 🌉|nit|pont de nit
 🎠|atraccions|cavallets
+🛝|divertit|jugar|lliscar|parc|togoban
 🎡|fira|roda de fira
 🎢|muntanya|parc d’atraccions|russa
 💈|barberia|pal|tallada de cabells
@@ -936,11 +939,13 @@
 🛤️|tren|via de tren
 🛢️|barril de petroli|bidó de petroli|petroli
 ⛽|assortidor de gasolina|benzinera|combustible|gasolina
+🛞|cercle|girar|pneumàtic|rodar
 🚨|cotxe|llum de cotxe de policia|policia
 🚥|horitzontal|semàfor|senyal|trànsit
 🚦|semàfor|senyal|trànsit|vertical
 🛑|detenció|estop|senyal d’estop|senyal de detenció obligatòria|stop
 🚧|barrera|obres|tanca
+🛟|cèrcol|flotador|rescat|salvament|salvavides|seguretat
 ⛵|iot|mar|vaixell|vehicle|veler
 🛶|canoa|kayak
 🚤|llanxa|ràpida
@@ -1089,10 +1094,10 @@
 🎯|dards|diana|joc|punteria
 🪀|fluctuar|io-io|joguina
 🪁|enlairar-se|estel|volar
+🔫|arma de foc|eina|pistola d’aigua|revòlver
 🎱|8|billar|bola de billar|bola negra de billar
 🔮|bola de vidre|fantasia|fortuna|sort
 🪄|bruixa|bruixot|màgia|vareta màgica
-🧿|amulet|nazar|pedra del mal d’ull|talismà
 🎮|comandament de consola|comandament de joc|comandament de videoconsola|joc|videojoc
 🕹️|control|joystick|palanca de control|videojoc
 🎰|atzar|escurabutxaques|joc|màquina escurabutxaques
@@ -1100,6 +1105,7 @@
 🧩|encaixar|peça|peces de trencaclosques|pista|puzle|trencaclosques
 🧸|joc|joguina|os de peluix|pelfa|peluix
 🪅|celebració|festa|pinyata
+🪩|ballar|bola de miralls|brillant|discoteca|festa
 🪆|matrioixca|nina|nines russes|russa
 ♟️|escacs|peó d’escacs|prescindible|sacrificable
 🃏|carta|comodí|partida
@@ -1132,10 +1138,11 @@
 🩳|banyador|pantaló|pantalons curts|roba interior|vestit de bany
 👙|biquini|nedar|roba
 👚|dona|roba de dona
+🪭|aire|calor|dansa|vano|ventall|vergonya
 👛|accessori|moneda|moneder|roba
 👜|accessori|bossa de mà|roba
 👝|accessori|bossa|roba
-🛍️|bosses de compres|compra
+🛍️|bosses de compres|compra|equipatge|hotel
 🎒|escola|motxilla d’escola
 🩴|xancleta de dit|xancleta de platja
 👞|calçat|home|sabata d’home
@@ -1146,6 +1153,7 @@
 👡|calçat|dona|sandàlia de dona
 🩰|ballet|dansa|sabatilles de ballet
 👢|bota de dona|calçat|dona
+🪮|afro|cabell|pinça|pinta
 👑|cap|complement|corona|reina
 👒|accessori|barret de dona|dona
 🎩|barret de copa|copa
@@ -1184,6 +1192,8 @@
 🪕|banjo|corda|música
 🥁|baquetes|música|tambor|timbal
 🪘|conga|percussió|ritme|timbal
+🪇|instrument|maraques|música|percussió|ritme|sacsejar|sonall
+🪈|flauta dolça|instrument de vent de fusta|música|vent
 📱|mòbil|telèfon
 📲|fletxa|mòbil|rebre|telèfon mòbil amb fletxa
 ☎️|telèfon
@@ -1191,6 +1201,7 @@
 📟|buscapersones|cercapersones
 📠|fax
 🔋|bateria|càrrega
+🪫|bateria baixa|electrònica|poca bateria
 🔌|connexió|electricitat|endoll
 💻|equip|ordinador portàtil|pc|personal|portàtil
 🖥️|equip|escriptori|ordinador d’escriptori|ordinador de sobretaula
@@ -1235,7 +1246,7 @@
 📑|fitxa|marcadors|punt
 🔖|marcador|punt de llibre
 🏷️|etiqueta
-💰|bossa de diners|diners
+💰|bossa de diners|diners|dòlar
 🪙|metall|moneda|or|plata|tresor
 💴|bitllets de ien|ien|signe
 💵|bitllets de dòlar|dòlar|signe
@@ -1296,7 +1307,7 @@
 ⛏️|eina|mineria|pic
 🛠️|clau anglesa|eina|martell i clau anglesa
 🗡️|arma|daga|ganivet
-🔫|arma de foc|eina|pistola d’aigua|revòlver
+💣|bomba|còmic
 🪃|austràlia|bumerang|rebot|repercussió
 🏹|arc i fletxa|fletxa|sagitari|zodíac
 🛡️|arma|escut
@@ -1322,7 +1333,9 @@
 🩸|donació de sang|gota de sang|medicina|menstruació
 💊|malalt|medicina|metge|pastilla|píndola
 🩹|bena|tireta
+🩼|ajuda a la mobilitat|bastó|crossa|discapacitat|lesió
 🩺|cor|doctor|estetoscopi|medicina
+🩻|diagnòstic|esquelet|medicina|ossos|radiografia
 🚪|porta
 🛗|accessibilitat|ascensor|muntacàrregues
 🪞|espill|mirall|reflector|reflex
@@ -1343,6 +1356,7 @@
 🧻|paper de vàter|paper higiènic|rotlle de paper|tovalloleta de paper
 🪣|cubell|galleda
 🧼|bany|ensabonar-se|netejar|pastilla|sabó|sabonera
+🫧|bombolles|net|sabó|subaquàtic|submarí
 🪥|dental|dents|higiene|lavabo|raspall de dents|rentar
 🧽|absorbent|esponja|netejar|porosa
 🧯|apagar|extingir|extintor|foc
@@ -1351,8 +1365,11 @@
 ⚰️|mort|taüt
 🪦|cementiri|làpida|tomba
 ⚱️|funeral|mort|urna funerària
+🧿|amulet|nazar|pedra del mal d’ull|talismà
+🪬|amulet|mà de fàtima|mà de míriam|protecció
 🗿|cara|estàtua|moai
 🪧|cartell|manifestació|pancarta|protesta|senyal
+🪪|carnet|credencials|identificació|seguretat|targeta d’identificació
 🏧|atm|banc|caixer automàtic|signe de caixer automàtic
 🚮|brossa|paperera|signe de paperera|tirar la brossa
 🚰|aigua|potable
@@ -1399,6 +1416,7 @@
 ☮️|pau|símbol de la pau
 🕎|canelobre de set braços|menorà|religió|set braços
 🔯|estrella de sis puntes amb punt|fortuna|punt|sis puntes
+🪯|khanda|religió|sikh
 ♊|bessons|gèmini|zodíac
 ♋|càncer|cranc|zodíac
 ♌|lleó|zodíac
@@ -1428,9 +1446,11 @@
 🔅|atenuar|botó d’atenuar la brillantor|brillantor
 🔆|augmentar|botó d’augmentar la brillantor|brillantor
 📶|barres de cobertura|cobertura|mòbil|telèfon
+🛜|internet|ordinador|sense fil|xarxa
 📳|mode de vibració|telèfon|vibració
 📴|apagat|desactivat|desconnectat|mòbil|telèfon
 ⚧️|símbol transgènere|transgènere
+🟰|igualtat|matemàtiques|signe d’igual gran
 ♾️|il·limitat|infinit|per sempre|universal
 ‼️|!!|doble exclamació|exclamació|signe d’exclamació doble
 💱|canvi de divisa|divisa

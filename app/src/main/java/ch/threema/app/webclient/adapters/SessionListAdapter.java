@@ -125,6 +125,7 @@ public class SessionListAdapter extends AbstractRecyclerAdapter<WebClientSession
 		holder.model = model;
 		if(this.onClickItemListener != null) {
 			holder.itemView.setOnClickListener(v -> onClickItemListener.onClick(holder.model, h.getAdapterPosition()));
+			holder.itemView.setOnLongClickListener(v -> true);
 		}
 
 		// Set session name

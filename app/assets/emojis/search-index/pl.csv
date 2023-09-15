@@ -10,7 +10,7 @@
 ☀️|jasne|kosmos|pogoda|promienie|słońce|słonecznie
 ☁️|chmura|pogoda
 ☂️|deszcz|opady|pada|parasol|pogoda
-☃️|bałwanek i płatki śniegu|pogoda|śnieg|zabawa na śniegu|zimno
+☃️|bałwan i płatki śniegu|bałwanek i płatki śniegu|pogoda|śnieg|zabawa na śniegu|zimno
 ☄️|kometa|kosmos|ogon
 ☑️|parafka|pole ze znacznikiem wyboru|ptaszek|zaznaczenie
 ☔|deszcz|opady|pada|parasol z kroplami deszczu|pogoda
@@ -47,7 +47,7 @@
 ✔️|gruby znacznik wyboru|parafka|ptaszek|zaznaczenie|znacznik wyboru
 ✖️|×|anuluj|iks|mnożenie|x|znak mnożenia
 ✡️|dawid|gwiazda dawida|gwiazda dawidowa|religia|żydowska
-✨|* gwiazdki|gwiazda|gwiazdki|gwiazdy
+✨|*|gwiazda|gwiazdki|gwiazdy
 ✳️|*|gwiazdka ośmioramienna
 ✴️|*|gwiazda ośmioramienna
 ❄️|płatek śniegu|pogoda|śnieg|zimno
@@ -66,43 +66,6 @@
 〰️|fala|falista kreska|linia|pofalowana
 ㊗️|gratulacje|ideogram|japoński przycisk gratulacje
 ㊙️|ideogram|japoński przycisk tajemnica|tajemnica
-🥹|duma|opór|płacz|smutna twarz|twarz powstrzymująca łzy|zdenerwowanie
-🧌|bajka|fantazja|potwór|troll
-🩻|kości|lekarz|medycyna|szkielet|zdjęcie rentgenowskie
-🩼|ból|kij|kula|laska|niepełnosprawność|pomoc w chodzeniu
-🪩|dyskoteka|kula dyskotekowa|migotanie|przyjęcie|taniec
-🪪|bezpieczeństwo|dane osobowe|dowód tożsamości|prawo jazdy
-🪫|elektronika|niski poziom energii|słaba bateria
-🪬|amulet|chamsa|dłoń fatimy|dłoń z okiem|fatima|miriam|ochrona|ręka fatimy|ręka miriam|ręka z okiem
-🪷|buddyzm|czystość|hinduizm|indie|kwiat|lotosu|wietnam
-🪸|koralowa|koralowiec|ocean|rafa
-🪹|gniazdowanie|gnieżdżenie|puste gniazdo
-🪺|gniazdo z jajkami|gniazdowanie|gnieżdżenie
-🫃|brzuch|mężczyzna w ciąży|pełny|w ciąży|wzdęty
-🫄|brzuch|osoba w ciąży|pełny|w ciąży|wzdęty
-🫅|królewski|monarcha|osoba w koronie|szlachta
-🫗|nalewanie płynu|napój|pusty|rozlanie|szklanka
-🫘|fasola|jedzenie|nerkowata|strąk
-🫙|pojemnik|przechowywanie|przyprawa|pusty|słoik|słój|sos|zapas
-🫠|płynna twarz|rozpuszczająca się twarz|roztapiająca się twarz|znikająca twarz
-🫡|ok|pogodna twarz|salutująca twarz|tak jest|wojsko
-🫢|niedowierzanie|niespodzianka|przestrach|przestraszona twarz|twarz z otwartymi oczami i ręką na ustach|zawstydzona twarz|zdumienie
-🫣|gapienie się|podglądanie|twarz z podglądającym okiem|zaabsorbowana twarz
-🫤|do kitu|niepewna twarz|rozczarowana twarz|sceptyczna twarz|twarz z ukośnymi ustami
-🫥|introwertyk|niewidzialna twarz|przygnębiona twarz|twarz otoczona linią przerywaną|ukryta twarz|znikająca twarz
-🫦|dyskomfort|flirt|nerwowość|niepokój|przygryzanie wargi|strach|zmartwienie
-🫧|bąbelki|mycie|mydło|plusk|pod wodą
-🫰|dłoń ze skrzyżowanym palcem wskazującym i kciukiem|drogie|miłość|pieniądze|pstryknięcie palcami|serce
-🫱|dłoń skierowana w prawo|prawa|w prawo
-🫲|dłoń skierowana w lewo|lewa|w lewo
-🫳|dłoń skierowana w dół|odrzucenie|sio|upuszczenie
-🫴|dłoń skierowana w górę|łapanie|propozycja|przywołanie|skinienie
-🫵|palec wskazujący skierowany na patrzącego|ty|wskazywanie
-🫶|dłonie tworzące serce|miłość
-🛝|park rozrywki|wesołe miasteczko|zabawa|zjeżdżalnia
-🛞|koło pojazdu
-🛟|bezpieczeństwo|koło ratunkowe|pływak|ratunek
-🟰|gruby znak równości|matematyka|równość
 😀|roześmiana buźka|szeroko uśmiechnięta twarz
 😃|uśmiechnięta twarz z otwartymi ustami|wesoły
 😄|uśmiechnięta twarz z otwartymi ustami i roześmianymi oczami|wesoły
@@ -113,6 +76,7 @@
 😂|łzy|śmiech|twarz ze łzami radości
 🙂|buźka|lekko uśmiechnięta twarz
 🙃|do góry nogami|odwrócona twarz
+🫠|płynna twarz|rozpuszczająca się twarz|roztapiająca się twarz|znikająca twarz
 😉|puszczać oko|twarz puszczająca oko
 😊|przyjazny|serdeczny|uśmiechnięta twarz o roześmianych oczach
 😇|nic nie zrobiłem|świętoszek|uśmiechnięta twarz z aureolą
@@ -133,13 +97,17 @@
 🤑|hajs|kasa|pieniądze|twarz z pieniędzmi na ustach
 🤗|ściskam|twarz z gestem przytulania|uśmiech
 🤭|twarz z ręką na ustach|ups
+🫢|niedowierzanie|niespodzianka|przestrach|przestraszona twarz|twarz z otwartymi oczami i ręką na ustach|zawstydzona twarz|zdumienie
+🫣|gapienie się|podglądanie|twarz z podglądającym okiem|zaabsorbowana twarz
 🤫|cicho|uciszać|uciszająca twarz
 🤔|buźka|myśląca twarz|myślę|zamyślony|zastanawiam się
+🫡|ok|pogodna twarz|salutująca twarz|tak jest|wojsko
 🤐|buzia na kłódkę|nic nie powiem|twarz z zamkiem błyskawicznym na ustach
 🤨|brew|buźka|sceptyczny|twarz z podniesioną brwią
 😐|hm|neutralna twarz|nic|nie mam zdania
 😑|nic|nie mam zdania|nie obchodzi mnie|twarz bez wyrazu
 😶|buźka|cisza|nic nie mówię|twarz bez ust
+🫥|introwertyk|niewidzialna twarz|przygnębiona twarz|twarz otoczona linią przerywaną|ukryta twarz|znikająca twarz
 😶‍🌫️|bujać w obłokach|głowa w chmurach|twarz w chmurach|zamyślenie
 😏|twarz z uśmieszkiem|uśmieszek
 😒|niezadowolona buźka|niezadowolona twarz
@@ -147,6 +115,7 @@
 😬|grymaśna buźka|twarz z grymasem
 😮‍💨|gwizd|twarz wypuszczająca powietrze|ulga|westchnienie|wydmuchiwać powietrze|wypuszczać powietrze
 🤥|długi nos|kłamać|pinokio|twarz kłamcy
+🫨|szok|trzęsienie ziemi|twarz|wibracje|wstrząs|wstrząśnięta twarz
 😌|odprężona buźka|twarz z wyrazem ulgi
 😔|zamyślona buźka|zamyślona twarz
 😪|senna twarz|śpiąca buźka
@@ -171,6 +140,7 @@
 🤓|buźka w okularach|inteligent|kujon
 🧐|twarz z monoklem|wyniosły
 😕|zakłopotana buźka|zdezorientowana twarz
+🫤|do kitu|niepewna twarz|rozczarowana twarz|sceptyczna twarz|twarz z ukośnymi ustami
 😟|zmartwiona buźka|zmartwiona twarz
 🙁|grymas|lekko zachmurzona twarz|niezadowolenie
 😮|twarz z otwartymi ustami|zaskoczenie|zaskoczona buźka
@@ -178,6 +148,7 @@
 😲|zadziwiona twarz|zaskoczenie|zaskoczona buźka
 😳|twarz z rumieńcami|twarz z wypiekami
 🥺|błagająca twarz|błaganie|litość|słodkie oczy
+🥹|duma|opór|płacz|smutna twarz|twarz powstrzymująca łzy|zdenerwowanie
 😦|rozzłoszczona buźka|zachmurzona twarz z otwartymi ustami
 😧|udręczona twarz|złość
 😨|przestraszona twarz|wystraszona buźka
@@ -220,7 +191,6 @@
 🙈|gest|małpa zasłaniająca oczy|nie widzę|nie widzieć|niedobre|zabronione|zakrywam oczy
 🙉|gest|małpa zasłaniająca uszy|nie słyszę|nie słyszeć|niedobre|zabronione|zakrywam uszy
 🙊|co ja mówię|gest|małpa zasłaniająca pyszczek|nie mówić|nie mówię|niedobre|zabronione|zakrywam usta
-💋|odcisk ust|pocałunek|ślad po pocałunku|usta
 💌|liścik|list miłosny|miłość|serce|wiadomość
 💘|przebite strzałą|serce przebite strzałą|serce ze strzałą
 💝|serce ze wstążką|walentynki|wstążka
@@ -233,14 +203,18 @@
 💔|pęknięte|serce|złamane serce
 ❤️‍🔥|miłość|płomienie|płonąć|serce w płomieniach|święte serce
 ❤️‍🩹|dobrze|lepiej|lepsze samopoczucie|uleczone serce|zdrowsze
+🩷|lubić|miłość|różowe|serce|urocze
 🧡|pomarańczowe serce
 💛|serce|żółte
 💚|serce|zielone
 💙|niebieskie|serce
+🩵|jasnoniebieskie|serce|turkusowe|zielononiebieskie
 💜|fioletowe|purpurowe serce|serce
 🤎|brązowe|serce
 🖤|czarne serce|czarny|serce|zło
+🩶|ciemnoszare|serce|srebrne|szare
 🤍|białe|serce
+💋|odcisk ust|pocałunek|ślad po pocałunku|usta
 💯|100|setka|sto punktów|stówa|stówka
 💢|symbol gniewu|złość
 💥|kolizja|wybuch|żartobliwy
@@ -248,7 +222,6 @@
 💦|krople potu|pot|woda
 💨|pędzić|podmuch wiatru|szybkie poruszanie się|szybkość|wiatr
 🕳️|dziura|otwór
-💣|bomba|żartobliwy
 💬|dialog|dymek|rozmowa
 👁️‍🗨️|dymek|oko w dymku|wzrok
 🗨️|dialog|dymek|lewostronny dymek|rozmowa
@@ -259,12 +232,19 @@
 🤚|powitanie|pozdrowienie|pożegnanie|uniesiona dłoń|wzniesiony grzbiet dłoni
 🖐️|otwarta dłoń wszystkie palce|palce|rozpostarte palce|uniesiona otwarta dłoń
 ✋|dłoń|stop|uwaga|wzniesiona dłoń
-🖖|dłoń|palce|salut wolkański|wolkański
+🖖|dłoń|palce|salut wolkański|spock|wolkański
+🫱|dłoń skierowana w prawo|prawa|w prawo
+🫲|dłoń skierowana w lewo|lewa|w lewo
+🫳|dłoń skierowana w dół|odrzucenie|sio|upuszczenie
+🫴|dłoń skierowana w górę|łapanie|propozycja|przywołanie|skinienie
+🫷|czekać|dłoń pchająca w lewo|odmawiać|pchać|piątka|stop|w lewo
+🫸|czekać|dłoń pchająca w prawo|odmawiać|pchać|piątka|stop|w prawo
 👌|dłoń z gestem ok|znak ok
 🤌|gest|palce|przesłuchanie|sarkazm|złączone palce
 🤏|dłoń z gestem trochę|mała ilość
 ✌️|gest v|gest zwycięstwa|znak victorii
 🤞|kciuki|powodzenia|skrzyżowane palce|trzymać
+🫰|dłoń ze skrzyżowanym palcem wskazującym i kciukiem|drogie|miłość|pieniądze|pstryknięcie palcami|serce
 🤟|gest kocham cię|kocham|ręka
 🤘|gest rogów|rocker|rogi|znak rockersów
 🤙|dłoń w geście zadzwoń do mnie|dzwonić|telefonować
@@ -274,6 +254,7 @@
 🖕|gest|środkowy palec|wulgarny gest
 👇|dłoń z palcem wskazującym w dół|dół|na dół|palec|w dół|wskazujący
 ☝️|do góry|góra|palec wskazujący w górę|w górę|wskazujący
+🫵|palec wskazujący skierowany na patrzącego|ty|wskazywanie
 👍|brawo|kciuk w górę|lubię|ok|podoba mi się
 👎|brzydkie|kciuk w dół|nie lubię|nie podoba mi się
 ✊|pięść|uniesiona|wzniesiona pięść|zaciśnięta
@@ -282,6 +263,7 @@
 🤜|cios|pięść skierowana w prawo|uderzenie z lewej
 👏|brawa|klaskać|klaskanie|oklaski
 🙌|hura!|super|wzniesione ręce
+🫶|dłonie tworzące serce|miłość
 👐|otwarte dłonie|puste ręce|złapać
 🤲|dłonie do góry razem|modlitwa
 🤝|powitanie|spotkanie|uścisk dłoni|zgoda
@@ -306,6 +288,7 @@
 👁️|ciało|oko
 👅|ciało|język
 👄|ciało|usta|wargi
+🫦|dyskomfort|flirt|nerwowość|niepokój|przygryzanie wargi|strach|zmartwienie
 👶|dziecko|niemowlę
 🧒|dziecko|młody|płeć neutralna
 👦|chłopiec
@@ -413,6 +396,7 @@
 👷|budowlaniec|kask
 👷‍♂️|budowlaniec|mężczyzna|robotnik
 👷‍♀️|budowlaniec|kobieta|robotnik
+🫅|królewski|monarcha|osoba w koronie|szlachta
 🤴|książę
 👸|bajka|baśń|królewna|księżniczka
 👳|mężczyzna|osoba w turbanie|turban
@@ -427,6 +411,8 @@
 👰‍♂️|mężczyzna w welonie|welon
 👰‍♀️|kobieta w welonie|welon
 🤰|ciąża|kobieta w ciąży
+🫃|brzuch|mężczyzna w ciąży|pełny|w ciąży|wzdęty
+🫄|brzuch|osoba w ciąży|pełny|w ciąży|wzdęty
 🤱|karmienie piersią|niemowlę|pierś
 👩‍🍼|karmienie piersią|kobieta karmiąca niemowlę|niemowlę
 👨‍🍼|karmienie|mężczyzna karmiący niemowlę|niemowlę
@@ -462,6 +448,7 @@
 🧟|chodzące trupy|nieumarli|zombie
 🧟‍♂️|chodzące trupy|mężczyzna zombie|nieumarli
 🧟‍♀️|chodzące trupy|kobieta zombie|nieumarli
+🧌|bajka|fantazja|potwór|troll
 💆|kosmetyczka|masaż|osoba podczas masażu|salon masażu
 💆‍♂️|głowa|masaż|mężczyzna podczas masażu|twarz
 💆‍♀️|głowa|kobieta podczas masażu|masaż|twarz
@@ -550,7 +537,7 @@
 🛀|kąpiel|osoba biorąca kąpiel|wanna
 🛌|hotel|nocleg|osoba w łóżku|sen
 🧑‍🤝‍🧑|osoby trzymające się za ręce|para|za ręce
-👭|dwie kobiety trzymające się za ręce|kobiety trzymające się za ręce|miłość|para|za ręce|zakochani
+👭|dwie kobiety trzymające się za ręce|kobiety trzymające się za ręce|miłość|para|za ręce|zakochane
 👫|mężczyzna i kobieta trzymający się za ręce|miłość|para|za ręce|zakochani
 👬|dwóch mężczyzn trzymających się za ręce|miłość|para|za ręce|zakochani
 💏|miłość|para|pocałunek|zakochani
@@ -581,6 +568,8 @@
 🐅|tygrys
 🐆|lampart
 🐴|głowa|konia|końska|koński|łeb
+🫎|łoś|poroże|ssak|zwierzę
+🫏|muł|osiołek|ssak|uparty|zwierzę
 🐎|koń wyścigowy|wierzchowiec|wyścigi konne
 🦄|głowa jednorożca|jednorożec|łeb
 🦓|zebra
@@ -643,6 +632,8 @@
 🦩|ekstrawagancja|flaming|tropikalny
 🦚|dumny|paw|ptak
 🦜|gadająca|papuga|pirat|ptak
+🪽|anielskie|latający|latanie|mitologia|ptak|skrzydło
+🪿|drób|gęganie|gęś|głuptas|ptak
 🐸|głowa żaby|ropucha|traszka|żaba|żabka
 🐊|aligator|krokodyl
 🐢|żółw
@@ -662,6 +653,8 @@
 🦈|rekin|ryba
 🐙|ośmiornica
 🐚|muszelka|muszla spiralna|spirala
+🪸|koralowa|koralowiec|ocean|rafa
+🪼|ał|bezkręgowiec|galareta|meduza|morski|parzyć
 🐌|ślimak
 🦋|kolorowy|motyl|owad
 🐛|gąsienica|insekt|owad
@@ -681,6 +674,7 @@
 💐|bukiet kwiatów|kwiaty
 🌸|kwiat wiśni|kwitnąca wiśnia
 💮|biały kwiat|kontury
+🪷|buddyzm|czystość|hinduizm|indie|kwiat|lotosu|wietnam
 🏵️|kwiat|roślina|rozeta
 🌹|kwiat|roślina|róża
 🥀|kwiat|róża|więdnąć|zwiędły kwiat
@@ -688,6 +682,7 @@
 🌻|kwiat|roślina|słońce|słonecznik
 🌼|kwiatek|kwitnie|roślina
 🌷|kwiatek|pąk|tulipan
+🪻|bławatek|chaber|hiacynt|kwiat|lawenda|łubin|lwia paszcza
 🌱|pęd|roślinka|sadzonka
 🪴|dom|kwiat doniczkowy|podlewać|roślina doniczkowa
 🌲|drzewo iglaste|wiecznie zielone drzewo
@@ -700,6 +695,9 @@
 🍁|liść jesienny|liść klonowy|liść klonu
 🍂|liście|roślina|spadające liście|spadanie
 🍃|liście na wietrze|podmuch|roślina|trzepotanie|wiatr|wicher
+🪹|gniazdowanie|gnieżdżenie|puste gniazdo
+🪺|gniazdo z jajkami|gniazdowanie|gnieżdżenie
+🍄|grzyb|muchomor|trujący
 🍇|owoce|winogrona
 🍈|melon|owoc
 🍉|arbuz|kawałek arbuza|owoc
@@ -731,9 +729,11 @@
 🥦|brokuł
 🧄|aromatyczny|czosnek
 🧅|aromatyczna|cebula
-🍄|grzyb|muchomor|trujący
 🥜|fistaszki|jedzenie|orzeszki ziemne
+🫘|fasola|jedzenie|nerkowata|strąk
 🌰|jedzenie|kasztan jadalny
+🫚|korzeń imbiru|piwo|przyprawa
+🫛|edamame|fasola|groch|łuskać|strąk grochu|warzywo
 🍞|bochenek|chleb|kawałek chleba|pieczywo
 🥐|jedzenie|pieczywo|rogalik francuski
 🥖|bagietka|bułka|chleb|jedzenie|pieczywo
@@ -817,6 +817,7 @@
 🍻|kufle z piwem|piwiarnia|stukające się kufle piwa
 🥂|kieliszki|na zdrowie|stukające się kieliszki|świętowanie|toast
 🥃|alkohol|drink|grube dno|szklanka z grubym dnem|whisky
+🫗|nalewanie płynu|napój|pusty|rozlanie|szklanka
 🥤|szklanka ze słomką
 🧋|herbata|kuleczka|kulki tapioki|mleko|napój bubble tea
 🧃|napój w kartoniku|słodki|słomka|sok w kartoniku
@@ -827,6 +828,7 @@
 🍴|gotowanie|nóż|widelec i nóż
 🥄|łyżeczka|łyżka|sztućce
 🔪|broń|gotowanie|narzędzie|nóż kuchenny
+🫙|pojemnik|przechowywanie|przyprawa|pusty|słoik|słój|sos|zapas
 🏺|amfora|dzban|puchar|stągiew|waza|wodnik|zodiak
 🌍|afryka|europa|kula ziemska przedstawiająca europę i afrykę|ziemia
 🌎|ameryka północna i południowa|kula ziemska przedstawiająca ameryki|ziemia
@@ -888,6 +890,7 @@
 🌇|budynki|miasto|zachód słońca|zmierzch
 🌉|most nocą|most w nocy
 🎠|koń z karuzeli|konik
+🛝|park rozrywki|wesołe miasteczko|zabawa|zjeżdżalnia
 🎡|diabelski|karuzela|młyn|park rozrywki|wesołe miasteczko
 🎢|kolejka górska|park rozrywki|wesołe miasteczko
 💈|fryzjer|słup fryzjerski
@@ -936,11 +939,13 @@
 🛤️|kolej|pociąg|tor kolejowy|tory
 🛢️|beczka oleju|olej
 ⛽|benzyna|dystrybutor paliwa|stacja paliw
+🛞|koło pojazdu|kręcić|opona
 🚨|kogut policyjny|lampa obrotowa|policyjny|sygnalizator świetlny
 🚥|pozioma sygnalizacja uliczna|sygnalizacja świetlna
 🚦|pionowa sygnalizacja uliczna|sygnalizacja świetlna
 🛑|stop|znak drogowy|znak stopu
 🚧|bariera|prace drogowe|znak drogowy
+🛟|bezpieczeństwo|koło ratunkowe|pływak|ratunek
 ⛵|jacht|kurort|łódka|morze|pojazd|żaglówka
 🛶|kajak|łódź
 🚤|łódka|łódź|ścigacz wodny
@@ -1029,7 +1034,7 @@
 🌂|parasolka|pogoda|złożona|złożony parasol
 ⛱️|deszcz|parasol plażowy wbity w ziemię|pogoda|słońce
 ⚡|błyskawica|elektryczność|napięcie|niebezpieczeństwo|piorun|wysokie napięcie
-⛄|bałwan bez śniegu|pogoda|śnieg|zabawa na śniegu|zimno
+⛄|bałwan bez śniegu|bałwanek bez śniegu|pogoda|śnieg|zabawa na śniegu|zimno
 🔥|ogień|płomień
 💧|kropelka|kropla|łza|pot
 🌊|fala|fale|morze|ocean|tsunami
@@ -1089,17 +1094,18 @@
 🎯|dziesiątka|strzał w 10|trafienie|w dziesiątkę
 🪀|gra|jojo|zabawka
 🪁|latanie|latawiec|puszczanie
+🔫|broń palna|pistolet na wodę|rewolwer
 🎱|8|bila|kula
 🔮|fortuna|kryształowa|kula|przepowiadać|wróżka|wróżyć
 🪄|czarodziejka|czarodziejska różdżka|czary|magia|magik
-🧿|amulet nazar|błękitne oko|koralik|nazar|oko proroka|talizman
 🎮|gamepad|gra wideo|pad
-🕹️|dżojstik|gra komputerowa|gra wideo
+🕹️|dżojstik|gra komputerowa|gra wideo|joystick
 🎰|automat do gier|automat do gry|jednoręki bandyta|kasyno
 🎲|gra|kostka do gry|w kości
 🧩|element układanki|łączenie|łamigłówka|puzzle
 🧸|miś pluszowy|pluszak|pluszowa|wypchana|zabawka
 🪅|impreza|piniata|świętowanie
+🪩|dyskoteka|kula dyskotekowa|migotanie|przyjęcie|taniec
 🪆|laleczka|lalka|matrioszka|matrioszki|rosyjska
 ♟️|pionek|szachy
 🃏|dżoker|joker|karta do gry
@@ -1132,6 +1138,7 @@
 🩳|bermudy|bielizna|spodenki|strój do kąpieli|szorty
 👙|bikini|do pływania|strój kąpielowy|ubiór|ubranie
 👚|damska|ubiór|ubranie damskie
+🪭|gorąco|nieśmiałość|ochłoda|taniec|wachlarz|wachlować|wachlowanie
 👛|na monety|portmonetka|torebka
 👜|bagaż|damska torebka|torebka
 👝|damska|saszetka|torebka
@@ -1146,6 +1153,7 @@
 👡|but|damski|obuwie|sandał
 🩰|baletki|taniec
 👢|kozaczek|kozak damski
+🪮|afro|grzebień fryzjerski|rozczesywanie|włosy
 👑|korona|królowa
 👒|damski|kapelusz|nakrycie głowy|ze wstążką
 🎩|cylinder|kapelusz|męskie nakrycie głowy
@@ -1184,6 +1192,8 @@
 🪕|banjo|instrument|muzyka|strunowy
 🥁|bębenek|grać|muzyka
 🪘|bęben|konga|rytm
+🪇|grzechotać|instrument|marakasy|muzyka|perkusja|potrząsać
+🪈|flet prosty|gwizdać|instrument dęty drewniany|muzyka|piszczałka
 📱|komóra|komórka|smartfon|telefon komórkowy
 📲|dzwonić|komórka|odebrać|smartfon|strzałka|telefon komórkowy ze strzałką
 ☎️|aparat telefoniczny|telefon
@@ -1191,6 +1201,7 @@
 📟|pager
 📠|faks
 🔋|akumulatorek|bateria
+🪫|elektronika|niski poziom energii|słaba bateria
 🔌|elektryczna|podłączyć|wtyczka elektryczna
 💻|komputer|laptop|notebook|osobisty|wyświetlacz
 🖥️|biurkowy|ekran|komputer|stacjonarny|wyświetlacz
@@ -1296,7 +1307,7 @@
 ⛏️|górnicze|kilof|narzędzie
 🛠️|klucz|młot i klucz|narzędzia|warsztatowy
 🗡️|broń|nóż|sztylet
-🔫|broń palna|pistolet na wodę|rewolwer
+💣|bomba|żartobliwy
 🪃|aborygeni|australia|bumerang|wraca
 🏹|broń|łucznik|łuk i strzała|narzędzie|strzała|strzelec|zodiak
 🛡️|ochrona|osłona|tarcza
@@ -1322,7 +1333,9 @@
 🩸|kropla krwi|krwiodawstwo|medycyna|menstruacja|oddawanie krwi
 💊|kapsułka|lekarstwo|tabletka
 🩹|opatrunek|plaster
+🩼|ból|kij|kula|laska|niepełnosprawność|pomoc w chodzeniu
 🩺|lekarz|medycyna|serce|stetoskop
+🩻|kości|lekarz|medycyna|szkielet|zdjęcie rentgenowskie
 🚪|drzwi
 🛗|dostępność|winda
 🪞|lustro|odbicie|zwierciadło
@@ -1343,6 +1356,7 @@
 🧻|papier toaletowy|ręczniki papierowe|rolka papieru
 🪣|kubeł|wiaderko|wiadro
 🧼|kąpiel|kostka|mycie|mydelniczka|mydło|piana
+🫧|bąbelki|mycie|mydło|plusk|pod wodą
 🪥|czyszczenie|higiena|jama ustna|łazienka|szczoteczka do zębów|szczotka|zęby
 🧽|gąbka|mycie|porowata|wchłanianie
 🧯|gaśnica|ogień|ugasić|zgasić
@@ -1351,8 +1365,11 @@
 ⚰️|pogrzeb|śmierć|trumna
 🪦|cmentarz|grób|kamień nagrobny|nagrobek
 ⚱️|pogrzeb|śmierć|urna na prochy
+🧿|amulet nazar|błękitne oko|koralik|nazar|oko proroka|talizman
+🪬|amulet|chamsa|dłoń fatimy|dłoń z okiem|fatima|miriam|ochrona|ręka fatimy|ręka miriam|ręka z okiem
 🗿|moai|posąg|twarz|wyspa wielkanocna
 🪧|demonstracja|pikieta|protest|tabliczka|transparent|znak
+🪪|bezpieczeństwo|dane osobowe|dowód tożsamości|prawo jazdy
 🏧|atm|znak bankomatu
 🚮|kosz|nie śmiecić|śmiecić|znak kosza na śmieci
 🚰|kran|pić|pitna|woda
@@ -1399,6 +1416,7 @@
 ☮️|pacyfa|symbol pokoju
 🕎|kandelabr|menora|religia|świecznik
 🔯|gwiazda sześcioramienna z kropką|szczęście
+🪯|khanda|religia|sikh
 ♊|bliźnięta|znak zodiaku|zodiak
 ♋|rak|znak zodiaku|zodiak
 ♌|lew|znak zodiaku|zodiak
@@ -1428,9 +1446,11 @@
 🔅|jasność|mała|niska|przyciemnić|przycisk małej jasności
 🔆|duża|jasność|przycisk dużej jasności|rozjaśnić|wysoka
 📶|sieć komórkowa|siła sygnału|zasięg
+🛜|bezprzewodowy|internet|komputer|sieć
 📳|komórka|telefon komórkowy|tryb wibracji|wibracje
 📴|komórka|telefon komórkowy|wyłączony telefon komórkowy
 ⚧️|symbol transpłciowości|transpłciowość
+🟰|gruby znak równości|matematyka|równość
 ♾️|bezgraniczność|nieskończoność|wieczność
 ‼️|!!|krzyk|okrzyk|podwójny wykrzyknik|wykrzykniki
 💱|kantor|waluta|wymiana walut
@@ -1468,7 +1488,7 @@
 🆙|do góry|przycisk up!|znak up!
 🆚|kontra|przycisk vs|versus|vs
 🈁|ideogram|japoński przycisk tutaj|koko
-🈂️|ideogram|japoński|sa w języku katakana
+🈂️|ideogram|japoński przycisk usługa|opłata serwisowa|opłata za usługę|sa w katakanie|usługa|zapłata za usługę
 🈷️|ideogram księżyca|japoński|księżyc
 🈶|ideogram|istnienie|japoński przycisk płatne
 🈯|ideogram|japoński przycisk zarezerwowane|palec

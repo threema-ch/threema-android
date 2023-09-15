@@ -251,6 +251,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final int NEW_SYNCED_CONTACTS_NOTIFICATION_ID = 736;
 	public static final int WEB_RESUME_FAILED_NOTIFICATION_ID = 737;
 	public static final int IDENTITY_SYNC_NOTIFICATION_ID = 748;
+	public static final int VOICE_MSG_PLAYER_NOTIFICATION_ID = 749;
 	public static final int INCOMING_CALL_NOTIFICATION_ID = 800;
 	public static final int GROUP_RESPONSE_NOTIFICATION_ID = 801;
 	public static final int GROUP_REQUEST_NOTIFICATION_ID = 802;
@@ -348,6 +349,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 	@Override
 	public void onCreate() {
+		long startupTime = System.currentTimeMillis();
+
 		if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
 				.detectLeakedSqlLiteObjects()
@@ -623,6 +626,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				ThreemaPushService.tryStart(logger, getAppContext());
 			}
 		}
+
+		logger.info("Startup time {}s", (System.currentTimeMillis() - startupTime) / DateUtils.SECOND_IN_MILLIS);
 	}
 
 	private void applyDynamicColorsIfEnabled() {
