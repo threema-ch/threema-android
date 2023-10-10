@@ -354,7 +354,6 @@ public class ComposeMessageFragment extends Fragment implements
 	private MenuItem blockMenuItem = null;
 	private MenuItem deleteDistributionListItem = null;
 	private MenuItem callItem = null;
-	private MenuItem shortCutItem = null;
 	private MenuItem showOpenBallotWindowMenuItem = null;
 	private MenuItem showBallotsMenuItem = null;
 	private MenuItem showAllGroupRequestsMenuItem = null;
@@ -993,8 +992,6 @@ public class ComposeMessageFragment extends Fragment implements
 			getActivity().supportPostponeEnterTransition();
 		}
 		super.onCreate(savedInstanceState);
-
-//		setRetainInstance(true);
 
 		ListenerManager.contactTypingListeners.add(this.contactTypingListener);
 		ListenerManager.messageListeners.add(this.messageListener, true);
@@ -3004,7 +3001,8 @@ public class ComposeMessageFragment extends Fragment implements
 				selectedMessages.remove(messageModel);
 				convListView.setItemChecked(position, false);
 			} else {
-				if (convListView.getCheckedItemCount() < MAX_SELECTED_ITEMS) {
+				if (convListView.getCheckedItemCount() < MAX_SELECTED_ITEMS &&
+					isItemSelectable(composeMessageAdapter.getItemViewType(position), messageModel)) {
 					// add this to selection
 					selectedMessages.add(messageModel);
 					convListView.setItemChecked(position, true);
@@ -3138,14 +3136,14 @@ public class ComposeMessageFragment extends Fragment implements
 	@UiThread
 	private void onListItemLongClick(@NonNull View view, final int position) {
 		int viewType = composeMessageAdapter.getItemViewType(position);
-		if (viewType == ComposeMessageAdapter.TYPE_FIRST_UNREAD  ||
-			viewType == ComposeMessageAdapter.TYPE_DATE_SEPARATOR) {
-			// Do not allow to select these view types
+		AbstractMessageModel selectedMessage = composeMessageAdapter.getItem(position);
+
+		if (!isItemSelectable(viewType, selectedMessage)) {
 			return;
 		}
 
 		selectedMessages.clear();
-		selectedMessages.add(composeMessageAdapter.getItem(position));
+		selectedMessages.add(selectedMessage);
 
 		if (actionMode != null) {
 			convListView.clearChoices();
@@ -3209,6 +3207,31 @@ public class ComposeMessageFragment extends Fragment implements
 			});
 		}
 		ackjiPopup.show(view.findViewById(R.id.message_block), selectedMessages.get(0));
+	}
+
+	/**
+	 * Check whether the selected item in the conversation list can be selected
+	 * @param viewType View type of the item
+	 * @param selectedMessage Message Model of the item
+	 * @return true if item is selectable, false otherwise
+	 */
+	private boolean isItemSelectable(int viewType, @Nullable AbstractMessageModel selectedMessage) {
+		if (viewType == ComposeMessageAdapter.TYPE_FIRST_UNREAD  ||
+			viewType == ComposeMessageAdapter.TYPE_DATE_SEPARATOR) {
+			// Do not allow to select these view types
+			return false;
+		}
+
+		if (selectedMessage == null) {
+			return false;
+		}
+
+		if (viewType == ComposeMessageAdapter.TYPE_FILE_VIDEO_SEND && selectedMessage.getState() == MessageState.TRANSCODING) {
+			// transcoding messages cannot be selected
+			return false;
+		}
+
+		return true;
 	}
 
 	private boolean isMuted() {
@@ -3642,6 +3665,7 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	@Override
+	@SuppressLint("StaticFieldLeak")
 	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
 		inflater.inflate(R.menu.fragment_compose_message, menu);
 		this.setupToolbar();
@@ -3655,7 +3679,6 @@ public class ComposeMessageFragment extends Fragment implements
 	public void onPrepareOptionsMenu(Menu menu) {
 		this.callItem = menu.findItem(R.id.menu_threema_call);
 		this.deleteDistributionListItem = menu.findItem(R.id.menu_delete_distribution_list);
-		this.shortCutItem = menu.findItem(R.id.menu_shortcut);
 		this.mutedMenuItem = menu.findItem(R.id.menu_muted);
 		this.blockMenuItem = menu.findItem(R.id.menu_block_contact);
 		this.showOpenBallotWindowMenuItem = menu.findItem(R.id.menu_ballot_window_show);
@@ -3677,7 +3700,6 @@ public class ComposeMessageFragment extends Fragment implements
 		if (!TestUtil.required(
 				this.callItem,
 				this.deleteDistributionListItem,
-				this.shortCutItem,
 				this.mutedMenuItem,
 				this.blockMenuItem,
 				this.showOpenBallotWindowMenuItem,
@@ -3689,7 +3711,6 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		this.deleteDistributionListItem.setVisible(this.isDistributionListChat);
-		this.shortCutItem.setVisible(ShortcutManagerCompat.isRequestPinShortcutSupported(getAppContext()));
 		this.mutedMenuItem.setVisible(!this.isDistributionListChat && !(isGroupChat && groupService.isNotesGroup(groupModel)));
 		updateMuteMenu();
 
@@ -4027,7 +4048,7 @@ public class ComposeMessageFragment extends Fragment implements
 				selectorDialog.setTargetFragment(this, 0);
 				selectorDialog.show(getFragmentManager(), DIALOG_TAG_CHOOSE_SHORTCUT_TYPE);
 		} else {
-			ShortcutUtil.createPinnedShortcut(messageReceiver, TYPE_CHAT);
+			RuntimeUtil.runOnWorkerThread(() -> ShortcutUtil.createPinnedShortcut(messageReceiver, TYPE_CHAT));
 		}
 	}
 
@@ -4073,8 +4094,8 @@ public class ComposeMessageFragment extends Fragment implements
 	@Override
 	public void onClick(String tag, int which, Object data) {
 		if (DIALOG_TAG_CHOOSE_SHORTCUT_TYPE.equals(tag)) {
-			int shortcutType = which + 1;
-			ShortcutUtil.createPinnedShortcut(messageReceiver, shortcutType);
+			final int shortcutType = which + 1;
+			RuntimeUtil.runOnWorkerThread(() -> ShortcutUtil.createPinnedShortcut(messageReceiver, shortcutType));
 		}
 	}
 

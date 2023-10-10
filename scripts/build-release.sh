@@ -222,6 +222,10 @@ for variant in "${variant_array[@]}"; do
         log_minor "$(basename "$f")"
         cp "$f" "$targetdir/$variant/mapping/"
     done
+    for f in "$DIR"/../app/build/outputs/native-debug-symbols/"$variant_dir"Release/native-debug-symbols.zip; do
+        log_minor "$(basename "$f")"
+        cp "$f" "$targetdir/$variant/mapping/"
+    done
     for f in "$DIR"/../app/build/outputs/sdk-dependencies/"$variant_dir"Release/sdkDependencies.txt; do
         log_minor "$(basename "$f")"
         cp "$f" "$targetdir/$variant/"

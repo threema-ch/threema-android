@@ -1730,7 +1730,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 			if(headerImageView != null) {
 				headerImageView.clearColorFilter();
-				headerImageView.setImageBitmap(BitmapUtil.safeGetBitmapFromUri(this, Uri.fromFile(customAppIcon), ConfigUtils.getUsableWidth(getWindowManager()), false));
+				headerImageView.setImageBitmap(BitmapUtil.safeGetBitmapFromUri(this, Uri.fromFile(customAppIcon), ConfigUtils.getUsableWidth(getWindowManager()), false, false, false));
 			}
 		}
 	}

@@ -480,7 +480,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		View itemView = convertView;
 		final ComposeMessageHolder holder;
 		final AbstractMessageModel messageModel = values.get(position);
-		final MessageType messageType = messageModel.getType();
+		MessageType messageType = messageModel.getType();
 
 		@ItemType int itemType = this.getItemType(messageModel);
 		int itemLayout = this.getLayoutByItemType(itemType);
@@ -562,6 +562,10 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		}
 		else {
 			final boolean showAvatar = adjustMarginsForMessageGrouping(holder, itemView, itemType, messageModel);
+
+			if (messageType == null) {
+				messageType = MessageType.STATUS;
+			}
 
 			switch (messageType) {
 				case STATUS:

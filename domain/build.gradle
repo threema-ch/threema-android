@@ -33,7 +33,7 @@ def getGitVersion = { ->
 
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    api 'com.googlecode.libphonenumber:libphonenumber:8.13.7'
+    api 'com.googlecode.libphonenumber:libphonenumber:8.13.19'
     api 'androidx.annotation:annotation:1.6.0'
     api 'net.sourceforge.streamsupport:streamsupport-flow:1.7.4'
 

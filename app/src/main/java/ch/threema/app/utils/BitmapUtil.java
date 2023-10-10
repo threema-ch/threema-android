@@ -220,14 +220,6 @@ public class BitmapUtil {
 		return null;
 	}
 
-	static public Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize) {
-		return safeGetBitmapFromUri(context, imageUri, maxSize, true, true);
-	}
-
-	static public Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize, boolean replaceTransparency) {
-		return safeGetBitmapFromUri(context, imageUri, maxSize, replaceTransparency, false);
-	}
-
 	/**
 	 * Get a scaled bitmap from a JPG image file pointed at by imageUri keeping its aspect ratio
 	 * The image is scaled so that it fits into a bounding box of maxSize x maxSize unless the scaleToWidth parameter is set.
@@ -237,10 +229,11 @@ public class BitmapUtil {
 	 * @param maxSize max size of the image
 	 * @param replaceTransparency if set to true, transparency in the image will be replaced with Color.WHITE
 	 * @param scaleToWidth if set, the image will be scaled so its width does not exceed maxSize while the height may be larger
+	 * @param applyExifOrientation whether exif rotation or flip settings should be applied, if present
 	 * @return resulting bitmap or null in case of failure
 	 */
 	static public @Nullable
-	Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize, boolean replaceTransparency, boolean scaleToWidth) {
+	Bitmap safeGetBitmapFromUri(Context context, Uri imageUri, int maxSize, boolean replaceTransparency, boolean scaleToWidth, boolean applyExifOrientation) {
 		logger.debug("safeGetBitmapFromUri");
 		InputStream measure = null, data = null;
 		BitmapFactory.Options options;
@@ -301,6 +294,14 @@ public class BitmapUtil {
 						logger.debug("Image has alpha channel, replace transparency with white");
 						result = replaceTransparency(result, Color.WHITE);
 					}
+
+					if (applyExifOrientation) {
+						BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(context, imageUri);
+						if (result != null && (exifOrientation.getRotation() != 0f || exifOrientation.getFlip() != BitmapUtil.FLIP_NONE)) {
+							return BitmapUtil.rotateBitmap(result, exifOrientation.getRotation(), exifOrientation.getFlip());
+						}
+					}
+
 					return result;
 				} catch (StackOverflowError e) {
 					logger.error("Exception", e);
@@ -551,20 +552,6 @@ public class BitmapUtil {
 		} catch (Exception e) {
 			return background;
 		}
-	}
-
-	public static Bitmap cropToSquare(Bitmap bitmap) {
-		int width  = bitmap.getWidth();
-		int height = bitmap.getHeight();
-		int newWidth = (height > width) ? width : height;
-		int newHeight = (height > width)? height - ( height - width) : height;
-		int cropW = (width - height) / 2;
-		int cropH = (height - width) / 2;
-
-		cropW = (cropW < 0)? 0: cropW;
-		cropH = (cropH < 0)? 0: cropH;
-
-		return Bitmap.createBitmap(bitmap, cropW, cropH, newWidth, newHeight);
 	}
 
 	@Nullable

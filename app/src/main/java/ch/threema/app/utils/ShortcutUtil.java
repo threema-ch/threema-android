@@ -22,6 +22,7 @@
 package ch.threema.app.utils;
 
 import static androidx.core.content.pm.ShortcutManagerCompat.FLAG_MATCH_PINNED;
+import static ch.threema.app.ThreemaApplication.getAppContext;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -105,24 +106,29 @@ public final class ShortcutUtil {
 
 	@WorkerThread
 	public static void createPinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
-		ShortcutInfoCompat shortcutInfoCompat = getPinnedShortcutInfo(messageReceiver, type);
+		if (ShortcutManagerCompat.isRequestPinShortcutSupported(getAppContext())) {
+			ShortcutInfoCompat shortcutInfoCompat = getPinnedShortcutInfo(messageReceiver, type);
 
-		if (shortcutInfoCompat != null) {
-			if (updatePinnedShortcut(messageReceiver, type)) {
-				Toast.makeText(getContext(), R.string.add_shortcut_exists, Toast. LENGTH_LONG).show();
-			} else {
-				Intent pinnedShortcutCallbackIntent = new Intent(ThreemaApplication.INTENT_ACTION_SHORTCUT_ADDED);
-				PendingIntent callback = PendingIntent.getBroadcast(getContext(), REQUEST_CODE_SHORTCUT_ADDED,
-					pinnedShortcutCallbackIntent, IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
-
-				if (ShortcutManagerCompat.requestPinShortcut(getContext(), shortcutInfoCompat, callback.getIntentSender())) {
-					logger.info("Shortcut requested");
+			if (shortcutInfoCompat != null) {
+				if (updatePinnedShortcut(messageReceiver, type)) {
+					RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.add_shortcut_exists, Toast.LENGTH_LONG).show());
+					return;
 				} else {
-					Toast.makeText(getContext(), R.string.add_shortcut_error, Toast.LENGTH_SHORT).show();
-					logger.info("Failed to add shortcut");
+					Intent pinnedShortcutCallbackIntent = new Intent(ThreemaApplication.INTENT_ACTION_SHORTCUT_ADDED);
+					PendingIntent callback = PendingIntent.getBroadcast(getContext(), REQUEST_CODE_SHORTCUT_ADDED,
+						pinnedShortcutCallbackIntent, IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
+
+					if (ShortcutManagerCompat.requestPinShortcut(getContext(), shortcutInfoCompat, callback.getIntentSender())) {
+						logger.info("Shortcut requested");
+						return;
+					}
 				}
 			}
+			logger.info("Failed to add shortcut");
+		} else {
+			logger.info("Launcher does not support shortcuts");
 		}
+		RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.add_shortcut_error, Toast.LENGTH_SHORT).show());
 	}
 
 	@WorkerThread

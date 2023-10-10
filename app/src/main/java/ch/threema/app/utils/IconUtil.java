@@ -175,7 +175,7 @@ public class IconUtil {
 		if (thumbnailBitmap == null) {
 			// PNGs or GIFs may contain transparency
 			boolean mayContainTransparency = MimeUtil.MIME_TYPE_IMAGE_PNG.equals(mimeType) || MimeUtil.MIME_TYPE_IMAGE_GIF.equals(mimeType);
-			thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, uri, thumbSize, !mayContainTransparency, true);
+			thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, uri, thumbSize, !mayContainTransparency, true, false);
 		}
 
 		if (thumbnailBitmap == null && MimeUtil.isVideoFile(mimeType)) {
@@ -192,7 +192,7 @@ public class IconUtil {
 			}
 		}
 
-		if (thumbnailBitmap != null && !ignoreExifRotate && (exifOrientation.getRotation() != 0f || exifOrientation.getFlip() != 0f)) {
+		if (thumbnailBitmap != null && !ignoreExifRotate && (exifOrientation.getRotation() != 0f || exifOrientation.getFlip() != BitmapUtil.FLIP_NONE)) {
 			return BitmapUtil.rotateBitmap(thumbnailBitmap, exifOrientation.getRotation(), exifOrientation.getFlip());
 		}
 

@@ -85,6 +85,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
@@ -106,6 +107,7 @@ import com.datatheorem.android.trustkit.TrustKit;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.mapbox.mapboxsdk.Mapbox;
 
 import org.slf4j.Logger;
 
@@ -155,6 +157,7 @@ public class ConfigUtils {
 	private static int emojiStyle = 0;
 	private static Boolean isTablet = null, isBiggerSingleEmojis = null, hasMapLibreSupport = null;
 	private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1, currentDayNightMode;
+	private static Mapbox mapbox = null;
 
 	private static final float[] NEGATIVE_MATRIX = {
 		-1.0f,     0,     0,    0, 255, // red
@@ -297,16 +300,6 @@ public class ConfigUtils {
 			ConfigUtils.isOnPremBuild() ?
 				HttpsURLConnection.getDefaultSSLSocketFactory() :
 				TrustKit.getInstance().getSSLSocketFactory(host));
-	}
-
-	public static boolean hasNoMapLibreSupport() {
-		/* Some broken Samsung devices crash on MapLibre initialization due to a compiler bug, see https://issuetracker.google.com/issues/37013676 */
-		/* Device that do not support OCSP stapling cannot use our maps and POI servers */
-		if (hasMapLibreSupport == null) {
-			hasMapLibreSupport =
-				Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1 && Build.MANUFACTURER.equalsIgnoreCase("marshall");
-		}
-		return hasMapLibreSupport;
 	}
 
 	public static boolean isXiaomiDevice() {
@@ -1517,5 +1510,15 @@ public class ConfigUtils {
 			params.bottomMargin = insets.getSystemWindowInsetBottom() + context.getResources().getDimensionPixelSize(R.dimen.exo_styled_progress_margin_bottom);
 			return insets;
 		});
+	}
+
+	@UiThread
+	@NonNull
+	public static Mapbox getMapLibreInstance() {
+		if (mapbox == null) {
+			mapbox = Mapbox.getInstance(ThreemaApplication.getAppContext());
+			logger.info("MapLibre enabled");
+		}
+		return mapbox;
 	}
 }

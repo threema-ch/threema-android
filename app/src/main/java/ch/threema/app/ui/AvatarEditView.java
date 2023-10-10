@@ -576,7 +576,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 				case REQUEST_CODE_CROP:
 					Bitmap bitmap = null;
 					if (avatarData.getCroppedFile() != null && avatarData.getCroppedFile().exists() && avatarData.getCroppedFile().length() > 0) {
-						bitmap = BitmapUtil.safeGetBitmapFromUri(getActivity(), Uri.fromFile(avatarData.getCroppedFile()), CONTACT_AVATAR_HEIGHT_PX);
+						bitmap = BitmapUtil.safeGetBitmapFromUri(getActivity(), Uri.fromFile(avatarData.getCroppedFile()), CONTACT_AVATAR_HEIGHT_PX, true, true, false);
 						if (bitmap != null) {
 							if (listenerRef.get() != null) {
 								listenerRef.get().onAvatarSet(avatarData.getCroppedFile());
@@ -775,7 +775,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	public void setAvatarFile(File avatarFile) {
 		if (avatarFile != null && avatarFile.exists() && avatarFile.length() > 0) {
 			this.avatarData.setCroppedFile(avatarFile);
-			Bitmap bitmap = BitmapUtil.safeGetBitmapFromUri(getActivity(), Uri.fromFile(avatarData.getCroppedFile()), CONTACT_AVATAR_HEIGHT_PX);
+			Bitmap bitmap = BitmapUtil.safeGetBitmapFromUri(getActivity(), Uri.fromFile(avatarData.getCroppedFile()), CONTACT_AVATAR_HEIGHT_PX, true, true, false);
 			if (bitmap != null) {
 				setAvatarBitmap(bitmap);
 			}

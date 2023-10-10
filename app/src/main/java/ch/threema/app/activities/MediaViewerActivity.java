@@ -131,6 +131,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 	private View captionContainer;
 	private TextView caption;
 	private final Handler loadingFragmentHandler = new Handler();
+	private MenuItem saveMenuItem, shareMenuItem, viewMenuItem;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -300,8 +301,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		this.pager = findViewById(R.id.pager);
 		this.pager.setOnPageChangeListener(new LockableViewPager.OnPageChangeListener() {
 			@Override
-			public void onPageScrolled(int i, float v, int i2) {
-			}
+			public void onPageScrolled(int i, float v, int i2) {}
 
 			@Override
 			public void onPageSelected(int i) {
@@ -309,8 +309,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 			}
 
 			@Override
-			public void onPageScrollStateChanged(int i) {
-			}
+			public void onPageScrollStateChanged(int i) {}
 		});
 
 		this.attachAdapter();
@@ -343,6 +342,16 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 			this.caption.setText("");
 		}
 		this.captionContainer.setVisibility(TestUtil.empty(captionText) ? View.GONE : View.VISIBLE);
+	}
+
+	private void updateMenus() {
+		boolean visibility = currentMediaFile != null  && !AppRestrictionUtil.isShareMediaDisabled(ThreemaApplication.getAppContext());
+
+		if (saveMenuItem != null) {
+			saveMenuItem.setVisible(visibility);
+			shareMenuItem.setVisible(visibility);
+			viewMenuItem.setVisible(visibility);
+		}
 	}
 
 	private void hideCurrentFragment() {
@@ -396,11 +405,9 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 			menuBuilder.setOptionalIconsVisible(true);
 		} catch (Exception ignored) {}
 
-		if (AppRestrictionUtil.isShareMediaDisabled(this)) {
-			menu.findItem(R.id.menu_save).setVisible(false);
-			menu.findItem(R.id.menu_share).setVisible(false);
-			menu.findItem(R.id.menu_view).setVisible(false);
-		}
+		saveMenuItem = menu.findItem(R.id.menu_save);
+		shareMenuItem = menu.findItem(R.id.menu_share);
+		viewMenuItem = menu.findItem(R.id.menu_view);
 
 		if (getToolbar().getNavigationIcon() != null) {
 			getToolbar().getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
@@ -735,12 +742,16 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 					@Override
 					public void decrypted(boolean success) {
-//						Toast.makeText(a.getApplicationContext(), "Decrypted: " + (success ? "success" : "failed"), Toast.LENGTH_LONG).show();
+						if (!success) {
+							a.currentMediaFile = null;
+							a.updateMenus();
+						}
 					}
 
 					@Override
 					public void loaded(File file) {
 						a.currentMediaFile = file;
+						a.updateMenus();
 					}
 
 					@Override

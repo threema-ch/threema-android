@@ -40,12 +40,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
@@ -130,9 +132,15 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 		// Create media item
 		final @MediaItem.MediaType int mediaType;
 		final @FileData.RenderingType int renderingType;
+		@BitmapUtil.FlipType int exifFlip = 0;
+		int exifRotation = 0;
+
 		if (!sendAsFile && FileMessageCreateHandler.IMAGE_MIME_TYPES.contains(mimeType)) {
 			mediaType = MediaItem.TYPE_IMAGE;
 			renderingType = FileData.RENDERING_MEDIA;
+			BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(ThreemaApplication.getAppContext(), Uri.fromFile(file));
+			exifRotation = (int) exifOrientation.getRotation();
+			exifFlip = exifOrientation.getFlip();
 		} else if (!sendAsFile && FileMessageCreateHandler.AUDIO_MIME_TYPES.contains(mimeType)) {
 			mediaType = MediaItem.TYPE_VOICEMESSAGE;
 			renderingType = FileData.RENDERING_DEFAULT;
@@ -148,6 +156,8 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 		mediaItem.setCaption(caption);
 		mediaItem.setMimeType(mimeType);
 		mediaItem.setRenderingType(renderingType);
+		mediaItem.setExifFlip(exifFlip);
+		mediaItem.setExifRotation(exifRotation);
 
 		// Send media, get message model
 		final AbstractMessageModel model = messageService.sendMedia(Collections.singletonList(mediaItem), receivers, null);

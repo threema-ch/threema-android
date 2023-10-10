@@ -127,6 +127,8 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 
 		ConfigUtils.configureSystemBars(this);
 
+		ConfigUtils.getMapLibreInstance();
+
 		setContentView(R.layout.activity_map);
 
 		ConfigUtils.configureTransparentStatusBar(this);

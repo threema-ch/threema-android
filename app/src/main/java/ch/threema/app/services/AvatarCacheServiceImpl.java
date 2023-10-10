@@ -206,11 +206,11 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 	@AnyThread
 	private <M extends ReceiverModel> void loadBitmap(@NonNull AvatarConfig<M> config, @Nullable Drawable placeholder, @NonNull ImageView view) {
-		RequestBuilder<Bitmap> requestBuilder = Glide.with(context).asBitmap().load(config).placeholder(placeholder).transition(BitmapTransitionOptions.withCrossFade(factory)).diskCacheStrategy(DiskCacheStrategy.NONE).signature(new ObjectKey(config.state));
-		if (config.options.disableCache) {
-			requestBuilder = requestBuilder.skipMemoryCache(true);
-		}
 		try {
+			RequestBuilder<Bitmap> requestBuilder = Glide.with(context).asBitmap().load(config).placeholder(placeholder).transition(BitmapTransitionOptions.withCrossFade(factory)).diskCacheStrategy(DiskCacheStrategy.NONE).signature(new ObjectKey(config.state));
+			if (config.options.disableCache) {
+				requestBuilder = requestBuilder.skipMemoryCache(true);
+			}
 			requestBuilder.into(view);
 		} catch (Exception e) {
 			logger.debug("Glide failure", e);

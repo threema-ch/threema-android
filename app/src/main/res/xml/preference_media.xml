@@ -20,7 +20,7 @@
 			android:title="@string/prefs_save_media"/>
 
 		<DropDownPreference
-			android:defaultValue="1"
+			android:defaultValue="2"
 			android:entries="@array/list_image_size"
 			android:entryValues="@array/list_image_size_values"
 			android:icon="@drawable/ic_picture_size_outline"

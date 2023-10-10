@@ -208,6 +208,8 @@ public class LocationPickerActivity extends ThreemaActivity implements
 
 		ConfigUtils.configureSystemBars(this);
 
+		ConfigUtils.getMapLibreInstance();
+
 		setContentView(R.layout.activity_location_picker);
 
 		ConfigUtils.configureTransparentStatusBar(this);

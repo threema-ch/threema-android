@@ -1198,6 +1198,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			outputStream.close();
 			return compressedBytes;
 		} catch (Exception e) {
+			logger.error("Error compressing", e);
 			return null;
 		}
 	}
@@ -1216,6 +1217,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			outputStream.close();
 			return uncompressedBytes;
 		} catch (Exception e) {
+			logger.error("Error uncompressing", e);
 			return null;
 		}
 	}

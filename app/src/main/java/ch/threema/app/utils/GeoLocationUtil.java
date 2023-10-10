@@ -248,9 +248,6 @@ public class GeoLocationUtil {
 	 * @return true if the device supports map libre and the location can be shown, false otherwise
 	 */
 	public static boolean viewLocation(@NonNull Context context, @NonNull LocationDataModel locationData) {
-		if (ConfigUtils.hasNoMapLibreSupport()) {
-			return false;
-		}
 		Intent intent = new Intent(context, MapActivity.class);
 		IntentDataUtil.append(new LatLng(locationData.getLatitude(),
 				locationData.getLongitude()),

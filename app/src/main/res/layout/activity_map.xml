@@ -8,7 +8,6 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	xmlns:mapbox="http://schemas.android.com/apk/res-auto"
 	android:id="@+id/coordinator"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
@@ -19,14 +18,14 @@
 		android:id="@+id/map"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		mapbox:mapbox_cameraZoom="4"
-		mapbox:mapbox_uiLogo="false"
-		mapbox:mapbox_uiAttribution="false"
-		mapbox:mapbox_uiCompass="true"
-		mapbox:mapbox_uiCompassFadeFacingNorth="false"
-		mapbox:mapbox_uiCompassGravity="top|right"
-		mapbox:mapbox_uiCompassMarginTop="@dimen/map_compass_margin_top"
-		mapbox:mapbox_uiCompassMarginRight="@dimen/map_compass_margin_right"/>
+		app:maplibre_cameraZoom="4"
+		app:maplibre_uiLogo="false"
+		app:maplibre_uiAttribution="false"
+		app:maplibre_uiCompass="true"
+		app:maplibre_uiCompassFadeFacingNorth="false"
+		app:maplibre_uiCompassGravity="top|right"
+		app:maplibre_uiCompassMarginTop="@dimen/map_compass_margin_top"
+		app:maplibre_uiCompassMarginRight="@dimen/map_compass_margin_right"/>
 
 	<RelativeLayout
 		android:id="@+id/map_container"

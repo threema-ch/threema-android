@@ -18,15 +18,11 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
--dontpreverify
-#-flattenpackagehierarchy
--repackageclasses
--optimizationpasses 5
--dontusemixedcaseclassnames
--dontskipnonpubliclibraryclasses
--dontskipnonpubliclibraryclassmembers
--allowaccessmodification
+-dontoptimize
+-dontobfuscate
 -verbose
+
+-keepattributes EnclosingMethod,InnerClasses,Exceptions,*Annotation*,SourceFile,LineNumberTable
 
 -keeppackagenames ch.threema.**
 -keeppackagenames org.saltyrtc.**
@@ -122,12 +118,10 @@ public static <fields>;
 # "Warning: org.webrtc.SoftwareVideoDecoderFactory: can't find referenced class org.webrtc.LibvpxVp8Decoder"
 -dontwarn org.webrtc.**
 
--keepattributes EnclosingMethod
--keepattributes InnerClasses
+
 
 # hms requirements
 -ignorewarnings
--keepattributes Exceptions
 -keep class com.huawei.updatesdk.**{*;}
 -keep class com.huawei.hms.**{*;}
 -keep class com.huawei.android.sdk.drm.**{*;}
@@ -142,7 +136,6 @@ public static <fields>;
 
 # remaining options from proguard-android-optimize.txt
 -renamesourcefileattribute SourceFile
--keepattributes *Annotation*,SourceFile,LineNumberTable
 -keep public class com.google.android.vending.licensing.ILicensingService
 
 # keep setters in Views so that animations can still work.
@@ -168,7 +161,6 @@ public static <fields>;
 -dontwarn org.slf4j.impl.StaticMDCBinder
 -dontwarn org.slf4j.impl.StaticMarkerBinder
 -dontwarn org.slf4j.impl.StaticLoggerBinder
--keepattributes *Annotation*
 
 # WebRTC
 -keep class org.webrtc.** { *; }
@@ -233,3 +225,8 @@ public static <fields>;
 }
 
 -keep class java8.util.ImmutableCollections { *; }
+
+# https://stackoverflow.com/questions/73748946/proguard-r8-warnings
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**

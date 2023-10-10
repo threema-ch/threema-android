@@ -38,8 +38,8 @@
 
 					<com.mapbox.mapboxsdk.maps.MapView
 						android:id="@+id/map"
-						app:mapbox_cameraZoom="16"
-						app:mapbox_uiCompass="false"
+						app:maplibre_cameraZoom="16"
+						app:maplibre_uiCompass="false"
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"/>
 

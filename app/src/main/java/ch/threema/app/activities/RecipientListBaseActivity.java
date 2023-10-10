@@ -980,14 +980,18 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 				if (i < originalMessageModels.size() - 1) {
 					forwardSingleMessage(messageReceivers, i+1, intent, keepOriginalCaptions);
 				} else {
-					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, true);
+					RuntimeUtil.runOnUiThread(() -> DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, true));
 					startComposeActivity(intent);
 				}
 			}
 
 			@Override
 			public void error(String message) {
-				RuntimeUtil.runOnUiThread(() -> SingleToast.getInstance().showLongText(getString(R.string.an_error_occurred_during_send)));
+				RuntimeUtil.runOnUiThread(() -> {
+					SingleToast.getInstance().showLongText(getString(R.string.an_error_occurred_during_send));
+					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, true);
+				});
+				finish();
 			}
 		});
 	}

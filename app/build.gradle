@@ -17,7 +17,7 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "5.1.2"
+def app_version = "5.1.3"
 def beta_suffix = "" // with leading dash
 
 /**
@@ -96,7 +96,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 912
+        versionCode 919
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -496,6 +496,9 @@ android {
             multiDexEnabled true
             multiDexKeepProguard file('multidex-keep.pro')
             testCoverageEnabled false
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
 
             if (keystores['debug'] != null) {
                 signingConfig signingConfigs.debug
@@ -510,6 +513,9 @@ android {
             multiDexEnabled true
             multiDexKeepProguard file('multidex-keep.pro')
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-project.txt'
+            ndk {
+                debugSymbolLevel 'FULL' // 'SYMBOL_TABLE'
+            }
 
             if (keystores['release'] != null) {
                 productFlavors.store_google.signingConfig signingConfigs.release
@@ -560,6 +566,8 @@ android {
         jniLibs {
             // fix https://stackoverflow.com/questions/42739916/aarch64-linux-android-strip-file-missing
             keepDebugSymbols += ['*/mips/*.so', '*/mips64/*.so', '*/armeabi/*.so']
+            // replacement for extractNativeLibs in AndroidManifest
+            useLegacyPackaging = true
         }
         resources {
             excludes += ['META-INF/DEPENDENCIES.txt', 'META-INF/LICENSE.txt', 'META-INF/NOTICE.txt', 'META-INF/NOTICE', 'META-INF/LICENSE', 'META-INF/DEPENDENCIES', 'META-INF/notice.txt', 'META-INF/license.txt', 'META-INF/dependencies.txt', 'META-INF/LGPL2.1', '**/*.proto']
@@ -680,7 +688,7 @@ dependencies {
 
     implementation project(':domain')
 
-    implementation 'net.zetetic:sqlcipher-android:4.5.4@aar'
+    implementation 'net.zetetic:sqlcipher-android:4.5.5@aar'
 
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
     implementation 'net.sf.opencsv:opencsv:2.3'
@@ -690,15 +698,15 @@ dependencies {
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation "org.slf4j:slf4j-api:$slf4j_version"
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.25'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.28'
     implementation 'com.github.CanHub:Android-Image-Cropper:4.3.0'
     implementation 'com.datatheorem.android.trustkit:trustkit:1.1.5'
     implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
     implementation 'com.googlecode.ez-vcard:ez-vcard:0.11.3'
 
     // AndroidX / Jetpack support libraries
-    implementation "androidx.preference:preference-ktx:1.2.0"
-    implementation 'androidx.recyclerview:recyclerview:1.3.0'
+    implementation "androidx.preference:preference-ktx:1.2.1"
+    implementation 'androidx.recyclerview:recyclerview:1.3.1'
     implementation 'androidx.palette:palette-ktx:1.0.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -718,22 +726,22 @@ dependencies {
     implementation 'androidx.media3:media3-ui:1.1.1'
     implementation "androidx.media3:media3-session:1.1.1"
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-service:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-process:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-service:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-process:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.6.2"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.paging:paging-runtime-ktx:3.1.1"
     implementation "androidx.sharetarget:sharetarget:1.2.0"
-    implementation 'androidx.room:room-runtime:2.5.1'
-    kapt 'androidx.room:room-compiler:2.5.1'
+    implementation 'androidx.room:room-runtime:2.5.2'
+    kapt 'androidx.room:room-compiler:2.5.2'
 
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on API < 24
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.7' // make sure to update this in domain's build.gradle as well
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.19' // make sure to update this in domain's build.gradle as well
 
     // webclient dependencies
     implementation 'org.msgpack:msgpack-core:0.8.24!!'
@@ -748,16 +756,16 @@ dependencies {
     }
 
     implementation 'org.saltyrtc:chunked-dc:1.0.1'
-    implementation 'ch.threema:webrtc-android:110.0.0'
+    implementation 'ch.threema:webrtc-android:114.0.0'
     implementation('org.saltyrtc:saltyrtc-task-webrtc:0.18.1') {
         exclude module: 'saltyrtc-client'
     }
 
     // Glide components
     // Glide 4.15+ does not work on API 21
-    implementation 'com.github.bumptech.glide:glide:4.14.2'
-    kapt 'com.github.bumptech.glide:compiler:4.14.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    kapt 'com.github.bumptech.glide:compiler:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
     // kotlin
     implementation 'androidx.core:core-ktx:1.10.1'
@@ -815,7 +823,7 @@ dependencies {
         'com.google.android.gms:play-services-base:18.1.0': [],
 
         // Firebase push
-        'com.google.firebase:firebase-messaging:23.1.1': [
+        'com.google.firebase:firebase-messaging:23.1.2': [
             [group: 'com.google.firebase', module: 'firebase-core'],
             [group: 'com.google.firebase', module: 'firebase-analytics'],
             [group: 'com.google.firebase', module: 'firebase-measurement-connector'],
@@ -845,7 +853,7 @@ dependencies {
     redImplementation(name: 'libgsaverification-client', ext: 'aar')
 
     // Maplibre (may have transitive dependencies on Google location services)
-    def maplibreDependency = 'org.maplibre.gl:android-sdk:9.6.0'
+    def maplibreDependency = 'org.maplibre.gl:android-sdk:10.2.0'
     noneImplementation maplibreDependency
     store_googleImplementation maplibreDependency
     store_google_workImplementation maplibreDependency

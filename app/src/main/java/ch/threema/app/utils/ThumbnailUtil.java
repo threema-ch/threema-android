@@ -40,6 +40,15 @@ public class ThumbnailUtil {
 
 	private ThumbnailUtil() {}
 
+	/**
+	 * Generate a thumbnail for a received file.
+	 * Note that the provided file is supposed to be a temporary file so we cannot use MediaStore or DocumentsContract
+	 * to retrieve a thumbnail. We have to generate our own.
+	 * @param context A Context
+	 * @param mimeType Mime Type of the file
+	 * @param file File to generate a thumbnail for
+	 * @return A byte array containing either a JPG or PNG encoded bitmap
+	 */
 	public static @Nullable byte[] generateThumbnailData(
 		@NonNull Context context,
 		@NonNull String mimeType,
@@ -72,7 +81,7 @@ public class ThumbnailUtil {
 
 		switch (MimeUtil.getMediaTypeFromMimeType(mimeType)) {
 			case MediaItem.TYPE_IMAGE:
-				return BitmapUtil.safeGetBitmapFromUri(context, uri, MessageServiceImpl.THUMBNAIL_SIZE_PX, false, true);
+				return BitmapUtil.safeGetBitmapFromUri(context, uri, MessageServiceImpl.THUMBNAIL_SIZE_PX, false, true, true);
 			case MediaItem.TYPE_GIF:
 				return IconUtil.getThumbnailFromUri(context, uri, MessageServiceImpl.THUMBNAIL_SIZE_PX, mimeType, true);
 			case MediaItem.TYPE_VIDEO:

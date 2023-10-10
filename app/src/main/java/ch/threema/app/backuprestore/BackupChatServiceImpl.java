@@ -127,7 +127,8 @@ public class BackupChatServiceImpl implements BackupChatService {
 						saveMedia = fileDataModel.isDownloaded();
 						filename = TestUtil.empty(fileDataModel.getFileName()) ?
 							FileUtil.getDefaultFilename(fileDataModel.getMimeType()) :
-							m.getApiMessageId() + "-" + fileDataModel.getFileName();
+							(m.getApiMessageId() != null ? m.getApiMessageId() : m.getId()) +
+							"-" + fileDataModel.getFileName();
 						extension = "";
 						break;
 					case LOCATION:

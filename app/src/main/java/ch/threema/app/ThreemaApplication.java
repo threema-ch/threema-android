@@ -1105,8 +1105,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				}
 			}, "scheduleSync").start();
 
-			initMapLibre();
-
 			// setup locale override
 			ConfigUtils.setLocaleOverride(getAppContext(), serviceManager.getPreferenceService());
 		} catch (MasterKeyLockedException | SQLiteException e) {
@@ -1128,15 +1126,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			ConfigUtils.getBuildNumber(getAppContext()),
 			commitHash
 		);
-	}
-
-	private static void initMapLibre() {
-		if (ConfigUtils.hasNoMapLibreSupport()) {
-			logger.debug("*** MapLibre disabled due to faulty firmware");
-		} else {
-			Mapbox.getInstance(getAppContext());
-			logger.debug("*** MapLibre enabled");
-		}
 	}
 
 	private static long getSchedulePeriodMs(PreferenceStore preferenceStore, int key) {

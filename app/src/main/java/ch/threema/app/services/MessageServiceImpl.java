@@ -3998,7 +3998,7 @@ public class MessageServiceImpl implements MessageService {
 				Bitmap bitmap = null;
 				try {
 					boolean hasNoTransparency = MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mediaItem.getMimeType());
-					bitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), maxSize, false);
+					bitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), maxSize, false, false, false);
 					if (bitmap != null) {
 						bitmap = adjustBitmapOrientation(bitmap, mediaItem, metaData);
 
@@ -4151,8 +4151,7 @@ public class MessageServiceImpl implements MessageService {
 				} else {
 					fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_PNG);
 				}
-				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, false, true);
-
+				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, false, true, false);
 				if (thumbnailBitmap != null) {
 					thumbnailBitmap = BitmapUtil.rotateBitmap(BitmapUtil.rotateBitmap(
 						thumbnailBitmap,
@@ -4163,7 +4162,7 @@ public class MessageServiceImpl implements MessageService {
 			case MediaItem.TYPE_IMAGE_CAM:
 				// camera images are always sent as JPGs
 				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
-				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, false, true);
+				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, false, true, false);
 				if (thumbnailBitmap != null) {
 					thumbnailBitmap = BitmapUtil.rotateBitmap(BitmapUtil.rotateBitmap(
 						thumbnailBitmap,

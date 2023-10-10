@@ -4,7 +4,7 @@
 
 	<item
 		android:id="@+id/menu_gallery"
-		app:showAsAction="ifRoom"
+		app:showAsAction="always"
 		android:title="@string/media_gallery"
 		android:icon="@drawable/ic_outline_apps"
 		app:iconTint="@android:color/white"
@@ -12,8 +12,9 @@
 
 	<item
 		android:id="@+id/menu_save"
-		app:showAsAction="ifRoom"
+		app:showAsAction="never"
 		android:title="@string/save_message_action"
+		android:visible="false"
 		android:icon="@drawable/ic_save_outline"
 		app:iconTint="@android:color/white"
 		android:orderInCategory="10" />
@@ -22,6 +23,7 @@
 		android:id="@+id/menu_view"
 		app:showAsAction="never"
 		android:title="@string/view_in_gallery"
+		android:visible="false"
 		android:icon="@drawable/ic_collections"
 		app:iconTint="@android:color/white"
 		android:orderInCategory="30" />
@@ -29,6 +31,7 @@
 	<item
 		android:id="@+id/menu_share"
 		app:showAsAction="always"
+		android:visible="false"
 		android:icon="@drawable/ic_share_outline"
 		app:iconTint="@android:color/white"
 		android:title="@string/share_image"

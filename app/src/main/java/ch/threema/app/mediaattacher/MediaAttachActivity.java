@@ -386,11 +386,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		super.onClick(v);
 		final int id = v.getId();
 		if (id == R.id.attach_location) {
-			if (!ConfigUtils.hasNoMapLibreSupport()) {
-				launchPlacePicker();
-			} else {
-				Toast.makeText(this, "Feature not available due to firmware error", Toast.LENGTH_LONG).show();
-			}
+			launchPlacePicker();
 		} else if (id == R.id.attach_file) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ConfigUtils.requestStoragePermissions(this, null, PERMISSION_REQUEST_ATTACH_FILE)) {
 				attachFile();
