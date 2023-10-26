@@ -35,6 +35,7 @@ import android.widget.ListView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.ActionMode;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.slf4j.Logger;
@@ -261,10 +262,13 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 			});
 
 			if (this.ballots != null) {
-				this.listAdapter = new BallotOverviewListAdapter(this,
-						this.ballots,
-						this.ballotService,
-						this.contactService);
+				this.listAdapter = new BallotOverviewListAdapter(
+					this,
+					this.ballots,
+					this.ballotService,
+					this.contactService,
+					Glide.with(this)
+				);
 
 				listView.setAdapter(this.listAdapter);
 			}

@@ -28,11 +28,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.bumptech.glide.RequestManager;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ballot.BallotService;
@@ -54,14 +56,22 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
 	private final List<BallotModel> values;
 	private final BallotService ballotService;
 	private final ContactService contactService;
+	private final @NonNull RequestManager requestManager;
 
-	public BallotOverviewListAdapter(Context context, List<BallotModel> values, BallotService ballotService, ContactService contactService) {
+	public BallotOverviewListAdapter(
+		Context context,
+		List<BallotModel> values,
+		BallotService ballotService,
+		ContactService contactService,
+		@NonNull RequestManager requestManager
+	) {
 		super(context, R.layout.item_ballot_overview, values);
 
 		this.context = context;
 		this.values = values;
 		this.ballotService = ballotService;
 		this.contactService = contactService;
+		this.requestManager = requestManager;
 	}
 
 	private static class BallotOverviewItemHolder extends AvatarListItemHolder {
@@ -98,7 +108,7 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
 
 		if(ballotModel != null) {
 			final ContactModel contactModel = this.contactService.getByIdentity(ballotModel.getCreatorIdentity());
-			AvatarListItemUtil.loadAvatar(contactModel, contactService, holder);
+			AvatarListItemUtil.loadAvatar(contactModel, contactService, holder, requestManager);
 
 			if(holder.name != null) {
 				holder.name.setText(ballotModel.getName());

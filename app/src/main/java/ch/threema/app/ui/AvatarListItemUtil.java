@@ -24,6 +24,9 @@ package ch.threema.app.ui;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.RequestManager;
+
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.glide.AvatarOptions;
@@ -46,7 +49,9 @@ public class AvatarListItemUtil {
 		final ContactService contactService,
 		final GroupService groupService,
 		final DistributionListService distributionListService,
-		AvatarListItemHolder holder) {
+		AvatarListItemHolder holder,
+		@NonNull RequestManager requestManager
+	) {
 
 		// load avatars asynchronously
 		ImageView avatarView = holder.avatarView.getAvatarView();
@@ -55,19 +60,34 @@ public class AvatarListItemUtil {
 				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
 					ThreemaApplication.getAppContext().getString(R.string.mime_contact),
 					NameUtil.getDisplayNameOrNickname(conversationModel.getContact(), true)));
-			contactService.loadAvatarIntoImage(conversationModel.getContact(), avatarView, AvatarOptions.PRESET_RESPECT_SETTINGS);
+			contactService.loadAvatarIntoImage(
+				conversationModel.getContact(),
+				avatarView,
+				AvatarOptions.PRESET_RESPECT_SETTINGS,
+				requestManager
+			);
 		} else if (conversationModel.isGroupConversation()) {
 			holder.avatarView.setContentDescription(
 				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
 					ThreemaApplication.getAppContext().getString(R.string.group),
 					NameUtil.getDisplayName(conversationModel.getGroup(), groupService)));
-			groupService.loadAvatarIntoImage(conversationModel.getGroup(), avatarView, AvatarOptions.PRESET_DEFAULT_FALLBACK);
+			groupService.loadAvatarIntoImage(
+				conversationModel.getGroup(),
+				avatarView,
+				AvatarOptions.PRESET_DEFAULT_FALLBACK,
+				requestManager
+			);
 		} else if (conversationModel.isDistributionListConversation()) {
 			holder.avatarView.setContentDescription(
 				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
 					ThreemaApplication.getAppContext().getString(R.string.distribution_list),
 					NameUtil.getDisplayName(conversationModel.getDistributionList(), distributionListService)));
-			distributionListService.loadAvatarIntoImage(conversationModel.getDistributionList(), avatarView, AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE);
+			distributionListService.loadAvatarIntoImage(
+				conversationModel.getDistributionList(),
+				avatarView,
+				AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE,
+				requestManager
+			);
 		}
 
 		// Set work badge
@@ -78,7 +98,8 @@ public class AvatarListItemUtil {
 	public static <M extends ReceiverModel> void loadAvatar(
 		final M model,
 		final AvatarService<M> avatarService,
-		AvatarListItemHolder holder
+		AvatarListItemHolder holder,
+		@NonNull RequestManager requestManager
 	) {
 
 		//do nothing
@@ -101,7 +122,12 @@ public class AvatarListItemUtil {
 			options = AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE;
 		}
 
-		avatarService.loadAvatarIntoImage(model, holder.avatarView.getAvatarView(), options);
+		avatarService.loadAvatarIntoImage(
+			model,
+			holder.avatarView.getAvatarView(),
+			options,
+			requestManager
+		);
 
 		holder.avatarView.setVisibility(View.VISIBLE);
 	}

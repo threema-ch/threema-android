@@ -55,17 +55,20 @@ import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.app.voip.groupcall.GroupCallObserver
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.ConversationModel.NO_RESOURCE
+import com.bumptech.glide.RequestManager
 import com.google.android.material.button.MaterialButton
 import java.util.Objects
 
 private val logger = LoggingUtil.getThreemaLogger("MessageListViewHolder")
 
-class MessageListViewHolder(itemView: View,
-                            private val context: Context,
-                            private val clickListener: MessageListViewHolderClickListener,
-                            private val groupCallManager: GroupCallManager,
-                            private val params: MessageListItemParams,
-                            private val strings: MessageListItemStrings
+class MessageListViewHolder(
+    itemView: View,
+    private val context: Context,
+    private val clickListener: MessageListViewHolderClickListener,
+    private val groupCallManager: GroupCallManager,
+    private val params: MessageListItemParams,
+    private val strings: MessageListItemStrings,
+    private val requestManager: RequestManager,
 ) : RecyclerView.ViewHolder(itemView), GroupCallObserver {
     interface MessageListViewHolderClickListener {
         fun onItemClick(view: View, position: Int)
@@ -269,7 +272,14 @@ class MessageListViewHolder(itemView: View,
 
         AdapterUtil.styleConversation(fromView, params.groupService, messageListAdapterItem.conversationModel)
 
-        AvatarListItemUtil.loadAvatar(messageListAdapterItem.conversationModel, params.contactService, params.groupService, params.distributionListService, avatarListItemHolder)
+        AvatarListItemUtil.loadAvatar(
+            messageListAdapterItem.conversationModel,
+            params.contactService,
+            params.groupService,
+            params.distributionListService,
+            avatarListItemHolder,
+            requestManager
+        )
 
         updateTypingIndicator(messageListAdapterItem)
 

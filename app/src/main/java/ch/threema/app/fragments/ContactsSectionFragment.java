@@ -65,6 +65,7 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -662,12 +663,13 @@ public class ContactsSectionFragment
 
 					if (isAdded() && getContext() != null) {
 						contactListAdapter = new ContactListAdapter(
-								getContext(),
-								contactModels,
-								contactService,
-								serviceManager.getPreferenceService(),
-								serviceManager.getBlackListService(),
-								ContactsSectionFragment.this
+							getContext(),
+							contactModels,
+							contactService,
+							serviceManager.getPreferenceService(),
+							serviceManager.getBlackListService(),
+							ContactsSectionFragment.this,
+							Glide.with(getContext())
 						);
 						listView.setAdapter(contactListAdapter);
 					}

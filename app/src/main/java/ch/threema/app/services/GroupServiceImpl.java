@@ -35,6 +35,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.RequestManager;
 import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.IOUtils;
@@ -1469,13 +1470,26 @@ public class GroupServiceImpl implements GroupService {
 	@Nullable
 	@Override
 	public Bitmap getAvatar(@Nullable GroupModel groupModel, @NonNull AvatarOptions options) {
+		// If the custom avatar is requested without default fallback and there is no avatar for
+		// this group, we can return null directly. Important: This is necessary to prevent glide
+		// from logging an unnecessary error stack trace.
+		if (options.defaultAvatarPolicy == AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR
+			&& !fileService.hasGroupAvatarFile(groupModel)) {
+			return null;
+		}
+
 		return avatarCacheService.getGroupAvatar(groupModel, options);
 	}
 
 	@AnyThread
 	@Override
-	public void loadAvatarIntoImage(@NonNull GroupModel groupModel, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
-		avatarCacheService.loadGroupAvatarIntoImage(groupModel, imageView, options);
+	public void loadAvatarIntoImage(
+		@NonNull GroupModel groupModel,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	) {
+		avatarCacheService.loadGroupAvatarIntoImage(groupModel, imageView, options, requestManager);
 	}
 
 	@Override

@@ -55,7 +55,7 @@ public class MessageAckProcessor implements MessageAckListener {
 	public void processAck(@NonNull QueueMessageId queueMessageId) {
 		final long ackReceivedAt = new Date().getTime();
 		logger.info(
-			"Processing server ack for message ID {} from {}",
+			"Processing server ack for message ID {} to {}",
 			queueMessageId.getMessageId(),
 			queueMessageId.getRecipientId()
 		);

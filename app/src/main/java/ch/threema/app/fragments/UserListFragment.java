@@ -25,11 +25,13 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
 import ch.threema.app.adapters.UserListAdapter;
 import ch.threema.app.collections.Functional;
@@ -103,7 +105,8 @@ public class UserListFragment extends RecipientListFragment {
 					blacklistService,
 					hiddenChatsListService,
 					preferenceService,
-					UserListFragment.this
+					UserListFragment.this,
+					Glide.with(ThreemaApplication.getAppContext())
 				);
 				setListAdapter(adapter);
 				if (listInstanceState != null) {

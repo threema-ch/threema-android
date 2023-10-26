@@ -24,11 +24,14 @@ package ch.threema.app.fragments;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.UserListAdapter;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -141,7 +144,8 @@ public class UserMemberListFragment extends MemberListFragment {
 					blacklistService,
 					hiddenChatsListService,
 					preferenceService,
-					UserMemberListFragment.this
+					UserMemberListFragment.this,
+					Glide.with(ThreemaApplication.getAppContext())
 				);
 				setListAdapter(adapter);
 				if (listInstanceState != null) {

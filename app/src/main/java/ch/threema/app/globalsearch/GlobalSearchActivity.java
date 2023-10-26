@@ -43,6 +43,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -196,7 +197,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 		emptyTextView = findViewById(R.id.empty_text);
 		progressBar = findViewById(R.id.progress);
 
-		chatsAdapter = new GlobalSearchAdapter(this);
+		chatsAdapter = new GlobalSearchAdapter(this, Glide.with(this));
 		chatsAdapter.setOnClickItemListener(this::showMessage);
 
 		setupChip(R.id.chats, FILTER_CHATS);

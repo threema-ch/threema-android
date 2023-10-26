@@ -30,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.RequestManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -71,6 +73,7 @@ public class UserListAdapter extends FilterableListAdapter {
 	private final IdListService blacklistService;
 	private final DeadlineListService hiddenChatsListService;
 	private final FilterResultsListener filterResultsListener;
+	private final @NonNull RequestManager requestManager;
 
 	public UserListAdapter(
 		Context context,
@@ -81,7 +84,8 @@ public class UserListAdapter extends FilterableListAdapter {
 		IdListService blacklistService,
 		DeadlineListService hiddenChatsListService,
 		PreferenceService preferenceService,
-		FilterResultsListener filterResultsListener
+		FilterResultsListener filterResultsListener,
+		@NonNull RequestManager requestManager
 	) {
 		super(context, R.layout.item_user_list, (List<Object>) (Object) values);
 
@@ -90,6 +94,7 @@ public class UserListAdapter extends FilterableListAdapter {
 		this.hiddenChatsListService = hiddenChatsListService;
 		this.blacklistService = blacklistService;
 		this.filterResultsListener = filterResultsListener;
+		this.requestManager = requestManager;
 
 		this.values = new ArrayList<>(values);
 		this.values.addAll(getMissingPreselectedContacts(values, preselectedIdentities));
@@ -184,9 +189,10 @@ public class UserListAdapter extends FilterableListAdapter {
 
 		// load avatars asynchronously
 		AvatarListItemUtil.loadAvatar(
-				contactModel,
-				this.contactService,
-				holder
+			contactModel,
+			this.contactService,
+			holder,
+			requestManager
 		);
 
 		position += ((ListView)parent).getHeaderViewsCount();

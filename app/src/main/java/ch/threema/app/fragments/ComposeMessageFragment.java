@@ -120,6 +120,7 @@ import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 
+import com.bumptech.glide.Glide;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.material.badge.BadgeDrawable;
@@ -3628,7 +3629,12 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 			actionBarSubtitleTextView.setText(groupService.getMembersString(groupModel));
 			actionBarSubtitleTextView.setVisibility(View.VISIBLE);
-			groupService.loadAvatarIntoImage(groupModel, actionBarAvatarView.getAvatarView(), AvatarOptions.PRESET_DEFAULT_FALLBACK);
+			groupService.loadAvatarIntoImage(
+				groupModel,
+				actionBarAvatarView.getAvatarView(),
+				AvatarOptions.PRESET_DEFAULT_FALLBACK,
+				Glide.with(getActivity())
+			);
 			actionBarAvatarView.setBadgeVisible(false);
 			setAvatarContentDescription(R.string.prefs_group_notifications);
 		} else if (this.isDistributionListChat) {
@@ -3638,7 +3644,12 @@ public class ComposeMessageFragment extends Fragment implements
 				actionBarAvatarView.setVisibility(View.GONE);
 				actionBarTitleTextView.setText(getString(R.string.threema_message_to, ""));
 			} else {
-				distributionListService.loadAvatarIntoImage(distributionListModel, actionBarAvatarView.getAvatarView(), AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE);
+				distributionListService.loadAvatarIntoImage(
+					distributionListModel,
+					actionBarAvatarView.getAvatarView(),
+					AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE,
+					Glide.with(getActivity())
+				);
 			}
 			actionBarAvatarView.setBadgeVisible(false);
 			setAvatarContentDescription(R.string.distribution_list);
@@ -3646,7 +3657,12 @@ public class ComposeMessageFragment extends Fragment implements
 			if (contactModel != null) {
 				this.actionBarSubtitleImageView.setContactModel(contactModel);
 				this.actionBarSubtitleImageView.setVisibility(View.VISIBLE);
-				contactService.loadAvatarIntoImage(contactModel, this.actionBarAvatarView.getAvatarView(), AvatarOptions.PRESET_RESPECT_SETTINGS);
+				contactService.loadAvatarIntoImage(
+					contactModel,
+					this.actionBarAvatarView.getAvatarView(),
+					AvatarOptions.PRESET_RESPECT_SETTINGS,
+					Glide.with(getActivity())
+				);
 				this.actionBarAvatarView.setBadgeVisible(contactService.showBadge(contactModel));
 			}
 			setAvatarContentDescription(R.string.prefs_header_chat);

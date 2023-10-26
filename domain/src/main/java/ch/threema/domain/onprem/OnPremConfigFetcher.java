@@ -81,13 +81,20 @@ public class OnPremConfigFetcher {
 		} catch (LicenseExpiredException e) {
 			throw new ThreemaException("OnPrem license has expired");
 		} catch (Exception e) {
+			Date newLastUnauthorized = null;
 			try {
 				if (uc != null && (uc.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED || uc.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN)) {
-					lastUnauthorized = new Date();
-					throw new UnauthorizedFetchException("Cannot fetch OnPrem config (unauthorized; check username/password)");
+					newLastUnauthorized = new Date();
 				}
-			} catch (IOException ignored) {
-				// ignored
+			} catch (IOException | NullPointerException ignored) {
+				// After a cold boot without internet connectivity `uc.getResponseCode()` can throw a NPE
+				// Ignore this exception. A `ThreemaException` wrapping the original exception
+				// will be thrown later on.
+			}
+
+			if (newLastUnauthorized != null) {
+				lastUnauthorized = newLastUnauthorized;
+				throw new UnauthorizedFetchException("Cannot fetch OnPrem config (unauthorized; check username/password)");
 			}
 
 			throw new ThreemaException("Cannot fetch OnPrem config (check connectivity)", e);

@@ -21,10 +21,13 @@
 
 package ch.threema.app.utils;
 
+import static ch.threema.storage.models.ContactModel.DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY;
+
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -40,6 +43,13 @@ import android.os.Build;
 import android.provider.ContactsContract;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
+import androidx.annotation.WorkerThread;
+import androidx.core.content.ContextCompat;
+import androidx.core.util.Pair;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
@@ -52,12 +62,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.PatternSyntaxException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
-import androidx.annotation.WorkerThread;
-import androidx.core.content.ContextCompat;
-import androidx.core.util.Pair;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -67,8 +71,6 @@ import ch.threema.app.services.UserService;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
-
-import static ch.threema.storage.models.ContactModel.DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY;
 
 public class AndroidContactUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AndroidContactUtil");
@@ -203,7 +205,7 @@ public class AndroidContactUtil {
 		// contactUri will be null if permission is not granted
 		Uri contactUri = getAndroidContactUri(contactModel);
 		if (contactUri != null) {
-			Bitmap bitmap = AvatarConverterUtil.convert(ThreemaApplication.getAppContext(), contactUri);
+			@SuppressLint("MissingPermission") Bitmap bitmap = AvatarConverterUtil.convert(ThreemaApplication.getAppContext(), contactUri);
 
 			if (bitmap != null) {
 				try {

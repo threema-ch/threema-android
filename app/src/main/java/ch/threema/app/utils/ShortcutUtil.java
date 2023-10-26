@@ -399,6 +399,7 @@ public final class ShortcutUtil {
 			preferenceService.setList(KEY_RECENT_UIDS, publishedRecentChatsUids.toArray(new String[0]));
 
 			try {
+				logger.info("Set {} dynamic sharing target shortcuts", numPublishableConversations);
 				ShortcutManagerCompat.setDynamicShortcuts(getContext(), shareTargetShortcuts);
 				logger.info("Published most recent {} conversations as sharing target shortcuts", numPublishableConversations);
 			} catch (Exception e) {

@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.RequestManager;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -98,6 +99,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 	private RecyclerView recyclerView;
 	private final Map<ConversationModel, MessageListAdapterItem> messageListAdapterItemsCache;
 
+	private final @NonNull RequestManager requestManager;
+
 
 	public static class FooterViewHolder extends RecyclerView.ViewHolder {
 		FooterViewHolder(View itemView) {
@@ -130,8 +133,9 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		@NonNull GroupCallManager groupCallManager,
 		@Nullable String highlightUid,
 		@NonNull ItemClickListener clickListener,
-		@NonNull Map<ConversationModel, MessageListAdapterItem> messageListAdapterItemCache
-	) {
+		@NonNull Map<ConversationModel, MessageListAdapterItem> messageListAdapterItemCache,
+		@NonNull RequestManager requestManager
+		) {
 		this.context = context;
 		this.inflater = LayoutInflater.from(context);
 		this.conversationService = conversationService;
@@ -169,6 +173,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 		this.groupCallManager = groupCallManager;
 		this.messageListAdapterItemsCache = messageListAdapterItemCache;
+
+		this.requestManager = requestManager;
 	}
 
 	@Override
@@ -212,7 +218,15 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		if (viewType == TYPE_ITEM) {
 			View itemView = inflater.inflate(R.layout.item_message_list, viewGroup, false);
 			itemView.setClickable(true);
-			return new MessageListViewHolder(itemView, context, clickForwarder, groupCallManager, messageListItemParams, messageListItemStrings);
+			return new MessageListViewHolder(
+				itemView,
+				context,
+				clickForwarder,
+				groupCallManager,
+				messageListItemParams,
+				messageListItemStrings,
+				requestManager
+			);
 		}
 		return new FooterViewHolder(inflater.inflate(R.layout.footer_message_section, viewGroup, false));
 	}

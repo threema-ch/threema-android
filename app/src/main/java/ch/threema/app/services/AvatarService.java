@@ -24,6 +24,8 @@ package ch.threema.app.services;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import com.bumptech.glide.RequestManager;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -105,7 +107,12 @@ public interface AvatarService<M extends ReceiverModel> {
 	 * @param options     the options for loading the image
 	 */
 	@AnyThread
-	void loadAvatarIntoImage(@NonNull M model, @NonNull ImageView imageView, @NonNull AvatarOptions options);
+	void loadAvatarIntoImage(
+		@NonNull M model,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	);
 
 	/**
 	 * Get the default avatar even if a custom avatar is set for the given model.

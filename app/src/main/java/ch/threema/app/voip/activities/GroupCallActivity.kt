@@ -76,6 +76,7 @@ import ch.threema.app.voip.util.VoipUtil
 import ch.threema.app.voip.viewmodel.GroupCallViewModel
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.GroupModel
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.*
 import java.lang.Runnable
 import java.util.*
@@ -629,7 +630,7 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 		val gutterPx = resources.getDimensionPixelSize(R.dimen.group_call_participants_item_gutter)
 
 		val contactService = ThreemaApplication.requireServiceManager().contactService
-		participantsAdapter = GroupCallParticipantsAdapter(contactService, gutterPx)
+		participantsAdapter = GroupCallParticipantsAdapter(contactService, gutterPx, Glide.with(this))
 		views.participants.layoutManager = participantsLayoutManager
 		views.participants.adapter = participantsAdapter
 		views.participants.addItemDecoration(VerticalGridLayoutGutterDecoration(gutterPx))

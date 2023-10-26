@@ -41,6 +41,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import org.slf4j.Logger;
@@ -133,7 +134,7 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 			filterMenu.setVisible(false);
 		}
 
-		archiveAdapter = new ArchiveAdapter(this);
+		archiveAdapter = new ArchiveAdapter(this, Glide.with(this));
 		archiveAdapter.setOnClickItemListener(new ArchiveAdapter.OnClickItemListener() {
 			@Override
 			public void onClick(ConversationModel conversationModel, View view, int position) {

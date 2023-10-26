@@ -30,6 +30,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.RequestManager;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,6 +73,7 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
 	private DistributionListService distributionListService;
 	private DeadlineListService hiddenChatsListService;
 	private SparseBooleanArray checkedItems = new SparseBooleanArray();
+	private final @NonNull RequestManager requestManager;
 
 	class ArchiveViewHolder extends RecyclerView.ViewHolder {
 
@@ -103,9 +106,10 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
 	private final LayoutInflater inflater;
 	private List<ConversationModel> conversationModels; // Cached copy of conversationModels
 
-	ArchiveAdapter(Context context) {
+	ArchiveAdapter(Context context, @NonNull RequestManager requestManager) {
 		this.context = context;
 		this.inflater = LayoutInflater.from(context);
+		this.requestManager = requestManager;
 
 		try {
 			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
@@ -217,11 +221,12 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
 
 			// load avatars asynchronously
 			AvatarListItemUtil.loadAvatar(
-					conversationModel,
-					this.contactService,
-					this.groupService,
-					this.distributionListService,
-					holder.avatarListItemHolder
+				conversationModel,
+				this.contactService,
+				this.groupService,
+				this.distributionListService,
+				holder.avatarListItemHolder,
+				requestManager
 			);
 
 			((CheckableRelativeLayout) holder.itemView).setChecked(checkedItems.get(position));

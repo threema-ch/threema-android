@@ -30,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -160,11 +162,12 @@ public class RecentListAdapter extends FilterableListAdapter {
 
 		// load avatars asynchronously
 		AvatarListItemUtil.loadAvatar(
-				conversationModel,
-				this.contactService,
-				this.groupService,
-				this.distributionListService,
-				holder
+			conversationModel,
+			this.contactService,
+			this.groupService,
+			this.distributionListService,
+			holder,
+			Glide.with(holder.avatarView.getContext())
 		);
 
 		((ListView)parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));

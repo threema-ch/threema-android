@@ -25,12 +25,15 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.widget.AbsListView;
 
+import com.bumptech.glide.Glide;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.UserListAdapter;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -130,7 +133,8 @@ public class WorkUserMemberListFragment extends MemberListFragment {
 						blacklistService,
 						hiddenChatsListService,
 						preferenceService,
-						WorkUserMemberListFragment.this
+						WorkUserMemberListFragment.this,
+						Glide.with(ThreemaApplication.getAppContext())
 					);
 					setListAdapter(adapter);
 					getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);

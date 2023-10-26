@@ -34,6 +34,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.bumptech.glide.RequestManager;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.ShapeAppearanceModel;
@@ -96,6 +97,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 	private Integer[] counts;
 	private final LayoutInflater inflater;
 	private final Collator collator;
+	private final @NonNull RequestManager requestManager;
 
 	public interface AvatarListener {
 		void onAvatarClick(View view, int position);
@@ -103,7 +105,15 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		void onRecentlyAddedClick(ContactModel contactModel);
 	}
 
-	public ContactListAdapter(@NonNull Context context, @NonNull List<ContactModel> values, ContactService contactService, PreferenceService preferenceService, IdListService blackListIdentityService, AvatarListener avatarListener) {
+	public ContactListAdapter(
+		@NonNull Context context,
+		@NonNull List<ContactModel> values,
+		ContactService contactService,
+		PreferenceService preferenceService,
+		IdListService blackListIdentityService,
+		AvatarListener avatarListener,
+		@NonNull RequestManager requestManager
+	) {
 		super(context, R.layout.item_contact_list, (List<Object>) (Object) values);
 
 		this.values = updateRecentlyAdded(values);
@@ -116,6 +126,8 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
 		this.collator = Collator.getInstance();
 		this.collator.setStrength(Collator.PRIMARY);
+
+		this.requestManager = requestManager;
 
 		setupIndexer();
 	}
@@ -371,17 +383,22 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		}
 
 		if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
-			contactService.loadAvatarIntoImage(contactModel, holder.shapeableAvatarView,
+			contactService.loadAvatarIntoImage(
+				contactModel,
+				holder.shapeableAvatarView,
 				new AvatarOptions.Builder()
 					.setHighRes(true)
-					.toOptions()
+					.toOptions(),
+				requestManager
 			);
 			holder.viewType = VIEW_TYPE_RECENTLY_ADDED;
 		} else {
 			AvatarListItemUtil.loadAvatar(
 				contactModel,
 				this.contactService,
-				holder);
+				holder,
+				requestManager
+			);
 			holder.avatarView.setContentDescription(
 				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
 					ThreemaApplication.getAppContext().getString(R.string.mime_contact),

@@ -24,6 +24,8 @@ package ch.threema.app.services;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import com.bumptech.glide.RequestManager;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,8 +40,10 @@ import ch.threema.storage.models.GroupModel;
 public interface AvatarCacheService {
 
 	/**
-	 * Get the avatar of the provided contact model in high resolution. If an error happens while loading
-	 * the avatar, the default avatar or null is returned.
+	 * Get the avatar of the provided contact model in high resolution. If an error happens while
+	 * loading the avatar, the default avatar or null is returned. Note: Do not call this method
+	 * with the {@link AvatarOptions.DefaultAvatarPolicy#CUSTOM_AVATAR} for contacts that do not
+	 * have a custom avatar. This may cause glide to misbehave :)
 	 *
 	 * @param contactModel if the contact model is null, the neutral contact avatar is returned
 	 * @param options      the options for loading the avatar
@@ -57,11 +61,18 @@ public interface AvatarCacheService {
 	 * @param options      the options for loading the image
 	 */
 	@AnyThread
-	void loadContactAvatarIntoImage(@NonNull ContactModel contactModel, @NonNull ImageView imageView, @NonNull AvatarOptions options);
+	void loadContactAvatarIntoImage(
+		@NonNull ContactModel contactModel,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	);
 
 	/**
-	 * Get the avatar of the provided group model in high resolution. If an error happens while loading
-	 * the avatar, the default avatar or null is returned.
+	 * Get the avatar of the provided group model in high resolution. If an error happens while
+	 * loading the avatar, the default avatar or null is returned. Note: Do not call this method
+	 * with the {@link AvatarOptions.DefaultAvatarPolicy#CUSTOM_AVATAR} for groups that do not have
+	 * a custom avatar. This may cause glide to misbehave :)
 	 *
 	 * @param groupModel if the group model is null, the neutral group avatar is returned
 	 * @param options    the options for loading the avatar
@@ -74,12 +85,17 @@ public interface AvatarCacheService {
 	/**
 	 * Load the avatar directly into the given image view.
 	 *
-	 * @param groupModel  the group model
-	 * @param imageView   the image view
-	 * @param options     the options for loading the image
+	 * @param groupModel the group model
+	 * @param imageView  the image view
+	 * @param options    the options for loading the image
 	 */
 	@AnyThread
-	void loadGroupAvatarIntoImage(@Nullable GroupModel groupModel, @NonNull ImageView imageView, @NonNull AvatarOptions options);
+	void loadGroupAvatarIntoImage(
+		@Nullable GroupModel groupModel,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	);
 
 	/**
 	 * Get the avatar of the provided model in low resolution. If an error happens while loading the
@@ -102,7 +118,12 @@ public interface AvatarCacheService {
 	 * @param options               the options for loading the image
 	 */
 	@AnyThread
-	void loadDistributionListAvatarIntoImage(@NonNull DistributionListModel distributionListModel, @NonNull ImageView imageView, AvatarOptions options);
+	void loadDistributionListAvatarIntoImage(
+		@NonNull DistributionListModel distributionListModel,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	);
 
 	/**
 	 * Clears the cache. This should be called if many (or all) avatars change, e.g., when changing the default avatar color preference.

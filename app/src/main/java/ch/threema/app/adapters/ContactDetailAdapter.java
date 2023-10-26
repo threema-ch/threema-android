@@ -40,6 +40,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.RequestManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -82,6 +83,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	private final ContactModel contactModel;
 	private final List<GroupModel> values;
 	private OnClickListener onClickListener;
+	private final @NonNull RequestManager requestManager;
 
 	public static class ItemHolder extends RecyclerView.ViewHolder {
 		public final View view;
@@ -182,10 +184,16 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		}
 	}
 
-	public ContactDetailAdapter(Context context, List<GroupModel> values, ContactModel contactModel) {
+	public ContactDetailAdapter(
+		Context context,
+		List<GroupModel>values,
+		ContactModel contactModel,
+		@NonNull RequestManager requestManager
+	) {
 		this.context = context;
 		this.values = values;
 		this.contactModel = contactModel;
+		this.requestManager = requestManager;
 
 		try {
 			ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
@@ -223,7 +231,12 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			ItemHolder itemHolder = (ItemHolder) holder;
 			final GroupModel groupModel = getItem(position);
 
-			this.groupService.loadAvatarIntoImage(groupModel, itemHolder.avatarView, AvatarOptions.PRESET_DEFAULT_FALLBACK);
+			this.groupService.loadAvatarIntoImage(
+				groupModel,
+				itemHolder.avatarView,
+				AvatarOptions.PRESET_DEFAULT_FALLBACK,
+				requestManager
+			);
 
 			String groupName = groupModel.getName();
 			if (groupName == null) {

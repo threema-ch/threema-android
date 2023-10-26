@@ -25,6 +25,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import com.bumptech.glide.RequestManager;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -138,8 +140,13 @@ public class DistributionListServiceImpl implements DistributionListService {
 	}
 
 	@Override
-	public void loadAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
-		avatarCacheService.loadDistributionListAvatarIntoImage(model, imageView, options);
+	public void loadAvatarIntoImage(
+		@NonNull DistributionListModel model,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	) {
+		avatarCacheService.loadDistributionListAvatarIntoImage(model, imageView, options, requestManager);
 	}
 
 	@Override

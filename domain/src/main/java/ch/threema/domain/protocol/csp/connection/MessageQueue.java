@@ -194,7 +194,7 @@ public class MessageQueue implements MessageAckListener, ConnectionStateListener
 	 */
 	@Override
 	public synchronized void processAck(@NonNull QueueMessageId queueMessageId) {
-		logger.debug("Processing server ack for message ID {} from {}", queueMessageId.getMessageId(), queueMessageId.getRecipientId());
+		logger.debug("Processing server ack for message ID {} to {}", queueMessageId.getMessageId(), queueMessageId.getRecipientId());
 
 		// Find this message in the queue and remove it
 		final Iterator<MessageBox> it = queue.iterator();
@@ -208,7 +208,7 @@ public class MessageQueue implements MessageAckListener, ConnectionStateListener
 			}
 		}
 
-		logger.warn("Message ID {} from {} not found in queue", queueMessageId.getMessageId(), queueMessageId.getRecipientId());
+		logger.warn("Message ID {} to {} not found in queue", queueMessageId.getMessageId(), queueMessageId.getRecipientId());
 	}
 
 	public synchronized int getQueueSize() {

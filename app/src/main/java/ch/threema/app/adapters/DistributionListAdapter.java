@@ -29,6 +29,8 @@ import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -54,7 +56,13 @@ public class DistributionListAdapter extends FilterableListAdapter {
 	private final DistributionListService distributionListService;
 	private final FilterResultsListener filterResultsListener;
 
-	public DistributionListAdapter(Context context, List<DistributionListModel> values, List<Integer> checkedItems, DistributionListService distributionListService, FilterResultsListener filterResultsListener) {
+	public DistributionListAdapter(
+		Context context,
+		List<DistributionListModel> values,
+		List<Integer> checkedItems,
+		DistributionListService distributionListService,
+		FilterResultsListener filterResultsListener
+	) {
 		super(context, R.layout.item_distribution_list, (List<Object>) (Object) values);
 
 		this.context = context;
@@ -116,9 +124,10 @@ public class DistributionListAdapter extends FilterableListAdapter {
 
 		// load avatars asynchronously
 		AvatarListItemUtil.loadAvatar(
-				distributionListModel,
-				this.distributionListService,
-				holder
+			distributionListModel,
+			this.distributionListService,
+			holder,
+			Glide.with(context)
 		);
 
 		((ListView)parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));

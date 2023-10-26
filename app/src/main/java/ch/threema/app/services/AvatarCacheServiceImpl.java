@@ -35,6 +35,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
@@ -115,8 +116,13 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 	@AnyThread
 	@Override
-	public void loadContactAvatarIntoImage(@NonNull ContactModel model, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
-		loadBitmap(new ContactAvatarConfig(model, options), contactPlaceholder, imageView);
+	public void loadContactAvatarIntoImage(
+		@NonNull ContactModel model,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	) {
+		loadBitmap(new ContactAvatarConfig(model, options), contactPlaceholder, imageView, requestManager);
 	}
 
 	@AnyThread
@@ -129,8 +135,13 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 	@AnyThread
 	@Override
-	public void loadGroupAvatarIntoImage(@Nullable GroupModel groupModel, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
-		loadBitmap(new GroupAvatarConfig(groupModel, options), groupPlaceholder, imageView);
+	public void loadGroupAvatarIntoImage(
+		@Nullable GroupModel groupModel,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	) {
+		loadBitmap(new GroupAvatarConfig(groupModel, options), groupPlaceholder, imageView, requestManager);
 	}
 
 	@AnyThread
@@ -143,8 +154,13 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 	@AnyThread
 	@Override
-	public void loadDistributionListAvatarIntoImage(@NonNull DistributionListModel model, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
-		loadBitmap(new DistributionListAvatarConfig(model, options), distributionListPlaceholder, imageView);
+	public void loadDistributionListAvatarIntoImage(
+		@NonNull DistributionListModel model,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	) {
+		loadBitmap(new DistributionListAvatarConfig(model, options), distributionListPlaceholder, imageView, requestManager);
 	}
 
 	@AnyThread
@@ -199,15 +215,22 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 			return requestBuilder.submit().get();
 		} catch (ExecutionException | InterruptedException e) {
 			logger.error("Error while getting avatar bitmap for configuration " + config, e);
-			Thread.currentThread().interrupt();
+			if (e instanceof InterruptedException) {
+				Thread.currentThread().interrupt();
+			}
 			return null;
 		}
 	}
 
 	@AnyThread
-	private <M extends ReceiverModel> void loadBitmap(@NonNull AvatarConfig<M> config, @Nullable Drawable placeholder, @NonNull ImageView view) {
+	private <M extends ReceiverModel> void loadBitmap(
+		@NonNull AvatarConfig<M> config,
+		@Nullable Drawable placeholder,
+		@NonNull ImageView view,
+		@NonNull RequestManager requestManager
+	) {
 		try {
-			RequestBuilder<Bitmap> requestBuilder = Glide.with(context).asBitmap().load(config).placeholder(placeholder).transition(BitmapTransitionOptions.withCrossFade(factory)).diskCacheStrategy(DiskCacheStrategy.NONE).signature(new ObjectKey(config.state));
+			RequestBuilder<Bitmap> requestBuilder = requestManager.asBitmap().load(config).placeholder(placeholder).transition(BitmapTransitionOptions.withCrossFade(factory)).diskCacheStrategy(DiskCacheStrategy.NONE).signature(new ObjectKey(config.state));
 			if (config.options.disableCache) {
 				requestBuilder = requestBuilder.skipMemoryCache(true);
 			}
@@ -256,6 +279,8 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 		abstract long getAvatarState();
 
+		abstract @NonNull String getModelDebugString();
+
 		/**
 		 * The hash code of this class is based only on the parameters that change the actual result, e.g., the resolution,
 		 * the default options and of course the contact, group, or distribution list. The state does not affect the hashcode
@@ -290,7 +315,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 		@NonNull
 		@Override
 		public String toString() {
-			return (model != null ? model.toString() : "null") + " " + options;
+			return "'" + getModelDebugString() + "' " + options;
 		}
 	}
 
@@ -329,6 +354,12 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 			}
 			return newState;
 		}
+
+		@NonNull
+		@Override
+		String getModelDebugString() {
+			return model != null ? model.getIdentity() : "null";
+		}
 	}
 
 	/**
@@ -365,6 +396,12 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 			}
 			return newState;
 		}
+
+		@NonNull
+		@Override
+		String getModelDebugString() {
+			return model != null ? model.getCreatorIdentity() + "/" + model.getApiGroupId() : "null";
+		}
 	}
 
 	/**
@@ -387,6 +424,12 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 		@Override
 		long getAvatarState() {
 			return 1;
+		}
+
+		@NonNull
+		@Override
+		String getModelDebugString() {
+			return model != null ? String.valueOf(model.getId()) : "null";
 		}
 	}
 

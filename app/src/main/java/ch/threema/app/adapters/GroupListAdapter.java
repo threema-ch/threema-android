@@ -30,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +57,13 @@ public class GroupListAdapter extends FilterableListAdapter {
 	private final FilterResultsListener filterResultsListener;
 
 
-	public GroupListAdapter(Context context, List<GroupModel> values, List<Integer> checkedItems, GroupService groupService, FilterResultsListener filterResultsListener) {
+	public GroupListAdapter(
+		Context context,
+		List<GroupModel> values,
+		List<Integer> checkedItems,
+		GroupService groupService,
+		FilterResultsListener filterResultsListener
+	) {
 		super(context, R.layout.item_group_list, (List<Object>) (Object) values);
 
 		this.context = context;
@@ -124,9 +132,10 @@ public class GroupListAdapter extends FilterableListAdapter {
 
 		// load avatars asynchronously
 		AvatarListItemUtil.loadAvatar(
-				groupModel,
-				this.groupService,
-				holder
+			groupModel,
+			this.groupService,
+			holder,
+			Glide.with(context)
 		);
 
 		((ListView)parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));

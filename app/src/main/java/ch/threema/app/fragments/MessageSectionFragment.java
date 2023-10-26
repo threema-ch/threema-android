@@ -64,6 +64,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -1593,7 +1594,8 @@ public class MessageSectionFragment extends MainFragment
 									groupCallManager,
 									highlightUid,
 									MessageSectionFragment.this,
-									messageListAdapterItemCache
+									messageListAdapterItemCache,
+									Glide.with(ThreemaApplication.getAppContext())
 								);
 
 								recyclerView.setAdapter(messageListAdapter);

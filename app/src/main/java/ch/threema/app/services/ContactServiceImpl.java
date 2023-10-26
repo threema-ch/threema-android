@@ -40,6 +40,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.RequestManager;
 import com.neilalexander.jnacl.NaCl;
 
 import org.slf4j.Logger;
@@ -119,6 +120,8 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
+
+import static ch.threema.app.glide.AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR;
 
 public class ContactServiceImpl implements ContactService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactServiceImpl");
@@ -909,6 +912,13 @@ public class ContactServiceImpl implements ContactService {
 	@AnyThread
 	@Override
 	public Bitmap getAvatar(@Nullable ContactModel contact, @NonNull AvatarOptions options) {
+		// If the custom avatar is requested without default fallback and there is no avatar for
+		// this contact, we can return null directly. Important: This is necessary to prevent glide
+		// from logging an unnecessary error stack trace.
+		if (options.defaultAvatarPolicy == CUSTOM_AVATAR && !hasAvatarOrContactPhoto(contact)) {
+			return null;
+		}
+
 		Bitmap b = this.avatarCacheService.getContactAvatar(contact, options);
 
 		//check if a business avatar update is necessary
@@ -918,6 +928,14 @@ public class ContactServiceImpl implements ContactService {
 		}
 
 		return b;
+	}
+
+	private boolean hasAvatarOrContactPhoto(@Nullable ContactModel contact) {
+		if (contact == null) {
+			return false;
+		}
+
+		return fileService.hasContactAvatarFile(contact) || fileService.hasContactPhotoFile(contact);
 	}
 
 	@Override
@@ -930,8 +948,13 @@ public class ContactServiceImpl implements ContactService {
 
 	@AnyThread
 	@Override
-	public void loadAvatarIntoImage(@NonNull ContactModel model, @NonNull ImageView imageView, @NonNull AvatarOptions options) {
-		avatarCacheService.loadContactAvatarIntoImage(model, imageView, options);
+	public void loadAvatarIntoImage(
+		@NonNull ContactModel model,
+		@NonNull ImageView imageView,
+		@NonNull AvatarOptions options,
+		@NonNull RequestManager requestManager
+	) {
+		avatarCacheService.loadContactAvatarIntoImage(model, imageView, options, requestManager);
 	}
 
 	@AnyThread

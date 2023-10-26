@@ -50,6 +50,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -441,7 +442,12 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	}
 
 	private ContactDetailAdapter setupAdapter() {
-		ContactDetailAdapter groupMembershipAdapter = new ContactDetailAdapter(this, this.groupList, contact);
+		ContactDetailAdapter groupMembershipAdapter = new ContactDetailAdapter(
+			this,
+			this.groupList,
+			contact,
+			Glide.with(this)
+		);
 		groupMembershipAdapter.setOnClickListener(new ContactDetailAdapter.OnClickListener() {
 			@Override
 			public void onItemClick(View v, GroupModel groupModel) {

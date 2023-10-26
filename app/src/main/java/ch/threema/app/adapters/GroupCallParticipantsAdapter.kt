@@ -37,6 +37,7 @@ import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.ParticipantSurfaceViewRenderer
 import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.base.utils.LoggingUtil
+import com.bumptech.glide.RequestManager
 import kotlinx.coroutines.*
 import org.webrtc.EglBase
 
@@ -45,7 +46,8 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallParticipantsAdapter"
 @UiThread
 class GroupCallParticipantsAdapter(
 	private val contactService: ContactService,
-	private val gutterPx: Int
+	private val gutterPx: Int,
+	private val requestManager: RequestManager,
 ) : RecyclerView.Adapter<GroupCallParticipantsAdapter.GroupCallParticipantViewHolder>() {
 	private val participants: MutableList<Participant> = mutableListOf()
 
@@ -314,7 +316,12 @@ class GroupCallParticipantsAdapter(
 		holder.name.text = participant.name
 
 		if (participant is NormalParticipant) {
-			contactService.loadAvatarIntoImage(participant.contactModel, holder.avatar, AVATAR_OPTIONS)
+			contactService.loadAvatarIntoImage(
+                participant.contactModel,
+                holder.avatar,
+                AVATAR_OPTIONS,
+                requestManager
+            )
 		} else {
 			logger.warn("Unknown group call participant type bound: {}", participant.type)
 			holder.avatar.setImageResource(R.drawable.ic_person_outline)
