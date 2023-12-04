@@ -278,7 +278,7 @@ public class BackupDataFragment extends Fragment implements
 			intent.putExtra(BackupService.EXTRA_BACKUP_RESTORE_DATA_CONFIG, backupRestoreDataConfig);
 			ContextCompat.startForegroundService(getActivity(), intent);
 			Toast.makeText(getActivity(), R.string.backup_started, Toast.LENGTH_SHORT).show();
-			getActivity().finish();
+			getActivity().finishAffinity();
 		}
 	}
 

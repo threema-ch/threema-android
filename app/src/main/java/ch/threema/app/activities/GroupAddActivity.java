@@ -94,7 +94,7 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
 			int groupId = IntentDataUtil.getGroupId(this.getIntent());
 			if(this.groupService != null && groupId > 0) {
 				this.groupModel = this.groupService.getById(groupId);
-				this.appendMembers = (this.groupModel != null && this.groupService.isGroupOwner(this.groupModel));
+				this.appendMembers = (this.groupModel != null && this.groupService.isGroupCreator(this.groupModel));
 				String[] excluded = IntentDataUtil.getContactIdentities(this.getIntent());
 				if (excluded != null && excluded.length > 0) {
 					this.excludedIdentities = new ArrayList<>(Arrays.asList(excluded));

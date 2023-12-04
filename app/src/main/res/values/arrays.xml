@@ -127,6 +127,16 @@
 		<item>@string/one_week</item>
 		<item>@string/everything</item>
 	</string-array>
+
+	<string-array name="keep_messages_timeout">
+		<item>@string/forever</item>
+		<item>@string/one_year</item>
+		<item>@string/six_months</item>
+		<item>@string/three_months</item>
+		<item>@string/one_month</item>
+		<item>@string/one_week</item>
+	</string-array>
+
 	<string-array name="list_emoji_style">
 		<item>@string/prefs_default_emojis</item>
 		<item>@string/prefs_android_emojis</item>
@@ -157,7 +167,7 @@
 		<item>system</item>
 		<item>biometric</item>
 	</string-array>
-	<string-array name="list_language_override">
+	<string-array name="list_app_languages">
         <item>@string/notifications_default</item>
 		<item>Català</item> <!-- Catalan -->
 		<item>Čeština</item> <!-- Czech -->
@@ -182,7 +192,7 @@
 		<item>日本語</item> <!-- Japanese -->
 	</string-array>
 	<!--suppress CheckTagEmptyBody -->
-	<string-array name="list_language_override_values">
+	<string-array name="list_app_languages_values">
         <item></item>
 		<item>ca</item> <!-- Catalan -->
 		<item>cs</item> <!-- Czech -->
@@ -199,11 +209,11 @@
 		<item>rm</item>
 		<item>sk</item> <!-- Slovak -->
 		<item>tr</item>
-		<item>be-rBY</item> <!-- Belarusian -->
+		<item>be-BY</item> <!-- Belarusian -->
 		<item>ru</item> <!-- Russian -->
 		<item>uk</item> <!-- Ukrainian -->
-		<item>zh-rCN</item> <!-- Chinese simplified -->
-		<item>zh-rTW</item> <!-- Chinese traditional -->
+		<item>zh-hans-CN</item> <!-- Chinese simplified. Note that we need 'hans' in it to apply the script correctly in the settings. -->
+		<item>zh-hant-TW</item> <!-- Chinese traditional. Note that we need 'hant' in it to apply the script correctly in the settings. -->
 		<item>ja</item> <!-- Japanese -->
 	</string-array>
 	<string-array name="picrelease_choices">

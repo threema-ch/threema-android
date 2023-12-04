@@ -21,6 +21,23 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.ThreemaApplication.getMessageDraft;
+import static ch.threema.app.adapters.SendMediaPreviewAdapter.VIEW_TYPE_NORMAL;
+import static ch.threema.app.services.PreferenceService.ImageScale_SEND_AS_FILE;
+import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
+import static ch.threema.app.services.PreferenceService.VideoSize_MEDIUM;
+import static ch.threema.app.services.PreferenceService.VideoSize_ORIGINAL;
+import static ch.threema.app.services.PreferenceService.VideoSize_SEND_AS_FILE;
+import static ch.threema.app.services.PreferenceService.VideoSize_SMALL;
+import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
+import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
+import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
+import static ch.threema.app.ui.MediaItem.TYPE_VIDEO_CAM;
+import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_ADAPTER;
+import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_ALL;
+import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_BOTH_ADAPTERS;
+import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_PREVIEW_ADAPTER;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -29,7 +46,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.MediaMetadataRetriever;
@@ -117,25 +133,6 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.localcrypto.MasterKeyLockedException;
-
-import static ch.threema.app.ThreemaApplication.getMessageDraft;
-import static ch.threema.app.adapters.SendMediaPreviewAdapter.VIEW_TYPE_NORMAL;
-import static ch.threema.app.services.PreferenceService.ImageScale_SEND_AS_FILE;
-import static ch.threema.app.services.PreferenceService.VideoSize_DEFAULT;
-import static ch.threema.app.services.PreferenceService.VideoSize_MEDIUM;
-import static ch.threema.app.services.PreferenceService.VideoSize_ORIGINAL;
-import static ch.threema.app.services.PreferenceService.VideoSize_SEND_AS_FILE;
-import static ch.threema.app.services.PreferenceService.VideoSize_SMALL;
-import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
-import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
-import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
-import static ch.threema.app.ui.MediaItem.TYPE_VIDEO_CAM;
-import static ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL;
-import static ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL;
-import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_ADAPTER;
-import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_ALL;
-import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_BOTH_ADAPTERS;
-import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_PREVIEW_ADAPTER;
 
 public class SendMediaActivity extends ThreemaToolbarActivity implements
 	GenericAlertDialog.DialogClickListener,
@@ -397,7 +394,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 			this.emojiPicker = (EmojiPicker) ((ViewStub) findViewById(R.id.emoji_stub)).inflate();
 			this.emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService());
-			emojiButton.attach(this.emojiPicker, true);
+			emojiButton.attach(this.emojiPicker);
 			this.emojiPicker.setEmojiKeyListener(new EmojiPicker.EmojiKeyListener() {
 				@Override
 				public void onBackspaceClick() {
@@ -423,6 +420,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 							emojiPicker.hide();
 						} else {
 							openSoftKeyboard(emojiPicker, captionEditText);
+							runOnSoftKeyboardOpen(() -> emojiPicker.hide());
 						}
 					}
 				}
@@ -522,9 +520,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 						emojiPicker.hide();
 					} else {
 						openSoftKeyboard(emojiPicker, captionEditText);
-						if (getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
-							emojiPicker.hide();
-						}
+						runOnSoftKeyboardOpen(() -> emojiPicker.hide());
 					}
 				} else {
 					emojiPicker.show(loadStoredSoftKeyboardHeight());
@@ -1105,7 +1101,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		if (emojiPicker != null && emojiPicker.isShown()) {
 			emojiPicker.hide();
 		} else if (captionEditText.isMentionPopupShowing()) {

@@ -22,11 +22,10 @@
 package ch.threema.app.services;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import android.database.Cursor;
 
 import org.slf4j.Logger;
 
@@ -365,6 +364,12 @@ public class ConversationServiceImpl implements ConversationService {
 						return;
 					}
 					ConversationModel updatedModel = conversationModelParser.parseResult(result.get(0), null, false);
+					if (updatedModel != null) {
+						// persist tags from original model
+						updatedModel.setIsPinTagged(conversationModel.isPinTagged());
+						updatedModel.setIsUnreadTagged(conversationModel.getIsUnreadTagged());
+					}
+
 					conversationCache.set(i, updatedModel);
 					break;
 				}
@@ -473,7 +478,12 @@ public class ConversationServiceImpl implements ConversationService {
 
 	@Override
 	public synchronized boolean clear(final ConversationModel conversation) {
-		return this.clear(conversation, false);
+		return this.clear(conversation, false, true);
+	}
+
+	@Override
+	public synchronized boolean clear(final ConversationModel conversation, boolean silentMessageUpdate) {
+		return this.clear(conversation, false, silentMessageUpdate);
 	}
 
 	@Override
@@ -537,9 +547,9 @@ public class ConversationServiceImpl implements ConversationService {
 		}
 	}
 
-	private synchronized boolean clear(final ConversationModel conversation, boolean removeFromCache) {
+	private synchronized boolean clear(final ConversationModel conversation, boolean removeFromCache, boolean silentMessageUpdate) {
 		for (AbstractMessageModel m : this.messageService.getMessagesForReceiver(conversation.getReceiver())) {
-			this.messageService.remove(m, true);
+			this.messageService.remove(m, silentMessageUpdate);
 		}
 
 		// Remove tags
@@ -836,7 +846,7 @@ public class ConversationServiceImpl implements ConversationService {
 			ConversationModel model = this.getCached(this.getIndex(parentObject));
 			if(model != null) {
 				//remove from cache
-				clear(model, true);
+				clear(model, true, true);
 			}
 
 			return true;
@@ -1129,6 +1139,11 @@ public class ConversationServiceImpl implements ConversationService {
 
 			@Override
 			public int[] contentTypes() {
+				return null;
+			}
+
+			@Override
+			public int[] displayTags() {
 				return null;
 			}
 		}), new IPredicateNonNull<AbstractMessageModel>() {

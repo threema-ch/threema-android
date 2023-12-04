@@ -368,7 +368,12 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		setResult(RESULT_OK);
 		finish();
 	}

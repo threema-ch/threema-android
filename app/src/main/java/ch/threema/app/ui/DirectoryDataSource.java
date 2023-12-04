@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
@@ -134,13 +135,8 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 						workDirectoryFilter
 					);
 				} catch (Exception e) {
-					logger.error("Exception", e);
-					RuntimeUtil.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							Toast.makeText(ThreemaApplication.getAppContext(), "Unable to fetch directory: " + e.getMessage(), Toast.LENGTH_LONG).show();
-						}
-					});
+					RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.directory_request_failed, Toast.LENGTH_LONG).show());
+					logger.error("Unable to fetch directory", e);
 					return null;
 				}
 
@@ -179,13 +175,8 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 						workDirectoryFilter
 					);
 				} catch (Exception e) {
-					logger.error("Exception", e);
-					RuntimeUtil.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							Toast.makeText(ThreemaApplication.getAppContext(), "Unable to fetch directory: " + e.getMessage(), Toast.LENGTH_LONG).show();
-						}
-					});
+					RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.directory_request_failed, Toast.LENGTH_LONG).show());
+					logger.error("Unable to fetch directory", e);
 					return null;
 				}
 

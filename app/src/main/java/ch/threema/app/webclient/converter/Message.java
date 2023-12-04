@@ -70,6 +70,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
+import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 @AnyThread
@@ -213,6 +214,10 @@ public class Message extends Converter {
 			}
 		}
 
+		if (virtualMessageType == ch.threema.storage.models.MessageType.GROUP_STATUS) {
+			return convertGroupStatus((GroupMessageModel) message);
+		}
+
 		if (message instanceof GroupMessageModel && virtualMessageType == ch.threema.storage.models.MessageType.GROUP_CALL_STATUS) {
 				return convertGroupCallStatus((GroupMessageModel) message);
 		}
@@ -306,6 +311,31 @@ public class Message extends Converter {
 		return builder;
 	}
 
+	private static MsgpackObjectBuilder convertGroupStatus(GroupMessageModel message) throws ConversionException {
+		final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+		try {
+			GroupStatusDataModel groupStatusDataModel = message.getGroupStatusDataModel();
+			if (groupStatusDataModel != null) {
+				builder
+					.put(ID, String.valueOf(message.getId()))
+					.put(TYPE, MessageType.TEXT)
+					.put(SORT_KEY, message.getId())
+					.put(IS_OUTBOX, message.isOutbox())
+					.put(IS_STATUS, true)
+					.put(PARTNER_ID, message.getIdentity())
+					.put(BODY, MessageUtil.getViewElement(ThreemaApplication.getAppContext(), message).text)
+					.put(IS_UNREAD, false)
+					.put(STATUS_TYPE, "text");
+				maybePutState(builder, STATE, DELIVERED);
+				maybePutDate(builder, DATE, message);
+				maybePutEvents(builder, EVENTS, message);
+			}
+		} catch (Exception e) {
+			throw new ConversionException(e.toString());
+		}
+		return builder;
+	}
+
 	private static MsgpackObjectBuilder convertGroupCallStatus(GroupMessageModel message) throws ConversionException {
 		final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
 		try {
@@ -321,7 +351,7 @@ public class Message extends Converter {
 						groupCallStatusDataModel.getCallerIdentity() :
 						getContactService().getMe().getIdentity())
 					.put(BODY, MessageUtil.getViewElement(ThreemaApplication.getAppContext(), message).text)
-					.put(IS_UNREAD, message.isRead())
+					.put(IS_UNREAD, false)
 					.put(STATUS_TYPE, "text");
 				maybePutState(builder, STATE, DELIVERED);
 				maybePutDate(builder, DATE, message);

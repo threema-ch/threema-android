@@ -68,6 +68,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.GroupModel;
 
 public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, SearchView.OnQueryTextListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ArchiveActivity");
@@ -260,11 +261,16 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		if (actionMode != null) {
 			actionMode.finish();
 		} else {
-			super.onBackPressed();
+			finish();
 		}
 	}
 
@@ -291,9 +297,11 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 		String confirmText = ConfigUtils.getSafeQuantityString(this, R.plurals.really_delete_thread_message, num, num) + " " + getString(R.string.messages_cannot_be_recovered);
 		String reallyDeleteThreadText = getResources().getString(num > 1 ? R.string.really_delete_multiple_threads : R.string.really_delete_thread);
 
-		if (num == 1 && checkedItems.get(0).isGroupConversation()) {
-			if (groupService.isGroupMember(checkedItems.get(0).getGroup())) {
-				if (groupService.isGroupOwner(checkedItems.get(0).getGroup())) {
+		ConversationModel conversationModel = checkedItems.get(0);
+		if (num == 1 && conversationModel.isGroupConversation()) {
+			GroupModel groupModel = conversationModel.getGroup();
+			if (groupModel != null && groupService.isGroupMember(groupModel)) {
+				if (groupService.isGroupCreator(groupModel)) {
 					confirmText = getString(R.string.delete_my_group_message);
 				} else {
 					confirmText = getString(R.string.delete_group_message);

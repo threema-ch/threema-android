@@ -21,6 +21,7 @@
 
 package ch.threema.app.activities.wizard;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,12 +33,13 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.slf4j.Logger;
 
 import java.io.File;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
@@ -80,6 +82,15 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 	private FileService fileService;
 	private UserService userService;
 	private PreferenceService preferenceService;
+	private File backupFile;
+	private String backupPassword;
+
+	private final ActivityResultLauncher<String> permissionLauncher =
+		registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+			// Restore backup even if permission is not granted as we do not strictly require the
+			// notification permission.
+			startRestore();
+		});
 
 	@Override
 	protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -157,12 +168,12 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 		findViewById(R.id.cancel).setOnClickListener(v -> finish());
 	}
 
-	public void restoreSafe() {
+	private void restoreSafe() {
 		startActivity(new Intent(this, WizardSafeRestoreActivity.class));
 		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 	}
 
-	public void restoreIDExport(String backupString, String backupPassword) {
+	private void restoreIDExport(String backupString, String backupPassword) {
 		Intent intent = new Intent(this, WizardIDRestoreActivity.class);
 
 		if (!TestUtil.empty(backupString) && !TestUtil.empty(backupPassword)) {
@@ -252,6 +263,16 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 		dialogFragment.show(getSupportFragmentManager(), "restorePW");
 	}
 
+	private void startRestore() {
+		Intent intent = new Intent(this, RestoreService.class);
+		intent.putExtra(RestoreService.EXTRA_RESTORE_BACKUP_FILE, backupFile);
+		intent.putExtra(RestoreService.EXTRA_RESTORE_BACKUP_PASSWORD, backupPassword);
+		ContextCompat.startForegroundService(this, intent);
+
+		setResult(Activity.RESULT_OK);
+		finish();
+	}
+
 	@UiThread
 	private void showNoInternetDialog(File file) {
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.menu_restore, R.string.new_wizard_need_internet, R.string.retry, R.string.cancel);
@@ -286,11 +307,13 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 	// start password dialog callbacks
 	@Override
 	public void onYes(String tag, String text, boolean isChecked, Object data) {
-		Intent intent = new Intent(this, RestoreService.class);
-		intent.putExtra(RestoreService.EXTRA_RESTORE_BACKUP_FILE, (File) data);
-		intent.putExtra(RestoreService.EXTRA_RESTORE_BACKUP_PASSWORD, text);
-		ContextCompat.startForegroundService(this, intent);
-		finish();
+		this.backupFile = (File) data;
+		this.backupPassword = text;
+
+		// If the permission is already granted, then start the restore directly
+		if (ConfigUtils.requestNotificationPermission(this, permissionLauncher)) {
+			startRestore();
+		}
 	}
 
 	@Override

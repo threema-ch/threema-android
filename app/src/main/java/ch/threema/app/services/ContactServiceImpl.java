@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -61,7 +62,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
@@ -89,12 +89,14 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
+import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
@@ -109,9 +111,9 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.ContactDeleteProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.ContactSetProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
-import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
@@ -120,6 +122,8 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 
 import static ch.threema.app.glide.AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR;
 
@@ -416,7 +420,7 @@ public class ContactServiceImpl implements ContactService {
 				return this.contactModelCache.get(identity);
 			}
 		}
-		return this.cache(this.contactStore.getContactModelForIdentity(identity));
+		return this.cache(this.contactStore.getContactForIdentity(identity));
 	}
 
 	/**
@@ -689,11 +693,12 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public void setActive(String identity) {
+	public void setActive(@Nullable String identity) {
 		final ContactModel contact = this.getByIdentity(identity);
 
 		if (contact != null && contact.getState() == ContactModel.State.INACTIVE) {
 			contact.setState(ContactModel.State.ACTIVE);
+			this.save(contact);
 		}
 	}
 
@@ -738,7 +743,7 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public void save(ContactModel contactModel) {
+	public void save(@NonNull ContactModel contactModel) {
 		this.contactStore.addContact(contactModel);
 	}
 
@@ -997,6 +1002,40 @@ public class ContactServiceImpl implements ContactService {
 		this.save(newContact);
 
 		return newContact;
+	}
+
+	@Override
+	public void createContactsByIdentities(@NonNull List<String> identities) {
+		List<String> newIdentities = StreamSupport.stream(identities)
+				.filter(identity -> {
+					if (identity == null) {
+						return false;
+					}
+					if (identity.equals(getMe().getIdentity())) {
+						logger.warn("Ignore own identity");
+						return false;
+					}
+					if (getByIdentity(identity) != null) {
+						logger.warn("Ignore ID that is already in contact list");
+						return false;
+					}
+					return true;
+				}).collect(Collectors.toList());
+
+		if (newIdentities.isEmpty()) {
+			return;
+		}
+
+		try {
+			for (APIConnector.FetchIdentityResult result : apiConnector.fetchIdentities(newIdentities)) {
+				ContactModel contactModel = createContactByFetchIdentityResult(result);
+				if (contactModel != null) {
+					contactStore.addContact(contactModel);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error while bulk creating contacts", e);
+		}
 	}
 
 	@Override
@@ -1368,31 +1407,31 @@ public class ContactServiceImpl implements ContactService {
 			throw new InvalidEntryException(R.string.connection_error);
 		}
 
-		//try to fetch
-		byte[] publicKey;
-		ContactModel newContact;
-
+		ContactModel contact;
 		try {
-			Contact contact = this.contactStore.fetchPublicKeyForIdentity(identity, true);
-			publicKey = contact != null ? contact.getPublicKey() : null;
-
-			if (publicKey == null) {
+			contact = this.fetchPublicKeyForIdentity(identity);
+		} catch (APIConnector.HttpConnectionException e) {
+			logger.error("Could not fetch public key", e);
+			if (e.getErrorCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+				throw new InvalidEntryException(R.string.invalid_threema_id);
+			} else {
 				throw new InvalidEntryException(R.string.connection_error);
 			}
-		} catch (FileNotFoundException e) {
-			throw new InvalidEntryException(
-				ConfigUtils.isOnPremBuild() && !identity.startsWith(BuildConfig.ONPREM_ID_PREFIX) ?
-				R.string.invalid_onprem_id : R.string.invalid_threema_id);
-		} catch (ThreemaException e) {
-			// contact already exists - shouldn't happen
+		} catch (APIConnector.NetworkException e) {
+			throw new InvalidEntryException(R.string.connection_error);
 		}
 
-		newContact = this.getByIdentity(identity);
-
-		if (newContact == null) {
+		if (contact == null) {
 			throw new InvalidEntryException(R.string.invalid_threema_id);
 		}
-		return newContact;
+
+		if (contact.getPublicKey() == null) {
+			throw new InvalidEntryException(R.string.connection_error);
+		}
+
+		save(contact);
+
+		return contact;
 	}
 
 	@Override
@@ -1500,30 +1539,109 @@ public class ContactServiceImpl implements ContactService {
 		return contactModel;
 	}
 
-	/**
-	 * Check if a contact for the provided identity exists, if not, try to fetch a contact from work api and add it to the contact database
-	 * @param identity Identity
-	 */
 	@Override
-	public void createWorkContact(@NonNull String identity) {
-		if (!ConfigUtils.isWorkBuild()) {
+	@WorkerThread
+	public void fetchAndCacheContact(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException, MissingPublicKeyException {
+		// Check if the contact is available locally
+		if (contactStore.getContactForIdentity(identity) != null) {
 			return;
 		}
 
-		if (contactStore.getContactForIdentity(identity, false, true) == null) {
-			LicenseService.Credentials credentials = this.licenseService.loadCredentials();
-			if ((credentials instanceof UserCredentials)) {
-				try {
-					List<WorkContact> workContacts = apiConnector.fetchWorkContacts(((UserCredentials) credentials).username, ((UserCredentials) credentials).password, new String[]{identity});
-					if (workContacts.size() > 0) {
-						WorkContact workContact = workContacts.get(0);
-						addWorkContact(workContact, null);
-					}
-				} catch (Exception e) {
-					logger.error("Error fetching work contact", e);
-				}
+		// Check if the contact is cached locally
+		if (contactStore.getContactForIdentityIncludingCache(identity) != null) {
+			return;
+		}
+
+		// Check if the identity is a work contact that should be known
+		if (ConfigUtils.isWorkBuild()) {
+			fetchAndCreateWorkContact(identity);
+			if (contactStore.getContactForIdentity(identity) != null) {
+				return;
 			}
 		}
+
+		// Check if contact is known after contact synchronization (if enabled)
+		if (preferenceService.isSyncContacts()) {
+			// Synchronize contact
+			SynchronizeContactsUtil.startDirectly(identity);
+
+			// Check again locally
+			if (contactStore.getContactForIdentity(identity) != null) {
+				return;
+			}
+		}
+
+		try {
+			// Otherwise try to fetch the identity
+			Contact contact = fetchPublicKeyForIdentity(identity);
+			if (contact != null) {
+				contactStore.addCachedContact(contact);
+			}
+		} catch (APIConnector.HttpConnectionException e) {
+			if (e.getErrorCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+				logger.warn("Identity fetch for identity '{}' returned 404", identity);
+				throw new MissingPublicKeyException("No public key found");
+			} else {
+				throw e;
+			}
+		}
+	}
+
+	/**
+	 * Try to fetch a contact from work api and add it to the contact database. Note that this
+	 * method does not throw any exceptions when the connection to the server could not be
+	 * established.
+	 *
+	 * @param identity the identity of the contact that might be a work contact
+	 */
+	private void fetchAndCreateWorkContact(@NonNull String identity) {
+		LicenseService.Credentials credentials = this.licenseService.loadCredentials();
+		if ((credentials instanceof UserCredentials)) {
+			try {
+				List<WorkContact> workContacts = apiConnector.fetchWorkContacts(((UserCredentials) credentials).username, ((UserCredentials) credentials).password, new String[]{identity});
+				if (workContacts.size() > 0) {
+					WorkContact workContact = workContacts.get(0);
+					addWorkContact(workContact, null);
+				}
+			} catch (Exception e) {
+				logger.error("Error fetching work contact", e);
+			}
+		}
+	}
+
+	/**
+	 * Create a contact by an identity fetch result.
+	 *
+	 * @param result the result of the identity fetch
+	 * @return the contact model if the fetch was successful, null otherwise
+	 */
+	private @Nullable ContactModel createContactByFetchIdentityResult(
+		@Nullable APIConnector.FetchIdentityResult result
+	) {
+		if (result == null || result.publicKey == null) {
+			return null;
+		}
+
+		byte[] b = result.publicKey;
+
+		ContactModel contact = new ContactModel(result.identity, b);
+		contact.setFeatureMask(result.featureMask);
+		contact.setVerificationLevel(VerificationLevel.UNVERIFIED);
+		contact.setDateCreated(new Date());
+		contact.setIdentityType(result.type);
+		switch (result.state) {
+			case IdentityState.ACTIVE:
+				contact.setState(ContactModel.State.ACTIVE);
+				break;
+			case IdentityState.INACTIVE:
+				contact.setState(ContactModel.State.INACTIVE);
+				break;
+			case IdentityState.INVALID:
+				contact.setState(ContactModel.State.INVALID);
+				break;
+		}
+
+		return contact;
 	}
 
 	@Override
@@ -1613,5 +1731,52 @@ public class ContactServiceImpl implements ContactService {
 			logger.error("Could not get forward security state", e);
 			return null;
 		}
+	}
+
+	/**
+	 * Fetch a public key for an identity and return it in a contact model.
+	 *
+	 * @param identity Identity to add a contact for
+	 * @return the contact model of the identity in case of success, null otherwise
+	 * @throws ch.threema.domain.protocol.api.APIConnector.HttpConnectionException when the identity cannot be fetched
+	 * @throws ch.threema.domain.protocol.api.APIConnector.NetworkException        when the identity cannot be fetched
+	 */
+	@WorkerThread
+	private @Nullable ContactModel fetchPublicKeyForIdentity(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException {
+		ContactModel contactModel = contactStore.getContactForIdentity(identity);
+		if (contactModel != null) {
+			return contactModel;
+		}
+
+		APIConnector.FetchIdentityResult result;
+		try {
+			result = this.apiConnector.fetchIdentity(identity);
+
+			if (result == null || result.publicKey == null) {
+				return null;
+			}
+		} catch (ThreemaException e) {
+			logger.error("Fetch failed: ", e);
+			throw new APIConnector.NetworkException(e);
+		}
+
+		ContactModel contact = new ContactModel(identity, result.publicKey);
+		contact.setFeatureMask(result.featureMask);
+		contact.setVerificationLevel(VerificationLevel.UNVERIFIED);
+		contact.setDateCreated(new Date());
+		contact.setIdentityType(result.type);
+		switch (result.state) {
+			case IdentityState.ACTIVE:
+				contact.setState(ContactModel.State.ACTIVE);
+				break;
+			case IdentityState.INACTIVE:
+				contact.setState(ContactModel.State.INACTIVE);
+				break;
+			case IdentityState.INVALID:
+				contact.setState(ContactModel.State.INVALID);
+				break;
+		}
+
+		return contact;
 	}
 }

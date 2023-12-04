@@ -48,9 +48,10 @@ import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 import ch.threema.app.R;
 import ch.threema.app.ScreenshotTakingRule;
-import ch.threema.app.testutils.TestHelpers;
 import ch.threema.app.notifications.BackgroundErrorNotification;
+import ch.threema.app.testutils.TestHelpers;
 
+import static ch.threema.app.PermissionRuleUtilsKt.getNotificationPermissionRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -62,7 +63,9 @@ public class BackgroundErrorNotificationTest {
 	private UiDevice mDevice;
 
 	@Rule
-	public final RuleChain activityRule = ScreenshotTakingRule.getRuleChain();
+	public final RuleChain activityRule = ScreenshotTakingRule.getRuleChain().around(
+		getNotificationPermissionRule()
+	);
 
 	@Before
 	public void getDevice() {
@@ -76,7 +79,7 @@ public class BackgroundErrorNotificationTest {
 	@SuppressWarnings("unused") // Used for manual debugging
 	private static void dumpState(@NonNull UiDevice device) throws IOException {
 		device.takeScreenshot(new File("/sdcard/screenshot.png"));
-		try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(new File("/sdcard/screenshot.uix")))) {
+		try (OutputStream stream = new BufferedOutputStream(new FileOutputStream("/sdcard/screenshot.uix"))) {
 			// Note: Explicitly opening and closing stream since the UiAutomator dumpWindowHierarchy(File)
 			// method leaks a file descriptor.
 			device.dumpWindowHierarchy(stream);

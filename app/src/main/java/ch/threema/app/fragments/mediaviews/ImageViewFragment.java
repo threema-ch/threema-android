@@ -63,11 +63,6 @@ public class ImageViewFragment extends MediaViewFragment {
 	}
 
 	@Override
-	public boolean inquireClose() {
-		return true;
-	}
-
-	@Override
 	protected void showThumbnail(@NonNull Drawable thumbnail) {
 		if (TestUtil.required(imageViewReference.get(), thumbnail)) {
 			previewViewReference.get().setVisibility(View.VISIBLE);

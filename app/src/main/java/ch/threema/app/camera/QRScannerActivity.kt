@@ -73,8 +73,6 @@ class QRScannerActivity : ThreemaActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        ConfigUtils.setLocaleOverride(this, ThreemaApplication.getServiceManager()!!.preferenceService)
-
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         setContentView(R.layout.activity_qrscanner)

@@ -134,6 +134,12 @@ public class ServerAddressProviderOnPrem implements ServerAddressProvider {
 		return 0;
 	}
 
+	@Override
+	public byte[] getThreemaPushPublicKey() throws ThreemaException {
+		// TODO(ONPREM-164): Allow to configure for OnPrem
+		return null;
+	}
+
 	private OnPremConfigFetcher getOnPremConfigFetcher() throws ThreemaException {
 		return fetcherProvider.getFetcher();
 	}

@@ -35,7 +35,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.push.PushService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.license.LicenseService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.webclient.exceptions.ConversionException;
@@ -95,11 +95,11 @@ public class ClientInfo extends Converter {
 		}
 
 		PreferenceService preferenceService;
-		LicenseService licenseService;
+		UserService userService;
 
 		try {
+			userService = serviceManager.getUserService();
 			preferenceService = serviceManager.getPreferenceService();
-			licenseService = serviceManager.getLicenseService();
 		} catch (Exception e) {
 			logger.error("Exception", e);
 			throw new ConversionException("Services not available");
@@ -111,13 +111,17 @@ public class ClientInfo extends Converter {
 		data.put(OS_VERSION, Build.VERSION.RELEASE);
 		data.put(APP_VERSION, ConfigUtils.getAppVersion(appContext));
 		if (pushToken != null) {
-			// To be able to differentiate between HMS and FCM push tokens without any
-			// protocol changes, we'll prefix the push token with "hms;".
+			// To be able to differentiate between FCM and other push tokens without any
+			// protocol changes, we'll prefix non-FCM push tokens.
 			if (PushService.hmsServicesInstalled(appContext)) {
 				data.put(PUSH_TOKEN, "hms;" + pushToken);
 			} else {
 				data.put(PUSH_TOKEN, pushToken);
 			}
+		} else {
+			// If we don't have a push token, then we use the Threema Gateway for wakeup calls
+			data.put(PUSH_TOKEN, String.format("threema-gateway;%s;%s",
+				userService.getIdentity(), ch.threema.base.utils.Utils.byteArrayToHexString(userService.getPublicKey())));
 		}
 
 		// Work stuff

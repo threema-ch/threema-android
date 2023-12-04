@@ -11,8 +11,6 @@
 		android:title="@string/media_gallery"
 		app:showAsAction="always"/>
 
-	<!-- TODO(DES-54) replace with more appropriate icon -->
-
 	<item
 		android:id="@+id/menu_group_call"
 		android:icon="@drawable/ic_group_call"
@@ -63,26 +61,39 @@
 		app:showAsAction="never"
 		/>
 
-	<item
-		android:id="@+id/menu_leave_group"
-		android:enabled="true"
-		android:orderInCategory="80"
-		android:title="@string/action_leave_group"
-		android:icon="@drawable/ic_outline_directions_run"
-		app:iconTint="?attr/colorOnSurface"
-		android:visible="false"
-		app:showAsAction="never"
-		/>
+	<group>
+		<item
+			android:id="@+id/menu_dissolve_group"
+			android:enabled="true"
+			android:orderInCategory="80"
+			android:title="@string/action_dissolve_group"
+			android:icon="@drawable/ic_outline_directions_run"
+			app:iconTint="?attr/colorOnSurface"
+			android:visible="false"
+			app:showAsAction="never"
+			/>
 
-	<item
-		android:id="@+id/menu_delete_group"
-		android:enabled="true"
-		android:orderInCategory="90"
-		android:title="@string/action_delete_group"
-		android:icon="@drawable/ic_delete_outline"
-		app:iconTint="?attr/colorOnSurface"
-		android:visible="false"
-		app:showAsAction="never"
-		/>
+		<item
+			android:id="@+id/menu_leave_group"
+			android:enabled="true"
+			android:orderInCategory="80"
+			android:title="@string/action_leave_group"
+			android:icon="@drawable/ic_outline_directions_run"
+			app:iconTint="?attr/colorOnSurface"
+			android:visible="false"
+			app:showAsAction="never"
+			/>
+
+		<item
+			android:id="@+id/menu_delete_group"
+			android:enabled="true"
+			android:orderInCategory="90"
+			android:title="@string/action_delete_group"
+			android:icon="@drawable/ic_delete_outline"
+			app:iconTint="?attr/colorOnSurface"
+			android:visible="false"
+			app:showAsAction="never"
+			/>
+	</group>
 
 </menu>

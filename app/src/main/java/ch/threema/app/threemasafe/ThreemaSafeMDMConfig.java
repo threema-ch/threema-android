@@ -200,6 +200,10 @@ public class ThreemaSafeMDMConfig {
 		return (this.restoreStatus & PASSWORD_PRESET) == PASSWORD_PRESET;
 	}
 
+	public boolean isBackupPasswordPreset() {
+		return (this.backupStatus & PASSWORD_PRESET) == PASSWORD_PRESET;
+	}
+
 	public boolean isRestoreDisabled() {
 		return this.restoreStatus == RESTORE_DISABLE;
 	}
@@ -213,7 +217,7 @@ public class ThreemaSafeMDMConfig {
 	}
 
 	public boolean isBackupAdminDisabled() {
-		return this.backupStatus == BACKUP_DISABLE || (this.backupStatus & PASSWORD_PRESET) == PASSWORD_PRESET;
+		return this.backupStatus == BACKUP_DISABLE || isBackupPasswordPreset();
 	}
 
 	public boolean isSkipBackupPasswordEntry() {

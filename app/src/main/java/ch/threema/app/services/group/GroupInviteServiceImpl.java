@@ -144,6 +144,7 @@ public class GroupInviteServiceImpl implements GroupInviteService {
 	 * @return GroupInviteModel set as default
 	 */
 	@Override
+	@NonNull
 	public Optional<GroupInviteModel> getDefaultGroupInvite(@NonNull GroupModel groupModel) {
 		return groupInviteModelFactory.getDefaultByGroupApiId(groupModel.getApiGroupId());
 	}

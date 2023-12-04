@@ -23,29 +23,22 @@ package ch.threema.app.stores;
 
 import org.slf4j.Logger;
 
-import java.io.FileNotFoundException;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.PreferenceService;
-import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.Contact;
-import ch.threema.domain.models.IdentityState;
-import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
@@ -65,122 +58,26 @@ public class DatabaseContactStore implements ContactStore {
 
 	private final @NonNull IdentityStoreInterface identityStore;
 	private final @NonNull DHSessionStoreInterface fsSessions;
-	private final @NonNull APIConnector apiConnector;
-	private final @NonNull PreferenceService preferenceService;
 	private final @NonNull DatabaseServiceNew databaseServiceNew;
-	private final @NonNull IdListService blackListService;
-	private final @NonNull IdListService excludeListService;
+
+	/**
+	 * The cache of fetched contacts. Note that this cache only contains the cached contacts from a
+	 * server fetch. Contacts from the database are not cached here.
+	 */
+	private final @NonNull Map<String, Contact> contactCache = new HashMap<>();
 
 	public DatabaseContactStore(
 		@NonNull IdentityStoreInterface identityStore,
 		@NonNull DHSessionStoreInterface fsSessions,
-		@NonNull APIConnector apiConnector,
-		@NonNull PreferenceService preferenceService,
-		@NonNull DatabaseServiceNew databaseServiceNew,
-		@NonNull IdListService blackListService,
-		@NonNull IdListService excludeListService
+		@NonNull DatabaseServiceNew databaseServiceNew
 	) {
 		this.identityStore = identityStore;
 		this.fsSessions = fsSessions;
-		this.apiConnector = apiConnector;
-		this.preferenceService = preferenceService;
 		this.databaseServiceNew = databaseServiceNew;
-		this.blackListService = blackListService;
-		this.excludeListService = excludeListService;
 	}
 
 	@Override
-	public Contact getContactForIdentity(@NonNull String identity, boolean fetch, boolean saveContact) {
-		Contact contact = this.getContactForIdentity(identity);
-
-		if (contact == null) {
-			if (fetch) {
-				try {
-					//check if identity is on black list
-					if(this.blackListService != null && this.blackListService.has(identity)) {
-						return null;
-					}
-
-					if (this.preferenceService != null) {
-						if (this.preferenceService.isSyncContacts()) {
-							//check if is on exclude list
-							if (this.excludeListService != null && !this.excludeListService.has(identity)) {
-								SynchronizeContactsUtil.startDirectly(identity);
-
-								//try to select again
-								contact = this.getContactForIdentity(identity);
-								if (contact != null) {
-									return contact;
-								}
-							}
-						}
-
-						//do not fetch if block unknown is enabled
-						if (this.preferenceService.isBlockUnknown()) {
-							return null;
-						}
-					}
-
-					return this.fetchPublicKeyForIdentity(identity, saveContact);
-				} catch (Exception e) {
-					logger.error("Exception", e);
-					return null;
-				}
-			}
-			return null;
-		}
-
-		return contact;
-	}
-
-	/**
-	 * Fetch a public key for an identity, create a contact and save it (if requested)
-	 *
-	 * @param identity Identity to add a contact for
-	 * @param saveContact save contact if it does not exist; if false, the contact is added as hidden contact
-	 * @throws ThreemaException if a contact with this identity already exists
-	 *          FileNotFoundException if identity was not found on the server
-	 * @return public key of identity in case of success, null otherwise
-	 */
-	@WorkerThread
-	public @Nullable Contact fetchPublicKeyForIdentity(@NonNull String identity, boolean saveContact) throws FileNotFoundException, ThreemaException {
-		APIConnector.FetchIdentityResult result = getContactResult(identity);
-		if (result == null || result.publicKey == null) {
-			return null;
-		}
-
-		byte[] b = result.publicKey;
-
-		ContactModel contact = new ContactModel(identity, b);
-		contact.setFeatureMask(result.featureMask);
-		contact.setVerificationLevel(VerificationLevel.UNVERIFIED);
-		contact.setDateCreated(new Date());
-		contact.setIdentityType(result.type);
-		switch (result.state) {
-			case IdentityState.ACTIVE:
-				contact.setState(ContactModel.State.ACTIVE);
-				break;
-			case IdentityState.INACTIVE:
-				contact.setState(ContactModel.State.INACTIVE);
-				break;
-			case IdentityState.INVALID:
-				contact.setState(ContactModel.State.INVALID);
-				break;
-		}
-
-		if (saveContact) {
-			this.addContact(contact);
-		}
-
-		return contact;
-	}
-
-	@Override
-	public @Nullable Contact getContactForIdentity(@NonNull String identity) {
-		return this.databaseServiceNew.getContactModelFactory().getByIdentity(identity);
-	}
-
-	public @Nullable ContactModel getContactModelForIdentity(@NonNull String identity) {
+	public @Nullable ContactModel getContactForIdentity(@NonNull String identity) {
 		return this.databaseServiceNew.getContactModelFactory().getByIdentity(identity);
 	}
 
@@ -190,6 +87,22 @@ public class DatabaseContactStore implements ContactStore {
 
 	public @Nullable ContactModel getContactModelForLookupKey(final String lookupKey) {
 		return this.databaseServiceNew.getContactModelFactory().getByLookupKey(lookupKey);
+	}
+
+	@Override
+	public void addCachedContact(@NonNull Contact contact) {
+		contactCache.put(contact.getIdentity(), contact);
+	}
+
+	@Nullable
+	@Override
+	public Contact getContactForIdentityIncludingCache(@NonNull String identity) {
+		Contact cached = contactCache.get(identity);
+		if (cached != null) {
+			return cached;
+		}
+
+		return getContactForIdentity(identity);
 	}
 
 	@Override
@@ -323,25 +236,5 @@ public class DatabaseContactStore implements ContactStore {
 				listener.onRemoved(removedContactModel);
 			}
 		});
-	}
-
-	private APIConnector.FetchIdentityResult getContactResult(@NonNull String identity) throws FileNotFoundException {
-		APIConnector.FetchIdentityResult result;
-		try {
-			Contact contact = this.getContactForIdentity(identity);
-			if(contact != null) {
-				//cannot fetch and save... contact already exists
-				throw new ThreemaException("contact already exists, cannot fetch and save");
-			}
-
-			result = this.apiConnector.fetchIdentity(identity);
-		}
-		catch (FileNotFoundException e) {
-			throw e;
-		} catch (Exception e) {
-			//do nothing
-			return null;
-		}
-		return result;
 	}
 }

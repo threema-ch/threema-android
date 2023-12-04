@@ -21,6 +21,20 @@
 
 package ch.threema.app.services;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyDouble;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.RestrictionsManager;
@@ -51,20 +65,6 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkData;
 import ch.threema.domain.protocol.api.work.WorkMDMSettings;
-
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyDouble;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 public class AppRestrictionServiceTest {
@@ -475,14 +475,17 @@ public class AppRestrictionServiceTest {
 		applicationRestrictions.putString("th_web_hosts", "restriction_web_hosts"); // #9
 		mdmWorkParameters.put("th_web_hosts", "work_mdm_web_hosts"); // #9
 
+		applicationRestrictions.putInt("th_keep_messages_days", 365); // #10
+		mdmWorkParameters.put("th_keep_messages_days", 7); // #10
+
 		// Application restrictions that are not touched by work mdm parameters and must therefore not change:
-		applicationRestrictions.putBoolean("th_disable_export", true); // #10
-		applicationRestrictions.putString("th_safe_password_message", "restriction_safe_password_message"); // #11
+		applicationRestrictions.putBoolean("th_disable_export", true); // #11
+		applicationRestrictions.putString("th_safe_password_message", "restriction_safe_password_message"); // #12
 
 		// Work mdm parameters not set by application restrictions:
-		mdmWorkParameters.put("th_safe_enable", true);  // #12
-		mdmWorkParameters.put("th_firstname", "work_mdm_firstname"); // #13
-		mdmWorkParameters.put("th_lastname", "work_mdm_lastname"); // #14
+		mdmWorkParameters.put("th_safe_enable", true);  // #13
+		mdmWorkParameters.put("th_firstname", "work_mdm_firstname"); // #14
+		mdmWorkParameters.put("th_lastname", "work_mdm_lastname"); // #15
 
 		RestrictionsManager restrictionManagerMock = PowerMockito.mock(RestrictionsManager.class);
 		when(restrictionManagerMock.getApplicationRestrictions()).thenReturn(applicationRestrictions);
@@ -517,7 +520,7 @@ public class AppRestrictionServiceTest {
 		verify(preferenceStoreMock, times(1)).getJSONObject(eq("wrk_app_restriction"), eq(true));
 		verify(mockContext, times(5)).getString(anyInt());
 
-		Assert.assertEquals(14, appRestrictions.size());
+		Assert.assertEquals(15, appRestrictions.size());
 		// Application restrictions that must not be overridden by work mdm parameters:
 		Assert.assertEquals("restriction_id_backup", appRestrictions.getString("th_id_backup"));
 		Assert.assertEquals("restriction_id_backup_password", appRestrictions.getString("th_id_backup_password"));
@@ -530,6 +533,7 @@ public class AppRestrictionServiceTest {
 		Assert.assertFalse(appRestrictions.getBoolean("th_disable_calls"));
 		Assert.assertEquals("work_mdm_nickname", appRestrictions.getString("th_nickname"));
 		Assert.assertEquals("work_mdm_web_hosts", appRestrictions.getString("th_web_hosts"));
+		Assert.assertEquals(7, appRestrictions.getInt("th_keep_messages_days"));
 
 		// Application restrictions that are not set in work mdm and therefore not overridden:
 		Assert.assertTrue(appRestrictions.getBoolean("th_disable_export"));

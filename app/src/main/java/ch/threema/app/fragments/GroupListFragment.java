@@ -73,27 +73,27 @@ public class GroupListFragment extends RecipientListFragment {
 			protected List<GroupModel> doInBackground(Void... voids) {
 				return groupService.getAll(new GroupService.GroupFilter() {
 					@Override
-					public boolean sortingByDate() {
+					public boolean sortByDate() {
 						return false;
 					}
 
 					@Override
-					public boolean sortingByName() {
+					public boolean sortByName() {
 						return true;
 					}
 
 					@Override
-					public boolean sortingAscending() {
+					public boolean sortAscending() {
 						return true;
 					}
 
 					@Override
-					public boolean withDeleted() {
+					public boolean includeDeletedGroups() {
 						return false;
 					}
 
 					@Override
-					public boolean withDeserted() { return false; }
+					public boolean includeLeftGroups() { return false; }
 
 				});
 			}

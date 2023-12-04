@@ -242,6 +242,8 @@ class MessageListViewHolder(
 
         val draft = messageListAdapterItem.getDraft()
 
+        val isHidden = messageListAdapterItem.isHidden
+
         // Initialize subject
         subjectView.visibility = VISIBLE
         subjectView.text = params.emojiMarkupUtil.formatBodyTextString(
@@ -250,7 +252,7 @@ class MessageListViewHolder(
             100
         )
 
-        groupMemberName.text = if (messageListAdapterItem.isHidden) "" else messageListAdapterItem.latestMessageGroupMemberName
+        groupMemberName.text = if (isHidden) "" else messageListAdapterItem.latestMessageGroupMemberName
 
         if (draft != null) {
             initializeDraft()
@@ -264,9 +266,9 @@ class MessageListViewHolder(
 
         initializeMuteAppearance(messageListAdapterItem)
 
-        initializeHiddenAppearance(messageListAdapterItem.isHidden)
+        initializeHiddenAppearance(isHidden)
 
-        initializeDeliveryView(messageListAdapterItem, messageListAdapterItem.isHidden, draft != null)
+        initializeDeliveryView(messageListAdapterItem, isHidden, draft != null)
 
         initializeGroupCallIndicator(messageListAdapterItem)
 
@@ -281,7 +283,7 @@ class MessageListViewHolder(
             requestManager
         )
 
-        updateTypingIndicator(messageListAdapterItem)
+        updateTypingIndicator(messageListAdapterItem.isTyping, isHidden)
 
         if (params.isTablet) {
             // handle selection in multi-pane mode
@@ -469,8 +471,8 @@ class MessageListViewHolder(
         }
     }
 
-    private fun updateTypingIndicator(messageListAdapterItem: MessageListAdapterItem) {
-        val isTypingIndicatorHidden = !messageListAdapterItem.isTyping || messageListAdapterItem.isHidden
+    private fun updateTypingIndicator(isTyping: Boolean, isHidden: Boolean) {
+        val isTypingIndicatorHidden = !isTyping || isHidden
         latestMessageContainer.visibility = if (isTypingIndicatorHidden) VISIBLE else GONE
         typingContainer.visibility = if (isTypingIndicatorHidden) GONE else VISIBLE
     }

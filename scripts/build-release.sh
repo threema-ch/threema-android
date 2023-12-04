@@ -119,7 +119,7 @@ if [ "$license" != "accepted" ]; then
 fi
 
 # Determine build version
-app_version_code=$(grep "^\s*versionCode \d*" "$DIR/../app/build.gradle" | sed 's/[^0-9]*//g')
+app_version_code=$(grep "^\s*def defaultVersionCode = \d*" "$DIR/../app/build.gradle" | sed 's/[^0-9]*//g')
 app_version_name_main=$(grep '^def app_version = "' "$DIR/../app/build.gradle" | sed 's/^def app_version = "\([^"]*\)".*/\1/')
 app_version_name_suffix=$(grep '^def beta_suffix = "' "$DIR/../app/build.gradle" | sed 's/^def beta_suffix = "\([^"]*\)".*/\1/')
 app_version_name="${app_version_name_main}${app_version_name_suffix}"

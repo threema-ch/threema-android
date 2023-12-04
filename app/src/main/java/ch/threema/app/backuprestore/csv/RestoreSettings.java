@@ -39,8 +39,10 @@ public class RestoreSettings {
 	 * 17: group message states (ack / dec) and group descriptions
 	 * 18: contact forward security flag
 	 * 19: add random contact id
+	 * 20: add message display type (starred etc.)
+	 * 21: refactored group status messages
 	 */
-	public static final int CURRENT_VERSION = 19;
+	public static final int CURRENT_VERSION = 21;
 	private int version;
 
 	public RestoreSettings(int version) {

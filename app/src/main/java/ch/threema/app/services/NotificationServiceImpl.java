@@ -67,7 +67,6 @@ import android.text.format.Formatter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.Person;
@@ -259,7 +258,6 @@ public class NotificationServiceImpl implements NotificationService {
 			notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_WORK_SYNC);
 		}
 		notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_GROUP_CALL);
-		notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_IDENTITY_SYNC);
 		notificationManager.deleteNotificationChannelGroup(NOTIFICATION_CHANNELGROUP_CHAT);
 		notificationManager.deleteNotificationChannelGroup(NOTIFICATION_CHANNELGROUP_CHAT_UPDATE);
 		notificationManager.deleteNotificationChannelGroup(NOTIFICATION_CHANNELGROUP_VOIP);
@@ -364,19 +362,6 @@ public class NotificationServiceImpl implements NotificationService {
 			notificationManager.createNotificationChannel(notificationChannel);
 		}
 
-		// identity sync notification
-		notificationChannel = new NotificationChannel(
-				NOTIFICATION_CHANNEL_IDENTITY_SYNC,
-				context.getString(R.string.work_data_sync),
-				NotificationManager.IMPORTANCE_LOW);
-		notificationChannel.setDescription(context.getString(R.string.contact_update));
-		notificationChannel.enableLights(false);
-		notificationChannel.enableVibration(false);
-		notificationChannel.setShowBadge(false);
-		notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-		notificationChannel.setSound(null, null);
-		notificationManager.createNotificationChannel(notificationChannel);
-
 		// new synced contact notification
 		notificationChannel = new NotificationChannel(
 				NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS,
@@ -390,9 +375,8 @@ public class NotificationServiceImpl implements NotificationService {
 		notificationChannel.setSound(null,null);
 		notificationManager.createNotificationChannel(notificationChannel);
 
-		// TODO(ANDR-2065) temporary - remove these two lines after beta
-		notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_GROUP_CALL_OLD);
-		notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_GROUP_CALL);
+		// TODO: reference to this channel may be removed after Sep. 2024
+		notificationManager.deleteNotificationChannel(NOTIFICATION_CHANNEL_IDENTITY_SYNC);
 
 		// group join response notification channel
 		if (ConfigUtils.supportsGroupLinks()) {
@@ -1868,37 +1852,6 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public void cancelWorkSyncProgress() {
 		this.cancel(WORK_SYNC_NOTIFICATION_ID);
-	}
-
-	@Override
-	public void showIdentityStatesSyncProgress() {
-		showSyncProgress(ThreemaApplication.IDENTITY_SYNC_NOTIFICATION_ID, NOTIFICATION_CHANNEL_IDENTITY_SYNC, R.string.synchronizing);
-	}
-
-	@Override
-	public void cancelIdentityStatesSyncProgress() {
-		this.cancel(ThreemaApplication.IDENTITY_SYNC_NOTIFICATION_ID);
-	}
-
-	private void showSyncProgress(final int notificationId, final String channelName, final @StringRes int textRes) {
-		final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-		if (notificationManager == null) {
-			return;
-		}
-
-		NotificationCompat.Builder builder =
-			new NotificationBuilderWrapper(context, channelName, null)
-				.setSound(null)
-				.setSmallIcon(R.drawable.ic_sync_notification)
-				.setContentTitle(this.context.getString(textRes))
-				.setProgress(0, 0, true)
-				.setPriority(Notification.PRIORITY_LOW)
-				.setAutoCancel(true)
-				.setLocalOnly(true)
-				.setOnlyAlertOnce(true);
-
-		this.notify(notificationId, builder, null, channelName);
 	}
 
 	@Override

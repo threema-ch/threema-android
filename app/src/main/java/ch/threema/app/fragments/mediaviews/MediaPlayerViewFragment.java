@@ -80,9 +80,6 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
 	}
 
 	@Override
-	public boolean inquireClose() { return true; }
-
-	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Bundle arguments = getArguments();
 		if (arguments != null) {

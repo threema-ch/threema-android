@@ -29,16 +29,11 @@ import androidx.annotation.Nullable;
 import ch.threema.domain.models.Contact;
 
 public class DummyContactStore implements ContactStore {
-	private Map<String,Contact> contactMap;
+	private final Map<String, Contact> contactMap;
+	private final Map<String, Contact> contactCache = new HashMap<>();
 
 	public DummyContactStore() {
 		this.contactMap = new HashMap<>();
-	}
-
-	@Nullable
-	@Override
-	public Contact getContactForIdentity(@NonNull String identity, boolean fetch, boolean saveContact) {
-		return getContactForIdentity(identity);
 	}
 
 	@Nullable
@@ -60,5 +55,20 @@ public class DummyContactStore implements ContactStore {
 	@Override
 	public void removeContact(@NonNull Contact contact) {
 		contactMap.remove(contact.getIdentity());
+	}
+
+	@Override
+	public void addCachedContact(@NonNull Contact contact) {
+		this.contactCache.put(contact.getIdentity(), contact);
+	}
+
+	@Nullable
+	@Override
+	public Contact getContactForIdentityIncludingCache(@NonNull String identity) {
+		Contact cached = contactCache.get(identity);
+		if (cached != null) {
+			return cached;
+		}
+		return getContactForIdentity(identity);
 	}
 }

@@ -23,20 +23,20 @@ package ch.threema.app.workers;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
+
 import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PollingHelper;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ContactUtil;
@@ -51,7 +51,6 @@ public class IdentityStatesWorker extends Worker {
 	private ContactService contactService;
 	private APIConnector apiConnector;
 	private PreferenceService preferenceService;
-	private NotificationService notificationService;
 	private PollingHelper pollingHelper = null;
 
 	public IdentityStatesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -62,7 +61,6 @@ public class IdentityStatesWorker extends Worker {
 			contactService = serviceManager.getContactService();
 			apiConnector = serviceManager.getAPIConnector();
 			preferenceService = serviceManager.getPreferenceService();
-			notificationService = serviceManager.getNotificationService();
 		} catch (Exception e) {
 			//
 		}
@@ -76,10 +74,6 @@ public class IdentityStatesWorker extends Worker {
 		if (this.contactService == null) {
 			logger.info("ContactService not available while updating IdentityStates");
 			return Result.failure();
-		}
-
-		if (notificationService != null) {
-			notificationService.showIdentityStatesSyncProgress();
 		}
 
 		//get all identities
@@ -141,44 +135,47 @@ public class IdentityStatesWorker extends Worker {
 					Integer featureMask = res.featureMasks[n];
 
 					if (contactMap.containsKey(identity)) {
-						ContactModel contactModel = contactModelList.get(contactMap.get(identity));
-						if (contactModel != null) {
-							ContactModel.State contactModelState = null;
-							switch (state) {
-								case IdentityState.ACTIVE:
-									contactModelState = ContactModel.State.ACTIVE;
-									break;
-								case IdentityState.INACTIVE:
-									contactModelState = ContactModel.State.INACTIVE;
-									break;
-								case IdentityState.INVALID:
-									contactModelState = ContactModel.State.INVALID;
-									break;
-							}
+						Integer entry = contactMap.get(identity);
+						if (entry != null) {
+							ContactModel contactModel = contactModelList.get(entry);
+							if (contactModel != null) {
+								ContactModel.State contactModelState = null;
+								switch (state) {
+									case IdentityState.ACTIVE:
+										contactModelState = ContactModel.State.ACTIVE;
+										break;
+									case IdentityState.INACTIVE:
+										contactModelState = ContactModel.State.INACTIVE;
+										break;
+									case IdentityState.INVALID:
+										contactModelState = ContactModel.State.INVALID;
+										break;
+								}
 
-							boolean save = false;
-							if (contactModel.getIdentityType() != res.types[n]) {
-								// Set new type
-								contactModel.setIdentityType(res.types[n]);
-								save = true;
-							}
-							if (featureMask != null) {
-								if (contactModel.getFeatureMask() != featureMask) {
-									contactModel.setFeatureMask(featureMask);
+								boolean save = false;
+								if (contactModel.getIdentityType() != res.types[n]) {
+									// Set new type
+									contactModel.setIdentityType(res.types[n]);
 									save = true;
 								}
-							} else {
-								logger.warn("Feature mask for contact {} is null.", contactModel.getIdentity());
-								// is this a valid contact?
-							}
-							if (ContactUtil.allowedChangeToState(contactModel, contactModelState)) {
-								logger.debug("update {} with state {}", identity, contactModelState);
-								contactModel.setState(contactModelState);
-								save = true;
-							}
+								if (featureMask != null) {
+									if (contactModel.getFeatureMask() != featureMask) {
+										contactModel.setFeatureMask(featureMask);
+										save = true;
+									}
+								} else {
+									logger.warn("Feature mask for contact {} is null.", contactModel.getIdentity());
+									// is this a valid contact?
+								}
+								if (ContactUtil.allowedChangeToState(contactModel, contactModelState)) {
+									logger.debug("update {} with state {}", identity, contactModelState);
+									contactModel.setState(contactModelState);
+									save = true;
+								}
 
-							if (save) {
-								this.contactService.save(contactModel);
+								if (save) {
+									this.contactService.save(contactModel);
+								}
 							}
 						}
 					}
@@ -201,10 +198,6 @@ public class IdentityStatesWorker extends Worker {
 		pollingHelper.poll(false);
 
 		logger.debug("finished");
-
-		if (notificationService != null) {
-			notificationService.cancelIdentityStatesSyncProgress();
-		}
 
 		return Result.success();
 	}

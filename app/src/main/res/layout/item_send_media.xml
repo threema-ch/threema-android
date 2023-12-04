@@ -13,7 +13,7 @@
 		android:foreground="@drawable/media_gallery_item_selector">
 
 		<com.google.android.material.imageview.ShapeableImageView
-			android:id="@+id/image_view"
+			android:id="@+id/thumbnail_view"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_gravity="center_vertical"

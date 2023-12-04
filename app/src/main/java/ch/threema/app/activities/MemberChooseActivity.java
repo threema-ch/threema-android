@@ -165,7 +165,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 				noticeText.setText(getNotice());
 				noticeLayout.setVisibility(View.VISIBLE);
 
-				findViewById(R.id.close_button).setOnClickListener(v -> AnimationUtil.collapse(noticeLayout));
+				findViewById(R.id.close_button).setOnClickListener(v -> AnimationUtil.collapse(noticeLayout, null,true));
 			}
 		}
 

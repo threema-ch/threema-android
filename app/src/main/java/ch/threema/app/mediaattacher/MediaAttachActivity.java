@@ -264,7 +264,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		});
 
 		// If the media grid is shown, we don't need the gallery button
-		if (preferenceService.isShowImageAttachPreviewsEnabled() && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+		if (preferenceService.isShowImageAttachPreviewsEnabled() && ConfigUtils.isVideoImagePermissionGranted(this)) {
 			this.attachGalleryButton.setVisibility(View.GONE);
 		}
 

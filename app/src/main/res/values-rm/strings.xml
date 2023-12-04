@@ -217,7 +217,6 @@
     <string name="ringtone_none">Senza tun</string>
     <string name="no_camera_installed">Nagina camera adattada a disposiziun</string>
     <string name="save_message_action">Memorisar</string>
-    <string name="saving_media">Il medium vegn memorisà</string>
     <string name="file_is_not_a_video">La datoteca selectada n\'è betg in video</string>
     <string name="masterkey_is_unlocked">La clav principala è debloccada</string>
     <string name="file_too_large">La datoteca è pli gronda ch\'ils %1$d MB permess</string>
@@ -1360,5 +1359,9 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <plurals name="selection_counter_label">
         <item quantity="one">Tschernì %d maletg</item>
         <item quantity="other">Tschernì %d maletgs</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="one">Il medium vegn memorisà</item>
+        <item quantity="other"></item>
     </plurals>
 </resources>

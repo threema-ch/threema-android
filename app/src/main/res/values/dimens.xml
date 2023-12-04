@@ -71,7 +71,8 @@
 	<dimen name="listitem_contacts_margin_left_right">16dp</dimen>
 	<dimen name="tablet_standard_padding_left_right">16dp</dimen>
 	<dimen name="listitem_contact_height">64dp</dimen>
-    <dimen name="tablet_additional_padding_left_right">0dp</dimen>
+	<dimen name="listitem_globalsearch_height">80dp</dimen>
+	<dimen name="tablet_additional_padding_left_right">0dp</dimen>
 
 	<!-- new ballot wizard -->
 	<dimen name="wizard_footer_height">48dp</dimen>
@@ -320,4 +321,7 @@
 	<dimen name="notice_views_vertical_margin">2dp</dimen>
     <dimen name="media_gallery_container_radius">3dp</dimen>
     <dimen name="compose_edittext_elevation">3dp</dimen>
+
+	<!-- offset of badge on overflow toolbar item -->
+    <dimen name="overflow_badge_offset">18dp</dimen>
 </resources>

@@ -24,7 +24,11 @@ package ch.threema.app.utils;
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.ConfigurationCompat;
 
 import java.io.UnsupportedEncodingException;
@@ -32,11 +36,16 @@ import java.net.URLEncoder;
 import java.text.Normalizer;
 import java.util.Locale;
 
+import androidx.core.os.LocaleListCompat;
+import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.base.utils.LoggingUtil;
 
 public class LocaleUtil {
 	public static final String UTF8_ENCODING = "UTF-8";
+	private final static Logger logger = LoggingUtil.getThreemaLogger("LocaleUtil");
 
 	private LocaleUtil() {
 		// Forbidden being instantiated.
@@ -52,12 +61,12 @@ public class LocaleUtil {
 
 	@NonNull
 	public static String getAppLanguage() {
-		PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-		if (preferenceService != null) {
-			String localeOverride = preferenceService.getLocaleOverride();
+		LocaleListCompat locales = AppCompatDelegate.getApplicationLocales();
+		if (!locales.isEmpty()) {
+			Locale appLocale = locales.get(0);
 
-			if (!TestUtil.empty(localeOverride)) {
-				return localeOverride;
+			if (appLocale != null && !TestUtil.empty(appLocale.getLanguage())) {
+				return appLocale.getLanguage();
 			}
 		}
 		return LocaleUtil.getLanguage();
@@ -132,4 +141,139 @@ public class LocaleUtil {
 		}
 		return input;
 	}
+
+	/**
+	 * Map the given target locale to the corresponding notation of the given locales array.
+	 *
+	 * @param target  the locale that should be mapped to the best matching locale
+	 * @param locales the selection of possible locales
+	 * @return the locale of the given locales that best fits the target, the empty string if no
+	 * match is possible
+	 */
+	@NonNull
+	public static String mapLocaleToPredefinedLocales(@Nullable Locale target, @NonNull String[] locales) {
+		if (target == null || "".equals(target.getLanguage()) || target.getLanguage().length() < 2) {
+			return "";
+		}
+
+		// Special case for chinese: select region based on script (as android does)
+		if ("zh".equals(target.getLanguage())) {
+			switch (target.getScript().toLowerCase()) {
+				case "hant":
+					// Traditional chinese is used in TW (independent of region)
+					return "zh-hant-TW";
+				case "hans":
+				default:
+					// Simplified chinese (default) is used in CN (independent of region)
+					return "zh-hans-CN";
+			}
+		}
+
+		// Find our language string based on language, region, and variant
+		String exactMatch = findMatch(target, locales);
+		if (exactMatch != null) {
+			return exactMatch;
+		}
+
+		// Find our language string based on the language and region (ignoring the variant)
+		Locale languageCountryTarget = new Locale(
+			target.getLanguage(),
+			target.getCountry()
+		);
+		String languageCountryMatch = findMatch(languageCountryTarget, locales);
+		if (languageCountryMatch != null) {
+			return languageCountryMatch;
+		}
+
+		// Find our language string based only on the language (ignoring the region and variant)
+		Locale languageTarget = new Locale(
+			target.getLanguage()
+		);
+		for (String locale : locales) {
+			Locale onlyLanguage = new Locale(Locale.forLanguageTag(locale).getLanguage());
+			if (onlyLanguage.equals(languageTarget)) {
+				return locale;
+			}
+		}
+
+		// We could not map the language to one of our supported languages, so we use the system
+		// default
+		return "";
+	}
+
+	@Nullable
+	private static String findMatch(@NonNull Locale target, @NonNull String[] locales) {
+		for (String locale : locales) {
+			if (Locale.forLanguageTag(locale).equals(target)) {
+				return locale;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Switch from our custom language preference to the androidx per app language selection. Note
+	 * that this migration code can be removed when enough users have installed this version.
+	 * TODO(ANDR-2462): remove this migration when enough users have updated
+	 */
+	public static void switchToAndroidXPerAppLanguageSelection(
+		@NonNull Context context,
+		@NonNull PreferenceService preferenceService
+	) {
+		String localeOverride = preferenceService.getLocaleOverride();
+		if (localeOverride == null) {
+			// TODO(ANDR-2727)
+			// As soon as this workaround is not needed anymore, we can return if localeOverride is
+			// null without any further actions.
+			LocaleListCompat list = AppCompatDelegate.getApplicationLocales();
+			if (list.isEmpty() || (list.size() == 1 && list.get(0) != null && "".equals(list.get(0).getLanguage()))) {
+				// Note that this workaround is only needed to change the language to the system
+				// default for the users of the alpha and beta of 5.2 up to 5.2-beta2.
+				// Note that a new empty locale list must be created, otherwise the setting is not
+				// applied.
+				AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList());
+			}
+			return;
+		}
+
+		String newLanguageTag;
+		switch (localeOverride) {
+			case "be-rBY":
+				newLanguageTag = "be-BY";
+				break;
+			case "zh-rCN":
+				newLanguageTag = "zh-hans-CN";
+				break;
+			case "zh-rTW":
+				newLanguageTag = "zh-hant-TW";
+				break;
+			default:
+				newLanguageTag = localeOverride;
+				break;
+		}
+
+		LocaleListCompat localeList;
+
+		if (newLanguageTag.isEmpty()) {
+			// For the default language (which is stored as empty string), we create an empty list
+			localeList = LocaleListCompat.getEmptyLocaleList();
+		} else {
+			// For a custom language preference, we use the new language list
+			localeList = LocaleListCompat.create(Locale.forLanguageTag(newLanguageTag));
+		}
+
+		// Store the language preference in the language framework
+		AppCompatDelegate.setApplicationLocales(localeList);
+		logger.info("Updated per-app language from '{}' to '{}'", localeOverride, newLanguageTag);
+
+		removeDeprecatedLanguageOverrideSetting(context);
+	}
+
+	private static void removeDeprecatedLanguageOverrideSetting(Context context) {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			serviceManager.getPreferenceStore().remove(context.getString(R.string.preferences__language_override));
+		}
+	}
+
 }

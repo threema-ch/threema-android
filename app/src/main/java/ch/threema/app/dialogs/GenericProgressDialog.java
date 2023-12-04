@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
@@ -41,11 +42,21 @@ public class GenericProgressDialog extends ThreemaDialogFragment {
 	private Activity activity;
 	private TextView messageTextView;
 
-	public static GenericProgressDialog newInstance(@StringRes int title, @StringRes int message) {
+	public static GenericProgressDialog newInstance(@StringRes int titleRes, @StringRes int messageRes) {
 		GenericProgressDialog dialog = new GenericProgressDialog();
 		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
+		args.putInt("titleRes", titleRes);
+		args.putInt("messageRes", messageRes);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	public static GenericProgressDialog newInstance(@Nullable String title, @NonNull String message) {
+		GenericProgressDialog dialog = new GenericProgressDialog();
+		Bundle args = new Bundle();
+		args.putString("title", title);
+		args.putString("message", message);
 
 		dialog.setArguments(args);
 		return dialog;
@@ -61,20 +72,28 @@ public class GenericProgressDialog extends ThreemaDialogFragment {
 	@NonNull
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt("title");
-		int message = getArguments().getInt("message");
+		int titleRes = getArguments().getInt("titleRes");
+		int messageRes = getArguments().getInt("messageRes");
+		String titleString = getArguments().getString("title");
+		String messageString = getArguments().getString("message");
 
 		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_progress_generic, null);
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), 0).setCancelable(false);
 		builder.setView(dialogView);
 
-		if (title != -1) {
-			builder.setTitle(title);
+		if (titleRes != 0) {
+			builder.setTitle(titleRes);
+		} else {
+			builder.setTitle(titleString);
 		}
 
 		messageTextView = dialogView.findViewById(R.id.text);
-		messageTextView.setText(message);
+		if (messageRes != 0) {
+			messageTextView.setText(messageRes);
+		} else {
+			messageTextView.setText(messageString);
+		}
 
 		setCancelable(false);
 

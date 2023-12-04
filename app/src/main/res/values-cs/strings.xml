@@ -204,6 +204,7 @@
     <string name="unlinking_email">Odpojení e‑mailu</string>
     <string name="unlink">Odpojit</string>
     <string name="threema_version">Verze</string>
+    <string name="threema_version_code">Kód verze</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Nejste připojeni k internetu, máte neplatnou zálohu vašeho ID, nebo jste zadali nesprávné heslo</string>
     <string name="prefs_header_other">Ostatní</string>
     <string name="an_error_occurred">Došlo k chybě</string>
@@ -219,7 +220,6 @@
     <string name="ringtone_none">Žádný</string>
     <string name="no_camera_installed">Není dostupný žádný fotoaparát</string>
     <string name="save_message_action">Uložit</string>
-    <string name="saving_media">Média se ukládají</string>
     <string name="file_is_not_a_video">Vybraný soubor není videem</string>
     <string name="masterkey_is_unlocked">Hlavní klíč je odemčen</string>
     <string name="file_too_large">Soubor je větší než maximální povolená velikost %1$d MB</string>
@@ -659,6 +659,8 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="backup_data">Záloha dat</string>
     <string name="really_leave_group_admin_message">Jste správcem této skupiny. Pokud ji opustíte, zůstane bez správce. Ostatní členové mezi sebou budou moci nadále komunikovat, ale provést jakékoliv změny již nebude možné.</string>
     <string name="action_delete_group">Odstranit skupinu</string>
+    <string name="action_leave_and_delete_group">Opustit a odstranit skupinu</string>
+    <string name="action_dissolve_and_delete_group">Rozpustit a odstranit skupinu</string>
     <string name="delete_my_group_message">Skutečně si přejete tuto skupinu zcela odstranit? Všechny zprávy v ní obsažené budou odstraněny a členové této skupiny ji nadále nebudou moci používat.</string>
     <string name="error_out_of_memory">Pro dokončení této akce nezbývá dostatečné množství paměti</string>
     <string name="configure">Konfigurovat</string>
@@ -1012,12 +1014,11 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="open_in_maps_app">Otevřít v aplikaci Mapy</string>
     <string name="delete">Odstranit</string>
     <string name="continue_recording">Pokračovat v nahrávání</string>
-    <string name="whatsnew_title">Vítejte v aplikaci %1$s 5.1</string>
+    <string name="whatsnew_title">Co je nového v aplikaci %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p>Tato aktualizace se zaměřuje na zlepšení zabezpečení, vyšší použitelnost a modernizaci aplikace.</p>
-		<p>Na základě četných žádostí byla aplikace kompletně přepracována, aby plně podporovala paradigma „Material You“ představené se systémem Android 12. Díky volitelnému nastavení „Dynamické barvy“ se aplikace může přizpůsobit vašemu personalizovanému barevnému schématu.</p>
-		<p>Funkce Perfect Forward Secrecy je nyní standardně zapnuta pro všechny kontakty, které mají nainstalovanou aktuální verzi aplikace %1$s.</p>
-		<p>Mezi další vylepšení se řadí nový přehrávač hlasových zpráv, který pokračuje v přehrávání oznámení i po přepnutí aplikace do pozadí, a nové pokyny pro uživatele při žádostech o udělení oprávnění.</p>
+		<p>Ohvězdičkované zprávy: Abyste je později snadno našli, označte důležité zprávy hvězdou dlouhým klepnutím.</p>
+		<p>Automatické odstranění: Nechte své konverzace po uplynutí volitelné doby automaticky vyčistit. Funkce automatického odstranění zpráv můžete aktivovat ve správě úložiště.</p>
+		<p>Další četná vylepšení a optimalizace.</p>
 		]]></string>
     <string name="tap_to_start">Klepnutím sem spustíte aplikaci %s.</string>
     <string name="two_years">2 roky</string>
@@ -1405,7 +1406,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="prefs_summary_hibernation_api_32">Aby se zabránilo tomu, že aplikace Threema bude pozastavena systémem po delší neaktivitě, zakažte prosím systémové nastavení „Odstranit oprávnění a uvolnit místo“.</string>
     <string name="prefs_summary_hibernation_api">Aby se zabránilo tomu, že je aplikace Threema pozastavena systémem po delší neaktivitě, zakažte prosím systémové nastavení „Pozastavit aktivitu při nepoužívání“.</string>
     <string name="unable_to_fetch_configuration">Nelze načíst data z konfiguračního serveru. Zkuste to prosím znovu později.</string>
-    <string name="rogue_device_warning">Bylo zjištěno připojení z jiného zařízení s totožným Threema ID. Použili jste v nedávné době své Threema ID na jiném zařízení? &lt;br&gt;&lt;br&gt; Pokud ano, tuto zprávu můžete ignorovat. &lt;br&gt;&lt;br&gt; V opačném případě mohlo dojít k narušení bezpečnosti vašeho soukromého klíče. Zachovejte se dle <a href="https://threema.ch/en/faq/another_connection">našich pokynů</a>, abyste ochránili své zařízení a data, a následně si vytvořte nové ID.</string>
+    <string name="rogue_device_warning"><![CDATA[Bylo zjištěno připojení z jiného zařízení s totožným Threema ID. Použili jste v nedávné době své Threema ID na jiném zařízení? <br><br> Pokud ano, tuto zprávu můžete ignorovat. <br><br> V opačném případě mohlo dojít k narušení bezpečnosti vašeho soukromého klíče. Zachovejte se dle <a href="https://threema.ch/en/faq/another_connection">našich pokynů</a>, abyste ochránili své zařízení a data, a následně si vytvořte nové ID.]]></string>
     <string name="fetch2_failure">Synchronizace se zajišťovacím serverem selhala.</string>
     <string name="no_members_support_group_calls">V této skupině nejsou žádní další členové, kteří by mohli přijímat skupinové hovory.</string>
     <string name="group_calls">Skupinové hovory</string>
@@ -1435,6 +1436,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="group_call_inactivity_left">Skupinový hovor byl opuštěn z důvodu neaktivity</string>
     <string name="missing_permission_external_storage">Soubor nelze zkopírovat. Vyzkoušejte následující postup:\n1. Otevřete aplikaci nastavení.\n2. Přejděte do kategorie „Aplikace“ a zvolte položku „Aplikace se speciálním přístupem“.\n3. Klepněte na „Přístup ke všem souborům“.\n4. Klepněte na tři tečky v pravém horním rohu obrazovky a zvolte „Zobrazit systémové aplikace“.\n5. Klepněte na „Externí úložiště“ a ujistěte se, že je povolena volba „Povolit přístup ke správě všech souborů“.\n6. Znovu vyzkoušejte obnovit zálohu.</string>
     <string name="forward_security_downgraded_status_message">Funkce Perfect Forward Secrecy byla v této konverzaci zakázána, protože verze aplikace, kterou používá váš konverzační partner, ji nepodporuje.</string>
+    <string name="forward_security_illegal_session_status_message">Relace Perfect Forward Secrecy byla obnovena z důvodu neplatnosti.</string>
     <string name="crop_image_title">Oříznout obrázek</string>
     <string name="scroll_to_bottom">Posunout na konec</string>
     <string name="scroll_to_top">Posunout na začátek</string>
@@ -1459,10 +1461,45 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="permission_microphone">Mikrofon</string>
     <string name="permission_read_phone_state">Telefon</string>
     <string name="permission_enable_in_settings_rationale">Udělte prosím toto oprávnění v nastavení. Vyberte možnost „Oprávnění“ a poté povolte „%s“.</string>
+    <string name="post_notification_permission_rationale">Abyste mohli přijímat oznámení, musíte povolit aplikaci %s zobrazovat oznámení.</string>
     <string name="group_name">Název skupiny</string>
+    <string name="star_message">Ohvězdičkovat zprávu</string>
+    <string name="starred_message">Ohvězdičkovaná zpráva</string>
+    <string name="starred">Ohvězdičkované</string>
+    <string name="starred_messages">Ohvězdičkované zprávy</string>
+    <string name="sorting">Řazení</string>
+    <string name="sort_by">Řadit podle…</string>
+    <string name="newest_first">od nejnovějších</string>
+    <string name="oldest_first">od nejstarších</string>
+    <string name="no_starred_messages">Nebyly nalezeny žádné ohvězdičkované zprávy. Zprávu ohvězdičkujete tak, že na ni dlouze klepnete a vyberete tlačítko s hvězdou.</string>
+    <string name="remove_all_stars">Odstranit všechny hvězdy</string>
+    <string name="remove_star">Odstranit hvězdu</string>
     <string name="samsung_permission_problem_explain">Aplikace %1$s nemůže přistupovat k mediálním souborům kvůli chybějícímu oprávnění v systémové aplikaci. Chcete‑li tento problém opravit, ujistěte se, že je na následující obrazovce aktivovaný přepínač vedle položky „Externí úložiště“ a restartujte aplikaci %1$s.</string>
     <string name="min_n_chars">min. %d znaků</string>
     <string name="prefs_title_grant_bluetooth_permission">Udělit oprávnění Bluetooth</string>
+    <string name="safe_managed_password_confirm">Bylo definováno spravované heslo pro vaši zálohu Threema Safe.\n\nPřejete si použít toto heslo? Při pochybnostech prosím kontaktujte vašeho správce.</string>
+    <string name="safe_managed_new_password_confirm">Bylo definováno nové spravované heslo pro vaši zálohu Threema Safe.\n\nPřejete si nahradit současné heslo tímto novým, spravovaným heslem? Při pochybnostech prosím kontaktujte vašeho správce.</string>
+    <string name="real_not_now">Nyní ne</string>
+    <string name="add_contact_in">Přidat kontakt do…</string>
+    <string name="really_remove_all_stars">Skutečně si přejete odhvězdičkovat všechny zprávy?</string>
+    <string name="prefs_sum_storage_management">Spravovat paměť a odstranit zprávy nebo média</string>
+    <string name="delete_automatically">Odstranit automaticky</string>
+    <string name="keep_messages">Uchovávat zprávy po dobu:</string>
+    <string name="clean_up_manually">Vyčistit ručně</string>
+    <string name="forever">Navždy</string>
+    <string name="autodelete_explain">Pokud bude nastaveno cokoliv kromě „navždy“, příchozí a odchozí zprávy budou uchovávány pouze po specifikovanou dobu, a poté budou nenávratně odstraněny. Do toho jsou zahrnuty i nepřečtené a neodeslané zprávy. Zprávy ve skupinách pro poznámky a zprávy označené hvězdou nebudou odstraněny nikdy. Proces odstranění nastává periodicky a ne nutně ihned po aktivaci.</string>
+    <string name="autodelete_confirm">Zprávy budou automaticky odstraněny po %s. Pokračovat?</string>
+    <string name="autodelete_activated">Automatické odstranění aktivováno.</string>
+    <string name="autodelete_disabled">Automatické odstranění zakázáno.</string>
+    <string name="set_by_administrator">Hodnota byla nastavena správcem a nemůže být změněna.</string>
+    <string name="action_dissolve_group">Rozpustit skupinu</string>
+    <string name="really_dissolve_group">Pokud pouze rozpustíte skupinu, nikdo už nebude moci do skupiny posílat nové zprávy a skupina nebude moci být nadále spravována. Rozpuštěná skupina může být klonována.</string>
+    <string name="status_orphaned_group">*Tato skupina je osiřelá*\nTvůrce skupiny opustil skupinu, a tato již nebude moci být nadále spravována. Jeden ze zbývajících členů může skupinu klonovat (prostřednictvím podrobností skupiny), aby se stal novým správcem.</string>
+    <string name="group_orphaned_notice">Tato skupina je osiřelá, protože ji tvůrce skupiny opustil. Klonujte prosím tuto skupinu, abyste se stal(a) novým správcem.</string>
+    <string name="group_not_a_member_notice">Již nejste členem této skupiny, a nemůžete ji proto nadále používat.</string>
+    <string name="group_dissolved_notice">Tato skupina byla rozpuštěna a nemůže být nadále používána.</string>
+    <string name="directory_request_failed">Požadavek složky selhal. Zkuste to znovu.</string>
+    <string name="add_shortcut_exists">Zástupce pro tento cíl již existuje.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>
@@ -1510,6 +1547,12 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
         <item quantity="many">%d souborů bylo úspěšně uloženo.</item>
         <item quantity="one">%d soubor byl úspěšně uložen.</item>
         <item quantity="other">%d souborů bylo úspěšně uloženo.</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="few">Ukládají se %d mediální soubory</item>
+        <item quantity="many">Ukládá se %d mediálních souborů</item>
+        <item quantity="one">Ukládají se média</item>
+        <item quantity="other">Ukládá se %d mediálních souborů</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="few">Odstranit ankety</item>

@@ -22,6 +22,7 @@
 package ch.threema.domain.testhelpers;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.NonceStoreInterface;
@@ -46,13 +47,19 @@ public class TestHelpers {
 	public static ContactStore getNoopContactStore() {
 		return new ContactStore() {
 			@Override
-			public Contact getContactForIdentity(@NonNull String identity, boolean fetch, boolean saveContact) {
+			public Contact getContactForIdentity(@NonNull String identity) {
 				return new Contact(identity, new byte[256]);
 			}
 
 			@Override
-			public Contact getContactForIdentity(@NonNull String identity) {
-				return null;
+			public void addCachedContact(@NonNull Contact contact) {
+
+			}
+
+			@Nullable
+			@Override
+			public Contact getContactForIdentityIncludingCache(@NonNull String identity) {
+				return getContactForIdentity(identity);
 			}
 
 			@Override
@@ -147,9 +154,7 @@ public class TestHelpers {
 
 	public static AbstractMessage decodeMessageFromBox(@NonNull MessageBox boxedMessage) throws MissingPublicKeyException, BadMessageException {
 		MessageCoder messageCoder = new MessageCoder(getNoopContactStore(), getNoopIdentityStore());
-		return messageCoder.decode(
-			boxedMessage,
-			true);
+		return messageCoder.decode(boxedMessage);
 	}
 
 

@@ -21,6 +21,7 @@
 
 package ch.threema.app.activities;
 
+import android.content.Intent;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
@@ -87,7 +88,8 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 		}
 
 		if (BackupService.isRunning() || RestoreService.isRunning()) {
-			Toast.makeText(this, "Backup or restore in progress. Try Again later.", Toast.LENGTH_LONG).show();
+			Intent intent = new Intent(this, BackupRestoreProgressActivity.class);
+			startActivity(intent);
 			finish();
 		}
 

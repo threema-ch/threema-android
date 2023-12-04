@@ -204,6 +204,7 @@
     <string name="unlinking_email">Suppression du lien vers l\'e-mail</string>
     <string name="unlink">Supprimer le lien</string>
     <string name="threema_version">Version</string>
+    <string name="threema_version_code">Code de version</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Aucune connexion à Internet, données d\'exportation de l\'ID invalides ou mot de passe incorrect</string>
     <string name="prefs_header_other">Autre</string>
     <string name="an_error_occurred">Une erreur s\'est produite</string>
@@ -219,7 +220,6 @@
     <string name="ringtone_none">Silencieux</string>
     <string name="no_camera_installed">Aucun appareil photo utilisable trouvé</string>
     <string name="save_message_action">Enregistrer</string>
-    <string name="saving_media">Enregistrement du média</string>
     <string name="file_is_not_a_video">Le fichier sélectionné n\'est pas une vidéo</string>
     <string name="masterkey_is_unlocked">Clé principale déverrouillée</string>
     <string name="file_too_large">Le fichier dépasse le maximum de %1$d Mo</string>
@@ -658,6 +658,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="backup_data">Sauvegarde de données</string>
     <string name="really_leave_group_admin_message">Vous êtes l\'administrateur de ce groupe. Si vous le quittez maintenant, il deviendra orphelin. Les autres membres pourront toujours discuter, mais il ne sera plus possible de modifier le groupe.</string>
     <string name="action_delete_group">Supprimer le groupe</string>
+    <string name="action_leave_and_delete_group">Quitter et supprimer le groupe</string>
+    <string name="action_dissolve_and_delete_group">Dissoudre et supprimer le groupe</string>
     <string name="delete_my_group_message">Voulez-vous vraiment supprimer ce groupe de façon permanente ? Tous ses membres seront retirés.</string>
     <string name="error_out_of_memory">Pas assez de mémoire pour effectuer cette action</string>
     <string name="configure">Configurer</string>
@@ -1011,12 +1013,12 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="open_in_maps_app">Ouvrir dans l\'app de cartes</string>
     <string name="delete">Supprimer</string>
     <string name="continue_recording">Continuer l\'enregistrement</string>
+    <string name="whatsnew_title">Quoi de neuf dans %1$s 5.2 ?</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p>Cette version se concentre sur la sécurité, la convivialité et la modernisation de l\'application.</p>
-		<p>À la demande générale, l\'application a été complètement redessinée pour prendre en charge le paradigme « Materiel You » introduit dans Android 12. Un paramètre facultatif « Couleurs dynamiques » permet à l\'application de s\'adapter à votre palette de couleurs personnalisée.</p>
-		<p>La confidentialité persistante est désormais activée par défaut pour tous les contacts ayant installé une version récente de %1$s.</p>
-		<p>Parmi les autres améliorations, citons un nouveau lecteur de messages vocaux qui continue à diffuser dans une notification lorsque l\'application est mise en arrière-plan et de nouveaux conseils à l\'utilisateur lors des demandes d\'autorisation.</p>
-		]]></string>
+
+<p>Messages marqués d\'une étoile : Pour les retrouver facilement plus tard, marquez les messages importants d\'une étoile en appuyant dessus de manière prolongée.</p>
+<p>Suppression automatique : Vos discussions sont automatiquement effacées après un laps de temps déterminé. La fonction de suppression automatique des messages peut être activée dans la gestion du stockage.</p>
+<p>De nombreuses autres améliorations et optimisations.</p> ]]></string>
     <string name="tap_to_start">Touchez ici pour lancer %s maintenant.</string>
     <string name="two_years">2 ans</string>
     <string name="invalid_backup_path">Chemin de sauvegarde invalide</string>
@@ -1403,7 +1405,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="prefs_summary_hibernation_api_32">Pour empêcher que Threema soit mis en pause par le système après une longue période d\'inactivité, veuillez désactiver le paramètre système « Retirer les autorisations et libérer l’espace ».</string>
     <string name="prefs_summary_hibernation_api">Pour empêcher que Threema soit mis en pause par le système après une longue période d’inactivité, veuillez désactiver le paramètre système « Mettre en pause l’activité des application si inutilisées ».</string>
     <string name="unable_to_fetch_configuration">Impossible de récupérer les données à partir du serveur de configuration. Réessayez plus tard.</string>
-    <string name="rogue_device_warning">Une connexion à partir d\'un autre appareil avec le même ID Threema a été détectée. Avez-vous récemment utilisé votre ID Threema sur un autre appareil ? &lt;br&gt;&lt;br&gt; Si c\'est le cas, vous pouvez ignorer ce message. &lt;br&gt;&lt;br&gt; Sinon, votre clé privée pourrait être compromise. Veuillez <a href="https://threema.ch/en/faq/another_connection">suivre nos suggestions</a> pour protéger votre appareil et vos données avant de créer un nouvel ID.</string>
+    <string name="rogue_device_warning"><![CDATA[Une connexion à partir d\'un autre appareil avec le même ID Threema a été détectée. Avez-vous récemment utilisé votre ID Threema sur un autre appareil ? &lt;br&gt;&lt;br&gt; Si c\'est le cas, vous pouvez ignorer ce message. &lt;br&gt;&lt;br&gt; Sinon, votre clé privée pourrait être compromise. Veuillez <a href="https://threema.ch/en/faq/another_connection">suivre nos suggestions</a> pour protéger votre appareil et vos données avant de créer un nouvel ID.]]></string>
     <string name="fetch2_failure">La synchronisation avec le serveur de provisionnement a échoué.</string>
     <string name="no_members_support_group_calls">Il n\'y a plus d\'autres membres dans ce groupe capables de répondre aux appels de groupe</string>
     <string name="group_calls">Appels de groupe</string>
@@ -1433,6 +1435,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="group_call_inactivity_left">Appel de groupe arrêté pour cause d\'inactivité</string>
     <string name="missing_permission_external_storage">Impossible de copier le fichier. Essayez les étapes suivantes :\n1. Ouvrez l\'application Paramètres.\n2. Sous « Applications », choisissez « Accès spécial aux applications ».\n3. Touchez « Accès tous fichiers ».\n4. Touchez les trois points dans le coin supérieur droit et sélectionnez « Afficher le système ».\n5. Touchez « Stockage externe » et assurez-vous que « Autoriser l\'accès pour gérer tous les fichiers » est activé.\n6. Essayez à nouveau de restaurer la sauvegarde.</string>
     <string name="forward_security_downgraded_status_message">La confidentialité persistante a été désactivée dans cette conversation, car la version de l\'application de votre partenaire de discussion ne la prend pas en charge.</string>
+    <string name="forward_security_illegal_session_status_message">La session de confidentialité persistante a été réinitialisée pour cause de non-validité.</string>
     <string name="crop_image_title">Rogner l\'image</string>
     <string name="scroll_to_bottom">Défiler vers le bas</string>
     <string name="scroll_to_top">Défiler vers le haut</string>
@@ -1457,10 +1460,45 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="permission_microphone">Microphone</string>
     <string name="permission_read_phone_state">Téléphone</string>
     <string name="permission_enable_in_settings_rationale">Veuillez accorder l\'autorisation dans les paramètres. Sélectionnez « Autorisations » puis autorisez « %s ».</string>
+    <string name="post_notification_permission_rationale">Pour recevoir des notifications, vous devez autoriser %s à afficher des notifications.</string>
     <string name="group_name">Nom de groupe</string>
+    <string name="star_message">Marquer le message d\'une étoile</string>
+    <string name="starred_message">Message marqué d\'une étoile</string>
+    <string name="starred">Marqué d\'une étoile</string>
+    <string name="starred_messages">Messages marqués d\'une étoile</string>
+    <string name="sorting">Tri</string>
+    <string name="sort_by">Trier par…</string>
+    <string name="newest_first">les plus récents en premier</string>
+    <string name="oldest_first">les plus anciens en premier</string>
+    <string name="no_starred_messages">Aucun message marqué d\'une étoile n\'a été trouvé. Pour marquer un message d\'une étoile, touchez-le de manière prolongée et sélectionnez le bouton Étoile.</string>
+    <string name="remove_all_stars">Retirer toutes les étoiles</string>
+    <string name="remove_star">Retirer l\'étoile</string>
     <string name="samsung_permission_problem_explain">%1$s ne peut pas accéder aux fichiers média en raison d\'une autorisation manquante dans une application système. Pour résoudre ce problème, assurez-vous que l\'interrupteur à côté de « Stockage externe » est activé dans l\'écran suivant et redémarrez %1$s.</string>
     <string name="min_n_chars">%d caractères au min</string>
     <string name="prefs_title_grant_bluetooth_permission">Accorder l\'autorisation Bluetooth</string>
+    <string name="safe_managed_password_confirm">Un mot de passe géré pour votre sauvegarde Threema Safe a été défini.\n\nSouhaitez-vous utiliser ce mot de passe ? En cas de doute, veuillez contacter votre administrateur.</string>
+    <string name="safe_managed_new_password_confirm">Un nouveau mot de passe géré pour votre sauvegarde Threema Safe a été défini.\n\nSouhaitez-vous remplacer le mot de passe actuel par ce nouveau mot de passe géré ? En cas de doute, veuillez contacter votre administrateur.</string>
+    <string name="real_not_now">Pas maintenant</string>
+    <string name="add_contact_in">Ajouter le contact dans…</string>
+    <string name="really_remove_all_stars">Voulez-vous vraiment retirer les étoiles de tous les messages ?</string>
+    <string name="prefs_sum_storage_management">Gérez la mémoire et supprimez messages ou médias</string>
+    <string name="delete_automatically">Supprimer automatiquement</string>
+    <string name="keep_messages">Conserver les messages pour :</string>
+    <string name="clean_up_manually">Nettoyer manuellement</string>
+    <string name="forever">Pour toujours</string>
+    <string name="autodelete_explain">Si vous choisissez une valeur autre que « pour toujours », les messages entrants et sortants ne seront conservés que pendant la durée spécifiée, avant d\'être définitivement supprimés. Cela inclut les messages non lus et non envoyés. Les messages des groupes de notes et ceux marqués d\'une étoile ne sont jamais supprimés. Le processus de suppression se produit périodiquement et pas nécessairement immédiatement après l\'activation.</string>
+    <string name="autodelete_confirm">Les messages seront automatiquement supprimés après %s. Continuer ?</string>
+    <string name="autodelete_activated">Suppression automatique activée.</string>
+    <string name="autodelete_disabled">Suppression automatique désactivée.</string>
+    <string name="set_by_administrator">La valeur a été définie par l\'administrateur et ne peut pas être modifiée.</string>
+    <string name="action_dissolve_group">Dissoudre le groupe</string>
+    <string name="really_dissolve_group">Si vous dissolvez simplement le groupe, plus personne ne pourra envoyer de nouveaux messages au groupe et il ne pourra plus être géré. Le groupe dissous peut toujours être cloné.</string>
+    <string name="status_orphaned_group">*Ce groupe est orphelin*\nLe créateur du groupe a quitté le groupe et celui-ci ne peut plus être géré. L\'un des membres restants peut cloner le groupe (depuis les détails du groupe) pour devenir le nouvel administrateur.</string>
+    <string name="group_orphaned_notice">Ce groupe est orphelin car son créateur a quitté le groupe. Veuillez cloner ce groupe pour devenir le nouvel administrateur.</string>
+    <string name="group_not_a_member_notice">Vous ne faites plus partie de ce groupe et ne pouvez plus l\'utiliser.</string>
+    <string name="group_dissolved_notice">Ce groupe a été dissous et ne peut plus être utilisé.</string>
+    <string name="directory_request_failed">Échec de demande de répertoire. Réessayez.</string>
+    <string name="add_shortcut_exists">Un raccourci pour cette cible existe déjà.</string>
     <plurals name="contacts_counter_label" tools:ignore="MissingQuantity">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

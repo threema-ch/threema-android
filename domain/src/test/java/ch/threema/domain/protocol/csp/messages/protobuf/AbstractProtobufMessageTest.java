@@ -48,6 +48,11 @@ public class AbstractProtobufMessageTest {
 				public Version getMinimumRequiredForwardSecurityVersion() {
 					return null;
 				}
+
+				@Override
+				public boolean exemptFromBlocking() {
+					return false;
+				}
 			};
 
 		assertArrayEquals(

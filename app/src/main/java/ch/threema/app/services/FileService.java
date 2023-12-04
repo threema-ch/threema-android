@@ -185,22 +185,22 @@ public interface FileService {
 	File getMessageFile(AbstractMessageModel messageModel);
 
 	/**
-	 * write a message (modify if needed) and return the original or modified file as byte
+	 * Write a message (modify if needed) and return true on success.
 	 */
 	boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data) throws Exception;
 
 	/**
-	 * write a message (modify if needed) and return the original or modified file as byte
+	 * Write a message (modify if needed) and return true on success.
 	 */
 	boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length) throws Exception;
 
 	/**
-	 * write a message (modify if needed) and return the original or modified file as byte
+	 * Write a message (modify if needed) and return true on success.
 	 */
 	boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length, boolean overwrite) throws Exception;
 
 	/**
-	 * save a group avatar (resize if needed) and return the original or modified avatar
+	 * Save a group avatar (resize if needed) and return true on success.
 	 */
 	boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws Exception;
 

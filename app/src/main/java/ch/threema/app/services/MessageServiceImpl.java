@@ -44,6 +44,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -146,7 +147,6 @@ import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
-import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
@@ -197,6 +197,7 @@ import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 import ch.threema.storage.models.data.media.VideoDataModel;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
+import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 public class MessageServiceImpl implements MessageService {
@@ -231,9 +232,8 @@ public class MessageServiceImpl implements MessageService {
 	private final ApiService apiService;
 	private final DownloadService downloadService;
 	private final DeadlineListService hiddenChatsListService;
-	private final IdListService profilePicRecipientsService, blackListService;
+	private final IdListService blackListService;
 	private final SymmetricEncryptionService symmetricEncryptionService;
-	private final ForwardSecurityMessageProcessor fsmp;
 
 	public MessageServiceImpl(
 		Context context,
@@ -252,9 +252,7 @@ public class MessageServiceImpl implements MessageService {
 	    ApiService apiService,
 	    DownloadService downloadService,
 	    DeadlineListService hiddenChatsListService,
-	    IdListService profilePicRecipientsService,
-	    IdListService blackListService,
-		ForwardSecurityMessageProcessor fsmp
+	    IdListService blackListService
 	) {
 		this.context = context;
 		this.messageQueue = messageQueue;
@@ -271,9 +269,7 @@ public class MessageServiceImpl implements MessageService {
 		this.apiService = apiService;
 		this.downloadService = downloadService;
 		this.hiddenChatsListService = hiddenChatsListService;
-		this.profilePicRecipientsService = profilePicRecipientsService;
 		this.blackListService = blackListService;
-		this.fsmp = fsmp;
 
 		contactMessageCache = cacheService.getMessageModelCache();
 		groupMessageCache = cacheService.getGroupMessageModelCache();
@@ -420,6 +416,31 @@ public class MessageServiceImpl implements MessageService {
 		);
 		model.setOutbox(false);
 		model.setForwardSecurityStatusData(ForwardSecurityStatusDataModel.create(type, quantity, staticText));
+		model.setSaved(true);
+		model.setIsStatusMessage(true);
+		model.setRead(true);
+		receiver.saveLocalModel(model);
+		fireOnCreatedMessage(model);
+		return model;
+	}
+
+	@Override
+	public AbstractMessageModel createGroupStatus(
+		@NonNull GroupMessageReceiver receiver,
+		@NonNull GroupStatusDataModel.GroupStatusType type,
+		@Nullable String identity,
+		@Nullable String ballotName,
+		@Nullable String newGroupName
+	) {
+		logger.info("Storing group status message of type {}", type.getType());
+
+		final GroupMessageModel model = receiver.createLocalModel(
+			MessageType.GROUP_STATUS,
+			MessageContentsType.GROUP_STATUS,
+			new Date()
+		);
+		model.setOutbox(false);
+		model.setGroupStatusData(GroupStatusDataModel.create(type, identity, ballotName, newGroupName));
 		model.setSaved(true);
 		model.setIsStatusMessage(true);
 		model.setRead(true);
@@ -1578,7 +1599,7 @@ public class MessageServiceImpl implements MessageService {
 		GroupMessageModel messageModel = null;
 
 		//first of all, check if i can receive messages
-		GroupModel groupModel = groupService.getGroup(message);
+		GroupModel groupModel = groupService.getByGroupMessage(message);
 		if(groupModel == null) {
 			logger.error("GroupMessage {}: error: no groupModel", message.getMessageId());
 			return false;
@@ -1709,7 +1730,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	private GroupMessageModel saveGroupMessage(GroupBallotCreateMessage message, GroupMessageModel messageModel) throws Exception {
-		GroupModel groupModel = groupService.getGroup(message);
+		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
 			return null;
@@ -1771,7 +1792,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	private GroupMessageModel saveGroupMessage(GroupFileMessage message, GroupMessageModel messageModel) throws Exception {
-		GroupModel groupModel = groupService.getGroup(message);
+		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
 			return null;
@@ -2069,7 +2090,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	private GroupMessageModel saveGroupMessage(GroupTextMessage message, GroupMessageModel messageModel) throws Exception {
-		GroupModel groupModel = groupService.getGroup(message);
+		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
 			return null;
@@ -2172,7 +2193,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@Deprecated
 	private GroupMessageModel saveGroupMessage(GroupImageMessage message, GroupMessageModel messageModel) throws Exception {
-		GroupModel groupModel = groupService.getGroup(message);
+		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
 			return null;
@@ -2271,7 +2292,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@Deprecated
 	private GroupMessageModel saveGroupMessage(GroupVideoMessage message, GroupMessageModel messageModel) throws Exception {
-		GroupModel groupModel = groupService.getGroup(message);
+		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
 			logger.error("could not save a group message from an unknown group");
@@ -2287,7 +2308,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	private GroupMessageModel saveGroupMessage(GroupAudioMessage message, GroupMessageModel messageModel) throws Exception {
-		GroupModel groupModel = groupService.getGroup(message);
+		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
 			return null;
@@ -2303,7 +2324,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@WorkerThread
 	private GroupMessageModel saveGroupMessage(GroupLocationMessage message, GroupMessageModel messageModel) throws SQLException {
-		GroupModel groupModel = groupService.getGroup(message);
+		GroupModel groupModel = groupService.getByGroupMessage(message);
 		boolean isNewMessage = false;
 		if(groupModel == null) {
 			return null;
@@ -2596,23 +2617,17 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver, MessageFilter messageFilter, boolean appendUnreadMessage) {
-		try {
-			List<AbstractMessageModel> messages  = receiver.loadMessages(messageFilter);
-			if (!appendUnreadMessage) {
-				return messages;
-			}
-			switch (receiver.getType()) {
-				case MessageReceiver.Type_GROUP:
-				case MessageReceiver.Type_CONTACT:
-					return markFirstUnread(messages);
-				default:
-					return messages;
-			}
-		} catch (SQLException e) {
-			logger.error("Exception", e);
+		List<AbstractMessageModel> messages = receiver.loadMessages(messageFilter);
+		if (!appendUnreadMessage) {
+			return messages;
 		}
-
-		return null;
+		switch (receiver.getType()) {
+			case MessageReceiver.Type_GROUP:
+			case MessageReceiver.Type_CONTACT:
+				return markFirstUnread(messages);
+			default:
+				return messages;
+		}
 	}
 
 	/**
@@ -2658,70 +2673,114 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public List<AbstractMessageModel> getMessageForBallot(final BallotModel ballotModel) {
-		try {
-			MessageReceiver receiver = ballotService.getReceiver(ballotModel);
+		MessageReceiver receiver = ballotService.getReceiver(ballotModel);
 
-			if(receiver != null) {
-				List<AbstractMessageModel> ballotMessages = receiver.loadMessages(new MessageFilter() {
-					@Override
-					public long getPageSize() {
-						return 0;
-					}
+		if (receiver != null) {
+			List<AbstractMessageModel> ballotMessages = receiver.loadMessages(new MessageFilter() {
+				@Override
+				public long getPageSize() {
+					return 0;
+				}
 
-					@Override
-					public Integer getPageReferenceId() {
-						return null;
-					}
+				@Override
+				public Integer getPageReferenceId() {
+					return null;
+				}
 
-					@Override
-					public boolean withStatusMessages() {
-						return false;
-					}
+				@Override
+				public boolean withStatusMessages() {
+					return false;
+				}
 
-					@Override
-					public boolean withUnsaved() {
-						return true;
-					}
+				@Override
+				public boolean withUnsaved() {
+					return true;
+				}
 
-					@Override
-					public boolean onlyUnread() {
-						return false;
-					}
+				@Override
+				public boolean onlyUnread() {
+					return false;
+				}
 
-					@Override
-					public boolean onlyDownloaded() {
-						return false;
-					}
+				@Override
+				public boolean onlyDownloaded() {
+					return false;
+				}
 
-					@Override
-					public MessageType[] types() {
-						return new MessageType[]{
-								MessageType.BALLOT
-						};
-					}
+				@Override
+				public MessageType[] types() {
+					return new MessageType[]{
+						MessageType.BALLOT
+					};
+				}
 
-					@Override
-					public int[] contentTypes() {
-						return null;
-					}
-				});
+				@Override
+				public int[] contentTypes() {
+					return null;
+				}
 
-				return Functional.filter(ballotMessages, (IPredicateNonNull<AbstractMessageModel>) type -> type.getBallotData().getBallotId() == ballotModel.getId());
-			}
-		} catch (SQLException e) {
-			logger.error("Exception", e);
+				@Override
+				public int[] displayTags() {
+					return null;
+				}
+			});
+
+			return Functional.filter(ballotMessages, (IPredicateNonNull<AbstractMessageModel>) type -> type.getBallotData().getBallotId() == ballotModel.getId());
 		}
 		return null;
 	}
 
-	@Override
-	public List<AbstractMessageModel> getContactMessagesForText(String query, boolean includeArchived) {
-		return databaseServiceNew.getMessageModelFactory().getMessagesByText(query, includeArchived);
+	private List<AbstractMessageModel> getContactMessagesForText(String query, boolean includeArchived, boolean starredOnly, boolean sortAscending) {
+		return databaseServiceNew.getMessageModelFactory().getMessagesByText(query, includeArchived, starredOnly, sortAscending);
+	}
+
+	private List<AbstractMessageModel> getGroupMessagesForText(String query, boolean includeArchived, boolean starredOnly, boolean sortAscending) {
+		return databaseServiceNew.getGroupMessageModelFactory().getMessagesByText(query, includeArchived, starredOnly, sortAscending);
 	}
 
 	@Override
-	public List<AbstractMessageModel> getGroupMessagesForText(String query, boolean includeArchived) {
-		return databaseServiceNew.getGroupMessageModelFactory().getMessagesByText(query, includeArchived);
+	public List<AbstractMessageModel> getMessagesForText(@Nullable String queryString, @MessageFilterFlags int filterFlags, boolean sortAscending) {
+		List<AbstractMessageModel> messageModels = new ArrayList<>();
+
+		boolean includeArchived = (filterFlags & FILTER_INCLUDE_ARCHIVED) == FILTER_INCLUDE_ARCHIVED;
+		boolean starredOnly = (filterFlags & FILTER_STARRED_ONLY) == FILTER_STARRED_ONLY;
+
+		if ((filterFlags & FILTER_CHATS) == FILTER_CHATS) {
+			messageModels.addAll(getContactMessagesForText(queryString, includeArchived,
+				starredOnly,
+				sortAscending));
+		}
+
+		if ((filterFlags & FILTER_GROUPS) == FILTER_GROUPS) {
+			messageModels.addAll(getGroupMessagesForText(queryString, includeArchived,
+				starredOnly,
+				sortAscending));
+		}
+
+		if (messageModels.size() > 0) {
+			if (sortAscending) {
+				Collections.sort(messageModels, (o1, o2) -> o1.getCreatedAt().compareTo(o2.getCreatedAt()));
+			} else {
+				Collections.sort(messageModels, (o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
+			}
+		}
+		return messageModels;
+	}
+
+	@Override
+	@WorkerThread
+	public int unstarAllMessages() {
+		return
+			databaseServiceNew.getMessageModelFactory().unstarAllMessages() +
+			databaseServiceNew.getGroupMessageModelFactory().unstarAllMessages();
+	}
+
+	@Override
+	@WorkerThread
+	public long countStarredMessages() throws SQLiteException {
+		return
+			databaseServiceNew.getMessageModelFactory().countStarredMessages() +
+			databaseServiceNew.getGroupMessageModelFactory().countStarredMessages();
 	}
 
 	private void readMessageQueue() {
@@ -3460,58 +3519,59 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public void markConversationAsRead(MessageReceiver messageReceiver, NotificationService notificationService) {
-		try {
-			@SuppressWarnings("unchecked")
-			List<AbstractMessageModel> unreadMessages = messageReceiver.loadMessages(new MessageService.MessageFilter() {
-				@Override
-				public long getPageSize() {
-					return 0;
-				}
-
-				@Override
-				public Integer getPageReferenceId() {
-					return null;
-				}
-
-				@Override
-				public boolean withStatusMessages() {
-					return false;
-				}
-
-				@Override
-				public boolean withUnsaved() {
-					return false;
-				}
-
-				@Override
-				public boolean onlyUnread() {
-					return true;
-				}
-
-				@Override
-				public boolean onlyDownloaded() {
-					return false;
-				}
-
-				@Override
-				public MessageType[] types() {
-					return null;
-				}
-
-				@Override
-				public int[] contentTypes() {
-					return null;
-				}
-			});
-
-			if (unreadMessages != null && unreadMessages.size() > 0) {
-				//do not run on a own thread, create a new thread outside!
-				new ReadMessagesRoutine(unreadMessages, this, notificationService).run();
+		@SuppressWarnings("unchecked")
+		List<AbstractMessageModel> unreadMessages = messageReceiver.loadMessages(new MessageService.MessageFilter() {
+			@Override
+			public long getPageSize() {
+				return 0;
 			}
-			notificationService.cancel(messageReceiver);
-		} catch (SQLException e) {
-			logger.error("Exception", e);
+
+			@Override
+			public Integer getPageReferenceId() {
+				return null;
+			}
+
+			@Override
+			public boolean withStatusMessages() {
+				return false;
+			}
+
+			@Override
+			public boolean withUnsaved() {
+				return false;
+			}
+
+			@Override
+			public boolean onlyUnread() {
+				return true;
+			}
+
+			@Override
+			public boolean onlyDownloaded() {
+				return false;
+			}
+
+			@Override
+			public MessageType[] types() {
+				return null;
+			}
+
+			@Override
+			public int[] contentTypes() {
+				return null;
+			}
+
+			@Override
+			public int[] displayTags() {
+				return null;
+			}
+		});
+
+		if (unreadMessages != null && unreadMessages.size() > 0) {
+			//do not run on a own thread, create a new thread outside!
+			new ReadMessagesRoutine(unreadMessages, this, notificationService).run();
 		}
+		notificationService.cancel(messageReceiver);
 	}
 
 	@Override

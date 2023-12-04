@@ -492,8 +492,9 @@ public class ContactModel extends Contact implements ReceiverModel {
 	}
 
 	@Override
+	@NonNull
 	public String toString() {
-		return "contact " + this.getIdentity() + ", " + this.getFirstName() + " " + this.getLastName();
+		return "ContactModel(identity=" + this.getIdentity() + ")";
 	}
 }
 

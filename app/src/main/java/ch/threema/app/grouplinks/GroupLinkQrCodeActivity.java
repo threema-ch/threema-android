@@ -109,7 +109,7 @@ public class GroupLinkQrCodeActivity extends ThreemaToolbarActivity {
 		final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), qrBitmap);
 		bitmapDrawable.setFilterBitmap(false);
 
-		((ImageView) findViewById(R.id.image_view)).setImageDrawable(bitmapDrawable);
+		((ImageView) findViewById(R.id.thumbnail_view)).setImageDrawable(bitmapDrawable);
 		((TextView) findViewById(R.id.qr_code_description))
 			.setText(
 				HtmlCompat.fromHtml(String.format(

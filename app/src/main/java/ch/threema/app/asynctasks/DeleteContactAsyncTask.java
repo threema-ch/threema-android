@@ -67,7 +67,7 @@ public class DeleteContactAsyncTask extends AsyncTask<Void, Integer, Integer> {
 
 	@Override
 	protected void onPreExecute() {
-		CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.deleting_contact, 0, R.string.cancel, contacts.size());
+		CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.deleting_contact, R.string.cancel, contacts.size());
 		dialog.setOnCancelListener((dialog1, which) -> cancelled = true);
 		dialog.show(fragmentManager, DIALOG_TAG_DELETE_CONTACT);
 

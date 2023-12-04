@@ -555,7 +555,13 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
+		// Intercepting back navigation is needed as this activity overrides the finish() method
 		this.finish();
 	}
 

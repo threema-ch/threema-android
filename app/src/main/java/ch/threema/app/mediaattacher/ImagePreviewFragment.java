@@ -63,7 +63,7 @@ public class ImagePreviewFragment extends PreviewFragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		if (rootView != null) {
-			this.imageView = rootView.findViewById(R.id.image_view);
+			this.imageView = rootView.findViewById(R.id.thumbnail_view);
 			this.gifView = rootView.findViewById(R.id.gif_view);
 
 			if (mediaItem.getType() == MediaItem.TYPE_GIF) {

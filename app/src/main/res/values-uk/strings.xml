@@ -228,7 +228,6 @@
     <string name="ringtone_none">Без звуку</string>
     <string name="no_camera_installed">Немає доступних для використання камер</string>
     <string name="save_message_action">Зберегти</string>
-    <string name="saving_media">Збереження медіафайлів</string>
     <string name="file_is_not_a_video">Вибраний файл не є відео</string>
     <string name="masterkey_is_unlocked">Головний ключ розблоковано</string>
     <string name="file_too_large">Розмір файлу перевищує максимально дозволений (%1$d МБ)</string>
@@ -1054,13 +1053,6 @@
     <string name="open_in_maps_app">Відкрити в додатку для карт</string>
     <string name="delete">Видалити</string>
     <string name="continue_recording">Продовжити запис</string>
-    <string name="whatsnew_title">Вітаємо в %1$s 5.1!</string>
-    <string name="whatsnew_headline"><![CDATA[
-		<p>У цьому випуску ми зосередилися на безпеці, зручності користування та модернізації додатка.</p>
-		<p>На ваші численні прохання ми оновили дизайн додатка. Тепер він повністю підтримує парадигму Material You, представлену в Android 12, а додатковий параметр \"Динамічний колір\" дає змогу підлаштовувати кольори додатка відповідно до вашої палітри.</p>
-		<p>Perfect Forward Secrecy тепер увімкнено за умовчанням для всіх контактів, які встановили останню версію %1$s.</p>
-		<p>Ми також удосконалили програвач голосових повідомлень, який залишатиметься в сповіщенні, коли ви згортаєте додаток, і оновили інструкції для користувачів щодо запиту дозволів.</p>
-		]]></string>
     <string name="whatsnew2_title">" "</string>
     <string name="whatsnew2_body">" "</string>
     <string name="tap_to_start">Торкніться тут, щоб запустити %s.</string>
@@ -1411,7 +1403,7 @@
     <string name="forward_security_cleared">Сеанси Perfect Forward Secrecy з цим контактом видалено</string>
     <string name="message_without_forward_security">Ви отримали повідомлення, яке не захищено Perfect Forward Secrecy. Переконайтеся, що відправник навмисно вимкнув цю функцію.</string>
     <string name="forward_security_established">Повідомлення в цьому чаті тепер захищено Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">Повідомлення, які ви отримуєте в цьому чаті, тепер захищено Perfect Forward Secrecy. Увімкніть цю функцію в параметрах контакта, щоб також захистити повідомлення, які ви надсилаєте.</string>
+    <string name="forward_security_established_rx">Повідомлення, які ви отримуєте в цьому чаті, тепер захищено Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Сеанс Perfect Forward Secrecy було скинуто. Це може статися, якщо контакт змінив пристрій або перевстановив додаток.</string>
     <string name="forward_security_reset_simple">Сеанси Perfect Forward Secrecy з цим контактом скинуто.</string>
     <string name="forward_security_message_out_of_order">Повідомлення було отримано з порушенням порядку, тому його неможливо розшифрувати.</string>
@@ -1473,12 +1465,13 @@
     <string name="group_calls_tooltip_text">Натисніть тут, щоб запросити всіх учасників групи до виклику. Кожен із них отримає сповіщення та зможе вибрати, приєднуватися йому чи ні.</string>
     <string name="prefs_title_calls">Безпечні виклики</string>
     <string name="prefs_sum_group_calls_vibration">Виберіть, чи вмикати вібрацію, коли починається груповий виклик</string>
-    <string name="forward_security_mode_4dh">виконано</string>
+    <string name="forward_security_mode_4dh">Виконано</string>
     <string name="forward_security_mode_2dh">одностороння</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) захищає раніше записані розмови від дешифрування, навіть якщо скомпрометовано довгостроковий ключ шифрування.\n\nЦю функцію можна ввімкнути, якщо її підтримує додаток обох сторін.</string>
     <string name="group_call_inactivity_left">Груповий виклик покинуто через неактивність</string>
     <string name="missing_permission_external_storage">Не вдалося скопіювати файл. Спробуйте виконати такі кроки:\n1. Відкрийте додаток \"Налаштування\".\n2. Перейдіть до розділу \"Додатки\" й виберіть \"Спеціальний доступ для додатка\".\n3. Натисніть \"Доступ до всіх файлів\".\n4. Натисніть три крапки праворуч угорі й виберіть \"Показати системні\".\n5. Натисніть \"Зовнішня пам\'ять\" і переконайтеся, що вибрано варіант \"Надати доступ до керування всіма файлами\".\n6. Спробуйте відновити резервну копію ще раз.</string>
     <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy вимкнено в цьому чаті, оскільки версія додатка вашого контакта не підтримує цю функцію.</string>
+    <string name="forward_security_illegal_session_status_message">Сеанс Perfect Forward Secrecy було скинуто як недійсний.</string>
     <string name="crop_image_title">Кадрувати зображення</string>
     <string name="scroll_to_bottom">Прокрутити вниз</string>
     <string name="scroll_to_top">Прокрутити вгору</string>

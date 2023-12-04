@@ -260,7 +260,12 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		setResult(RESULT_CANCELED);
 		finish();
 	}

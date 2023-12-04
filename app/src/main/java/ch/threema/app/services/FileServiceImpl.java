@@ -1481,8 +1481,11 @@ public class FileServiceImpl implements FileService {
 
 			@Override
 			protected void onPreExecute() {
-				if (activity != null && selectedMessages.size() > 3) {
-					CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.saving_media, 0, R.string.cancel, selectedMessages.size());
+				int selectedMessagesCount = selectedMessages.size();
+				if (activity != null && selectedMessagesCount > 3) {
+					String title = String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.saving_media, selectedMessagesCount, selectedMessagesCount));
+					String cancel = activity.getString(R.string.cancel);
+					CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(title, cancel, selectedMessagesCount);
 					dialog.setOnCancelListener(new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {

@@ -38,14 +38,19 @@ import java.util.Set;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.adapters.decorators.GroupStatusAdapterDecorator;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.UserService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
+import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -55,6 +60,7 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
+import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 public class MessageUtil {
@@ -561,6 +567,41 @@ public class MessageUtil {
 							TestUtil.empty(messageString) ? null: messageString,
 							null,
 							null);
+				case GROUP_STATUS:
+					GroupStatusDataModel groupStatusDataModel = messageModel.getGroupStatusDataModel();
+					if (groupStatusDataModel == null) {
+						return new MessageViewElement(null, null, null, null, null);
+					}
+					ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+
+					ContactService contactService = null;
+					UserService userService = null;
+
+					if (serviceManager != null) {
+						try {
+							contactService = serviceManager.getContactService();
+						} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+							logger.error("Could not get contact service", e);
+							// Don't abort: if the contact service cannot be created, then the
+							// status messages only show the threema id instead of the display name
+						}
+						userService = serviceManager.getUserService();
+					}
+
+					String statusText = GroupStatusAdapterDecorator.Companion.getStatusText(
+						groupStatusDataModel,
+						userService,
+						contactService,
+						context
+					);
+
+					return new MessageViewElement(
+						null,
+						statusText,
+						statusText,
+						null,
+						null
+					);
 				case VOIP_STATUS:
 					VoipStatusDataModel voipStatusDataModel = messageModel.getVoipStatusData();
 					if (voipStatusDataModel != null) {
@@ -659,7 +700,7 @@ public class MessageUtil {
 								String body = context.getString(R.string.voip_gc_call_started);
 								if (groupCallStatusDataModel.getCallerIdentity() != null) {
 									try {
-										ContactService contactService = ThreemaApplication.getServiceManager().getContactService();
+										contactService = ThreemaApplication.getServiceManager().getContactService();
 										body = String.format(
 											context.getString(messageModel.isOutbox() ?
 												R.string.voip_gc_notification_call_started_generic_outbox :

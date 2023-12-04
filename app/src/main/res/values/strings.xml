@@ -214,6 +214,7 @@
 	<string name="unlinking_email">Unlinking email</string>
 	<string name="unlink">Unlink</string>
 	<string name="threema_version">Version</string>
+	<string name="threema_version_code">Version Code</string>
 	<string name="wrong_backupid_or_password_or_no_internet_connection">No connection to the internet, invalid ID export data or incorrect password</string>
 	<string name="prefs_header_other">Other</string>
 	<string name="an_error_occurred">An error occurred</string>
@@ -229,7 +230,6 @@
 	<string name="ringtone_none">Silent</string>
 	<string name="no_camera_installed">No usable camera available</string>
 	<string name="save_message_action">Save</string>
-	<string name="saving_media">Saving media</string>
 	<string name="file_is_not_a_video">Selected file is not a video</string>
 	<string name="masterkey_is_unlocked">Master key is unlocked</string>
 	<string name="file_too_large">File is larger than the maximum of %1$d MB</string>
@@ -695,13 +695,15 @@
 		your Threema ID. You will not appear on your friends\’ contact lists. Do you really want to use Threema
 		anonymously?</string>
 	<string name="new_wizard_scan_id_backup">Or scan the QR code of your ID export</string>
-	<string name="error_saving_file">Error saving file. Check permissions.</string>
+	<string name="error_saving_file">Some files could not be saved</string>
 	<string name="wait_one_minute">Please wait for at least 10 minutes for the SMS to arrive before requesting a call.</string>
 	<string name="backup_id">Exported ID</string>
 	<string name="backup_data">Data Backup</string>
 	<string name="really_leave_group_admin_message">You are the administrator of this group. If you leave it now, it
 		will become orphaned. The other members will still be able to chat but changes will no longer be possible.</string>
 	<string name="action_delete_group">Delete group</string>
+	<string name="action_leave_and_delete_group">Leave and delete group</string>
+	<string name="action_dissolve_and_delete_group">Dissolve and delete group</string>
 	<string name="delete_my_group_message">Do you really want to delete this group completely? All messages will be removed and remaining members can no longer use the group.</string>
 	<string name="error_out_of_memory">Not enough memory to complete this action</string>
 	<string name="configure">Configure</string>
@@ -1055,13 +1057,12 @@
 	<string name="open_in_maps_app">Open in Maps app</string>
 	<string name="delete">Delete</string>
 	<string name="continue_recording">Continue recording</string>
-	<string name="whatsnew_title">Welcome to %1$s 5.1</string>
+	<string name="whatsnew_title">What\'s new in %1$s 5.2?</string>
 	<string name="whatsnew_headline">
 		<![CDATA[
-		<p>This release focuses on security, usability and modernization of the app.</p>
-		<p>By popular demand, the app has been redesigned completely to fully support the “Material You” paradigm introduced with Android 12. An optional “Dynamic Colors” setting allows the app to adapt to your personalized color scheme.</p>
-		<p>Perfect Forward Secrecy is now enabled by default for all contacts that have a recent %1$s version installed.</p>
-		<p>Other improvements include a new voice message player that continues playing in a notification when the app is put to the background and new user guidance when requesting permissions.</p>
+		<p>Starred messages: To easily find them later, mark important messages with a star by long tapping.</p>
+		<p>Automatic Delete: Have your chats cleaned up automatically after a selectable period of time. The automatic deletion function for messages can be activated in the storage management.</p>
+		<p>Numerous other improvements and optimizations.</p>
 		]]>
 	</string>
 	<string name="whatsnew2_title"></string>
@@ -1337,7 +1338,7 @@
 	<string name="group_request_already_sent_title">Request already sent</string>
 	<string name="qr_scanner_id_hint">Scan the QR code of a contact to verify its identity. To display the code, ask your contact to tap on the profile picture in the upper left corner of the Threema home screen.</string>
 	<string name="enable_storage_access_for_media">Enable storage access to see pictures and videos on your device</string>
-	<string name="take_me_there">Take me there...</string>
+	<string name="take_me_there">Take me there…</string>
 	<string name="notification_channel_group_join_request">Notification channel for received group requests</string>
 	<string name="reset_default_group_link_title">Reset Default Link Info</string>
 	<string name="reset_default_group_link_desc">The previously shared link will be invalid and requests through the old link will automatically be rejected with an expired response.</string>
@@ -1507,10 +1508,44 @@
 	<string name="permission_microphone">Microphone</string>
 	<string name="permission_read_phone_state">Phone</string>
 	<string name="permission_enable_in_settings_rationale">Please enable the permission in the settings. Select “Permissions” and then allow “%s”.</string>
+	<string name="post_notification_permission_rationale">To receive notifications, you must allow %s to show notifications.</string>
     <string name="group_name">Group name</string>
+    <string name="star_message">Star message</string>
+    <string name="starred_message">Starred message</string>
+	<string name="starred">Starred</string>
+	<string name="starred_messages">Starred messages</string>
+	<string name="sorting">Sorting</string>
+	<string name="sort_by">Sort by…</string>
+	<string name="newest_first">newest first</string>
+	<string name="oldest_first">oldest first</string>
+	<string name="no_starred_messages">No starred messages found. To star a message, long tap on it and select the star button.</string>
+    <string name="remove_all_stars">Remove all stars</string>
+	<string name="remove_star">Remove star</string>
     <string name="samsung_permission_problem_explain">%1$s cannot access media files due to a missing permission on a system app. To fix it, make sure, the switch next to “External Storage” is enabled in the screen that follows and restart %1$s.</string>
 	<string name="min_n_chars">min. %d chars</string>
 	<string name="prefs_title_grant_bluetooth_permission">Grant Bluetooth permission</string>
+    <string name="safe_managed_password_confirm">A managed password for your Threema Safe backup has been defined.\n\nWould you like to use this password? When in doubt, please contact your administrator.</string>
+	<string name="safe_managed_new_password_confirm">A new managed password for your Threema Safe backup has been defined.\n\nWould you like to replace the current password with this new, managed one? When in doubt, please contact your administrator.</string>
+	<string name="real_not_now">Not now</string>
+	<string name="add_contact_in">Add contact in…</string>
+    <string name="really_remove_all_stars">Do you really want to unstar all messages?</string>
+	<string name="prefs_sum_storage_management">Manage memory and delete messages or media</string>
+	<string name="delete_automatically">Delete automatically</string>
+	<string name="keep_messages">Keep messages for:</string>
+	<string name="clean_up_manually">Clean up manually</string>
+	<string name="forever">Forever</string>
+	<string name="autodelete_explain">If set to anything other than “forever”, incoming and outgoing messages will be irrecoverably deleted after the specified amount of time. This includes unread and unsent messages. However, messages in note groups and starred messages will not be deleted. The deletion process is triggered periodically and not necessarily immediately after activation.</string>
+	<string name="autodelete_confirm">Messages will be deleted automatically after %s. Continue?</string>
+	<string name="autodelete_activated">Auto delete activated.</string>
+    <string name="autodelete_disabled">Auto delete disabled.</string>
+	<string name="set_by_administrator">Value has been set by administrator and cannot be changed.</string>
+	<string name="action_dissolve_group">Dissolve group</string>
+	<string name="really_dissolve_group">If you just dissolve the group, nobody can send new messages to the group anymore, and it can no longer be managed. The dissolved group can still be cloned.</string>
+	<string name="status_orphaned_group">*This group is orphaned*\nThe group creator has left the group, and it can no longer be maintained. One of the remaining members can clone the group (via group details) to become the new admin.</string>
+	<string name="group_orphaned_notice">This group is orphaned as the group creator has left the group. Please clone this group to become the new admin.</string>
+	<string name="group_not_a_member_notice">You are no longer part of this group and cannot use it anymore.</string>
+	<string name="group_dissolved_notice">This group has been dissolved and cannot be used anymore.</string>
+	<string name="directory_request_failed">Directory request failed. Try again.</string>
 	<string name="add_shortcut_exists">A shortcut for this target already exists.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
@@ -1557,6 +1592,12 @@
 		<item quantity="few">%d files successfully saved.</item>
 		<item quantity="many">%d files successfully saved.</item>
 		<item quantity="other">%d files successfully saved.</item>
+	</plurals>
+	<plurals name="saving_media">
+		<item quantity="one">Saving media</item>
+		<item quantity="few">Saving %d media files</item>
+		<item quantity="many">Saving %d media files</item>
+		<item quantity="other">Saving %d media files</item>
 	</plurals>
 	<plurals name="ballot_really_delete">
 		<item quantity="one">Remove poll</item>

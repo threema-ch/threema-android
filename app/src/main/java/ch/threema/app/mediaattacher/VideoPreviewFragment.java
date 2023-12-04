@@ -40,6 +40,10 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
+import com.alexvasilkov.gestures.GestureController;
+import com.alexvasilkov.gestures.State;
+import com.alexvasilkov.gestures.views.GestureFrameLayout;
+
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
@@ -53,6 +57,20 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 
 	private PlayerView videoView;
 	private ExoPlayer videoPlayer;
+	private GestureFrameLayout gestureFrameLayout;
+	private final GestureController.OnStateChangeListener onGestureStateChangeListener = new GestureController.OnStateChangeListener() {
+		@Override
+		public void onStateChanged(State state) {
+			if (state.getZoom() > 1.05f || state.getZoom() < 0.95f) {
+				if (videoView != null && videoView.isControllerFullyVisible()) {
+					videoView.hideController();
+				}
+			}
+		}
+
+		@Override
+		public void onStateReset(State oldState, State newState) {}
+	};
 
 	VideoPreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel){
 		super(mediaItem, mediaAttachViewModel);
@@ -73,6 +91,9 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 
 		if (rootView != null) {
 			this.videoView = rootView.findViewById(R.id.video_view);
+			this.gestureFrameLayout = rootView.findViewById(R.id.video_gesture_frame);
+			this.gestureFrameLayout.getController().getSettings().setMaxZoom(2.5f);
+			this.gestureFrameLayout.getController().addOnStateChangeListener(onGestureStateChangeListener);
 		}
 	}
 
@@ -109,6 +130,9 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 	@Override
 	public void onDestroy(@NonNull LifecycleOwner owner) {
 		releasePlayer();
+		if (gestureFrameLayout != null) {
+			gestureFrameLayout.getController().removeOnStateChangeListener(onGestureStateChangeListener);
+		}
 	}
 
 	@Override

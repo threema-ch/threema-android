@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="16dp"
+	android:animateLayoutChanges="true"
+	tools:context=".activities.BackupRestoreProgressActivity">
+
+	<TextView
+		android:id="@+id/backup_restore_info_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		style="@style/Threema.TextAppearance.Title"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"/>
+
+	<LinearLayout
+		android:id="@+id/backup_restore_summary"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/backup_restore_info_title">
+
+		<TextView
+			android:id="@+id/backup_restore_info_summary"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/backup_restore_in_progress"
+			android:layout_marginTop="16dp"
+			style="@style/Threema.TextAppearance.BodyLarge" />
+
+		<TextView
+			android:id="@+id/duration_delimiter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text=": "
+			android:layout_marginTop="16dp"
+			android:visibility="invisible"
+			style="@style/Threema.TextAppearance.BodyLarge"
+			tools:ignore="HardcodedText" />
+
+		<TextView
+			android:id="@+id/duration_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="16dp"
+			android:visibility="invisible"
+			style="@style/Threema.TextAppearance.BodyLarge" />
+
+	</LinearLayout>
+
+	<ProgressBar
+		android:id="@+id/backup_restore_progress"
+		style="?android:attr/progressBarStyleHorizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="16dp"
+		android:indeterminate="true"
+		android:indeterminateBehavior="cycle"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/backup_restore_summary"/>
+
+	<com.google.android.material.button.MaterialButton
+		android:id="@+id/close_button"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_weight="1"
+		android:text="@string/close"
+		style="@style/Threema.MaterialButton.Action"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

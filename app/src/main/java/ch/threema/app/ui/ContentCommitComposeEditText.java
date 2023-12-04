@@ -21,24 +21,27 @@
 
 package ch.threema.app.ui;
 
+import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
+
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+
+import androidx.annotation.NonNull;
+import androidx.core.view.inputmethod.EditorInfoCompat;
+import androidx.core.view.inputmethod.InputConnectionCompat;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import androidx.annotation.NonNull;
-import androidx.core.os.BuildCompat;
-import androidx.core.view.inputmethod.EditorInfoCompat;
-import androidx.core.view.inputmethod.InputConnectionCompat;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -50,8 +53,6 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
-
-import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 
 public class ContentCommitComposeEditText extends ComposeEditText {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContentCommitComposeEditText");
@@ -95,7 +96,7 @@ public class ContentCommitComposeEditText extends ComposeEditText {
 
 		final InputConnectionCompat.OnCommitContentListener callback =
 			(inputContentInfo, flags, opts) -> {
-				if (BuildCompat.isAtLeastNMR1() && (flags &
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && (flags &
 						InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
 					try {
 						inputContentInfo.requestPermission();
@@ -142,7 +143,7 @@ public class ContentCommitComposeEditText extends ComposeEditText {
 					}
 					return true;
 				}
-				if (BuildCompat.isAtLeastNMR1()) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
 					inputContentInfo.releasePermission();
 				}
 				return false;

@@ -179,11 +179,6 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 		return false;
 	}
 
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-	}
-
 	@SuppressLint("StaticFieldLeak")
 	private void saveChangesAndExit(final String safePassword) {
 		if (!TestUtil.empty(safePassword)) {

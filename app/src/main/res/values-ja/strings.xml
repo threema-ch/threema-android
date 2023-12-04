@@ -13,7 +13,7 @@
     <string name="invite_via">共有先を選択...</string>
     <string name="invite_email_body">こんにちは！\n\nこれはユーザーのプライバシーを守る安全なインスタントメッセンジャーの %1$s の招待です。\n\nThreema ID: https://threema.id/%2$s\n\nそれではまた %1$s で！\n\n良い一日を！\n</string>
     <string name="invite_sms_body">こんにちは！%1$sを使って安全にプライベートな会話をしましょう！Threema ID: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threemaは安全でプライバシーを守るメッセンジャーです</string>
+    <string name="invite_email_subject">Threema。私たちのプライバシーを守る安全なメッセンジャー</string>
     <string name="enter_id_hint">Threema IDを入力</string>
     <string name="account_links">紐付けされたアカウント</string>
     <string name="menu_settings">設定</string>
@@ -55,9 +55,9 @@
     <string name="prefs_title_wallpaper">壁紙を選ぶ</string>
     <string name="prefs_sum_wallpaper">壁紙の選択</string>
     <string name="prefs_title_wallpaper_switch">壁紙</string>
-    <string name="prefs_title_enter">「エンター」で送信</string>
-    <string name="prefs_sum_enter_on">エンターキーを押すとすぐにメッセージが送信されます</string>
-    <string name="prefs_sum_enter_off">エンターキーを押すと改行がされます</string>
+    <string name="prefs_title_enter">改行キーで送信</string>
+    <string name="prefs_sum_enter_on">改行キーが送信キーになります</string>
+    <string name="prefs_sum_enter_off">改行キーで改行が実行されます</string>
     <string name="prefs_system_notifications">個人トーク</string>
     <string name="prefs_inapp">アプリ内</string>
     <string name="prefs_inapp_sounds">アプリ内でのサウンド</string>
@@ -85,7 +85,7 @@
     <string name="image_size_medium">中 (1024x1024)</string>
     <string name="image_size_large">大 (1600x1600)</string>
     <string name="image_size_xlarge">最大 (2592x2592)</string>
-    <string name="image_size_original">オリジナル</string>
+    <string name="image_size_original">元の画質</string>
     <string name="color_none">なし</string>
     <string name="color_orange">オレンジ色</string>
     <string name="color_red">赤色</string>
@@ -225,7 +225,6 @@
     <string name="ringtone_none">消音</string>
     <string name="no_camera_installed">使用可能なカメラがありません</string>
     <string name="save_message_action">保存</string>
-    <string name="saving_media">メディアを保存中</string>
     <string name="file_is_not_a_video">選択されたファイルは動画ではありません</string>
     <string name="masterkey_is_unlocked">マスターキーが解除されました</string>
     <string name="file_too_large">ファイルが最大容量の %1$d MB を超えています</string>
@@ -506,6 +505,7 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="really_remove_wallpapers">本当にすべての壁紙を削除しますか？</string>
     <string name="wallpapers_removed">壁紙は削除されました</string>
     <string name="invalid_backup">バックアップデータが無効です。復元できませんでした。</string>
+    <string name="invalid_zip_restore_failed">復元は失敗しました。無効なバックアップファイル: %1$s</string>
     <string name="revocation_explain">ID を紛失したり、盗難された場合に、ここに入力したパスワードを
 https://myid.threema.ch/revoke に入力することで ID を削除することができます。</string>
     <string name="no_unread_messages">未読のメッセージが無いか、PINロックがかかっています</string>
@@ -670,7 +670,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="configure">設定</string>
     <string name="file_is_not_audio">音声ファイルではありません</string>
     <!-- restrictions -->
-    <string name="disabled_by_policy">デバイスポリシーで一部の設定が無効になっています</string>
+    <string name="disabled_by_policy">一部の設定は管理者によって無効にされています</string>
     <string name="select_all">すべて選択</string>
     <string name="deleting_messages">メッセージを削除</string>
     <string name="media_gallery_files">ファイル</string>
@@ -901,7 +901,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="safe_configure_choose_password_force">あなたのThreema IDを守るために、強力なパスワードを設定してください。ここに入力した内容を忘れないようにしてください。</string>
     <string name="safe_deactivate">Threema Safeの無効化</string>
     <string name="safe_deactivate_explain">Threema Safeを無効にすると、既存のバックアップはサーバー上で削除されます。続けますか？</string>
-    <string name="add_group_members">新しいメンバー</string>
+    <string name="add_group_members">メンバーをさらに追加</string>
     <string name="contact_add_confirm">新しい連絡先 «%1$s» を連絡先リストに追加しますか？</string>
     <string name="password_bad">脆弱なパスワード</string>
     <string name="prefs_fix_background_data">バックグラウンドデータの有効化</string>
@@ -1231,7 +1231,11 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="group_link_rename">名前の変更</string>
     <string name="group_link_rename_tag">新しい名前</string>
     <string name="tap_here_for_more">詳しい情報はこちら</string>
-    <string name="another_connection_instructions">サーバーは複数の異なるデバイスから同じThreema IDへの接続を検出しました。\n\n複数のデバイスで同じThreema IDを同時に使用することはできません。新しいメッセージは、サーバーに最後にログインしたデバイスにのみ送信されます。\n\n新しいデバイスに切り替える場合、古いデバイスから%sをアンイストールか無効にしてから、新しいデバイスを再起動してください。</string>
+    <string name="another_connection_instructions"><![CDATA[サーバーは複数の異なるデバイスから同じThreema IDへの接続を検出しました。
+
+複数のデバイスで同じThreema IDを同時に使用することはできません。新しいメッセージは、サーバーに最後にログインしたデバイスにのみ送信されます。
+
+新しいデバイスに切り替える場合、古いデバイスから%sをアンイストールか無効にしてから、新しいデバイスを再起動してください。]]></string>
     <string name="app_store_error_code">App storeエラーコード: %d</string>
     <string name="backup_restore_type"><![CDATA[どの種類のバックアップで復元しますか？ <br/><br/> <a href=%s>Threemaのバックアップについての詳細</a>]]></string>
     <string name="data_backup_info">トークを含むすべてを復元する</string>
@@ -1361,12 +1365,13 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="forward_security">Perfect Forward Secrecyを使用してメッセージを送信</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">なし</string>
-    <string name="clear_forward_security">Perfect Forward Secrecyセッションをクリア</string>
+    <string name="clear_forward_security">この連絡先のPerfect Forward Secrecyを初期化</string>
+    <string name="clear_forward_security_warning">これはThreemaのサポートチームからの指示がある場合にのみ実行してください。</string>
     <string name="forward_security_cleared">この連絡先とのPerfect Forward Secrecyセッションはクリアされました</string>
     <string name="message_without_forward_security">Perfect Forward Secrecyを使用しないメッセージを受信しました。送信者がPerfect Forward Secrecyを意図的に無効にしていることを確認してください。</string>
     <string name="forward_security_established">このトークのメッセージはPerfect Forward Secrecyによって保護されるようになりました。</string>
     <string name="forward_security_established_rx">このトークで受信したメッセージはPerfect Forward Secrecyによって保護されるようになりました。</string>
-    <string name="forward_security_reset">この連絡先とのPerfect Forward Secrecyセッションはリセットされました。その連絡先がデバイスを変更したか、アプリを再インストールした可能性があります。</string>
+    <string name="forward_security_reset">Perfect Forward Secrecy セッションが初期化されました。これは、トークの相手がが端末を変更したり、アプリを再インストールしたりした場合に発生することがあります。</string>
     <string name="forward_security_reset_simple">この連絡先とのPerfect Forward Secrecyセッションはリセットされました。</string>
     <string name="forward_security_message_out_of_order">メッセージが間違った順序で受信されたため、復号化できませんでした。</string>
     <string name="self_updater_installation_failed">アップデートのダウンロードに失敗しました。<a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> からアップデートをダウンロードしてインストールしてください。</string>
@@ -1403,7 +1408,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_summary_hibernation_api_32">長期の不使用後に、Theemaがシステムによって中断されるのを防ぐために、システム設定の「権限を削除して空き容量を増やす」を無効にしてください。</string>
     <string name="prefs_summary_hibernation_api">長期の不使用後に、Theemaがシステムによって中断されるのを防ぐために、システム設定の「使用していないアプリを一時停止する」を無効にしてください。</string>
     <string name="unable_to_fetch_configuration">設定サーバーからデータを取得できません。後でもう一度お試しください。</string>
-    <string name="rogue_device_warning">サーバーは異なるデバイスから同じThreema IDへの接続を検出しました。\n\nThreema IDを別のデバイスや古いアプリのバージョンで使用していない場合は、サポートに連絡してください（可能であればログファイルも送ってください）</string>
+    <string name="rogue_device_warning">異なるデバイスからの接続が、同じThreema IDで検出されました。最近、別の端末であなたのThreema IDを使用しましたか？&lt;br&gt;&lt;br&gt;もし使用したのであれば、このメッセージは無視してください。&lt;br&gt;&lt;br&gt;もし使用していないのであれば、あなたのプライベートキーが不正利用されている可能性があります。新しいIDを作成する前に、<a href="https://threema.ch/en/faq/another_connection">私たちの提案に従って</a>、あなたの端末とデータを保護してください。</string>
     <string name="fetch2_failure">プロビジョニングサーバーとの同期に失敗しました。</string>
     <string name="no_members_support_group_calls">このグループにはグループ通話に応答できるメンバーがいません</string>
     <string name="group_calls">グループ通話</string>
@@ -1412,7 +1417,13 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="group_call">グループ通話</string>
     <string name="checking_compatibility">互換性の確認中…</string>
     <string name="group_call_mic_permission_rationale">グループ通話を行うには、「権限」でマイクへのアクセスを %s に許可する必要があります。</string>
+    <string name="group_call_mic_permission_description">グループ通話を行うためには、マイクの許可を有効にする必要があります。</string>
+    <string name="call_mic_permission_description">通話をするためには、マイクの許可を有効に津す必要があります。</string>
     <string name="group_call_camera_permission_rationale">他の参加者にあなたの映像を見せるには、「権限」でカメラへのアクセスを %s に許可する必要があります。</string>
+    <string name="group_call_phone_permission_description">グループ通話を行うためには、他の通話がグループ通話を中断した際に検出するために、電話の許可が必要です。</string>
+    <string name="call_phone_permission_description">Threema通話を行うためには、他の通話がThreema通話を中断した際に検出するために、電話の許可が必要です。</string>
+    <string name="group_call_nearby_devices_permission_description">Bluetoothヘッドセットを使用してグループ通話を行うには、「近くのデバイス」の許可をBluetoothヘッドセットの検出に許可する必要があります。</string>
+    <string name="call_nearby_devices_permission_description">Bluetoothヘッドセットを使用してThreema通話を行うには、「近くのデバイス」の許可をBluetoothヘッドセットの検出に許可する必要があります。</string>
     <string name="settings">設定</string>
     <string name="leave">退出</string>
     <string name="fs_key_mismatch">キーが一致しません</string>
@@ -1425,6 +1436,29 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="forward_security_mode_2dh">単方向</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (略してPFS、日本語で前方秘匿性) は、長期鍵の安全性が損なわれたとしても、記録された通信をさかのぼって復号化されることから保護します。\n\nこのオプションは、双方のアプリがPFSに対応している場合に有効にすることができます。</string>
     <string name="group_call_inactivity_left">非アクティブによるグループ通話の退出</string>
+    <string name="missing_permission_external_storage">ファイルをコピーできませんでした。下記の手段を試みてください:\n1. 設定アプリを開く\n2.「アプリ」から「特別なアプリへのアクセス」を選択\n3. 「すべてのファイルのアクセス」を選択\n4. 右上の3つの点をタップし「システムを表示」を選択\n5. 「外部ストレージ」と「すべてのファイルの管理へのアクセスを許可」が許可されていることを確認\n6. バックアップの復元をもう一度試す</string>
+    <string name="forward_security_downgraded_status_message">相手のアプリバージョンがサポートされていないため、このトークではPerfect Forward Secrecyが無効になっています。</string>
+    <string name="forward_security_illegal_session_status_message">このPerfect Forward Secrecyセッションは無効であるため、リセットされました。</string>
+    <string name="crop_image_title">画像を切り抜く</string>
+    <string name="scroll_to_bottom">下部にスクロール</string>
+    <string name="scroll_to_top">上部にスクロール</string>
+    <string name="welcome_back">おかえりなさい！</string>
+    <string name="id_restored_successfully">あなたのThreema IDが復元されました</string>
+    <string name="prefs_dynamic_colors">ダイナミックカラー</string>
+    <string name="prefs_dynamic_colors_sum">システムカラーを使用</string>
+    <string name="apply_changes">変更を適応</string>
+    <string name="prefs_threema_work_summary">Threemaはビジネス向けのコミュニケーションソリューションも提供していることをご存知でたか？Threema Workについて詳しく知りたい場合は、こちらをタップしてください。</string>
+    <string name="notification_channel_voice_message_player">音声メッセージプレイヤー</string>
+    <string name="voice_message_from">%sからの音声メッセージ</string>
+    <string name="vm_fg_service_not_allowed">音声メッセージプレイバックエラー</string>
+    <string name="ignore_permission">二度と尋ねない</string>
+    <string name="permission_nearby_devices">近くの端末</string>
+    <string name="permission_bluetooth">Bluetooth</string>
+    <string name="permission_camera">カメラ</string>
+    <string name="permission_microphone">マイク</string>
+    <string name="permission_read_phone_state">電話</string>
+    <string name="permission_enable_in_settings_rationale">設定で権限を有効にしてください。「許可」 を選択し、次に 「%s」 を許可してください。</string>
+    <string name="group_name">グループ名</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d 連絡先</item>
     </plurals>
@@ -1448,6 +1482,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     </plurals>
     <plurals name="file_saved">
         <item quantity="other">%d ファイルの保存に成功しました。</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="other">メディアを保存中</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="other">投票を削除</item>
@@ -1476,6 +1513,10 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <plurals name="webclient_running_sessions">
         <item quantity="other">%d セッションを実行中</item>
     </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="other">本当に%d件のグループリクエストを削除しますか？
+これは撤回できないため注意してください。リクエストに対し回答されていない場合、引き続き回答を保留することができます。</item>
+    </plurals>
     <plurals name="really_delete_incoming_request">
         <item quantity="other">一度削除した参加申請には参加申請応答ができません。
 本当に %d 件のグループ参加申請を削除しますか？</item>
@@ -1496,5 +1537,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     </plurals>
     <plurals name="delete_messages">
         <item quantity="other">%d 件のメッセージをこのデバイスから削除しますか？</item>
+    </plurals>
+    <plurals name="number_of_group_members">
+        <item quantity="other">%d名のグループメンバー</item>
     </plurals>
 </resources>

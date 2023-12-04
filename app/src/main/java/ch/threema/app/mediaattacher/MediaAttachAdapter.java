@@ -95,7 +95,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 			super(itemView);
 			contentView = (CheckableFrameLayout) itemView;
 			mediaFrame = itemView.findViewById(R.id.media_frame);
-			imageView = itemView.findViewById(R.id.image_view);
+			imageView = itemView.findViewById(R.id.thumbnail_view);
 			gifIndicator = itemView.findViewById(R.id.gif_marker_container);
 			videoIndicator = itemView.findViewById(R.id.video_marker_container);
 			loadErrorIndicator = itemView.findViewById(R.id.load_error_indicator);

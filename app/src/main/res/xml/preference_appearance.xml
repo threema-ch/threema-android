@@ -25,11 +25,11 @@
 			android:defaultValue="false"/>
 
 		<DropDownPreference
-			android:key="@string/preferences__language_override"
+			android:key="@string/preferences__app_language"
 			android:title="@string/prefs_language_override"
 			android:icon="@drawable/ic_language_outline"
-			android:entries="@array/list_language_override"
-			android:entryValues="@array/list_language_override_values"
+			android:entries="@array/list_app_languages"
+			android:entryValues="@array/list_app_languages_values"
 			android:defaultValue=""/>
 
 		<DropDownPreference
@@ -119,7 +119,7 @@
 				android:title="@string/prefs_show_inactive_contacts"
 				android:summaryOn="@string/prefs_sum_show_inactive_contacts_on"
 				android:summaryOff="@string/prefs_sum_show_inactive_contacts_off"
-				android:defaultValue="true"/>
+				android:defaultValue="false"/>
 
 	</PreferenceCategory>
 </PreferenceScreen>

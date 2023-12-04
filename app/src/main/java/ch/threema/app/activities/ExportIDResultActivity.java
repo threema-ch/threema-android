@@ -240,9 +240,13 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 		startActivity(shareIntent);
 	}
 
+	@Override
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
 
 	@Override
-	public void onBackPressed() {
+	protected void handleOnBackPressed() {
 		done();
 	}
 

@@ -388,8 +388,6 @@ public class SessionsActivity extends ThreemaToolbarActivity
 			}
 		});
 
-		findViewById(R.id.notice_layout).setVisibility(preferenceService.useThreemaPush() ? View.VISIBLE : View.GONE);
-
 		View emptyView = this.findViewById(R.id.empty_frame);
 		TextView emptyTextView = emptyView.findViewById(R.id.empty_text);
 		String emptyText;
@@ -693,8 +691,6 @@ public class SessionsActivity extends ThreemaToolbarActivity
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-
-		ConfigUtils.setLocaleOverride(this, this.serviceManager.getPreferenceService());
 
 		switch (requestCode) {
 			case REQUEST_ID_INTRO_WIZARD:

@@ -235,7 +235,7 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 	@Override
 	public void onYes(String tag, Object data) {
 		if (LinkifyUtil.DIALOG_TAG_CONFIRM_LINK.equals(tag)) {
-			LinkifyUtil.getInstance().openLink(this, (Uri) data);
+			LinkifyUtil.getInstance().openLink((Uri) data, null, this);
 		}
 	}
 

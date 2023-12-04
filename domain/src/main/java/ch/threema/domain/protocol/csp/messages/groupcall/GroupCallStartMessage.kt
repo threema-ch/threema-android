@@ -36,4 +36,6 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) : AbstractProtobufG
     override fun getMinimumRequiredForwardSecurityVersion(): Version? = null
 
     override fun allowUserProfileDistribution() = true
+
+    override fun exemptFromBlocking() = true
 }

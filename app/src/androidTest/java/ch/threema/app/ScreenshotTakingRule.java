@@ -23,7 +23,6 @@ package ch.threema.app;
 
 import android.util.Log;
 
-import org.junit.Rule;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -35,8 +34,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
+
+import static ch.threema.app.PermissionRuleUtilsKt.getReadWriteExternalStoragePermissionRule;
 
 /**
  * When a test fails, take a screenshot.
@@ -50,14 +50,10 @@ public class ScreenshotTakingRule extends TestWatcher {
 
 	public static RuleChain getRuleChain() {
 		return RuleChain
-			.outerRule(GrantPermissionRule.grant(
-				"android.permission.READ_EXTERNAL_STORAGE",
-				"android.permission.WRITE_EXTERNAL_STORAGE"
-			))
+			.outerRule(getReadWriteExternalStoragePermissionRule())
 			.around(new ScreenshotTakingRule());
 	}
 
-	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Override
 	protected void failed(Throwable e, Description description) {
 		final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -76,7 +72,7 @@ public class ScreenshotTakingRule extends TestWatcher {
 
 		// Dump UI state
 		try {
-			try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(basePath + ".uix")))) {
+			try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(basePath + ".uix"))) {
 				// Note: Explicitly opening and closing stream since the UiAutomator dumpWindowHierarchy(File)
 				// method leaks a file descriptor.
 				device.dumpWindowHierarchy(stream);

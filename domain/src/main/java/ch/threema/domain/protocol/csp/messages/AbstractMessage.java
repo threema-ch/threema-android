@@ -138,6 +138,11 @@ public abstract class AbstractMessage {
 	}
 
 	/**
+	 * Return whether this message should be exempted from blocking.
+	 */
+	public abstract boolean exemptFromBlocking();
+
+	/**
 	 * Return the body of this message in network format (i.e. formatted as a byte array).
 	 *
 	 * @return message body

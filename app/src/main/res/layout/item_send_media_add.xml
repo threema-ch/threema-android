@@ -8,7 +8,7 @@
 	android:background="@drawable/shape_add_media_item_bg">
 
 	<ImageView
-		android:id="@+id/image_view"
+		android:id="@+id/thumbnail_view"
 		android:layout_width="36dp"
 		android:layout_height="36dp"
 		android:layout_gravity="center"

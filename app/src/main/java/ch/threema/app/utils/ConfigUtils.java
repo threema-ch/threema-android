@@ -114,7 +114,6 @@ import org.slf4j.Logger;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
@@ -152,7 +151,6 @@ public class ConfigUtils {
 	public static final int EMOJI_DEFAULT = 0;
 	public static final int EMOJI_ANDROID = 1;
 
-	@Deprecated private static String localeOverride = null;
 	private static Integer miuiVersion = null;
 	private static int emojiStyle = 0;
 	private static Boolean isTablet = null, isBiggerSingleEmojis = null, hasMapLibreSupport = null;
@@ -787,86 +785,6 @@ public class ConfigUtils {
 		return !PreferenceService.LockingMech_NONE.equals(preferenceService.getLockMechanism());
 	}
 
-	public static void setLocaleOverride(@Nullable Context context, @Nullable PreferenceService preferenceService) {
-		if (context == null) {
-			return;
-		}
-
-		if (preferenceService == null) {
-			return;
-		}
-
-		if (localeOverride == null) {
-			String localeString = preferenceService.getLocaleOverride();
-			localeOverride = localeString != null ? localeString : "";
-		}
-
-		try {
-			Resources res = context.getResources();
-
-			String systemLanguage = Resources.getSystem().getConfiguration().locale.getLanguage();
-			String confLanguage = res.getConfiguration().locale.getLanguage();
-
-			if (localeOverride.isEmpty()) {
-				if (systemLanguage.equals(confLanguage)) {
-					return;
-				} else {
-					confLanguage = systemLanguage;
-				}
-			} else {
-				confLanguage = localeOverride;
-			}
-
-			DisplayMetrics dm = res.getDisplayMetrics();
-			android.content.res.Configuration conf = res.getConfiguration();
-			switch (confLanguage) {
-				case "pt":
-					conf.locale = new Locale(confLanguage, "BR");
-					break;
-				case "zh-rCN":
-					conf.locale = new Locale("zh", "CN");
-					break;
-				case "zh-rTW":
-					conf.locale = new Locale("zh", "TW");
-					break;
-				case "be-rBY":
-					conf.locale = new Locale("be", "BY");
-					break;
-				default:
-					conf.locale = new Locale(confLanguage);
-					break;
-			}
-			res.updateConfiguration(conf, dm);
-			Locale.setDefault(conf.locale);
-		} catch (Exception e) {
-			//
-		}
-	}
-
-	public static void updateLocaleOverride(Object newValue) {
-		if (newValue != null) {
-			String newLocale = newValue.toString();
-			if (!TestUtil.empty(newLocale)) {
-				localeOverride = newLocale;
-				return;
-			}
-		}
-		localeOverride = null;
-	}
-
-	/*
-	 * Update the app locale to avoid having to restart if relying on the app context to get resources
-	 */
-	public static void updateAppContextLocale(Context context, String lang) {
-		Configuration config = new Configuration();
-		if (!TextUtils.isEmpty(lang)) {
-			config.locale = new Locale(lang);
-		} else {
-			config.locale = Locale.getDefault();
-		}
-		context.getResources().updateConfiguration(config, null);
-	}
-
 	/*
 	 * Returns the height of the status bar (showing battery or network status) on top of the screen
 	 * DEPRECATED: use ViewCompat.setOnApplyWindowInsetsListener() on Lollipop+
@@ -1002,13 +920,53 @@ public class ConfigUtils {
 	}
 
 	/**
-	 * Request all possibly required permissions of Storage group
+	 * Request the permission to read videos and images. Prior to Android 13 READ_EXTERNAL_STORAGE
+	 * is requested.
+	 *
+	 * @param context the context to check the permissions
+	 * @return true if permissions are already granted, false otherwise
+	 */
+	public static boolean isVideoImagePermissionGranted(@NonNull Context context) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			return isPermissionGranted(context, Manifest.permission.READ_MEDIA_VIDEO)
+				&& isPermissionGranted(context, Manifest.permission.READ_MEDIA_IMAGES);
+		} else {
+			return isPermissionGranted(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+		}
+	}
+
+	/**
+	 * Request all required permissions to read external storage. For Android 13 and higher this
+	 * requests READ_MEDIA_IMAGES and READ_MEDIA_VIDEO. READ_MEDIA_AUDIO is not requested.
+	 *
+	 * @param activity Activity context for onRequestPermissionsResult callback
+	 * @param requestCode request code for onRequestPermissionsResult callback
+	 * @return true if permissions are already granted, false otherwise
+	 */
+	public static boolean requestReadStoragePermission(@NonNull Activity activity, Fragment fragment, int requestCode) {
+		String[] permissions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+			? new String[] { Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}
+			: new String[] { Manifest.permission.READ_EXTERNAL_STORAGE };
+
+		if (checkIfNeedsPermissionRequest(activity, permissions)) {
+			requestPermissions(activity, fragment, permissions, requestCode);
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Request all possibly required permissions of Storage group. For Android 13 and higher this
+	 * requests READ_MEDIA_IMAGES and READ_MEDIA_VIDEO. READ_MEDIA_AUDIO is not requested.
+	 *
 	 * @param activity Activity context for onRequestPermissionsResult callback
 	 * @param requestCode request code for onRequestPermissionsResult callback
 	 * @return true if permissions are already granted, false otherwise
 	 */
 	public static boolean requestStoragePermissions(@NonNull Activity activity, Fragment fragment, int requestCode) {
-		String[] permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+		String[] permissions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+			? new String[] { Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO }
+			: new String[] { Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE };
 
 		if (checkIfNeedsPermissionRequest(activity, permissions)) {
 			requestPermissions(activity, fragment, permissions, requestCode);
@@ -1146,6 +1104,25 @@ public class ConfigUtils {
 	}
 
 	/**
+	 * Request the POST_NOTIFICATION permission. For Android versions below 13, this is not needed.
+	 *
+	 * @param context                   the context is needed to check whether the permission is already granted
+	 * @param requestPermissionLauncher the request permission launcher will be used to get the result
+	 * @return {@code true} if the permission is already granted, {@code false} otherwise
+	 */
+	public static boolean requestNotificationPermission(@NonNull Context context, @NonNull ActivityResultLauncher<String> requestPermissionLauncher) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+			return true;
+		}
+		String permission = Manifest.permission.POST_NOTIFICATIONS;
+		if (checkIfNeedsPermissionRequest(context, new String[]{permission})) {
+			requestPermissionLauncher.launch(permission);
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Asynchronously request camera permissions.
 	 *
 	 * @param activity Activity context for onRequestPermissionsResult callback
@@ -1182,26 +1159,60 @@ public class ConfigUtils {
 	}
 
 	/**
-	 * Show a snackbar explaining the reason why the user should enable a certain permission
-	 * @param context
-	 * @param parentLayout
-	 * @param stringResource
+	 * Show a snackbar explaining the reason why the user should enable a certain permission.
+	 *
+	 * @param context        the context; if null, nothing is shown
+	 * @param parentLayout   the parent layout where the snackbar is placed; if null, a toast is shown
+	 * @param stringResource the string resource of the message that will be shown
 	 */
-	public static void showPermissionRationale(Context context, View parentLayout, @StringRes int stringResource) {
-		showPermissionRationale(context, parentLayout, stringResource, null);
+	public static void showPermissionRationale(@Nullable Context context, @Nullable View parentLayout, @StringRes int stringResource) {
+		if (context != null) {
+			showPermissionRationale(context, parentLayout, context.getString(stringResource));
+		}
 	}
 
 	/**
-	 * Show a snackbar explaining the reason why the user should enable a certain permission
-	 * @param context
-	 * @param parentLayout
-	 * @param stringResource
-	 * @param callback Callback for the snackbar
+	 * Show a snackbar explaining the reason why the user should enable a certain permission.
+	 *
+	 * @param context      the context; if null, nothing is shown
+	 * @param parentLayout the parent layout where the snackbar is placed; if null, a toast is shown
+	 * @param message      the message that is shown
+	 */
+	public static void showPermissionRationale(@Nullable Context context, @Nullable View parentLayout, @NonNull String message) {
+		showPermissionRationale(context, parentLayout, message, null);
+	}
+
+	/**
+	 * Show a snackbar explaining the reason why the user should enable a certain permission.
+	 *
+	 * @param context        the context; if null, nothing is shown
+	 * @param parentLayout   the parent layout where the snackbar is placed; if null, a toast is shown
+	 * @param stringResource the string resource of the message that will be shown
+	 * @param callback       the callback for the snackbar
 	 */
 	public static void showPermissionRationale(
-		Context context,
+		@Nullable Context context,
 		@Nullable View parentLayout,
 		@StringRes int stringResource,
+		@Nullable BaseTransientBottomBar.BaseCallback<Snackbar> callback
+	) {
+		if (context != null) {
+			showPermissionRationale(context, parentLayout, context.getString(stringResource), callback);
+		}
+	}
+
+	/**
+	 * Show a snackbar explaining the reason why the user should enable a certain permission.
+	 *
+	 * @param context      the context; if null, nothing is shown
+	 * @param parentLayout the parent layout where the snackbar is placed; if null, a toast is shown
+	 * @param message      the message that is shown
+	 * @param callback     the callback for the snackbar
+	 */
+	public static void showPermissionRationale(
+		@Nullable Context context,
+		@Nullable View parentLayout,
+		@NonNull String message,
 		@Nullable BaseTransientBottomBar.BaseCallback<Snackbar> callback
 	) {
 		if (context == null) {
@@ -1209,9 +1220,9 @@ public class ConfigUtils {
 		}
 
 		if (parentLayout == null) {
-			Toast.makeText(context, context.getString(stringResource), Toast.LENGTH_LONG).show();
+			Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 		} else {
-			Snackbar snackbar = SnackbarUtil.make(parentLayout, context.getString(stringResource), Snackbar.LENGTH_LONG, 5);
+			Snackbar snackbar = SnackbarUtil.make(parentLayout, message, BaseTransientBottomBar.LENGTH_LONG, 5);
 			snackbar.setAction(R.string.menu_settings, new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -1271,8 +1282,7 @@ public class ConfigUtils {
 		}
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-			WindowManager.LayoutParams params = activity.getWindow().getAttributes();
-			params.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+			activity.getWindow().getAttributes().layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
 		}
 
 		activity.getWindow().setStatusBarColor(statusBarColor);

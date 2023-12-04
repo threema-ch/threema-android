@@ -95,15 +95,15 @@
     <string name="voip_gc_call_full_generic">Dosiahlo sa maximum: K tomuto skupinovému hovoru sa nemôžu pripojiť žiadni ďalší účastníci.</string>
     <string name="voip_gc_call_full_n">Dosiahol sa maximálny počet účastníkov (%1$d), k tomuto skupinovému hovoru sa nemôžete pripojiť.</string>
     <plurals name="n_participants_in_call">
-        <item quantity="one">%d účastník</item>
-        <item quantity="other">%d účastníkov</item>
         <item quantity="few">%d účastníci</item>
         <item quantity="many">%d účastníkov</item>
+        <item quantity="one">%d účastník</item>
+        <item quantity="other">%d účastníkov</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
+        <item quantity="many">Upozornenie: %d členov sa nemôže zúčastniť skupinových hovorov.</item>
+        <item quantity="few">Upozornenie: %d členovia sa nemôžu zúčastniť skupinových hovorov.</item>
         <item quantity="one">Upozornenie: Jeden člen sa nemôže zúčastniť skupinových hovorov.</item>
         <item quantity="other">Upozornenie: %d členov sa nemôže zúčastniť skupinových hovorov.</item>
-        <item quantity="few">Upozornenie: %d členovia sa nemôžu zúčastniť skupinových hovorov.</item>
-        <item quantity="many">Upozornenie: %d členov sa nemôže zúčastniť skupinových hovorov.</item>
     </plurals>
 </resources>

@@ -126,9 +126,15 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     private fun initAboutPref() {
         val aboutPreference = getPref<Preference>(R.string.preferences__about)
-        aboutPreference.title = getString(R.string.threema_version) + " " + getVersionString()
+        aboutPreference.title = getVersionNameWithBuildNumber()
         aboutPreference.setSummary(R.string.about_copyright)
         aboutPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            if (aboutCounter % 2 == 0) {
+                aboutPreference.title = getVersionNameWithVersionCode()
+            } else {
+                aboutPreference.title = getVersionNameWithBuildNumber()
+            }
+
             if (aboutCounter == ABOUT_REQUIRED_CLICKS) {
                 aboutCounter++
                 val intent = Intent(requireActivity().applicationContext, AboutActivity::class.java)
@@ -192,15 +198,43 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         }
     }
 
-    private fun getVersionString(): String {
+    private fun getVersionNameWithBuildNumber(): String {
         val version = StringBuilder()
-        version.append(ConfigUtils.getAppVersion(requireContext()))
-        version.append(" Build ").append(ConfigUtils.getBuildNumber(context))
-        version.append(" ").append(BuildFlavor.getName())
-        if (BuildConfig.DEBUG) {
-            version.append(" Commit ").append(BuildConfig.GIT_HASH)
-        }
+        version.appendVersionName()
+        version.appendBuildNumber()
+        version.appendBuildFlavor()
         return version.toString()
+    }
+
+    private fun getVersionNameWithVersionCode(): String {
+        val version = StringBuilder()
+        version.appendVersionName()
+        version.appendVersionCode()
+        version.appendBuildFlavor()
+        return version.toString()
+    }
+
+    private fun StringBuilder.appendVersionName(): StringBuilder {
+        return append(getString(R.string.threema_version)).append(" ").append(BuildConfig.VERSION_NAME)
+    }
+
+    private fun StringBuilder.appendVersionCode(): StringBuilder {
+        return append(" ")
+            .append(getString(R.string.threema_version_code))
+            .append(" ").append(BuildConfig.VERSION_CODE)
+    }
+
+    private fun StringBuilder.appendBuildNumber(): StringBuilder {
+        return append(" Build ")
+            .append(ConfigUtils.getBuildNumber(context))
+    }
+
+    private fun StringBuilder.appendBuildFlavor(): StringBuilder {
+        append(" ").append(BuildFlavor.getName())
+        if (BuildConfig.DEBUG) {
+            append(" Commit ").append(BuildConfig.GIT_HASH)
+        }
+        return this
     }
 
     @SuppressLint("StaticFieldLeak")

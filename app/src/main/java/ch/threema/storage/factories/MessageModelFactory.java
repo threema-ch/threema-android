@@ -21,14 +21,17 @@
 
 package ch.threema.storage.factories;
 
-import android.content.ContentValues;
+import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
 
+import android.content.ContentValues;
 import android.database.Cursor;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.services.MessageService;
 import ch.threema.domain.models.MessageId;
 import ch.threema.storage.CursorHelper;
@@ -37,7 +40,6 @@ import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 
@@ -94,8 +96,31 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 				});
 	}
 
-	public List<AbstractMessageModel> getMessagesByText(String text, boolean includeArchived) {
+	public List<AbstractMessageModel> getMessagesByText(@Nullable String text, boolean includeArchived, boolean starredOnly, boolean sortAscending) {
+		String displayClause, sortClause;
+		if (starredOnly) {
+			displayClause = " AND (displayTags & " + DISPLAY_TAG_STARRED + ") > 0 ";
+		} else {
+			displayClause = "";
+		}
+
+		if (sortAscending) {
+			sortClause = " ASC ";
+		} else {
+			sortClause = " DESC ";
+		}
+
 		if (includeArchived) {
+			if (text == null) {
+				return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+					"SELECT * FROM " + MessageModel.TABLE +
+						" WHERE isStatusMessage = 0" +
+						displayClause +
+						" ORDER BY createdAtUtc" + sortClause +
+						"LIMIT 200",
+					new String[]{}));
+			}
+
 			return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
 				"SELECT * FROM " + MessageModel.TABLE +
 					" WHERE ( ( body LIKE ? " +
@@ -108,13 +133,25 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 					MessageType.IMAGE.ordinal() + "," +
 					MessageType.FILE.ordinal() + ") ) )" +
 					" AND isStatusMessage = 0" +
-					" ORDER BY createdAtUtc DESC" +
-					" LIMIT 200",
+					displayClause +
+					" ORDER BY createdAtUtc" + sortClause +
+					"LIMIT 200",
 				new String[]{
 					"%" + text + "%",
 					"%" + text + "%"
 				}));
 		} else {
+			if (text == null) {
+				return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+					"SELECT * FROM " + MessageModel.TABLE + " m" +
+						" INNER JOIN " + ContactModel.TABLE + " c ON c.identity = m.identity" +
+						" WHERE c.isArchived = 0" +
+						" AND m.isStatusMessage = 0" +
+						displayClause +
+						" ORDER BY m.createdAtUtc" + sortClause +
+						"LIMIT 200",
+					new String[]{}));
+			}
 			return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
 				"SELECT * FROM " + MessageModel.TABLE + " m" +
 					" INNER JOIN " + ContactModel.TABLE + " c ON c.identity = m.identity" +
@@ -129,8 +166,9 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 					MessageType.IMAGE.ordinal() + "," +
 					MessageType.FILE.ordinal() + ") ) )" +
 					" AND m.isStatusMessage = 0" +
-					" ORDER BY m.createdAtUtc DESC" +
-					" LIMIT 200",
+					displayClause +
+					" ORDER BY m.createdAtUtc" + sortClause +
+					"LIMIT 200",
 				new String[]{
 					"%" + text + "%",
 					"%" + text + "%"
@@ -462,7 +500,8 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 						"`" + MessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
 						"`" + MessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
 						"`" + MessageModel.COLUMN_READ_AT +"` DATETIME ," +
-						"`" + MessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 );",
+						"`" + MessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 ," +
+						"`" + MessageModel.COLUMN_DISPLAY_TAGS +"` TINYINT DEFAULT 0 );",
 
 			//indices
 				"CREATE INDEX `messageUidIdx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_UID +"` )",

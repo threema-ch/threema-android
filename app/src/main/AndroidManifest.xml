@@ -24,8 +24,12 @@
 	<uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 
 	<!-- android.permission-group.STORAGE -->
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+		android:maxSdkVersion="29"/>
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+		android:maxSdkVersion="32"/>
 
 	<!-- android.permission-group.LOCATION -->
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -68,6 +72,9 @@
 	<!-- Permissions for biometric unlocking  -->
 	<uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 	<uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+
+	<!-- Permission to show notifications -->
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
 	<!-- Launcher shortcuts -->
 	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
@@ -156,7 +163,6 @@
 	<application
 		android:name=".ThreemaApplication"
 		android:allowBackup="false"
-		android:extractNativeLibs="true"
 		android:hardwareAccelerated="true"
 		android:icon="@mipmap/ic_launcher"
 		android:roundIcon="@mipmap/ic_launcher"
@@ -172,7 +178,9 @@
 		android:appCategory="social"
 		android:hasFragileUserData="true"
 		tools:replace="android:supportsRtl,android:allowBackup"
-		android:dataExtractionRules="@xml/data_extraction_rules">
+		android:dataExtractionRules="@xml/data_extraction_rules"
+		android:enableOnBackInvokedCallback="true"
+		android:localeConfig="@xml/locales_config">
 		<!-- Note: The "replace" entry above should be kept to ensure that a library cannot accidentally
 		override rtl or backup support. Unfortunately the linter warning cannot be silenced. -->
 		<meta-data
@@ -796,6 +804,11 @@
 			android:theme="@style/Theme.Threema.Translucent"
 			android:windowSoftInputMode="adjustResize"/>
 		<activity
+			android:name="ch.threema.app.activities.StarredMessagesActivity"
+			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
+			android:theme="@style/Theme.Threema.StarredMessages"
+			android:windowSoftInputMode="adjustResize"/>
+		<activity
 			android:name=".locationpicker.LocationAutocompleteActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:windowSoftInputMode="adjustResize" />
@@ -847,13 +860,14 @@
 			android:exported="false"
 			android:excludeFromRecents="true">
 		</activity>
+		<activity
+			android:name=".activities.BackupRestoreProgressActivity"
+			android:theme="@style/Theme.Threema.WithToolbar"
+			android:launchMode="singleTask"
+			android:exported="false">
+		</activity>
 
 		<!-- services -->
-		<service
-			android:name=".AutostartService"
-			android:permission="android.permission.BIND_JOB_SERVICE"
-			android:enabled="true"
-			android:exported="false"/>
 		<service
 			android:name=".services.AccountAuthenticatorService"
 			android:exported="true">
@@ -888,11 +902,6 @@
 		<service
 			android:name=".services.WidgetService"
 			android:permission="android.permission.BIND_REMOTEVIEWS"
-			android:exported="false"/>
-		<service
-			android:name=".services.RestrictBackgroundChangedService"
-			android:permission="android.permission.BIND_JOB_SERVICE"
-			android:enabled="true"
 			android:exported="false"/>
 		<service
 			android:name=".jobs.ReConnectJobService"
@@ -948,6 +957,16 @@
 				<action android:name="androidx.media3.session.MediaLibraryService"/>
 				<action android:name="android.media.browse.MediaBrowserService" />
 			</intent-filter>
+		</service>
+
+		<!-- Store the chosen per-app locale -->
+		<service
+			android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+			android:enabled="false"
+			android:exported="false">
+			<meta-data
+				android:name="autoStoreLocales"
+				android:value="true" />
 		</service>
 
 		<!-- broadcast receivers -->

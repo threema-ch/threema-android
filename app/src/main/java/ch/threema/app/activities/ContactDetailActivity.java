@@ -675,7 +675,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		} else if (id == R.id.action_send_profilepic) {
 			sendProfilePic();
 		} else {
-			finishUp();
+			finish();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -938,16 +938,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 				ConfigUtils.showPermissionRationale(this, findViewById(R.id.main_content), R.string.permission_camera_qr_required);
 			}
 		}
-	}
-
-	@Override
-	public void onBackPressed() {
-		finishUp();
-	}
-
-
-	private void finishUp() {
-		finish();
 	}
 
 	private void finishAndGoHome() {

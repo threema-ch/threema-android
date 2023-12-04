@@ -1,6 +1,7 @@
 import com.android.tools.profgen.ArtProfileKt
 import com.android.tools.profgen.ArtProfileSerializer
 import com.android.tools.profgen.DexFile
+import org.jetbrains.kotlin.gradle.tasks.KaptGenerateStubs
 
 plugins {
     id 'org.sonarqube'
@@ -17,8 +18,9 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "5.1.4"
+def app_version = "5.2"
 def beta_suffix = "" // with leading dash
+def defaultVersionCode = 930
 
 /**
  * Return the git hash, if git is installed.
@@ -86,17 +88,19 @@ android {
     //       make sure to adjust them in `scripts/Dockerfile` and
     //       `.gitlab-ci.yml` as well!
     compileSdkVersion 33
-    buildToolsVersion '33.0.0'
-    ndkVersion '25.1.8937393'
+    buildToolsVersion '33.0.2'
+    ndkVersion '26.0.10792818'
 
     defaultConfig {
+        // https://developer.android.com/training/testing/espresso/setup#analytics
+        testInstrumentationRunnerArguments notAnnotation: 'ch.threema.app.TestFastlaneOnly,ch.threema.app.DangerousTest', disableAnalytics: 'true'
         minSdkVersion 21
         //noinspection OldTargetApi
-        targetSdkVersion 31
+        targetSdkVersion 33
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
-        versionCode 922
+        versionCode defaultVersionCode
         versionName "${app_version}${beta_suffix}"
         resValue "string", "app_name", "Threema"
         // package name used for sync adapter - needs to match mime types below
@@ -129,6 +133,7 @@ android {
         buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.threema.ch/\""
         buildConfigField "String", "SAFE_SERVER_URL", "\"https://safe-%h.threema.ch/\""
         buildConfigField "String", "WEB_SERVER_URL", "\"https://web.threema.ch/\""
+        buildConfigField "byte[]", "THREEMA_PUSH_PUBLIC_KEY", "new byte[] {(byte) 0xfd, (byte) 0x71, (byte) 0x1e, (byte) 0x1a, (byte) 0x0d, (byte) 0xb0, (byte) 0xe2, (byte) 0xf0, (byte) 0x3f, (byte) 0xca, (byte) 0xab, (byte) 0x6c, (byte) 0x43, (byte) 0xda, (byte) 0x25, (byte) 0x75, (byte) 0xb9, (byte) 0x51, (byte) 0x36, (byte) 0x64, (byte) 0xa6, (byte) 0x2a, (byte) 0x12, (byte) 0xbd, (byte) 0x07, (byte) 0x28, (byte) 0xd8, (byte) 0x7f, (byte) 0x71, (byte) 0x25, (byte) 0xcc, (byte) 0x24}"
         buildConfigField "String", "ONPREM_ID_PREFIX", "\"O\""
         buildConfigField "String", "LOG_TAG", "\"3ma\""
         buildConfigField "String", "DEFAULT_APP_THEME", "\"2\""
@@ -157,26 +162,50 @@ android {
         }
 
         testInstrumentationRunner 'ch.threema.app.ThreemaTestRunner'
-        testInstrumentationRunnerArgument 'notAnnotation', 'ch.threema.app.TestFastlaneOnly,ch.threema.app.DangerousTest'
-        testInstrumentationRunnerArgument 'disableAnalytics', 'true' // https://developer.android.com/training/testing/espresso/setup#analytics
+
+        // Only include language resources for those languages
+        resourceConfigurations += [
+            "en",
+            "be-rBY",
+            "ca",
+            "cs",
+            "de",
+            "es",
+            "fr",
+            "hu",
+            "it",
+            "ja",
+            "nl-rNL",
+            "no",
+            "pl",
+            "pt-rBR",
+            "rm",
+            "ru",
+            "sk",
+            "tr",
+            "uk",
+            "zh-rCN",
+            "zh-rTW"
+        ]
     }
 
     splits {
         abi {
             enable true
             reset()
-            include 'armeabi-v7a', 'x86', "arm64-v8a", "x86_64"
+            include 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
             exclude 'armeabi', 'mips', 'mips64'
             universalApk true
         }
     }
 
     // Assign different version code for each output
-    project.ext.versionCodes = ['armeabi': 1, 'armeabi-v7a': 2, 'arm64-v8a': 3, 'mips': 5, 'mips64': 6, 'x86': 8, 'x86_64': 9]
+    def abiVersionCodes = ['armeabi-v7a': 2, 'arm64-v8a': 3, 'x86': 8, 'x86_64': 9]
     android.applicationVariants.all { variant ->
         variant.outputs.each { output ->
+            def abi = output.getFilter("ABI")
             output.versionCodeOverride =
-                    project.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) * 1000000 + android.defaultConfig.versionCode
+                    abiVersionCodes.get(abi, 0) * 1000000 + defaultVersionCode
         }
     }
 
@@ -586,6 +615,10 @@ android {
                     outputs.upToDateWhen { false }
                     exceptionFormat = 'full'
                 }
+
+                jvmArgs = jvmArgs + ['--add-opens=java.base/java.util=ALL-UNNAMED']
+                jvmArgs = jvmArgs + ['--add-opens=java.base/java.util.stream=ALL-UNNAMED']
+                jvmArgs = jvmArgs + ['--add-opens=java.base/java.lang=ALL-UNNAMED']
             }
             // By default, local unit tests throw an exception any time the code you are testing tries to access
             // Android platform APIs (unless you mock Android dependencies yourself or with a testing
@@ -602,12 +635,12 @@ android {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(11))
+            languageVersion.set(JavaLanguageVersion.of(17))
         }
     }
 
     kotlin {
-        jvmToolchain(11)
+        jvmToolchain(17)
     }
 
     androidResources {
@@ -687,6 +720,7 @@ dependencies {
     }
 
     implementation project(':domain')
+    implementation project(path: ':task-manager')
 
     implementation 'net.zetetic:sqlcipher-android:4.5.5@aar'
 
@@ -699,21 +733,22 @@ dependencies {
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation "org.slf4j:slf4j-api:$slf4j_version"
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.28'
-    implementation 'com.github.CanHub:Android-Image-Cropper:4.3.0'
+    implementation 'com.vanniktech:android-image-cropper:4.5.0'
     implementation 'com.datatheorem.android.trustkit:trustkit:1.1.5'
-    implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
+    implementation 'me.zhanghai.android.fastscroll:library:1.3.0'
     implementation 'com.googlecode.ez-vcard:ez-vcard:0.11.3'
+    implementation 'com.alexvasilkov:gesture-views:2.8.3'
 
     // AndroidX / Jetpack support libraries
     implementation "androidx.preference:preference-ktx:1.2.1"
-    implementation 'androidx.recyclerview:recyclerview:1.3.1'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
     implementation 'androidx.palette:palette-ktx:1.0.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
-    implementation 'androidx.fragment:fragment-ktx:1.5.7'
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
     implementation 'androidx.activity:activity-ktx:1.7.2'
     implementation 'androidx.sqlite:sqlite:2.2.2'
     implementation "androidx.concurrent:concurrent-futures:1.1.0"
@@ -734,7 +769,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-process:2.6.2"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.6.2"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation "androidx.paging:paging-runtime-ktx:3.1.1"
+    implementation "androidx.paging:paging-runtime-ktx:3.2.1"
     implementation "androidx.sharetarget:sharetarget:1.2.0"
     implementation 'androidx.room:room-runtime:2.5.2'
     kapt 'androidx.room:room-compiler:2.5.2'
@@ -802,7 +837,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.4.0', {
         exclude group: 'androidx.annotation', module: 'annotation'
     }
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0', {
         exclude group: 'androidx.annotation', module: 'annotation'
         exclude group: 'androidx.appcompat', module: 'appcompat'
@@ -816,6 +851,8 @@ dependencies {
         exclude group: 'androidx.annotation', module: 'annotation'
     }
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    androidTestImplementation 'androidx.test:core-ktx:1.5.0'
+    androidTestImplementation "org.mockito:mockito-core:4.8.1"
 
     // Google Play Services and related libraries
     def googleDependencies = [
@@ -823,7 +860,7 @@ dependencies {
         'com.google.android.gms:play-services-base:18.1.0': [],
 
         // Firebase push
-        'com.google.firebase:firebase-messaging:23.1.2': [
+        'com.google.firebase:firebase-messaging:23.2.1': [
             [group: 'com.google.firebase', module: 'firebase-core'],
             [group: 'com.google.firebase', module: 'firebase-analytics'],
             [group: 'com.google.firebase', module: 'firebase-measurement-connector'],
@@ -880,8 +917,14 @@ dependencies {
         hmsImplementation(dependency) { excludes.each { exclude it } }
         hms_workImplementation(dependency) { excludes.each { exclude it } }
     }
-    hmsImplementation(name: 'agconnect-core-1.5.0.300', ext: 'aar')
-    hms_workImplementation(name: 'agconnect-core-1.5.0.300', ext: 'aar')
+    hmsImplementation(name: 'agconnect-core-1.9.1.301', ext: 'aar')
+    hms_workImplementation(name: 'agconnect-core-1.9.1.301', ext: 'aar')
+}
+
+tasks.withType(KaptGenerateStubs).configureEach {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
 }
 
 sonarqube {

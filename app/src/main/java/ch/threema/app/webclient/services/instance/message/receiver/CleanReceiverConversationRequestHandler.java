@@ -32,7 +32,6 @@ import java.util.Map;
 import androidx.annotation.AnyThread;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
-
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
@@ -100,12 +99,15 @@ public class CleanReceiverConversationRequestHandler extends MessageReceiver {
 			switch(receiver.getType()) {
 				case ContactMessageReceiver.Type_CONTACT:
 					conversationModel = this.conversationService.refresh(((ContactMessageReceiver)receiver).getContact());
+					this.conversationService.clear(conversationModel, true);
 					break;
 				case ContactMessageReceiver.Type_GROUP:
 					conversationModel = this.conversationService.refresh(((GroupMessageReceiver)receiver).getGroup());
+					this.conversationService.clear(conversationModel, false);
 					break;
 				case ContactMessageReceiver.Type_DISTRIBUTION_LIST:
 					conversationModel = this.conversationService.refresh(((DistributionListMessageReceiver)receiver).getDistributionList());
+					this.conversationService.clear(conversationModel, false);
 					break;
 			}
 
@@ -113,7 +115,6 @@ public class CleanReceiverConversationRequestHandler extends MessageReceiver {
 				throw new ThreemaException("invalid conversation/receiver");
 			}
 
-			this.conversationService.clear(conversationModel);
 			this.success(temporaryId);
 		} catch (Exception x) {
 			logger.error("Exception", x);

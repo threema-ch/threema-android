@@ -210,8 +210,9 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 	}
 
 	@Override
-	public void onBackPressed() {
-		finish();
+	protected boolean enableOnBackPressedCallback() {
+		// Override the behavior of WizardBackgroundActivity to allow normal back navigation
+		return false;
 	}
 
 	@TargetApi(Build.VERSION_CODES.M)

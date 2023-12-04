@@ -21,20 +21,22 @@
 
 package ch.threema.storage.models;
 
+// Do not change the order of the values, since this would break the persisted type in the database
 public enum MessageType {
 	TEXT,
 	@Deprecated IMAGE,
 	@Deprecated VIDEO,
 	@Deprecated VOICEMESSAGE,
 	LOCATION,
-	CONTACT,
+	@Deprecated CONTACT,
 	STATUS,
 	BALLOT,
 	FILE,
 	VOIP_STATUS,
 	DATE_SEPARATOR,
 	GROUP_CALL_STATUS,
-	FORWARD_SECURITY_STATUS
+	FORWARD_SECURITY_STATUS,
+	GROUP_STATUS,
 }
 
 

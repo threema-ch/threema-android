@@ -60,6 +60,11 @@ public class BoxTextMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public byte[] getBody() {
         return text.getBytes(StandardCharsets.UTF_8);
     }

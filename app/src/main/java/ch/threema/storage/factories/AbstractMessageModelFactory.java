@@ -21,9 +21,15 @@
 
 package ch.threema.storage.factories;
 
+import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
+
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
+import net.zetetic.database.sqlcipher.SQLiteStatement;
 
 import org.slf4j.Logger;
 
@@ -43,6 +49,7 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.data.DisplayTag;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
@@ -87,6 +94,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 						.setDeliveredAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_DELIVERED_AT))
 						.setReadAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_READ_AT))
 						.setForwardSecurityMode(forwardSecurityMode)
+						.setDisplayTags(cursorFactory.getInt(AbstractMessageModel.COLUMN_DISPLAY_TAGS))
 				;
 				String stateString = cursorFactory.getString(AbstractMessageModel.COLUMN_STATE);
 				if (!TestUtil.empty(stateString)) {
@@ -132,6 +140,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		contentValues.put(AbstractMessageModel.COLUMN_DELIVERED_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getDeliveredAt()));
 		contentValues.put(AbstractMessageModel.COLUMN_READ_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getReadAt()));
 		contentValues.put(AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE, messageModel.getForwardSecurityMode() != null ? messageModel.getForwardSecurityMode().getValue() : null);
+		contentValues.put(AbstractMessageModel.COLUMN_DISPLAY_TAGS, messageModel.getDisplayTags());
 
 		return contentValues;
 	}
@@ -168,6 +177,12 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 			if(filter.getPageReferenceId() != null && filter.getPageReferenceId() > 0) {
 				queryBuilder.appendWhere(AbstractMessageModel.COLUMN_ID + "<?");
 				placeholders.add(String.valueOf(filter.getPageReferenceId()));
+			}
+
+			if (filter.displayTags() != null && filter.displayTags().length > 0) {
+				for(@DisplayTag int f: filter.displayTags()) {
+					queryBuilder.appendWhere("(" + AbstractMessageModel.COLUMN_DISPLAY_TAGS + " & " + f + ") > 0");
+				}
 			}
 		}
 	}
@@ -234,5 +249,27 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		catch (Exception e) {
 			logger.error("Exception", e);
 		}
+	}
+
+	@WorkerThread
+	public int unstarAllMessages() {
+		String query =
+			"UPDATE " + this.getTableName() +
+				" SET " + AbstractMessageModel.COLUMN_DISPLAY_TAGS +
+				" = (" + AbstractMessageModel.COLUMN_DISPLAY_TAGS +
+				" & ~" + DISPLAY_TAG_STARRED +
+				") WHERE (" + AbstractMessageModel.COLUMN_DISPLAY_TAGS + " & " + DISPLAY_TAG_STARRED + ") > 0";
+
+		SQLiteStatement statement = this.databaseService.getWritableDatabase().compileStatement(query);
+		return statement.executeUpdateDelete();
+	}
+
+	@WorkerThread
+	public long countStarredMessages() throws SQLiteException {
+		return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+			"SELECT COUNT(*) FROM " + this.getTableName()
+				+ " WHERE (" + AbstractMessageModel.COLUMN_DISPLAY_TAGS + " & " + DISPLAY_TAG_STARRED + ") > 0",
+			null
+		));
 	}
 }

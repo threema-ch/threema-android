@@ -26,7 +26,6 @@ import android.os.AsyncTask
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.activities.MediaGalleryActivity
 import ch.threema.app.activities.MediaGalleryActivity.*
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.MessageService
@@ -34,7 +33,6 @@ import ch.threema.app.services.MessageService.MessageFilter
 import ch.threema.base.ThreemaException
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
-import ch.threema.storage.models.data.MessageContentsType
 
 class MediaGalleryRepository {
     private var abstractMessageModels: MutableLiveData<List<AbstractMessageModel?>?>? = null
@@ -86,6 +84,7 @@ class MediaGalleryRepository {
             override fun onlyDownloaded(): Boolean { return false }
             override fun types(): Array<MessageType>? { return null }
             override fun contentTypes(): IntArray { return getContentTypes() }
+            override fun displayTags(): IntArray? { return null }
         }
     }
 

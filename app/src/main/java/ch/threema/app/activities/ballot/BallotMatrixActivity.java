@@ -408,7 +408,12 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		setResult(RESULT_OK);
 		finish();
 	}

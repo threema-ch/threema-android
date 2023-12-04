@@ -292,4 +292,11 @@
 		android:restrictionType="bool"
 		android:title="@string/restriction_disable_group_calls"/>
 
+	<restriction
+		android:defaultValue="0"
+		android:description="@string/restriction_keep_messages_days_desc"
+		android:key="th_keep_messages_days"
+		android:restrictionType="integer"
+		android:title="@string/restriction_keep_messages_days"/>
+
 </restrictions>

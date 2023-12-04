@@ -63,4 +63,9 @@ public class VoipICECandidatesMessage extends VoipMessage {
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_VOIP_ICE_CANDIDATES;
 	}
+
+	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
 }

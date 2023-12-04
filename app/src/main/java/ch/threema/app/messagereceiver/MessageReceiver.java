@@ -121,7 +121,7 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	/**
 	 * select and filter (if filter is set) all message models
 	 */
-	List<M> loadMessages(MessageService.MessageFilter filter) throws SQLException;
+	List<M> loadMessages(MessageService.MessageFilter filter);
 
 	/**
 	 * Count messages for this receiver
@@ -209,6 +209,4 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	 * @return list of identities
 	 */
 	String[] getIdentities();
-
-	String[] getIdentities(int requiredFeature);
 }

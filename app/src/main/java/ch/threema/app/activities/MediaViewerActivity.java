@@ -261,13 +261,17 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 				public int[] contentTypes() {
 					return filter;
 				}
+
+				@Override
+				public int[] displayTags() {
+					return null;
+				}
 			});
 		} catch (Exception x) {
 			logger.error("Exception", x);
 			finish();
 			return false;
 		}
-
 
 		if (intent.getBooleanExtra(EXTRA_ID_REVERSE_ORDER, false)) {
 			// reverse order
@@ -582,15 +586,6 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 	}
 
 	@Override
-	public void onBackPressed() {
-		//if in zoom mode,
-		MediaViewFragment f = this.getCurrentFragment();
-		if (f == null || f.inquireClose()) {
-			super.onBackPressed();
-		}
-	}
-
-	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		// fixes https://code.google.com/p/android/issues/detail?id=19917
 		super.onSaveInstanceState(outState);
@@ -655,15 +650,15 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 	public static class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
 		private final MediaViewerActivity a;
-		private final FragmentManager mFragmentManager;
-		private final SparseArray<Fragment> mFragments;
-		private FragmentTransaction mCurTransaction;
+		private final FragmentManager fragmentManager;
+		private final SparseArray<Fragment> fragments;
+		private FragmentTransaction curTransaction;
 
 		public ScreenSlidePagerAdapter(MediaViewerActivity a, FragmentManager fm) {
 			super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 			this.a = a;
-			mFragmentManager = fm;
-			mFragments = new SparseArray<>();
+			fragmentManager = fm;
+			fragments = new SparseArray<>();
 		}
 
 		@NonNull
@@ -671,11 +666,11 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		@Override
 		public Object instantiateItem(@NonNull ViewGroup container, int position) {
 			Fragment fragment = getItem(position);
-			if (mCurTransaction == null) {
-				mCurTransaction = mFragmentManager.beginTransaction();
+			if (curTransaction == null) {
+				curTransaction = fragmentManager.beginTransaction();
 			}
-			mCurTransaction.add(container.getId(), fragment, "fragment:" + position);
-			mFragments.put(position, fragment);
+			curTransaction.add(container.getId(), fragment, "fragment:" + position);
+			fragments.put(position, fragment);
 			return fragment;
 		}
 
@@ -770,11 +765,11 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
 			logger.debug("destroyItem " + position);
 
-			if (mCurTransaction == null) {
-				mCurTransaction = mFragmentManager.beginTransaction();
+			if (curTransaction == null) {
+				curTransaction = fragmentManager.beginTransaction();
 			}
-			mCurTransaction.detach(mFragments.get(position));
-			mFragments.remove(position);
+			curTransaction.detach(fragments.get(position));
+			fragments.remove(position);
 
 			if (position >= 0 && position < a.fragments.length) {
 				if (TestUtil.required(a.fragments[position])) {
@@ -789,10 +784,10 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 		@Override
 		public void finishUpdate(@NonNull ViewGroup container) {
-			if (mCurTransaction != null) {
-				mCurTransaction.commitAllowingStateLoss();
-				mCurTransaction = null;
-				mFragmentManager.executePendingTransactions();
+			if (curTransaction != null) {
+				curTransaction.commitAllowingStateLoss();
+				curTransaction = null;
+				fragmentManager.executePendingTransactions();
 			}
 		}
 

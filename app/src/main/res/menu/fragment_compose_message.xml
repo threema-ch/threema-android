@@ -117,7 +117,7 @@
 		<item
 			android:id="@+id/menu_block_contact"
 			android:icon="@drawable/ic_block"
-			android:orderInCategory="100"
+			android:orderInCategory="92"
 			android:title="@string/block_contact"
 			android:visible="false"
 			app:iconTint="?attr/colorOnSurface"
@@ -126,7 +126,7 @@
 		<item
 			android:id="@+id/menu_empty_chat"
 			android:icon="@drawable/ic_outline_delete_sweep"
-			android:orderInCategory="104"
+			android:orderInCategory="94"
 			android:title="@string/empty_chat_title"
 			android:visible="true"
 			app:iconTint="?attr/colorOnSurface"
@@ -135,7 +135,7 @@
 		<item
 			android:id="@+id/menu_delete_distribution_list"
 			android:icon="@drawable/ic_delete_outline"
-			android:orderInCategory="107"
+			android:orderInCategory="95"
 			android:title="@string/really_delete_distribution_list"
 			android:visible="false"
 			app:iconTint="?attr/colorOnSurface"

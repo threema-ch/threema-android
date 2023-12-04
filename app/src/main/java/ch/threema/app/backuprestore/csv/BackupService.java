@@ -21,6 +21,10 @@
 
 package ch.threema.app.backuprestore.csv;
 
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -62,6 +66,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -113,22 +118,25 @@ import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
 
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
-
 public class BackupService extends Service {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupService");
+
+	public static final String BACKUP_PROGRESS_INTENT = "backup_progress_intent";
+	public static final String BACKUP_PROGRESS = "backup_progress";
+	public static final String BACKUP_PROGRESS_STEPS = "backup_progress_steps";
+	public static final String BACKUP_PROGRESS_MESSAGE = "backup_progress_message";
+	public static final String BACKUP_PROGRESS_ERROR_MESSAGE = "backup_progress_error_message";
 
 	private static final int MEDIA_STEP_FACTOR = 9;
 	private static final int MEDIA_STEP_FACTOR_VIDEOS_AND_FILES = 12;
 	private static final int MEDIA_STEP_FACTOR_THUMBNAILS = 3;
+	private static final int NONCES_PER_STEP = 50;
 
 	private static final String EXTRA_ID_CANCEL = "cnc";
 	public static final String EXTRA_BACKUP_RESTORE_DATA_CONFIG = "ebrdc";
 
 	private static final int BACKUP_NOTIFICATION_ID = 991772;
-	private static final int BACKUP_COMPLETION_NOTIFICATION_ID = 991773;
+	public static final int BACKUP_COMPLETION_NOTIFICATION_ID = 991773;
 	private static final long FILE_SETTLE_DELAY = 5000;
 
 	private static final String INCOMPLETE_BACKUP_FILENAME_PREFIX = "INCOMPLETE-";
@@ -399,6 +407,9 @@ public class BackupService extends Service {
 
 			if (this.config.backupNonces()) {
 				progress += 1;
+				long nonceCount = this.databaseNonceStore.getCount();
+				long nonceProgress = (long) Math.ceil((double) nonceCount / NONCES_PER_STEP);
+				progress += nonceProgress;
 			}
 
 			logger.debug("Calculated steps " + progress);
@@ -482,14 +493,21 @@ public class BackupService extends Service {
 		int p = (int) (100d / (double) this.processSteps * (double) this.currentProgressStep);
 		if (p > this.latestPercentStep) {
 			this.latestPercentStep = p;
-			updatePersistentNotification(latestPercentStep, 100);
+			String timeRemaining = getRemainingTimeText(latestPercentStep, 100);
+			updatePersistentNotification(latestPercentStep, 100, timeRemaining);
+			LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext())
+				.sendBroadcast(new Intent(BACKUP_PROGRESS_INTENT)
+					.putExtra(BACKUP_PROGRESS, latestPercentStep)
+					.putExtra(BACKUP_PROGRESS_STEPS, 100)
+					.putExtra(BACKUP_PROGRESS_MESSAGE, timeRemaining)
+				);
 		}
 	}
 
 	private void removeBackupFile(DocumentFile zipFile) {
 		//remove zip file
 		if (zipFile != null && zipFile.exists()) {
-			logger.debug( "remove " + zipFile.getUri());
+			logger.debug("remove {}", zipFile.getUri());
 			zipFile.delete();
 		}
 	}
@@ -563,7 +581,8 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID,
 			Tags.TAG_MESSAGE_DELIVERED_AT,
 			Tags.TAG_MESSAGE_READ_AT,
-			Tags.TAG_GROUP_MESSAGE_STATES
+			Tags.TAG_GROUP_MESSAGE_STATES,
+			Tags.TAG_MESSAGE_DISPLAY_TAGS
 		};
 
 		// Iterate over all contacts. Then backup every contact with the corresponding messages.
@@ -654,6 +673,7 @@ public class BackupService extends Service {
 										.write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, messageModel.getQuotedMessageId())
 										.write(Tags.TAG_MESSAGE_DELIVERED_AT, messageModel.getDeliveredAt())
 										.write(Tags.TAG_MESSAGE_READ_AT, messageModel.getReadAt())
+										.write(Tags.TAG_MESSAGE_DISPLAY_TAGS, messageModel.getDisplayTags())
 										.write();
 								}
 
@@ -728,31 +748,32 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_DELIVERED_AT,
 			Tags.TAG_MESSAGE_READ_AT,
 			Tags.TAG_GROUP_MESSAGE_STATES,
+			Tags.TAG_MESSAGE_DISPLAY_TAGS
 		};
 
 		final GroupService.GroupFilter groupFilter = new GroupService.GroupFilter() {
 			@Override
-			public boolean sortingByDate() {
+			public boolean sortByDate() {
 				return false;
 			}
 
 			@Override
-			public boolean sortingByName() {
+			public boolean sortByName() {
 				return false;
 			}
 
 			@Override
-			public boolean sortingAscending() {
+			public boolean sortAscending() {
 				return false;
 			}
 
 			@Override
-			public boolean withDeleted() {
+			public boolean includeDeletedGroups() {
 				return true;
 			}
 
 			@Override
-			public boolean withDeserted() {
+			public boolean includeLeftGroups() {
 				return true;
 			}
 		};
@@ -827,6 +848,7 @@ public class BackupService extends Service {
 									.write(Tags.TAG_MESSAGE_DELIVERED_AT, groupMessageModel.getDeliveredAt())
 									.write(Tags.TAG_MESSAGE_READ_AT, groupMessageModel.getReadAt())
 									.write(Tags.TAG_GROUP_MESSAGE_STATES, groupMessageStates)
+									.write(Tags.TAG_MESSAGE_DISPLAY_TAGS, groupMessageModel.getDisplayTags())
 									.write();
 
 								if (MessageUtil.hasDataFile(groupMessageModel)) {
@@ -1082,8 +1104,15 @@ public class BackupService extends Service {
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
 			CSVWriter csvWriter = new CSVWriter(outputStreamWriter, nonceHeader)
 		) {
-			for (String nonce : databaseNonceStore.getAllHashedNonces()) {
-				csvWriter.createRow().write(Tags.TAG_NONCES, nonce).write();
+			List<String> nonces = databaseNonceStore.getAllHashedNonces();
+			for (int i = 0; i < nonces.size(); i += NONCES_PER_STEP) {
+				int chunkEnd = Math.min(i + NONCES_PER_STEP, nonces.size());
+				for (int n = i; n < chunkEnd; n++) {
+					csvWriter.createRow().write(Tags.TAG_NONCES, nonces.get(n)).write();
+				}
+				if (!next("Backup nonce")) {
+					return;
+				}
 			}
 		}
 		ZipUtil.addZipStream(
@@ -1272,7 +1301,7 @@ public class BackupService extends Service {
 				if (is != null) {
 					ZipUtil.addZipStream(zipOutputStream, is, filePrefix + messageModel.getUid(), false);
 				} else {
-					logger.debug( "Can't add media for message " + messageModel.getUid() + " (" + messageModel.getPostedAt().toString() + "): missing file");
+					logger.debug("Can't add media for message {} ({}): missing file", messageModel.getUid(), messageModel.getPostedAt());
 					// try to save thumbnail if media is missing
 					saveThumbnail = true;
 				}
@@ -1289,7 +1318,7 @@ public class BackupService extends Service {
 			return true;
 		} catch (Exception x) {
 			//do not abort, its only a media :-)
-			logger.debug( "Can't add media for message " + messageModel.getUid() + " (" + messageModel.getPostedAt().toString() + "): " + x.getMessage());
+			logger.debug( "Can't add media for message {} ({}): {}", messageModel.getUid(), messageModel.getPostedAt(), x.getMessage());
 			return false;
 		}
 	}
@@ -1329,6 +1358,11 @@ public class BackupService extends Service {
 		} else {
 			logger.error("Backup failed: {}", message);
 			showBackupErrorNotification(message);
+
+			// Send broadcast so that the BackupRestoreProgressActivity can display the message
+			LocalBroadcastManager.getInstance(this).sendBroadcast(
+				new Intent().putExtra(BACKUP_PROGRESS_ERROR_MESSAGE, message)
+			);
 		}
 
 		//try to reopen connection
@@ -1349,12 +1383,18 @@ public class BackupService extends Service {
 
 		isRunning = false;
 
-		//ConfigUtils.scheduleAppRestart(getApplicationContext(), getApplicationContext().getResources().getString(R.string.ipv6_restart_now));
+		// Send broadcast to indicate that the backup has been completed
+		LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext())
+			.sendBroadcast(new Intent(BACKUP_PROGRESS_INTENT)
+				.putExtra(BACKUP_PROGRESS, 100)
+				.putExtra(BACKUP_PROGRESS_STEPS, 100)
+			);
+
 		stopSelf();
 	}
 
 	private void showPersistentNotification() {
-		logger.debug( "showPersistentNotification");
+		logger.debug("showPersistentNotification");
 
 		Intent cancelIntent = new Intent(this, BackupService.class);
 		cancelIntent.putExtra(EXTRA_ID_CANCEL, true);
@@ -1378,14 +1418,11 @@ public class BackupService extends Service {
 		startForeground(BACKUP_NOTIFICATION_ID, notification);
 	}
 
-	private void updatePersistentNotification(int currentStep, int steps) {
-		logger.debug( "updatePersistentNoti " + currentStep + " of " + steps);
+	private void updatePersistentNotification(int currentStep, int steps, String timeRemaining) {
+		logger.debug("updatePersistentNotification {} of {}", currentStep, steps);
 
-		if (currentStep != 0) {
-			final long millisPassed = System.currentTimeMillis() - startTime;
-			final long millisRemaining = millisPassed * steps / currentStep - millisPassed + FILE_SETTLE_DELAY;
-			String timeRemaining = StringConversionUtil.secondsToString(millisRemaining / DateUtils.SECOND_IN_MILLIS, false);
-			notificationBuilder.setContentText(String.format(getString(R.string.time_remaining), timeRemaining));
+		if (timeRemaining != null) {
+			notificationBuilder.setContentText(timeRemaining);
 		}
 
 		notificationBuilder.setProgress(steps, currentStep, false);
@@ -1393,6 +1430,13 @@ public class BackupService extends Service {
 		if (notificationManager != null) {
 			notificationManager.notify(BACKUP_NOTIFICATION_ID, notificationBuilder.build());
 		}
+	}
+
+	private String getRemainingTimeText(int currentStep, int steps) {
+		final long millisPassed = System.currentTimeMillis() - startTime;
+		final long millisRemaining = millisPassed * steps / currentStep - millisPassed + FILE_SETTLE_DELAY;
+		String timeRemaining = StringConversionUtil.secondsToString(millisRemaining / DateUtils.SECOND_IN_MILLIS, false);
+		return String.format(getString(R.string.time_remaining), timeRemaining);
 	}
 
 	private void cancelPersistentNotification() {
@@ -1436,7 +1480,7 @@ public class BackupService extends Service {
 	}
 
 	private void showBackupSuccessNotification() {
-		logger.debug( "showBackupSuccess");
+		logger.debug("showBackupSuccess");
 
 		String text;
 
@@ -1486,12 +1530,21 @@ public class BackupService extends Service {
 	private void safeStopSelf() {
 		Notification notification = new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS, null)
 			.setContentTitle("")
-			.setContentText("").
-				build();
+			.setContentText("")
+			.build();
 
 		startForeground(BACKUP_NOTIFICATION_ID, notification);
 		stopForeground(true);
 		isRunning = false;
+
+		// Send broadcast after isRunning has been set to false to indicate that there is no backup
+		// in progress anymore
+		LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext())
+			.sendBroadcast(new Intent(BACKUP_PROGRESS_INTENT)
+				.putExtra(BACKUP_PROGRESS, 100)
+				.putExtra(BACKUP_PROGRESS_STEPS, 100)
+			);
+
 		stopSelf();
 	}
 

@@ -28,6 +28,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.WindowCompat;
 import androidx.fragment.app.FragmentManager;
 
 import org.slf4j.Logger;
@@ -65,7 +66,14 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	public void onCreate(Bundle savedInstanceState) {
 		logger.debug("onCreate");
 
+		getWindow().setAllowEnterTransitionOverlap(true);
+		getWindow().setAllowReturnTransitionOverlap(true);
 		super.onCreate(savedInstanceState);
+
+		// Tell the Window that our app is going to responsible for fitting for any system windows.
+		// This is similar to the now deprecated:
+		// view.setSystemUiVisibility(LAYOUT_STABLE | LAYOUT_FULLSCREEN | LAYOUT_FULLSCREEN)
+		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
 		this.currentIntent = getIntent();
 
@@ -95,14 +103,19 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 			}
 		}
 
+		boolean isHidden = checkHiddenChatLock(getIntent(), ID_HIDDEN_CHECK_ON_CREATE);
 		if (composeMessageFragment == null) {
 			// fragment no longer around
 			composeMessageFragment = new ComposeMessageFragment();
-			getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).hide(composeMessageFragment).commit();
-		}
-
-		if (!checkHiddenChatLock(getIntent(), ID_HIDDEN_CHECK_ON_CREATE)) {
-			getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
+			if (isHidden) {
+				getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).hide(composeMessageFragment).commit();
+			} else {
+				getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).commit();
+			}
+		} else {
+			if (!isHidden) {
+				getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
+			}
 		}
 		return true;
 	}
@@ -137,8 +150,12 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	}
 
 	@Override
-	public void onBackPressed() {
-		logger.debug("onBackPressed");
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		if (ConfigUtils.isTabletLayout()) {
 			if (messageSectionFragment != null) {
 				if (messageSectionFragment.onBackPressed()) {
@@ -155,7 +172,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 			}
 			return;
 		}
-		super.onBackPressed();
+		finish();
 	}
 
 	@Override

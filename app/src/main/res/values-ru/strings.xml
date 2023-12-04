@@ -3,7 +3,7 @@
     <string name="title_section2">Контакты</string>
     <string name="title_section1">Сообщения</string>
     <string name="title_compose_message">Новое сообщение</string>
-    <string name="title_choose_recipient">Выбрать получателей</string>
+    <string name="title_choose_recipient">Выбрать получателя</string>
     <string name="title_keyfingerprint">Отпечаток ключа</string>
     <string name="title_mythreemaid">Мой Threema ID</string>
     <string name="title_threemaid">Threema ID</string>
@@ -44,7 +44,7 @@
     <string name="prefs_title_typing_indicator">Индикация набора текста</string>
     <string name="prefs_media_title">Мультимедиа</string>
     <string name="prefs_sum_media_title">Настройки мультимедиа</string>
-    <string name="prefs_image_size">Размеры изображения</string>
+    <string name="prefs_image_size">Размер изображения</string>
     <string name="prefs_notification_sound">Звук уведомления</string>
     <string name="prefs_sum_notification_sound">Системный по умолчанию</string>
     <string name="prefs_vibrate">Вибрация</string>
@@ -77,7 +77,7 @@
     <string name="prefs_title_sum_message_log_off">События не будут записываться</string>
     <string name="prefs_reset_push">Сброс push-метки</string>
     <string name="prefs_sum_reset_push">Повторно зарегистрировать устройство для получения push-уведомлений с помощью FCM/HMS</string>
-    <string name="prefs_notification_preview">Показать предварительный просмотр сообщения</string>
+    <string name="prefs_notification_preview">Просмотр сообщения</string>
     <string name="prefs_sum_reset_ringtones">Восстановить настройки по умолчанию</string>
     <string name="prefs_title_reset_ringtones">Сброс настроек звуковых уведомлений</string>
     <string name="image_size_small">Малый (640x640)</string>
@@ -204,6 +204,7 @@
     <string name="unlinking_email">Удаление привязки к электронной почте</string>
     <string name="unlink">Отвязать</string>
     <string name="threema_version">Версия</string>
+    <string name="threema_version_code">Код версии</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Отсутствует подключение к интернету, неправильные данные экспорта ID или пароль</string>
     <string name="prefs_header_other">Другое</string>
     <string name="an_error_occurred">Произошла ошибка</string>
@@ -219,7 +220,6 @@
     <string name="ringtone_none">Без звука</string>
     <string name="no_camera_installed">Нет доступной для использования камеры</string>
     <string name="save_message_action">Сохранить</string>
-    <string name="saving_media">Сохранение мультимедиа</string>
     <string name="file_is_not_a_video">Выбранный файл не является видео</string>
     <string name="masterkey_is_unlocked">Главный ключ разблокирован</string>
     <string name="file_too_large">Размер файла превышает допустимые %1$d МБ</string>
@@ -657,6 +657,8 @@
     <string name="backup_data">Резервная копия данных</string>
     <string name="really_leave_group_admin_message">Вы являетесь администратором этой группы. Если вы покинете ее сейчас, она станет неуправляемой. Другие участники будут по прежнему иметь возможность общаться, но изменения больше будут невозможны.</string>
     <string name="action_delete_group">Удалить группу</string>
+    <string name="action_leave_and_delete_group">Покинуть и удалить группу</string>
+    <string name="action_dissolve_and_delete_group">Распустить и удалить группу</string>
     <string name="delete_my_group_message">Полностью удалить эту группу? Все сообщения будут удалены, а оставшиеся участники больше не смогут пользоваться группой.</string>
     <string name="error_out_of_memory">Недостаточно памяти для завершения операции</string>
     <string name="configure">Настроить</string>
@@ -852,11 +854,11 @@
     <string name="prefs_title_accept_privacy_policy">Принять политику конфиденциальности</string>
     <string name="privacy_policy_explain">%1$s защищает вашу конфиденциальность тщательнее, чем любой другой мессенджер. Подробнее смотрите в нашей %2$s.</string>
     <string name="privacy_policy_check_confirm">Для пользования %s примите политику конфиденциальности.\n\n(требуется согласно регламенту ЕС 2016/679)</string>
-    <string name="prefs_title_incognito_keyboard">Запросить инкогнито-клавиатуру</string>
+    <string name="prefs_title_incognito_keyboard">Запрос инкогнито-клавиатуры</string>
     <string name="prefs_sum_incognito_keyboard">Отключить сбор данных для персонализированных предложений (если поддерживается клавиатурой)</string>
     <string name="tooltip_mentions">Введите символ «@» на клавиатуре, чтобы напрямую обратиться к члену этой группы или упомянуть его.</string>
     <string name="tooltip_imagepaint">Больше креатива! Нажмите на кнопку с волшебной палочкой и напишите что-то от руки или добавьте стикеры и текст к своим картинкам перед тем, как их отправлять.</string>
-    <string name="call_ongoing">Текущий вызов</string>
+    <string name="call_ongoing">Текущий звонок</string>
     <string name="ballot_received_votes">Число полученных голосов: %1$d/%2$d</string>
     <string name="quote_not_found">Котировочное сообщение не найдено</string>
     <string name="ballot_secret">секретным</string>
@@ -1010,11 +1012,11 @@
     <string name="open_in_maps_app">Открыть в приложении «Карты»</string>
     <string name="delete">Удалить</string>
     <string name="continue_recording">Продолжить запись</string>
+    <string name="whatsnew_title">Что нового в версии %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p>Этот выпуск ориентирован на безопасность, удобство для использования и модернизацию приложения.</p>
-		<p>В соответствии с популярным запросом дизайн приложения полностью переработан с целью полной поддержки парадигмы “Material You”, предложенной в ОС Android 12. Необязательный параметр “Динамические цвета” позволяет адаптировать приложение к вашей индивидуальной цветовой схеме.</p>
-		<p>Протокол Perfect Forward Secrecy теперь по умолчанию активирован для всех контактов, у которых установлена последняя версия приложения %1$s.</p>
-		<p>К числу других улучшений относятся новый модуль для воспроизведения голосовых сообщений, который продолжает воспроизведение в уведомлении, когда приложение переходит в фоновый режим, и новое руководство для пользователей при запросе разрешений.</p>
+		<p>Сообщения со звездочками: для упрощения поиска помечайте важные сообщения звездочкой, нажав и удерживая сообщение</p>
+		<p>Автоматическое удаление: настройте автоматическую очистку ваших чатов после заданного периода времени. Функцию автоматического удаления сообщений можно активировать на экране управления хранилищем.</p>
+		<p>Разнообразные доработки и улучшения.</p>
 		]]></string>
     <string name="tap_to_start">Нажмите здесь, чтобы запустить %s.</string>
     <string name="two_years">2 года</string>
@@ -1080,7 +1082,7 @@
     <string name="delete_everything">Удалить все</string>
     <string name="prefs_title_voip_video_enable">Разрешить видео</string>
     <string name="video_calls">Видеозвонки Threema</string>
-    <string name="prefs_videocall_profile">Предпочитаемое качество изображения</string>
+    <string name="prefs_videocall_profile">Желаемое качество изображения</string>
     <string name="videocall_profile_auto">Сбалансированное (рекомендовано)</string>
     <string name="videocall_profile_low_bandwidth">Экономия данных</string>
     <string name="videocall_profile_max_quality">Максимальное качество</string>
@@ -1349,10 +1351,10 @@
     <string name="contact_property_key">"Ключ"</string>
     <string name="header_nickname_entry">"Псевдоним"</string>
     <string name="contact_picture_content_description">Изображение контакта</string>
-    <string name="prefs_title_use_system_ringtone">Использовать системную мелодию вызова</string>
+    <string name="prefs_title_use_system_ringtone">Использовать системную мелодию</string>
     <string name="organization_type">Организация</string>
     <string name="permission_bluetooth_connect_required">Активируйте разрешение «Устройства поблизости» для поиска подключенных гарнитур Bluetooth</string>
-    <string name="threema_push_start_webclient_sessions_manually">Функция Threema Push активна. Таким образом, сеансы web-версии и версии для ПК следует запускать вручную.</string>
+    <string name="threema_push_start_webclient_sessions_manually">Функция Threema Push активна. Таким образом, сессии web-версии и версии для ПК следует запускать вручную.</string>
     <string name="tooltip_multiple_recipients_title">Несколько получателей</string>
     <string name="tooltip_multiple_recipients_text">Зажмите кнопку, чтобы выбрать несколько получателей для отправки им одного и того же сообщения.</string>
     <string name="synchronizing">Синхронизация…</string>
@@ -1364,7 +1366,7 @@
     <string name="forward_security_cleared">Сессии Perfect Forward Secrecy с этим контактом очищены</string>
     <string name="message_without_forward_security">Получено сообщение, в котором не использовался протокол Perfect Forward Secrecy. Убедитесь, что отправитель намеренно отключил Perfect Forward Secrecy.</string>
     <string name="forward_security_established">Сообщения в этом чате теперь защищены протоколом Perfect Forward Secrecy.</string>
-    <string name="forward_security_established_rx">Сообщения, получаемые в этом чате, теперь защищены протоколом Perfect Forward Secrecy.</string>
+    <string name="forward_security_established_rx">Сообщения, полученные в этом чате, теперь защищены Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Сессия Perfect Forward Secrecy сброшена. Это может произойти, если собеседник в чате переходит на другое устройство или переустанавливает приложение.</string>
     <string name="forward_security_reset_simple">Сессия Perfect Forward Secrecy с этим контактом сброшена.</string>
     <string name="forward_security_message_out_of_order">Получено сообщение, которое невозможно расшифровать.</string>
@@ -1402,7 +1404,7 @@
     <string name="prefs_summary_hibernation_api_32">Чтобы система не останавливала приложение Threema после его долгого бездействия, отключите системную настройку «Отозвать разрешения и освободить место».</string>
     <string name="prefs_summary_hibernation_api">Чтобы система не останавливала приложение Threema после его долгого бездействия, отключите системную настройку «Останавливать, если приложение не используется».</string>
     <string name="unable_to_fetch_configuration">Невозможно получить данные от сервера конфигурации. Повторите попытку позже.</string>
-    <string name="rogue_device_warning">Было обнаружено подключение с другого устройства с тем же Threema ID. Вы в последнее время использовали свой Threema ID на другом устройствe?&lt;br&gt;&lt;br&gt;Если использовали, не обращайте внимания на это сообщение.&lt;br&gt;&lt;br&gt;Если же нет, возможно, ваш закрытый ключ стал известен другим. Просмотрите <a href="https://threema.ch/en/faq/another_connection">наши рекомендации</a> по защите устройства и данных, после чего создайте новый ID.</string>
+    <string name="rogue_device_warning"><![CDATA[Было обнаружено подключение с другого устройства с тем же Threema ID. Вы в последнее время использовали свой Threema ID на другом устройствe?&lt;br&gt;&lt;br&gt;Если использовали, не обращайте внимания на это сообщение.&lt;br&gt;&lt;br&gt;Если же нет, возможно, ваш закрытый ключ стал известен другим. Просмотрите <a href="https://threema.ch/en/faq/another_connection">наши рекомендации</a> по защите устройства и данных, после чего создайте новый ID.]]></string>
     <string name="fetch2_failure">Синхронизация с сервером подготовки не выполнена.</string>
     <string name="no_members_support_group_calls">В этой группе нет других участников, которые могут отвечать на групповые звонки</string>
     <string name="group_calls">Групповые звонки</string>
@@ -1432,6 +1434,7 @@
     <string name="group_call_inactivity_left">Групповой звонок окончен из-за отсутствия активности</string>
     <string name="missing_permission_external_storage">Невозможно скопировать файл. Попробуйте выполнить следующие шаги:\n1. Откройте приложение «Настройки».\n2. Перейдите на вкладку «Приложения» и выберите «Специальный доступ приложений».\n3. Нажмите «Доступ ко всем файлам».\n4. Нажмите на три точки в правом верхнем углу и выберите «Показать систему».\n5. Нажмите «Внешнее хранилище» и установите «Разрешить доступ для управления всеми файлами».\n6. Еще раз попробуйте восстановить резервную копию.</string>
     <string name="forward_security_downgraded_status_message">Протокол Perfect Forward Secrecy (PFS) в этой беседе отключен, поскольку версия приложения вашего собеседника в чате его не поодерживает.</string>
+    <string name="forward_security_illegal_session_status_message">Сессия Perfect Forward Secrecy сброшена по причине недействительности.</string>
     <string name="crop_image_title">Аватар группы</string>
     <string name="scroll_to_bottom">Прокрутить вниз</string>
     <string name="scroll_to_top">Прокрутить вверх</string>
@@ -1456,11 +1459,46 @@
     <string name="permission_microphone">Микрофон</string>
     <string name="permission_read_phone_state">Телефон</string>
     <string name="permission_enable_in_settings_rationale">Предоставьте это разрешение в настройках. Выберите «Разрешения», а затем разрешите «%s».</string>
+    <string name="post_notification_permission_rationale">Чтобы получать уведомления, вы должны разрешить программе %s показывать уведомления.</string>
     <string name="group_name">Название группы</string>
+    <string name="star_message">Отметить звездочкой</string>
+    <string name="starred_message">Сообщение со звездочкой</string>
+    <string name="starred">Со звездочкой</string>
+    <string name="starred_messages">Сообщения со звездочкой</string>
+    <string name="sorting">Сортировка</string>
+    <string name="sort_by">Порядок...</string>
+    <string name="newest_first">сначала новые</string>
+    <string name="oldest_first">сначала старые</string>
+    <string name="no_starred_messages">Сообщения со звездочкой не найдены. Чтобы пометить сообщение звездочкой, удерживайте его, а затем выберите звездочку.</string>
+    <string name="remove_all_stars">Убрать все звездочки</string>
+    <string name="remove_star">Убрать звездочку</string>
     <string name="samsung_permission_problem_explain">%1$s не может получить доступ к файлам мультимедиа, т.к. не хватает разрешения для системного приложения. Чтобы исправить это, убедитесь, что переключатель «Внешнее хранилище» на следующем экране включен, и перезапустите
 %1$s.</string>
     <string name="min_n_chars">не менее %d символов</string>
     <string name="prefs_title_grant_bluetooth_permission">Предоставить доступ к Bluetooth</string>
+    <string name="safe_managed_password_confirm">Подготовлен управляемый пароль для вашей резервной копии Threema Safe.\n\nХотите использовать этот пароль? Если сомневаетесь, обратитесь к администратору.</string>
+    <string name="safe_managed_new_password_confirm">Подготовлен управляемый пароль для для вашей резервной копии Threema Safe.\n\nХотите заменить текущий пароль новым, управляемым? Если сомневаетесь, обратитесь к администратору.</string>
+    <string name="real_not_now">Не сейчас</string>
+    <string name="add_contact_in">Добавить контакт в...</string>
+    <string name="really_remove_all_stars">Действительно убрать звездочки со всех сообщений?</string>
+    <string name="prefs_sum_storage_management">Управляйте памятью и удаляйте сообщения или мультимедиа</string>
+    <string name="delete_automatically">Автоматическое удаление</string>
+    <string name="keep_messages">Хранить сообщения:</string>
+    <string name="clean_up_manually">Очистка вручную</string>
+    <string name="forever">Вечно</string>
+    <string name="autodelete_explain">Если выбрать любой другой вариант, кроме «Вечно», входящие и исходящие сообщения будут храниться только в течение заданного периода времени, затем они будут удалены без возможности восстановления. Это касается также непрочитанных и неотправленных сообщений. Сообщения в группах примечаний и сообщения, помеченные звездочкой, не будут удаляться. Процесс удаления происходит периодически, необязательно сразу после активации.</string>
+    <string name="autodelete_confirm">Сообщения будут удалены автоматически через %s. Продолжить?</string>
+    <string name="autodelete_activated">Автоудаление активировано.</string>
+    <string name="autodelete_disabled">Автоудаление отключено.</string>
+    <string name="set_by_administrator">Это значение задано администратором, изменить его нельзя.</string>
+    <string name="action_dissolve_group">Распустить группу</string>
+    <string name="really_dissolve_group">Если распустить группу, никто больше не сможет отправлять в нее новые сообщения, также невозможно будет управление ею. При этом распущенную группу можно клонировать.</string>
+    <string name="status_orphaned_group">*Группа осталась без создателя*\nСоздатель группы покинул ее, она больше не будет поддерживаться. Кто-то из оставшихся участников может клонировать группу (с экрана сведений о группе) и стать ее новым администратором.</string>
+    <string name="group_orphaned_notice">Группа осталась без создателя, т.к. он покинул группу. Клонируйте группу, чтобы стать ее новым администратором.</string>
+    <string name="group_not_a_member_notice">Вы больше не состоите в этой группе и не можете ее использовать.</string>
+    <string name="group_dissolved_notice">Группа распущена и больше не может использоваться.</string>
+    <string name="directory_request_failed">Сбой запроса каталога. Повторите попытку.</string>
+    <string name="add_shortcut_exists">Ярлык для этого элемента уже существует.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>
@@ -1568,6 +1606,16 @@
         <item quantity="many">%d сессий запущено</item>
         <item quantity="one">%d сессия запущена</item>
         <item quantity="other">%d сессий запущено</item>
+    </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="few">Удалить %d запроса на вступление в группу?
+Учтите, что запросы не будут отозваны, и вы все еще сможете быть приняты или опрошены, если на запросы не были даны ответы.</item>
+        <item quantity="many">Удалить %d запросов на вступление в группу?
+Учтите, что запросы не будут отозваны, и вы все еще сможете быть приняты или опрошены, если на запросы не были даны ответы.</item>
+        <item quantity="one">Удалить %d запрос на вступление в группу?
+Учтите, что запрос не будет отозван, и вы все еще сможете быть приняты или опрошены, если на запрос не был дан ответ.</item>
+        <item quantity="other">Удалить %d запросов на вступление в группу?
+Учтите, что запросы не будут отозваны, и вы все еще сможете быть приняты или опрошены, если на запросы не были даны ответы.</item>
     </plurals>
     <plurals name="really_delete_incoming_request">
         <item quantity="few">Удалить %d запроса вступления в группу?

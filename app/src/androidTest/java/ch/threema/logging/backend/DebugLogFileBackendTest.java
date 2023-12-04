@@ -21,7 +21,6 @@
 
 package ch.threema.logging.backend;
 
-import android.Manifest;
 import android.util.Log;
 
 import org.junit.Assert;
@@ -39,6 +38,8 @@ import androidx.test.rule.GrantPermissionRule;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.DangerousTest;
 
+import static ch.threema.app.PermissionRuleUtilsKt.getReadWriteExternalStoragePermissionRule;
+
 /**
  * Debug log file test
  */
@@ -47,7 +48,7 @@ import ch.threema.app.DangerousTest;
 public class DebugLogFileBackendTest {
 
 	@Rule
-	public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+	public GrantPermissionRule permissionRule = getReadWriteExternalStoragePermissionRule();
 
 	@Before
 	public void disableLogfile() {

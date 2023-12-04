@@ -152,6 +152,60 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/group_notice_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:clickable="false"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:cardCornerRadius="@dimen/cardview_border_radius"
+        app:cardElevation="@dimen/notice_views_elevation"
+        app:strokeWidth="0dp"
+        app:contentPaddingLeft="8dp"
+        app:contentPaddingRight="8dp"
+        app:contentPaddingTop="4dp"
+        app:contentPaddingBottom="4dp"
+        android:outlineProvider="none">
+
+        <RelativeLayout
+            android:id="@+id/group_notice_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false">
+
+            <TextView
+                style="@style/Threema.TextAppearance.BodyMedium"
+                android:id="@+id/group_notice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/clone_button"
+                android:layout_marginRight="8dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:text="@string/group_orphaned_notice"
+                android:textColor="?attr/colorOnBackground"
+                android:ellipsize="end"
+                android:maxLines="6"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/clone_button"
+                style="@style/Threema.MaterialButton.Action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="@string/action_clone_group" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <ch.threema.app.ui.SectionHeaderView
         android:id="@+id/group_members_title"
         android:layout_width="wrap_content"

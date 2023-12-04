@@ -125,6 +125,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 
 	public static final boolean DEFAULT_SYNC_CONTACTS = false;
 	private static final String DIALOG_TAG_WORK_SYNC = "workSync";
+	private static final String DIALOG_TAG_PASSWORD_PRESET_CONFIRM = "pwPreset";
 
 	private static int lastPage = 0;
 	private ParallaxViewPager viewPager;
@@ -275,9 +276,14 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	private void setupConfig() {
 		safeConfig = ThreemaSafeMDMConfig.getInstance();
 
+		viewPager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager()));
+		viewPager.addOnPageChangeListener(this);
+
 		if (ConfigUtils.isWorkRestricted()) {
 			if (isSafeEnabled()) {
-				safePassword = safeConfig.getPassword();
+				if (isSafeForced()) {
+					safePassword = safeConfig.getPassword();
+				}
 				safeServerInfo = safeConfig.getServerInfo();
 			}
 
@@ -331,11 +337,16 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 			isSyncContacts = false;
 		}
 
-		viewPager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager()));
-		viewPager.addOnPageChangeListener(this);
-
 		presetMobile = this.userService.getLinkedMobile();
 		presetEmail = this.userService.getLinkedEmail();
+
+		if (ConfigUtils.isWorkRestricted()) {
+			// confirm the use of a managed password
+			if (!safeConfig.isBackupDisabled() && safeConfig.isBackupPasswordPreset()) {
+				WizardDialog wizardDialog = WizardDialog.newInstance(R.string.safe_managed_password_confirm, R.string.accept, R.string.real_not_now, WizardDialog.Highlight.NONE);
+				wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_PASSWORD_PRESET_CONFIRM);
+			}
+		}
 	}
 
 	/**
@@ -526,8 +537,14 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 				linkPhone();
 			}
 		} else {
-			WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_info_sync_contacts_dialog, R.string.yes, R.string.no, null);
-			wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_SYNC_CONTACTS_ENABLE);
+			if (this.skipWizard) {
+				isSyncContacts = false;
+				this.serviceManager.getPreferenceService().setSyncContacts(false);
+				linkPhone();
+			} else {
+				WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_info_sync_contacts_dialog, R.string.yes, R.string.no, null);
+				wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_SYNC_CONTACTS_ENABLE);
+			}
 		}
 	}
 
@@ -631,6 +648,11 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	}
 
 	@Override
+	public boolean isSafeForced() {
+		return safeConfig.isBackupForced();
+	}
+
+	@Override
 	public String getSafePassword() {
 		return this.safePassword;
 	}
@@ -656,7 +678,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	}
 
 	/**
-	 * Return wether the identity was just created
+	 * Return whether the identity was just created
 	 * @return true if it's a new identity, false if the identity was restored
 	 */
 	public boolean isNewIdentity() {
@@ -674,6 +696,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 				break;
 			case DIALOG_TAG_PASSWORD_BAD:
 			case DIALOG_TAG_THREEMA_SAFE:
+			case DIALOG_TAG_PASSWORD_PRESET_CONFIRM:
 				break;
 			case DIALOG_TAG_SYNC_CONTACTS_ENABLE:
 			case DIALOG_TAG_SYNC_CONTACTS_MDM_ENABLE_RATIONALE:
@@ -702,11 +725,20 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 				this.serviceManager.getPreferenceService().setSyncContacts(false);
 				linkPhone();
 				break;
+			case DIALOG_TAG_PASSWORD_PRESET_CONFIRM:
+				finish();
+				System.exit(0);
+				break;
 		}
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		if (prevButton != null && prevButton.getVisibility() == View.VISIBLE) {
 			prevPage();
 		}

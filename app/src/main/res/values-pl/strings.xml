@@ -204,6 +204,7 @@
     <string name="unlinking_email">Niepołączony e-mai</string>
     <string name="unlink">Odłącz</string>
     <string name="threema_version">Wersja</string>
+    <string name="threema_version_code">Kod wersji</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Brak połączenia z Internetem, nieprawidłowe dane eksportu identyfikatora lub nieprawidłowe hasło</string>
     <string name="prefs_header_other">Inne</string>
     <string name="an_error_occurred">Wystąpił błąd</string>
@@ -219,7 +220,6 @@
     <string name="ringtone_none">Tryb cichy</string>
     <string name="no_camera_installed">Brak sprawnego aparatu</string>
     <string name="save_message_action">Zapisz</string>
-    <string name="saving_media">Zapisywanie mediów</string>
     <string name="file_is_not_a_video">Wybrany plik nie jest filmem</string>
     <string name="masterkey_is_unlocked">Klucz generalny jest odlokowany</string>
     <string name="file_too_large">Wielkość pliku przekracza limit wynoszący %1$d MB</string>
@@ -674,6 +674,8 @@ anonimowo?</string>
     <string name="backup_data">Backup danych</string>
     <string name="really_leave_group_admin_message">Jesteś administratorem tej grupy. Jeśli ją opuścisz, zostanie osierocona. Inni członkowie będą mogli dalej rozmawiać, ale nie będzie można wprowadzić żadnych zmian.</string>
     <string name="action_delete_group">Usuń grupę</string>
+    <string name="action_leave_and_delete_group">Opuść i usuń grupę</string>
+    <string name="action_dissolve_and_delete_group">Rozwiąż i usuń grupę</string>
     <string name="delete_my_group_message">Czy na pewno chcesz usunąć tę grupę? Wszyscy członkowie zostaną wyrzuceni.</string>
     <string name="error_out_of_memory">Za mało pamięci, aby ukończyć to polecenie</string>
     <string name="configure">Konfiguruj</string>
@@ -1027,11 +1029,12 @@ anonimowo?</string>
     <string name="open_in_maps_app">Otwórz w aplikacji Mapy</string>
     <string name="delete">Usuń</string>
     <string name="continue_recording">Kontynuuj nagrywanie</string>
+    <string name="whatsnew_title">Co nowego w %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
-<p>Ta wersja koncentruje się na bezpieczeństwie, użyteczności i modernizacji aplikacji.</p>
-<p>Ze względu na opinie użytkowników całkowicie przeprojektowaliśmy aplikację zgodnie ze schematem „Material You” wprowadzonym wraz z wersją systemu Android 12. Opcjonalne ustawienie „Dynamiczne kolory” pozwala na dostosowanie aplikacji do wybranego schematu kolorów.</p>
-<p>Opcja Perfect Forward Secrecy jest teraz domyślnie włączona dla wszystkich kontaktów z zainstalowaną niedawną wersją %1$s.</p>
-<p>Inne ulepszenia obejmują nowy odtwarzacz wiadomości głosowych, który odtwarza powiadomienie, gdy aplikacje działa w tle, oraz nowe wskazówki dla użytkownika przy zapytaniach o uprawnienia.</p> ]]></string>
+		<p>Wiadomości z gwiazdką: Aby łatwiej potem je znaleźć, oznacz ważne wiadomości gwiazdką, przytrzymując je.</p>
+		<p>Automatyczne usuwanie: Czyść automatycznie swoje czaty po upływie wybranego czasu. Funkcję automatycznego usuwania wiadomości można włączyć w opcji zarządzania przechowywaniem.</p>
+		<p>Wiele innych ulepszeń i optymalizacji.</p>
+		]]></string>
     <string name="tap_to_start">Dotknij tutaj, aby włączyć %s teraz.</string>
     <string name="two_years">2 lata</string>
     <string name="invalid_backup_path">Nieprawidłowa ścieżka kopii zapasowej</string>
@@ -1448,6 +1451,7 @@ anonimowo?</string>
     <string name="group_call_inactivity_left">Opuszczono rozmowę grupową z powodu nieaktywności</string>
     <string name="missing_permission_external_storage">Nie udało się skopiować pliku. Spróbuj następujących kroków:\n1. Otwórz aplikację Ustawienia.\n2. Przejdź do \"Aplikacje\" i wybierz \"Dostęp specjalny\".\n3. Dotknij \"Dostęp do wszystkich plików\".\n4. Dotknij trzech kropek w prawym górnym rogu i wybierz \"Pokaż aplikacje systemowe\".\n5. Dotknij \"Pamięć zewnętrzna\" i upewnij się, że \"Zezwól na dostęp do zarządzania wszystkimi plikami\" jest przyznane.\n6. Spróbuj ponownie przywrócić kopię zapasową.</string>
     <string name="forward_security_downgraded_status_message">Funkcja Perfect Forward Secrecy została wyłączona w tej konwersacji, ponieważ wersja aplikacji partnera na czacie jej nie obsługuje.</string>
+    <string name="forward_security_illegal_session_status_message">Zresetowano sesję Perfect Forward Secrecy z powodu nieprawidłowości.</string>
     <string name="crop_image_title">Przytnij obraz</string>
     <string name="scroll_to_bottom">Przewiń na dół</string>
     <string name="scroll_to_top">Przewiń do góry</string>
@@ -1472,10 +1476,45 @@ anonimowo?</string>
     <string name="permission_microphone">Mikrofon</string>
     <string name="permission_read_phone_state">Telefon</string>
     <string name="permission_enable_in_settings_rationale">Przyznaj uprawnienie w ustawieniach. Wybierz „Uprawnienia”, a potem przyznaj „%s”.</string>
+    <string name="post_notification_permission_rationale">Aby otrzymywać powiadomienia, musisz zezwolić na pokazywanie powiadomień przez aplikację %s.</string>
     <string name="group_name">Nazwa grupy</string>
+    <string name="star_message">Oznacz gwiazdką</string>
+    <string name="starred_message">Wiadomość z gwiazdką</string>
+    <string name="starred">Z gwiazdką</string>
+    <string name="starred_messages">Wiadomości z gwiazdką</string>
+    <string name="sorting">Sortowanie</string>
+    <string name="sort_by">Sortuj wg...</string>
+    <string name="newest_first">wpierw najnowsze</string>
+    <string name="oldest_first">wpierw najstarsze</string>
+    <string name="no_starred_messages">Nie znaleziono wiadomości z gwiazdką. Aby oznaczyć wiadomość gwiazdką, przytrzymaj ją i wybierz przycisk gwiazdki.</string>
+    <string name="remove_all_stars">Usuń wszystkie gwiazdki</string>
+    <string name="remove_star">Usuń gwiazdkę</string>
     <string name="samsung_permission_problem_explain">%1$s nie może uzyskać dostępu do plików mediów z powodu brakującego uprawnienia w aplikacji systemowej. Aby to naprawić, sprawdź, czy pole obok „Magazyn zewnętrzny” jest zaznaczone na następnym ekranie i ponownie uruchom %1$s.</string>
     <string name="min_n_chars">min. %d znaków</string>
     <string name="prefs_title_grant_bluetooth_permission">Przyznaj uprawnienie Bluetooth</string>
+    <string name="safe_managed_password_confirm">Zdefiniowano hasło zarządzane kopii zapasowej Threema Safe.\n\nChcesz użyć tego hasła? W razie wątpliwości skontaktuj się ze swoim administratorem.</string>
+    <string name="safe_managed_new_password_confirm">Zdefiniowano nowe hasło zarządzane kopii zapasowej Threema Safe.\n\nChcesz zastąpić bieżące hasło nowym zarządzanym hasłem? W razie wątpliwości skontaktuj się ze swoim administratorem.</string>
+    <string name="real_not_now">Nie teraz</string>
+    <string name="add_contact_in">Dodaj kontakt w...</string>
+    <string name="really_remove_all_stars">Czy na pewno chcesz usunąć wszystkie gwiazdki z wiadomości?</string>
+    <string name="prefs_sum_storage_management">Zarządzaj pamięcią i usuwaj wiadomości lub media</string>
+    <string name="delete_automatically">Usuń automatycznie</string>
+    <string name="keep_messages">Zachowaj wiadomości przez:</string>
+    <string name="clean_up_manually">Usuwaj ręcznie</string>
+    <string name="forever">Na zawsze</string>
+    <string name="autodelete_explain">Po ustawieniu opcji innej niż „na zawsze”, nadchodzące i wychodzące wiadomości będą przechowywane tylko przez określony czas, a potem zostaną usunięte bez możliwości odzyskania. Dotyczy to również wiadomości nieprzeczytanych i niewysłanych. Wiadomości w grupach notatek oraz oznaczone gwiazdką nigdy nie będą usuwane. Procedura usuwania przeprowadzania jest okresowo, niekoniecznie natychmiast po włączeniu.</string>
+    <string name="autodelete_confirm">Wiadomości będą usuwane automatycznie po %s. Kontynuować?</string>
+    <string name="autodelete_activated">Włączono automatyczne usuwanie.</string>
+    <string name="autodelete_disabled">Wyłączono automatyczne usuwanie.</string>
+    <string name="set_by_administrator">Wartość została ustawiona przez administratora i nie można jej zmienić.</string>
+    <string name="action_dissolve_group">Rozwiąż grupę</string>
+    <string name="really_dissolve_group">Jeśli tylko rozwiążesz grupę, nikt nie będzie mógł wysyłać do niej nowych wiadomości i nie będzie można nią zarządzać. Rozwiązaną grupę dalej można klonować.</string>
+    <string name="status_orphaned_group">*Ta grupa jest porzucona*\nTwórca grupy opuścił ją i nie można już nią zarządzać. Jeden z pozostałych członków może sklonować grupę (poprzez szczegóły grupy), aby zostać nowym administratorem.</string>
+    <string name="group_orphaned_notice">Ta grupa jest porzucona, gdyż jej twórca ją opuścił. Sklonuj grupę, aby zostać nowym administratorem.</string>
+    <string name="group_not_a_member_notice">Nie należysz już do tej grupy i nie możesz z niej korzystać.</string>
+    <string name="group_dissolved_notice">Grupa ta została rozwiązana i nie można już z niej korzystać.</string>
+    <string name="directory_request_failed">Żądanie katalogu nie powiodło się. Spróbuj ponownie.</string>
+    <string name="add_shortcut_exists">Skrót tego obiektu docelowego już istnieje.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktów</item>

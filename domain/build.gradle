@@ -34,7 +34,7 @@ def getGitVersion = { ->
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     api 'com.googlecode.libphonenumber:libphonenumber:8.13.19'
-    api 'androidx.annotation:annotation:1.6.0'
+    api 'androidx.annotation:annotation:1.7.0'
     api 'net.sourceforge.streamsupport:streamsupport-flow:1.7.4'
 
     api 'com.google.protobuf:protobuf-javalite:3.19.4'
@@ -59,11 +59,10 @@ sourceSets {
     }
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.19.4'
+        artifact = 'com.google.protobuf:protoc:3.24.3'
     }
     generateProtoTasks {
         all().each { task ->
@@ -121,3 +120,6 @@ publishing {
         }
     }
 }
+
+java.targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_11

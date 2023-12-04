@@ -34,11 +34,7 @@ import ch.threema.domain.stores.ContactStore;
  */
 public class InMemoryContactStore implements ContactStore {
 	private final Map<String, Contact> contacts = new HashMap<>();
-
-	@Override
-	public @Nullable Contact getContactForIdentity(@NonNull String identity, boolean fetch, boolean save) {
-		return this.contacts.get(identity);
-	}
+	private final Map<String, Contact> contactsCache = new HashMap<>();
 
 	@Override
 	public Contact getContactForIdentity(@NonNull String identity) {
@@ -61,5 +57,21 @@ public class InMemoryContactStore implements ContactStore {
 	@Override
 	public void removeContact(@NonNull Contact contact) {
 		this.contacts.remove(contact.getIdentity());
+	}
+
+	@Override
+	public void addCachedContact(@NonNull Contact contact) {
+		this.contactsCache.put(contact.getIdentity(), contact);
+	}
+
+	@Nullable
+	@Override
+	public Contact getContactForIdentityIncludingCache(@NonNull String identity) {
+		Contact cached = contactsCache.get(identity);
+		if (cached != null) {
+			return cached;
+		}
+
+		return getContactForIdentity(identity);
 	}
 }

@@ -86,7 +86,7 @@ public class ProtocolTest {
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
-		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg, true);
+		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
 		Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
 		Assert.assertTrue(decodedBoxMessage instanceof GroupBallotCreateMessage);
 
@@ -147,7 +147,7 @@ public class ProtocolTest {
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
-		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg, true);
+		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
 		Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
 		Assert.assertTrue(decodedBoxMessage instanceof BallotCreateMessage);
 

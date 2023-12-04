@@ -121,9 +121,9 @@ public class CreateGroupHandler extends MessageReceiver {
 			}
 		}
 
-		// Greate group
+		// Create group
 		try {
-			final GroupModel groupModel = this.groupService.createGroup(name, identities, avatar);
+			final GroupModel groupModel = this.groupService.createGroupFromLocal(name, identities, avatar);
 			this.success(temporaryId, groupModel);
 		} catch (PolicyViolationException e) {
 			this.failed(temporaryId, Protocol.ERROR_DISABLED_BY_POLICY);

@@ -43,7 +43,7 @@ public interface GroupInviteService {
 		GroupInviteToken.InvalidGroupInviteTokenException,
 		IOException, GroupInviteModel.MissingRequiredArgumentsException;
 
-	@Nullable
+	@NonNull
 	Optional<GroupInviteModel> getDefaultGroupInvite(@NonNull GroupModel groupModel);
 
 	int getCustomLinksCount(GroupId groupApiId);

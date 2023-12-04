@@ -63,7 +63,7 @@ public class DeleteMyGroupAsyncTask extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected Void doInBackground(Void... params) {
-		groupService.removeAllMembersAndLeave(groupModel);
+		groupService.dissolveGroupFromLocal(groupModel);
 		groupService.remove(groupModel);
 		return null;
 	}

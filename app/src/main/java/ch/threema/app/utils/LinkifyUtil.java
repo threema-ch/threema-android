@@ -27,6 +27,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Layout;
@@ -47,12 +51,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.text.util.LinkifyCompat;
 import androidx.core.view.GestureDetectorCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.slf4j.Logger;
 
 import java.net.IDN;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import ch.threema.app.BuildConfig;
@@ -60,9 +69,11 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ContactDetailActivity;
 import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
+import ch.threema.app.dialogs.BottomSheetGridDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.ui.BottomSheetItem;
 import ch.threema.app.ui.MentionClickableSpan;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -281,7 +292,7 @@ public class LinkifyUtil {
 								}
 
 								if (UrlUtil.isLegalUri(uri)) {
-									LinkifyUtil.this.openLink(context, uri);
+									LinkifyUtil.this.openLink(uri, fragment, activity);
 								} else {
 									String host = uri.getHost();
 									if (!TestUtil.empty(host)) {
@@ -308,7 +319,7 @@ public class LinkifyUtil {
 											dialog.show(activity.getSupportFragmentManager(), DIALOG_TAG_CONFIRM_LINK);
 										}
 									} else {
-										LinkifyUtil.this.openLink(context, uri);
+										LinkifyUtil.this.openLink(uri, fragment, activity);
 									}
 								}
 							} else if (link[0] instanceof MentionClickableSpan) {
@@ -347,11 +358,25 @@ public class LinkifyUtil {
 		return null;
 	}
 
-	public void openLink(@NonNull Context context, Uri uri) {
+	public void openLink(Uri uri, ComposeMessageFragment fragment, AppCompatActivity activity) {
+		final Context context = fragment != null ? fragment.getContext() : activity;
+		if (context == null) return;
+
 		// Open geo uris with internal map activity
 		if (uri.toString().startsWith("geo:")) {
 			GeoLocationUtil.viewLocation(context, uri);
 			return;
+		}
+
+		// handle contact Urls internally
+		if (BuildConfig.contactActionUrl.equals(uri.getAuthority())) {
+			List<String> pathSegments = uri.getPathSegments();
+			if (pathSegments.size() == 1 && pathSegments.get(0).length() == 8) {
+				if (openContactLinkTargetAppSelector(fragment, activity)) {
+					// intent has been handled
+					return;
+				}
+			}
 		}
 
 		Bundle bundle = new Bundle();
@@ -366,4 +391,76 @@ public class LinkifyUtil {
 		}
 	}
 
+	/**
+	 * Possible target Url schemes for adding Threema contacts
+	 */
+	private final String[] addContactSchemes = {
+			"threema",
+			"threemawork",
+			"threemared",
+			"threemaonprem"
+	};
+
+	/**
+	 * Query the PackageManager API (https://developer.android.com/reference/android/content/pm/PackageManager) to see which other Threema apps are installed.
+	 * Open a selector that allows picking a Threema app for opening an "add contact" link.
+	 *
+	 * Return true if the link target app selector could be shown, false otherwise.
+	 */
+	public boolean openContactLinkTargetAppSelector(@Nullable Fragment fragment, @Nullable AppCompatActivity activity) {
+		final Context context = fragment != null ? fragment.getContext() : activity;
+		if (context == null) return false;
+
+		final FragmentManager fragmentManager = fragment != null ? fragment.getParentFragmentManager() : activity.getSupportFragmentManager();
+		final PackageManager packageManager = context.getPackageManager();
+		if (packageManager == null) return false;
+
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		List<ResolveInfo> resolveInfoList;
+
+		ArrayList<BottomSheetItem> items = new ArrayList<>();
+
+		for (String addContactScheme : addContactSchemes) {
+			Uri targetUri = new Uri.Builder()
+				.scheme(addContactScheme)
+				.authority("add")
+				.appendQueryParameter("id", uri.getLastPathSegment())
+				.build();
+			intent.setData(targetUri);
+			resolveInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+			for (ResolveInfo resolveInfo : resolveInfoList) {
+				if (resolveInfo != null) {
+					CharSequence label = resolveInfo.loadLabel(packageManager);
+					Drawable icon = resolveInfo.loadIcon(packageManager);
+
+					if (label != null && icon != null) {
+						Bitmap bitmap = BitmapUtil.getBitmapFromVectorDrawable(icon, null);
+						if (bitmap != null) {
+							items.add(new BottomSheetItem(bitmap, label.toString(), resolveInfo.activityInfo.packageName, targetUri.toString()));
+						}
+					}
+				}
+			}
+		}
+
+		if (!items.isEmpty()) {
+			if (items.size() == 1) {
+				launchAddContactActivity(context, items.get(0).getTag(), items.get(0).getData());
+			} else {
+				BottomSheetGridDialog dialog = BottomSheetGridDialog.newInstance(R.string.add_contact_in, items);
+				dialog.setCallback((tag, data) -> launchAddContactActivity(context, tag, data));
+				dialog.show(fragmentManager, "bsh");
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private void launchAddContactActivity(Context context, String packageName, String uriString) {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setPackage(packageName);
+		intent.setData(Uri.parse(uriString));
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+		ContextCompat.startActivity(context, intent, null);
+	}
 }

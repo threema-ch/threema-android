@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (c) 2019-2023 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<ch.threema.app.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:background="@drawable/listitem_background_selector">
+
+    <ch.threema.app.ui.AvatarView
+        android:id="@+id/avatar_view"
+        android:layout_width="@dimen/avatar_size_mini"
+        android:layout_height="@dimen/avatar_size_mini"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:clickable="false"
+        android:importantForAccessibility="no" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/message_block"
+        style="@style/Threema.CardView.Bubble.Receive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/avatar_view"
+        android:layout_toLeftOf="@+id/next_view"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="0dp"
+        app:shapeAppearanceOverlay="@style/Threema.ShapeAppearance.CardView.Bubble.Status"
+        app:contentPaddingLeft="@dimen/chat_bubble_margin_end"
+        app:contentPaddingRight="@dimen/chat_bubble_margin_start">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ch.threema.app.emojis.EmojiTextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/thumbnail_view"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="@style/Threema.TextAppearance.BodySmall"
+                android:textColor="@color/bubble_text_colorstatelist"
+                android:textStyle="bold" />
+
+            <ch.threema.app.emojis.EmojiTextView
+                android:id="@+id/snippet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/thumbnail_view"
+                android:textColor="@color/bubble_text_colorstatelist"
+                android:ellipsize="end"
+                android:maxLines="4"
+                android:textAppearance="@style/Threema.Bubble.Text.Body.Unscaled" />
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@id/snippet"
+                android:layout_alignLeft="@+id/snippet"
+                android:layout_toLeftOf="@+id/thumbnail_view"
+                android:ellipsize="none"
+                android:singleLine="true"
+                android:textAppearance="@style/Threema.TextAppearance.BodySmall"
+                android:textColor="@color/bubble_text_colorstatelist" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/thumbnail_view"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/colorTertiaryContainer"
+                android:clickable="false"
+                android:contentDescription="@string/attach_picture"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <ImageView
+        android:id="@+id/next_view"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="8dp"
+        android:clickable="false"
+        android:importantForAccessibility="no"
+        android:visibility="visible"
+        app:srcCompat="@drawable/ic_keyboard_arrow_right"
+        app:tint="?attr/colorOnBackground" />
+
+</ch.threema.app.ui.CheckableRelativeLayout>

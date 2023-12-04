@@ -307,7 +307,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 			}
 
 			if (hasMedia) {
-				if (!ConfigUtils.requestStoragePermissions(this, null, REQUEST_READ_EXTERNAL_STORAGE)) {
+				if (!ConfigUtils.requestReadStoragePermission(this, null, REQUEST_READ_EXTERNAL_STORAGE)) {
 					return;
 				}
 			}
@@ -998,7 +998,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
 	@UiThread
 	private void forwardMessages(final MessageReceiver[] messageReceivers, final Intent intent, boolean keepOriginalCaptions) {
-		CancelableHorizontalProgressDialog.newInstance(R.string.sending_messages, 0, 0, originalMessageModels.size()).show(getSupportFragmentManager(), DIALOG_TAG_MULTISEND);
+		CancelableHorizontalProgressDialog.newInstance(R.string.sending_messages, 0, originalMessageModels.size()).show(getSupportFragmentManager(), DIALOG_TAG_MULTISEND);
 
 		forwardSingleMessage(messageReceivers, 0, intent, keepOriginalCaptions);
 	}

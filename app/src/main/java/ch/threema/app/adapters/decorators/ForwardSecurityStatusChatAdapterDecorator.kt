@@ -29,7 +29,7 @@ import ch.threema.app.utils.TestUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.ForwardSecurityStatusType
 
-class ForwardSecurityStatusChatAdapterDecorator(context: Context?, messageModel: AbstractMessageModel?, helper: Helper?) : ChatAdapterDecorator(context, messageModel, helper) {
+class ForwardSecurityStatusChatAdapterDecorator(context: Context, messageModel: AbstractMessageModel?, helper: Helper?) : ChatAdapterDecorator(context, messageModel, helper) {
     override fun configureChatMessage(holder: ComposeMessageHolder, position: Int) {
         val statusDataModel = messageModel.forwardSecurityStatusData ?: return
         var body: String? = null

@@ -23,133 +23,122 @@
 		android:elevation="2dp"
 		app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-		<androidx.core.widget.NestedScrollView
+		<ImageView
+			style="@style/Threema.BottomSheet.DragHandle"
+			android:id="@+id/drag_handle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:importantForAccessibility="no"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<FrameLayout
+			android:id="@+id/search_container"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			android:layout_height="@dimen/directory_search_bar_height"
+			android:layout_gravity="top"
+			android:layout_marginLeft="16dp"
+			android:layout_marginTop="4dp"
+			android:layout_marginRight="16dp"
+			android:layout_marginBottom="12dp"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toBottomOf="@id/drag_handle">
+
+			<ch.threema.app.ui.ThreemaSearchView
+				android:id="@+id/search"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:background="@drawable/bubble_compose_surface"
+				android:textColor="?attr/colorOnBackground"
+				app:defaultQueryHint="@string/global_search"
+				app:iconifiedByDefault="false"
+				app:queryHint="@string/global_search">
+
+				<requestFocus />
+			</ch.threema.app.ui.ThreemaSearchView>
+
+			<com.google.android.material.progressindicator.CircularProgressIndicator
+				android:id="@+id/progress"
+				android:layout_width="28dp"
+				android:layout_height="28dp"
+				android:layout_gravity="center_vertical|right"
+				android:layout_marginRight="52dp"
+				android:indeterminate="true"
+				android:maxWidth="28dp"
+				android:maxHeight="28dp"
+				android:visibility="gone" />
+
+		</FrameLayout>
+
+		<com.google.android.material.chip.ChipGroup
+			android:id="@+id/chip_group"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp"
 			app:layout_behavior="@string/appbar_scrolling_view_behavior"
 			app:layout_constraintLeft_toLeftOf="parent"
 			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintTop_toTopOf="parent">
+			app:layout_constraintTop_toBottomOf="@+id/search_container">
 
-			<androidx.constraintlayout.widget.ConstraintLayout
-				android:layout_width="match_parent"
-				android:layout_height="match_parent">
+			<com.google.android.material.chip.Chip
+				android:id="@+id/chats"
+				style="@style/Threema.Chip.Choice"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:ensureMinTouchTargetSize="false"
+				android:checked="true"
+				android:text="@string/chats"
+				app:checkedIconEnabled="true" />
 
-				<ImageView
-					style="@style/Threema.BottomSheet.DragHandle"
-					android:id="@+id/drag_handle"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:importantForAccessibility="no"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toTopOf="parent" />
+			<com.google.android.material.chip.Chip
+				android:id="@+id/groups"
+				style="@style/Threema.Chip.Choice"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:ensureMinTouchTargetSize="false"
+				android:checked="true"
+				android:text="@string/title_tab_groups"
+				app:checkedIconEnabled="true" />
 
-				<FrameLayout
-					android:id="@+id/search_container"
-					android:layout_width="match_parent"
-					android:layout_height="@dimen/directory_search_bar_height"
-					android:layout_gravity="top"
-					android:layout_marginLeft="16dp"
-					android:layout_marginTop="4dp"
-					android:layout_marginRight="16dp"
-					android:layout_marginBottom="12dp"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toBottomOf="@id/drag_handle">
+			<com.google.android.material.chip.Chip
+				android:id="@+id/archived"
+				style="@style/Threema.Chip.Choice"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:ensureMinTouchTargetSize="false"
+				android:checked="true"
+				android:text="@string/archived"
+				app:checkedIconEnabled="true" />
 
-					<ch.threema.app.ui.ThreemaSearchView
-						android:id="@+id/search"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_gravity="center_vertical"
-						android:background="@drawable/bubble_compose_surface"
-						android:textColor="?attr/colorOnBackground"
-						app:defaultQueryHint="@string/global_search"
-						app:iconifiedByDefault="false"
-						app:queryHint="@string/global_search">
+		</com.google.android.material.chip.ChipGroup>
 
-						<requestFocus />
-					</ch.threema.app.ui.ThreemaSearchView>
+		<TextView
+			style="@style/Threema.TextAppearance.BodyLarge"
+			android:id="@+id/empty_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="8dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			android:text="@string/global_search_empty_view_text"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/chip_group" />
 
-					<com.google.android.material.progressindicator.CircularProgressIndicator
-						android:id="@+id/progress"
-						android:layout_width="28dp"
-						android:layout_height="28dp"
-						android:layout_gravity="center_vertical|right"
-						android:layout_marginRight="52dp"
-						android:indeterminate="true"
-						android:maxWidth="28dp"
-						android:maxHeight="28dp"
-						android:visibility="gone" />
-
-				</FrameLayout>
-
-				<com.google.android.material.chip.ChipGroup
-					android:id="@+id/chip_group"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:paddingLeft="16dp"
-					android:paddingRight="16dp"
-					app:layout_behavior="@string/appbar_scrolling_view_behavior"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toBottomOf="@+id/search_container">
-
-					<com.google.android.material.chip.Chip
-						android:id="@+id/chats"
-						style="@style/Threema.Chip.Choice"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:checked="true"
-						android:text="@string/chats"
-						app:checkedIconEnabled="true" />
-
-					<com.google.android.material.chip.Chip
-						android:id="@+id/groups"
-						style="@style/Threema.Chip.Choice"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:checked="true"
-						android:text="@string/title_tab_groups"
-						app:checkedIconEnabled="true" />
-
-					<com.google.android.material.chip.Chip
-						android:id="@+id/archived"
-						style="@style/Threema.Chip.Choice"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:checked="true"
-						android:text="@string/archived"
-						app:checkedIconEnabled="true" />
-
-				</com.google.android.material.chip.ChipGroup>
-
-				<TextView
-					style="@style/Threema.TextAppearance.BodyLarge"
-					android:id="@+id/empty_text"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="8dp"
-					android:gravity="center_horizontal|center_vertical"
-					android:paddingLeft="16dp"
-					android:paddingRight="16dp"
-					android:text="@string/global_search_empty_view_text"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toBottomOf="@+id/chip_group" />
-
-				<androidx.recyclerview.widget.RecyclerView
-					android:id="@+id/recycler_chats"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toBottomOf="@+id/chip_group" />
-
-			</androidx.constraintlayout.widget.ConstraintLayout>
-
-		</androidx.core.widget.NestedScrollView>
+		<androidx.recyclerview.widget.RecyclerView
+			android:id="@+id/recycler_chats"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/chip_group" />
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
 

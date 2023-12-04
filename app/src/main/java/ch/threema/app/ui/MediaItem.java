@@ -578,7 +578,7 @@ public class MediaItem implements Parcelable {
 	public boolean hasChanges() {
 		if (type == TYPE_IMAGE) {
 			return isEdited() || orientation.getRotation() != 0 || orientation.getFlip() != BitmapUtil.FLIP_NONE;
-		} else if (type == TYPE_VIDEO) {
+		} else if (type == TYPE_VIDEO || type == TYPE_VIDEO_CAM) {
 			return needsTrimming() || muted;
 		} else {
 			return false;

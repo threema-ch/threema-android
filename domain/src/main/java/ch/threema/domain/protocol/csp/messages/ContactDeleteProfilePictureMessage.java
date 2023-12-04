@@ -43,6 +43,11 @@ public class ContactDeleteProfilePictureMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public byte[] getBody() {
 		return new byte[0];
 	}

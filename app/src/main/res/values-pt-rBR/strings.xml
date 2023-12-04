@@ -204,6 +204,7 @@
     <string name="unlinking_email">Desvinculando e-mail</string>
     <string name="unlink">Desvincular</string>
     <string name="threema_version">Versão</string>
+    <string name="threema_version_code">Código da versão</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Sem conexão com a internet, dados de exportação de ID inválidos ou senha incorreta</string>
     <string name="prefs_header_other">Outros</string>
     <string name="an_error_occurred">Ocorreu um erro</string>
@@ -219,7 +220,6 @@
     <string name="ringtone_none">Silencioso</string>
     <string name="no_camera_installed">Não há câmera disponível</string>
     <string name="save_message_action">Salvar</string>
-    <string name="saving_media">Salvando mídia</string>
     <string name="file_is_not_a_video">O arquivo selecionado não é um vídeo</string>
     <string name="masterkey_is_unlocked">Chave mestra está desbloqueada</string>
     <string name="file_too_large">O arquivo excede o tamanho máximo de %1$d MB</string>
@@ -658,6 +658,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="backup_data">Backup de dados</string>
     <string name="really_leave_group_admin_message">Você é o administrador deste grupo. Se você sair agora, o grupo ficará órfão. Os outros membros ainda poderão conversar, mas não serão mais possíveis alterações no grupo.</string>
     <string name="action_delete_group">Excluir grupo</string>
+    <string name="action_leave_and_delete_group">Sair e excluir o grupo</string>
+    <string name="action_dissolve_and_delete_group">Dissolver e excluir grupo</string>
     <string name="delete_my_group_message">Deseja excluir este grupo completamente? Todos os membros serão removidos.</string>
     <string name="error_out_of_memory">Não há memória suficiente para executar esta ação</string>
     <string name="configure">Configurar</string>
@@ -1012,11 +1014,12 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="open_in_maps_app">Abrir no Maps</string>
     <string name="delete">Excluir</string>
     <string name="continue_recording">Continuar gravação</string>
+    <string name="whatsnew_title">Quais são as novidades no %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
-<p>Esta atualização foca na segurança, usabilidade e modernização do app.</p>
-<p>Por causa da demanda popular, o app foi completamente reprojetado para ter total compatibilidade com o paradigma \"Material You\", introduzido com o Android 12. Uma configuração de \"Cores dinâmicas\" possibilita que o app se adapte ao seu esquema personalizado de cores.</p>
-<p>Agora, por padrão, o Perfect Forward Secrecy está habilitado em todos os contatos que têm uma versão recente do %1$s instalada.</p>
-<p>Outras melhorias incluem: novo reprodutor de mensagens de voz, que continua reproduzindo uma notificação quando o app for colocado em segundo plano, e uma nova orientação ao usuário quando solicitar permissões.</p> ]]></string>
+		<p>Mensagens com estrela: Para encontrá-las facilmente mais tarde, marque mensagens importantes com uma estrela tocando e segurando a mensagem.</p>
+		<p>Exclusão automática: Faça as suas mensagens serem apagadas automaticamente após um período de tempo selecionável. A função de exclusão automática para mensagens pode ser ativada no gerenciamento de armazenamento.</p>
+		<p>Várias outras melhorias e otimizações.</p>
+		]]></string>
     <string name="tap_to_start">Toque aqui para iniciar o %s agora.</string>
     <string name="two_years">2 anos</string>
     <string name="invalid_backup_path">Caminho de backup inválido</string>
@@ -1433,6 +1436,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="group_call_inactivity_left">Chamada de grupo abandonada devido à inatividade</string>
     <string name="missing_permission_external_storage">Não foi possível copiar o arquivo. Tente os passos a seguir:\n1. Abra o aplicativo de ajustes.\n2. Vá até “Aplicativos” e escolha “Acesso especial ao aplicativo”.\n3. Toque em \"Acesso a todos os arquivos\".\n4. Toque nos três pontos no canto superior direito e escolha “Mostrar sistema“.\n5. Toque em “Armazenamento externo” e conceda autorização para “Permitir acesso para gerenciar todos os arquivos”.\n6. Tente restaurar o backup novamente.</string>
     <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy foi desativado nesta conversa porque a versão do app do seu contato do chat não é compatível.</string>
+    <string name="forward_security_illegal_session_status_message">A sessão com Perfect Forward Secrecy foi reiniciada por ser inválida.</string>
     <string name="crop_image_title">Cortar imagem</string>
     <string name="scroll_to_bottom">Rolar para baixo</string>
     <string name="scroll_to_top">Rolar para cima</string>
@@ -1457,10 +1461,45 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="permission_microphone">Microfone</string>
     <string name="permission_read_phone_state">Telefone</string>
     <string name="permission_enable_in_settings_rationale">Habilite a permissão nas configurações. Selecione \"Permissões\" e, depois, \"%s\".</string>
+    <string name="post_notification_permission_rationale">Para receber notificações, você precisa permitir que o %s exiba notificações.</string>
     <string name="group_name">Nome do grupo</string>
+    <string name="star_message">Marcar com estrela</string>
+    <string name="starred_message">Mensagem com estrela</string>
+    <string name="starred">Com estrela</string>
+    <string name="starred_messages">Mensagens com estrela</string>
+    <string name="sorting">Ordenação</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="newest_first">novas primeiro</string>
+    <string name="oldest_first">antigas primeiro</string>
+    <string name="no_starred_messages">Nenhuma mensagem com estrela encontrada. Para marcar uma mensagem com estrela, toque e segure e selecione o botão de estrela.</string>
+    <string name="remove_all_stars">Remover todas estrelas</string>
+    <string name="remove_star">Remover estrela</string>
     <string name="samsung_permission_problem_explain">%1$s não pode acessar os arquivos de mídia devido a uma permissão em falta em um app do sistema. Para corrigir isso, certifique-se de que o selecionador ao lado de \"Armazenamento Externo\" está habilitado na tela que segue e reinicie o %1$s.</string>
     <string name="min_n_chars">%d caracteres (mín.)</string>
     <string name="prefs_title_grant_bluetooth_permission">Conceder permissão do Bluetooth</string>
+    <string name="safe_managed_password_confirm">Uma senha gerenciada foi definida para o seu backup do Threema Safe.\n\nGostaria de usar esta senha? Caso tenha dúvidas, entre em contato com o seu administrador.</string>
+    <string name="safe_managed_new_password_confirm">Uma senha gerenciada foi definida para o seu backup do Threema Safe.\n\nGostaria de substituir a senha atual pela nova senha gerenciada? Caso tenha dúvidas, entre em contato com o seu administrador.</string>
+    <string name="real_not_now">Agora não</string>
+    <string name="add_contact_in">Adicionar contato em...</string>
+    <string name="really_remove_all_stars">Quer mesmo desmarcar todas as mensagens com estrela?</string>
+    <string name="prefs_sum_storage_management">Gerencie a memória e exclua mensagens ou mídia</string>
+    <string name="delete_automatically">Excluir automaticamente</string>
+    <string name="keep_messages">Manter mensagens por:</string>
+    <string name="clean_up_manually">Apagar manualmente</string>
+    <string name="forever">Para sempre</string>
+    <string name="autodelete_explain">Se uma opção diferente de \"para sempre\" for selecionada, as mensagens recebidas e enviadas serão mantidas apenas durante o período especificado e serão excluídas de forma permanente. Isso inclui mensagens não lidas e não enviadas. Mensagens em grupos de anotações e marcadas com estrela nunca serão excluídas. O processo de exclusão ocorre periodicamente e não obrigatoriamente logo após a ativação.</string>
+    <string name="autodelete_confirm">As mensagens serão excluídas automaticamente após %s. Continuar?</string>
+    <string name="autodelete_activated">Exclusão automática ativada.</string>
+    <string name="autodelete_disabled">Exclusão automática desativada.</string>
+    <string name="set_by_administrator">O valor foi definido pelo administrador e não pode ser alterado.</string>
+    <string name="action_dissolve_group">Dissolver grupo</string>
+    <string name="really_dissolve_group">Se você simplesmente dissolver o grupo, ninguém poderá enviar novas mensagens para o grupo e ele não poderá mais ser gerenciado. O grupo dissolvido ainda poderá ser clonado.</string>
+    <string name="status_orphaned_group">*Este grupo está órfão*\nO(a) criador(a) do grupo saiu e ele não poderá ser mantido. Um dos membros restantes pode clonar o grupo (via detalhes do grupo) para tornar-se o novo administrador.</string>
+    <string name="group_orphaned_notice">Este grupo está órfão porque o(a) criador(a) do grupo saiu. Clone este grupo para tornar-se o novo administrador.</string>
+    <string name="group_not_a_member_notice">Você não faz mais parte deste grupo e não pode mais usá-lo.</string>
+    <string name="group_dissolved_notice">Este grupo foi dissolvido e não pode mais ser usado.</string>
+    <string name="directory_request_failed">A solicitação de diretório falhou. Tente novamente.</string>
+    <string name="add_shortcut_exists">Já existe um atalho para esta opção.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>
@@ -1488,6 +1527,10 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <plurals name="file_saved">
         <item quantity="one">%d arquivo salvo com sucesso.</item>
         <item quantity="other">%d arquivos salvos com sucesso.</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Salvando mídia</item>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one" tools:ignore="ImpliedQuantity">Remover enquete</item>

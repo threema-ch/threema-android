@@ -51,6 +51,13 @@ public class ForwardSecurityEnvelopeMessage extends AbstractProtobufMessage<Forw
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		// Note that checking for exemption from blocking should never happen on forward security
+		// envelope messages.
+		throw new IllegalStateException("Cannot check for exemption from blocking of fs envelopes");
+	}
+
+	@Override
 	public boolean flagSendPush() {
 		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_SEND_PUSH) != 0;
 	}

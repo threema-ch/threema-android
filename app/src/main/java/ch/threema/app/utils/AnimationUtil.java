@@ -30,7 +30,6 @@ import android.os.Handler;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -59,11 +58,7 @@ import ch.threema.base.utils.LoggingUtil;
 public class AnimationUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AnimationUtil");
 
-	public static void expand(final View v) {
-		expand(v, null);
-	}
-
-	public static void expand(final View v, final Runnable onFinishRunnable) {
+	public static void expand(final View v, final Runnable onFinishRunnable, final boolean willChangeBounds) {
 		v.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		final int targetHeight = v.getMeasuredHeight();
 
@@ -81,7 +76,7 @@ public class AnimationUtil {
 
 			@Override
 			public boolean willChangeBounds() {
-				return true;
+				return willChangeBounds;
 			}
 		};
 
@@ -106,11 +101,7 @@ public class AnimationUtil {
 		v.startAnimation(a);
 	}
 
-	public static void collapse(final View v) {
-		collapse(v, null);
-	}
-
-	public static void collapse(final View v, final Runnable onFinishRunnable) {
+	public static void collapse(final View v, final Runnable onFinishRunnable, final boolean willChangeBounds) {
 		final int initialHeight = v.getMeasuredHeight();
 
 		Animation a = new Animation() {
@@ -126,7 +117,7 @@ public class AnimationUtil {
 
 			@Override
 			public boolean willChangeBounds() {
-				return true;
+				return willChangeBounds;
 			}
 		};
 
@@ -150,21 +141,6 @@ public class AnimationUtil {
 			});
 		}
 		v.startAnimation(a);
-	}
-
-	public static void setupTransitions(Context context, Window window) {
-		// requestFeature() must be called before adding content
-		if (window != null && context != null) {
-			android.transition.Transition fade = new android.transition.Fade();
-			fade.excludeTarget(android.R.id.navigationBarBackground, true);
-
-			window.requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-			window.setEnterTransition(fade);
-			window.setExitTransition(fade);
-
-			window.setAllowEnterTransitionOverlap(true);
-			window.setAllowReturnTransitionOverlap(true);
-		}
 	}
 
 	public static void getViewCenter(View theView, View containerView, int[] location) {

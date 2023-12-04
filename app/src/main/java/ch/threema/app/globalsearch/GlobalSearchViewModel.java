@@ -23,24 +23,17 @@ package ch.threema.app.globalsearch;
 
 import android.app.Application;
 
-import java.util.List;
-
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import ch.threema.storage.models.AbstractMessageModel;
 
-/**
- * The ViewModel's role is to provide data to the UI and survive configuration changes.
- * A ViewModel acts as a communication center between the Repository and the UI.
- *
- * Never pass context into ViewModel instances. Do not store Activity, Fragment, or View instances or
- * their Context in the ViewModel.
- */
+import java.util.List;
+
+import ch.threema.storage.models.AbstractMessageModel;
 
 public class GlobalSearchViewModel extends AndroidViewModel {
 	private final LiveData<List<AbstractMessageModel>> messageModels;
 
-	LiveData<List<AbstractMessageModel>> getMessageModels() {
+	public LiveData<List<AbstractMessageModel>> getMessageModels() {
 		return messageModels;
 	}
 
@@ -52,11 +45,15 @@ public class GlobalSearchViewModel extends AndroidViewModel {
 		messageModels = repository.getMessageModels();
 	}
 
-	void onQueryChanged(String query, int filterFlags) {
-		repository.onQueryChanged(query, filterFlags);
+	public void onQueryChanged(String query, int filterFlags, boolean allowEmpty, boolean sortAscending) {
+		repository.onQueryChanged(query, filterFlags, allowEmpty, sortAscending);
 	}
 
-	LiveData<Boolean> getIsLoading() {
+	public LiveData<Boolean> getIsLoading() {
 		return repository.getIsLoading();
 	}
+
+    public void onDataChanged() {
+		repository.onDataChanged();
+    }
 }

@@ -204,6 +204,7 @@
     <string name="unlinking_email">E-mailadres loskoppelen</string>
     <string name="unlink">Loskoppelen</string>
     <string name="threema_version">Versie</string>
+    <string name="threema_version_code">Versiecode</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Geen internetverbinding, ongeldige ID-exportgegevens of een onjuist wachtwoord</string>
     <string name="prefs_header_other">Overig</string>
     <string name="an_error_occurred">Er is een fout opgetreden</string>
@@ -219,7 +220,6 @@
     <string name="ringtone_none">Stil</string>
     <string name="no_camera_installed">Geen bruikbare camera beschikbaar</string>
     <string name="save_message_action">Opslaan</string>
-    <string name="saving_media">Media opslaan</string>
     <string name="file_is_not_a_video">Geselecteerd bestand is geen video</string>
     <string name="masterkey_is_unlocked">Hoofdsleutel is vrijgegeven</string>
     <string name="file_too_large">Bestand is groter dan het maximum van %1$d MB</string>
@@ -660,6 +660,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="backup_data">Gegevensback-up</string>
     <string name="really_leave_group_admin_message">U bent administrator van deze groep. Als u de groep nu verlaat, krijgt deze de status \'orphaned\'. Andere leden kunnen nog steeds chatten, maar wijzigingen aanbrengen zijn dan niet langer mogelijk.</string>
     <string name="action_delete_group">Groep verwijderen</string>
+    <string name="action_leave_and_delete_group">Vertrekken en groep verwijderen</string>
+    <string name="action_dissolve_and_delete_group">Groep opheffen en verwijderen</string>
     <string name="delete_my_group_message">Weet u zeker dat u deze groep volledig wil verwijderen. Alle leden worden verwijderd.</string>
     <string name="error_out_of_memory">Niet genoeg geheugen om deze handeling te voltooien</string>
     <string name="configure">Configureren</string>
@@ -1013,12 +1015,11 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="open_in_maps_app">Openen in Maps-app</string>
     <string name="delete">Verwijderen</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
-    <string name="whatsnew_title">Nieuw: %1$s groepsgesprekken</string>
+    <string name="whatsnew_title">Wat is er nieuw in %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p>Deze versie is gericht op de beveiliging, het gebruiksgemak en de modernisering van de app.</p>
-		<p>Op veler verzoek is de app volledig opnieuw ontworpen om het paradigma \"Material You\" dat in Android 12 werd geïntroduceerd te ondersteunen. Dankzij een optionele instelling “Dynamic Colors” kan de app zich aanpassen aan je persoonlijke kleurenschema.</p>
-		<p>Perfecte Forward Secrecy is nu standaard ingeschakeld voor alles contacten met een recente versie van %1$s.</p>
-		<p>Overige verbeteringen omvatten een nieuwe voicemail-player die in de achtergrond blijft afspelen wanneer de app naar de achtergrond wordt gezet en een nieuwe gebruikersbegeleiding wanneer je een machtigingsverzoek doet.</p>
+<p>Berichten met ster: houd belangrijke berichten lang ingedrukt om deze met een ster te markeren en vind ze later gemakkelijk terug.</p>
+<p>Automatisch verwijderen: zorg dat je chats automatisch worden opgeschoond na een bepaalde tijdsperiode. De functie voor het automatisch verwijderen van berichten kan worden geactiveerd in het opslagbeheer</p>
+<p>Talrijke andere verbeteringen en optimalisaties.</p>
 		]]></string>
     <string name="tap_to_start">Tik hier om %s te starten.</string>
     <string name="two_years">2 jaar</string>
@@ -1406,7 +1407,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_summary_hibernation_api_32">Zorg dat de systeeminstelling \'Toestemmingen verwijderen en ruimte vrijmaken\' uitgeschakeld is om te voorkomen dat Threema na lange perioden van inactiviteit door het systeem gepauzeerd wordt.</string>
     <string name="prefs_summary_hibernation_api">Zorg dat de systeeminstelling \'App-activiteit pauzeren indien ongebruikt\' uitgeschakeld is om te voorkomen dat Threema na lange perioden van inactiviteit door het systeem gepauzeerd wordt.</string>
     <string name="unable_to_fetch_configuration">Niet mogelijk om gegevens op te halen uit de configuratieserver. Probeer het later opnieuw.</string>
-    <string name="rogue_device_warning">Er is een verbinding met een ander apparaat ontdekt dat dezelfde Threema-ID heeft. Hebt u uw Threema-ID onlangs op een ander apparaat gebruikt? &lt;br&gt;&lt;br&gt; Indien ja, kunt u dit bericht negeren. &lt;br&gt;&lt;br&gt; Indien nee, is uw privésleutel mogelijk gecompromitteerd. <a href="https://threema.ch/en/faq/another_connection">Volg onze suggesties</a> om uw apparaat en uw gegevens te beschermen voordat u een nieuwe ID aanmaakt.</string>
+    <string name="rogue_device_warning"><![CDATA[Er is een verbinding met een ander apparaat ontdekt dat dezelfde Threema-ID heeft. Hebt u uw Threema-ID onlangs op een ander apparaat gebruikt? &lt;br&gt;&lt;br&gt; Indien ja, kunt u dit bericht negeren. &lt;br&gt;&lt;br&gt; Indien nee, is uw privésleutel mogelijk gecompromitteerd. <a href="https://threema.ch/en/faq/another_connection">Volg onze suggesties</a> om uw apparaat en uw gegevens te beschermen voordat u een nieuwe ID aanmaakt.]]></string>
     <string name="fetch2_failure">Synchronisatie met de provisioningserver is mislukt.</string>
     <string name="no_members_support_group_calls">Er zijn geen andere leden in deze groep die groepsgesprekken kunnen beantwoorden</string>
     <string name="group_calls">Groepsgesprekken</string>
@@ -1436,6 +1437,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="group_call_inactivity_left">Groepsgesprek verlaten vanwege inactiviteit</string>
     <string name="missing_permission_external_storage">Het bestand kon niet worden gekopieerd. Probeer de volgende stappen:\n1. Open de Instellingen-app.\n2. Ga naar \'Apps\' en kies \'Speciale apptoegang\'.\n3. Tik op \'Toegang tot alle bestanden\'.\n4. Tik op de drie stippen rechts bovenaan en kies \'Systeem tonen\'.\n5. Tik op \'Externe opslag\' en zorg dat \'Toegang voor het beheren van alle bestanden toestaan\' verleend is.\n6. Probeer de back-up opnieuw te herstellen.</string>
     <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy voor dit gesprek is uitgeschakeld omdat je gesprekspartner een versie van de app gebruikt die deze functie niet ondersteunt.</string>
+    <string name="forward_security_illegal_session_status_message">De Perfect Forward Secrecy-sessie is gereset vanwege ongeldigheid.</string>
     <string name="crop_image_title">Snij beeld bij</string>
     <string name="scroll_to_bottom">Naar beneden scrollen</string>
     <string name="scroll_to_top">Naar boven scrollen</string>
@@ -1460,10 +1462,45 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="permission_microphone">Microfoon</string>
     <string name="permission_read_phone_state">Telefoon</string>
     <string name="permission_enable_in_settings_rationale">Schakel de toestemming in de instellingen in. Selecteer \'Toestemmingen\' en sta dan \'%s\' toe.</string>
+    <string name="post_notification_permission_rationale">Om meldingen te ontvangen moet u %s toestaan om meldingen te tonen.</string>
     <string name="group_name">Groepsnaam</string>
+    <string name="star_message">Ster toevoegen aan bericht</string>
+    <string name="starred_message">Bericht met ster</string>
+    <string name="starred">Met ster</string>
+    <string name="starred_messages">Berichten met ster</string>
+    <string name="sorting">Sorteren</string>
+    <string name="sort_by">Sorteren op…</string>
+    <string name="newest_first">nieuwste eerst</string>
+    <string name="oldest_first">oudste eerst</string>
+    <string name="no_starred_messages">Geen berichten met ster gevonden. Houd het bericht lang ingedrukt en selecteer de ster-knop om een ster toe te voegen.</string>
+    <string name="remove_all_stars">Alle sterren verwijderen</string>
+    <string name="remove_star">Ster verwijderen</string>
     <string name="samsung_permission_problem_explain">%1$s heeft geen toegang tot mediabestanden vanwege een ontbrekende toestemming op een systeem-app. Zorg ervoor dat de schakelaar naast \'Externe opslag\' is ingeschakeld in het opkomende scherm en herstart vervolgens %1$s om dit probleem te verhelpen.</string>
     <string name="min_n_chars">min. %d tekens</string>
     <string name="prefs_title_grant_bluetooth_permission">Geef bluetooth-toestemming</string>
+    <string name="safe_managed_password_confirm">Er is een beheerd wachtwoord voor uw Threema Safe-back-up bepaald.\n\nWilt u dit wachtwoord gebruiken? Neem bij twijfel contact op met uw beheerder.</string>
+    <string name="safe_managed_new_password_confirm">Er is een nieuw beheerd wachtwoord voor uw Threema Safe-back-up bepaald.\n\nWilt u het huidige wachtwoord vervangen met dit nieuwe, beheerde wachtwoord? Neem bij twijfel contact op met uw beheerder.</string>
+    <string name="real_not_now">Nu niet</string>
+    <string name="add_contact_in">Contact toevoegen in...</string>
+    <string name="really_remove_all_stars">Weet u zeker dat u de ster van alle berichten wilt verwijderen?</string>
+    <string name="prefs_sum_storage_management">Beheer het geheugen en verwijder berichten of media</string>
+    <string name="delete_automatically">Automatisch verwijderen</string>
+    <string name="keep_messages">Berichten houden voor:</string>
+    <string name="clean_up_manually">Handmatig opschonen</string>
+    <string name="forever">Voor altijd</string>
+    <string name="autodelete_explain">Als dit is ingesteld op iets anders dan \'voor altijd\', worden inkomende en uitgaande berichten alleen bewaard voor de opgegeven tijdsduur en daarna voorgoed verwijderd. Dit omvat ongelezen en niet verzonden berichten. Berichten in notitiegroepen en berichten met een ster worden nooit verwijderd. Het verwijderingsproces vind regelmatig plaats en niet per se direct na activering.</string>
+    <string name="autodelete_confirm">Berichten worden automatisch verwijderd na %s. Wilt u verdergaan?</string>
+    <string name="autodelete_activated">Automatisch wissen geactiveerd</string>
+    <string name="autodelete_disabled">Automatisch wissen gedeactiveerd</string>
+    <string name="set_by_administrator">De waarde is ingesteld door de beheerder en kan niet worden gewijzigd.</string>
+    <string name="action_dissolve_group">Groep opheffen</string>
+    <string name="really_dissolve_group">Als u de groep opheft, kan er niemand meer nieuwe berichten naar de groep sturen en kan deze niet langer worden beheerd. De opgeheven groep kan nog wel worden gekloond.</string>
+    <string name="status_orphaned_group">*Deze groep is een orphan*\nDe maker heeft de groep verlaten en de groep wordt niet langer onderhouden. Een van de overgebleven leden kan de groep klonen (via de groepsdetails) en de nieuwe beheerder worden.</string>
+    <string name="group_orphaned_notice">Deze groep is een orphan omdat de maker de groep heeft verlaten. Kloon deze groep om de nieuwe beheerder te worden.</string>
+    <string name="group_not_a_member_notice">U maakt geen deel meer uit van deze groep en kunt deze niet langer gebruiken.</string>
+    <string name="group_dissolved_notice">Deze groep is opgeheven en kan niet langer worden gebruikt.</string>
+    <string name="directory_request_failed">Directory-aanvraag is mislukt. Probeer het opnieuw.</string>
+    <string name="add_shortcut_exists">Er bestaat al een snelkoppeling voor dit doel.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>
@@ -1491,6 +1528,10 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <plurals name="file_saved">
         <item quantity="one">%d bestand is opgeslagen.</item>
         <item quantity="other">%d bestanden zijn opgeslagen.</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="one">Media opslaan</item>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Poll verwijderen</item>

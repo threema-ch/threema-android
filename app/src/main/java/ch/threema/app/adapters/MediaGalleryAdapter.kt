@@ -102,7 +102,7 @@ class MediaGalleryAdapter(
         var messageId = 0
 
         init {
-            imageView = itemView.findViewById(R.id.image_view)
+            imageView = itemView.findViewById(R.id.thumbnail_view)
             gifContainerView = itemView.findViewById(R.id.gif_marker_container)
             videoContainerView = itemView.findViewById(R.id.video_marker_container)
             videoDuration = itemView.findViewById(R.id.video_duration_text)

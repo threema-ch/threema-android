@@ -37,16 +37,20 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.AnimationUtil;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.storage.models.AbstractMessageModel;
+import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.data.DisplayTag;
 
-public class AckjiPopup extends PopupWindow implements View.OnClickListener {
+public class
+AckjiPopup extends PopupWindow implements View.OnClickListener {
 
-	private final ImageView ackButton, decButton, imageReplyButton, infoButton;
+	private final ImageView ackButton, decButton, imageReplyButton, infoButton, starButton;
 	private final View parentView, imageReplySeparator, infoSeparator;
 	private AckDecPopupListener ackDecPopupListener;
 	private final int popupHeight, popupHorizontalOffset;
@@ -57,6 +61,7 @@ public class AckjiPopup extends PopupWindow implements View.OnClickListener {
 	public static final int ITEM_DEC = 1;
 	public static final int ITEM_IMAGE_REPLY = 2;
 	public static final int ITEM_INFO = 3;
+	public static final int ITEM_STAR = 4;
 
 	public AckjiPopup(Context context, View parentView) {
 		super(context);
@@ -74,6 +79,7 @@ public class AckjiPopup extends PopupWindow implements View.OnClickListener {
 		this.decButton = topLayout.findViewById(R.id.dec);
 		this.imageReplyButton = topLayout.findViewById(R.id.image_reply);
 		this.infoButton = topLayout.findViewById(R.id.info);
+		this.starButton = topLayout.findViewById(R.id.star);
 
 		this.imageReplySeparator = topLayout.findViewById(R.id.image_reply_separator);
 		this.infoSeparator = topLayout.findViewById(R.id.info_separator);
@@ -82,6 +88,7 @@ public class AckjiPopup extends PopupWindow implements View.OnClickListener {
 		this.decButton.setOnClickListener(this);
 		this.imageReplyButton.setOnClickListener(this);
 		this.infoButton.setOnClickListener(this);
+		this.starButton.setOnClickListener(this);
 
 		setContentView(topLayout);
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -136,13 +143,24 @@ public class AckjiPopup extends PopupWindow implements View.OnClickListener {
 		}
 
 		this.infoSeparator.setVisibility(View.GONE);
-		if (messageModel.getType().equals(MessageType.VOIP_STATUS)) {
-			this.infoButton.setVisibility(View.GONE);
+		if (messageModel.getType().equals(MessageType.STATUS) ||
+			messageModel.getType().equals(MessageType.VOIP_STATUS) ||
+			messageModel.getType().equals(MessageType.GROUP_CALL_STATUS) ||
+			messageModel.getType().equals(MessageType.GROUP_STATUS)) {
+			this.starButton.setVisibility(View.GONE);
 		} else {
 			this.infoButton.setVisibility(View.VISIBLE);
+			this.starButton.setVisibility(messageModel instanceof DistributionListMessageModel ? View.GONE : View.VISIBLE);
 			if (ackButton.getVisibility() == View.VISIBLE || decButton.getVisibility() == View.VISIBLE
 				|| imageReplyButton.getVisibility() == View.VISIBLE) {
 				this.infoSeparator.setVisibility(View.VISIBLE);
+			}
+			if ((messageModel.getDisplayTags() & DisplayTag.DISPLAY_TAG_STARRED) == DisplayTag.DISPLAY_TAG_STARRED) {
+				this.starButton.setImageResource(R.drawable.star_outline_off_black_24dp);
+				this.starButton.setColorFilter(ConfigUtils.getColorFromAttribute(parentView.getContext(), R.attr.colorOnSurface));
+			} else {
+				this.starButton.setImageResource(R.drawable.ic_star_golden_24dp);
+				this.starButton.setColorFilter(null);
 			}
 		}
 
@@ -171,6 +189,9 @@ public class AckjiPopup extends PopupWindow implements View.OnClickListener {
 				}
 				if (infoButton.getVisibility() == View.VISIBLE) {
 					AnimationUtil.bubbleAnimate(infoButton, animationDelay += animationDelayStep);
+				}
+				if (starButton.getVisibility() == View.VISIBLE) {
+					AnimationUtil.bubbleAnimate(starButton, animationDelay += animationDelayStep);
 				}
 			}
 		});
@@ -206,6 +227,8 @@ public class AckjiPopup extends PopupWindow implements View.OnClickListener {
 				clickedItem = ITEM_DEC;
 			} else if (id == R.id.image_reply) {
 				clickedItem = ITEM_IMAGE_REPLY;
+			} else if (id == R.id.star) {
+				clickedItem = ITEM_STAR;
 			} else {
 				clickedItem = ITEM_INFO;
 			}

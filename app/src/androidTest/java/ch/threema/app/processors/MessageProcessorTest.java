@@ -43,7 +43,6 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.ballot.BallotService;
-import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.services.group.GroupJoinResponseService;
 import ch.threema.app.services.group.IncomingGroupJoinRequestService;
 import ch.threema.app.testutils.CaptureLogcatOnTestFailureRule;
@@ -59,6 +58,7 @@ import ch.threema.domain.helpers.InMemoryIdentityStore;
 import ch.threema.domain.helpers.InMemoryNonceStore;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
@@ -78,21 +78,7 @@ public class MessageProcessorTest {
 	private final static Contact TEST_CONTACT_1 = new Contact("09BNNVR2", Utils.hexStringToByteArray("e4613bbe5408d342fdabc3edf4509d1a3aecd7cb0598773987eef8400e74c81a"));
 	private final static Contact TEST_CONTACT_2 = new Contact("0BSXZ4P8", Utils.hexStringToByteArray("dee1cd341de88f783a768941eac702951c8bbb21e836da4a43ab8f3776fc0a65"));
 
-	// Services
-	private MessageService messageService;
-	private ContactService contactService;
-	private PreferenceService preferenceService;
-	private GroupService groupService;
-	private GroupInviteService groupInviteService;
-	private GroupJoinResponseService groupJoinResponseService;
-	private IncomingGroupJoinRequestService incomingGroupJoinRequestService;
-	private IdListService blackListService;
-	private BallotService ballotService;
-	private FileService fileService;
-	private NotificationService notificationService;
-	private VoipStateService voipStateService;
 	private NonceFactory nonceFactory;
-	private GroupCallManager groupCallManager;
 
 	// Stores
 	private IdentityStoreInterface identityStore;
@@ -101,27 +87,27 @@ public class MessageProcessorTest {
 
 	// Message processor
 	private MessageProcessor messageProcessor;
-	private ForwardSecurityMessageProcessor forwardSecurityMessageProcessor;
 
 	@Before
 	public void setUp() throws Exception {
 		// Load services
+		// Services
 		final ServiceManager serviceManager = Objects.requireNonNull(ThreemaApplication.getServiceManager());
-		this.messageService = serviceManager.getMessageService();
-		this.contactService = serviceManager.getContactService();
-		this.preferenceService = serviceManager.getPreferenceService();
-		this.groupService = serviceManager.getGroupService();
-		this.groupInviteService = serviceManager.getGroupInviteService();
-		this.groupJoinResponseService = serviceManager.getGroupJoinResponseService();
-		this.incomingGroupJoinRequestService = serviceManager.getIncomingGroupJoinRequestService();
-		this.blackListService = serviceManager.getBlackListService();
-		this.ballotService = serviceManager.getBallotService();
-		this.fileService = serviceManager.getFileService();
-		this.notificationService = serviceManager.getNotificationService();
-		this.voipStateService = serviceManager.getVoipStateService();
+		MessageService messageService = serviceManager.getMessageService();
+		ContactService contactService = serviceManager.getContactService();
+		PreferenceService preferenceService = serviceManager.getPreferenceService();
+		GroupService groupService = serviceManager.getGroupService();
+		GroupJoinResponseService groupJoinResponseService = serviceManager.getGroupJoinResponseService();
+		IncomingGroupJoinRequestService incomingGroupJoinRequestService = serviceManager.getIncomingGroupJoinRequestService();
+		IdListService blackListService = serviceManager.getBlackListService();
+		BallotService ballotService = serviceManager.getBallotService();
+		FileService fileService = serviceManager.getFileService();
+		NotificationService notificationService = serviceManager.getNotificationService();
+		VoipStateService voipStateService = serviceManager.getVoipStateService();
 		this.nonceFactory = new NonceFactory(new InMemoryNonceStore());
-		this.forwardSecurityMessageProcessor = serviceManager.getForwardSecurityMessageProcessor();
-		this.groupCallManager = serviceManager.getGroupCallManager();
+		ForwardSecurityMessageProcessor forwardSecurityMessageProcessor = serviceManager.getForwardSecurityMessageProcessor();
+		GroupCallManager groupCallManager = serviceManager.getGroupCallManager();
+		ServerAddressProvider serverAddressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
 
 		// Create in-memory stores
 		this.contactStore = new InMemoryContactStore();
@@ -147,21 +133,23 @@ public class MessageProcessorTest {
 
 		// Create message processor
 		this.messageProcessor = new MessageProcessor(
-			this.messageService,
-			this.contactService,
+			serviceManager,
+			messageService,
+			contactService,
 			this.identityStore,
 			this.contactStore,
-			this.preferenceService,
-			this.groupService,
-			this.groupJoinResponseService,
-			this.incomingGroupJoinRequestService,
-			this.blackListService,
-			this.ballotService,
-			this.fileService,
-			this.notificationService,
-			this.voipStateService,
-			this.forwardSecurityMessageProcessor,
-			this.groupCallManager
+			preferenceService,
+			groupService,
+			groupJoinResponseService,
+			incomingGroupJoinRequestService,
+			blackListService,
+			ballotService,
+			fileService,
+			notificationService,
+			voipStateService,
+			forwardSecurityMessageProcessor,
+			groupCallManager,
+			serverAddressProvider
 		);
 	}
 

@@ -211,7 +211,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 	 */
 	@Override
 	protected boolean shouldShowMediaGrid() {
-		return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+		return ConfigUtils.isVideoImagePermissionGranted(this);
 	}
 
 	@Override

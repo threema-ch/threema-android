@@ -24,7 +24,6 @@ package ch.threema.app.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -32,6 +31,7 @@ import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
@@ -94,16 +94,6 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	}
 
 	@Override
-	protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
-		super.onApplyThemeResource(theme, resid, first);
-	}
-
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-	}
-
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		logger.debug("onCreate");
 
@@ -156,7 +146,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	 * @param savedInstanceState the bundle provided to onCreate()
 	 * @return true on success, false otherwise
 	 */
-	protected boolean initActivity(Bundle savedInstanceState) {
+	protected boolean initActivity(@Nullable Bundle savedInstanceState) {
 		logger.debug("initActivity");
 
 		@LayoutRes int layoutResource = getLayoutResource();
@@ -177,7 +167,6 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
 		// hide contents in app switcher and inhibit screenshots
 		ConfigUtils.setScreenshotsAllowed(this, preferenceService, lockAppService);
-		ConfigUtils.setLocaleOverride(this, preferenceService);
 
 		if (layoutResource != 0) {
 			logger.debug("setContentView");
@@ -342,13 +331,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
 	@UiThread
 	public void openSoftKeyboard(@NonNull final EmojiPicker emojiPicker, @NonNull final EditText messageText) {
-		runOnSoftKeyboardOpen(() -> {
-			emojiPicker.hide();
-		});
-		messageText.post(() -> {
-			messageText.requestFocus();
-			EditTextUtil.showSoftKeyboard(messageText);
-		});
+		EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
 	}
 
 	public boolean isSoftKeyboardOpen() {

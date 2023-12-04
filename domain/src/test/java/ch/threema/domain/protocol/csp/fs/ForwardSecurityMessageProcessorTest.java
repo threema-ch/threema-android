@@ -818,7 +818,7 @@ public class ForwardSecurityMessageProcessorTest {
 		Assert.assertNotNull(messageBox);
 
 		MessageCoder messageCoder = new MessageCoder(recipientContext.contactStore, recipientContext.identityStore);
-		ForwardSecurityEnvelopeMessage msg = (ForwardSecurityEnvelopeMessage) messageCoder.decode(messageBox, false);
+		ForwardSecurityEnvelopeMessage msg = (ForwardSecurityEnvelopeMessage) messageCoder.decode(messageBox);
 
 		long counterBeforeProcessing = getRatchetCounterInSession(recipientContext, msg);
 

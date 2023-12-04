@@ -61,7 +61,7 @@ public interface NotificationService {
 	String NOTIFICATION_CHANNEL_ALERT =  "al";
 	String NOTIFICATION_CHANNEL_NOTICE =  "no";
 	String NOTIFICATION_CHANNEL_WORK_SYNC =  "ws";
-	String NOTIFICATION_CHANNEL_IDENTITY_SYNC =  "is";
+	String NOTIFICATION_CHANNEL_IDENTITY_SYNC =  "is"; // TODO: reference to this channel may be removed after Sep. 2024
 	String NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS =  "bk";
 	String NOTIFICATION_CHANNEL_CHAT_UPDATE =  "cu"; // virtual notification channel used by wrapper
 	String NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS = "nc";
@@ -70,9 +70,6 @@ public interface NotificationService {
 	String NOTIFICATION_CHANNEL_THREEMA_PUSH = "tpush";
 	String NOTIFICATION_CHANNEL_GROUP_CALL = "gcall"; // virtual notification channel used by wrapper
 	String NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER = "vmp";
-
-	// TODO(ANDR-2065): temporary - remove after beta
-	String NOTIFICATION_CHANNEL_GROUP_CALL_OLD = "gca";
 
 	String NOTIFICATION_CHANNELGROUP_CHAT = "group";
 	String NOTIFICATION_CHANNELGROUP_VOIP = "vgroup";
@@ -83,8 +80,6 @@ public interface NotificationService {
 	String NOTIFICATION_CHANNEL_VOIP_ID_PREFIX = "voip";
 	String NOTIFICATION_CHANNEL_CHAT_UPDATE_ID_PREFIX = "chu";
 	String NOTIFICATION_CHANNEL_GROUP_CALLS_ID_PREFIX = "gc";
-
-	String NOTIFICATION_CHANNEL_REJECT_SERVICE = "reject";
 
 	interface NotificationSchema {
 		boolean vibrate();
@@ -361,9 +356,6 @@ public interface NotificationService {
 	void showSafeBackupFailed(int numDays);
 
 	void cancelWorkSyncProgress();
-
-	void showIdentityStatesSyncProgress();
-	void cancelIdentityStatesSyncProgress();
 
 	void showNewSyncedContactsNotification(List<ContactModel> contactModels);
 

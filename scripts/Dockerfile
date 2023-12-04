@@ -8,18 +8,18 @@
 # - `SDK_VERSION`: Set this to the desired Android SDK version (e.g. `28`)
 # - `BUILD_TOOLS_VERSION`: Set this to the desired build tools version (e.g. `28.0.3`)
 
-FROM docker.io/ubuntu:20.04
+FROM docker.io/ubuntu:22.04
 
 # Arguments
 ARG SDK_VERSION=33
-ARG BUILD_TOOLS_VERSION=33.0.0
-ARG NDK_VERSION=25.1.8937393
+ARG BUILD_TOOLS_VERSION=33.0.2
+ARG NDK_VERSION=26.0.10792818
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q \
  && apt-get -y -q install --no-install-recommends \
-    build-essential file openjdk-11-jdk git wget unzip rsync vim-nox cpu-checker \
+    build-essential file openjdk-17-jdk git wget unzip rsync vim-nox cpu-checker \
  && rm -rf /var/lib/apt/lists/*
 
 # Download Android command line tools
@@ -37,7 +37,6 @@ RUN /opt/android/cmdline-tools/tools/bin/sdkmanager --install \
     "platform-tools" \
     "platforms;android-${SDK_VERSION}" \
     "ndk;${NDK_VERSION}" \
-    "patcher;v4" \
     "build-tools;${BUILD_TOOLS_VERSION}" \
     "emulator"
 

@@ -244,7 +244,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			}
 			itemHolder.nameView.setText(groupName);
 
-			if (groupService.isGroupOwner(groupModel)) {
+			if (groupService.isGroupCreator(groupModel)) {
 				itemHolder.statusView.setImageResource(R.drawable.ic_group_outline);
 			} else {
 				itemHolder.statusView.setImageResource(R.drawable.ic_group_filled);

@@ -70,6 +70,11 @@ public class BoxImageMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public byte[] getBody() {
 		byte[] body = new byte[ProtocolDefines.BLOB_ID_LEN + 4 + NaCl.NONCEBYTES];
 

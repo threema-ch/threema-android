@@ -55,16 +55,33 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 	/**
 	 * Creates a DialogFragment with a horizontal progress bar and a percentage display below. Mimics deprecated system ProgressDialog behavior
 	 * @param title title of dialog
-	 * @param message currently ignored
 	 * @param button label of cancel button
 	 * @param total maximum allowed progress value.
 	 * @return nothing
 	 */
-	public static CancelableHorizontalProgressDialog newInstance(@StringRes int title, @StringRes int message, @StringRes int button, int total) {
+	public static CancelableHorizontalProgressDialog newInstance(@StringRes int title, @StringRes int button, int total) {
 		CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
 		Bundle args = new Bundle();
 		args.putInt("title", title);
 		args.putInt("button", button);
+		args.putInt("total", total);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	/**
+	 * Creates a DialogFragment with a horizontal progress bar and a percentage display below. Mimics deprecated system ProgressDialog behavior
+	 * @param title title of dialog
+	 * @param button label of cancel button
+	 * @param total maximum allowed progress value.
+	 * @return nothing
+	 */
+	public static CancelableHorizontalProgressDialog newInstance(@NonNull String title, @NonNull String button, int total) {
+		CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
+		Bundle args = new Bundle();
+		args.putString("title", title);
+		args.putString("button", button);
 		args.putInt("total", total);
 
 		dialog.setArguments(args);
@@ -117,9 +134,11 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt("title");
+		int titleRes = getArguments().getInt("title");
 		int button = getArguments().getInt("button");
 		int total = getArguments().getInt("total", 0);
+		String titleString = getArguments().getString("title");
+		String buttonString = getArguments().getString("button");
 
 		final String tag = this.getTag();
 
@@ -131,8 +150,10 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme()).setCancelable(false);
 		builder.setView(dialogView);
 
-		if (title != -1) {
-			builder.setTitle(title);
+		if (titleRes != 0) {
+			builder.setTitle(titleRes);
+		} else if (titleString != null) {
+			builder.setTitle(titleString);
 		}
 
 		max = total;
@@ -142,18 +163,19 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 		progressBar.setMax(max);
 		setProgress(0);
 
+		DialogInterface.OnClickListener onClickListener = (dialog, which) -> {
+			if (listener != null) {
+				listener.onClick(dialog, which);
+			}
+			if (callback != null) {
+				callback.onCancel(tag, object);
+			}
+		};
+
 		if (button != 0) {
-			builder.setPositiveButton(getString(button), new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if (listener != null) {
-						listener.onClick(dialog, which);
-					}
-					if (callback != null) {
-						callback.onCancel(tag, object);
-					}
-				}
-			});
+			builder.setPositiveButton(getString(button), onClickListener);
+		} else if (buttonString != null) {
+			builder.setPositiveButton(buttonString, onClickListener);
 		}
 
 		AlertDialog progressDialog = builder.create();

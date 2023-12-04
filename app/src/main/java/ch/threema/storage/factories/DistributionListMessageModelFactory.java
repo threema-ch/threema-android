@@ -22,7 +22,6 @@
 package ch.threema.storage.factories;
 
 import android.content.ContentValues;
-
 import android.database.Cursor;
 
 import org.slf4j.Logger;
@@ -289,7 +288,8 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 						"`" + DistributionListMessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
 						"`" + DistributionListMessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
 						"`" + DistributionListMessageModel.COLUMN_READ_AT +"` DATETIME ," +
-						"`" + DistributionListMessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0);",
+						"`" + DistributionListMessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 ," +
+						"`" + DistributionListMessageModel.COLUMN_DISPLAY_TAGS +"` TINYINT DEFAULT 0 );",
 
 			//indices
 				"CREATE INDEX `distributionListDistributionListIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `"+ DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID +"` )",

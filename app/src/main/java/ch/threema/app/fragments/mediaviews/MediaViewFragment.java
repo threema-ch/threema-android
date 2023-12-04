@@ -354,7 +354,6 @@ abstract public class MediaViewFragment extends Fragment {
 
 	protected abstract void created(Bundle savedInstanceState);
 	protected abstract int getFragmentResourceId();
-	public abstract boolean inquireClose();
 
 	/**
 	 * This method is called with a thumbnail when the fragment is created. It can be overridden to

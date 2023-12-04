@@ -238,6 +238,7 @@
 	<string name="unlinking_email">Verknüpfung wird entfernt</string>
 	<string name="unlink">Entfernen</string>
 	<string name="threema_version">Version</string>
+	<string name="threema_version_code">Versions-Code</string>
 	<string name="wrong_backupid_or_password_or_no_internet_connection">Keine Internetverbindung, ungültige ID-Export-Zeichenfolge
 		oder falsches Passwort
 	</string>
@@ -255,7 +256,6 @@
 	<string name="ringtone_none">Stumm</string>
 	<string name="no_camera_installed">Keine geeignete Kamera verfügbar</string>
 	<string name="save_message_action">Speichern</string>
-	<string name="saving_media">Medium wird gespeichert</string>
 	<string name="file_is_not_a_video">Selektierte Datei ist kein Video</string>
 	<string name="masterkey_is_unlocked">Hauptschlüssel ist entsperrt</string>
 	<string name="file_too_large" tools:ignore="Typos">Die Datei ist grösser als die erlaubten %1$d MB</string>
@@ -760,13 +760,15 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="status_ballot_all_votes">Umfrage «%1$s» vollständig</string>
 	<string name="restore">Wiederherstellen</string>
 	<string name="new_wizard_scan_id_backup">Oder scannen Sie den QR-Code Ihres ID-Exports</string>
-	<string name="error_saving_file">Fehler beim Speichern. Keine Berechtigung?</string>
+	<string name="error_saving_file">Einige Dateien konnten nicht gesichert werden</string>
 	<string name="state_dec">abgelehnt</string>
 	<string name="wait_one_minute">Bitte warten Sie mindestens 10 Minuten auf die SMS, bevor Sie einen Anruf anfordern.</string>
 	<string name="backup_id">ID-Export</string>
 	<string name="backup_data">Daten-Backup</string>
 	<string name="really_leave_group_admin_message">Sie sind Administrator dieser Gruppe. Wenn Sie sie jetzt verlassen, wird sie verwaist. Die anderen Mitglieder können weiter chatten, aber Änderungen sind nicht mehr möglich.</string>
 	<string name="action_delete_group">Gruppe löschen</string>
+	<string name="action_leave_and_delete_group">Gruppe verlassen und löschen</string>
+	<string name="action_dissolve_and_delete_group">Gruppe auflösen und löschen</string>
 	<string name="delete_my_group_message">Möchten Sie diese Gruppe vollständig löschen? Alle Nachrichten werden entfernt und die verbleibenden Mitglieder können die Gruppe nicht mehr weiter nutzen.</string>
 	<string name="error_out_of_memory">Zuwenig freier Speicher, um diese Aktion durchzuführen</string>
 	<string name="configure">Konfigurieren</string>
@@ -1121,13 +1123,12 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="open_in_maps_app">In Maps-App öffnen</string>
 	<string name="delete">Löschen</string>
 	<string name="continue_recording">Weiter aufnehmen</string>
-	<string name="whatsnew_title">Willkommen bei %1$s 5.1</string>
+	<string name="whatsnew_title">Neue Funktionen in %1$s 5.2</string>
 	<string name="whatsnew_headline">
 	<![CDATA[
-		<p>Diese Version fokussiert sich auf Sicherheit, Benutzerfreundlichkeit und die sanfte Modernisierung der App.</p>
-		<p>Auf vielfachen Wunsch wurde die App neu gestaltet, um die mit Android 12 eingeführten «Material You»-Paradigmen vollständig zu unterstützen. Mit der optionalen Einstellung «Dynamische Farben» kann sich die App zudem an Ihr persönliches Farbschema anpassen.</p>
-		<p>Perfect Forward Secrecy ist jetzt standardmässig aktiviert für alle Kontakte, die eine hinreichend aktuelle %1$s-Version nutzen.</p>
-		<p>Zu den weiteren Verbesserungen gehören ein neuer Player für Sprachnachrichten, der in einer Benachrichtigung weiterläuft, wenn die App in den Hintergrund gestellt wird, sowie eine optimierte Benutzerführung beim Anfordern von Berechtigungen.</p>
+		<p>Nachrichten markieren: Markieren Sie wichtige Nachrichten durch langes Tippen mit einem Stern, um Sie später leicht wiederzufinden.</p>
+		<p>Automatisches Löschen: Lassen Sie Ihre Chats nach einem wählbaren Zeitraum automatisch aufräumen. Die automatische Löschfunktion für Nachrichten lässt sich im Speichermanagement aktivieren.</p>
+		<p>Zahlreiche weitere Verbesserungen und Optimierungen.</p>
 		]]>
 	</string>
 	<string name="tap_to_start">Tippen Sie hier, um %s jetzt zu starten.</string>
@@ -1569,10 +1570,44 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="permission_microphone">Mikrofon</string>
 	<string name="permission_read_phone_state">Telefon</string>
 	<string name="permission_enable_in_settings_rationale">Bitte erlauben Sie die Berechtigung in den Einstellungen. Wählen Sie «Berechtigungen» aus und lassen Sie danach «%s» zu.</string>
+	<string name="post_notification_permission_rationale">Um Benachrichtigungen zu erhalten, müssen Sie unter «Berechtigungen» für %s die Benachrichtigungen einschalten.</string>
     <string name="group_name">Name der Gruppe</string>
 	<string name="samsung_permission_problem_explain">%1$s hat keinen Zugriff auf Mediendaten aufgrund der fehlenden Berechtigung einer System-App. Um das Problem zu beheben, stellen Sie sicher, dass der Schalter neben «Externer Speicher» im folgenden Bildschirm aktiviert ist, und starten Sie %1$s neu.</string>
+    <string name="star_message">Mit Stern markieren</string>
+	<string name="starred_message">Mit Stern markiert</string>
+	<string name="starred">Mit Stern</string>
+	<string name="starred_messages">Mit Stern markiert</string>
+	<string name="sorting">Sortierung</string>
+	<string name="sort_by">Sortieren nach…</string>
+	<string name="newest_first">neueste zuerst</string>
+	<string name="oldest_first">älteste zuerst</string>
+	<string name="no_starred_messages">Keine mit Stern markierten Nachrichten gefunden. Um eine Nachricht zu markieren, tippen Sie lange darauf und wählen Sie den Stern-Button.</string>
+    <string name="remove_all_stars">Alle Sterne entfernen</string>
+    <string name="remove_star">Stern entfernen</string>
 	<string name="min_n_chars">min. %d Zeichen</string>
 	<string name="prefs_title_grant_bluetooth_permission">Bluetooth-Berechtigung erteilen</string>
+    <string name="safe_managed_password_confirm">Ein verwaltetes Passwort für Threema Safe wurde festgelegt.\n\nMöchten Sie dieses Passwort benutzen? Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.</string>
+	<string name="safe_managed_new_password_confirm">Ein neues verwaltetes Passwort für Threema Safe wurde festgelegt.\n\nMöchten Sie das gegenwärtige Passwort durch das neue, verwaltete ersetzen? Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.</string>
+	<string name="real_not_now">Jetzt nicht</string>
+	<string name="add_contact_in">Kontakt hinzufügen in…</string>
+    <string name="really_remove_all_stars">Möchten Sie wirklich alle Sterne-Markierungen entfernen?</string>
+	<string name="prefs_sum_storage_management">Speicher verwalten und Nachrichten oder Medien löschen</string>
+	<string name="delete_automatically">Automatisch löschen</string>
+	<string name="keep_messages">Nachrichten behalten für:</string>
+	<string name="clean_up_manually">Manuell aufräumen</string>
+	<string name="forever">Immer</string>
+	<string name="autodelete_explain">Wenn nicht «für immer» ausgewählt ist, werden ein- und ausgehende Nachrichten nach der angegebenen Zeitspanne unwiederbringlich gelöscht. Dies gilt auch für ungelesene und nicht versendete Nachrichten. Nachrichten in Notizgruppen und solche, die mit einem Stern markiert sind, werden jedoch nicht gelöscht. Die Löschung erfolgt periodisch und nicht unbedingt direkt nach der Aktivierung.</string>
+	<string name="autodelete_confirm">Nachrichten werden nach %s automatisch gelöscht. Fortfahren?</string>
+	<string name="autodelete_activated">Automatisches Löschen aktiviert.</string>
+	<string name="autodelete_disabled">Automatisches Löschen deaktiviert.</string>
+    <string name="set_by_administrator">Der Wert wurde durch den Administrator festgelegt und kann nicht geändert werden.</string>
+	<string name="action_dissolve_group">Gruppe auflösen</string>
+	<string name="really_dissolve_group">Wenn Sie die Gruppe nur auflösen, kann niemand mehr neue Nachrichten in die Gruppe senden, und sie lässt sich auch nicht mehr verwalten. Die aufgelöste Gruppe kann weiterhin geklont werden.</string>
+	<string name="status_orphaned_group">*Diese Gruppe ist verwaist*\nDer Gruppen-Ersteller hat die Gruppe verlassen, und sie ist nun nicht mehr administrierbar. Ein verbleibendes Gruppenmitglied kann die Gruppe (via Gruppendetails) klonen, um neuer Administrator zu werden.</string>
+	<string name="group_orphaned_notice">Diese Gruppe ist verwaist, weil der Gruppen-Ersteller die Gruppe verlassen hat. Bitte klonen Sie die Gruppe, um der neue Administrator zu werden.</string>
+	<string name="group_not_a_member_notice">Sie sind nicht mehr Mitglied dieser Gruppe und können sie nicht mehr verwenden.</string>
+	<string name="group_dissolved_notice">Diese Gruppe wurde aufgelöst und kann nicht mehr verwendet werden.</string>
+	<string name="directory_request_failed">Verzeichnis-Abfrage fehlgeschlagen. Versuchen Sie es nochmals.</string>
 	<string name="add_shortcut_exists">Eine Verknüpfung für dieses Ziel existiert bereits.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
@@ -1613,6 +1648,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<plurals name="media_files_deleted">
 		<item quantity="one">%d Mediendatei gelöscht</item>
 		<item quantity="other">%d Mediendateien gelöscht</item>
+	</plurals>
+	<plurals name="saving_media">
+		<item quantity="one">Medium wird gespeichert</item>
+		<item quantity="other">%d Medien werden gespeichert</item>
 	</plurals>
 	<plurals name="file_saved">
 		<item quantity="one">%d Datei erfolgreich gespeichert.</item>

@@ -151,7 +151,12 @@ public class PinLockActivity extends ThreemaActivity {
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		quit();
 	}
 

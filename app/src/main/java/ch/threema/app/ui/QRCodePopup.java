@@ -79,7 +79,7 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 		topLayout =  layoutInflater.inflate(R.layout.popup_qrcode, null, true);
 
 		this.containerView = topLayout.findViewById(R.id.qr_popup_container);
-		this.imageView = topLayout.findViewById(R.id.image_view);
+		this.imageView = topLayout.findViewById(R.id.thumbnail_view);
 
 		// border around popup contents
 		int borderSize = context.getResources().getDimensionPixelSize(R.dimen.qrcode_min_margin) * 2;

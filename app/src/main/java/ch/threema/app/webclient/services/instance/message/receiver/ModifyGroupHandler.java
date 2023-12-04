@@ -104,7 +104,7 @@ public class ModifyGroupHandler extends MessageReceiver {
 			this.failed(temporaryId, Protocol.ERROR_INVALID_GROUP);
 			return;
 		}
-		if (!this.groupService.isGroupOwner(groupModel)) {
+		if (!this.groupService.isGroupCreator(groupModel)) {
 			logger.error("Not allowed to change a foreign group");
 			this.failed(temporaryId, Protocol.ERROR_NOT_ALLOWED);
 			return;

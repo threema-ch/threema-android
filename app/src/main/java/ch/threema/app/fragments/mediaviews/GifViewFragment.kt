@@ -51,8 +51,6 @@ class GifViewFragment: MediaViewFragment() {
 
     override fun getFragmentResourceId(): Int = R.layout.fragment_media_viewer_gif
 
-    override fun inquireClose(): Boolean = true
-
     override fun handleDecryptingFile() {
         // nothing to do
     }

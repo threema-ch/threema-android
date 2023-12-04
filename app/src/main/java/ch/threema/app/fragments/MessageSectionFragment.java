@@ -42,7 +42,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -175,6 +174,7 @@ public class MessageSectionFragment extends MainFragment
 	private static final String DIALOG_TAG_HIDE_THREAD_EXPLAIN = "hideEx";
 	private static final String DIALOG_TAG_SELECT_DELETE_ACTION = "sel";
 	private static final String DIALOG_TAG_REALLY_LEAVE_GROUP = "rlg";
+	private static final String DIALOG_TAG_REALLY_DISSOLVE_GROUP = "reallyDissolveGroup";
 	private static final String DIALOG_TAG_REALLY_DELETE_MY_GROUP = "rdmg";
 	private static final String DIALOG_TAG_REALLY_DELETE_GROUP = "rdgcc";
 	private static final String DIALOG_TAG_REALLY_DELETE_DISTRIBUTION_LIST = "rddl";
@@ -185,8 +185,9 @@ public class MessageSectionFragment extends MainFragment
 	private static final int TAG_EMPTY_CHAT = 1;
 	private static final int TAG_DELETE_DISTRIBUTION_LIST = 2;
 	private static final int TAG_LEAVE_GROUP = 3;
-	private static final int TAG_DELETE_MY_GROUP = 4;
-	private static final int TAG_DELETE_GROUP = 5;
+	private static final int TAG_DISSOLVE_GROUP = 4;
+	private static final int TAG_DELETE_MY_GROUP = 5;
+	private static final int TAG_DELETE_GROUP = 6;
 	private static final int TAG_SET_PRIVATE = 7;
 	private static final int TAG_UNSET_PRIVATE = 8;
 	private static final int TAG_SHARE = 9;
@@ -611,10 +612,8 @@ public class MessageSectionFragment extends MainFragment
 	};
 
 	private void showConversation(ConversationModel conversationModel, View v) {
-		new Thread(() -> {
-			conversationTagService.unTag(conversationModel, unreadTagModel);
-			conversationModel.setUnreadCount(0);
-		}).start();
+		conversationTagService.unTag(conversationModel, unreadTagModel);
+		conversationModel.setUnreadCount(0);
 
 		// Close keyboard if search view is expanded
 		if (searchView != null && !searchView.isIconified()) {
@@ -1110,7 +1109,7 @@ public class MessageSectionFragment extends MainFragment
 
 	@Override
 	public void onItemClick(View view, int position, ConversationModel model) {
-		showConversation(model, view);
+		new Thread(() -> showConversation(model, view)).start();
 	}
 
 	@Override
@@ -1119,8 +1118,8 @@ public class MessageSectionFragment extends MainFragment
 		if (model.isContactConversation()) {
 			intent = new Intent(getActivity(), ContactDetailActivity.class);
 			intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, model.getContact().getIdentity());
-		} else if (model.isGroupConversation() && groupService.isGroupMember(model.getGroup())) {
-			editGroup(model, view);
+		} else if (model.isGroupConversation()) {
+			openGroupDetails(model);
 		} else if (model.isDistributionListConversation()) {
 			intent = new Intent(getActivity(), DistributionListAddActivity.class);
 			intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, model.getDistributionList().getId());
@@ -1145,9 +1144,13 @@ public class MessageSectionFragment extends MainFragment
 		}
 	}
 
-	private void editGroup(ConversationModel model, View view) {
-		Intent intent = groupService.getGroupEditIntent(model.getGroup(), activity);
-		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, model.getGroup().getId());
+	private void openGroupDetails(ConversationModel model) {
+		GroupModel groupModel = model.getGroup();
+		if (groupModel == null) {
+			return;
+		}
+		Intent intent = groupService.getGroupDetailIntent(groupModel, activity);
+		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
 		activity.startActivity(intent);
 	}
 
@@ -1298,18 +1301,32 @@ public class MessageSectionFragment extends MainFragment
 			tags.add(TAG_DELETE_DISTRIBUTION_LIST);
 		} else if (conversationModel.isGroupConversation()) {
 			// group chats
-			if (groupService.isGroupOwner(conversationModel.getGroup()) &&
-				groupService.isGroupMember(conversationModel.getGroup())) {
+			GroupModel group = conversationModel.getGroup();
+			if (group == null) {
+				logger.error("Cannot access the group from the conversation model");
+				return;
+			}
+			boolean isCreator = groupService.isGroupCreator(group);
+			boolean isMember = groupService.isGroupMember(group);
+			boolean hasOtherMembers = groupService.getOtherMemberCount(group) > 0;
+			// Check also if the user is a group member, because orphaned groups should not be
+			// editable.
+			if (isCreator && isMember) {
 				labels.add(new SelectorDialogItem(getString(R.string.group_edit_title), R.drawable.ic_pencil_outline));
 				tags.add(TAG_EDIT_GROUP);
 			}
-			if (groupService.isGroupMember(conversationModel.getGroup())) {
+			// Members (except the creator) can leave the group
+			if (!isCreator && isMember) {
 				labels.add(new SelectorDialogItem(getString(R.string.action_leave_group), R.drawable.ic_outline_directions_run));
 				tags.add(TAG_LEAVE_GROUP);
 			}
+			if (isCreator && isMember && hasOtherMembers) {
+				labels.add(new SelectorDialogItem(getString(R.string.action_dissolve_group), R.drawable.ic_outline_directions_run));
+				tags.add(TAG_DISSOLVE_GROUP);
+			}
 			labels.add(new SelectorDialogItem(getString(R.string.action_delete_group), R.drawable.ic_delete_outline));
-			if (groupService.isGroupMember(conversationModel.getGroup())) {
-				if (groupService.isGroupOwner(conversationModel.getGroup())) {
+			if (isMember) {
+				if (isCreator) {
 					tags.add(TAG_DELETE_MY_GROUP);
 				} else {
 					tags.add(TAG_DELETE_GROUP);
@@ -1355,42 +1372,56 @@ public class MessageSectionFragment extends MainFragment
 				dialog.setData(conversationModel.getDistributionList());
 				dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_DISTRIBUTION_LIST);
 				break;
+			case TAG_EDIT_GROUP:
+				openGroupDetails(conversationModel);
+				break;
 			case TAG_LEAVE_GROUP:
-				int leaveMessageRes = groupService.isGroupOwner(conversationModel.getGroup()) ? R.string.really_leave_group_admin_message : R.string.really_leave_group_message;
 				dialog = GenericAlertDialog.newInstance(
 					R.string.action_leave_group,
-					Html.fromHtml(getString(leaveMessageRes)),
+					R.string.really_leave_group_message,
 					R.string.ok,
 					R.string.cancel);
 				dialog.setTargetFragment(this, 0);
 				dialog.setData(conversationModel.getGroup());
 				dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_LEAVE_GROUP);
 				break;
-			case TAG_EDIT_GROUP:
-				editGroup(conversationModel, null);
+			case TAG_DISSOLVE_GROUP:
+				dialog = GenericAlertDialog.newInstance(
+					R.string.action_dissolve_group,
+					R.string.really_dissolve_group,
+					R.string.ok,
+					R.string.cancel
+				);
+				dialog.setTargetFragment(this, 0);
+				dialog.setData(conversationModel.getGroup());
+				dialog.show(getParentFragmentManager(), DIALOG_TAG_REALLY_DISSOLVE_GROUP);
 				break;
 			case TAG_DELETE_MY_GROUP:
 				dialog = GenericAlertDialog.newInstance(
-					R.string.action_delete_group,
+					R.string.action_dissolve_and_delete_group,
 					R.string.delete_my_group_message,
 					R.string.ok,
-					R.string.cancel);
+					R.string.cancel
+				);
 				dialog.setTargetFragment(this, 0);
 				dialog.setData(conversationModel.getGroup());
 				dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_MY_GROUP);
 				break;
 			case TAG_DELETE_GROUP:
-				dialog = GenericAlertDialog.newInstance(R.string.action_delete_group,
-					String.format(getString(R.string.delete_group_message), 1),
+				dialog = GenericAlertDialog.newInstance(
+					R.string.action_delete_group,
+					R.string.delete_group_message,
 					R.string.ok,
-					R.string.cancel);
+					R.string.cancel
+				);
 				dialog.setTargetFragment(this, 0);
 				dialog.setData(conversationModel.getGroup());
 				dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_GROUP);
 				break;
 			case TAG_DELETE_LEFT_GROUP:
-				dialog = GenericAlertDialog.newInstance(R.string.action_delete_group,
-					String.format(getString(R.string.delete_left_group_message), 1),
+				dialog = GenericAlertDialog.newInstance(
+					R.string.action_delete_group,
+					R.string.delete_left_group_message,
 					R.string.ok,
 					R.string.cancel);
 				dialog.setTargetFragment(this, 0);
@@ -1446,11 +1477,14 @@ public class MessageSectionFragment extends MainFragment
 				intent.putExtra(SettingsActivity.EXTRA_SHOW_SECURITY_FRAGMENT, true);
 				startActivityForResult(intent, ID_RETURN_FROM_SECURITY_SETTINGS);
 				break;
-			case DIALOG_TAG_REALLY_DELETE_MY_GROUP:
-				new DeleteMyGroupAsyncTask((GroupModel) data, groupService, null, this, null).execute();
-				break;
 			case DIALOG_TAG_REALLY_LEAVE_GROUP:
 				new LeaveGroupAsyncTask((GroupModel) data, groupService, null, this, null).execute();
+				break;
+			case DIALOG_TAG_REALLY_DISSOLVE_GROUP:
+				groupService.dissolveGroupFromLocal((GroupModel) data);
+				break;
+			case DIALOG_TAG_REALLY_DELETE_MY_GROUP:
+				new DeleteMyGroupAsyncTask((GroupModel) data, groupService, null, this, null).execute();
 				break;
 			case DIALOG_TAG_REALLY_DELETE_GROUP:
 				new DeleteGroupAsyncTask((GroupModel) data, groupService, null, this, null).execute();

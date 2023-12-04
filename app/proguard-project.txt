@@ -22,7 +22,7 @@
 -dontobfuscate
 -verbose
 
--keepattributes EnclosingMethod,InnerClasses,Exceptions,*Annotation*,SourceFile,LineNumberTable
+-keepattributes EnclosingMethod,InnerClasses,Exceptions,*Annotation*,SourceFile,LineNumberTable,Signature
 
 -keeppackagenames ch.threema.**
 -keeppackagenames org.saltyrtc.**

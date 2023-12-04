@@ -85,11 +85,11 @@ public class SyncGroupHandler extends MessageReceiver {
 		}
 
 		if (group == null
-				//deleted group
+				// Deleted group
 				|| group.isDeleted()
-				//i am not the administrator
-				|| !this.groupService.isGroupOwner(group)
-				//i am not in these group (e.g. leaved)
+				// I am not the creator
+				|| !this.groupService.isGroupCreator(group)
+				// I am not in this group (e.g. left)
 				|| !this.groupService.isGroupMember(group)) {
 			logger.error("not allowed");
 			this.failed(temporaryId, Protocol.ERROR_NOT_ALLOWED);

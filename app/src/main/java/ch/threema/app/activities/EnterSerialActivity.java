@@ -436,8 +436,12 @@ public class EnterSerialActivity extends ThreemaActivity {
 	}
 
 	@Override
-	public void onBackPressed() {
-		// finish application
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		moveTaskToBack(true);
 		finish();
 	}

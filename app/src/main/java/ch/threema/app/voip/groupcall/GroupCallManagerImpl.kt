@@ -510,7 +510,11 @@ class GroupCallManagerImpl(
 	private suspend fun processGroupCallStart(message: GroupCallStartMessage) {
 		GroupCallThreadUtil.assertDispatcherThread()
 
-		val group = groupService.getGroup(message)
+		val group = groupService.getByGroupMessage(message)
+		if (group == null) {
+			logger.warn("Could not find group for group call start message")
+			return
+		}
 		val groupId = group.localGroupId
 		logger.info("Process group call start for group {}: {}", groupId, message.data)
 

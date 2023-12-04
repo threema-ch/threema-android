@@ -405,7 +405,12 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		onDone();
 	}
 

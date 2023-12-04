@@ -104,13 +104,13 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 			logger.info("Group Join Request: Received with expired date or group invite was invalidated/deleted");
 			return trySendingResponse(message, new GroupJoinResponseData.Expired()) ?
 				MessageProcessor.ProcessingResult.SUCCESS :
-				MessageProcessor.ProcessingResult.FAILED;
+				MessageProcessor.ProcessingResult.IGNORED;
 		}
 
 		final GroupModel group = databaseServiceNew.getGroupModelFactory().getByApiGroupIdAndCreator(groupInvite.getGroupApiId().toString(), userService.getIdentity());
 		if (group == null) {
 			logger.error("Group Join Request: Corresponding group not found");
-			return MessageProcessor.ProcessingResult.FAILED;
+			return MessageProcessor.ProcessingResult.IGNORED;
 		}
 
 		if (Arrays.asList(this.groupService.getGroupIdentities(group)).contains(message.getFromIdentity())) {
@@ -118,7 +118,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 			groupService.sendSync(group, new String[]{message.getFromIdentity()});
 			return trySendingResponse(message, new GroupJoinResponseData.Accept(groupInvite.getGroupApiId().toLong())) ?
 				MessageProcessor.ProcessingResult.SUCCESS :
-				MessageProcessor.ProcessingResult.FAILED;
+				MessageProcessor.ProcessingResult.IGNORED;
 		}
 
 		final @Nullable IncomingGroupJoinRequestModel joinRequestModel;
@@ -132,7 +132,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 				joinRequestModel = this.persistRequest(message, groupInvite.getId());
 			} catch(ThreemaException e) {
 				logger.error("Group Join Request: failed to insert request to db ", e);
-				return MessageProcessor.ProcessingResult.FAILED;
+				return MessageProcessor.ProcessingResult.IGNORED;
 			}
 		}
 		else {
@@ -150,7 +150,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 
 			return trySendingResponse(message, new GroupJoinResponseData.GroupFull()) ?
 				MessageProcessor.ProcessingResult.SUCCESS :
-				MessageProcessor.ProcessingResult.FAILED;
+				MessageProcessor.ProcessingResult.IGNORED;
 		}
 
 		if (groupInvite.getManualConfirmation()) {
@@ -165,7 +165,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 			this.accept(joinRequestModel);
 		} catch(Exception e) {
 			logger.error("Group Join Request: Group Service Exception", e);
-			return MessageProcessor.ProcessingResult.FAILED;
+			return MessageProcessor.ProcessingResult.IGNORED;
 		}
 
 		return MessageProcessor.ProcessingResult.SUCCESS;

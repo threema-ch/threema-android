@@ -43,6 +43,8 @@ import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public interface PreferenceService {
 
+	void setMediaGalleryContentTypes(boolean[] contentTypes);
+
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({ImageScale_DEFAULT, ImageScale_SMALL, ImageScale_MEDIUM, ImageScale_LARGE, ImageScale_XLARGE, ImageScale_ORIGINAL, ImageScale_SEND_AS_FILE})
 	@interface ImageScale {}
@@ -61,6 +63,11 @@ public interface PreferenceService {
 	int VideoSize_MEDIUM = 1;
 	int VideoSize_ORIGINAL = 2;
 	int VideoSize_SEND_AS_FILE = 3;
+
+	@IntDef({StarredMessagesSortOrder_DATE_DESCENDING, StarredMessagesSortOrder_DATE_ASCENDING})
+	@interface StarredMessagesSortOrder {}
+	int StarredMessagesSortOrder_DATE_DESCENDING = 0;
+	int StarredMessagesSortOrder_DATE_ASCENDING = 1;
 
 	int EmojiStyle_DEFAULT = 0;
 	int EmojiStyle_ANDROID = 1;
@@ -133,8 +140,6 @@ public interface PreferenceService {
 	void setCustomWallpaperEnabled(boolean enabled);
 
 	boolean isEnterToSend();
-
-	boolean isFullscreenIme();
 
 	boolean isInAppSounds();
 
@@ -341,6 +346,13 @@ public interface PreferenceService {
 	void setCustomSupportUrl(String supportUrl);
 	String getCustomSupportUrl();
 
+	/**
+	 * This method returns the pre-target level api 33 locale override. This is only used for
+	 * migrating to the new per app language framework.
+	 *
+	 * @return the previous locale setting, null if already migrated or no language is selected
+	 */
+	@Deprecated
 	String getLocaleOverride();
 
 	HashMap<String, String> getDiverseEmojiPrefs();
@@ -562,4 +574,14 @@ public interface PreferenceService {
 
 	long getBackupWarningDismissedTime();
 	void setBackupWarningDismissedTime(long time);
+
+	@StarredMessagesSortOrder int getStarredMessagesSortOrder();
+	void setStarredMessagesSortOrder(@StarredMessagesSortOrder int order);
+
+	void setAutoDeleteDays(int i);
+	int getAutoDeleteDays();
+	void setLastNotificationRationaleShown(long date);
+	long getLastNotificationRationaleShown();
+
+	void getMediaGalleryContentTypes(boolean[] contentTypes);
 }

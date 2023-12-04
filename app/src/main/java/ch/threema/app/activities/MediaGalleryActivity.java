@@ -285,7 +285,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
 		chipGroup.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING|LayoutTransition.CHANGE_APPEARING|LayoutTransition.APPEARING|LayoutTransition.DISAPPEARING);
 
 		contentTypeNames = getResources().getStringArray(R.array.media_gallery_spinner);
-		Arrays.fill(checkedContentTypes, true);
+		preferenceService.getMediaGalleryContentTypes(checkedContentTypes);
 
 		gridLayoutManager = new GridLayoutManager(this, ConfigUtils.isLandscape(this) ? 5 : 3);
 		recyclerView = findViewById(R.id.item_list);
@@ -327,16 +327,16 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
 				.setThumbDrawable(Objects.requireNonNull(thumbDrawable))
 				.setTrackDrawable(Objects.requireNonNull(AppCompatResources.getDrawable(this, R.drawable.fastscroll_track_media)))
 				.setPopupStyle(thumbScrollerPopupStyle)
-				.setPopupTextProvider(position -> {
-						int firstVisible = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
-						if (firstVisible >= 0) {
-							AbstractMessageModel item = mediaGalleryAdapter.getItemAtPosition(firstVisible);
-							if (item != null) {
-								return LocaleUtil.formatDateRelative(item.getCreatedAt().getTime());
-							}
+				.setPopupTextProvider((view, position) -> {
+					int firstVisible = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
+					if (firstVisible >= 0) {
+						AbstractMessageModel item = mediaGalleryAdapter.getItemAtPosition(firstVisible);
+						if (item != null) {
+							return LocaleUtil.formatDateRelative(item.getCreatedAt().getTime());
 						}
-						return getString(R.string.unknown);
-					})
+					}
+					return MediaGalleryActivity.this.getString(R.string.unknown);
+				})
 				.build();
 		}
 
@@ -479,7 +479,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
 			@Override
 			protected void onPreExecute() {
 				if (selectedMessages.size() > 10) {
-					CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.deleting_messages, 0, R.string.cancel, selectedMessages.size());
+					CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.deleting_messages, R.string.cancel, selectedMessages.size());
 					dialog.setOnCancelListener((dialog1, which) -> cancelled = true);
 					dialog.show(getSupportFragmentManager(), DIALOG_TAG_DELETING_MEDIA);
 				}
@@ -668,17 +668,26 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
 					}
 					if (chipGroup.getChildCount() == 0) {
 						finish();
+					} else {
+						updatePrefs();
 					}
 				});
 				chipGroup.addView(chip);
 			}
 		}
 		updateFilter();
+		updatePrefs();
 	}
 
 	private void updateFilter() {
 		if (mediaGalleryAdapter != null && mediaGalleryViewModel != null) {
 			mediaGalleryViewModel.setFilter(getMediaContentTypeArray());
+		}
+	}
+
+	private void updatePrefs() {
+		if (preferenceService != null) {
+			preferenceService.setMediaGalleryContentTypes(checkedContentTypes);
 		}
 	}
 

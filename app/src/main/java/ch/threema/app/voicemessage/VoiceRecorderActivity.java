@@ -69,6 +69,7 @@ import java.util.Locale;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.activities.ThreemaAppCompatActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -83,7 +84,7 @@ import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-public class VoiceRecorderActivity extends AppCompatActivity implements DefaultLifecycleObserver, View.OnClickListener, AudioRecorder.OnStopListener, AudioManager.OnAudioFocusChangeListener, GenericAlertDialog.DialogClickListener {
+public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements DefaultLifecycleObserver, View.OnClickListener, AudioRecorder.OnStopListener, AudioManager.OnAudioFocusChangeListener, GenericAlertDialog.DialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VoiceRecorderActivity");
 
 	private static final String DIALOG_TAG_CANCEL_CONFIRM = "cc";
@@ -679,7 +680,12 @@ public class VoiceRecorderActivity extends AppCompatActivity implements DefaultL
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		cancelRecording();
 	}
 

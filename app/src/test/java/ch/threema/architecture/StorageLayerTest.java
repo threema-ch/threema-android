@@ -21,6 +21,9 @@
 
 package ch.threema.architecture;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_STORAGE;
+
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.ArchUnitRunner;
@@ -31,12 +34,10 @@ import org.junit.runner.RunWith;
 import ch.threema.storage.factories.ModelFactory;
 import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.Access;
+import ch.threema.storage.models.data.DisplayTag;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.MessageDataInterface;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
-
-import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_STORAGE;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = PACKAGE_STORAGE, importOptions = { ArchitectureTestUtils.DoNotIncludeAndroidTests.class })
@@ -71,7 +72,8 @@ public class StorageLayerTest {
 				Access.class,
 				MessageContentsType.class,
 				MessageDataInterface.class,
-				MediaMessageDataInterface.class
+				MediaMessageDataInterface.class,
+				DisplayTag.class
 			)
 			.should().haveSimpleNameEndingWith("Model");
 }

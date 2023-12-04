@@ -22,7 +22,6 @@
 package ch.threema.app.adapters.decorators;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.Spannable;
@@ -30,8 +29,6 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -72,6 +69,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.data.DisplayTag;
 
 abstract public class ChatAdapterDecorator extends AdapterDecorator {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ChatAdapterDecorator");
@@ -259,9 +257,11 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		}
 	}
 
-	public ChatAdapterDecorator(Context context,
-	                            AbstractMessageModel messageModel,
-	                            Helper helper) {
+	public ChatAdapterDecorator(
+		@NonNull Context context,
+		AbstractMessageModel messageModel,
+		Helper helper
+	) {
 		super(context);
 		this.messageModel = messageModel;
 		this.helper = helper;
@@ -392,6 +392,10 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 				holder.datePrefixIcon.setVisibility(durationS > 0L ? View.VISIBLE : View.GONE);
 			}
 
+			if (holder.starredIcon != null) {
+				holder.starredIcon.setVisibility((messageModel.getDisplayTags() & DisplayTag.DISPLAY_TAG_STARRED) == DisplayTag.DISPLAY_TAG_STARRED ? View.VISIBLE : View.GONE);
+			}
+
 			stateBitmapUtil.setStateDrawable(getContext(), messageModel, holder.deliveredIndicator, true);
 			stateBitmapUtil.setGroupAckCount(messageModel, holder);
 		}
@@ -460,6 +464,10 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
 	protected UserService getUserService() {
 		return helper.getUserService();
+	}
+
+	protected ContactService getContactService() {
+		return helper.getContactService();
 	}
 
 	protected void setOnClickListener(final View.OnClickListener onViewClickListener, View view) {

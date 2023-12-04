@@ -52,7 +52,8 @@ public class LayerTest {
 		PACKAGE_STORAGE + ".."
 	).orShould().resideInAnyPackage(
 		"ch.threema.protobuf..",
-		"ch.threema.webrtc.."
+		"ch.threema.webrtc..",
+		"ch.threema.taskmanager.."
 	);
 
 }

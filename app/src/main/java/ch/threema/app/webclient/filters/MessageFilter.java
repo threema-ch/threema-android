@@ -78,4 +78,9 @@ public class MessageFilter implements MessageService.MessageFilter {
 	public int[] contentTypes() {
 		return null;
 	}
+
+	@Override
+	public int[] displayTags() {
+		return null;
+	}
 }

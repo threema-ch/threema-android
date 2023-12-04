@@ -25,6 +25,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/scrypt/include
 LOCAL_CFLAGS     += -DANDROID -DHAVE_CONFIG_H -DANDROID_TARGET_ARCH="$(TARGET_ARCH)"
 LOCAL_LDFLAGS    += -lc -llog
 
+LOCAL_LDFLAGS    += -Wl,--build-id=none  # Reproducible builds
+
 include $(BUILD_SHARED_LIBRARY)
 
 # libnacl
@@ -38,5 +40,7 @@ LOCAL_SRC_FILES  += $(LOCAL_PATH)/nacl/poly1305-jni.c
 LOCAL_SRC_FILES  += $(LOCAL_PATH)/nacl/curve25519-jni.c
 LOCAL_SRC_FILES  += $(LOCAL_PATH)/nacl/smult_donna.c
 LOCAL_SRC_FILES  += $(LOCAL_PATH)/nacl/smult_donna-c64.c
+
+LOCAL_LDFLAGS    += -Wl,--build-id=none  # Reproducible builds
 
 include $(BUILD_SHARED_LIBRARY)

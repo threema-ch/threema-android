@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
@@ -43,7 +44,7 @@ public class RingtoneUtil {
 			if (uri.equals(THREEMA_CALL_RINGTONE_URI)) {
 				return THREEMA_CALL_RINGTONE_TITLE;
 			}
-			Ringtone ringtone = RingtoneManager.getRingtone(context, uri);
+			Ringtone ringtone = RingtoneManager.getRingtone(context, uri); // TODO(ANDR-2681) May block on some devices causing ANRs
 			if (ringtone != null) {
 				try {
 					return ringtone.getTitle(context);

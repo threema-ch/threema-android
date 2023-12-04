@@ -24,6 +24,7 @@ package ch.threema.app.activities.wizard;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Build;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.View;
@@ -36,11 +37,14 @@ import org.slf4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
+import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.dialogs.WizardSafeSearchPhoneDialog;
 import ch.threema.app.threemasafe.ThreemaSafeAdvancedDialog;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
@@ -59,6 +63,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class WizardSafeRestoreActivity extends WizardBackgroundActivity implements PasswordEntryDialog.PasswordEntryDialogClickListener,
 	WizardSafeSearchPhoneDialog.WizardSafeSearchPhoneDialogCallback,
+	WizardDialog.WizardDialogCallback,
 	ThreemaSafeAdvancedDialog.WizardDialogCallback {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardSafeRestoreActivity");
 
@@ -67,12 +72,20 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 	private static final String DIALOG_TAG_FORGOT_ID = "li";
 	private static final String DIALOG_TAG_ADVANCED = "adv";
 	private static final String DIALOG_TAG_WORK_SYNC = "workSync";
+	private static final String DIALOG_TAG_PASSWORD_PRESET_CONFIRM = "safe_pw_preset";
 
 	private ThreemaSafeService threemaSafeService;
 
 	EditText identityEditText;
 	ThreemaSafeMDMConfig safeMDMConfig;
 	ThreemaSafeServerInfo serverInfo = new ThreemaSafeServerInfo();
+
+	private final ActivityResultLauncher<String> notificationPermissionLauncher =
+		registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+			// Restore backup even if permission is not granted as we do not strictly require the
+			// notification permission.
+			doSafeRestore();
+		});
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -122,14 +135,18 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 			}
 		});
 
-		findViewById(R.id.safe_restore_button).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (identityEditText != null && identityEditText.getText() != null && identityEditText.getText().toString().length() == ProtocolDefines.IDENTITY_LEN) {
-					doSafeRestore();
-				} else {
-					SimpleStringAlertDialog.newInstance(R.string.safe_restore, R.string.invalid_threema_id).show(getSupportFragmentManager(), "");
+		findViewById(R.id.safe_restore_button).setOnClickListener(v -> {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				// Ask for notification permission
+				if (!ConfigUtils.requestNotificationPermission(WizardSafeRestoreActivity.this, notificationPermissionLauncher)) {
+					return;
 				}
+			}
+
+			if (identityEditText != null && identityEditText.getText() != null && identityEditText.getText().toString().length() == ProtocolDefines.IDENTITY_LEN) {
+				doSafeRestore();
+			} else {
+				SimpleStringAlertDialog.newInstance(R.string.safe_restore, R.string.invalid_threema_id).show(getSupportFragmentManager(), "");
 			}
 		});
 
@@ -265,14 +282,9 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 							() -> {
 								// On fail
 								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
-								RuntimeUtil.runOnUiThread(() -> LongToast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
-								logger.info("Unable to post work request for fetch2");
-								try {
-									userService.removeIdentity();
-								} catch (Exception e) {
-									logger.error("Unable to remove identity", e);
-								}
-								finishAndRemoveTask();
+								RuntimeUtil.runOnUiThread(() -> Toast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
+								logger.info("Unable to post work request for fetch2 or preset password was denied");
+								removeIdentity();
 							});
 					} else {
 						onSuccessfulRestore();
@@ -287,7 +299,25 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 		}.execute();
 	}
 
+	private void removeIdentity() {
+		try {
+			userService.removeIdentity();
+		} catch (Exception e) {
+			logger.error("Unable to remove identity", e);
+		}
+		finishAndRemoveTask();
+	}
+
 	private void onSuccessfulRestore() {
+		if (safeMDMConfig.isBackupPasswordPreset()) {
+			WizardDialog wizardDialog = WizardDialog.newInstance(R.string.safe_managed_password_confirm, R.string.accept, R.string.real_not_now, WizardDialog.Highlight.NONE);
+			wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_PASSWORD_PRESET_CONFIRM);
+		} else {
+			scheduleAppRestart();
+		}
+	}
+
+	private void scheduleAppRestart() {
 		SimpleStringAlertDialog.newInstance(R.string.restore_success_body, R.string.android_backup_restart_threema,
 			true).show(getSupportFragmentManager(), "d");
 		try {
@@ -299,8 +329,9 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 	}
 
 	@Override
-	public void onBackPressed() {
-		finish();
+	protected boolean enableOnBackPressedCallback() {
+		// Override the behavior of WizardBackgroundActivity to allow normal back navigation
+		return false;
 	}
 
 	@Override
@@ -326,8 +357,17 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 	}
 
 	@Override
+	public void onYes(String tag, Object data) {
+		if (DIALOG_TAG_PASSWORD_PRESET_CONFIRM.equals(tag)) {
+			scheduleAppRestart();
+		}
+	}
+
+	@Override
 	public void onNo(String tag) {
-		if (safeMDMConfig.isRestoreDisabled()) {
+		if (DIALOG_TAG_PASSWORD_PRESET_CONFIRM.equals(tag)) {
+			removeIdentity();
+		} else if (safeMDMConfig.isRestoreDisabled()) {
 			finish();
 		}
 	}

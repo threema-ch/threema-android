@@ -22,19 +22,25 @@
 package ch.threema.app.services;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
 import android.location.Location;
 import android.net.Uri;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
+import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
@@ -56,15 +62,33 @@ import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
 import ch.threema.storage.models.ballot.BallotModel;
+import ch.threema.storage.models.data.DisplayTag;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
+import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 /**
  * Handling methods for messages
  */
 public interface MessageService {
+	int FILTER_CHATS = 1;
+	int FILTER_GROUPS = 1<<1;
+	int FILTER_INCLUDE_ARCHIVED = 1<<2;
+	int FILTER_STARRED_ONLY = 1<<3;
+
+	@IntDef(
+		flag=true,
+		value={
+			FILTER_CHATS,
+			FILTER_GROUPS,
+			FILTER_INCLUDE_ARCHIVED,
+			FILTER_STARRED_ONLY
+		}
+	)
+	@Retention(RetentionPolicy.SOURCE)
+	@interface MessageFilterFlags{}
 
 	interface CompletionHandler {
 		void sendComplete(AbstractMessageModel messageModel);
@@ -90,6 +114,11 @@ public interface MessageService {
 		boolean onlyDownloaded();
 		MessageType[] types();
 		@MessageContentsType int[] contentTypes();
+		/* Messages can be tagged with a star or other attributes that affect how they are displayed.
+		If the implementation returns an array of tags, the result will be filtered to contain only messages that have one or more of the specified tags set.
+		If this method returns null, no filtering for display tags will be performed */
+		@DisplayTag
+		int[] displayTags();
 	}
 
 	public class MessageString {
@@ -139,6 +168,26 @@ public interface MessageService {
 		@ForwardSecurityStatusDataModel.ForwardSecurityStatusType int type,
 		int quantity,
 		@Nullable String staticText);
+
+	/**
+	 * Create and save a group status message.
+	 *
+	 * @param receiver     the receiver
+	 * @param type         the type
+	 * @param identity     the identity that will be included in the message (needed for
+	 *                     MEMBER_ADDED, MEMBER_LEFT, MEMBER_KICKED, FIRST_VOTE, and RECEIVED_VOTE)
+	 * @param ballotName   the name of the ballot (needed for FIRST_VOTE, MODIFIED_VOTE,
+	 *                     RECEIVED_VOTE, and VOTES_COMPLETE)
+	 * @param newGroupName the new group name (needed for RENAMED)
+	 * @return the group status message model
+	 */
+	AbstractMessageModel createGroupStatus(
+		@NonNull GroupMessageReceiver receiver,
+		@NonNull GroupStatusDataModel.GroupStatusType type,
+		@Nullable String identity,
+		@Nullable String ballotName,
+		@Nullable String newGroupName
+	);
 
     AbstractMessageModel sendText(String message, MessageReceiver receiver) throws Exception;
 	AbstractMessageModel sendLocation(@NonNull Location location, String poiName, MessageReceiver receiver, CompletionHandler completionHandler) throws ThreemaException, IOException;
@@ -211,8 +260,6 @@ public interface MessageService {
 	@WorkerThread
 	List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver);
 	List<AbstractMessageModel> getMessageForBallot(BallotModel ballotModel);
-	List<AbstractMessageModel> getContactMessagesForText(String query, boolean includeArchived);
-	List<AbstractMessageModel> getGroupMessagesForText(String query, boolean includeArchived);
 
 	MessageModel getContactMessageModel(final Integer id, boolean lazy);
 	GroupMessageModel getGroupMessageModel(final Integer id, boolean lazy);
@@ -226,6 +273,26 @@ public interface MessageService {
 	boolean downloadMediaMessage(AbstractMessageModel mediaMessageModel, ProgressListener progressListener) throws Exception;
 	boolean cancelMessageDownload(AbstractMessageModel messageModel);
 	void cancelMessageUpload(AbstractMessageModel messageModel);
+
+	/**
+	 * Get all messages in any chat that match the specified criteria - excluding distribution lists
+	 * @param queryString Substring to match or null to match all messages
+	 * @param filterFlags @MessageFilterFlags for this query
+	 * @param sortAscending Date sort order of results. true = oldest messages first, false = newest messages first
+	 * @return A list of matching message models
+	 */
+	List<AbstractMessageModel> getMessagesForText(String queryString, @MessageService.MessageFilterFlags int filterFlags, boolean sortAscending);
+
+
+	/**
+	 * Remove the "star" display tag from all messages
+	 * @return number of affected messages
+	 */
+	@WorkerThread
+	int unstarAllMessages();
+
+	@WorkerThread
+	long countStarredMessages() throws SQLiteException;
 
 	void saveMessageQueueAsync();
 	void saveMessageQueue(@NonNull MasterKey masterKey);

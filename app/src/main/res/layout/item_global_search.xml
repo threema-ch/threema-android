@@ -5,11 +5,12 @@
   ~ All rights reserved.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-				android:layout_height="@dimen/listitem_contact_height"
-				android:orientation="vertical"
-				android:background="@drawable/listitem_background_selector">
+<ch.threema.app.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="@dimen/listitem_globalsearch_height"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	android:background="@drawable/listitem_background_selector">
 
 	<ch.threema.app.ui.AvatarView
 		android:id="@+id/avatar_view"
@@ -17,7 +18,6 @@
 		android:layout_height="@dimen/avatar_size_small"
 		android:layout_marginLeft="16dp"
 		android:layout_centerVertical="true"
-		android:foreground="@drawable/selector_avatar"
 		android:clickable="false"
 		android:importantForAccessibility="no"
 		android:layout_alignParentLeft="true"
@@ -37,23 +37,11 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true"
 			android:layout_alignWithParentIfMissing="true"
-			android:layout_toLeftOf="@+id/date"
+			android:layout_toLeftOf="@+id/thumbnail_view"
 			android:ellipsize="end"
 			android:singleLine="true"
 			android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
 			android:text="title"/>
-
-		<TextView
-			android:id="@+id/date"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignBaseline="@id/name"
-			android:layout_alignParentRight="true"
-			android:layout_alignWithParentIfMissing="true"
-			android:ellipsize="none"
-			android:singleLine="true"
-			android:text="date"
-			android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine" />
 
 		<ch.threema.app.emojis.EmojiTextView
 			android:id="@+id/snippet"
@@ -61,12 +49,52 @@
 			android:layout_height="wrap_content"
 			android:layout_alignLeft="@id/name"
 			android:layout_alignParentLeft="true"
+			android:layout_toLeftOf="@+id/thumbnail_view"
+			android:layout_alignWithParentIfMissing="true"
 			android:layout_below="@id/name"
 			android:ellipsize="end"
 			android:singleLine="true"
-			android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-			android:text="excerpt"/>
+			android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
+
+		<TextView
+			android:id="@+id/date"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/snippet"
+			android:layout_alignLeft="@+id/snippet"
+			android:layout_alignWithParentIfMissing="true"
+			android:ellipsize="none"
+			android:singleLine="true"
+			android:text="date"
+			android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine" />
+
+		<com.google.android.material.imageview.ShapeableImageView
+			app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Small"
+			android:id="@+id/thumbnail_view"
+			android:layout_width="56dp"
+			android:layout_height="56dp"
+			android:layout_marginLeft="8dp"
+			android:layout_toLeftOf="@+id/next_view"
+			android:layout_centerVertical="true"
+			android:clickable="false"
+			android:contentDescription="@string/attach_picture"
+			android:visibility="gone"
+			android:background="?attr/colorSecondaryContainer" />
+
+		<ImageView
+			android:id="@+id/next_view"
+			android:layout_width="32dp"
+			android:layout_height="32dp"
+			android:layout_marginRight="-8dp"
+			android:layout_marginLeft="4dp"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:clickable="false"
+			android:importantForAccessibility="no"
+			android:visibility="visible"
+			app:srcCompat="@drawable/ic_keyboard_arrow_right"
+			app:tint="?attr/colorOnBackground" />
 
 	</RelativeLayout>
 
-</RelativeLayout>
+</ch.threema.app.ui.CheckableRelativeLayout>

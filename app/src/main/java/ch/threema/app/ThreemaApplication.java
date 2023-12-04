@@ -39,7 +39,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.sqlite.SQLiteException;
 import android.net.ConnectivityManager;
@@ -166,6 +165,7 @@ import ch.threema.app.webclient.services.SessionAndroidService;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
+import ch.threema.app.workers.AutoDeleteWorker;
 import ch.threema.app.workers.IdentityStatesWorker;
 import ch.threema.app.workers.ShareTargetUpdateWorker;
 import ch.threema.app.workers.WorkSyncWorker;
@@ -196,6 +196,7 @@ import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.GroupBallotModel;
 import ch.threema.storage.models.ballot.IdentityBallotModel;
 import ch.threema.storage.models.ballot.LinkBallotModel;
+import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
@@ -282,6 +283,9 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String WORKER_THREEMA_SAFE_UPLOAD = "SafeUpload";
 	public static final String WORKER_PERIODIC_THREEMA_SAFE_UPLOAD = "PeriodicSafeUpload";
 	public static final String WORKER_CONNECTIVITY_CHANGE = "ConnectivityChange";
+	public static final String WORKER_AUTO_DELETE = "AutoDelete";
+	public static final String WORKER_AUTOSTART = "Autostart";
+	public static final String WORKER_RESTRICT_BACKGROUND_CHANGED = "RestrictBackgroundChanged";
 
 	public static final Lock onAndroidContactChangeLock = new ReentrantLock();
 
@@ -328,18 +332,22 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			try {
 				GroupService groupService = serviceManager.getGroupService();
 				MessageService messageService = serviceManager.getMessageService();
-				if (groupService != null && messageService != null) {
-					String notice = null;
+				GroupStatusDataModel.GroupStatusType type = null;
 
-					if (newState == GroupService.NOTES) {
-						notice = serviceManager.getContext().getString(R.string.status_create_notes);
-					} else if (newState == GroupService.PEOPLE && oldState != GroupService.UNDEFINED) {
-						notice = serviceManager.getContext().getString(R.string.status_create_notes_off);
-					}
+				if (newState == GroupService.NOTES) {
+					type = GroupStatusDataModel.GroupStatusType.IS_NOTES_GROUP;
+				} else if (newState == GroupService.PEOPLE && oldState != GroupService.UNDEFINED) {
+					type = GroupStatusDataModel.GroupStatusType.IS_PEOPLE_GROUP;
+				}
 
-					if (notice != null) {
-						messageService.createStatusMessage(notice, groupService.createReceiver(groupModel));
-					}
+				if (type != null) {
+					messageService.createGroupStatus(
+						groupService.createReceiver(groupModel),
+						type,
+						null,
+						null,
+						null
+					);
 				}
 			} catch (ThreemaException e) {
 				logger.error("Exception", e);
@@ -545,11 +553,13 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 							} else {
 								logger.info("*** Device waking up");
 								if (serviceManager != null) {
-									try {
-										serviceManager.getLifetimeService().unpause();
-									} catch (Exception e) {
-										logger.error("Exception while unpausing connection", e);
-									}
+									new Thread(() -> {
+										try {
+											serviceManager.getLifetimeService().unpause();
+										} catch (Exception e) {
+											logger.error("Exception while unpausing connection", e);
+										}
+									}, "device_wakup").start();
 									isDeviceIdle = false;
 								} else {
 									logger.info("Service manager unavailable");
@@ -608,12 +618,18 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					getAppContext().registerReceiver(new BroadcastReceiver() {
 						@Override
 						public void onReceive(Context context, Intent intent) {
+							logger.info("Restrictions have changed. Updating workers");
+
 							AppRestrictionService.getInstance().reload();
 							try {
 								OneTimeWorkRequest workRequest = WorkSyncWorker.Companion.buildOneTimeWorkRequest(true, true, null);
 								WorkManager.getInstance(ThreemaApplication.getAppContext()).enqueueUniqueWork(WORKER_WORK_SYNC, ExistingWorkPolicy.REPLACE, workRequest);
 							} catch (IllegalStateException e) {
 								logger.error("Unable to schedule work sync one time work", e);
+							}
+
+							if (!AutoDeleteWorker.Companion.scheduleAutoDelete(getAppContext())) {
+								AutoDeleteWorker.Companion.cancelAutoDelete(getAppContext());
 							}
 						}
 					}, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
@@ -701,15 +717,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 		super.onLowMemory();
 
 		logger.info("*** App is low on memory");
-	}
-
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		if (serviceManager != null) {
-			ConfigUtils.setLocaleOverride(getAppContext(), serviceManager.getPreferenceService());
-		}
-
-		super.onConfigurationChanged(newConfig);
 	}
 
 	@SuppressLint("SwitchIntDef")
@@ -1101,12 +1108,12 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 				// schedule shortcut update
 				if (preferenceStore.getBoolean(getAppContext().getString(R.string.preferences__direct_share))) {
 					scheduleShareTargetShortcutUpdate();
-
+				}
+				// schedule auto delete
+				if (!AutoDeleteWorker.Companion.scheduleAutoDelete(getAppContext())) {
+					AutoDeleteWorker.Companion.cancelAutoDelete(getAppContext());
 				}
 			}, "scheduleSync").start();
-
-			// setup locale override
-			ConfigUtils.setLocaleOverride(getAppContext(), serviceManager.getPreferenceService());
 		} catch (MasterKeyLockedException | SQLiteException e) {
 			logger.error("Exception opening database", e);
 		} catch (ThreemaException e) {
@@ -1243,9 +1250,13 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			public void onCreate(GroupModel newGroupModel) {
 				try {
 					serviceManager.getConversationService().refresh(newGroupModel);
-					serviceManager.getMessageService().createStatusMessage(
-							serviceManager.getContext().getString(R.string.status_create_group),
-							serviceManager.getGroupService().createReceiver(newGroupModel));
+					serviceManager.getMessageService().createGroupStatus(
+						serviceManager.getGroupService().createReceiver(newGroupModel),
+						GroupStatusDataModel.GroupStatusType.CREATED,
+						null,
+						null,
+						null
+					);
 				} catch (ThreemaException e) {
 					logger.error("Exception", e);
 				}
@@ -1255,15 +1266,19 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			public void onRename(GroupModel groupModel) {
 				new Thread(() -> {
 					try {
-						MessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
+						GroupMessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
 						serviceManager.getConversationService().refresh(groupModel);
 						String groupName = groupModel.getName();
 						if (groupName == null) {
 							groupName = "";
 						}
-						serviceManager.getMessageService().createStatusMessage(
-							serviceManager.getContext().getString(R.string.status_rename_group, groupName),
-							messageReceiver);
+						serviceManager.getMessageService().createGroupStatus(
+							messageReceiver,
+							GroupStatusDataModel.GroupStatusType.RENAMED,
+							null,
+							null,
+							groupName
+						);
 						ShortcutUtil.updatePinnedShortcut(messageReceiver);
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
@@ -1275,11 +1290,15 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			public void onUpdatePhoto(GroupModel groupModel) {
 				new Thread(() -> {
 					try {
-						MessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
+						GroupMessageReceiver messageReceiver = serviceManager.getGroupService().createReceiver(groupModel);
 						serviceManager.getConversationService().refresh(groupModel);
-						serviceManager.getMessageService().createStatusMessage(
-							serviceManager.getContext().getString(R.string.status_group_new_photo),
-							messageReceiver);
+						serviceManager.getMessageService().createGroupStatus(
+							messageReceiver,
+							GroupStatusDataModel.GroupStatusType.PROFILE_PICTURE_UPDATED,
+							null,
+							null,
+							null
+						);
 						ShortcutUtil.updatePinnedShortcut(messageReceiver);
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
@@ -1303,51 +1322,42 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			@Override
 			public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
-				String memberName = newIdentity;
-				ContactModel contactModel;
 				try {
-					if ((contactModel = serviceManager.getContactService().getByIdentity(newIdentity)) != null) {
-						memberName = NameUtil.getDisplayNameOrNickname(contactModel, true);
-					}
-				} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-					logger.error("Exception", e);
-				}
-
-
-				try {
-					final MessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
+					final GroupMessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
 					final String myIdentity = serviceManager.getUserService().getIdentity();
 
-					if (receiver != null && !TestUtil.empty(myIdentity)) {
-						serviceManager.getMessageService().createStatusMessage(
-								serviceManager.getContext().getString(R.string.status_group_new_member, memberName),
-								receiver);
+					if (!TestUtil.empty(myIdentity)) {
+						serviceManager.getMessageService().createGroupStatus(
+							receiver,
+							GroupStatusDataModel.GroupStatusType.MEMBER_ADDED,
+							newIdentity,
+							null,
+							null
+						);
 
 						if ((!myIdentity.equals(group.getCreatorIdentity())) || previousMemberCount > 1) {
 							//send all open ballots to the new group member
 							BallotService ballotService = serviceManager.getBallotService();
-							if (ballotService != null) {
-								List<BallotModel> openBallots = ballotService.getBallots(new BallotService.BallotFilter() {
-									@Override
-									public MessageReceiver getReceiver() {
-										return receiver;
-									}
-
-									@Override
-									public BallotModel.State[] getStates() {
-										return new BallotModel.State[]{BallotModel.State.OPEN};
-									}
-
-									@Override
-									public boolean filter(BallotModel ballotModel) {
-										//only my ballots please
-										return ballotModel.getCreatorIdentity().equals(myIdentity);
-									}
-								});
-
-								for (BallotModel ballotModel : openBallots) {
-									ballotService.publish(receiver, ballotModel, null, newIdentity);
+							List<BallotModel> openBallots = ballotService.getBallots(new BallotService.BallotFilter() {
+								@Override
+								public MessageReceiver getReceiver() {
+									return receiver;
 								}
+
+								@Override
+								public BallotModel.State[] getStates() {
+									return new BallotModel.State[]{BallotModel.State.OPEN};
+								}
+
+								@Override
+								public boolean filter(BallotModel ballotModel) {
+									//only my ballots please
+									return ballotModel.getCreatorIdentity().equals(myIdentity);
+								}
+							});
+
+							for (BallotModel ballotModel : openBallots) {
+								ballotService.publish(receiver, ballotModel, null, newIdentity);
 							}
 						}
 					}
@@ -1367,21 +1377,32 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 
 			@Override
 			public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
-				String memberName = identity;
-				ContactModel contactModel;
 				try {
-					if ((contactModel = serviceManager.getContactService().getByIdentity(identity)) != null) {
-						memberName = NameUtil.getDisplayNameOrNickname(contactModel, true);
-					}
-				} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-					logger.error("Exception", e);
-				}
-				try {
-					final MessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
+					GroupService groupService = serviceManager.getGroupService();
+					final GroupMessageReceiver receiver = groupService.createReceiver(group);
 
-					serviceManager.getMessageService().createStatusMessage(
-							serviceManager.getContext().getString(R.string.status_group_member_left, memberName),
-							receiver);
+					serviceManager.getMessageService().createGroupStatus(
+						receiver,
+						GroupStatusDataModel.GroupStatusType.MEMBER_LEFT,
+						identity,
+						null,
+						null
+					);
+
+					// Show the orphaned group status when the creator left the group and it was not
+					// this user that left the group (as creator). This listener call is also
+					// triggered when the user (as creator) dissolves the group and in that case we
+					// do not want this status to be shown.
+					if (group.getCreatorIdentity().equals(identity) && !groupService.isGroupCreator(group)) {
+						// Show a group orphaned status message when the creator leaves the group
+						serviceManager.getMessageService().createGroupStatus(
+							receiver,
+							GroupStatusDataModel.GroupStatusType.ORPHANED,
+							null,
+							null,
+							null
+						);
+					}
 
 					BallotService ballotService = serviceManager.getBallotService();
 					ballotService.removeVotes(receiver, identity);
@@ -1403,22 +1424,16 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 						logger.error("Exception", e);
 					}
 				}
-
-				String memberName = identity;
-				ContactModel contactModel;
 				try {
-					if ((contactModel = serviceManager.getContactService().getByIdentity(identity)) != null) {
-						memberName = NameUtil.getDisplayNameOrNickname(contactModel, true);
-					}
-				} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-					logger.error("Exception", e);
-				}
-				try {
-					final MessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
+					final GroupMessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
 
-					serviceManager.getMessageService().createStatusMessage(
-							serviceManager.getContext().getString(R.string.status_group_member_kicked, memberName),
-							receiver);
+					serviceManager.getMessageService().createGroupStatus(
+						receiver,
+						GroupStatusDataModel.GroupStatusType.MEMBER_KICKED,
+						identity,
+						null,
+						null
+					);
 
 					BallotService ballotService = serviceManager.getBallotService();
 					ballotService.removeVotes(receiver, identity);
@@ -1762,8 +1777,8 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 								/*&& BallotUtil.isMine(ballotModel, userService)*/) {
 							LinkBallotModel b = ballotService.getLinkedBallotModel(ballotModel);
 							if(b != null) {
-								String message = null;
-								MessageReceiver receiver = null;
+								GroupStatusDataModel.GroupStatusType type = null;
+								MessageReceiver<? extends AbstractMessageModel> receiver = null;
 								if (b instanceof GroupBallotModel) {
 									GroupModel groupModel = groupService.getById(((GroupBallotModel) b).getGroupId());
 
@@ -1784,40 +1799,39 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 								if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE) {
 									// Only show status message for first vote from a voter on private voting
 									if (isFirstVote) {
-										//on private voting, only show default update msg!
-										message = serviceManager
-											.getContext().getString(R.string.status_ballot_voting_changed, ballotModel.getName());
+										// On private voting, only show default update msg!
+										type = GroupStatusDataModel.GroupStatusType.RECEIVED_VOTE;
 									}
-								} else {
-
-									if (receiver != null) {
-										ContactModel votingContactModel = contactService.getByIdentity(votingIdentity);
-
-										if (isFirstVote) {
-											message = serviceManager
-													.getContext().getString(R.string.status_ballot_user_first_vote,
-															NameUtil.getDisplayName(votingContactModel),
-															ballotModel.getName());
-										} else {
-											message = serviceManager
-													.getContext().getString(R.string.status_ballot_user_modified_vote,
-															NameUtil.getDisplayName(votingContactModel),
-															ballotModel.getName());
-										}
+								} else if (receiver != null) {
+									if (isFirstVote) {
+										type = GroupStatusDataModel.GroupStatusType.FIRST_VOTE;
+									} else {
+										type = GroupStatusDataModel.GroupStatusType.MODIFIED_VOTE;
 									}
 								}
 
-								if(TestUtil.required(message, receiver)) {
-									messageService.createStatusMessage(message, receiver);
+								if (type != null && receiver instanceof GroupMessageReceiver) {
+									messageService.createGroupStatus(
+										(GroupMessageReceiver) receiver,
+										type,
+										votingIdentity,
+										ballotModel.getName(),
+										null
+									);
 								}
 
 								//now check if every participant has voted
-								if (isFirstVote && ballotService.getPendingParticipants(ballotModel.getId()).size() == 0) {
-									String ballotAllVotesMessage = serviceManager
-													.getContext().getString(R.string.status_ballot_all_votes,
-															ballotModel.getName());
-
-									messageService.createStatusMessage(ballotAllVotesMessage, receiver);
+								if (isFirstVote
+									&& ballotService.getPendingParticipants(ballotModel.getId()).isEmpty()
+									&& receiver instanceof GroupMessageReceiver
+								) {
+									messageService.createGroupStatus(
+										(GroupMessageReceiver) receiver,
+										GroupStatusDataModel.GroupStatusType.VOTES_COMPLETE,
+										null,
+										ballotModel.getName(),
+										null
+									);
 								}
 							}
 						}

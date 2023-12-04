@@ -44,6 +44,7 @@
 	<string name="restriction__onprem_server">th_onprem_server</string>
 	<string name="restriction__disable_work_directory">th_disable_work_directory</string>
 	<string name="restriction__disable_group_calls">th_disable_group_calls</string>
+	<string name="restriction__keep_messages_days">th_keep_messages_days</string>
 
 	<!-- strings for policy controller -->
 	<string name="restriction_license_username">Corporate License Username</string>
@@ -132,4 +133,6 @@
 	<string name="restriction_disable_work_directory_desc">Hide option for Work directory</string>
 	<string name="restriction_disable_group_calls">Disable group calls</string>
 	<string name="restriction_disable_group_calls_desc">Disable both incoming and outgoing Threema group (video) calls</string>
+	<string name="restriction_keep_messages_days">Keep messages (days)</string>
+	<string name="restriction_keep_messages_days_desc">How many days messages should be kept on the device before they are deleted automatically. If not set or set to 0, messages are kept forever.</string>
 </resources>

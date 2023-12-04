@@ -58,7 +58,12 @@ public class WhatsNew2Activity extends ThreemaAppCompatActivity {
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		Intent intent = new Intent(WhatsNew2Activity.this, WhatsNewActivity.class);
 		intent.putExtra(EXTRA_NO_ANIMATION, true);
 		startActivity(intent);

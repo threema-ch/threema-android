@@ -107,6 +107,7 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_GROUP_DELIVERY_RECEIPT = 0x81;
 	public static final int MSGTYPE_TYPING_INDICATOR = 0x90;
 	public static final int MSGTYPE_FS_ENVELOPE = 0xa0;
+	public static final int MSGTYPE_WEB_SESSION_RESUME = 0xfe;
 	public static final int MSGTYPE_AUTH_TOKEN = 0xff;
 
 	/* message flags */
@@ -171,4 +172,9 @@ public class ProtocolDefines {
 	public static final int GC_PEEK_FAILED_ABANDON_MIN_TRIES = 3;
 	public static final long GC_PEEK_FAILED_ABANDON_MIN_CALL_AGE_MILLIS = 1000L * 60L * 60L * 10L; // 10 hours
 	public static final String GC_ALLOWED_BASE_URL_PROTOCOL = "https";
+
+	/* Auto Delete */
+	public static final int AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE = 0;
+	public static final int AUTO_DELETE_KEEP_MESSAGES_DAYS_MIN = 7;
+	public static final int AUTO_DELETE_KEEP_MESSAGES_DAYS_MAX = 3650;
 }

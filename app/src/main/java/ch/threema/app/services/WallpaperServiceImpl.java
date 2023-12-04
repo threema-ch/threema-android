@@ -327,7 +327,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 			}
 
 			@Override
-			public void onSelected(String tag) {
+			public void onSelected(String tag, String data) {
 				if (fragment.isAdded()) {
 					switch (tag) {
 						case SELECTOR_TAG_WALLPAPER_DEFAULT:

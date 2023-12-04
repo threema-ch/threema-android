@@ -25,10 +25,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
 import org.slf4j.Logger;
 
-import ch.threema.app.services.RestrictBackgroundChangedService;
+import ch.threema.app.workers.RestrictBackgroundChangedWorker;
 import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.ThreemaApplication.WORKER_RESTRICT_BACKGROUND_CHANGED;
 
 public class RestrictBackgroundChangedReceiver extends BroadcastReceiver {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("RestrictBackgroundChangedReceiver");
@@ -36,6 +42,8 @@ public class RestrictBackgroundChangedReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		logger.info("Restrict Background changed broadcast received");
-		RestrictBackgroundChangedService.enqueueWork(context, intent);
+		OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(RestrictBackgroundChangedWorker.class)
+			.build();
+		WorkManager.getInstance(context).enqueueUniqueWork(WORKER_RESTRICT_BACKGROUND_CHANGED, ExistingWorkPolicy.REPLACE, workRequest);
 	}
 }

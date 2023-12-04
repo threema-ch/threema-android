@@ -21,7 +21,6 @@
 
 package ch.threema.app.backuprestore.csv;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -73,6 +72,8 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 import java8.util.stream.StreamSupport;
 
+import static ch.threema.app.PermissionRuleUtilsKt.getReadWriteExternalStoragePermissionRule;
+
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 @DangerousTest // Deletes data and possibly identity
@@ -94,7 +95,7 @@ public class BackupServiceTest {
     private @NonNull BallotService ballotService;
 
 	@Rule
-	public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+	public GrantPermissionRule permissionRule = getReadWriteExternalStoragePermissionRule();
 
 	/**
 	 * Ensure that an identity is set up, initialize static {@link #TEST_IDENTITY} variable.

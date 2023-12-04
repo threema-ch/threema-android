@@ -177,7 +177,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	}
 
 	@Override
-	public List<DistributionListMessageModel> loadMessages(MessageService.MessageFilter filter) throws SQLException {
+	public List<DistributionListMessageModel> loadMessages(MessageService.MessageFilter filter) {
 		return this.databaseServiceNew.getDistributionListMessageModelFactory().find(
 				this.distributionListModel.getId(),
 				filter
@@ -272,24 +272,6 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	@Override
 	public String[] getIdentities() {
 		return this.distributionListService.getDistributionListIdentities(this.distributionListModel);
-	}
-
-	@Override
-	public String[] getIdentities(final int requiredFeature) {
-		List<DistributionListMemberModel> members = Functional.filter(this.distributionListService.getDistributionListMembers(this.distributionListModel),
-				new IPredicateNonNull<DistributionListMemberModel>() {
-					@Override
-					public boolean apply(@NonNull DistributionListMemberModel dmm) {
-						ContactModel model = contactService.getByIdentity(dmm.getIdentity());
-						return model != null && ThreemaFeature.hasFeature(model.getFeatureMask(), requiredFeature);
-					}
-				});
-
-		String[] identities = new String[members.size()];
-		for(int p = 0; p < identities.length; p++) {
-			identities[p] = members.get(p).getIdentity();
-		}
-		return identities;
 	}
 
 	@Override

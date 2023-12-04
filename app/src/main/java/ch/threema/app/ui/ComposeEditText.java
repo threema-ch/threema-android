@@ -162,11 +162,8 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
 		this.context = context;
 
 		PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-		boolean fullScreenIme = context instanceof SendMediaActivity || preferenceService.isFullscreenIme();
 
-		this.setImeOptions(getImeOptions() | (fullScreenIme ?
-				EditorInfo.IME_ACTION_SEND & ~EditorInfo.IME_FLAG_NO_FULLSCREEN:
-				EditorInfo.IME_ACTION_SEND | EditorInfo.IME_FLAG_NO_FULLSCREEN));
+		this.setImeOptions(getImeOptions() | (EditorInfo.IME_ACTION_SEND & ~EditorInfo.IME_FLAG_NO_FULLSCREEN));
 		this.setRawInputType(preferenceService.isEnterToSend() ?
 				InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES | EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT |
 						(preferenceService.getEmojiStyle() == PreferenceService.EmojiStyle_ANDROID ? EditorInfo.TYPE_TEXT_VARIATION_SHORT_MESSAGE : 0) :

@@ -21,13 +21,14 @@
 
 package ch.threema.app.utils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
@@ -229,7 +230,13 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 	public boolean hasForwardSecuritySupport(@NonNull Contact contact) {
 		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
 		if (contactModel == null) {
-			return false;
+			try {
+				Integer[] fm = apiConnector.checkFeatureMask(new String[]{contact.getIdentity()});
+				return fm.length > 0 && fm[0] != null && ThreemaFeature.canForwardSecurity(fm[0]);
+			} catch (Exception e) {
+				logger.error("Could not get feature mask for contact");
+				return false;
+			}
 		}
 		return ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask());
 	}

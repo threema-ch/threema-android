@@ -33,12 +33,30 @@ public class BottomSheetItem implements Parcelable {
 	private final String title;
 	private final String tag;
 	private final @DrawableRes int resource;
+	private final String data;
+
+	public BottomSheetItem(Bitmap bitmap, String title, String tag, String data) {
+		this.bitmap = bitmap;
+		this.title = title;
+		this.tag = tag;
+		this.resource = 0;
+		this.data = data;
+	}
+
+	public BottomSheetItem(@DrawableRes int resource, String title, String tag, String data) {
+		this.bitmap = null;
+		this.title = title;
+		this.tag = tag;
+		this.resource = resource;
+		this.data = data;
+	}
 
 	public BottomSheetItem(Bitmap bitmap, String title, String tag) {
 		this.bitmap = bitmap;
 		this.title = title;
 		this.tag = tag;
 		this.resource = 0;
+		this.data = null;
 	}
 
 	public BottomSheetItem(@DrawableRes int resource, String title, String tag) {
@@ -46,6 +64,7 @@ public class BottomSheetItem implements Parcelable {
 		this.title = title;
 		this.tag = tag;
 		this.resource = resource;
+		this.data = null;
 	}
 
 	public Bitmap getBitmap() {
@@ -64,11 +83,16 @@ public class BottomSheetItem implements Parcelable {
 		return this.resource;
 	}
 
+	public String getData() {
+		return this.data;
+	}
+
 	protected BottomSheetItem(Parcel in) {
 		bitmap = (Bitmap) in.readValue(Bitmap.class.getClassLoader());
 		title = in.readString();
 		tag = in.readString();
 		resource = in.readInt();
+		data = in.readString();
 	}
 
 	@Override
@@ -86,6 +110,7 @@ public class BottomSheetItem implements Parcelable {
 		dest.writeString(title);
 		dest.writeString(tag);
 		dest.writeInt(resource);
+		dest.writeString(data);
 	}
 
 	@SuppressWarnings("unused")

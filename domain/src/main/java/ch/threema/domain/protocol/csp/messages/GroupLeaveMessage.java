@@ -49,6 +49,11 @@ public class GroupLeaveMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return true;
+	}
+
+	@Override
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_GROUP_LEAVE;
 	}

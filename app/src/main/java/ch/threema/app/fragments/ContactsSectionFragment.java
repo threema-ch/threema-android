@@ -1326,7 +1326,7 @@ public class ContactsSectionFragment
 	}
 
 	@Override
-	public void onSelected(String tag) {
+	public void onSelected(String tag, String data) {
 		if (!TestUtil.empty(tag)) {
 			sendInvite(tag);
 		}

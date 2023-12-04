@@ -25,10 +25,12 @@ import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,12 +58,23 @@ public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
 
 		savedDayNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
 		ConfigUtils.setCurrentDayNightMode(savedDayNightMode == UI_MODE_NIGHT_YES ? MODE_NIGHT_YES : MODE_NIGHT_NO);
+
+		// Enable the on back pressed callback if the activity uses custom back navigation
+		if (enableOnBackPressedCallback()) {
+			getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+				@Override
+				public void handleOnBackPressed() {
+					ThreemaAppCompatActivity.this.handleOnBackPressed();
+				}
+			});
+		}
 	}
 
 	@Override
 	protected void onResume() {
 		if (BackupService.isRunning() || RestoreService.isRunning()) {
-			Toast.makeText(this,  R.string.backup_restore_in_progress, Toast.LENGTH_LONG).show();
+			Intent intent = new Intent(this, BackupRestoreProgressActivity.class);
+			startActivity(intent);
 			finish();
 		}
 		try {
@@ -89,5 +102,26 @@ public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
 			recreate();
 		}
 		super.onConfigurationChanged(newConfig);
+	}
+
+	/**
+	 * If an activity overrides this and returns {@code true}, then a lifecycle-aware on back
+	 * pressed callback is added that calls {@link #handleOnBackPressed()} when the back button has
+	 * been pressed.
+	 *
+	 * @return {@code true} if the back navigation should be intercepted, {@code false} otherwise
+	 */
+	protected boolean enableOnBackPressedCallback() {
+		return false;
+	}
+
+	/**
+	 * Handle an on back pressed event. This method gets only called when the on back pressed
+	 * callback is registered. This only happens when {@link #enableOnBackPressedCallback()} returns
+	 * {@code true}. Note that this method is lifecycle aware, i.e., it is not called if the
+	 * activity has been destroyed.
+	 */
+	protected void handleOnBackPressed() {
+		// Nothing to do here
 	}
 }

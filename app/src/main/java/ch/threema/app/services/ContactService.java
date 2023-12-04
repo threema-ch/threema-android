@@ -34,11 +34,13 @@ import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkContact;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.ContactDeleteProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.ContactSetProfilePictureMessage;
+import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
@@ -288,7 +290,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	void setIsArchived(String identity, boolean archived);
 
-	void save(ContactModel model);
+	void save(@NonNull ContactModel model);
 
 	/**
 	 * save contacts after processing and returning true
@@ -312,7 +314,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 */
 	void sendTypingIndicator(String toIdentity, boolean isTyping);
 
-	void setActive(String identity);
+	void setActive(@Nullable String identity);
 
 	int updateContactVerification(String identity, byte[] publicKey);
 
@@ -333,6 +335,17 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 * @param hiddenDefault Set this to true to hide the contact by default
 	 */
 	@NonNull ContactModel createContactByIdentity(String identity, boolean force, boolean hiddenDefault) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException;
+
+	/**
+	 * Create contacts for all provided identities. Note that contacts are also created when block
+	 * unknown is active or th_disable_add_contact is set to true.
+	 * Contacts are added with acquaintance level 'group'.
+	 * There is no contact created for an identity if
+	 *  - it is the user's identity
+	 *  - there is already a contact for that identity
+	 *  - the identity public key cannot be fetched (404)
+	 */
+	void createContactsByIdentities(@NonNull List<String> identities);
 
 	VerificationLevel getInitialVerificationLevel(ContactModel contactModel);
 
@@ -391,7 +404,31 @@ public interface ContactService extends AvatarService<ContactModel> {
 	void setName(ContactModel contact, String firstName, String lastName);
 	String getAndroidContactLookupUriString(ContactModel contactModel);
 	@Nullable ContactModel addWorkContact(@NonNull WorkContact workContact, @Nullable List<ContactModel> existingWorkContacts);
-	void createWorkContact(@NonNull String identity);
+
+	/**
+	 * Fetch contact if not available locally. There are different steps executed to get the public
+	 * key of the identity. As soon as the public key has been fetched, the steps are aborted and
+	 * the contact is either saved or cached.
+	 * <ul>
+	 *     <li>Check if the contact is stored locally.</li>
+	 *     <li>Check if the contact is cached locally.</li>
+	 *     <li>On work builds, check if the identity is available in the work package. If it is, a
+	 *         work contact is created.</li>
+	 *     <li>Contact synchronization is executed (if enabled) for the given contact. Afterwards
+	 *         local contacts are checked again.</li>
+	 *     <li>The identity is fetched from the server and then cached. Note that this does not
+	 *         store the contact permanently.</li>
+	 * </ul>
+	 * The contact will not be saved locally if it does not exist yet (except for work contacts). It
+	 * will only be cached in the contact store, so that for example the message coder can access
+	 * the public key to decrypt messages.
+	 *
+	 * @throws ch.threema.domain.protocol.api.APIConnector.HttpConnectionException when there is a problem with the http connection
+	 * @throws ch.threema.domain.protocol.api.APIConnector.NetworkException        when there is a problem with the network
+	 * @throws MissingPublicKeyException                                           when there is no public key for this identity
+	 */
+	@WorkerThread
+	void fetchAndCacheContact(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException, MissingPublicKeyException;
 
 	@WorkerThread
 	boolean resetReceiptsSettings();

@@ -1960,7 +1960,7 @@ public class CallActivity extends ThreemaActivity implements
 	 * @param tag
 	 */
 	@Override
-	public void onSelected(String tag) {
+	public void onSelected(String tag, String data) {
 		logger.debug("*** onSelected");
 		if (!TestUtil.empty(tag)) {
 			int ordinal = Integer.valueOf(tag);

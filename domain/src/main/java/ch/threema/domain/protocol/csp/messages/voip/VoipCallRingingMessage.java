@@ -70,4 +70,8 @@ public class VoipCallRingingMessage extends VoipMessage {
 		}
 	}
 
+	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
 }

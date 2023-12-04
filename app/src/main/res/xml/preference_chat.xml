@@ -16,13 +16,6 @@
 				android:title="@string/prefs_title_enter"
 				android:icon="@drawable/ic_send_circle_outline"
 				android:defaultValue="false"/>
-		<CheckBoxPreference
-				android:widgetLayout="@layout/preference_switch_layout"
-				android:key="@string/preferences__fullscreen_ime"
-				android:summaryOff="@string/prefs_sum_fullscreen_ime_off"
-				android:summaryOn="@string/prefs_sum_fullscreen_ime_on"
-				android:title="@string/prefs_title_fullscreen_ime"
-				android:defaultValue="true"/>
 	</PreferenceCategory>
 
 	<PreferenceCategory

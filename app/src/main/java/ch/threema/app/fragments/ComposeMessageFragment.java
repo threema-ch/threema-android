@@ -22,6 +22,7 @@
 package ch.threema.app.fragments;
 
 import static android.view.WindowManager.LayoutParams.FLAG_SECURE;
+import static androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP;
 import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.activities.HomeActivity.THREEMA_CHANNEL_IDENTITY;
 import static ch.threema.app.adapters.ComposeMessageAdapter.MIN_CONSTRAINT_LENGTH;
@@ -32,10 +33,12 @@ import static ch.threema.app.ui.AckjiPopup.ITEM_ACK;
 import static ch.threema.app.ui.AckjiPopup.ITEM_DEC;
 import static ch.threema.app.ui.AckjiPopup.ITEM_IMAGE_REPLY;
 import static ch.threema.app.ui.AckjiPopup.ITEM_INFO;
+import static ch.threema.app.ui.AckjiPopup.ITEM_STAR;
 import static ch.threema.app.ui.ScrollButtonManager.SCROLLBUTTON_VIEW_TIMEOUT;
 import static ch.threema.app.ui.ScrollButtonManager.TYPE_DOWN;
 import static ch.threema.app.utils.LinkifyUtil.DIALOG_TAG_CONFIRM_LINK;
 import static ch.threema.app.utils.ShortcutUtil.TYPE_CHAT;
+import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -106,8 +109,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
-import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -231,11 +234,13 @@ import ch.threema.app.ui.OngoingCallNoticeView;
 import ch.threema.app.ui.OpenBallotNoticeView;
 import ch.threema.app.ui.QRCodePopup;
 import ch.threema.app.ui.ReportSpamView;
+import ch.threema.app.ui.RootViewDeferringInsetsCallback;
 import ch.threema.app.ui.ScrollButtonManager;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.SendButton;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.ui.TooltipPopup;
+import ch.threema.app.ui.TranslateDeferringInsetsAnimationCallback;
 import ch.threema.app.ui.TypingIndicatorTextWatcher;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
@@ -375,6 +380,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private TypingIndicatorTextWatcher typingIndicatorTextWatcher;
 	private Map<String, Integer> identityColors;
 	private MediaFilterQuery lastMediaFilter;
+	private RootViewDeferringInsetsCallback deferringInsetsListener = null;
 
 	private PreferenceService preferenceService;
 	private ContactService contactService;
@@ -534,6 +540,11 @@ public class ComposeMessageFragment extends Fragment implements
 
 		@Override
 		public int[] contentTypes() {
+			return null;
+		}
+
+		@Override
+		public int[] displayTags() {
 			return null;
 		}
 	};
@@ -988,10 +999,6 @@ public class ComposeMessageFragment extends Fragment implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		logger.debug("onCreate");
-
-		if (getActivity() != null) {
-			getActivity().supportPostponeEnterTransition();
-		}
 		super.onCreate(savedInstanceState);
 
 		ListenerManager.contactTypingListeners.add(this.contactTypingListener);
@@ -1137,7 +1144,7 @@ public class ComposeMessageFragment extends Fragment implements
 			this.setupListeners();
 		}
 
-		if (preferenceService.getEmojiStyle() == PreferenceService.EmojiStyle_ANDROID) {
+		if (!ConfigUtils.isDefaultEmojiStyle()) {
 			// remove emoji button
 			this.emojiButton.setVisibility(View.GONE);
 			this.messageText.setPadding(getResources().getDimensionPixelSize(R.dimen.no_emoji_button_padding_left), this.messageText.getPaddingTop(), this.messageText.getPaddingRight(), this.messageText.getPaddingBottom());
@@ -1161,9 +1168,8 @@ public class ComposeMessageFragment extends Fragment implements
 				};
 				this.emojiPicker = (EmojiPicker) ((ViewStub) this.activity.findViewById(R.id.emoji_stub)).inflate();
 				this.emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService());
-				this.emojiButton.attach(this.emojiPicker, preferenceService.isFullscreenIme());
+				this.emojiButton.attach(this.emojiPicker);
 				this.emojiPicker.setEmojiKeyListener(emojiKeyListener);
-
 				this.emojiPicker.addEmojiPickerListener(this);
 			} catch (Exception e) {
 				logger.error("Exception", e);
@@ -1276,7 +1282,12 @@ public class ComposeMessageFragment extends Fragment implements
 
 	private void showEmojiPicker() {
 		logger.debug("Emoji button clicked");
+
 		if (activity.isSoftKeyboardOpen() && !isEmojiPickerShown()) {
+			if (deferringInsetsListener != null) {
+				deferringInsetsListener.setDisableAnimation(true);
+			}
+
 			logger.debug("Show emoji picker after keyboard close");
 			activity.runOnSoftKeyboardClose(() -> {
 				if (emojiPicker != null) {
@@ -1290,14 +1301,13 @@ public class ComposeMessageFragment extends Fragment implements
 				if (emojiPicker.isShown()) {
 					logger.debug("Emoji picker currently shown. Closing.");
 					if (ConfigUtils.isLandscape(activity) &&
-						!ConfigUtils.isTabletLayout() &&
-						preferenceService.isFullscreenIme()) {
+						!ConfigUtils.isTabletLayout()) {
 						emojiPicker.hide();
 					} else {
-						activity.openSoftKeyboard(emojiPicker, messageText);
-						if (activity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
-							emojiPicker.hide();
+						if (deferringInsetsListener != null) {
+							deferringInsetsListener.setDisableAnimation(true);
 						}
+						activity.openSoftKeyboard(emojiPicker, messageText);
 					}
 				} else {
 					logger.debug("Show emoji picker immediately");
@@ -1319,49 +1329,45 @@ public class ComposeMessageFragment extends Fragment implements
 			return;
 		}
 
-		if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
-			try {
-				View rootView = activity.getWindow().getDecorView().getRootView();
-				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-					try {
-						ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-						if (decorView.getChildCount() == 1 && decorView.getChildAt(0) instanceof LinearLayout) {
-							rootView = decorView.getChildAt(0);
-						}
-					} catch (Exception e) {
-						logger.error("Exception", e);
+		try {
+			View rootView = activity.getWindow().getDecorView().getRootView();
+			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+				try {
+					ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+					if (decorView.getChildCount() == 1) {
+						rootView = decorView.getChildAt(0);
 					}
+				} catch (Exception e) {
+					logger.error("Exception", e);
 				}
-
-				ViewCompat.setOnApplyWindowInsetsListener(rootView, new OnApplyWindowInsetsListener() {
-					@NonNull
-					@Override
-					public WindowInsetsCompat onApplyWindowInsets(@NonNull View v, @NonNull WindowInsetsCompat insets) {
-						ThreemaToolbarActivity attachedActivity = activity;
-						if (attachedActivity == null) {
-							attachedActivity = (ThreemaToolbarActivity) getActivity();
-						}
-						if (attachedActivity != null) {
-							if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
-								attachedActivity.onSoftKeyboardOpened(insets.getInsets(WindowInsetsCompat.Type.ime()).bottom - insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom);
-							} else {
-								attachedActivity.onSoftKeyboardClosed();
-							}
-						}
-						return ViewCompat.onApplyWindowInsets(v, insets);
-					}
-				});
-			} catch (NullPointerException e) {
-				logger.error("Exception", e);
 			}
-			activity.addOnSoftKeyboardChangedListener(this);
-		}
-	}
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		activity.supportStartPostponedEnterTransition();
+			deferringInsetsListener = new RootViewDeferringInsetsCallback(emojiPicker, activity);
+
+			ViewCompat.setWindowInsetsAnimationCallback(rootView, deferringInsetsListener);
+			ViewCompat.setOnApplyWindowInsetsListener(rootView, deferringInsetsListener);
+			ViewCompat.setWindowInsetsAnimationCallback(
+				bottomPanel,
+				new TranslateDeferringInsetsAnimationCallback(
+					bottomPanel,
+					WindowInsetsCompat.Type.systemBars(),
+					WindowInsetsCompat.Type.ime(),
+					WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+				)
+			);
+			ViewCompat.setWindowInsetsAnimationCallback(
+				convListView,
+				new TranslateDeferringInsetsAnimationCallback(
+					convListView,
+					WindowInsetsCompat.Type.systemBars(),
+					WindowInsetsCompat.Type.ime(),
+					DISPATCH_MODE_STOP
+				)
+			);
+		} catch (NullPointerException e) {
+			logger.error("Exception", e);
+		}
+		activity.addOnSoftKeyboardChangedListener(this);
 	}
 
 	@Override
@@ -1431,7 +1437,7 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 
 			// update group requests as they could have been changed when coming back from the overview activity
-			if (ConfigUtils.supportsGroupLinks() && groupService.isGroupOwner(this.groupModel)) {
+			if (ConfigUtils.supportsGroupLinks() && groupService.isGroupCreator(this.groupModel)) {
 				this.openGroupRequestNoticeView.updateGroupRequests();
 			}
 
@@ -1728,9 +1734,14 @@ public class ComposeMessageFragment extends Fragment implements
 						if (isQuotePanelShown() && abstractMessageModel.equals(quoteInfo.messageModel)) {
 							closeQuoteMode();
 						} else {
+							if (searchActionMode != null) {
+								searchActionMode.finish();
+							}
 							startQuoteMode(abstractMessageModel, () -> RuntimeUtil.runOnUiThread(() -> {
-								messageText.requestFocus();
-								EditTextUtil.showSoftKeyboard(messageText);
+								EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
+								if (isEmojiPickerShown()) {
+									activity.runOnSoftKeyboardOpen(() -> emojiPicker.hide());
+								}
 							}));
 						}
 					}
@@ -1784,19 +1795,9 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 			return false;
 		});
-		if (ConfigUtils.isDefaultEmojiStyle()) {
-			this.messageText.setOnClickListener(v -> {
-				if (isEmojiPickerShown()) {
-					if (ConfigUtils.isLandscape(activity) &&
-							!ConfigUtils.isTabletLayout() &&
-							preferenceService.isFullscreenIme()) {
-						emojiPicker.hide();
-					} else {
-						activity.openSoftKeyboard(emojiPicker, messageText);
-					}
-				}
-			});
-		}
+
+		setupMessageTextClickListener();
+
 		this.messageText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1813,6 +1814,33 @@ public class ComposeMessageFragment extends Fragment implements
 				updateCameraButton();
 			}
 		});
+	}
+
+	/**
+	 * Setup listener for text input field.
+	 * If default emojis are enabled and the device is in portrait mode,
+	 * we will handle activation. Otherwise, leave it to the system
+	 */
+	private void setupMessageTextClickListener() {
+		if (ConfigUtils.isDefaultEmojiStyle() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			this.messageText.setShowSoftInputOnFocus(false);
+			this.messageText.setOnClickListener(v -> {
+				if (isEmojiPickerShown()) {
+					if (ConfigUtils.isLandscape(activity) &&
+							!ConfigUtils.isTabletLayout()) {
+						emojiPicker.hide();
+					} else {
+						if (deferringInsetsListener != null) {
+							deferringInsetsListener.setDisableAnimation(true);
+						}
+					}
+				}
+				activity.openSoftKeyboard(emojiPicker, messageText);
+			});
+		} else {
+			this.messageText.setShowSoftInputOnFocus(true);
+			this.messageText.setOnClickListener(null);
+		}
 	}
 
 	private void updateCameraButton() {
@@ -1873,7 +1901,7 @@ public class ComposeMessageFragment extends Fragment implements
 				sendButton.setEnabled(true);
 			}
 		}
-		if (emojiButton != null) emojiButton.setVisibility(preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID ? View.VISIBLE : View.GONE);
+		if (emojiButton != null) emojiButton.setVisibility(ConfigUtils.isDefaultEmojiStyle() ? View.VISIBLE : View.GONE);
 		if (messageText != null) messageText.setVisibility(View.VISIBLE);
 	}
 
@@ -1974,9 +2002,7 @@ public class ComposeMessageFragment extends Fragment implements
 			actionBarTitleContainer.setOnClickListener(v -> {
 				Intent intent = null;
 				if (isGroupChat) {
-					if (groupService.isGroupMember(groupModel)) {
-						intent = groupService.getGroupEditIntent(groupModel, activity);
-					}
+					intent = groupService.getGroupDetailIntent(groupModel, activity);
 				} else if (isDistributionListChat) {
 					intent = new Intent(activity, DistributionListAddActivity.class);
 				} else {
@@ -2111,7 +2137,7 @@ public class ComposeMessageFragment extends Fragment implements
 			intent.removeExtra(ThreemaApplication.INTENT_DATA_GROUP);
 			this.messageReceiver = this.groupService.createReceiver(this.groupModel);
 			this.conversationUid = ConversationUtil.getGroupConversationUid(this.groupId);
-			if (ConfigUtils.supportsGroupLinks() && groupService.isGroupOwner(this.groupModel)) {
+			if (ConfigUtils.supportsGroupLinks() && groupService.isGroupCreator(this.groupModel)) {
 				this.openGroupRequestNoticeView.setGroupIdReference(this.groupModel.getApiGroupId());
 				this.openGroupRequestNoticeView.updateGroupRequests();
 			}
@@ -2690,7 +2716,7 @@ public class ComposeMessageFragment extends Fragment implements
 			new AsyncTask<Void, Void, List<AbstractMessageModel>>() {
 				@Override
 				protected void onPreExecute() {
-					GenericProgressDialog.newInstance(-1, R.string.please_wait).show(getParentFragmentManager(), DIALOG_TAG_LOADING_MESSAGES);
+					GenericProgressDialog.newInstance(0, R.string.please_wait).show(getParentFragmentManager(), DIALOG_TAG_LOADING_MESSAGES);
 				}
 
 				@Override
@@ -2733,6 +2759,11 @@ public class ComposeMessageFragment extends Fragment implements
 
 						@Override
 						public int[] contentTypes() {
+							return null;
+						}
+
+						@Override
+						public int[] displayTags() {
 							return null;
 						}
 					});
@@ -2818,17 +2849,13 @@ public class ComposeMessageFragment extends Fragment implements
 							}
 						});
 					} else {
-						if (searchActionMode == null) {
-							onListItemClick(view, position, messageModel);
-						}
+						onListItemClick(view, position, messageModel);
 					}
 				}
 
 				@Override
 				public void longClick(View view, int position, AbstractMessageModel messageModel) {
-					if (searchActionMode == null) {
-						onListItemLongClick(view, position);
-					}
+					onListItemLongClick(view, position);
 				}
 
 				@Override
@@ -2836,7 +2863,7 @@ public class ComposeMessageFragment extends Fragment implements
 					if (actionMode != null) {
 						return false;
 					}
-					if (listViewTouchSwipeListener != null && searchActionMode == null) {
+					if (listViewTouchSwipeListener != null) {
 						// performs (long) click manually
 						//  to propagate event to click listeners only after checking for swipe
 						return listViewTouchSwipeListener.onTouch(view, motionEvent);
@@ -3181,21 +3208,21 @@ public class ComposeMessageFragment extends Fragment implements
 					switch (clickedItem) {
 						case ITEM_ACK:
 							sendUserAck();
-							actionMode.finish();
 							break;
 						case ITEM_DEC:
 							sendUserDec();
-							actionMode.finish();
 							break;
 						case ITEM_IMAGE_REPLY:
 							sendImageReply();
-							actionMode.finish();
 							break;
 						case ITEM_INFO:
 							showMessageLog(selectedMessages.get(0));
-							actionMode.finish();
+							break;
+						case ITEM_STAR:
+							toggleStar(selectedMessages.get(0));
 							break;
 					}
+					actionMode.finish();
 				}
 
 				@Override
@@ -3558,14 +3585,21 @@ public class ComposeMessageFragment extends Fragment implements
 			quoteInfo.quoteTypeImage.setVisibility(View.VISIBLE);
 		}
 
-		AnimationUtil.expand(quoteInfo.quotePanel, onFinishRunnable);
+		if (activity.isSoftKeyboardOpen()) {
+			AnimationUtil.expand(quoteInfo.quotePanel, onFinishRunnable, false);
+		} else {
+			if (onFinishRunnable != null) {
+				onFinishRunnable.run();
+			}
+			convListView.postDelayed(() -> AnimationUtil.expand(quoteInfo.quotePanel, null, false), 350);
+		}
 	}
 
 	private void closeQuoteMode() {
 		quoteInfo.quoteIdentityView.setText("");
 		quoteInfo.quoteTextView.setText("");
 		if (isQuotePanelShown()) {
-			AnimationUtil.collapse(quoteInfo.quotePanel, () -> updateSendButton(messageText.getText()));
+			AnimationUtil.collapse(quoteInfo.quotePanel, () -> updateSendButton(messageText.getText()), false);
 		}
 	}
 
@@ -3601,6 +3635,18 @@ public class ComposeMessageFragment extends Fragment implements
 
 		MessageDetailDialog.newInstance(R.string.message_log_title, messageModel.getId(), messageModel.getClass().toString(), messageModel.getForwardSecurityMode()).
 			show(getParentFragmentManager(), DIALOG_TAG_MESSAGE_DETAIL);
+	}
+
+	/**
+	 * Toggles the "starred" flag for the provided message and saves it to the database
+	 * @param messageModel AbstractMessageModel of the message
+	 */
+	private void toggleStar(@Nullable AbstractMessageModel messageModel) {
+		if (messageModel != null && messageReceiver != null) {
+			messageModel.setDisplayTags(messageModel.getDisplayTags() ^ DISPLAY_TAG_STARRED);
+			messageModel.setSaved(true);
+			messageReceiver.saveLocalModel(messageModel);
+		}
 	}
 
 	private void updateToolbarTitle() {
@@ -4302,8 +4348,10 @@ public class ComposeMessageFragment extends Fragment implements
 				mode.finish();
 			} else if (id == R.id.menu_message_quote) {
 				startQuoteMode(null, () -> RuntimeUtil.runOnUiThread(() -> {
-					messageText.requestFocus();
-					EditTextUtil.showSoftKeyboard(messageText);
+					EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
+					if (isEmojiPickerShown()) {
+						activity.runOnSoftKeyboardOpen(() -> emojiPicker.hide());
+					}
 				}));
 				mode.finish();
 			} else if (id == R.id.menu_show_text) {
@@ -4717,7 +4765,7 @@ public class ComposeMessageFragment extends Fragment implements
 				break;
 			case DIALOG_TAG_CONFIRM_LINK:
 				Uri uri = (Uri) data;
-				LinkifyUtil.getInstance().openLink(getContext(), uri);
+				LinkifyUtil.getInstance().openLink(uri, this, null);
 				break;
 			case DIALOG_TAG_CONFIRM_MESSAGE_DELETE:
 				deleteDeleteableMessages();
@@ -4725,19 +4773,6 @@ public class ComposeMessageFragment extends Fragment implements
 			default:
 				break;
 		}
-	}
-
-	@Override
-	public void onNo(String tag, Object data) {
-		//
-	}
-
-	@Override
-	public void onEmojiPickerOpen() {
-	}
-
-	@Override
-	public void onEmojiPickerClose() {
 	}
 
 	@Override
@@ -4821,7 +4856,6 @@ public class ComposeMessageFragment extends Fragment implements
 		super.onConfigurationChanged(newConfig);
 
 		hideEmojiPickerIfShown();
-
 		EditTextUtil.hideSoftKeyboard(this.messageText);
 		dismissMentionPopup();
 		dismissTooltipPopup(workTooltipPopup, true);
@@ -4837,6 +4871,8 @@ public class ComposeMessageFragment extends Fragment implements
 				this.wallpaperService.setupWallpaperBitmap(this.messageReceiver, this.wallpaperView, ConfigUtils.isLandscape(activity), ConfigUtils.isTheDarkSide(activity));
 			}
 		}
+
+		setupMessageTextClickListener();
 	}
 
 	private void restoreMessageDraft(boolean force) {
@@ -4892,15 +4928,21 @@ public class ComposeMessageFragment extends Fragment implements
 
 	@Override
 	public void onKeyboardShown() {
-		if (isEmojiPickerShown()) {
-			emojiPicker.onKeyboardShown();
-		}
-		if (isResumed() && !emojiPicker.isShown() && searchActionMode == null && messageText != null && !messageText.hasFocus()) {
-			// In some cases when the activity is launched where the previous activity finished with
-			// an open keyboard, the messageText does not have focus even if the keyboard is shown
-			// Only request focus if the emoji picker is hidden and the search bar is not shown,
-			// otherwise the keyboard is needed to search emojis or the chat.
-			messageText.requestFocus();
+		if (emojiPicker != null) {
+			if (isEmojiPickerShown()) {
+				emojiPicker.onKeyboardShown();
+			}
+			if (isResumed() &&
+				!emojiPicker.isShown() &&
+				searchActionMode == null &&
+				messageText != null &&
+				!messageText.hasFocus()) {
+				// In some cases when the activity is launched where the previous activity finished with
+				// an open keyboard, the messageText does not have focus even if the keyboard is shown
+				// Only request focus if the emoji picker is hidden and the search bar is not shown,
+				// otherwise the keyboard is needed to search emojis or the chat.
+				messageText.requestFocus();
+			}
 		}
 	}
 

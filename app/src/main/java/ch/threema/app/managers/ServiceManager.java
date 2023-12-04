@@ -23,14 +23,15 @@ package ch.threema.app.managers;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.apache.commons.io.Charsets;
 import org.slf4j.Logger;
 
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.BackupChatService;
@@ -146,91 +147,139 @@ import ch.threema.domain.stores.DHSessionStoreInterface;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.DatabaseServiceNew;
-import ch.threema.storage.SQLDHSessionStore;
 import ch.threema.storage.models.MessageState;
 
 public class ServiceManager {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ServiceManager");
 
+	@NonNull
 	private final ThreemaConnection connection;
+	@NonNull
 	private final IdentityStore identityStore;
+	@NonNull
 	private final MasterKey masterKey;
+	@NonNull
 	private final PreferenceStoreInterface preferenceStore;
+	@NonNull
 	private final UpdateSystemService updateSystemService;
-
+	@NonNull
 	private final CacheService cacheService;
-
+	@Nullable
 	private DatabaseContactStore contactStore;
+	@Nullable
 	private APIConnector apiConnector;
+	@Nullable
 	private MessageQueue messageQueue;
+	@Nullable
 	private ContactService contactService;
+	@Nullable
 	private UserService userService;
-
+	@Nullable
 	private MessageService messageService;
-
+	@Nullable
 	private QRCodeService qrCodeService;
+	@Nullable
 	private FileService fileService;
+	@Nullable
 	private PreferenceService preferencesService;
+	@Nullable
 	private LocaleService localeService;
+	@Nullable
 	private DeviceService deviceService;
+	@Nullable
 	private LifetimeService lifetimeService;
+	@Nullable
 	private AvatarCacheService avatarCacheService;
+	@Nullable
 	private LicenseService licenseService;
+	@Nullable
 	private BackupRestoreDataService backupRestoreDataService;
+	@Nullable
 	private GroupService groupService;
-	private @Nullable GroupInviteService groupInviteService;
-	private @Nullable
-	GroupJoinResponseService groupJoinResponseService;
-	IncomingGroupJoinRequestService incomingGroupJoinRequestService;
-	OutgoingGroupJoinRequestService outgoingGroupJoinRequestService;
+	@Nullable
+	private GroupInviteService groupInviteService;
+	@Nullable
+	private GroupJoinResponseService groupJoinResponseService;
+	@Nullable
+	private IncomingGroupJoinRequestService incomingGroupJoinRequestService;
+	@Nullable
+	private OutgoingGroupJoinRequestService outgoingGroupJoinRequestService;
+	@Nullable
 	private GroupMessagingService groupMessagingService;
-
+	@Nullable
 	private MessageAckProcessor messageAckProcessor;
+	@Nullable
 	private LockAppService lockAppService;
+	@Nullable
 	private ActivityService activityService;
+	@Nullable
 	private ApiService apiService;
+	@Nullable
 	private ConversationService conversationService;
+	@Nullable
 	private NotificationService notificationService;
+	@Nullable
 	private SynchronizeContactsService synchronizeContactsService;
+	@Nullable
 	private SystemScreenLockService systemScreenLockService;
 
+	@Nullable
 	private IdListService blackListService, excludedSyncIdentitiesService, profilePicRecipientsService;
+	@Nullable
 	private DeadlineListService mutedChatsListService, hiddenChatListService, mentionOnlyChatsListService;
+	@Nullable
 	private DistributionListService distributionListService;
+	@Nullable
 	private MessageProcessor messageProcessor;
+	@Nullable
 	private MessagePlayerService messagePlayerService = null;
+	@Nullable
 	private DownloadServiceImpl downloadService;
+	@Nullable
 	private BallotService ballotService;
+	@Nullable
 	private WallpaperService wallpaperService;
+	@Nullable
 	private ThreemaSafeService threemaSafeService;
+	@Nullable
 	private RingtoneService ringtoneService;
+	@Nullable
 	private BackupChatService backupChatService;
 	@NonNull
 	private final DatabaseServiceNew databaseServiceNew;
+	@Nullable
 	private SensorService sensorService;
+	@Nullable
 	private VoipStateService voipStateService;
+	@Nullable
 	private GroupCallManager groupCallManager;
+	@Nullable
 	private SfuConnection sfuConnection;
+	@Nullable
 	private BrowserDetectionService browserDetectionService;
+	@Nullable
 	private ConversationTagServiceImpl conversationTagService;
+	@Nullable
 	private ServerAddressProviderService serverAddressProviderService;
-
+	@Nullable
 	private WebClientServiceManager webClientServiceManager;
 
 	@NonNull
 	private final DHSessionStoreInterface dhSessionStore;
 	private ForwardSecurityMessageProcessor forwardSecurityMessageProcessor;
+	@Nullable
 	private SymmetricEncryptionService symmetricEncryptionService;
 
+	@Nullable
 	private EmojiService emojiService;
 
-	public ServiceManager(ThreemaConnection connection,
-						  @NonNull DatabaseServiceNew databaseServiceNew,
-						  @NonNull DHSessionStoreInterface dhSessionStore,
-						  IdentityStore identityStore,
-						  PreferenceStoreInterface preferenceStore,
-						  MasterKey masterKey,
-						  UpdateSystemService updateSystemService)
+	public ServiceManager(@NonNull ThreemaConnection connection,
+	                      @NonNull DatabaseServiceNew databaseServiceNew,
+	                      @NonNull DHSessionStoreInterface dhSessionStore,
+	                      @NonNull IdentityStore identityStore,
+	                      @NonNull PreferenceStoreInterface preferenceStore,
+	                      @NonNull MasterKey masterKey,
+	                      @NonNull UpdateSystemService updateSystemService)
 	{
 		this.cacheService = new CacheService();
 
@@ -243,22 +292,20 @@ public class ServiceManager {
 		this.updateSystemService = updateSystemService;
 	}
 
+	@NonNull
 	private DatabaseContactStore getContactStore() {
 		if (this.contactStore == null) {
 			this.contactStore = new DatabaseContactStore(
 					this.getIdentityStore(),
 					this.getDHSessionStore(),
-					this.getAPIConnector(),
-					this.getPreferenceService(),
-					this.databaseServiceNew,
-					this.getBlackListService(),
-					this.getExcludedSyncIdentitiesService()
+					this.databaseServiceNew
 			);
 		}
 
 		return this.contactStore;
 	}
 
+	@NonNull
 	public APIConnector getAPIConnector() {
 		if (this.apiConnector == null) {
 			try {
@@ -322,29 +369,33 @@ public class ServiceManager {
 		this.connection.start();
 	}
 
+	@NonNull
 	public PreferenceStoreInterface getPreferenceStore() {
 		return preferenceStore;
 	}
 
+	@NonNull
 	public MessageProcessor getMessageProcessor() throws ThreemaException {
 		if(this.messageProcessor == null) {
 			this.messageProcessor = new MessageProcessor(
-					this.getMessageService(),
-					this.getContactService(),
-					this.getIdentityStore(),
-					this.getContactStore(),
-					this.getPreferenceService(),
-					this.getGroupService(),
-					this.getGroupJoinResponseService(),
-					this.getIncomingGroupJoinRequestService(),
-					this.getBlackListService(),
-					this.getBallotService(),
-					this.getFileService(),
-					this.getNotificationService(),
-					this.getVoipStateService(),
-					this.getForwardSecurityMessageProcessor(),
-					this.getGroupCallManager()
-		);
+				this,
+				this.getMessageService(),
+				this.getContactService(),
+				this.getIdentityStore(),
+				this.getContactStore(),
+				this.getPreferenceService(),
+				this.getGroupService(),
+				this.getGroupJoinResponseService(),
+				this.getIncomingGroupJoinRequestService(),
+				this.getBlackListService(),
+				this.getBallotService(),
+				this.getFileService(),
+				this.getNotificationService(),
+				this.getVoipStateService(),
+				this.getForwardSecurityMessageProcessor(),
+				this.getGroupCallManager(),
+				this.getServerAddressProviderService().getServerAddressProvider()
+			);
 		}
 		return this.messageProcessor;
 	}
@@ -376,6 +427,7 @@ public class ServiceManager {
 		}
 	}
 
+	@NonNull
 	public MessageQueue getMessageQueue() {
 		if (this.messageQueue == null) {
 			this.messageQueue = new MessageQueue(
@@ -388,6 +440,7 @@ public class ServiceManager {
 		return this.messageQueue;
 	}
 
+	@NonNull
 	public MessageAckProcessor getMessageAckProcessor() {
 		if (this.messageAckProcessor == null) {
 			this.messageAckProcessor = new MessageAckProcessor();
@@ -396,6 +449,7 @@ public class ServiceManager {
 		return this.messageAckProcessor;
 	}
 
+	@NonNull
 	public UserService getUserService() {
 		if (this.userService == null) {
 			try {
@@ -447,6 +501,7 @@ public class ServiceManager {
 		return this.contactService;
 	}
 
+	@NonNull
 	public MessageService getMessageService() throws ThreemaException {
 		if (this.messageService == null) {
 			this.messageService = new MessageServiceImpl(
@@ -466,16 +521,19 @@ public class ServiceManager {
 					this.getApiService(),
 					this.getDownloadService(),
 					this.getHiddenChatsListService(),
-					this.getProfilePicRecipientsService(),
-					this.getBlackListService(),
-					this.getForwardSecurityMessageProcessor()
+					this.getBlackListService()
 			);
-			this.messageQueue.setMessageEnqueueListener(message -> messageService.executeProfilePictureDistribution(message));
+			if (messageQueue == null) {
+				logger.error("Message queue is null: cannot set profile picture distribution listener");
+			} else {
+				messageQueue.setMessageEnqueueListener(message -> messageService.executeProfilePictureDistribution(message));
+			}
 		}
 
 		return this.messageService;
 	}
 
+	@NonNull
 	public PreferenceService getPreferenceService() {
 		if (this.preferencesService == null) {
 			this.preferencesService = new PreferenceServiceImpl(
@@ -486,6 +544,7 @@ public class ServiceManager {
 		return this.preferencesService;
 	}
 
+	@NonNull
 	public QRCodeService getQRCodeService() {
 		if (this.qrCodeService == null) {
 			this.qrCodeService = new QRCodeServiceImpl(this.getUserService());
@@ -494,6 +553,7 @@ public class ServiceManager {
 		return this.qrCodeService;
 	}
 
+	@NonNull
 	public FileService getFileService() throws FileSystemNotPresentException {
 		if (this.fileService == null) {
 			this.fileService = new FileServiceImpl(
@@ -506,6 +566,7 @@ public class ServiceManager {
 		return this.fileService;
 	}
 
+	@NonNull
 	public LocaleService getLocaleService() {
 		if (this.localeService == null) {
 			this.localeService = new LocaleServiceImpl(this.getContext());
@@ -514,10 +575,12 @@ public class ServiceManager {
 		return this.localeService;
 	}
 
+	@NonNull
 	public ThreemaConnection getConnection() {
 		return this.connection;
 	}
 
+	@NonNull
 	public DeviceService getDeviceService() {
 		if(this.deviceService == null) {
 			this.deviceService = new DeviceServiceImpl(this.getContext());
@@ -526,6 +589,7 @@ public class ServiceManager {
 		return this.deviceService;
 	}
 
+	@NonNull
 	public LifetimeService getLifetimeService() {
 		if(this.lifetimeService == null) {
 			this.lifetimeService = new LifetimeServiceImpl(this.getContext());
@@ -534,6 +598,7 @@ public class ServiceManager {
 		return this.lifetimeService;
 	}
 
+	@NonNull
 	public AvatarCacheService getAvatarCacheService() throws FileSystemNotPresentException {
 		if(this.avatarCacheService == null) {
 			this.avatarCacheService = new AvatarCacheServiceImpl(this.getContext());
@@ -545,6 +610,7 @@ public class ServiceManager {
 	/**
 	 * @return service to backup or restore data (conversations and contacts)
 	 */
+	@NonNull
 	public BackupRestoreDataService getBackupRestoreDataService() throws FileSystemNotPresentException {
 		if(this.backupRestoreDataService == null) {
 			this.backupRestoreDataService = new BackupRestoreDataServiceImpl(
@@ -554,6 +620,7 @@ public class ServiceManager {
 		return this.backupRestoreDataService;
 	}
 
+	@NonNull
 	public LicenseService getLicenseService() throws FileSystemNotPresentException {
 		if(this.licenseService == null) {
 			switch(BuildFlavor.getLicenseType()) {
@@ -610,6 +677,7 @@ public class ServiceManager {
 		return this.licenseService;
 	}
 
+	@NonNull
 	public LockAppService getLockAppService() {
 		if(null == this.lockAppService) {
 			this.lockAppService = new PinLockService(
@@ -622,6 +690,7 @@ public class ServiceManager {
 		return this.lockAppService;
 	}
 
+	@NonNull
 	public ActivityService getActivityService() {
 		if(null == this.activityService) {
 			this.activityService = new ActivityService(
@@ -632,7 +701,8 @@ public class ServiceManager {
 		return this.activityService;
 	}
 
-	public @NonNull GroupService getGroupService() throws MasterKeyLockedException, FileSystemNotPresentException {
+	@NonNull
+	public GroupService getGroupService() throws MasterKeyLockedException, FileSystemNotPresentException {
 		if(null == this.groupService) {
 			this.groupService = new GroupServiceImpl(
 					this.getContext(),
@@ -648,14 +718,14 @@ public class ServiceManager {
 					this.getWallpaperService(),
 					this.getMutedChatsListService(),
 					this.getHiddenChatsListService(),
-					this.getRingtoneService(),
-					this.getBlackListService()
+					this.getRingtoneService()
 			);
 		}
 		return this.groupService;
 	}
 
-	public @NonNull GroupInviteService getGroupInviteService() throws FileSystemNotPresentException, MasterKeyLockedException {
+	@NonNull
+	public GroupInviteService getGroupInviteService() throws FileSystemNotPresentException, MasterKeyLockedException {
 		if (this.groupInviteService == null) {
 			this.groupInviteService = new GroupInviteServiceImpl(
 				this.getUserService(),
@@ -666,7 +736,8 @@ public class ServiceManager {
 		return this.groupInviteService;
 	}
 
-	public @NonNull GroupJoinResponseService getGroupJoinResponseService() {
+	@NonNull
+	public GroupJoinResponseService getGroupJoinResponseService() {
 		if (this.groupJoinResponseService == null) {
 			this.groupJoinResponseService = new GroupJoinResponseServiceImpl(
 				this.getDatabaseServiceNew(),
@@ -676,9 +747,8 @@ public class ServiceManager {
 		return this.groupJoinResponseService;
 	}
 
-
-	public @NonNull
-	IncomingGroupJoinRequestService getIncomingGroupJoinRequestService() throws FileSystemNotPresentException, MasterKeyLockedException {
+	@NonNull
+	public IncomingGroupJoinRequestService getIncomingGroupJoinRequestService() throws FileSystemNotPresentException, MasterKeyLockedException {
 		if (this.incomingGroupJoinRequestService == null) {
 			this.incomingGroupJoinRequestService = new IncomingGroupJoinRequestServiceImpl(
 				this.getGroupJoinResponseService(),
@@ -690,9 +760,8 @@ public class ServiceManager {
 		return this.incomingGroupJoinRequestService;
 	}
 
-
-	public @NonNull
-	OutgoingGroupJoinRequestService getOutgoingGroupJoinRequestService() throws MasterKeyLockedException {
+	@NonNull
+	public OutgoingGroupJoinRequestService getOutgoingGroupJoinRequestService() {
 		if (this.outgoingGroupJoinRequestService == null) {
 			this.outgoingGroupJoinRequestService = new OutgoingGroupJoinRequestServiceImpl(
 				this.getDatabaseServiceNew(),
@@ -702,6 +771,7 @@ public class ServiceManager {
 		return this.outgoingGroupJoinRequestService;
 	}
 
+	@NonNull
 	public GroupMessagingService getGroupMessagingService() throws MasterKeyLockedException, FileSystemNotPresentException {
 		if(null == this.groupMessagingService) {
 			this.groupMessagingService = new GroupMessagingServiceImpl(
@@ -712,12 +782,15 @@ public class ServiceManager {
 		return this.groupMessagingService;
 	}
 
+	@NonNull
 	public ApiService getApiService() {
 		if(null == this.apiService) {
 			this.apiService = new ApiServiceImpl(ThreemaApplication.getAppVersion(), ThreemaApplication.getIPv6(), this.getAPIConnector(), new AuthTokenStore(), this.getServerAddressProviderService().getServerAddressProvider());
 		}
 		return this.apiService;
 	}
+
+	@NonNull
 	public DistributionListService getDistributionListService() throws MasterKeyLockedException, NoIdentityException, FileSystemNotPresentException {
 		if(null == this.distributionListService) {
 			this.distributionListService = new DistributionListServiceImpl(
@@ -731,16 +804,16 @@ public class ServiceManager {
 		return this.distributionListService;
 	}
 
+	@NonNull
 	public ConversationTagService getConversationTagService() {
-		if(null == this.conversationService) {
-			this.conversationTagService = new ConversationTagServiceImpl(
-				this.databaseServiceNew
-			);
+		if (this.conversationTagService == null) {
+			this.conversationTagService = new ConversationTagServiceImpl(this.databaseServiceNew);
 		}
 
 		return this.conversationTagService;
 	}
 
+	@NonNull
 	public ConversationService getConversationService() throws ThreemaException {
 		if(null == this.conversationService) {
 			this.conversationService = new ConversationServiceImpl(
@@ -759,6 +832,7 @@ public class ServiceManager {
 		return this.conversationService;
 	}
 
+	@NonNull
 	public ServerAddressProviderService getServerAddressProviderService() {
 		if(null == this.serverAddressProviderService) {
 			this.serverAddressProviderService = new ServerAddressProviderServiceImpl(this.getPreferenceService());
@@ -767,6 +841,7 @@ public class ServiceManager {
 		return this.serverAddressProviderService;
 	}
 
+	@NonNull
 	public NotificationService getNotificationService() {
 		if(this.notificationService == null) {
 			this.notificationService = new NotificationServiceImpl(
@@ -780,6 +855,7 @@ public class ServiceManager {
 		return this.notificationService;
 	}
 
+	@NonNull
 	public SynchronizeContactsService getSynchronizeContactsService() throws MasterKeyLockedException, FileSystemNotPresentException {
 		if(this.synchronizeContactsService == null) {
 			this.synchronizeContactsService = new SynchronizeContactsServiceImpl(
@@ -802,6 +878,7 @@ public class ServiceManager {
 		return this.synchronizeContactsService;
 	}
 
+	@NonNull
 	public IdListService getBlackListService() {
 		if(this.blackListService == null) {
 			this.blackListService = new IdListServiceImpl("identity_list_blacklist", this.getPreferenceService());
@@ -809,6 +886,7 @@ public class ServiceManager {
 		return this.blackListService;
 	}
 
+	@NonNull
 	public DeadlineListService getMutedChatsListService() {
 		if(this.mutedChatsListService == null) {
 			this.mutedChatsListService = new DeadlineListServiceImpl("list_muted_chats", this.getPreferenceService());
@@ -816,6 +894,7 @@ public class ServiceManager {
 		return this.mutedChatsListService;
 	}
 
+	@NonNull
 	public DeadlineListService getHiddenChatsListService() {
 		if(this.hiddenChatListService == null) {
 			this.hiddenChatListService = new DeadlineListServiceImpl("list_hidden_chats", this.getPreferenceService());
@@ -823,6 +902,7 @@ public class ServiceManager {
 		return this.hiddenChatListService;
 	}
 
+	@NonNull
 	public DeadlineListService getMentionOnlyChatsListService() {
 		if(this.mentionOnlyChatsListService == null) {
 			this.mentionOnlyChatsListService = new DeadlineListServiceImpl("list_mention_only", this.getPreferenceService());
@@ -830,6 +910,7 @@ public class ServiceManager {
 		return this.mentionOnlyChatsListService;
 	}
 
+	@NonNull
 	public IdListService getExcludedSyncIdentitiesService() {
 		if(this.excludedSyncIdentitiesService == null) {
 			this.excludedSyncIdentitiesService = new IdListServiceImpl("identity_list_sync_excluded", this.getPreferenceService());
@@ -837,10 +918,12 @@ public class ServiceManager {
 		return this.excludedSyncIdentitiesService;
 	}
 
+	@NonNull
 	public UpdateSystemService getUpdateSystemService() {
 		return this.updateSystemService;
 	}
 
+	@NonNull
 	public MessagePlayerService getMessagePlayerService() throws ThreemaException {
 		if(this.messagePlayerService == null) {
 			this.messagePlayerService = new MessagePlayerServiceImpl(
@@ -854,6 +937,7 @@ public class ServiceManager {
 		return this.messagePlayerService;
 	}
 
+	@NonNull
 	public DownloadService getDownloadService() throws FileSystemNotPresentException {
 		if (this.downloadService == null) {
 			this.downloadService = new DownloadServiceImpl(
@@ -865,6 +949,7 @@ public class ServiceManager {
 		return this.downloadService;
 	}
 
+	@NonNull
 	public BallotService getBallotService() throws NoIdentityException, MasterKeyLockedException, FileSystemNotPresentException {
 		if(this.ballotService == null) {
 			this.ballotService = new BallotServiceImpl(
@@ -879,6 +964,7 @@ public class ServiceManager {
 		return this.ballotService;
 	}
 
+	@NonNull
 	public WallpaperService getWallpaperService() throws FileSystemNotPresentException {
 		if(this.wallpaperService == null) {
 			this.wallpaperService = new WallpaperServiceImpl(this.getContext(),
@@ -891,6 +977,7 @@ public class ServiceManager {
 		return this.wallpaperService;
 	}
 
+	@NonNull
 	public ThreemaSafeService getThreemaSafeService() throws FileSystemNotPresentException, MasterKeyLockedException {
 		if(this.threemaSafeService == null) {
 			this.threemaSafeService = new ThreemaSafeServiceImpl(this.getContext(), this.getPreferenceService(), this.getUserService(), this.getContactService(), this.getLocaleService(), this.getFileService(), this.getProfilePicRecipientsService(), this.getDatabaseServiceNew(), this.getIdentityStore(), this.getAPIConnector(), this.getHiddenChatsListService());
@@ -899,14 +986,17 @@ public class ServiceManager {
 		return this.threemaSafeService;
 	}
 
+	@NonNull
 	public Context getContext() {
 		return ThreemaApplication.getAppContext();
 	}
 
+	@NonNull
 	public IdentityStore getIdentityStore() {
 		return this.identityStore;
 	}
 
+	@NonNull
 	public RingtoneService getRingtoneService() {
 		if(this.ringtoneService == null) {
 			this.ringtoneService = new RingtoneServiceImpl(this.getPreferenceService());
@@ -915,6 +1005,7 @@ public class ServiceManager {
 		return this.ringtoneService;
 	}
 
+	@NonNull
 	public BackupChatService getBackupChatService() throws ThreemaException {
 		if (this.backupChatService == null) {
 			this.backupChatService = new BackupChatServiceImpl(
@@ -928,6 +1019,7 @@ public class ServiceManager {
 		return this.backupChatService;
 	}
 
+	@NonNull
 	public SystemScreenLockService getScreenLockService() {
 		if(this.systemScreenLockService == null) {
 			this.systemScreenLockService = new SystemScreenLockServiceImpl(
@@ -939,6 +1031,7 @@ public class ServiceManager {
 		return this.systemScreenLockService;
 	}
 
+	@NonNull
 	public SensorService getSensorService() {
 		if (this.sensorService == null) {
 			this.sensorService = new SensorServiceImpl(this.getContext());
@@ -961,7 +1054,7 @@ public class ServiceManager {
 				this.getNotificationService(),
 				this.databaseServiceNew,
 				this.getBlackListService(),
-				this.preferencesService,
+				this.getPreferenceService(),
 				this.getUserService(),
 				this.getHiddenChatsListService(),
 				this.getFileService(),
@@ -1008,10 +1101,12 @@ public class ServiceManager {
 		return this.databaseServiceNew;
 	}
 
+	@NonNull
 	public DHSessionStoreInterface getDHSessionStore() {
 		return this.dhSessionStore;
 	}
 
+	@Nullable
 	public ForwardSecurityMessageProcessor getForwardSecurityMessageProcessor() {
 		if (!ConfigUtils.isForwardSecurityEnabled()) {
 			return null;
@@ -1023,13 +1118,18 @@ public class ServiceManager {
 				this.getContactStore(),
 				this.getIdentityStore(),
 				this.getMessageQueue(),
-				(sender, rejectedApiMessageId) ->
+				(sender, rejectedApiMessageId) -> {
+					if (this.messageService == null) {
+						logger.error("Message service is null: cannot update message state for outgoing message");
+						return;
+					}
 					this.messageService.updateMessageStateForOutgoingMessage(
 						rejectedApiMessageId,
 						MessageState.FS_KEY_MISMATCH,
 						new Date(),
 						sender.getIdentity()
-					)
+					);
+				}
 			);
 
 			try {
@@ -1045,16 +1145,16 @@ public class ServiceManager {
 		return this.forwardSecurityMessageProcessor;
 	}
 
-	public @NonNull
-	SymmetricEncryptionService getSymmetricEncryptionService() {
+	@NonNull
+	public SymmetricEncryptionService getSymmetricEncryptionService() {
 		if (symmetricEncryptionService == null) {
 			symmetricEncryptionService = new SymmetricEncryptionService();
 		}
 		return symmetricEncryptionService;
 	}
 
-	public @NonNull
-	EmojiService getEmojiService() {
+	@NonNull
+	public EmojiService getEmojiService() {
 		if (emojiService == null) {
 			EmojiSearchIndex searchIndex = new EmojiSearchIndex(
 				getContext().getApplicationContext(),
@@ -1069,7 +1169,8 @@ public class ServiceManager {
 		return emojiService;
 	}
 
-	public @NonNull GroupCallManager getGroupCallManager() throws ThreemaException {
+	@NonNull
+	public GroupCallManager getGroupCallManager() throws ThreemaException {
 		if (groupCallManager == null) {
 			groupCallManager = new GroupCallManagerImpl(
 				getContext().getApplicationContext(),
@@ -1086,7 +1187,8 @@ public class ServiceManager {
 		return groupCallManager;
 	}
 
-	public @NonNull SfuConnection getSfuConnection() {
+	@NonNull
+	public SfuConnection getSfuConnection() {
 		if (sfuConnection == null) {
 			sfuConnection = new SfuConnectionImpl(
 				getAPIConnector(),

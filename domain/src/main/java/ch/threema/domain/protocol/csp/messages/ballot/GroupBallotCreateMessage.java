@@ -67,6 +67,11 @@ public class GroupBallotCreateMessage extends AbstractGroupMessage
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return true;
+	}
+
+	@Override
 	public void setBallotId(BallotId ballotId) {
 		this.ballotId = ballotId;
 	}

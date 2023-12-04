@@ -225,7 +225,6 @@
     <string name="ringtone_none">Néma</string>
     <string name="no_camera_installed">Nincs megfelelő kamera</string>
     <string name="save_message_action">Mentés</string>
-    <string name="saving_media">A média mentése folyamatban van</string>
     <string name="file_is_not_a_video">A kiválasztott fájl nem videó</string>
     <string name="masterkey_is_unlocked">A főkulcs nyitva van</string>
     <string name="file_too_large">A fájl nagyobb, mint a megengedett %1$d MB</string>
@@ -1346,5 +1345,9 @@
     <plurals name="selection_counter_label">
         <item quantity="one">%d kép kiválasztva</item>
         <item quantity="other">%d kép kiválasztva</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="one">A média mentése folyamatban van</item>
+        <item quantity="other"></item>
     </plurals>
 </resources>

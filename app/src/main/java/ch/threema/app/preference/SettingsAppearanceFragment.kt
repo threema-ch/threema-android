@@ -21,20 +21,26 @@
 
 package ch.threema.app.preference
 
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.preference.CheckBoxPreference
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.WallpaperService
 import ch.threema.app.utils.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.LocaleUtil.mapLocaleToPredefinedLocales
+import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
+import java.util.Locale
+
+private val logger = LoggingUtil.getThreemaLogger("SettingsAppearanceFragment")
 
 @Suppress("unused")
 class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
@@ -216,20 +222,49 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
     }
 
     private fun initLanguageArrayPref() {
-        val languageArray = resources.getStringArray(R.array.list_language_override)
-        val languagePreference = getPref<DropDownPreference>(R.string.preferences__language_override)
-        val oldLocale = languagePreference.value
+        // We always determine the current language based on the application locales. This is due to
+        // the possibility that the user chooses an app language in the system settings.
+        val applicationLocales = AppCompatDelegate.getApplicationLocales()
+        val actualLocale = if (applicationLocales.isEmpty) {
+            null
+        } else {
+            applicationLocales.get(0)
+        }
+
+        // Then we get a list of our supported languages. Then we map the current language selection
+        // to the corresponding language array value we have defined for our supported languages.
+        // Note that the user may choose a region of a language that we do not explicitly support.
+        // Therefore we need #mapLocaleToPredefinedLocales.
+        val languageArray = resources.getStringArray(R.array.list_app_languages)
+        val languageArrayValues = resources.getStringArray(R.array.list_app_languages_values)
+        val languagePreference = getPref<DropDownPreference>(R.string.preferences__app_language)
+        val actualLocaleValue = mapLocaleToPredefinedLocales(actualLocale, languageArrayValues)
+        languagePreference.value = actualLocaleValue
+
+        logger.info("Mapping language '{}' to '{}'", actualLocale, actualLocaleValue)
+
+        // We set the current language selection as preference. This is only needed to show the
+        // correct language setting in the preferences.
         try {
-            languagePreference.summary = languageArray[languagePreference.findIndexOfValue(oldLocale)]
+            languagePreference.summary = languageArray[languagePreference.findIndexOfValue(actualLocaleValue)]
         } catch (e: Exception) {
-            //
+            logger.error("Could not set language $actualLocale ($actualLocaleValue)", e)
         }
         languagePreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
             val newLocale = newValue?.toString()
-            if (newLocale != null && newLocale != oldLocale) {
-                ConfigUtils.updateLocaleOverride(newValue)
-                ConfigUtils.updateAppContextLocale(ThreemaApplication.getAppContext(), newLocale)
-                ConfigUtils.recreateActivity(activity)
+            if (newLocale != null && newLocale != actualLocaleValue) {
+                val newLocaleList = if (newLocale.isNotEmpty()) {
+                    LocaleListCompat.create(
+                        // Note that for zh-CN, there needs to be a 'hans' in the language tag and for
+                        // zh-TW, we need the 'hant' tag in the language tag to set the script properly.
+                        Locale.forLanguageTag(newLocale)
+                    )
+                } else {
+                    // We need to create an empty locale list. Otherwise the setting is not applied
+                    // correctly with app compat version 1.6.1 or lower.
+                    LocaleListCompat.getEmptyLocaleList()
+                }
+                AppCompatDelegate.setApplicationLocales(newLocaleList)
             }
             true
         }

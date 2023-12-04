@@ -37,4 +37,9 @@ public class GroupJoinRequestMessage extends AbstractProtobufMessage<GroupJoinRe
 	public Version getMinimumRequiredForwardSecurityVersion() {
 		return null;
 	}
+
+	@Override
+	public boolean exemptFromBlocking() {
+		return true;
+	}
 }

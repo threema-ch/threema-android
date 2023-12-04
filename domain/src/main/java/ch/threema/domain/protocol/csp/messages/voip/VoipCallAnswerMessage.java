@@ -74,4 +74,9 @@ public class VoipCallAnswerMessage extends VoipMessage {
 		final Byte action = answerData.getAction();
 		return action != null && action == VoipCallAnswerData.Action.ACCEPT;
 	}
+
+	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
 }

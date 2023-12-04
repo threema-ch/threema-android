@@ -24,9 +24,11 @@ package ch.threema.app.services.ballot;
 
 import android.util.SparseArray;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -354,7 +354,7 @@ public class BallotServiceImpl implements BallotService {
 		BallotModel existingModel = this.get(createMessage.getBallotId().toString(), createMessage.getBallotCreator());
 
 		if (existingModel != null) {
-			if (data.getDisplayType().ordinal() != existingModel.getDisplayType().ordinal()) {
+			if (data.getDisplayType() != null && existingModel.getDisplayType() != null && data.getDisplayType().ordinal() != existingModel.getDisplayType().ordinal()) {
 				throw new BadMessageException("Ballot display mode not allowed to change. Discarding message");
 			}
 			if (data.getState() == BallotData.State.CLOSED) {
@@ -430,14 +430,9 @@ public class BallotServiceImpl implements BallotService {
 
 		if(createMessage instanceof GroupBallotCreateMessage) {
 			GroupModel groupModel;
-			try {
-				groupModel = this.groupService.getGroup((GroupBallotCreateMessage) createMessage);
-				if (groupModel == null) {
-					throw new ThreemaException("invalid group");
-				}
-			} catch (SQLException e) {
-				logger.error("Exception", e);
-				throw new ThreemaException("cannot find group");
+			groupModel = this.groupService.getByGroupMessage((GroupBallotCreateMessage) createMessage);
+			if (groupModel == null) {
+				throw new ThreemaException("invalid group");
 			}
 			//link with group
 			this.link(groupModel, ballotModel);
@@ -994,14 +989,12 @@ public class BallotServiceImpl implements BallotService {
 						for (AbstractMessageModel m : messageModels) {
 							if (m != null) {
 								serviceManager.getMessageService().remove(m);
+								logger.debug("Removing ballot message {} of type {}", m.getApiMessageId() != null ? m.getApiMessageId() : m.getId(), m.getBallotData().getType());
 							}
 						}
-						ListenerManager.ballotListeners.handle(new ListenerManager.HandleListener<BallotListener>() {
-							@Override
-							public void handle(BallotListener listener) {
-								if (listener.handle(ballotModel)) {
-									listener.onRemoved(ballotModel);
-								}
+						ListenerManager.ballotListeners.handle(listener -> {
+							if (listener.handle(ballotModel)) {
+								listener.onRemoved(ballotModel);
 							}
 						});
 					}

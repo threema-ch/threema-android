@@ -116,7 +116,7 @@
     <string name="id_scanned">Kimlik tarandı</string>
     <string name="id_mismatch">Bu kimlik için taradığınız genel anahtar, sunucunun sakladığı anahtarla eşleşmiyor. Bu, birisinin taranan kodu değiştirdiği ve anahtarın güvenilir olmaması gerektiği anlamına gelir.</string>
     <string name="scan_successful">Kimlik başarıyla tarandı ve kişi şimdi doğrulandı.</string>
-    <string name="scan_duplicate">Bu kimlik zaten tarandı ve doğrulandı.</string>
+    <string name="scan_duplicate">Bu kimlik önceden kontrol edildi ve doğrulandı.</string>
     <string name="linked_email">E-posta</string>
     <string name="linked_mobile">Cep telefonu numarası</string>
     <string name="public_nickname">Takma isim</string>
@@ -205,6 +205,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="unlinking_email">E-posta bağlantısı kaldırılıyor</string>
     <string name="unlink">Bağlantıyı kaldır</string>
     <string name="threema_version">Sürüm</string>
+    <string name="threema_version_code">Sürüm Kodu</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">İnternet bağlantısı yok, geçersiz dışa aktarılan kimlik verileri veya yanlış şifre</string>
     <string name="prefs_header_other">Diğer</string>
     <string name="an_error_occurred">Hata oluştu</string>
@@ -220,7 +221,6 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="ringtone_none">Sessiz</string>
     <string name="no_camera_installed">Kullanılabilir kamera yok</string>
     <string name="save_message_action">Kaydet</string>
-    <string name="saving_media">Medya kaydediliyor</string>
     <string name="file_is_not_a_video">Seçilen dosya bir video değil</string>
     <string name="masterkey_is_unlocked">Ana anahtarın kilidi açıldı</string>
     <string name="file_too_large">Dosya maksimum %1$d MB daha büyük</string>
@@ -655,6 +655,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="backup_data">Veri Yedekleme</string>
     <string name="really_leave_group_admin_message">Bu grubun yöneticisi sizsiniz. Şimdi bırakırsanız yöneticisiz kalacak. Diğer üyeler hala sohbet edebilecek, ancak değişiklikler artık mümkün olmayacak</string>
     <string name="action_delete_group">Grubu sil</string>
+    <string name="action_leave_and_delete_group">Gruptan ayrıl ve sil</string>
+    <string name="action_dissolve_and_delete_group">Grubu dağıt ve sil</string>
     <string name="delete_my_group_message">Bu grubu gerçekten tamamen silmek istiyor musunuz? Tüm iletiler kaldırılacak ve kalan üyeler artık grubu kullanamaz.</string>
     <string name="error_out_of_memory">Bu işlemi tamamlamak için yeterli bellek yok</string>
     <string name="configure">Yapılandır</string>
@@ -1008,11 +1010,12 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="open_in_maps_app">Haritalar uygulamasında aç</string>
     <string name="delete">Sil</string>
     <string name="continue_recording">Kayda devam et</string>
-    <string name="whatsnew_title">%1$s 5.1\'e hoş geldiniz</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Bu sürüm, uygulamanın güvenliğine, kullanılabilirliğine ve modernizasyonuna odaklanmaktadır.</p>
-<p>Yoğun talep üzerine uygulama, Android 12 ile sunulan \"Material You\" paradigmasını tamamen destekleyecek şekilde tamamen yeniden tasarlandı. İsteğe bağlı \"Dynamic Colors\" ayarı, uygulamanın kişiselleştirilmiş renk düzeninize uyum sağlamasına olanak tanır.</p>
-<p>Mükemmel İletme Gizliliği, en son %1$s sürümünün kurulu olduğu tüm kişiler için artık varsayılan olarak etkindir.</p>
-<p>Diğer iyileştirmeler arasında, uygulama arka plana alındığında bir bildirimde çalmaya devam eden yeni bir sesli mesaj oynatıcı ve izin isterken yeni kullanıcı rehberliği yer alıyor.</p>]]></string>
+    <string name="whatsnew_title">%1$s 5.2\'deki yenilikler nelerdir?</string>
+    <string name="whatsnew_headline"><![CDATA[<p>Yıldızlı mesajlar: Daha sonra kolayca bulmak için, önemli mesajlara uzun süre dokunarak bir yıldızla işaretleyin.</p>
+<p>Otomatik Silme: Sohbetlerinizin seçilebilir bir süre sonra otomatik olarak temizlenmesini sağlayın. Mesajlar için otomatik silme işlevi depolama yönetiminde etkinleştirilebilir.</p>
+<p>Diğer sayısız iyileştirme ve optimizasyon.</p>]]></string>
+    <string name="whatsnew2_title">(boş bir cümle)</string>
+    <string name="whatsnew2_body">(boş bir cümle)</string>
     <string name="tap_to_start">%s şimdi başlatmak için buraya dokunun.</string>
     <string name="two_years">2 yıl</string>
     <string name="invalid_backup_path">Geçersiz yedekleme dizini</string>
@@ -1429,6 +1432,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="group_call_inactivity_left">Hareketsizlik nedeniyle grup araması sonlandırıldı</string>
     <string name="missing_permission_external_storage">Dosya kopyalanamıyor. Aşağıdaki adımları deneyin:\n1. Ayarlar uygulamasını açın.\n2. \"Uygulamalar\"a gidin ve \"Özel uygulama erişimi\"ni seçin.\n3. “Tüm dosyalara erişim” seçeneğine dokunun.\n4. Sağ üst köşedeki üç noktaya dokunun ve \"Sistemi göster\"i seçin.\n5. \"Harici Depolama\" üzerine dokunun ve \"Tüm dosyaları yönetmek için erişime izin ver\" seçeneğinin verildiğinden emin olun.\n6. Yedeği tekrar geri yüklemeyi deneyin.</string>
     <string name="forward_security_downgraded_status_message">Sohbet ortağınızın uygulama sürümü desteklemediği için Mükemmel İletme Gizliliği bu görüşmede devre dışı bırakıldı.</string>
+    <string name="forward_security_illegal_session_status_message">Mükemmel İletme Gizliliği oturumu geçersizlik nedeniyle sıfırlandı.</string>
     <string name="crop_image_title">Görüntüyü kırp</string>
     <string name="scroll_to_bottom">Aşağı kaydır</string>
     <string name="scroll_to_top">Yukarı kaydır</string>
@@ -1453,10 +1457,45 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="permission_microphone">Mikrofon</string>
     <string name="permission_read_phone_state">Telefon</string>
     <string name="permission_enable_in_settings_rationale">Lütfen ayarlarda izni etkinleştirin. \"İzinler\"i seçin ve ardından \"%s\"ye izin verin.</string>
+    <string name="post_notification_permission_rationale">Bildirimleri almak için %s bildirimleri göstermesine izin vermelisiniz.</string>
     <string name="group_name">Grup adı</string>
+    <string name="star_message">Mesajı yıldızla</string>
+    <string name="starred_message">Yıldızlı mesaj</string>
+    <string name="starred">Yıldızlı</string>
+    <string name="starred_messages">Yıldızlı mesajlar</string>
+    <string name="sorting">Sıralama</string>
+    <string name="sort_by">Sırala...</string>
+    <string name="newest_first">en yeni ilk</string>
+    <string name="oldest_first">en eski̇ i̇lk</string>
+    <string name="no_starred_messages">Yıldızlı mesaj bulunamadı. Bir mesajı yıldızlamak için üzerine uzun dokunun ve yıldız düğmesini seçin.</string>
+    <string name="remove_all_stars">Tüm yıldızları kaldır</string>
+    <string name="remove_star">Yıldızı kaldır</string>
     <string name="samsung_permission_problem_explain">%1$s, bir sistem uygulamasındaki eksik izin nedeniyle medya dosyalarına erişemiyor. Düzeltmek için, takip eden ekranda \"Harici Depolama\"nın yanındaki anahtarın etkinleştirildiğinden emin olun ve %1$s\'yi yeniden başlatın.</string>
     <string name="min_n_chars">min. %d karakter</string>
     <string name="prefs_title_grant_bluetooth_permission">Bluetooth izni ver</string>
+    <string name="safe_managed_password_confirm">Threema Safe yedeklemeniz için yönetilen bir parola tanımlanmıştır.\n\nBu şifreyi kullanmak ister misiniz? Şüpheye düştüğünüz durumlarda lütfen yöneticinize başvurun.</string>
+    <string name="safe_managed_new_password_confirm">Threema Safe yedeklemeniz için yeni bir yönetilen parola tanımlandı.\n\nMevcut parolayı bu yeni, yönetilen parola ile değiştirmek ister misiniz? Şüphe duyduğunuzda lütfen yöneticinize başvurun.</string>
+    <string name="real_not_now">Şimdi değil</string>
+    <string name="add_contact_in">Kişi ekle...</string>
+    <string name="really_remove_all_stars">Gerçekten tüm mesajların yıldızını kaldırmak istiyor musunuz?</string>
+    <string name="prefs_sum_storage_management">Belleği yönet ve mesajları veya medyayı sil</string>
+    <string name="delete_automatically">Otomatik olarak sil</string>
+    <string name="keep_messages">Mesajları sakla:</string>
+    <string name="clean_up_manually">Manuel olarak temizle</string>
+    <string name="forever">Sonsuza dek</string>
+    <string name="autodelete_explain">\"Sonsuza kadar\" dışında bir değere ayarlanırsa, gelen ve giden mesajlar yalnızca belirtilen süre boyunca saklanır ve ardından geri alınamaz şekilde silinir. Buna okunmamış ve gönderilmemiş mesajlar da dahildir. Not gruplarındaki ve yıldızla işaretlenmiş mesajlar asla silinmez. Silme işlemi periyodik olarak gerçekleşir ve aktivasyondan hemen sonra gerçekleşmesi gerekmez.</string>
+    <string name="autodelete_confirm">Mesajlar %s sonra otomatik olarak silinecektir. Devam edelim mi?</string>
+    <string name="autodelete_activated">Otomatik silme etkinleştirildi.</string>
+    <string name="autodelete_disabled">Otomatik silme devre dışı.</string>
+    <string name="set_by_administrator">Değer yönetici tarafından ayarlanmıştır ve değiştirilemez.</string>
+    <string name="action_dissolve_group">Grubu dağıt</string>
+    <string name="really_dissolve_group">Grubu sadece feshederseniz, artık kimse gruba yeni mesaj gönderemez ve grup artık yönetilemez. Feshedilen grup yine de klonlanabilir.</string>
+    <string name="status_orphaned_group">*Bu grup öksüz kaldı*\nGrubu oluşturan kişi gruptan ayrılmıştır ve grup artık sürdürülemez. Kalan üyelerden biri yeni yönetici olmak için grubu klonlayabilir (grup ayrıntıları aracılığıyla).</string>
+    <string name="group_orphaned_notice">Grubu oluşturan kişi gruptan ayrıldığı için bu grup öksüz kaldı. Yeni yönetici olmak için lütfen bu grubu klonlayın.</string>
+    <string name="group_not_a_member_notice">Artık bu grubun bir parçası değilsiniz ve bu grubu kullanamazsınız.</string>
+    <string name="group_dissolved_notice">Bu grup dağıtılmıştır ve artık kullanılamaz.</string>
+    <string name="directory_request_failed">Dizin isteği başarısız oldu. Tekrar deneyin.</string>
+    <string name="add_shortcut_exists">Bu hedef için bir kısayol zaten mevcut.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>
@@ -1484,6 +1523,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <plurals name="file_saved">
         <item quantity="one">%d dosya başarıyla kaydedildi.</item>
         <item quantity="other">%d dosya başarıyla kaydedildi.</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="one">Medya kaydediliyor</item>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Anketi sil</item>
@@ -1518,8 +1561,12 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
         <item quantity="other">%d oturum çalışıyor</item>
     </plurals>
     <plurals name="really_delete_outgoing_request">
-        <item quantity="one">Kaynak dil bu çoğul biçimi içermiyor</item>
-        <item quantity="other">Kaynak dil bu çoğul biçimi içermiyor</item>
+        <item quantity="one">Gerçekten %d grup isteğini silmek istiyor musunuz?
+Talebin iptal edilmeyeceğini ve yine de kabul edilebileceğinizi veya talep edilebileceğinizi unutmayın.
+istek henüz yanıtlanmadıysa.</item>
+        <item quantity="other">Gerçekten %d grup isteğini silmek istiyor musunuz?
+Talebin iptal edilmeyeceğini ve yine de kabul edilebileceğinizi veya talep edilebileceğinizi unutmayın.
+istek henüz yanıtlanmadıysa.</item>
     </plurals>
     <plurals name="really_delete_incoming_request">
         <item quantity="one">%d grup isteğini gerçekten silmek istiyor musunuz?

@@ -23,9 +23,6 @@ package ch.threema.domain.protocol.api;
 
 import android.annotation.SuppressLint;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
@@ -45,7 +42,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +57,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.ThreemaKDF;
 import ch.threema.base.utils.Base64;
@@ -102,7 +100,6 @@ public class APIConnector {
 	private final @NonNull
 	SSLSocketFactoryFactory sslSocketFactoryFactory;
 
-	private final SecureRandom random;
 	private final boolean isWork;
 
 	private int matchCheckInterval = DEFAULT_MATCH_CHECK_INTERVAL;
@@ -110,7 +107,7 @@ public class APIConnector {
 	private Version version;
 	private String language;
 	protected ServerAddressProvider serverAddressProvider; // needs to be protected for test
-	private boolean ipv6;
+	private final boolean ipv6;
 
 	private APIAuthenticator authenticator;
 
@@ -120,7 +117,6 @@ public class APIConnector {
 		boolean isWork,
 		@NonNull SSLSocketFactoryFactory sslSocketFactoryFactory
 	) {
-		this.random = new SecureRandom();
 		this.version = new Version();
 		this.ipv6 = ipv6;
 		this.serverAddressProvider = serverAddressProvider;
@@ -221,23 +217,27 @@ public class APIConnector {
 	 *
 	 * @param identity the desired identity
 	 * @return information related to identity
-	 * @throws FileNotFoundException if identity not found
-	 * @throws Exception             on network error
+	 * @throws ThreemaException        if the server url cannot be fetched on onprem builds
+	 * @throws HttpConnectionException on http error
+	 * @throws NetworkException        on network error
 	 */
-	public FetchIdentityResult fetchIdentity(String identity) throws FileNotFoundException, Exception {
-		String responseStr = doGet(getServerUrl() + "identity/" + identity);
-		JSONObject jsonResponse = new JSONObject(responseStr);
+	public FetchIdentityResult fetchIdentity(String identity) throws ThreemaException, NetworkException, HttpConnectionException {
+		try {
+			String responseStr = doGet(getServerUrl() + "identity/" + identity);
+			JSONObject jsonResponse = new JSONObject(responseStr);
 
-		FetchIdentityResult result = new FetchIdentityResult();
-		result.publicKey = Base64.decode(jsonResponse.getString("publicKey"));
-		result.featureLevel = jsonResponse.optInt("featureLevel");
-		result.featureMask = jsonResponse.optInt("featureMask");
-		result.identity = jsonResponse.getString("identity");
-		result.state = jsonResponse.optInt("state");
-		result.type = jsonResponse.optInt("type");
-		return result;
+			FetchIdentityResult result = new FetchIdentityResult();
+			result.publicKey = Base64.decode(jsonResponse.getString("publicKey"));
+			result.featureLevel = jsonResponse.optInt("featureLevel");
+			result.featureMask = jsonResponse.optInt("featureMask");
+			result.identity = jsonResponse.getString("identity");
+			result.state = jsonResponse.optInt("state");
+			result.type = jsonResponse.optInt("type");
+			return result;
+		} catch (JSONException | IOException e) {
+			throw new NetworkException(e);
+		}
 	}
-
 
 	/**
 	 * Fetch identity-related information for given identities.
@@ -247,7 +247,7 @@ public class APIConnector {
 	 * @throws FileNotFoundException if identity not found
 	 * @throws Exception             on network error
 	 */
-	public ArrayList<FetchIdentityResult> fetchIdentities(ArrayList<String> identities) throws Exception {
+	public ArrayList<FetchIdentityResult> fetchIdentities(List<String> identities) throws Exception {
 		if (identities == null || identities.size() < 1) {
 			throw new ThreemaException("empty identities array");
 		}
@@ -748,7 +748,12 @@ public class APIConnector {
 
 		String url = getServerUrl() + "auth_token";
 
-		JSONObject result = new JSONObject(doGet(url));
+		JSONObject result;
+		try {
+			result = new JSONObject(doGet(url));
+		} catch (HttpConnectionException e) {
+			throw new IOException(e);
+		}
 		token = result.getString("authToken");
 		if (authTokenStore != null) {
 			authTokenStore.storeToken(token);
@@ -1548,7 +1553,7 @@ public class APIConnector {
 	 *
 	 * If provided also append the mdm source to the version.
 	 * This might seem to not be the appropriate location for this information
-	 * but has been specified in ANDR-2213 and https://confluence.threema.ch/display/EN/Update+Work+Info.
+	 * but has been specified in ANDR-2213 and "Update Work Info" in documentation.
 	 *
 	 * @param mdmSource The source(s) of the active mdm parameters
 	 * @return The version string
@@ -1583,7 +1588,7 @@ public class APIConnector {
 		this.language = language;
 	}
 
-	protected String doGet(String urlString) throws IOException {
+	protected String doGet(String urlString) throws IOException, HttpConnectionException {
 		URL url = new URL(urlString);
 
 		HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
@@ -1605,6 +1610,12 @@ public class APIConnector {
 
 		try {
 			return IOUtils.toString(urlConnection.getInputStream(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			try {
+				throw new HttpConnectionException(urlConnection.getResponseCode(), e);
+			} catch (IOException ignored) {
+				throw e;
+			}
 		} finally {
 			urlConnection.disconnect();
 		}
@@ -1821,5 +1832,25 @@ public class APIConnector {
 			this.turnPassword = turnPassword;
 			this.expirationDate = expirationDate;
 		}
+	}
+
+	public static class NetworkException extends Exception {
+		public NetworkException(Throwable cause) {
+			super(cause);
+		}
+	}
+
+	public static class HttpConnectionException extends Exception {
+		private final int errorCode;
+
+		public HttpConnectionException(int errorCode, Exception exception) {
+			super(exception);
+			this.errorCode = errorCode;
+		}
+
+		public int getErrorCode() {
+			return errorCode;
+		}
+
 	}
 }

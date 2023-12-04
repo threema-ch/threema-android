@@ -26,11 +26,16 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.util.Log;
 
+import com.neilalexander.jnacl.NaCl;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
+import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.UiDevice;
@@ -38,11 +43,122 @@ import androidx.test.uiautomator.Until;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.UserService;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.helpers.InMemoryIdentityStore;
+import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.GroupId;
+import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.GroupModel;
 
 import static org.junit.Assert.assertNotNull;
 
 public class TestHelpers {
 	private static final String TAG = "TestHelpers";
+
+	public static final TestContact TEST_CONTACT = new TestContact(
+		"XERCUKNS",
+		Utils.hexStringToByteArray("2bbc16092ff45ffcd0045c00f2f5e1e9597621f89360bbca23a2a2956b3c3b36"),
+		Utils.hexStringToByteArray("977aba4ab367041f6137afef69ab9676d445011ca7aca0455a5c64805b80b77a")
+	);
+
+	public static final class TestContact {
+		@NonNull
+		public final String identity;
+		@NonNull
+		public final byte[] publicKey;
+		@NonNull
+		public final byte[] privateKey;
+
+		public TestContact(@NonNull String identity) {
+			this.identity = identity;
+			publicKey = new byte[NaCl.PUBLICKEYBYTES];
+			privateKey = new byte[NaCl.SECRETKEYBYTES];
+
+			NaCl.genkeypair(publicKey, privateKey);
+		}
+
+		public TestContact(@NonNull String identity, @NonNull byte[] publicKey, @NonNull byte[] privateKey) {
+			this.identity = identity;
+			this.publicKey = publicKey;
+			this.privateKey = privateKey;
+		}
+
+		@NonNull
+		public Contact getContact() {
+			return new Contact(this.identity, this.publicKey);
+		}
+
+		@NonNull
+		public ContactModel getContactModel() {
+			return new ContactModel(this.identity, this.publicKey);
+		}
+
+		@NonNull
+		public IdentityStoreInterface getIdentityStore() {
+			return new InMemoryIdentityStore(
+				this.identity,
+				"",
+				this.privateKey,
+				null
+			);
+		}
+	}
+
+	public static final class TestGroup {
+		private int localGroupId = -1;
+
+		@NonNull
+		public final GroupId apiGroupId;
+
+		@NonNull
+		public final TestContact groupCreator;
+
+		@NonNull
+		public final List<TestContact> members;
+
+		@NonNull
+		public final String groupName;
+
+		@Nullable
+		public final byte[] profilePicture;
+
+		public TestGroup(
+			@NonNull GroupId apiGroupId,
+			@NonNull TestContact groupCreator,
+			@NonNull List<TestContact> members,
+			@NonNull String groupName
+		) {
+			this(apiGroupId, groupCreator, members, groupName, null);
+		}
+
+		public TestGroup(
+			@NonNull GroupId apiGroupId,
+			@NonNull TestContact groupCreator,
+			@NonNull List<TestContact> members,
+			@NonNull String groupName,
+			@Nullable byte[] profilePicture
+		) {
+			this.apiGroupId = apiGroupId;
+			this.groupCreator = groupCreator;
+			this.members = members;
+			this.groupName = groupName;
+			this.profilePicture = profilePicture;
+		}
+
+		@NonNull
+		public GroupModel getGroupModel() {
+			return new GroupModel()
+				.setApiGroupId(apiGroupId)
+				.setCreatedAt(new Date())
+				.setName(this.groupName)
+				.setCreatorIdentity(this.groupCreator.identity)
+				.setId(localGroupId);
+		}
+
+		public void setLocalGroupId(int localGroupId) {
+			this.localGroupId = localGroupId;
+		}
+	}
 
 	/**
 	 * Open the notification area and wait for the notifications to become visible.
@@ -87,12 +203,13 @@ public class TestHelpers {
 		}
 
 		// Otherwise, create identity
-		final String identity = "XERCUKNS";
-		final byte[] publicKey = Utils.hexStringToByteArray("2bbc16092ff45ffcd0045c00f2f5e1e9597621f89360bbca23a2a2956b3c3b36");
-		final byte[] privateKey = Utils.hexStringToByteArray("977aba4ab367041f6137afef69ab9676d445011ca7aca0455a5c64805b80b77a");
-		userService.restoreIdentity(identity, privateKey, publicKey);
-		Log.i(TAG, "Test identity restored: " + identity);
-		return identity;
+		userService.restoreIdentity(
+			TEST_CONTACT.identity,
+			TEST_CONTACT.privateKey,
+			TEST_CONTACT.publicKey
+		);
+		Log.i(TAG, "Test identity restored: " + TEST_CONTACT.identity);
+		return TEST_CONTACT.identity;
 	}
 
 	public static void clearLogcat() {

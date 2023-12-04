@@ -97,6 +97,7 @@ public abstract class Tags {
 	public static final String TAG_MESSAGE_IS_QUEUED = "isqueued";
 	public static final String TAG_MESSAGE_CAPTION = "caption";
 	public static final String TAG_MESSAGE_QUOTED_MESSAGE_ID = "quoted_message_apiid";
+	public static final String TAG_MESSAGE_DISPLAY_TAGS = "display_tags";
 
 	public static final String TAG_DISTRIBUTION_LIST_ID = "id";
 	public static final String TAG_DISTRIBUTION_LIST_NAME = "distribution_list_name";

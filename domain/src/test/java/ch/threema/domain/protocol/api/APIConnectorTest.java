@@ -61,7 +61,6 @@ public class APIConnectorTest {
 		when(addressProvider.getWorkServerUrl(anyBoolean())).thenReturn("https://api-work.threema.ch/");
 
 		setField(connector, APIConnector.class.getDeclaredField("serverAddressProvider"), addressProvider);
-		setField(connector, APIConnector.class.getDeclaredField("random"), new SecureRandom());
 		return connector;
 	}
 

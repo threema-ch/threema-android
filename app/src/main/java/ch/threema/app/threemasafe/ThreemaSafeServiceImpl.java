@@ -1001,7 +1001,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 						}
 
 						if (!groupModel.isDeleted()) {
-							if (groupService.isGroupOwner(groupModel)) {
+							if (groupService.isGroupCreator(groupModel)) {
 								groupService.sendSync(groupModel);
 							} else {
 								groupService.requestSync(creatorIdentity, groupModel.getApiGroupId());
@@ -1340,27 +1340,27 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 		for (final GroupModel groupModel : groupService.getAll(new GroupService.GroupFilter() {
 			@Override
-			public boolean sortingByDate() {
+			public boolean sortByDate() {
 				return false;
 			}
 
 			@Override
-			public boolean sortingByName() {
+			public boolean sortByName() {
 				return false;
 			}
 
 			@Override
-			public boolean sortingAscending() {
+			public boolean sortAscending() {
 				return false;
 			}
 
 			@Override
-			public boolean withDeleted() {
+			public boolean includeDeletedGroups() {
 				return true;
 			}
 
 			@Override
-			public boolean withDeserted() {
+			public boolean includeLeftGroups() {
 				return true;
 			}
 		})) {

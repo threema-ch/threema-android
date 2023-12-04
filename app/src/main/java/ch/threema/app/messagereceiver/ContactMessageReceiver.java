@@ -436,7 +436,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	}
 
 	@Override
-	public List<MessageModel> loadMessages(MessageService.MessageFilter filter) throws SQLException {
+	public List<MessageModel> loadMessages(MessageService.MessageFilter filter) {
 		return databaseServiceNew.getMessageModelFactory().find(
 			contactModel.getIdentity(),
 				filter);
@@ -584,14 +584,6 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	@Override
 	public String[] getIdentities() {
 		return new String[]{contactModel.getIdentity()};
-	}
-
-	@Override
-	public String[] getIdentities(int requiredFeature) {
-		if(ThreemaFeature.hasFeature(contactModel.getFeatureMask(), requiredFeature)) {
-			return new String[] {contactModel.getIdentity()};
-		}
-		return new String[0];
 	}
 
 	@Override

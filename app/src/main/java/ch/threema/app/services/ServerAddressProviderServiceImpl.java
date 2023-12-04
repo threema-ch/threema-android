@@ -140,6 +140,11 @@ public class ServerAddressProviderServiceImpl implements ServerAddressProviderSe
 			public int getWebOverrideSaltyRtcPort() throws ThreemaException {
 				return 0;
 			}
+
+			@Override
+			public byte[] getThreemaPushPublicKey() throws ThreemaException {
+				return BuildConfig.THREEMA_PUSH_PUBLIC_KEY;
+			}
 		};
 	}
 

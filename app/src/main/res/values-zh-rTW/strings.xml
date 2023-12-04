@@ -211,6 +211,7 @@
     <string name="unlinking_email">正在解除連結電子郵件</string>
     <string name="unlink">解除連結</string>
     <string name="threema_version">版本</string>
+    <string name="threema_version_code">版本號</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">無法連線至網際網路，無效的ID匯出資料或錯誤的密碼</string>
     <string name="prefs_header_other">其他</string>
     <string name="an_error_occurred">發生錯誤</string>
@@ -226,7 +227,6 @@
     <string name="ringtone_none">靜音</string>
     <string name="no_camera_installed">沒有可用的攝影機</string>
     <string name="save_message_action">儲存</string>
-    <string name="saving_media">正在儲存媒體</string>
     <string name="file_is_not_a_video">選定的檔案不是影片</string>
     <string name="masterkey_is_unlocked">主密鑰已解鎖</string>
     <string name="file_too_large">檔案大於最大大小 %1$dMB</string>
@@ -686,6 +686,8 @@ Threema 支援的所有表情符號。</string>
     <string name="really_leave_group_admin_message">您是這個群組的管理員。如果您現在離開這個群組，這個群組將會無人管理。
 其他成員仍然可以正常聊天，但是離開群組之後不能復原動作。</string>
     <string name="action_delete_group">刪除群組</string>
+    <string name="action_leave_and_delete_group">離開並刪除群組</string>
+    <string name="action_dissolve_and_delete_group">解散並刪除群組</string>
     <string name="delete_my_group_message">你確定要完全刪除這個群組嗎？所有訊息將被刪除，剩下的成員將無法再使用這個群組。</string>
     <string name="error_out_of_memory">沒有足夠的記憶體來完成此操作</string>
     <string name="configure">配置</string>
@@ -1039,12 +1041,12 @@ Threema 支援的所有表情符號。</string>
     <string name="open_in_maps_app">在地圖應用程式中開啟</string>
     <string name="delete">刪除</string>
     <string name="continue_recording">繼續錄音</string>
-    <string name="whatsnew_title">歡迎使用 %1$s 5.1</string>
-    <string name="whatsnew_headline"><![CDATA[
-<p>此版本著重於應用程式的安全性、可用性和現代化。</p>
-<p>應大眾要求，此應用程式經過徹底重新設計，以完全支援 Android 12 推出的 Material You 規格設計。可選用的「動態色彩」設定可讓應用程式符合您的個人化配色風格。</p>
-<p>現在預設為安裝了最新 %1$s 版本的所有聯絡人，啟用完全正向保密。</p>
-<p>其他改進包括新的語音訊息播放器（當應用程式在背景執行時，語音訊息繼續在通知中播放）以及請求權限時的新使用者指南。</p> ]]></string>
+    <string name="whatsnew_title">%1$s 5.2 有哪些新功能？</string>
+    <string name="whatsnew_headline"><![CDATA[<p>為訊息加上星號：為方便日後找出訊息，長按即可為重要訊息加星號。</p>
+<p>自動刪除對話：在選定的時間段後自動清理對話。對話自動刪除功能可在「儲存管理」中啟用。</p>
+<p>這次更新還有大量其他改進和最佳化。</p>]]></string>
+    <string name="whatsnew2_title">" "</string>
+    <string name="whatsnew2_body">" "</string>
     <string name="tap_to_start">點擊這裡立即開啟 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">無效的備份路徑</string>
@@ -1393,7 +1395,7 @@ Threema 支援的所有表情符號。</string>
     <string name="forward_security_cleared">與此聯絡人的完全正向保密對話已被清除</string>
     <string name="message_without_forward_security">您收到一則沒有完全正向保密的訊息，您可以驗證寄件者是否主動停用完美前向保密。</string>
     <string name="forward_security_established">此對話中的訊息現正受完全正向保密的保護。</string>
-    <string name="forward_security_established_rx">在此對話中收到的訊息現正受完全正向保密的保護。</string>
+    <string name="forward_security_established_rx">在此對話中的訊息現正受完全正向保密的保護。</string>
     <string name="forward_security_reset">這個之前已啟用「完全正向保密」的對話，現被重設保密狀態。如果聯絡人更換了裝置或重新安裝此應用程式，就會重設保密狀態。</string>
     <string name="forward_security_reset_simple">與此聯絡人的完全正向保密對話已重設。</string>
     <string name="forward_security_message_out_of_order">解密新收到的訊息發生錯誤，無法解密。</string>
@@ -1461,6 +1463,7 @@ Threema 支援的所有表情符號。</string>
     <string name="group_call_inactivity_left">因為長時間未使用，群組通話自動退出</string>
     <string name="missing_permission_external_storage">無法複製檔案，請嘗試以下步驟以解決問題：\n1. 開啟系統設定。\n2. 前往「應用程式」，然後按一下右上角的三個點，選擇「特殊存取」權限。\n3. 按一下「所有檔案存取」。\n4. 按一下右上角的三個點，選擇「顯示系統應用程式」。\n5. 按一下「外部儲存空間」並確保授予「允許存取所有檔案」權限。\n6. 再次嘗試還原備份。</string>
     <string name="forward_security_downgraded_status_message">因為對方使用的應用程式版本不支援「完全正向保密」功能，所以在此對話中已停用「完全正向保密」。</string>
+    <string name="forward_security_illegal_session_status_message">這個之前已啟用「完全正向保密」的工作階段，因無效而被重設保密狀態。</string>
     <string name="crop_image_title">裁剪圖片</string>
     <string name="scroll_to_bottom">回到頁尾</string>
     <string name="scroll_to_top">回到頁首</string>
@@ -1485,10 +1488,45 @@ Threema 支援的所有表情符號。</string>
     <string name="permission_microphone">麥克風</string>
     <string name="permission_read_phone_state">電話</string>
     <string name="permission_enable_in_settings_rationale">請在設定中啟用該權限。先選擇「權限」，然後按一下允許「%s」。</string>
+    <string name="post_notification_permission_rationale">如要接收通知，您必須允許 %s 顯示通知。</string>
     <string name="group_name">群組名稱</string>
+    <string name="star_message">為訊息加上星號</string>
+    <string name="starred_message">已加上星號的訊息</string>
+    <string name="starred">已加上星號</string>
+    <string name="starred_messages">已加上星號的訊息</string>
+    <string name="sorting">排序</string>
+    <string name="sort_by">按...排序</string>
+    <string name="newest_first">最新到最舊</string>
+    <string name="oldest_first">最舊到最新</string>
+    <string name="no_starred_messages">未找到已加星號的訊息。如要為訊息加上星號，請先長按該訊息，然後按一下星星按鈕。</string>
+    <string name="remove_all_stars">移除所有星號</string>
+    <string name="remove_star">移除星號</string>
     <string name="samsung_permission_problem_explain">由於「外部儲存空間」權限被停用，%1$s 無法取用媒體檔案。如要解決這個問題，請先在下一個畫面中允許「外部儲存空間」權限，然後重新啟動 %1$s。</string>
     <string name="min_n_chars">至少%d個字元</string>
     <string name="prefs_title_grant_bluetooth_permission">授予藍牙權限</string>
+    <string name="safe_managed_password_confirm">您的 Threema Safe 備份的管理密碼已設定。\n\n您想使用此密碼嗎？ 如有疑問，請聯絡您的管理員。</string>
+    <string name="safe_managed_new_password_confirm">您的 Threema Safe 備份的新管理密碼已設定。\n\n您想用這個新的管理密碼取代目前的密碼嗎？如有疑問，請聯絡您的管理員。</string>
+    <string name="real_not_now">現在不要</string>
+    <string name="add_contact_in">在…中新增聯絡人</string>
+    <string name="really_remove_all_stars">您確定要為所有訊息移除星號嗎？</string>
+    <string name="prefs_sum_storage_management">管理記憶體，同時刪除訊息或多媒體</string>
+    <string name="delete_automatically">自動刪除</string>
+    <string name="keep_messages">保留訊息期限：</string>
+    <string name="clean_up_manually">手動清理</string>
+    <string name="forever">永遠</string>
+    <string name="autodelete_explain">如果設定為「永遠」以外的其他選項，已收到和已傳送的訊息僅保留在已選定的時間內，之後訊息將徹底刪除，且不可還原，這包括未讀取和未傳送的訊息，已收藏和已加星號的訊息不會被刪除。自動刪除功能會定期執行，不一定是在啟用此功能後立即執行。</string>
+    <string name="autodelete_confirm">訊息將在%s後自動刪除。是否繼續？</string>
+    <string name="autodelete_activated">自動刪除已啟用。</string>
+    <string name="autodelete_disabled">自動刪除已停用。</string>
+    <string name="set_by_administrator">數值已由管理員設定，不可變更。</string>
+    <string name="action_dissolve_group">解散群組</string>
+    <string name="really_dissolve_group">如果您只是解散群組，沒有人可以再向此群組傳送新訊息，並且無法再對群組進行管理，而解散的群組仍然可以被克隆。</string>
+    <string name="status_orphaned_group">*此群組變成為孤立群組*\n由於群組建立者已離開群組，管理員職位現在為空缺。其餘成員應該克隆該群組（按一下群組詳細資料）以成為新的管理員。</string>
+    <string name="group_orphaned_notice">由於群組建立者已離開群組，請您克隆群組，成為新的管理員。</string>
+    <string name="group_not_a_member_notice">由於您不再是這個群組的成員，因此您不能再參與這個群組的討論。</string>
+    <string name="group_dissolved_notice">因於這個群組已解散，因此您不能再參與這個群組的討論。</string>
+    <string name="directory_request_failed">目錄要求失敗，請再試一次。</string>
+    <string name="add_shortcut_exists">此目標的捷徑已經存在。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>
@@ -1509,6 +1547,9 @@ Threema 支援的所有表情符號。</string>
     </plurals>
     <plurals name="file_saved">
         <item quantity="other">%d個檔案已成功儲存。</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="other">正在儲存媒體</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="other">移除投票</item>

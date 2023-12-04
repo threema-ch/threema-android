@@ -21,6 +21,7 @@
 
 package ch.threema.domain.protocol;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 
 public interface ServerAddressProvider {
@@ -45,4 +46,5 @@ public interface ServerAddressProvider {
 	String getWebServerUrl() throws ThreemaException;
 	String getWebOverrideSaltyRtcHost() throws ThreemaException;
 	int getWebOverrideSaltyRtcPort() throws ThreemaException;
+	@Nullable byte[] getThreemaPushPublicKey() throws ThreemaException;
 }

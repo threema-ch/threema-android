@@ -50,11 +50,6 @@ public class FileViewFragment extends MediaViewFragment {
 	}
 
 	@Override
-	public boolean inquireClose() {
-		return true;
-	}
-
-	@Override
 	protected void created(Bundle savedInstanceState) {
 		this.previewViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.preview_image));
 		this.filenameViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.filename_view));

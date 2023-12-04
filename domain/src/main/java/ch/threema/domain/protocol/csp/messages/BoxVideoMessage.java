@@ -80,6 +80,11 @@ public class BoxVideoMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public byte[] getBody() {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 

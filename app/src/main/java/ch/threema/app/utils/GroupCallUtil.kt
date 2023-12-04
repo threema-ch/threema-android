@@ -47,7 +47,6 @@ import ch.threema.storage.models.GroupModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallUtil")
 
@@ -177,6 +176,7 @@ private fun launchActivity(context: Context, groupModel: GroupModel, otherMember
     }
 }
 
-fun qualifiesForGroupCalls(groupService: GroupService, groupModel: GroupModel): Boolean {
-    return ConfigUtils.isGroupCallsEnabled() && groupService.countMembers(groupModel) > 1
-}
+fun qualifiesForGroupCalls(groupService: GroupService, groupModel: GroupModel): Boolean =
+    ConfigUtils.isGroupCallsEnabled()                    // group calls are enabled
+            && groupService.countMembers(groupModel) > 1 // there is more than one member
+            && groupService.isGroupMember(groupModel)    // the user is a member of the group

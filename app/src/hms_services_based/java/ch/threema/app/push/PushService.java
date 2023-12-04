@@ -24,7 +24,7 @@ package ch.threema.app.push;
 import android.content.Context;
 import android.text.format.DateUtils;
 
-import com.huawei.agconnect.config.AGConnectServicesConfig;
+import com.huawei.agconnect.AGConnectOptionsBuilder;
 import com.huawei.hms.aaid.HmsInstanceId;
 import com.huawei.hms.api.ConnectionResult;
 import com.huawei.hms.api.HuaweiMobileServicesUtil;
@@ -62,7 +62,7 @@ public class PushService extends HmsMessageService {
 	}
 
 	public static void deleteToken(Context context) {
-		String appId = AGConnectServicesConfig.fromContext(context).getString(APP_ID_CONFIG_FIELD);
+		String appId = new AGConnectOptionsBuilder().build(context).getString(APP_ID_CONFIG_FIELD);
 		try {
 			HmsInstanceId.getInstance(ThreemaApplication.getAppContext()).deleteToken(appId, TOKEN_SCOPE);
 			PushUtil.sendTokenToServer(context,"", ProtocolDefines.PUSHTOKEN_TYPE_NONE);

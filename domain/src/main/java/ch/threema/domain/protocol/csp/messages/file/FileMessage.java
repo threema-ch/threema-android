@@ -59,6 +59,11 @@ public class FileMessage extends AbstractMessage
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public void setData(FileData fileData) {
 		this.fileData = fileData;
 	}

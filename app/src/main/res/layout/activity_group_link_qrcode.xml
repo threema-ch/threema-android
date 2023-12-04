@@ -46,7 +46,7 @@
 				android:paddingBottom="@dimen/qrcode_min_margin">
 
 				<ch.threema.app.ui.SquareImageView
-					android:id="@+id/image_view"
+					android:id="@+id/thumbnail_view"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
 					android:adjustViewBounds="true"

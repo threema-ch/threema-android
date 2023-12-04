@@ -21,18 +21,33 @@
 
 package ch.threema.app.processors;
 
+import static ch.threema.app.services.GroupService.CommonGroupReceiveStepsResult.SUCCESS;
+import static ch.threema.app.services.GroupService.CommonGroupReceiveStepsResult.SYNC_REQUEST_SENT;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import ch.threema.app.exceptions.NotAllowedException;
+import ch.threema.app.groupcontrol.csp.IncomingGroupDeleteProfilePictureTask;
+import ch.threema.app.groupcontrol.csp.IncomingGroupLeaveTask;
+import ch.threema.app.groupcontrol.csp.IncomingGroupNameTask;
+import ch.threema.app.groupcontrol.csp.IncomingGroupSetProfilePictureTask;
+import ch.threema.app.groupcontrol.csp.IncomingGroupSetupTask;
+import ch.threema.app.groupcontrol.csp.IncomingGroupSyncRequestTask;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
@@ -46,12 +61,16 @@ import ch.threema.app.services.group.GroupJoinResponseService;
 import ch.threema.app.services.group.IncomingGroupJoinRequestService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageDiskSizeUtil;
+import ch.threema.app.utils.PushUtil;
 import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.services.VoipStateService;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.ServerAddressProvider;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
@@ -91,12 +110,11 @@ import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.ServerMessageModel;
 
-import static ch.threema.app.services.GroupService.CommonGroupReceiveStepsResult.SUCCESS;
-import static ch.threema.app.services.GroupService.CommonGroupReceiveStepsResult.SYNC_REQUEST_SENT;
-
 public class MessageProcessor implements MessageProcessorInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageProcessor");
 
+	@NonNull
+	private final ServiceManager serviceManager;
 	private final MessageService messageService;
 	private final ContactService contactService;
 	private final IdentityStoreInterface identityStore;
@@ -112,10 +130,12 @@ public class MessageProcessor implements MessageProcessorInterface {
 	private final NotificationService notificationService;
 	private final ForwardSecurityMessageProcessor forwardSecurityMessageProcessor;
 	private final GroupCallManager groupCallManager;
+	private final ServerAddressProvider serverAddressProvider;
 
 	private final List<AbstractMessage> pendingMessages = new ArrayList<>();
 
 	public MessageProcessor(
+		@NonNull ServiceManager serviceManager,
 		MessageService messageService,
 		ContactService contactService,
 		IdentityStoreInterface identityStore,
@@ -130,8 +150,10 @@ public class MessageProcessor implements MessageProcessorInterface {
 		NotificationService notificationService,
 		VoipStateService voipStateService,
 		ForwardSecurityMessageProcessor forwardSecurityMessageProcessor,
-		GroupCallManager groupCallManager) {
-
+		GroupCallManager groupCallManager,
+		ServerAddressProvider serverAddressProvider
+	) {
+		this.serviceManager = serviceManager;
 		this.messageService = messageService;
 		this.contactService = contactService;
 		this.identityStore = identityStore;
@@ -147,6 +169,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 		this.voipStateService = voipStateService;
 		this.forwardSecurityMessageProcessor = forwardSecurityMessageProcessor;
 		this.groupCallManager = groupCallManager;
+		this.serverAddressProvider = serverAddressProvider;
 	}
 
 	@NonNull
@@ -155,15 +178,20 @@ public class MessageProcessor implements MessageProcessorInterface {
 	public ProcessIncomingResult processIncomingMessage(MessageBox boxmsg) {
 		AbstractMessage msg;
 		try {
-			if (ConfigUtils.isWorkBuild() && preferenceService.isBlockUnknown()) {
-				contactService.createWorkContact(boxmsg.getFromIdentity());
+			// Special case: Web Client wakeup
+			//
+			// Note: Yes, this is nastily hacked in but the Web Client will die, so this can be removed completely.
+			if (boxmsg.getFromIdentity().equals("*3MAPUSH")) {
+				return processWebPushMessage(boxmsg);
 			}
 
-			// Check first, if contact of incoming message is a already known.
-			// This will throw MissingPublicKeyException if contact is blocked or fetching failed.
-			final boolean fetchKeyIfMissing = true;
-			MessageCoder messageCoder = new MessageCoder( this.contactStore, this.identityStore);
-			msg = messageCoder.decode(boxmsg, fetchKeyIfMissing);
+			// First, we need to ensure we have the public key of the sender
+			contactService.fetchAndCacheContact(boxmsg.getFromIdentity());
+
+			// Try to decode the message. At this point we have the public key of the sender either
+			// stored or cached in the contact store.
+			MessageCoder messageCoder = new MessageCoder(this.contactStore, this.identityStore);
+			msg = messageCoder.decode(boxmsg);
 
 			if (logger.isInfoEnabled()) {
 				logger.info(
@@ -175,17 +203,6 @@ public class MessageProcessor implements MessageProcessorInterface {
 				);
 			}
 
-			//check if sender is on blacklist
-			if (!(msg instanceof AbstractGroupMessage)) {
-				if (this.blackListService != null && this.blackListService.has(msg.getFromIdentity())) {
-					logger.debug("Direct message from {}: Contact blacklisted. Ignoring", msg.getFromIdentity());
-					//ignore message of blacklisted member
-					return ProcessIncomingResult.processed(msg.getType(), null);
-				}
-			}
-
-			this.contactService.setActive(msg.getFromIdentity());
-
 			PeerRatchetIdentifier peerRatchet = null;
 
 			if (msg instanceof ForwardSecurityEnvelopeMessage) {
@@ -195,7 +212,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 				}
 
 				// Decapsulate PFS message
-				final Contact contact = this.contactService.getByIdentity(msg.getFromIdentity());
+				final Contact contact = contactStore.getContactForIdentityIncludingCache(msg.getFromIdentity());
 				if (contact == null) {
 					logger.debug("Ignoring FS message from unknown identity {}", msg.getFromIdentity());
 					return ProcessIncomingResult.processed(null);
@@ -219,6 +236,18 @@ public class MessageProcessor implements MessageProcessorInterface {
 				);
 			} else {
 				forwardSecurityMessageProcessor.warnIfMessageWithoutForwardSecurityReceived(msg);
+			}
+
+			// Abort processing the message when the sender is blocked and the message is not
+			// exempted from blocking.
+			if (isBlocked(msg.getFromIdentity()) && !msg.exemptFromBlocking()) {
+				logger.info(
+					"Message {} from {} will be discarded: Contact is implicitly or explicitly blocked.",
+					msg.getMessageId(),
+					msg.getFromIdentity()
+				);
+				// Ignore message of blacklisted member
+				return ProcessIncomingResult.processed(msg.getType(), null);
 			}
 
 			if (msg instanceof TypingIndicatorMessage) {
@@ -259,28 +288,85 @@ public class MessageProcessor implements MessageProcessorInterface {
 			return ProcessIncomingResult.processed(msg.getType(), peerRatchet);
 
 		} catch (MissingPublicKeyException e) {
-			if(this.preferenceService.isBlockUnknown()) {
-				//its ok, return true and save nothing
-				return ProcessIncomingResult.processed(null);
-			}
-
-			if(this.blackListService != null && this.blackListService.has(boxmsg.getFromIdentity())) {
-				//its ok, a black listed identity, save NOTHING
-				return ProcessIncomingResult.processed(null);
-			}
-
 			logger.error("Missing public key", e);
-			return ProcessIncomingResult.failed();
-
+			return ProcessIncomingResult.processed(null);
 		} catch (BadMessageException e) {
 			logger.error("Bad message", e);
 			logger.warn("Message {} error: invalid - dropping msg.", boxmsg.getMessageId());
 			return ProcessIncomingResult.processed(null);
-
+		} catch (APIConnector.NetworkException e) {
+			logger.error("Could not process message {} due to an network error", boxmsg.getMessageId());
+			// As we have a network error, we do not mark the message as processed to restart the
+			// connection.
+			return ProcessIncomingResult.failed();
+		} catch (APIConnector.HttpConnectionException e) {
+			logger.error("Could not process message {} due to http error {}", boxmsg.getMessageId(), e.getErrorCode());
+			// As we have a network error, we do not mark the message as processed to restart the
+			// connection.
+			return ProcessIncomingResult.failed();
 		} catch (Exception e) {
 			logger.error("Unknown exception while processing BoxedMessage", e);
-			return ProcessIncomingResult.failed();
+			// Mark the message as processed, as retrying to process it later does not make sense
+			// due to forward security. In this case we may lose a message, but we would lose it
+			// anyways due to forward security. Returning failed instead of processed would restart
+			// the connection and we would potentially run into the same problem.
+			return ProcessIncomingResult.processed(null);
 		}
+	}
+
+	private ProcessIncomingResult processWebPushMessage(@NonNull MessageBox boxmsg) throws BadMessageException, ThreemaException {
+		// This code is mostly a copy of the essential parts of the MessageCoder. It's ugly and
+		// should be removed when the web client is gone.
+
+		final byte[] publicKey = serverAddressProvider.getThreemaPushPublicKey();
+		if (publicKey == null) {
+			throw new BadMessageException("Cannot handle message from *3MAPUSH, public key not configured");
+		}
+
+		if (!boxmsg.getToIdentity().equals(identityStore.getIdentity())) {
+			throw new BadMessageException("Message is not for own identity, cannot decode");
+		}
+
+		// Decrypt. We use hard-coded public key here and the sender is never added as a contact.
+		byte[] payload = identityStore.decryptData(boxmsg.getBox(), boxmsg.getNonce(), publicKey);
+		if (payload == null) {
+			throw new BadMessageException("Decryption of message from " + boxmsg.getFromIdentity() + " failed");
+		}
+		if (payload.length == 1) {
+			throw new BadMessageException("Empty message received");
+		}
+		int padbytes = payload[payload.length - 1] & 0xFF;
+		int realDataLength = payload.length - padbytes;
+		if (realDataLength < 1) {
+			throw new BadMessageException("Bad message padding");
+		}
+
+		// Ensure the message is `web-session-resume`
+		int type = (payload[0] & 0xff);
+		if (type != ProtocolDefines.MSGTYPE_WEB_SESSION_RESUME) {
+			throw new BadMessageException("Bad type for web push message: " + type);
+		}
+
+		// Decode the payload, assumed to be in the format described here:
+		// https://github.com/threema-ch/push-relay/tree/master#push-payload
+		Map<String, String> data = new HashMap<>();
+		try {
+			JSONObject object = new JSONObject(new String(payload, 1, realDataLength - 1, StandardCharsets.UTF_8));
+			data.put("wcs", object.getString("wcs"));
+			data.put("wct", String.valueOf(object.getLong("wct")));
+			data.put("wcv", String.valueOf(object.getInt("wcv")));
+			if (object.has("wca")) {
+				data.put("wca", object.getString("wca"));
+			}
+		} catch (JSONException e) {
+			throw new BadMessageException("Bad web push message payload: " + e.getMessage());
+		}
+
+		// Forward it to the push util and we're done.
+		//
+		// IMPORTANT: This assumes that the PushUtil recognises this as a web push (i.e. by checking for the "wcs" key).
+		PushUtil.processRemoteMessage(data);
+		return ProcessIncomingResult.processed(null);
 	}
 
 	private ProcessIncomingResult processTypingIndicatorMessage(@NonNull TypingIndicatorMessage msg, @Nullable PeerRatchetIdentifier peerRatchet) {
@@ -369,6 +455,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 			logger.trace("processAbstractMessage {}", msg.getMessageId());
 			//try to update public nickname
 			this.contactService.updatePublicNickName(msg);
+			this.contactService.setActive(msg.getFromIdentity());
 
 			//check available size on device..
 			long usableSpace = this.fileService.getInternalStorageFree();
@@ -382,15 +469,23 @@ public class MessageProcessor implements MessageProcessorInterface {
 				return ProcessingResult.FAILED;
 			}
 
+			if (!(msg instanceof AbstractGroupMessage) && contactService.getByIdentity(msg.getFromIdentity()) == null) {
+				contactService.createContactByIdentity(msg.getFromIdentity(), true);
+				contactService.updatePublicNickName(msg);
+			}
+
 			boolean processingSuccessful = false;
 
 			if(msg instanceof AbstractGroupMessage) {
 				if(msg instanceof GroupCreateMessage) {
 					//new group or sync it!
-					GroupService.GroupCreateMessageResult result = this.groupService.processGroupCreateMessage(
-							(GroupCreateMessage) msg);
+					ProcessingResult result = new IncomingGroupSetupTask(
+						(GroupCreateMessage) msg,
+						serviceManager
+					).run();
 
-					if(result.success() && result.getGroupModel() != null) {
+					if (result == ProcessingResult.SUCCESS
+						&& groupService.getByGroupMessage((AbstractGroupMessage) msg) != null) {
 						//process unprocessed message
 						synchronized (this.pendingMessages) {
 							Iterator<AbstractMessage> i = this.pendingMessages.iterator();
@@ -411,35 +506,37 @@ public class MessageProcessor implements MessageProcessorInterface {
 							}
 						}
 					}
-
-					processingSuccessful = result.success();
+					return result;
 				}
 				else if(msg instanceof GroupRenameMessage) {
-					if (groupService.runCommonGroupReceiveSteps((AbstractGroupMessage) msg) == SUCCESS) {
-						processingSuccessful = this.groupService.renameGroup((GroupRenameMessage)msg);
-					} else {
-						return ProcessingResult.IGNORED;
-					}
+					return new IncomingGroupNameTask(
+						(GroupRenameMessage) msg,
+						serviceManager
+					).run();
 				}
 				else if(msg instanceof GroupSetPhotoMessage) {
-					if (groupService.runCommonGroupReceiveSteps((AbstractGroupMessage) msg) == SUCCESS) {
-						processingSuccessful = this.groupService.updateGroupPhoto((GroupSetPhotoMessage) msg);
-					} else {
-						return ProcessingResult.IGNORED;
-					}
+					return new IncomingGroupSetProfilePictureTask(
+						(GroupSetPhotoMessage) msg,
+						serviceManager
+					).run();
 				}
 				else if(msg instanceof GroupDeletePhotoMessage) {
-					if (groupService.runCommonGroupReceiveSteps((AbstractGroupMessage) msg) == SUCCESS) {
-						processingSuccessful = this.groupService.deleteGroupPhoto((GroupDeletePhotoMessage) msg);
-					} else {
-						return ProcessingResult.IGNORED;
-					}
+					return new IncomingGroupDeleteProfilePictureTask(
+						(GroupDeletePhotoMessage) msg,
+						serviceManager
+					).run();
 				}
 				else if(msg instanceof GroupLeaveMessage) {
-					processingSuccessful = this.groupService.removeMemberFromGroup((GroupLeaveMessage) msg);
+					return new IncomingGroupLeaveTask(
+						(GroupLeaveMessage) msg,
+						serviceManager
+					).run();
 				}
 				else if(msg instanceof GroupRequestSyncMessage) {
-					processingSuccessful = this.groupService.processRequestSync((GroupRequestSyncMessage) msg);
+					return new IncomingGroupSyncRequestTask(
+						(GroupRequestSyncMessage) msg,
+						serviceManager
+					).run();
 				}
 				else if (msg instanceof GroupCallControlMessage) {
 					if (groupService.runCommonGroupReceiveSteps((AbstractGroupMessage) msg) == SUCCESS) {
@@ -512,7 +609,7 @@ public class MessageProcessor implements MessageProcessorInterface {
 				processingSuccessful = this.messageService.processIncomingContactMessage(msg);
 			}
 
-			return processingSuccessful ? ProcessingResult.SUCCESS : ProcessingResult.FAILED;
+			return processingSuccessful ? ProcessingResult.SUCCESS : ProcessingResult.IGNORED;
 		}
 		catch (FileNotFoundException f) {
 			//do nothing
@@ -525,7 +622,16 @@ public class MessageProcessor implements MessageProcessorInterface {
 		}
 		catch (Exception e) {
 			logger.error("Unknown exception", e);
-			return ProcessingResult.FAILED;
+			if (ConfigUtils.isTestBuild()) {
+				// Restart the connection in test builds. The message will be processed again when
+				// the connection has been established again. Note that this may lead to infinite
+				// reconnection loops. Therefore we only enable this in test builds.
+				return ProcessingResult.FAILED;
+			} else {
+				// Simply drop the message if processing it fails. With forward security we won't be
+				// able to decrypt the message again anyways.
+				return ProcessingResult.IGNORED;
+			}
 		}
 	}
 
@@ -539,6 +645,16 @@ public class MessageProcessor implements MessageProcessorInterface {
 	public void processServerError(String s, boolean b) {
 		ServerMessageModel msg = new ServerMessageModel(s, ServerMessageModel.TYPE_ERROR);
 		this.messageService.saveIncomingServerMessage(msg);
+	}
+
+	private boolean isBlocked(@NonNull String identity) {
+		// Return true, if the identity is explicitly blocked
+		if (blackListService != null && blackListService.has(identity)) {
+			return true;
+		}
+
+		// If not explicitly blocked, check if it is implicitly blocked
+		return contactService.getByIdentity(identity) == null && preferenceService.isBlockUnknown();
 	}
 
 

@@ -195,10 +195,15 @@ public class BallotWizardActivity extends ThreemaActivity {
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		int currentItem = pager.getCurrentItem();
 		if (currentItem == 0) {
-			super.onBackPressed();
+			finish();
 		} else {
 			pager.setCurrentItem(currentItem - 1);
 		}

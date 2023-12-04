@@ -81,7 +81,8 @@
 		<Preference
 			android:key="@string/preferences__storage_management"
 			android:icon="@drawable/ic_storage_outline"
-			android:title="@string/storage_management"/>
+			android:title="@string/storage_management"
+			android:summary="@string/prefs_sum_storage_management" />
 
 	</PreferenceCategory>
 

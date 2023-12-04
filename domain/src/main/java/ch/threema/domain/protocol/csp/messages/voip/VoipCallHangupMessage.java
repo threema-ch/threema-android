@@ -74,4 +74,9 @@ public class VoipCallHangupMessage extends VoipMessage {
 		// Hangup messages should persist in the message queue
 		return false;
 	}
+
+	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
 }

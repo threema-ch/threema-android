@@ -221,7 +221,6 @@ de continuar.</string>
     <string name="ringtone_none">Silenciós</string>
     <string name="no_camera_installed">No hi ha disponible una càmera adequada</string>
     <string name="save_message_action">Desar</string>
-    <string name="saving_media">Desant multimèdia</string>
     <string name="file_is_not_a_video">El fitxer seleccionat no és un vídeo</string>
     <string name="masterkey_is_unlocked">La clau mestra està desbloquejada</string>
     <string name="file_too_large">El fitxer és més gran que el màxim de %1$d MB</string>
@@ -1342,5 +1341,9 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <plurals name="selection_counter_label">
         <item quantity="one">%d imatge seleccionada</item>
         <item quantity="other">%d imatges seleccionades</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="one">Desant multimèdia</item>
+        <item quantity="other"></item>
     </plurals>
 </resources>

@@ -53,6 +53,11 @@ public class GroupDeletePhotoMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return true;
+	}
+
+	@Override
 	public byte[] getBody() {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

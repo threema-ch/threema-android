@@ -374,11 +374,16 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		if (actionMode != null) {
 			actionMode.finish();
 		} else {
-			super.onBackPressed();
+			finish();
 		}
 	}
 

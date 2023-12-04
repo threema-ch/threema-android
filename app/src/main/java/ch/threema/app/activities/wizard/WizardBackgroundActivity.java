@@ -71,7 +71,12 @@ public abstract class WizardBackgroundActivity extends ThreemaAppCompatActivity 
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		// catch back key
 	}
 

@@ -75,7 +75,7 @@ public class EmptyChatAsyncTask extends AsyncTask<Void, Integer, Integer> {
 	protected void onPreExecute() {
 		if (!quiet) {
 			isCancelled = false;
-			CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.emptying_chat, 0, R.string.cancel, 100);
+			CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.emptying_chat, R.string.cancel, 100);
 			dialog.setOnCancelListener((dialog1, which) -> isCancelled = true);
 			dialog.show(fragmentManager, DIALOG_TAG_EMPTYING_CHAT);
 		}

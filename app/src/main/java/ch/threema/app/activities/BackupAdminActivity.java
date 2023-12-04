@@ -21,26 +21,27 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.services.PreferenceService.LockingMech_NONE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.material.tabs.TabLayout;
-
-import org.slf4j.Logger;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.fragments.BackupDataFragment;
 import ch.threema.app.services.DeadlineListService;
-import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.BackupThreemaSafeFragment;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.utils.AnimationUtil;
@@ -49,8 +50,6 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
-
-import static ch.threema.app.services.PreferenceService.LockingMech_NONE;
 
 public class BackupAdminActivity extends ThreemaToolbarActivity {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupAdminActivity");
@@ -102,7 +101,7 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
 			noticeLayout.setVisibility(View.VISIBLE);
 			findViewById(R.id.close_button).setOnClickListener(v -> {
 				preferenceService.setBackupWarningDismissedTime(System.currentTimeMillis());
-				AnimationUtil.collapse(noticeLayout);
+				AnimationUtil.collapse(noticeLayout, null, true);
 			});
 		} else {
 			findViewById(R.id.notice_layout).setVisibility(View.GONE);

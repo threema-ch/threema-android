@@ -102,7 +102,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	public void remove(String key) {
 		SharedPreferences.Editor e = this.sharedPreferences.edit();
 		e.remove(key);
-		e.commit();
+		e.apply();
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 			//try to remove crypted file
 			this.removeCryptedFile(k);
 		}
-		e.commit();
+		e.apply();
 	}
 
 	@Override

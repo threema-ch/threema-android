@@ -104,11 +104,6 @@ public class AudioViewFragment extends MediaViewFragment implements Player.Liste
 	}
 
 	@Override
-	public boolean inquireClose() {
-		return true;
-	}
-
-	@Override
 	protected void handleDecryptingFile() {
 		if (progressBarRef.get() != null) {
 			this.progressBarRef.get().setVisibility(View.VISIBLE);

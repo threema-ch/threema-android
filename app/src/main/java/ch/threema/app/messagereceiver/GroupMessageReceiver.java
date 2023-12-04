@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,8 +37,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupMessagingService;
 import ch.threema.app.services.GroupService;
@@ -52,7 +49,6 @@ import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
-import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.GroupLocationMessage;
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage;
@@ -66,7 +62,6 @@ import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupMessagePendingMessageIdModel;
 import ch.threema.storage.models.GroupModel;
@@ -282,7 +277,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	}
 
 	@Override
-	public List<GroupMessageModel> loadMessages(MessageService.MessageFilter filter) throws SQLException {
+	public List<GroupMessageModel> loadMessages(MessageService.MessageFilter filter) {
 		return databaseServiceNew.getGroupMessageModelFactory().find(
 			group.getId(),
 				filter);
@@ -410,21 +405,6 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 	public String[] getIdentities() {
 		return groupService.getGroupIdentities(group);
 	}
-
-	@Override
-	public String[] getIdentities(final int requiredFeature) {
-		List<GroupMemberModel> members = Functional.filter(groupService.getGroupMembers(group), (IPredicateNonNull<GroupMemberModel>) groupMemberModel -> {
-			ContactModel model = contactService.getByIdentity(groupMemberModel.getIdentity());
-			return model != null && ThreemaFeature.hasFeature(model.getFeatureMask(), requiredFeature);
-		});
-
-		String[] identities = new String[members.size()];
-		for(int p = 0; p < members.size(); p++) {
-			identities[p] = members.get(p).getIdentity();
-		}
-		return identities;
-	}
-
 
 	private boolean sendMessage(GroupMessagingService.CreateApiMessage createApiMessage, AbstractMessageModel messageModel) throws ThreemaException {
 		return sendMessage(createApiMessage, messageModel, null);

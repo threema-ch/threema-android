@@ -99,8 +99,8 @@
     <string name="please_wait">Prosím čakajte…</string>
     <string name="wizard_first_create_id">Vytváram Threema ID…</string>
     <string name="wizard1_sync_contacts">Synchronizujú sa kontakty…</string>
-    <string name="wizard2_email_hint">Zadajte vašu e-mailovú adresu</string>
-    <string name="wizard2_email_linking">Prepojenie e‑mailu s vašim ID</string>
+    <string name="wizard2_email_hint">Zadajte vašu emailovú adresu</string>
+    <string name="wizard2_email_linking">Prepojenie emailu s vašim ID</string>
     <string name="wizard2_phone_hint">Zadajte vaše telefónne číslo</string>
     <string name="wizard2_phone_number_confirm_title">Potvrďte číslo</string>
     <string name="wizard2_phone_number_confirm">Chystáme sa odoslať SMS na:\n\n%1$s\n\nJe toto číslo správne?</string>
@@ -117,14 +117,14 @@
     <string name="id_mismatch">Naskenovaný verejný kľúč sa nezhoduje s kľúčom, ktorý je uložený na serveri pre toto ID. To znamená, že niekto s naskenovaným kódom manipuloval a kľúč preto nie je možné považovať za dôveryhodný.</string>
     <string name="scan_successful">ID bolo úspešne zoskenované a kontakt je overený.</string>
     <string name="scan_duplicate">ID bolo úspešne zoskenované a skontrolované.</string>
-    <string name="linked_email">E-mail</string>
+    <string name="linked_email">Email</string>
     <string name="linked_mobile">Mobilné číslo</string>
     <string name="public_nickname">Prezývka</string>
     <string name="share_via">Zdieľať cez…</string>
     <string name="share_subject">%s konverzácia</string>
     <string name="message_delete_undo">Vrátiť späť</string>
     <string name="mobile_already_linked">Vaše Threema ID je už s týmto číslom mobilného telefónu prepojené</string>
-    <string name="email_already_linked">Vaše Threema ID je už s touto e-mailovou adresou prepojené</string>
+    <string name="email_already_linked">Vaše Threema ID je už s touto emailovou adresou prepojené</string>
     <string name="whoaaa">Oznámenie</string>
     <string name="really_delete_message_title">Vymazať správu</string>
     <string name="really_delete_thread">Vymazať konverzáciu</string>
@@ -159,7 +159,9 @@
     <string name="password_hint">Heslo</string>
     <string name="generating_backup_data">Generujú sa údaje zálohy</string>
     <string name="backup_id_title">Export vášho ID</string>
-    <string name="backup_id_summary">Textový reťazec zobrazený vyššie, alebo QR kód spolu s heslom, ktoré ste si zvolili, môže byť použitý k obnoveniu vášho ID na inom zariadení. Mali by ste ho skopírovať na vhodné miesto, zdieľať ho e-mailom, alebo naskenovať QR kód pomocou iného zariadenia.</string>
+    <string name="backup_id_summary">Textový reťazec zobrazený vyššie, alebo QR kód spolu s heslom, ktoré ste si zvolili,
+môže byť použitý k obnoveniu vášho ID na inom zariadení. Mali by ste ho skopírovať na vhodné miesto, zdieľať ho emailom,
+alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="support">Nápoveda</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">Nasledujúci textový reťazec spoločne so zvoleným heslom  je možné použiť k obnoveniu vášho Threema ID.</string>
@@ -201,9 +203,10 @@
     <string name="invalid_barcode">Neplatný typ čiarového kódu</string>
     <string name="expired_barcode">Platnosť kódu vypršala. Zoskenujte ho znovu priamo z aplikácie druhého užívateľa.</string>
     <string name="pending">Čaká sa</string>
-    <string name="unlinking_email">Odpojenie e-mailu</string>
+    <string name="unlinking_email">Odpojenie emailu</string>
     <string name="unlink">Odpojiť</string>
     <string name="threema_version">Verzia</string>
+    <string name="threema_version_code">Kód verzie</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Nemáte pripojenie k internetu, neplatnú zálohu vašeho ID, alebo nesprávne heslo</string>
     <string name="prefs_header_other">Iné</string>
     <string name="an_error_occurred">Vyskytla sa chyba</string>
@@ -219,7 +222,6 @@
     <string name="ringtone_none">Stíšiť</string>
     <string name="no_camera_installed">Fotoaparát nie je k dispozícii</string>
     <string name="save_message_action">Uložiť</string>
-    <string name="saving_media">Ukladajú sa média</string>
     <string name="file_is_not_a_video">Vybratý súbor nie je video</string>
     <string name="masterkey_is_unlocked">Hlavný kľúč je odomknutý</string>
     <string name="file_too_large">Súbor prekročil veľkosť %1$dMB</string>
@@ -401,8 +403,8 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="verification_level2_work_explain">Interný kontakt, vopred obsadený vašou organizáciou.</string>
     <string name="verification_level3_work_explain">Interný kontakt, ktorého identitu a verejný kľúč ste osobne skontrolovali zoskenovaním jeho QR kódu.</string>
     <string name="verification_level3_explain">Kontakt, ktorého identitu a verejný kľúč ste osobne skontrolovali zoskenovaním jeho QR kódu.</string>
-    <string name="verification_level2_explain">Kontakt, ktorého telefónne číslo a/alebo e-mailová adresa sa nachádza v zozname kontaktov.</string>
-    <string name="verification_level1_explain">Neznámy kontakt: buď tento kontakt nepripojil telefónne číslo ani e-mailovú adresu ku svojmu ID, alebo váš adresár neobsahuje detaily o tomto kontakte.</string>
+    <string name="verification_level2_explain">Kontakt, ktorého telefónne číslo a/alebo emailová adresa sa nachádza v zozname kontaktov.</string>
+    <string name="verification_level1_explain">Neznámy kontakt: buď tento kontakt nepripojil telefónne číslo ani emailovú adresu ku svojmu ID, alebo váš adresár neobsahuje detaily o tomto kontakte.</string>
     <string name="state_dialog_received">Prijaté</string>
     <string name="prefs_title_hide_screenshots">Zakázať snímky obrazovky a náhľad</string>
     <string name="prefs_summary_hide_screenshots">Nezobrazovať náhľady aplikácie v prehľade běžiacich aplikácií a znemožniť vytvárať snímky obrazovky</string>
@@ -541,7 +543,7 @@ https://myid.threema.ch/revoke v prípade, že ho stratíte alebo vám bude odcu
     <string name="prefs_sum_passphrase">Na odomknutie lokálneho úložiska sa vyžaduje heslo</string>
     <string name="prefs_title_masterkey_change_passphrase">Zmeniť heslo</string>
     <string name="storage_total">Miesto na ínternom úložisku</string>
-    <string name="storage_threema">Využité %s</string>
+    <string name="storage_threema">Využité aplik. %s</string>
     <string name="storage_total_free">Volné miesto</string>
     <string name="storage_total_in_use">Využité</string>
     <string name="one_year">1 rok</string>
@@ -615,10 +617,10 @@ Už ich nebude možné obnoviť.</string>
     <string name="new_wizard_nickname_explain">Vaši priatelia uvidia vašu prezývku vo svojich oznámeniach</string>
     <string name="new_wizard_hint_enter_nickname">Zadajte prezývku</string>
     <string name="new_wizard_help_your_friends_find_you">Pomôžte svojim priateľom, aby vás našli!</string>
-    <string name="new_wizard_link_mobile">Prepojte svoje mobilné číslo a/alebo e-mail s vašim Threema ID.</string>
+    <string name="new_wizard_link_mobile">Prepojte svoje mobilné číslo a/alebo email s vašim Threema ID.</string>
     <string name="new_wizard_link_mobile_only">Prepojte svoje mobiln\u00e9 \u010d\u00edslo do v\u00e1\u0161ho Threema ID.</string>
     <string name="new_wizard_hint_mobile_number">Mobilné číslo (voliteľné)</string>
-    <string name="new_wizard_hint_email">E-mail (voliteľné)</string>
+    <string name="new_wizard_hint_email">Email (voliteľné)</string>
     <string name="new_wizard_find_friends">Nájdite svojich priateľov na Threeme</string>
     <string name="new_wizard_sync_contacts_explain">Zapnite, aby ste videli, ktorí priatelia používajú Threemu.</string>
     <string name="new_wizard_done_title">Hotovo!\nJe všetko správne?</string>
@@ -628,13 +630,18 @@ Už ich nebude možné obnoviť.</string>
     <string name="contact_details_id_copied">ID bolo skopírované do schránky</string>
     <string name="contact_details_nickname_copied">Prezývka bola skopírovaná do schránky</string>
     <string name="new_wizard_use_id_as_nickname">Chcete použiť vaše Threema ID ako prezývku?</string>
-    <string name="new_wizard_phone_email_invalid">Telefónne číslo alebo e-mailová adresa, ktorú ste zadali, nie sú platné.\nOpravte to a pokračujte.\n</string>
+    <string name="new_wizard_phone_email_invalid">Telefónne číslo alebo emailová adresa, ktorú ste zadali, nie sú platné.\nOpravte to a pokračujte.</string>
     <string name="new_wizard_phone_invalid">Telefónne číslo, ktoré ste zadali, nie je platné.\nOpravte ho a pokračujte.</string>
     <string name="new_wizard_info_fingerprint">Posúvaním prstom po displeji vytvoríte náhodné údaje (tzv. entropia), které sa použijú k vygenerovaniu páru šifrovacích kľúčov zviazaných s vaším Threema ID. Dvojica šifrovacích kľúčov sa skládá z <b>verejného kľúča</b>, ktorý je distribuovaný vaším priateľom a zo <b>súkromého kľúča</b>, ktorý je bezpečne uložený len vo vašom zariadení. Správy, ktoré vám odošlú vaši priatelia budú zašifrované vaším verejným kľúčom. Tieto správy môže dešifrovať iba ten, kto vlastní súkromný kľúč, nikto iný.</string>
     <string name="new_wizard_info_id">Vytvorili jste dvojicu šifrovacích kľúčov. Verejný kľúč bol bezpečne prenesený na naše servery. Súkromný kľúč nikdy neopustí vaše zariadenie. Tým je zaistené, že nikto nepovolaný se nebude môcť dostať k vašim správam.</string>
-    <string name="new_wizard_info_sync_contacts">Pokiaľ túto možnosť povolíte, odošlú sa jednosmerne šifrované (hashe) e-mailové adresy a telefónne čísla na náš server. Tu sa porovnajú s kontaktmi ostatných užívateľov. Neukladáme žiadne údaje z vášho adresára.</string>
-    <string name="new_wizard_info_sync_contacts_dialog">Synchronizácia kontaktov vám pomôže automaticky nájsť priateľov. Ak súhlasíte, telefónne čísla a e-mailové adresy z vášho telefónneho zoznamu budú pred odoslaním na náš server zašifrované, aby sme vyhľadali zodpovedajúce kontakty. Absolútne žiadne údaje nebudú uložené ani zdieľané.\n\nChcete povoliť synchronizáciu kontaktov?</string>
-    <string name="new_wizard_info_link">Poskytnutím svojho telefónneho čísla a e-mailovej adresy môže Threema pomôcť vašim kontaktom automaticky pridať vaše ID do ich adresára, ak vás majú v zozname. Údaje budú jednosmerne šifrované (hashované) a uložené na našom serveri. Tento krok môžete preskočiť, ak chcete používať Threemu výlučne anonymne.</string>
+    <string name="new_wizard_info_sync_contacts">Pokiaľ túto možnosť povolíte, odošlú sa jednosmerne šifrované (hashe) emailové adresy a telefónne
+čísla na náš server. Tu sa porovnajú s kontaktmi ostatných užívateľov. Neukladáme
+ žiadne údaje z vášho adresára.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">Synchronizácia kontaktov vám pomôže automaticky nájsť priateľov. Ak súhlasíte, telefónne čísla a emailové adresy z vášho telefónneho zoznamu budú pred odoslaním na náš server zašifrované, aby sme vyhľadali zodpovedajúce kontakty. Absolútne žiadne údaje nebudú uložené ani zdieľané.\n\nChcete povoliť synchronizáciu kontaktov?</string>
+    <string name="new_wizard_info_link">Poskytnutím svojho telefónneho čísla a emailovej adresy môže Threema pomôcť vašim
+  kontaktom automaticky pridať vaše ID do ich adresára, ak vás majú v zozname. Údaje budú jednosmerne
+  šifrované (hashované) a uložené na našom serveri. Tento krok môžete preskočiť, ak chcete používať Threemu
+  výlučne anonymne.</string>
     <string name="new_wizard_info_link_phone_only">Poskytnutím svojho telefónneho čísla môže Threema pomôcť vašim kontaktom automaticky pridať vaše ID do ich adresára, ak vás majú v zozname. Číslo bude jednosmerne šifrované (hashované) a uložené na našom serveri. Tento krok môžete preskočiť, ak chcete používať Threemu výlučne anonymne.</string>
     <string name="new_wizard_info_nickname">Prezývka sa používa na niektorých zariadeniach pri push upozorneniach, alebo ako ďalšia možnosť, ako vás identifikovať užívateľom, ktorí vás nemajú vo svojom adresári. Doporučujeme zadať iba vaše krstné meno alebo pseudonym. Ak prezývku nenastavíte, použijeme vo východzom nastavení vaše Threema ID.</string>
     <string name="not_linked">neprepojené</string>
@@ -648,7 +655,9 @@ Už ich nebude možné obnoviť.</string>
     <string name="status_ballot_user_modified_vote">“%1$s” zmenil hlasovanie pre “%2$s”</string>
     <string name="status_ballot_all_votes">Hlasy pre anketu „%1$s“ sú kompletné</string>
     <string name="restore">Obnoviť</string>
-    <string name="new_wizard_anonymous_confirm">Nezadali ste ani číslo mobilného telefónu, ani e‑mailovú adresu, ktoré by boli prepojené s vašim Threema ID. Nebudete se zobrazovať v zozname kontaktov vašich priateľov. Naozaj chcete používať aplikáciu Threema anonymne?</string>
+    <string name="new_wizard_anonymous_confirm">Nezadali ste ani číslo mobilného telefónu, ani emailovú adresu, ktoré by
+  boli prepojené s vašim Threema ID. Nebudete se zobrazovať v zozname kontaktov vašich priateľov. Naozaj
+  chcete používať aplikáciu Threema anonymne?</string>
     <string name="new_wizard_anonymous_confirm_phone_only">Nezadali ste číslo mobilného telefónu, ktoré by bolo prepojené s vašim Threema ID. Nebudete se zobrazovať v zozname kontaktov vašich priateľov. Naozaj chcete používať aplikáciu Threema anonymne?</string>
     <string name="new_wizard_scan_id_backup">Alebo naskenujte QR zálohu vašeho ID</string>
     <string name="error_saving_file">Chyba pri ukladaní súboru. Skontrolujte povolenia..</string>
@@ -657,6 +666,8 @@ Už ich nebude možné obnoviť.</string>
     <string name="backup_data">Záloha údajov</string>
     <string name="really_leave_group_admin_message">Ste správcom tejto skupiny. Ak z nej teraz odídete, bude bez správcu. Všetci členovia budú môcť komunikovať, ale akékoľvek zmeny už nebudú možné.</string>
     <string name="action_delete_group">Odstrániť skupinu</string>
+    <string name="action_leave_and_delete_group">Opustiť a vymazať skupinu</string>
+    <string name="action_dissolve_and_delete_group">Rozpustiť a vymazať skupinu</string>
     <string name="delete_my_group_message">Naozaj chcete kompletne vymazať túto skupinu? Všetky správy budú odstránené a zostávajúci členovia už nebudú môcť túto skupinu využívať.</string>
     <string name="error_out_of_memory">Na dokončenie tejto akcie nie je dostatok pamäte</string>
     <string name="configure">Konfigurovať</string>
@@ -880,7 +891,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="safe_enter_password">Zadajte vaše heslo pre Trezor Threema</string>
     <string name="safe_threema_id">Vaše Threema ID</string>
     <string name="safe_restore_enter_id">Zadajte Threema ID, ktoré chcete obnoviť</string>
-    <string name="safe_search_id_title">Zadajte mobilné číslo, alebo e-mailovú adresu prepojenú s vašim ID</string>
+    <string name="safe_search_id_title">Zadajte mobilné číslo, alebo emailovú adresu prepojenú s vašim ID</string>
     <string name="safe_id_lookup">Vyhľadáva sa Threema ID</string>
     <string name="safe_no_id_found">Threema ID nenájdené</string>
     <string name="safe_no_backup_found">Na serveri nenájdená žiadna záloha. Skontrolujte ID a heslo.</string>
@@ -1011,13 +1022,12 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="open_in_maps_app">Otvoriť v aplikácii Mapy</string>
     <string name="delete">Odstrániť</string>
     <string name="continue_recording">Pokračovať v nahrávaní</string>
-    <string name="whatsnew_title">Vitajte v %1$s 5.1</string>
+    <string name="whatsnew_title">Čo je nové v %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
-  <p>Toto vydanie sa zameriava na bezpečnosť, použiteľnosť a modernizáciu aplikácie.</p>
-   <p>Na základe všeobecného dopytu bola aplikácia úplne prepracovaná, aby plne podporovala paradigmu „Material You“ uvedenú systémom Android 12. Voliteľné nastavenie „Dynamic Colors“ umožňuje aplikácii prispôsobiť sa vašej vlastnej farebnej schéme.</p>
-   <p>Perfect Forward Secrecy je teraz prioritne predvolené pre všetky kontakty, ktoré majú nainštalovanú najnovšiu verziu %1$s.</p>
-   <p>Ďalšie vylepšenia zahŕňajú nový prehrávač hlasových správ, ktorý pokračuje v prehrávaní v notifikácii, keď je aplikácia presunutá na pozadie, a nové pokyny pre používateľa pri žiadostiach o povolenie.</p>
-  ]]></string>
+<p>Hviezdičkové správy: </p> <p>Dôležité správy môžete označiť hviezdičkou dlhým ťuknutím, aby ste ich neskôr ľahko našli.</p>
+ <p>Automatické vymazanie: Po uplynutí zvoleného času môžete svoje konverzácie automaticky vyčistiť. Funkciu automatického mazania správ môžete aktivovať v správe úložiska.</p>
+  <p>Množstvo ďalších vylepšení a optimalizácií.</p>
+ ]]></string>
     <string name="tap_to_start">Kliknutím sem spustíte aplikáciu %s.</string>
     <string name="two_years">2 roky</string>
     <string name="invalid_backup_path">Neplatná cesta pre zálohu</string>
@@ -1434,6 +1444,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="group_call_inactivity_left">Skupinový hovor prerušený z dôvodu nečinnosti</string>
     <string name="missing_permission_external_storage">Súbor nie je možné skopírovať. Vyskúšajte nasledujúce kroky:\n1. Otvorte Nastavenia systému.\n2. Prejdite na „Aplikácie“ a kliknite na aplikáciu Threema\n3. Kliknite na „Povolenia“.\n4. Kliknite na \"Súbory a médiá\" a uistite sa, že má aplikácia povolený prístup k médiám.\n5. Skúste znova obnoviť zálohu.</string>
     <string name="forward_security_downgraded_status_message">Funkcia Perfect Forward Secrecy bola v tejto konverzácii zakázaná, pretože verzia aplikácie vášho partnera ju nepodporuje.</string>
+    <string name="forward_security_illegal_session_status_message">Relácia Perfect Forward Secrecy bola resetovaná z dôvodu neplatnosti.</string>
     <string name="crop_image_title">Orezať obrázok</string>
     <string name="scroll_to_bottom">Prejsť na koniec</string>
     <string name="scroll_to_top">Prejsť na začiatok</string>
@@ -1458,10 +1469,45 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="permission_microphone">Mikrofón</string>
     <string name="permission_read_phone_state">Telefón</string>
     <string name="permission_enable_in_settings_rationale">Udelte povolenie v nastaveniach. Vyberte „Povolenia“ a potom povoľte „%s“.</string>
+    <string name="post_notification_permission_rationale">Ak chcete prijímať notifikácie, musíte povoliť zobrazovanie notifikácií %s.</string>
     <string name="group_name">Názov skupiny</string>
+    <string name="star_message">Označiť správu</string>
+    <string name="starred_message">Označená správa</string>
+    <string name="starred">Označené</string>
+    <string name="starred_messages">Označené správy</string>
+    <string name="sorting">Triedenie</string>
+    <string name="sort_by">Triediť podľa...</string>
+    <string name="newest_first">od najnovších</string>
+    <string name="oldest_first">od najstarších</string>
+    <string name="no_starred_messages">Nenašli sa žiadne správy s hviezdičkou. Ak chcete správu označiť hviezdičkou, dlho na ňu ťuknite a vyberte tlačidlo s hviezdičkou.</string>
+    <string name="remove_all_stars">Odstrániť všetky hviezdičky</string>
+    <string name="remove_star">Odstrániť hviezdičku</string>
     <string name="samsung_permission_problem_explain">%1$s nemá prístup k mediálnym súborom z dôvodu chýbajúceho povolenia v systémovej aplikácii. Ak to chcete opraviť, skontrolujte, či je na nasledujúcej obrazovke zapnutý prepínač vedľa položky \"Externé úložisko\" a reštartujte %1$s.</string>
     <string name="min_n_chars">min. %d znakov</string>
     <string name="prefs_title_grant_bluetooth_permission">Udeliť povolenie Bluetooth</string>
+    <string name="safe_managed_password_confirm">Bolo definované spravované heslo pre zálohu Threema Safe.\n\nChcete toto heslo používať? V prípade pochybností sa obráťte na svojho správcu.</string>
+    <string name="safe_managed_new_password_confirm">Bolo definované nové spravované heslo pre zálohu Threema Safe.\n\nChcete nahradiť súčasné heslo týmto novým spravovaným heslom? V prípade pochybností sa obráťte na svojho správcu.</string>
+    <string name="real_not_now">Teraz nie</string>
+    <string name="add_contact_in">Pridať kontakt do...</string>
+    <string name="really_remove_all_stars">Naozaj chcete zrušiť hviezdičku u všetkých správ?</string>
+    <string name="prefs_sum_storage_management">Správa pamäte a odstraňovanie správ alebo médií</string>
+    <string name="delete_automatically">Odstrániť automaticky</string>
+    <string name="keep_messages">Ponechať správy po dobu:</string>
+    <string name="clean_up_manually">Vyčistiť ručne</string>
+    <string name="forever">Navždy</string>
+    <string name="autodelete_explain">Ak je nastavené na inú hodnotu ako \"navždy\", budú sa prichádzajúce a odchádzajúce správy uchovávať len počas zadaného času a potom sa nenávratne vymažú. To zahŕňa aj neprečítané a neodoslané správy. Správy v skupinách poznámok a správy označené hviezdičkou sa nikdy neodstránia. Proces vymazávania sa uskutočňuje pravidelne a nie nevyhnutne ihneď po aktivácii.</string>
+    <string name="autodelete_confirm">Správy sa automaticky vymažú po %s. Pokračovať?</string>
+    <string name="autodelete_activated">Automatické mazanie aktivované.</string>
+    <string name="autodelete_disabled">Automatické mazanie deaktivované.</string>
+    <string name="set_by_administrator">Hodnota bola nastavená správcom a nie je možné ju zmeniť.</string>
+    <string name="action_dissolve_group">Rozpustiť skupinu</string>
+    <string name="really_dissolve_group">Ak skupinu jednoducho rozpustíte, nikto už do nej nebude môcť posielať nové správy a nebude možné ju ďalej spravovať. Rozpustenú skupinu je stále možné klonovať.</string>
+    <string name="status_orphaned_group">*Táto skupina je osirelá*\nTvorca skupiny opustil skupinu a tá už nemôže byť ďalej udržiavaná. Jeden zo zostávajúcich členov môže skupinu klonovať (prostredníctvom podrobností o skupine) a stať sa novým správcom.</string>
+    <string name="group_orphaned_notice">Táto skupina je osirelá, pretože jej tvorca ju opustil. Klonujte túto skupinu, aby ste sa stali novým správcom.</string>
+    <string name="group_not_a_member_notice">Už nie ste súčasťou tejto skupiny a nemôžete ju ďalej používať.</string>
+    <string name="group_dissolved_notice">Táto skupina bola zrušená a už sa nedá používať.</string>
+    <string name="directory_request_failed">Žiadosť o zložku sa nepodarila. Skúste to znova.</string>
+    <string name="add_shortcut_exists">Odkaz pre tento cieľ už existuje.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">kontakty</item>
         <item quantity="many">kontakty</item>
@@ -1503,6 +1549,12 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
         <item quantity="many">%d súborov úspešne uložených.</item>
         <item quantity="one">%d súbor úspešne uložený.</item>
         <item quantity="other">%d súborov úspešne uložených.</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="few">Ukladajú sa %d mediálne súbory</item>
+        <item quantity="many">Ukladá sa %d mediálnych súborov</item>
+        <item quantity="one">Ukladajú sa média</item>
+        <item quantity="other">Ukladá sa %d mediálnych súborov</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="few">Odstrániť ankety</item>
@@ -1548,13 +1600,17 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     </plurals>
     <plurals name="really_delete_outgoing_request">
         <item quantity="few">Naozaj chcete odstrániť %d skupinové žiadosti?
-    Uvedomte si, že žiadosti nebudú odvolané a stále môžete byť akceptovaní alebo vyžiadaní,
-    ak žiadosti ešte neboli zodpovedané.</item>
+    Uvedomte si, že žiadosťi nebudú odvolané a stále môžete byť prijatý alebo vyžiadaný,
+    ak na žiadosti ešte nebolo odpovedané.</item>
         <item quantity="many">Naozaj chcete odstrániť %d skupinových žiadostí?
-    Uvedomte si, že žiadosti nebudú odvolané a stále môžete byť akceptovaní alebo vyžiadaní,
-    ak žiadosti ešte neboli zodpovedané.</item>
-        <item quantity="one">Naozaj chcete odstrániť %d skupinovú žiadosť? Uvedomte si, že žiadosť nebude odvolaná a ak na žiadosť ešte nebolo odpovedané, môžete byť stále prijatý alebo vyžiadaný.</item>
-        <item quantity="other">Naozaj chcete odstrániť %d skupinových žiadostí? Uvedomte si, že žiadosti nebudú odvolané a stále môžete byť akceptovaní alebo vyžiadaní, ak žiadosti ešte neboli zodpovedané.</item>
+    Uvedomte si, že žiadosťi nebudú odvolané a stále môžete byť prijatý alebo vyžiadaný,
+    ak na žiadosti ešte nebolo odpovedané.</item>
+        <item quantity="one">Naozaj chcete odstrániť %d skupinovú žiadosť?
+    Uvedomte si, že žiadosť nebude odvolaná a stále môžete byť prijatý alebo vyžiadaný,
+    ak na žiadosť ešte nebolo odpovedané.</item>
+        <item quantity="other">Naozaj chcete odstrániť %d skupinových žiadostí?
+    Uvedomte si, že žiadosťi nebudú odvolané a stále môžete byť prijatý alebo vyžiadaný,
+    ak na žiadosti ešte nebolo odpovedané.</item>
     </plurals>
     <plurals name="really_delete_incoming_request">
         <item quantity="few">Naozaj chcete odstrániť %d skupinové žiadosťi? Po odstránení nemôžete na žiadosti odpovedať.</item>

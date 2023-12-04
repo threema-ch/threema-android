@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import java.util.Map;
 
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.ClientInfo;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
@@ -62,10 +63,12 @@ public class ClientInfoRequestHandler extends MessageReceiver {
 	}
 
 	@AnyThread
-	public ClientInfoRequestHandler(MessageDispatcher dispatcher,
-	                                PreferenceService preferenceService,
-	                                Context appContext,
-	                                Listener listener) {
+	public ClientInfoRequestHandler(
+		MessageDispatcher dispatcher,
+		PreferenceService preferenceService,
+		Context appContext,
+		Listener listener
+	) {
 		super(Protocol.SUB_TYPE_CLIENT_INFO);
 		this.dispatcher = dispatcher;
 		this.preferenceService = preferenceService;
@@ -96,9 +99,9 @@ public class ClientInfoRequestHandler extends MessageReceiver {
 
 	private void respond() {
 		// Get the "current" Push Token from application
-		final String currentPushToken = this.preferenceService.getPushToken();
-		if (currentPushToken == null || currentPushToken.isEmpty()) {
-			logger.warn("Warning: Push token is null or empty");
+		String currentPushToken = this.preferenceService.getPushToken();
+		if (currentPushToken.isEmpty()) {
+			currentPushToken = null;
 		}
 		try {
 			final MsgpackObjectBuilder data = ClientInfo.convert(this.appContext, currentPushToken);

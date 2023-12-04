@@ -21,11 +21,13 @@
 
 package ch.threema.storage.factories;
 
+import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
+
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
-
-import android.database.Cursor;
+import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,8 +111,31 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 				});
 	}
 
-	public List<AbstractMessageModel> getMessagesByText(String text, boolean includeArchived) {
+	public List<AbstractMessageModel> getMessagesByText(@Nullable String text, boolean includeArchived, boolean starredOnly, boolean sortAscending) {
+		String displayClause, sortClause;
+		if (starredOnly) {
+			displayClause = " AND (displayTags & " + DISPLAY_TAG_STARRED + ") > 0 ";
+		} else {
+			displayClause = "";
+		}
+
+		if (sortAscending) {
+			sortClause = " ASC ";
+		} else {
+			sortClause = " DESC ";
+		}
+
 		if (includeArchived) {
+			if (text == null) {
+				return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+					"SELECT * FROM " + GroupMessageModel.TABLE +
+						" WHERE isStatusMessage = 0" +
+						displayClause +
+						" ORDER BY createdAtUtc" + sortClause +
+						"LIMIT 200",
+					new String[]{}));
+			}
+
 			return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
 				"SELECT * FROM " + GroupMessageModel.TABLE +
 					" WHERE ( ( body LIKE ? " +
@@ -123,13 +148,26 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 					MessageType.IMAGE.ordinal() + "," +
 					MessageType.FILE.ordinal() + ") ) )" +
 					" AND isStatusMessage = 0" +
-					" ORDER BY createdAtUtc DESC" +
-					" LIMIT 200",
+					displayClause +
+					" ORDER BY createdAtUtc" + sortClause +
+					"LIMIT 200",
 				new String[]{
 					"%" + text + "%",
 					"%" + text + "%"
 				}));
 		} else {
+			if (text == null) {
+				return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+					"SELECT * FROM " + GroupMessageModel.TABLE + " m" +
+						" INNER JOIN " + GroupModel.TABLE + " g ON g.id = m.groupId" +
+						" WHERE g.isArchived = 0" +
+						" AND m.isStatusMessage = 0" +
+						displayClause +
+						" ORDER BY m.createdAtUtc" + sortClause +
+						"LIMIT 200",
+					new String[]{}));
+			}
+
 			return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
 				"SELECT * FROM " + GroupMessageModel.TABLE + " m" +
 					" INNER JOIN " + GroupModel.TABLE + " g ON g.id = m.groupId" +
@@ -144,8 +182,9 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 					MessageType.IMAGE.ordinal() + "," +
 					MessageType.FILE.ordinal() + ") ) )" +
 					" AND m.isStatusMessage = 0" +
-					" ORDER BY m.createdAtUtc DESC" +
-					" LIMIT 200",
+					displayClause +
+					" ORDER BY m.createdAtUtc" + sortClause +
+					"LIMIT 200",
 				new String[]{
 					"%" + text + "%",
 					"%" + text + "%"
@@ -446,7 +485,8 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 						"`" + GroupMessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
 						"`" + GroupMessageModel.COLUMN_READ_AT +"` DATETIME ," +
 						"`" + GroupMessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 ," +
-						"`" + GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES +"` VARCHAR);",
+						"`" + GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES +"` VARCHAR ," +
+						"`" + GroupMessageModel.COLUMN_DISPLAY_TAGS +"` TINYINT DEFAULT 0 );",
 
 				//indices
 				"CREATE INDEX `m_group_message_outbox_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_OUTBOX + "` );",

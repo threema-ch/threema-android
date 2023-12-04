@@ -43,7 +43,7 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 	public TextView senderName;
 	public TextView dateView;
 	public View senderView;
-	public ImageView deliveredIndicator, datePrefixIcon;
+	public ImageView deliveredIndicator, datePrefixIcon, starredIcon;
 	public ImageView attachmentImage;
 	public MaterialCardView messageBlockView;
 	public ViewGroup contentView;

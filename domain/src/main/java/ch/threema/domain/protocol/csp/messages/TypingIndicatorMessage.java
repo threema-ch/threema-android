@@ -49,6 +49,11 @@ public class TypingIndicatorMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public byte[] getBody() {
 		byte[] body = new byte[1];
 		body[0] = typing ? (byte)1 : (byte)0;

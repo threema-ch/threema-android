@@ -23,6 +23,15 @@
 		app:iconTint="?attr/colorOnSurface"
 		app:showAsAction="never"/>
 
+	<item
+		android:id="@+id/starred_messages"
+		android:orderInCategory="16"
+		android:icon="@drawable/ic_star_outline_24dp"
+		android:title="@string/starred_messages"
+		android:visible="true"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="never"/>
+
 	</group>
 
 	<group

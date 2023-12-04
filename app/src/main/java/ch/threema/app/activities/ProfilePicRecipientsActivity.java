@@ -106,7 +106,12 @@ public class ProfilePicRecipientsActivity extends MemberChooseActivity {
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		this.menuNext(getSelectedContacts());
 	}
 }

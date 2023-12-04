@@ -30,6 +30,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
@@ -181,13 +182,18 @@ public class PushUtil {
 		PollingHelper pollingHelper = new PollingHelper(appContext, "fcm");
 
 		ConnectivityManager mgr = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = mgr.getActiveNetworkInfo();
-		if (networkInfo != null && networkInfo.getDetailedState() == NetworkInfo.DetailedState.BLOCKED) {
+		boolean isBlocked;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			isBlocked = mgr.getRestrictBackgroundStatus() == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
+		} else {
+			NetworkInfo networkInfo = mgr.getActiveNetworkInfo();
+			isBlocked = networkInfo != null && networkInfo.getDetailedState() == NetworkInfo.DetailedState.BLOCKED;
+		}
+		if (isBlocked) {
 			logger.warn("Network blocked (background data disabled?)");
 			// The same message may arrive twice (due to a network change). so we simply ignore messages that we were unable to fetch due to a blocked network
 			// Simply schedule a poll when the device is back online
 			JobScheduler js = (JobScheduler) appContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-
 			js.cancel(RECONNECT_JOB);
 
 			JobInfo job = new JobInfo.Builder(RECONNECT_JOB,
@@ -200,10 +206,6 @@ public class PushUtil {
 				logger.error("Job scheduling failed");
 			}
 			return;
-		}
-
-		if (networkInfo == null) {
-			logger.warn("No network info available");
 		}
 
 		//recheck after one minute
@@ -406,10 +408,8 @@ public class PushUtil {
 				Integer versionNumber = null;
 				if (version != null) { // Can be null during beta, if an old client doesn't yet send the version field
 					try {
-						versionNumber = Integer.parseInt(version);
+						versionNumber = Integer.parseInt(version, 10);
 					} catch (NumberFormatException e) {
-						// Version number was sent but is not a valid u16.
-						// We should probably throw the entire wakeup notification away.
 						logger.error("Could not parse webclient protocol version number: ", e);
 						return;
 					}

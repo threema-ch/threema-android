@@ -211,6 +211,7 @@
     <string name="unlinking_email">正在解除链接电子邮件</string>
     <string name="unlink">解除连结</string>
     <string name="threema_version">版本</string>
+    <string name="threema_version_code">版本号</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">无法连接到互联网，无效的ID导出数据或错误的密码</string>
     <string name="prefs_header_other">其他</string>
     <string name="an_error_occurred">发生错误</string>
@@ -226,7 +227,6 @@
     <string name="ringtone_none">静音</string>
     <string name="no_camera_installed">没有可用的摄像头</string>
     <string name="save_message_action">保存</string>
-    <string name="saving_media">正在保存媒体</string>
     <string name="file_is_not_a_video">所选文件不是视频</string>
     <string name="masterkey_is_unlocked">主钥匙已解锁</string>
     <string name="file_too_large">文件大于最大大小 %1$d MB</string>
@@ -692,6 +692,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="really_leave_group_admin_message">您是这个群组的群主，如果您退出了这个群组，这个群组就会无人管理，
 但是群组成员依然可以正常聊天。退出之后不能撤回操作。</string>
     <string name="action_delete_group">删除群组</string>
+    <string name="action_leave_and_delete_group">离开并删除群组</string>
+    <string name="action_dissolve_and_delete_group">解散并删除群组</string>
     <string name="delete_my_group_message">您确实要完全删除此群组吗？所有消息将被删除，剩下的成员将无法再使用这个群。</string>
     <string name="error_out_of_memory">没有足够的内存来完成此操作</string>
     <string name="configure">配置</string>
@@ -1045,12 +1047,12 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="open_in_maps_app">在地图应用中打开</string>
     <string name="delete">删除</string>
     <string name="continue_recording">继续录音</string>
-    <string name="whatsnew_title">欢迎使用 %1$s 5.1</string>
-    <string name="whatsnew_headline"><![CDATA[
-<p>此版本着重于应用程序的安全性、可用性和现代化。</p>
-<p>应大众要求，此应用经过彻底重新设计，以完全支持 Android 12 推出的 “Material You” 范式设计。可选的 \"动态配色 \"设置可让应用程序适应您的个性化配色风格。</p>
-<p>现在默认为安装了最新 %1$s 版本的所有联系人，启用完全正向保密。</p>
-<p>其他改进包括新的语音消息播放器（当应用程序在后台运行时，语音信息继续在通知中播放）以及请求权限时的新用户指南。</p> ]]></string>
+    <string name="whatsnew_title">%1$s 5.2 有哪些新功能？</string>
+    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p>
+<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p>
+<p>这次更新还有大量其他改进和优化。</p> ]]></string>
+    <string name="whatsnew2_title">" "</string>
+    <string name="whatsnew2_body">" "</string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">无效的备份路径</string>
@@ -1399,7 +1401,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="forward_security_cleared">与此联系人的完全正向保密会话已被清除</string>
     <string name="message_without_forward_security">您收到一条没有完全正向保密的消息，您可以验证发件人是否主动禁用完美前向保密。</string>
     <string name="forward_security_established">此会话中的消息现正受完全正向保密的保护。</string>
-    <string name="forward_security_established_rx">在此会话中收到的消息现正受完全正向保密的保护。</string>
+    <string name="forward_security_established_rx">在此会话中的消息现正受完全正向保密的保护。</string>
     <string name="forward_security_reset">这个之前已启用 “完全正向保密” 的会话，现被重置保密状态。如果对方更换了设备或重新安装此应用程序，就会重置保密状态。</string>
     <string name="forward_security_reset_simple">与此联系人的完全正向保密会话已重置。</string>
     <string name="forward_security_message_out_of_order">解密新收到的消息发生错误，无法解密。</string>
@@ -1467,6 +1469,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_call_inactivity_left">因为长时间不活动，群组通话自动退出</string>
     <string name="missing_permission_external_storage">无法复制文件，请尝试以下步骤以解決问题：\n1. 打开系统设置。\n2. 前往 “应用程序”，然后点击右上角的三个点，选择 “特殊访问” 权限。\n3. 点击 “所有文件访问”。\n4. 点击右上角的三个点，选择“显示系统应用程序”。\n5. 点击 “外部存储” 并确保授予 “允许访问所有文件” 权限。\n6. 再次尝试恢复备份。</string>
     <string name="forward_security_downgraded_status_message">因为对方使用的应用程序版本不支持 “完全正向保密” 功能，所以在此会话中已禁用 “完全正向保密” 。</string>
+    <string name="forward_security_illegal_session_status_message">这个之前已启用 “完全正向保密” 的会话，因无效而被重置保密状态。</string>
     <string name="crop_image_title">裁剪图片</string>
     <string name="scroll_to_bottom">回到底部</string>
     <string name="scroll_to_top">回到顶部</string>
@@ -1491,10 +1494,45 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="permission_microphone">麦克风</string>
     <string name="permission_read_phone_state">电话</string>
     <string name="permission_enable_in_settings_rationale">请在设置中启用该权限。先选择 “权限”，然后点击允许 “%s”。</string>
+    <string name="post_notification_permission_rationale">如要接收通知，您必须允许 %s 显示通知。</string>
     <string name="group_name">群组名称</string>
+    <string name="star_message">为消息加星标</string>
+    <string name="starred_message">已加星标的消息</string>
+    <string name="starred">已加星标</string>
+    <string name="starred_messages">已加星标的消息</string>
+    <string name="sorting">排序</string>
+    <string name="sort_by">按...排序</string>
+    <string name="newest_first">最新到最旧</string>
+    <string name="oldest_first">最旧到最新</string>
+    <string name="no_starred_messages">未找到已加星标的消息。如要为消息加注星标，请先长按该消息，然后点击星星按钮。</string>
+    <string name="remove_all_stars">取消所有星标</string>
+    <string name="remove_star">取消星标</string>
     <string name="samsung_permission_problem_explain">由于 “外部存储” 权限被禁用，%1$s 无法访问媒体文件。如要修复这个问题，请先在接下来的界面中允许 “外部存储” 权限，然后重启 %1$s。</string>
     <string name="min_n_chars">至少%d个字符</string>
     <string name="prefs_title_grant_bluetooth_permission">授予蓝牙权限</string>
+    <string name="safe_managed_password_confirm">您的 Threema Safe 备份的管理密码已设置。\n\n您想使用此密码吗？ 如有疑问，请联系您的管理员。</string>
+    <string name="safe_managed_new_password_confirm">您的 Threema Safe 备份新的管理密码已设置。\n\n您想用这个新的管理密码替换当前的密码吗？如有疑问，请联系您的管理员。</string>
+    <string name="real_not_now">现在不要</string>
+    <string name="add_contact_in">在…中添加联系人</string>
+    <string name="really_remove_all_stars">您确定要为所有消息取消星标吗？</string>
+    <string name="prefs_sum_storage_management">管理内存，同时删除消息或媒体</string>
+    <string name="delete_automatically">自动删除</string>
+    <string name="keep_messages">保留消息期限：</string>
+    <string name="clean_up_manually">手动清理</string>
+    <string name="forever">永远</string>
+    <string name="autodelete_explain">如果设置为 “永远” 以外的其他选项，已收到和已发送的消息仅保留在已选定的时间内，之后消息将彻底删除，且不可恢复，这包含未读和未发送的消息，已收藏和已加星标的消息不会被删除。自动删除功能会定期执行，不一定是在启用此功能后立即执行。</string>
+    <string name="autodelete_confirm">消息将在%s后自动删除。是否继续？</string>
+    <string name="autodelete_activated">自动删除已启用。</string>
+    <string name="autodelete_disabled">自动删除已禁用。</string>
+    <string name="set_by_administrator">数值已由管理员设置，不可更改。</string>
+    <string name="action_dissolve_group">解散群组</string>
+    <string name="really_dissolve_group">如果您只是解散群组，没有人可以再向此群组发送新消息，并且无法再对群组进行管理，而解散的群组仍然可以被克隆。</string>
+    <string name="status_orphaned_group">*此群组成为孤立群组*\n由于群组创建者已离开群组，管理员职位现在为空缺。其余成员应该克隆该群组（点击群组详细信息）以成为新的管理员。</string>
+    <string name="group_orphaned_notice">由于群组创建者已离开群组，请您克隆该群组，成为新的管理员。</string>
+    <string name="group_not_a_member_notice">由于您不再是这个群组的成员，因此您不能再参与这个群组的讨论。</string>
+    <string name="group_dissolved_notice">由于这个群组已解散，因此您不能再参与这个群组的讨论。</string>
+    <string name="directory_request_failed">目录请求失败，请再试一次。</string>
+    <string name="add_shortcut_exists">此目标的快捷方式已经存在。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>
@@ -1515,6 +1553,9 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     </plurals>
     <plurals name="file_saved">
         <item quantity="other">%d个文件已成功保存。</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="other">正在保存媒体</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="other">移除投票</item>

@@ -204,8 +204,8 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 
 							// ServiceManager (and thus LifetimeService) are now available
 							// Trigger a connection
+							final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 							new Thread(() -> {
-								final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 								if (serviceManager != null) {
 									final LifetimeService lifetimeService = serviceManager.getLifetimeService();
 									if (lifetimeService != null) {

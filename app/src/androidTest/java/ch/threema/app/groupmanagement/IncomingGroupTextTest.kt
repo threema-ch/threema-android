@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2023 Threema GmbH
+ * Copyright (c) 2023 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -19,22 +19,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package androidx.core.app;
+package ch.threema.app.groupmanagement
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import ch.threema.app.DangerousTest
+import ch.threema.domain.protocol.csp.messages.GroupTextMessage
+import org.junit.runner.RunWith
 
-public abstract class FixedJobIntentService extends JobIntentService {
-	private static final Logger logger = LoggerFactory.getLogger(FixedJobIntentService.class);
-
-	@Override
-	GenericWorkItem dequeueWork() {
-		// See https://medium.com/@mohamed.zak/workaround-to-solve-securityexception-caused-by-jobintentservice-1f4b0e688a26
-		try {
-			return super.dequeueWork();
-		} catch (SecurityException|IllegalArgumentException exception) {
-			logger.info("Exception while dequeueing work", exception);
-		}
-		return null;
-	}
+/**
+ * Tests that the common group receive steps are executed for a group text message.
+ */
+@RunWith(AndroidJUnit4::class)
+@LargeTest
+@DangerousTest
+class IncomingGroupTextTest : GroupControlTest<GroupTextMessage>() {
+    override fun createMessageForGroup(): GroupTextMessage {
+        return GroupTextMessage().apply { text = "Group text message" }
+    }
 }

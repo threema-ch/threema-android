@@ -98,24 +98,22 @@ public class DeleteGroupHandler extends MessageReceiver {
 					this.failed(temporaryId, Protocol.ERROR_ALREADY_LEFT);
 					return;
 				}
-				this.groupService.leaveGroup(group);
+				this.groupService.leaveGroupFromLocal(group);
 				this.success(temporaryId);
 				return;
 			case TYPE_DELETE:
 				if (!groupLeft) {
-					// Allowed only for administrators
-					if (!this.groupService.isGroupOwner(group)) {
-						logger.error("you are not the administrator of this group");
-						this.failed(temporaryId, Protocol.ERROR_NOT_ALLOWED);
-						return;
+					if (this.groupService.isGroupCreator(group)) {
+						// If the group is not left and the user is the creator, then dissolve the group first
+						this.groupService.dissolveGroupFromLocal(group);
+					} else {
+						// If the group is not left and the user is a member, then leave the group first
+						this.groupService.leaveGroupFromLocal(group);
 					}
-					this.groupService.removeAllMembersAndLeave(group);
-					this.success(temporaryId);
-				} else {
-					// Allow to remove left groups!
-					this.groupService.remove(group);
-					this.success(temporaryId);
 				}
+				// Remove the group
+				this.groupService.remove(group);
+				this.success(temporaryId);
 				break;
 			default:
 				logger.error("invalid delete type argument");

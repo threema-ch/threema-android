@@ -30,6 +30,7 @@ import java.util.Date;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
+import ch.threema.storage.models.data.DisplayTag;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.MessageDataInterface;
@@ -40,6 +41,7 @@ import ch.threema.storage.models.data.media.ImageDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 import ch.threema.storage.models.data.status.GroupCallStatusDataModel;
+import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.StatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
@@ -90,6 +92,8 @@ public abstract class AbstractMessageModel {
 	public static final String COLUMN_READ_AT = "readAtUtc";
 	/** The forward security mode in which the message was received/sent. */
 	public static final String COLUMN_FORWARD_SECURITY_MODE = "forwardSecurityMode";
+	/** Display tags. Used e.g. for starred or pinned messages */
+	public static final String COLUMN_DISPLAY_TAGS = "displayTags";
 
 	private int id;
 	private String uid;
@@ -114,6 +118,7 @@ public abstract class AbstractMessageModel {
 	private @MessageContentsType int messageContentsType;
 	private int messageFlags;
 	private ForwardSecurityMode forwardSecurityMode;
+	private @DisplayTag int displayTags;
 
 	AbstractMessageModel() {
 	}
@@ -407,6 +412,19 @@ public abstract class AbstractMessageModel {
 		return (ForwardSecurityStatusDataModel) this.dataObject;
 	}
 
+	public void setGroupStatusData(GroupStatusDataModel groupStatusDataModel) {
+		this.setType(MessageType.GROUP_STATUS);
+		this.setBody(StatusDataModel.convert(groupStatusDataModel));
+	}
+
+	@Nullable
+	public GroupStatusDataModel getGroupStatusDataModel() {
+		if (this.dataObject == null) {
+			this.dataObject = StatusDataModel.convert(this.getBody());
+		}
+		return (GroupStatusDataModel) this.dataObject;
+	}
+
 	public void setImageData(ImageDataModel imageDataModel) {
 		this.setType(MessageType.IMAGE);
 		this.setBody(imageDataModel.toString());
@@ -526,6 +544,13 @@ public abstract class AbstractMessageModel {
 		return this;
 	}
 
+	public @DisplayTag int getDisplayTags() { return this.displayTags; }
+
+	public AbstractMessageModel setDisplayTags(@DisplayTag int displayTags) {
+		this.displayTags = displayTags;
+		return this;
+	}
+
 	/**
 	 * TODO: evil code!
 	 * @param sourceModel
@@ -545,6 +570,7 @@ public abstract class AbstractMessageModel {
 				.setCaption(sourceModel.getCaption())
 				.setQuotedMessageId(sourceModel.getQuotedMessageId())
 				.setForwardSecurityMode(sourceModel.getForwardSecurityMode())
+				.setDisplayTags(sourceModel.getDisplayTags())
 				;
 	}
 }

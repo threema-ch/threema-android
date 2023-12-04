@@ -67,6 +67,11 @@ public class BoxLocationMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public byte[] getBody() {
         String locStr = String.format(Locale.US, "%f,%f,%f", latitude, longitude, accuracy);
         if (poiName != null)

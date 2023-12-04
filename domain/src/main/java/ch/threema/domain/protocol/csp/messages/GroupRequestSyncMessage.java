@@ -48,6 +48,11 @@ public class GroupRequestSyncMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return true;
+	}
+
+	@Override
 	public int getType() {
 		return ProtocolDefines.MSGTYPE_GROUP_REQUEST_SYNC;
 	}

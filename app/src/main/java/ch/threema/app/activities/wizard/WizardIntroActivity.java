@@ -21,10 +21,14 @@
 
 package ch.threema.app.activities.wizard;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -36,10 +40,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.PrivacyPolicyActivity;
 import ch.threema.app.activities.SimpleWebViewActivity;
+import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AppRestrictionUtil;
@@ -51,6 +61,29 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 	private static final int ACTIVITY_RESULT_PRIVACY_POLICY = 9442;
 
 	private AnimationDrawable frameAnimation;
+
+	private final ActivityResultLauncher<Void> backupResult = registerForActivityResult(new ActivityResultContract<>() {
+		@NonNull
+		@Override
+		public Intent createIntent(@NonNull Context context, Void v) {
+			return new Intent(WizardIntroActivity.this, WizardBackupRestoreActivity.class);
+		}
+
+		@Override
+		public Boolean parseResult(int resultCode, @Nullable Intent intent) {
+			return resultCode == Activity.RESULT_OK;
+		}
+	}, (ActivityResultCallback<Boolean>) result -> {
+		if (Boolean.TRUE.equals(result) &&
+			(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+				|| ConfigUtils.isPermissionGranted(WizardIntroActivity.this, Manifest.permission.POST_NOTIFICATIONS))
+		) {
+			// When the backup is being restored and notifications can be shown, then exit the intro
+			// activity. Otherwise the activity is resumed and if a backup is being restored, the
+			// BackupRestoreProgressActivity is shown.
+			finish();
+		}
+	});
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +153,15 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 		isContactSyncSettingConflict();
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if (RestoreService.isRunning()) {
+			finish();
+		}
+	}
+
 	public void setupThreema(View view) {
 		if (isContactSyncSettingConflict()) {
 			return;
@@ -142,7 +184,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 			return;
 		}
 
-		startActivity(new Intent(this, WizardBackupRestoreActivity.class));
+		backupResult.launch(null);
 		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 	}
 
@@ -155,6 +197,12 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 				frameAnimation.stop();
 			}
 		}
+	}
+
+	@Override
+	protected boolean enableOnBackPressedCallback() {
+		// Override the behavior of WizardBackgroundActivity to allow normal back navigation
+		return false;
 	}
 
 	/**

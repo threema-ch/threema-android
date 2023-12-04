@@ -26,8 +26,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +48,9 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.ui.PlayerControlView;
 import androidx.media3.ui.PlayerView;
 
+import com.alexvasilkov.gestures.GestureController;
+import com.alexvasilkov.gestures.State;
+import com.alexvasilkov.gestures.views.GestureFrameLayout;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.slf4j.Logger;
@@ -59,7 +60,6 @@ import java.lang.ref.WeakReference;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
-import ch.threema.app.ui.ExoPlayerZoomGestureDetector;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.VideoUtil;
@@ -72,8 +72,24 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
 	private WeakReference<ImageView> previewImageViewRef;
 	private WeakReference<CircularProgressIndicator> progressBarRef;
 	private WeakReference<PlayerView> videoViewRef;
+	private WeakReference<GestureFrameLayout> gestureFrameLayoutRef;
 	private ExoPlayer videoPlayer;
 	private boolean isImmediatePlay, isPreparing;
+
+	private final GestureController.OnStateChangeListener onGestureStateChangeListener = new GestureController.OnStateChangeListener() {
+		@Override
+		public void onStateChanged(State state) {
+			if (state.getZoom() > 1.05f || state.getZoom() < 0.95f) {
+				PlayerView playerView = videoViewRef.get();
+				if (playerView != null && playerView.isControllerFullyVisible()) {
+					playerView.hideController();
+				}
+			}
+		}
+
+		@Override
+		public void onStateReset(State oldState, State newState) {}
+	};
 
 	public VideoViewFragment() {
 		super();
@@ -108,13 +124,6 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
 	}
 
 	@Override
-	public boolean inquireClose() {
-		logger.debug("inquireClose");
-
-		return true;
-	}
-
-	@Override
 	protected void showThumbnail(@NonNull Drawable thumbnail) {
 		logger.debug("showThumbnail");
 
@@ -144,29 +153,19 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
 		logger.debug("created");
 
 		if (rootViewReference.get() != null && this.videoPlayer != null) {
+			gestureFrameLayoutRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.video_gesture_frame));
+			gestureFrameLayoutRef.get().getController().getSettings().setMaxZoom(2.5f);
+			gestureFrameLayoutRef.get().getController().addOnStateChangeListener(onGestureStateChangeListener);
+
 			this.previewImageViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.image));
 
 			this.videoViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.video_view));
-			this.videoViewRef.get().setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
-				@Override
-				public void onVisibilityChange(int visibility) {
-					VideoViewFragment.this.showUi(visibility == View.VISIBLE);
-				}
-			});
+			this.videoViewRef.get().setControllerVisibilityListener((PlayerControlView.VisibilityListener) visibility -> VideoViewFragment.this.showUi(visibility == View.VISIBLE));
 			this.videoViewRef.get().setVisibility(View.GONE);
 			this.videoViewRef.get().setPlayer(this.videoPlayer);
 			this.videoViewRef.get().setControllerHideOnTouch(true);
 			this.videoViewRef.get().setControllerShowTimeoutMs(MediaViewerActivity.ACTIONBAR_TIMEOUT);
 			this.videoViewRef.get().setControllerAutoShow(true);
-
-			final ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(getContext(), new ExoPlayerZoomGestureDetector(this.videoViewRef.get()));
-			videoViewRef.get().setOnTouchListener(new View.OnTouchListener() {
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					scaleGestureDetector.onTouchEvent(event);
-					return false;
-				}
-			});
 
 			logger.debug("View Type: " + (this.videoViewRef.get().getVideoSurfaceView() instanceof TextureView ? "Texture" : "Surface"));
 
@@ -239,6 +238,10 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
 		if (this.videoPlayer != null) {
 			this.videoPlayer.release();
 			this.videoPlayer = null;
+		}
+
+		if (this.gestureFrameLayoutRef != null && this.gestureFrameLayoutRef.get() != null) {
+			this.gestureFrameLayoutRef.get().getController().removeOnStateChangeListener(onGestureStateChangeListener);
 		}
 
 		super.onDestroyView();

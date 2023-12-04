@@ -87,7 +87,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 			protected GroupModel doInBackground(Void... params) {
 				try {
 					Bitmap avatar = avatarFile != null ? BitmapFactory.decodeFile(avatarFile.getPath()) : null;
-					return groupService.createGroup(
+					return groupService.createGroupFromLocal(
 							groupName,
 							groupIdentities,
 							avatar

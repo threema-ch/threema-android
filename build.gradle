@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 buildscript {
     ext.kotlin_version = '1.8.10'
     ext.kotlin_coroutines_version = '1.6.4'
@@ -9,15 +11,15 @@ buildscript {
         flatDir { dirs 'app/libs' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.0.2' // abi splits are broken in 8.1.2
         classpath 'org.owasp:dependency-check-gradle:6.5.3'
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.18'
 
         // Huawei agconnect plugin
-        classpath 'com.huawei.agconnect:agcp-1.6.0.300'
-        classpath 'com.huawei.agconnect:agconnect-crash-symbol-lib-1.6.0.300'
-        classpath 'com.huawei.agconnect:agconnect-apms-plugin-1.5.2.302'
-        classpath 'com.huawei.agconnect:agconnect-core-1.5.0.300@aar'
+        classpath 'com.huawei.agconnect:agcp-1.9.1.301'
+        classpath 'com.huawei.agconnect:agconnect-crash-symbol-lib-1.9.1.301'
+        classpath 'com.huawei.agconnect:agconnect-apms-plugin-1.6.2.300'
+        classpath 'com.huawei.agconnect:agconnect-core-1.9.1.301@aar'
 
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
@@ -28,7 +30,7 @@ buildscript {
 
 plugins {
     id 'jacoco'
-    id 'org.sonarqube' version '3.0'
+    id 'org.sonarqube' version '4.4.1.3373'
 }
 
 allprojects {
@@ -36,7 +38,6 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        jcenter() // TODO(ANDR-2023): Remove repository
         flatDir { dirs 'libs' }
 
         // Huawei
@@ -80,8 +81,17 @@ sonarqube {
 jacoco {
     toolVersion = '0.8.7'
 }
+
 subprojects {
-    configurations.all {
+    tasks.withType(KotlinCompile).tap {
+        configureEach {
+            kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
+        }
+    }
+}
+
+subprojects {
+    configurations.configureEach {
         resolutionStrategy {
             eachDependency { details ->
                 if ('org.jacoco' == details.requested.group) {
@@ -107,6 +117,6 @@ tasks.register("codeCoverageReport", JacocoReport) {
         }
     }
     reports {
-        xml.enabled true
+        xml.required = true
     }
 }

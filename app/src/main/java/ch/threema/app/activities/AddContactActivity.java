@@ -387,8 +387,6 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 
-		ConfigUtils.setLocaleOverride(this, serviceManager.getPreferenceService());
-
 		if (resultCode == RESULT_OK) {
 			String payload = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
 

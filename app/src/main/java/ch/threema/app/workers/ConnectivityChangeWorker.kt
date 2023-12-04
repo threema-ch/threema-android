@@ -52,10 +52,8 @@ class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParamet
         if (serviceManager != null) {
             val preferenceService = serviceManager.preferenceService
             val online = serviceManager.deviceService.isOnline
-            if (preferenceService != null) {
-                wasOnline = preferenceService.lastOnlineStatus
-                preferenceService.lastOnlineStatus = online
-            }
+            wasOnline = preferenceService.lastOnlineStatus
+            preferenceService.lastOnlineStatus = online
 
             logger.info("Network state = {}", networkState)
 

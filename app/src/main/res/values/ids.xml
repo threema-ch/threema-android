@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<item name="tag_reflow_data" type="id"/>
-
-	<!-- QR scanner IDs -->
-	<item type="id" name="decode"/>
-	<item type="id" name="decode_failed"/>
-	<item type="id" name="decode_succeeded"/>
-	<item type="id" name="quit"/>
+    <item type="id" name="action_overflow_button"/>
 </resources>

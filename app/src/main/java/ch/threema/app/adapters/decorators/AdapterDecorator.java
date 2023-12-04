@@ -28,17 +28,20 @@ import android.widget.ListView;
 
 import androidx.annotation.AnyThread;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.utils.RuntimeUtil;
 
 abstract class AdapterDecorator {
+	@NonNull
 	private final Context context;
 	private transient ListView inListView = null;
 
-	protected AdapterDecorator(Context context) {
+	protected AdapterDecorator(@NonNull Context context) {
 		this.context = context;
 	}
 
+	@NonNull
 	protected Context getContext() {
 		return this.context;
 	}

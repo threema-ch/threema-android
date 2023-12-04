@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.NonceStoreInterface;
@@ -96,7 +97,7 @@ public class ProtocolTest {
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
-		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg, true);
+		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
 		Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
 		Assert.assertTrue(decodedBoxMessage instanceof GroupFileMessage);
 
@@ -157,7 +158,7 @@ public class ProtocolTest {
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
-		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg, true);
+		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
 		Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
 		Assert.assertTrue(decodedBoxMessage instanceof FileMessage);
 
@@ -177,13 +178,17 @@ public class ProtocolTest {
 	private static ContactStore createFakeContactStore() {
 		return new ContactStore() {
 			@Override
-			public Contact getContactForIdentity(@NonNull String identity, boolean fetch, boolean saveContact) {
-				return new Contact(identity, new byte[256]);
+			public void addCachedContact(@NonNull Contact contact) { }
+
+			@Nullable
+			@Override
+			public Contact getContactForIdentityIncludingCache(@NonNull String identity) {
+				return getContactForIdentity(identity);
 			}
 
 			@Override
 			public Contact getContactForIdentity(@NonNull String identity) {
-				return null;
+				return new Contact(identity, new byte[256]);
 			}
 
 			@Override

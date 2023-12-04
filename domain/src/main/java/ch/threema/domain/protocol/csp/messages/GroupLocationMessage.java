@@ -73,6 +73,11 @@ public class GroupLocationMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public byte[] getBody() {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

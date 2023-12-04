@@ -62,6 +62,11 @@ public class BallotVoteMessage extends AbstractMessage
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public void setBallotId(BallotId ballotId) {
 		this.ballotId = ballotId;
 	}

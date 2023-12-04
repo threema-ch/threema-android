@@ -61,7 +61,7 @@ public class Group extends Converter {
 	public static MsgpackObjectBuilder convert(GroupModel group) throws ConversionException {
 		MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
 		try {
-			final boolean isDisabled =  !getGroupService().isGroupMember(group);
+			final boolean isDisabled = !getGroupService().isGroupMember(group);
 			final boolean isSecretChat = getHiddenChatListService().has(getGroupService().getUniqueIdString(group));
 			final boolean isVisible = !isSecretChat || !getPreferenceService().isPrivateChatsHidden();
 
@@ -90,12 +90,12 @@ public class Group extends Converter {
 
 			//TODO
 			//create util class or use access object
-			boolean admin = getGroupService().isGroupOwner(group);
-			boolean leaved = !getGroupService().isGroupMember(group);
+			boolean admin = getGroupService().isGroupCreator(group);
+			boolean left = !getGroupService().isGroupMember(group);
 			boolean enabled = !(group.isDeleted() || isDisabled);
 			//define access
 			builder.put(Receiver.ACCESS, (new MsgpackObjectBuilder())
-					.put(Receiver.CAN_DELETE, admin || leaved)
+					.put(Receiver.CAN_DELETE, admin || left)
 					.put(CAN_CHANGE_AVATAR, admin && enabled)
 					.put(CAN_CHANGE_NAME, admin && enabled)
 					.put(CAN_CHANGE_MEMBERS, admin && enabled)
@@ -122,27 +122,27 @@ public class Group extends Converter {
 	public static GroupService.GroupFilter getGroupFilter() {
 		return new GroupService.GroupFilter() {
 			@Override
-			public boolean sortingByDate() {
+			public boolean sortByDate() {
 				return false;
 			}
 
 			@Override
-			public boolean sortingAscending() {
+			public boolean sortAscending() {
 				return false;
 			}
 
 			@Override
-			public boolean sortingByName() {
+			public boolean sortByName() {
 				return false;
 			}
 
 			@Override
-			public boolean withDeleted() {
+			public boolean includeDeletedGroups() {
 				return false;
 			}
 
 			@Override
-			public boolean withDeserted() {
+			public boolean includeLeftGroups() {
 				return true;
 			}
 		};

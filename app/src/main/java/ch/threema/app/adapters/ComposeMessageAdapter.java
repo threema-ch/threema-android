@@ -65,6 +65,7 @@ import ch.threema.app.adapters.decorators.FileChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.FirstUnreadChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.ForwardSecurityStatusChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.GroupCallStatusDataChatAdapterDecorator;
+import ch.threema.app.adapters.decorators.GroupStatusAdapterDecorator;
 import ch.threema.app.adapters.decorators.ImageChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.LocationChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.StatusChatAdapterDecorator;
@@ -526,6 +527,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					holder.groupAckThumbsUpImage = itemView.findViewById(R.id.groupack_thumbsup);
 					holder.groupAckThumbsDownImage = itemView.findViewById(R.id.groupack_thumbsdown);
 					holder.tapToResend = itemView.findViewById(R.id.tap_to_resend);
+					holder.starredIcon = itemView.findViewById(R.id.star_icon);
 
 					((ViewGroup) holder.groupAckContainer).getLayoutTransition().enableTransitionType(LayoutTransition.DISAPPEARING|LayoutTransition.APPEARING);
 				}
@@ -608,6 +610,9 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					break;
 				case FORWARD_SECURITY_STATUS:
 					decorator = new ForwardSecurityStatusChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+					break;
+				case GROUP_STATUS:
+					decorator = new GroupStatusAdapterDecorator(this.context, messageModel, this.decoratorHelper);
 					break;
 					// Fallback to text chat adapter
 				default:

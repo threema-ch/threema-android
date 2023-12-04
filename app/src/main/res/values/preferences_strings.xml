@@ -34,7 +34,6 @@
 	<string name="preferences__last_id_backup_date" translatable="false">pref_key_last_id_backup_date</string>
 	<string name="preferences__contact_sorting" translatable="false">pref_key_contact_sorting</string>
 	<string name="preferences__contact_format" translatable="false">pref_key_contact_format</string>
-	<string name="preferences__fullscreen_ime" translatable="false">prefs_key_fullscreen_ime</string>
 	<string name="preferences__save_media" translatable="false">prefs_key_save_media</string>
 	<string name="preferences__default_contact_picture_colored" translatable="false">prefs_key_default_contact_picture_colored</string>
 	<string name="preferences__hide_screenshots" translatable="false">prefs_key_hide_screenshots</string>
@@ -76,6 +75,9 @@
 	<string name="preferences__custom_support_url" translatable="false">pref_custom_support_url</string>
 	<string name="preferences__reset_ringtones" translatable="false">pref_reset_ringtones</string>
 	<string name="preferences__language_override" translatable="false">pref_language_override</string>
+	<!-- Note that 'app_language' is only used for displaying the preference in the settings. The
+	current value is stored in the language framework: AppCompatDelegate.getApplicationLocales -->
+	<string name="preferences__app_language" translatable="false">pref_app_language</string>
 	<string name="preferences__web_client_enabled" translatable="false">pref_web_client_enabled</string>
 	<string name="preferences__about" translatable="false">pref_about</string>
 	<string name="preferences__work_license_name" translatable="false">pref_work_license_name</string>
@@ -202,6 +204,10 @@
 	<string name="preferences__device_cookie" translatable="false">device_cookie</string>
 	<string name="preferences__dynamic_color" translatable="false">pref_dynamic_color</string>
 	<string name="preferences__backup_warning_dismissed_time" translatable="false">pref_backup_warning_dismissed_time</string>
+	<string name="preferences__starred_messages_sort_order" translatable="false">pref_starred_messages_sort_order</string>
+	<string name="preferences__auto_delete_days" translatable="false">pref_auto_delete_days</string>
 	<string name="preferences__ignore_bluetooth_permission_request" translatable="false">pref_ignore_bluetooth_permission_request</string>
 	<string name="preferences__grant_bluetooth_permission" translatable="false">pref_grant_bluetooth_permission</string>
+	<string name="preferences__last_notification_rationale_shown" translatable="false">last_notification_rationale_shown</string>
+    <string name="preferences__media_gallery_content_types" translatable="false">pref_media_gallery_content_types</string>
 </resources>

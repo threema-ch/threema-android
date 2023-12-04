@@ -61,7 +61,7 @@ class SendMediaPreviewAdapter(
     annotation class ViewType
 
     open class SendMediaHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.image_view)
+        val imageView: ImageView = itemView.findViewById(R.id.thumbnail_view)
     }
 
     class SendMediaItemHolder(itemView: View): SendMediaHolder(itemView) {

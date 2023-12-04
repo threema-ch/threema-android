@@ -174,17 +174,17 @@ public class GroupModelFactory extends ModelFactory {
 	}
 
 	public boolean create(GroupModel groupModel) {
-		logger.debug("create group " + groupModel.getApiGroupId());
+		logger.debug("create group {}", groupModel.getApiGroupId());
 		ContentValues contentValues = buildContentValues(groupModel);
 		try {
 			long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
 			if (newId > 0) {
-				logger.debug("create group success with id " + newId);
+				logger.debug("create group success with id {}", newId);
 				groupModel.setId((int) newId);
 				return true;
 			}
 		} catch (SQLException e) {
-			logger.debug("unable to create group: " + e.getMessage());
+			logger.debug("unable to create group: {}", e.getMessage());
 		}
 		return false;
 	}
@@ -245,17 +245,17 @@ public class GroupModelFactory extends ModelFactory {
 		List<String> placeholders = new ArrayList<>();
 
 		if(filter != null) {
-			if(!filter.withDeleted()) {
+			if(!filter.includeDeletedGroups()) {
 				queryBuilder.appendWhere(GroupModel.COLUMN_DELETED + "=0");
 			}
 
-			String sortDirection = filter.sortingAscending() ? "ASC" : "DESC";
-			if(filter.sortingByDate()) {
+			String sortDirection = filter.sortAscending() ? "ASC" : "DESC";
+			if(filter.sortByDate()) {
 				orderBy = GroupModel.COLUMN_CREATED_AT + " " + sortDirection;
-			} else if (filter.sortingByName()) {
+			} else if (filter.sortByName()) {
 				orderBy = String.format("%s COLLATE NOCASE %s ",
 						GroupModel.COLUMN_NAME,
-						filter.sortingAscending() ? "ASC" : "DESC");
+						sortDirection);
 			}
 		}
 

@@ -34,6 +34,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -91,9 +92,9 @@ public class SelectorDialog extends ThreemaDialogFragment {
 	}
 
 	public interface SelectorDialogClickListener {
-		void onClick(String tag, int which, Object data);
-		void onCancel(String tag);
-		void onNo(String tag);
+		void onClick(String tag, int which, @Nullable Object data);
+		default void onCancel(String tag) {};
+		default void onNo(String tag) {};
 	}
 
 	public interface SelectorDialogInlineClickListener extends Parcelable {

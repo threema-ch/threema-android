@@ -64,6 +64,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -123,6 +124,12 @@ import ch.threema.storage.models.data.media.FileDataModel;
 public class RestoreService extends Service {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("RestoreService");
 
+	public static final String RESTORE_PROGRESS_INTENT = "restore_progress_intent";
+	public static final String RESTORE_PROGRESS = "restore_progress";
+	public static final String RESTORE_PROGRESS_STEPS = "restore_progress_steps";
+	public static final String RESTORE_PROGRESS_MESSAGE = "restore_progress_message";
+	public static final String RESTORE_PROGRESS_ERROR_MESSAGE = "restore_progress_error_message";
+
 	public static final String EXTRA_RESTORE_BACKUP_FILE = "file";
 	public static final String EXTRA_RESTORE_BACKUP_PASSWORD = "pwd";
 	private static final int MAX_THUMBNAIL_SIZE_BYTES = 5 * 1024 * 1024; // do not restore thumbnails that are bigger than 5 MB
@@ -164,6 +171,7 @@ public class RestoreService extends Service {
 	private static final int STEP_SIZE_MESSAGES = 1; // per message
 	private static final int STEP_SIZE_GROUP_AVATARS = 50;
 	private static final int STEP_SIZE_MEDIA = 25; // per media file
+	private static final int NONCES_PER_STEP = 50;
 
 	private long stepSizeTotal = (long) STEP_SIZE_PREPARE + STEP_SIZE_IDENTITY + STEP_SIZE_MAIN_FILES + STEP_SIZE_GROUP_AVATARS;
 
@@ -404,7 +412,7 @@ public class RestoreService extends Service {
 			//
 			// The connection will be resumed in {@link onFinished}.
 			final ThreemaConnection connection = serviceManager.getConnection();
-			if (connection != null && connection.isRunning()) {
+			if (connection.isRunning()) {
 				connection.stop();
 			}
 
@@ -489,8 +497,9 @@ public class RestoreService extends Service {
 
 				// Restore nonces
 				logger.info("Restoring nonces");
-				if (!restoreNonces(fileHeaders)) {
-					logger.error("Restoring nonces failed");
+				int nonceCount = restoreNonces(fileHeaders);
+				if (nonceCount < 0) {
+					logger.error("Restoring nonces failed ({})", nonceCount);
 					//continue anyway!
 				}
 
@@ -539,7 +548,9 @@ public class RestoreService extends Service {
 				preferenceService.setProfilePicUploadData(null);
 
 				if (!writeToDb) {
-					stepSizeTotal += (messageCount * STEP_SIZE_MESSAGES)  + ((long) mediaCount * STEP_SIZE_MEDIA);
+					stepSizeTotal += (messageCount * STEP_SIZE_MESSAGES);
+					stepSizeTotal += ((long) mediaCount * STEP_SIZE_MEDIA);
+					stepSizeTotal += (long) Math.ceil((double) nonceCount / NONCES_PER_STEP);
 				}
 			}
 
@@ -633,7 +644,7 @@ public class RestoreService extends Service {
 		return true;
 	}
 
-	private boolean restoreNonces(List<FileHeader> fileHeaders) throws IOException {
+	private int restoreNonces(List<FileHeader> fileHeaders) throws IOException, RestoreCanceledException {
 		FileHeader nonceFileHeader = null;
 		for (FileHeader fileHeader : fileHeaders) {
 			String fileName = fileHeader.getFileName();
@@ -644,33 +655,44 @@ public class RestoreService extends Service {
 		}
 		if (nonceFileHeader == null) {
 			logger.info("Nonce file header is null");
-			return false;
+			return -1;
 		}
 
-		if (this.writeToDb) {
-			try (ZipInputStream inputStream = this.zipFile.getInputStream(nonceFileHeader);
-			     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-			     CSVReader csvReader = new CSVReader(inputStreamReader, false)
-			) {
-				boolean success = true;
-				CSVRow row;
-				while ((row = csvReader.readNextRow()) != null) {
-					try {
-						// Note that currently there is only one nonce per row, and therefore we do
-						// not need to read them as array. However, this gives us the flexibility to
-						// backup several nonces in one row (as we have done in 5.1-alpha3)
-						String[] nonces = row.getStrings(Tags.TAG_NONCES);
+		try (ZipInputStream inputStream = this.zipFile.getInputStream(nonceFileHeader);
+		     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+		     CSVReader csvReader = new CSVReader(inputStreamReader, false)
+		) {
+			int nonceProgressCount = 0;
+			int nonceCount = 0;
+			boolean success = true;
+			CSVRow row;
+			while ((row = csvReader.readNextRow()) != null) {
+				try {
+					// Note that currently there is only one nonce per row, and therefore we do
+					// not need to read them as array. However, this gives us the flexibility to
+					// backup several nonces in one row (as we have done in 5.1-alpha3)
+					String[] nonces = row.getStrings(Tags.TAG_NONCES);
+					nonceCount += nonces.length;
+					if (writeToDb) {
 						success &= databaseNonceStore.insertHashedNonces(nonces);
-					} catch (ThreemaException e) {
-						logger.error("Could not insert nonces");
-						return false;
+						nonceProgressCount += nonces.length;
+						if (nonceProgressCount >= NONCES_PER_STEP) {
+							long increment = nonceProgressCount / NONCES_PER_STEP;
+							updateProgress(increment);
+							nonceProgressCount -= increment * NONCES_PER_STEP;
+						}
 					}
+				} catch (ThreemaException e) {
+					logger.error("Could not insert nonces");
+					return -1;
 				}
-				return success;
+			}
+			if (success) {
+				return nonceCount;
+			} else {
+				return -1;
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -985,7 +1007,7 @@ public class RestoreService extends Service {
 					}
 
 					if (!groupModel.isDeleted()) {
-						if (groupService.isGroupOwner(groupModel)) {
+						if (groupService.isGroupCreator(groupModel)) {
 							groupService.sendSync(groupModel);
 						} else {
 							groupService.requestSync(groupModel.getCreatorIdentity(), new GroupId(Utils.hexStringToByteArray(groupModel.getApiGroupId().toString())));
@@ -1554,6 +1576,9 @@ public class RestoreService extends Service {
 		} else if (typeAsString.equals(MessageType.GROUP_CALL_STATUS.name())) {
 			messageType = MessageType.GROUP_CALL_STATUS;
 			messageContentsType = MessageContentsType.GROUP_CALL_STATUS;
+		} else if (typeAsString.equals(MessageType.GROUP_STATUS.name())) {
+			messageType = MessageType.GROUP_STATUS;
+			messageContentsType = MessageContentsType.GROUP_STATUS;
 		}
 		messageModel.setType(messageType);
 		messageModel.setMessageContentsType(messageContentsType);
@@ -1579,6 +1604,15 @@ public class RestoreService extends Service {
 			String quotedMessageId = row.getString(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID);
 			if (!TestUtil.empty(quotedMessageId)) {
 				messageModel.setQuotedMessageId(quotedMessageId);
+			}
+		}
+
+		if(restoreSettings.getVersion() >= 20) {
+			if (!(messageModel instanceof DistributionListMessageModel)) {
+				Integer displayTags = row.getInteger(Tags.TAG_MESSAGE_DISPLAY_TAGS);
+				if (displayTags != null) {
+					messageModel.setDisplayTags(displayTags);
+				}
 			}
 		}
 	}
@@ -1707,7 +1741,14 @@ public class RestoreService extends Service {
 		int p = (int) (100d / (double) this.progressSteps * (double) this.currentProgressStep);
 		if (p > this.latestPercentStep) {
 			this.latestPercentStep = p;
-			updatePersistentNotification(latestPercentStep, 100, false);
+			String timeRemaining = getRemainingTimeText(latestPercentStep, 100);
+			updatePersistentNotification(latestPercentStep, 100, false, timeRemaining);
+			LocalBroadcastManager.getInstance(this)
+				.sendBroadcast(new Intent(RESTORE_PROGRESS_INTENT)
+					.putExtra(RESTORE_PROGRESS, latestPercentStep)
+					.putExtra(RESTORE_PROGRESS_STEPS, 100)
+					.putExtra(RESTORE_PROGRESS_MESSAGE, timeRemaining)
+				);
 		}
 	}
 
@@ -1739,12 +1780,25 @@ public class RestoreService extends Service {
 
 			isRunning = false;
 
+			// Send broadcast after isRunning has been set to false to indicate that there is no
+			// backup being restored anymore
+			LocalBroadcastManager.getInstance(this)
+				.sendBroadcast(new Intent(RESTORE_PROGRESS_INTENT)
+					.putExtra(RESTORE_PROGRESS, 100)
+					.putExtra(RESTORE_PROGRESS_STEPS, 100)
+				);
+
 			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
 				ConfigUtils.scheduleAppRestart(getApplicationContext(), 2 * (int) DateUtils.SECOND_IN_MILLIS, getApplicationContext().getResources().getString(R.string.ipv6_restart_now));
 			}
 			stopSelf();
 		} else {
 			showRestoreErrorNotification(message);
+
+			// Send broadcast so that the BackupRestoreProgressActivity can display the message
+			LocalBroadcastManager.getInstance(this).sendBroadcast(
+				new Intent(RESTORE_PROGRESS_INTENT).putExtra(RESTORE_PROGRESS_ERROR_MESSAGE, message)
+			);
 
 			new DeleteIdentityAsyncTask(null, () -> {
 				isRunning = false;
@@ -1777,19 +1831,24 @@ public class RestoreService extends Service {
 		return notificationBuilder.build();
 	}
 
-	private void updatePersistentNotification(int currentStep, int steps, boolean indeterminate) {
-		logger.debug("updatePersistentNoti {} of {}", currentStep, steps);
+	private void updatePersistentNotification(int currentStep, int steps, boolean indeterminate, @Nullable String timeRemaining) {
+		logger.debug("updatePersistentNotification {} of {}", currentStep, steps);
 
-		if (currentStep != 0) {
-			final long millisPassed = System.currentTimeMillis() - startTime;
-			final long millisRemaining = millisPassed * steps / currentStep - millisPassed;
-			String timeRemaining = StringConversionUtil.secondsToString(millisRemaining / DateUtils.SECOND_IN_MILLIS, false);
+		if (timeRemaining != null) {
 			notificationBuilder.setContentText(String.format(getString(R.string.time_remaining), timeRemaining));
 		}
 
 		notificationBuilder.setProgress(steps, currentStep, indeterminate);
 		notificationManager.notify(RESTORE_NOTIFICATION_ID, notificationBuilder.build());
 	}
+
+	private String getRemainingTimeText(int currentStep, int steps) {
+		final long millisPassed = System.currentTimeMillis() - startTime;
+		final long millisRemaining = millisPassed * steps / currentStep - millisPassed;
+		String timeRemaining = StringConversionUtil.secondsToString(millisRemaining / DateUtils.SECOND_IN_MILLIS, false);
+		return String.format(getString(R.string.time_remaining), timeRemaining);
+	}
+
 
 	private void cancelPersistentNotification() {
 		notificationManager.cancel(RESTORE_NOTIFICATION_ID);

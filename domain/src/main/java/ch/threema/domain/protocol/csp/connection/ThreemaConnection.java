@@ -293,6 +293,17 @@ public class ThreemaConnection implements Runnable {
 		myCurThread.join();
 	}
 
+	@WorkerThread
+	private void restartConnection() {
+		// To restart the connection we simply close the socket. In this case, the reconnect
+		// mechanism of the threema connection will restart the connection.
+		try {
+			this.socket.close();
+		} catch (IOException e) {
+			logger.error("Could not close socket", e);
+		}
+	}
+
 	public boolean isRunning() {
 		return (curThread != null);
 	}
@@ -778,10 +789,18 @@ public class ThreemaConnection implements Runnable {
 			logger.info("Incoming message from {} (ID {})", boxmsg.getFromIdentity(), boxmsg.getMessageId());
 
 			if (messageProcessor != null) {
-				boolean ackMessage;
 				if (!this.nonceFactory.exists(boxmsg.getNonce())) {
-
+					// Process the incoming message
 					MessageProcessorInterface.ProcessIncomingResult result = messageProcessor.processIncomingMessage(boxmsg);
+
+					// If a message has not been processed, then we restart the connection to try
+					// again. Note that the only reason that a message has not been processed is
+					// that the public key of the sender could not be fetched.
+					if (!result.wasProcessed()) {
+						logger.warn("Message {} has not been processed. Restarting connection.", boxmsg.getMessageId());
+						restartConnection();
+						return;
+					}
 
 					// Save nonce if the incoming message was successfully processed
 					// and if the message is *not* a typing indicator
@@ -794,15 +813,11 @@ public class ThreemaConnection implements Runnable {
 					if (forwardSecurityMessageProcessor != null && result.wasProcessed() && result.getPeerRatchetIdentifier() != null) {
 						forwardSecurityMessageProcessor.commitPeerRatchet(result.getPeerRatchetIdentifier());
 					}
-
-					ackMessage = result.wasProcessed();
 				} else {
 					logger.info("Skipped processing message {} as its nonce has already been used", boxmsg.getMessageId());
-					// auto ack a already nonce'd message
-					ackMessage = true;
 				}
 
-				if (ackMessage && (boxmsg.getFlags() & ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK) == 0) {
+				if ((boxmsg.getFlags() & ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK) == 0) {
 					sendAck(boxmsg.getMessageId(), boxmsg.getFromIdentity());
 				}
 			}

@@ -128,22 +128,18 @@ public class MessageCoder {
 	 * to the message type. Note that the contact is not added, if it does not exist.
 	 *
 	 * @param boxmsg boxed message to be decrypted
-	 * @param fetch if true, attempt to fetch missing public keys from network (may cause delays)
 	 * @return decrypted message, or null if the message type is not supported
 	 * @throws BadMessageException if the message cannot be decrypted successfully
 	 * @throws MissingPublicKeyException if the sender's public key cannot be obtained
 	 */
-	public @NonNull AbstractMessage decode(@NonNull MessageBox boxmsg, boolean fetch) throws BadMessageException, MissingPublicKeyException {
+	public @NonNull AbstractMessage decode(@NonNull MessageBox boxmsg) throws BadMessageException, MissingPublicKeyException {
 
 		if (!boxmsg.getToIdentity().equals(identityStore.getIdentity())) {
 			throw new BadMessageException("Message is not for own identity, cannot decode");
 		}
 
-		// check if contact already exists
-		Contact contact = contactStore.getContactForIdentity(boxmsg.getFromIdentity());
-
 		/* obtain public key of sender */
-		Contact fetchedContact = contactStore.getContactForIdentity(boxmsg.getFromIdentity(), fetch, false);
+		Contact fetchedContact = contactStore.getContactForIdentityIncludingCache(boxmsg.getFromIdentity());
 
 		if (fetchedContact == null) {
 			throw new MissingPublicKeyException("Missing public key for ID " + boxmsg.getFromIdentity());
@@ -167,7 +163,7 @@ public class MessageCoder {
 		}
 		MessageCoder.logger.debug("Effective data length is {}", realDataLength);
 
-		DeserializeDataResult result = deserializeData(data, realDataLength, boxmsg.getFromIdentity(), boxmsg.getToIdentity(), contact);
+		DeserializeDataResult result = deserializeData(data, realDataLength, boxmsg.getFromIdentity(), boxmsg.getToIdentity(), fetchedContact);
 
 		if (result.addContact) {
 			contactStore.addContact(fetchedContact, result.addHidden);
@@ -290,7 +286,7 @@ public class MessageCoder {
 			byte[] boxData = bos.toByteArray();
 
 			/* obtain receiver's public key */
-			Contact receiver = contactStore.getContactForIdentity(message.getToIdentity(), false, true);
+			Contact receiver = contactStore.getContactForIdentityIncludingCache(message.getToIdentity());
 			byte[] receiverPublicKey = receiver != null ? receiver.getPublicKey() : null;
 
 			if (receiverPublicKey == null) {

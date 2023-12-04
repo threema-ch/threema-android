@@ -21,6 +21,8 @@
 
 package ch.threema.app.utils;
 
+import static ch.threema.app.utils.AutoDeleteUtil.validateKeepMessageDays;
+
 import android.content.Context;
 import android.os.Bundle;
 
@@ -181,6 +183,19 @@ public class AppRestrictionUtil {
 	}
 
 	/**
+	 * Get MDM configuration for how long messages are to be kept before they are deleted
+	 * @param context The context
+	 * @return Number of days or 0 if messages should be kept forever. null if the restriction is not set.
+	 */
+	public static Integer getKeepMessagesDays(Context context) {
+		Integer days = getIntRestriction(context.getString(R.string.restriction__keep_messages_days));
+		if (days != null) {
+			return validateKeepMessageDays(days);
+		}
+		return days;
+	}
+
+	/**
 	 * get boolean value for restriction
 	 * @param restriction The resource id of the restriction name
 	 * @return true if restriction value is set to true, false otherwise or if restriction does not exist or app is not restricted
@@ -220,6 +235,22 @@ public class AppRestrictionUtil {
 
 		if (appRestrictions != null && appRestrictions.containsKey(string)) {
 			return appRestrictions.getBoolean(string);
+		}
+		return null;
+	}
+
+	/**
+	 * Get an integer restriction
+	 * @param string Restriction key
+	 * @return Restriction value or null if restriction is empty or has not been set or 0 if there
+	 *         is no int mapping for the given key.
+	 */
+	public static Integer getIntRestriction(String string) {
+		Bundle appRestrictions = AppRestrictionService.getInstance()
+			.getAppRestrictions();
+
+		if (appRestrictions != null && appRestrictions.containsKey(string)) {
+			return appRestrictions.getInt(string, 0);
 		}
 		return null;
 	}

@@ -21,14 +21,11 @@
 
 package ch.threema.app.mediaattacher;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
@@ -42,6 +39,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import java8.util.concurrent.CompletableFuture;
 
@@ -83,7 +81,7 @@ public class MediaAttachViewModel extends ViewModel {
 		savedState.set(KEY_SELECTED_MEDIA, selectedItems);
 
 		// Fetch initial data
-		if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+		if (ConfigUtils.isVideoImagePermissionGranted(ThreemaApplication.getAppContext())) {
 			this.fetchSmallMostRecentMediaBatch();
 			this.initialLoadDone.thenRunAsync(() -> {
 				Integer savedQuery = getLastQueryType();

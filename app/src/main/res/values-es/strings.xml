@@ -205,6 +205,7 @@
     <string name="unlinking_email">Se está quitando el vínculo</string>
     <string name="unlink">Quitar</string>
     <string name="threema_version">Versión</string>
+    <string name="threema_version_code">Código de versión</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">No hay conexión a internet, datos de exportación de ID no válidos o contraseña incorrecta.</string>
     <string name="prefs_header_other">Más</string>
     <string name="an_error_occurred">Se ha producido un error</string>
@@ -220,7 +221,6 @@
     <string name="ringtone_none">Desactivar audio</string>
     <string name="no_camera_installed">No hay disponible ninguna cámara adecuada.</string>
     <string name="save_message_action">Guardar</string>
-    <string name="saving_media">El elemento multimedia se está guardando</string>
     <string name="file_is_not_a_video">El archivo seleccionado no es un vídeo</string>
     <string name="masterkey_is_unlocked">La clave maestra está desbloqueada</string>
     <string name="file_too_large">El archivo ocupa más espacio del permitido (%1$d MB)</string>
@@ -667,6 +667,8 @@ almacenado.</string>
     <string name="really_leave_group_admin_message">Eres el administrador de este grupo. Si lo abandonas,
 		se quedará huérfano. Los demás miembros podrán charlar, pero no se podrán hacer cambios.</string>
     <string name="action_delete_group">Borrar grupo</string>
+    <string name="action_leave_and_delete_group">Salir y eliminar grupo</string>
+    <string name="action_dissolve_and_delete_group">Disolver y eliminar grupo</string>
     <string name="delete_my_group_message">¿Seguro que quieres borrar este grupo? Se eliminarán todos los miembros.</string>
     <string name="error_out_of_memory">Memoria insuficiente para completar la acción</string>
     <string name="configure">Configurar</string>
@@ -1020,11 +1022,11 @@ almacenado.</string>
     <string name="open_in_maps_app">Abrir en Maps</string>
     <string name="delete">Borrar</string>
     <string name="continue_recording">Continuar grabando</string>
+    <string name="whatsnew_title">Novedades de %1$s 5.2</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p>Esta versión se centra en la seguridad, la usabilidad y la modernización de la app.</p>
-		<p>Por demanda popular, la app se ha rediseñado completamente para hacerla totalmente compatible con el paradigma \"Material You\" introducido con Android 12. Un ajuste opcional de \"Colores dinámicos\" permite que la app se adapte a su esquema de colores personalizado.</p>
-		<p>Perfect Forward Secrecy ahora está habilitado por defecto para todos los contactos que tengan instalada una versión reciente de %1$s.</p>
-		<p>Otras mejoras incluyen un nuevo reproductor de mensajes de voz que continúa reproduciéndose en una notificación cuando la app se pone en segundo plano y una nueva guía de usuario cuando se solicitan permisos.</p>		]]></string>
+<p>Mensajes destacados: para encontrarlos fácilmente más tarde, marque los mensajes importantes con una estrella con una pulsación larga.</p>
+<p>Eliminación automática: elija que sus chats se vacíen automáticamente después de un periodo de tiempo seleccionable. La función de eliminación automática de mensajes se puede activar en la gestión de almacenamiento.</p>
+<p>Muchas otras mejoras y optimizaciones.</p> ]]></string>
     <string name="tap_to_start">Toque aquí para iniciar %s ahora.</string>
     <string name="two_years">2 años</string>
     <string name="invalid_backup_path">Ruta de backup no válida</string>
@@ -1412,7 +1414,7 @@ almacenado.</string>
     <string name="prefs_summary_hibernation_api_32">Para evitar que el sistema pause Threema tras un periodo prolongado de inactividad, desactiva el ajuste del sistema \"Eliminar permisos y liberar espacio\".</string>
     <string name="prefs_summary_hibernation_api">Para evitar que el sistema pause Threema tras un periodo prolongado de inactividad, desactiva el ajuste del sistema \"Pausar actividad de la app cuando no esté en uso\".</string>
     <string name="unable_to_fetch_configuration">No hemos podido acceder a los datos del servidor de configuración. Inténtalo de nuevo más tarde.</string>
-    <string name="rogue_device_warning">Se ha detectado una conexión desde otro dispositivo con la misma ID de Threema. ¿Ha utilizado recientemente su Threema ID en otro dispositivo? &lt;br&gt;&lt;br&gt; Si es así, ignore este mensaje. &lt;br&gt;&lt;br&gt; Si no lo ha hecho, su clave privada podría verse comprometida. <a href="https://threema.ch/en/faq/another_connection">siga nuestras sugerencias</a> para proteger su dispositivo y sus datos antes de crear una nueva ID.</string>
+    <string name="rogue_device_warning"><![CDATA[Se ha detectado una conexión desde otro dispositivo con la misma ID de Threema. ¿Ha utilizado recientemente su Threema ID en otro dispositivo? &lt;br&gt;&lt;br&gt; Si es así, ignore este mensaje. &lt;br&gt;&lt;br&gt; Si no lo ha hecho, su clave privada podría verse comprometida. <a href="https://threema.ch/en/faq/another_connection">siga nuestras sugerencias</a> para proteger su dispositivo y sus datos antes de crear una nueva ID.]]></string>
     <string name="fetch2_failure">Error en la sincronización con el servidor de aprovisionamiento.</string>
     <string name="no_members_support_group_calls">No hay más miembros en este grupo que puedan responder a llamadas grupales</string>
     <string name="group_calls">Llamadas grupales</string>
@@ -1442,6 +1444,7 @@ almacenado.</string>
     <string name="group_call_inactivity_left">Llamada grupal abandonada por inactividad</string>
     <string name="missing_permission_external_storage">No se ha podido copiar el archivo. Prueba lo siguiente:\n1. Abre los ajustes.\n2. Ve a \"Aplicaciones\" y selecciona \"Acceso especial a la app\".\n3. Toca en \"Acceso a todos los archivos\".\n4. Toca en los tres puntos de la parte superior derecha y selecciona \"Mostrar sistema\".\n5. Toca en \"Almacenamiento externo\" y verifica que la opción de \"Permitir acceso para gestionar todos los archivos\" está activada.\n6. Vuelve a intentar restaurar la copia de seguridad.</string>
     <string name="forward_security_downgraded_status_message">Se ha desactivado Perfect Forward Secrecy en esta conversación porque no es compatible con la versión de la app de su compañero de chat.</string>
+    <string name="forward_security_illegal_session_status_message">Se ha restablecido la sesión Perfect Forward Secrecy por invalidez.</string>
     <string name="crop_image_title">Recortar imagen</string>
     <string name="scroll_to_bottom">Desplácese hasta abajo</string>
     <string name="scroll_to_top">Desplácese hasta arriba</string>
@@ -1466,10 +1469,45 @@ almacenado.</string>
     <string name="permission_microphone">Micrófono</string>
     <string name="permission_read_phone_state">Teléfono</string>
     <string name="permission_enable_in_settings_rationale">Habilite el permiso desde la configuración. Seleccione «Permisos» y luego permita «%s».</string>
+    <string name="post_notification_permission_rationale">Para recibir notificaciones, tiene que permitir que %s muestre notificaciones.</string>
     <string name="group_name">Nombre del grupo</string>
+    <string name="star_message">Destacar mensaje</string>
+    <string name="starred_message">Mensaje destacado</string>
+    <string name="starred">Destacado</string>
+    <string name="starred_messages">Mensajes destacados</string>
+    <string name="sorting">Orden</string>
+    <string name="sort_by">Ordenar por...</string>
+    <string name="newest_first">más recientes primero</string>
+    <string name="oldest_first">más antiguos primero</string>
+    <string name="no_starred_messages">No hay mensajes destacados. Para destacar un mensaje, manténgalo pulsado y seleccione el botón de la estrella.</string>
+    <string name="remove_all_stars">Quitar todas las estrellas</string>
+    <string name="remove_star">Quitar estrella</string>
     <string name="samsung_permission_problem_explain">%1$s no puede acceder a los archivos multimedia debido a la falta de autorización de la aplicación del sistema. Para solucionarlo, asegúrese de que el interruptor junto a «Almacenamiento externo» esté habilitado en la siguiente pantalla y reinicie %1$s.</string>
     <string name="min_n_chars">mín. %d car.</string>
     <string name="prefs_title_grant_bluetooth_permission">Conceder permiso de Bluetooth</string>
+    <string name="safe_managed_password_confirm">Se ha definido una contraseña gestionada para su copia de seguridad de Threema Safe.\n\n¿Quiere utilizar esta contraseña? En caso de duda, póngase en contacto con su administrador.</string>
+    <string name="safe_managed_new_password_confirm">Se ha definido una nueva contraseña gestionada para su copia de seguridad de Threema Safe.\n\n¿Quiere sustituir la contraseña actual por esta nueva contraseña gestionada? En caso de duda, póngase en contacto con su administrador.</string>
+    <string name="real_not_now">Ahora no</string>
+    <string name="add_contact_in">Añadir contacto a...</string>
+    <string name="really_remove_all_stars">¿Seguro que quiere desmarcar como destacados todos los mensajes?</string>
+    <string name="prefs_sum_storage_management">Gestionar memoria y eliminar mensajes o archivos multimedia</string>
+    <string name="delete_automatically">Eliminar automáticamente</string>
+    <string name="keep_messages">Mantener mensajes durante:</string>
+    <string name="clean_up_manually">Vaciar manualmente</string>
+    <string name="forever">Para siempre</string>
+    <string name="autodelete_explain">Si se configura con cualquier otro valor que no sea \"para siempre\", los mensajes entrantes y salientes solo se conservarán durante el tiempo especificado y, transcurrido ese tiempo, se eliminarán y no podrán recuperarse. Esto incluye los mensajes no leídos y no enviados. Los mensajes de grupos de notas y los marcados con una estrella no se eliminarán nunca. El proceso de eliminación se produce periódicamente y no necesariamente inmediatamente después de la activación.</string>
+    <string name="autodelete_confirm">Los mensajes se eliminarán automáticamente pasados %s. ¿Continuar?</string>
+    <string name="autodelete_activated">Eliminación automática activada.</string>
+    <string name="autodelete_disabled">Eliminación automática desactivada.</string>
+    <string name="set_by_administrator">El valor ha sido establecido por el administrador y no se puede modificar.</string>
+    <string name="action_dissolve_group">Disolver grupo</string>
+    <string name="really_dissolve_group">Si simplemente disuelve el grupo, ya nadie podrá enviar mensajes nuevos al grupo y dejará de poder gestionarse. Aunque un grupo se haya disuelto, puede clonarse.</string>
+    <string name="status_orphaned_group">*Este grupo está huérfano*\nEl creador del grupo ha abandonado el grupo y ya no se puede mantener. Uno de los miembros que quedan puede clonar el grupo (a través de los detalles del grupo) para convertirse en el nuevo administrador.</string>
+    <string name="group_orphaned_notice">Este grupo está huérfano porque el creador del grupo lo ha abandonado. Clone el grupo para convertirse en el nuevo administrador.</string>
+    <string name="group_not_a_member_notice">Ya no forma parte de este grupo y no puede usarlo.</string>
+    <string name="group_dissolved_notice">Este grupo se ha disuelto y ya no puede usarse.</string>
+    <string name="directory_request_failed">Error en la solicitud de directorio. Inténtelo de nuevo.</string>
+    <string name="add_shortcut_exists">Ya existe un acceso directo para este objetivo.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>
@@ -1497,6 +1535,10 @@ almacenado.</string>
     <plurals name="file_saved">
         <item quantity="one">%d archivo guardado correctamente.</item>
         <item quantity="other">%d archivos guardados correctamente.</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="one">El elemento multimedia se está guardando</item>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Eliminar sondeo</item>

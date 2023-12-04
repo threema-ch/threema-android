@@ -28,20 +28,24 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import ch.threema.app.R;
 
 public class EmptyView extends LinearLayout {
-	private TextView emptyText;
-	private CircularProgressIndicator loadingView;
+	private final TextView emptyText;
+	private final ImageView emptyImageView;
+	private final CircularProgressIndicator loadingView;
 
 	public EmptyView(Context context) {
 		this(context, null, 0);
@@ -69,20 +73,22 @@ public class EmptyView extends LinearLayout {
 		setVisibility(View.GONE);
 
 		this.loadingView = (CircularProgressIndicator) getChildAt(0);
-		this.emptyText = (TextView) getChildAt(1);
+		this.emptyImageView = (ImageView) getChildAt(1);
+		this.emptyText = (TextView) getChildAt(2);
 	}
 
-	public void setup(int label) {
-		this.emptyText.setText(label);
+	public void setup(@StringRes int labelRes) {
+		this.emptyText.setText(labelRes);
 	}
 
 	public void setup(String label) {
 		this.emptyText.setText(label);
 	}
 
-	public void setColors(@ColorRes int background, @ColorRes int foreground) {
-		this.setBackgroundColor(getResources().getColor(background));
-		this.emptyText.setTextColor(getResources().getColor(foreground));
+	public void setup(@StringRes int labelRes, @DrawableRes int imageRes) {
+		this.emptyImageView.setImageResource(imageRes);
+		this.emptyImageView.setVisibility(VISIBLE);
+		this.emptyText.setText(labelRes);
 	}
 
 	public void setColorsInt(@ColorInt int background, @ColorInt int foreground) {
@@ -93,5 +99,6 @@ public class EmptyView extends LinearLayout {
 	public void setLoading(boolean isLoading) {
 		this.loadingView.setVisibility(isLoading ? VISIBLE : GONE);
 		this.emptyText.setVisibility(isLoading ? GONE : VISIBLE);
+		this.emptyImageView.setVisibility(isLoading ? GONE : VISIBLE);
 	}
 }

@@ -205,6 +205,7 @@ når den første meldingen mottas.</string>
     <string name="unlinking_email">Koble fra e-post</string>
     <string name="unlink">Koble fra</string>
     <string name="threema_version">Versjon</string>
+    <string name="threema_version_code">Versjon kode</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Ingen internettilkobling, ugyldig ID eksport informasjon eller feil passord</string>
     <string name="prefs_header_other">Annet</string>
     <string name="an_error_occurred">Det oppstod en feil</string>
@@ -220,7 +221,6 @@ når den første meldingen mottas.</string>
     <string name="ringtone_none">Stille</string>
     <string name="no_camera_installed">Kameraet er ikke tilgjengelig</string>
     <string name="save_message_action">Lagre</string>
-    <string name="saving_media">Lagre media</string>
     <string name="file_is_not_a_video">Valgt fil er ikke en video</string>
     <string name="masterkey_is_unlocked">Masternøkkel er låst opp</string>
     <string name="file_too_large">Filen er større enn maksimal tillatt størrelse på %1$d MB</string>
@@ -655,6 +655,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="backup_data">Sikkerhetskopi</string>
     <string name="really_leave_group_admin_message">Du er administrator for denne gruppen. Om du forlater den nå, vil den bli uten en leder. De andre medlemmene kan fortsatt holde samtalen gående, men det blir ikke mulig å gjøre endringer.</string>
     <string name="action_delete_group">Slett gruppe</string>
+    <string name="action_leave_and_delete_group">Forlat og slett gruppe</string>
+    <string name="action_dissolve_and_delete_group">Oppløs og slett gruppe</string>
     <string name="delete_my_group_message">Er du sikker på at du vil slette denne gruppen for godt? Alle meldinger vil bli slettet og gjenværende medlemmer kan ikke lenger bruke gruppen.</string>
     <string name="error_out_of_memory">Ikke nok minne til å fullføre denne handlingen</string>
     <string name="configure">Konfigurer</string>
@@ -1008,15 +1010,14 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="open_in_maps_app">Åpne i kart-app</string>
     <string name="delete">Slett</string>
     <string name="continue_recording">Fortsett opptak</string>
-    <string name="whatsnew_title">Velkommen til %1$s 5.1</string>
+    <string name="whatsnew_title">Hva er nytt i %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
-  <p>Denne versjonen fokuserer på sikkerhet, brukervennlighet og modernisering av applikasjonen.</p>
+  <p>Stjernemerking av meldinger: For å enkelt finne frem meldinger på et senere tidspunkt, merk de med en stjerne ved å langtrykke på meldingen.</p>
 
-  <p>Etter stor etterspørsel så har vi laget ett komplett nytt design for å ha full støtte for \"Material You\" designspråket som ble lansert sammen med Android 12. Du kan nå aktivere \"Dynamiske farger\" i innstillingene slik at appen nå følger fargepaletten til enheten din.</p>
+  <p>Automatisk sletting: Du kan nå rydde samtalene dine automatisk etter en gitt tid. Denne funksjonen kan du aktivere i lagringsinnstillingene.</p>
 
-  <p>Perfect Forward Secrecy er nå aktivert som standard for alle kontakter som har en nyere versjon av %1$s installert.</p>
+  <p>Flere forbedringer og optimaliseringer.</p>
 
-  <p>Andre forbedringer inkluderer en ny spiller for lydmeldinger som kan fortsette å spille av i bakgrunnen selv om appen ikke er i aktiv bruk. Og nye brukerveiledninger når Threema spør om tilganger på enheten din.</p>
 
   ]]></string>
     <string name="tap_to_start">Trykk her for å starte %s nå.</string>
@@ -1409,7 +1410,11 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="prefs_summary_hibernation_api_32">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Fjern tillatelser og frigjør plass\".</string>
     <string name="prefs_summary_hibernation_api">For å unngå at Threema blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Sett en app i dvale om den er ubrukt\"</string>
     <string name="unable_to_fetch_configuration">Ute av stand til å hente data fra konfigurasjonsserver. Prøv igjen senere.</string>
-    <string name="rogue_device_warning">Serveren har oppdaget en tilkobling med den samme Threema IDen, men fra en annen enhet. Har du nylig brukt Threema på en annen enhet?\n\nOm du har gjort det, så kan du ignorere denne meldingen.\n\nOm du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre versjon av Threema, vennligst kontakt brukerstøtte og send en loggfil om det er mulig. Vennligst <a href="https://threema.ch/en/faq/another_connection">følg våre råd</a> for å beskytte din enhet og dine data før du lager en ny ID.</string>
+    <string name="rogue_device_warning"><![CDATA[Serveren har oppdaget en tilkobling med den samme Threema IDen, men fra en annen enhet. Har du nylig brukt Threema på en annen enhet?
+
+Om du har gjort det, så kan du ignorere denne meldingen.
+
+Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre versjon av Threema, vennligst kontakt brukerstøtte og send en loggfil om det er mulig. Vennligst <a href="https://threema.ch/en/faq/another_connection">følg våre råd</a> for å beskytte din enhet og dine data før du lager en ny ID.]]></string>
     <string name="fetch2_failure">Synkronisering med server mislyktes.</string>
     <string name="no_members_support_group_calls">Det er ingen andre medlemmer i denne gruppen som er i stand til å svare på gruppesamtale</string>
     <string name="group_calls">Gruppesamtaler</string>
@@ -1439,6 +1444,7 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="group_call_inactivity_left">Gruppesamtale avsluttet på grunn av inaktivitet</string>
     <string name="missing_permission_external_storage">Ikke mulig å kopiere filen. Prøv følgende: \n1. Åpne innstillinger på enheten.\n2. Gå til \"Apper\" og velg \"Spesiell tilgang\" på menyen med tre prikker eller en nedtrekksmeny.\n3. Trykk på \"Lagring\" eller \"Tilgang til filer\".\n4. Trykk på de tre prikkene oppe i høyre hjørne og velg \"Vis systemet\". \n5. Trykk på \"Ekstern lagring\" og sørg for at \"Tilgang til alle filer\" er gitt.\n6. Prøv igjen å gjenopprette sikkerhetskopien.</string>
     <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy har blitt deaktivert for denne samtalen fordi app-versjonen til den du chattet med ikke støtter det.</string>
+    <string name="forward_security_illegal_session_status_message">Perfect Forward Secrecy økten ble resatt fordi den er ugyldig.</string>
     <string name="crop_image_title">Bekjær bilde</string>
     <string name="scroll_to_bottom">Rull til bunnen</string>
     <string name="scroll_to_top">Rull til toppen</string>
@@ -1463,10 +1469,45 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="permission_microphone">Mikrofon</string>
     <string name="permission_read_phone_state">Telefon</string>
     <string name="permission_enable_in_settings_rationale">Vennligst aktiver tillatelsen i innstillingene. Velg \"Tillatelser\" og gi tillatelse til \"%s\".</string>
+    <string name="post_notification_permission_rationale">For å motta varslinger så må du gi %s tilgang til å vise varslinger.</string>
     <string name="group_name">Gruppenavn</string>
+    <string name="star_message">Stjernemelding</string>
+    <string name="starred_message">Stjernemerket melding</string>
+    <string name="starred">Stjernemerket</string>
+    <string name="starred_messages">Stjernemerket meldinger</string>
+    <string name="sorting">Sortering</string>
+    <string name="sort_by">Sorter etter</string>
+    <string name="newest_first">nyeste først</string>
+    <string name="oldest_first">gamlest først</string>
+    <string name="no_starred_messages">Ingen stjernemerkede meldinger funnet. For å stjernemerke en melding, langtrykk på meldingen og trykk på stjernen.</string>
+    <string name="remove_all_stars">Fjern all stjernemerking</string>
+    <string name="remove_star">Fjern stjerne</string>
     <string name="samsung_permission_problem_explain">%1$s har ikke tilgang til mediafiler på grunn av en manglende tillatelse. For å fikse dette, sørg for at tillatelsen for \"Ekstern lagring\" er aktivert på den neste skjermen og deretter restart %1$s.</string>
     <string name="min_n_chars">min. %d tegn</string>
     <string name="prefs_title_grant_bluetooth_permission">Gi tilgang til Bluetooth</string>
+    <string name="safe_managed_password_confirm">Det har blitt definert et administrert passord for din Threema Safe sikkerhetskopi.\n\nVil du bruke dette passordet? Om du er i tvil, vennligst ta kontakt med din administrator.</string>
+    <string name="safe_managed_new_password_confirm">Det har blitt definert et nytt administrert passord for din Threema Safe sikkerhetskopi.\n\nVil du bytte ut det nåværende passordet med det nye, administrerte passordet? Om du er i tvil, vennligst ta kontakt med din administrator.</string>
+    <string name="real_not_now">Ikke nå</string>
+    <string name="add_contact_in">Legg til kontakt i...</string>
+    <string name="really_remove_all_stars">Vil du virkelig fjerne stjernemerking for alle meldinger?</string>
+    <string name="prefs_sum_storage_management">Administrer minne og slett meldinger eller media</string>
+    <string name="delete_automatically">Slett automatisk</string>
+    <string name="keep_messages">Behold meldinger i:</string>
+    <string name="clean_up_manually">Slett manuelt</string>
+    <string name="forever">For alltid</string>
+    <string name="autodelete_explain">Om du velger noe annet enn \"For alltid\", så blir både innkommende og utgående meldinger beholdt i den valgte tiden og deretter slettet for alltid. Dette inkluderer uleste og usendte meldinger. Meldinger i \"Note group\"/Lokal gruppe og stjernemerkede meldinger vil aldri bli slettet. Prosessen med å slette meldinger skjer periodevis og ikke nødvendigvis rett etter aktivering av funksjonen.</string>
+    <string name="autodelete_confirm">Meldinger vil bli slettet automatisk etter %s. Vil du fortsette?</string>
+    <string name="autodelete_activated">Automatisk sletting aktivert.</string>
+    <string name="autodelete_disabled">Automatisk sletting deaktivert.</string>
+    <string name="set_by_administrator">Verdien er angitt av administrator og kan ikke endres.</string>
+    <string name="action_dissolve_group">Oppløs guppe</string>
+    <string name="really_dissolve_group">Om du bare oppløser en gruppe, så kan ingen sende nye meldinger til gruppen, og den kan heller ikke administreres. Den oppløste gruppen kan likevel bli klonet.</string>
+    <string name="status_orphaned_group">*Gruppen mangler en administrator*\nGruppens grunnlegger har forlatt gruppen og den kan ikke lenger administreres. En av de gjenværende medlemmene kan klone gruppen (via gruppedetaljer) for å bli den nye administratoren.</string>
+    <string name="group_orphaned_notice">Gruppen mangler en administrator fordi grunnleggeren har forlatt gruppen. Vennligst klon gruppen for å bli den nye administratoren.</string>
+    <string name="group_not_a_member_notice">Du er ikke lenger medlem av gruppen og kan ikke bruke den lenger.</string>
+    <string name="group_dissolved_notice">Gruppen har blitt oppløst og kan ikke bli brukt lenger.</string>
+    <string name="directory_request_failed">Katalogforespørsel mislyktes. Prøv igjen.</string>
+    <string name="add_shortcut_exists">En snarvei for dette finnes allerede.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1494,6 +1535,10 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <plurals name="file_saved">
         <item quantity="one">%d fil lagret vellykket</item>
         <item quantity="other">%d filer lagret vellykket</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="one">Lagre media</item>
+        <item quantity="other"></item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Fjern avstemning</item>

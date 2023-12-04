@@ -126,7 +126,7 @@ public class GroupListAdapter extends FilterableListAdapter {
 		AdapterUtil.styleGroup(holder.nameView, groupService, groupModel);
 
 		holder.subjectView.setText(this.groupService.getMembersString(groupModel));
- 		holder.roleView.setImageResource(groupService.isGroupOwner(groupModel)
+ 		holder.roleView.setImageResource(groupService.isGroupCreator(groupModel)
 		    ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline)
 		    : R.drawable.ic_group_filled);
 

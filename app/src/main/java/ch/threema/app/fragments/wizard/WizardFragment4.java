@@ -212,6 +212,7 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
 		boolean getSafeForcePasswordEntry();
 		boolean getSafeSkipBackupPasswordEntry();
 		boolean isSafeEnabled();
+		boolean isSafeForced();
 		String getSafePassword();
 		ThreemaSafeServerInfo getSafeServerInfo();
 		boolean getSyncContacts();

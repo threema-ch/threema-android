@@ -85,7 +85,7 @@ public class DeleteConversationsAsyncTask extends AsyncTask<Void, Integer, Integ
 
 	@Override
 	protected void onPreExecute() {
-		CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.deleting_thread, R.string.please_wait, R.string.cancel, conversationModels.size());
+		CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(R.string.deleting_thread, R.string.cancel, conversationModels.size());
 		dialog.setOnCancelListener(new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -112,7 +112,7 @@ public class DeleteConversationsAsyncTask extends AsyncTask<Void, Integer, Integ
 			conversationService.clear(conversationModel);
 
 			if (conversationModel.isGroupConversation()) {
-				groupService.leaveGroup(conversationModel.getGroup());
+				groupService.leaveGroupFromLocal(conversationModel.getGroup());
 				groupService.remove(conversationModel.getGroup());
 			} else if (conversationModel.isDistributionListConversation()) {
 				distributionListService.remove(conversationModel.getDistributionList());

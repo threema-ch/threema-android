@@ -71,6 +71,9 @@ public abstract class StatusDataModel {
 					case ForwardSecurityStatusDataModel.TYPE:
 						data = new ForwardSecurityStatusDataModel();
 						break;
+					case GroupStatusDataModel.TYPE:
+						data = new GroupStatusDataModel();
+						break;
 				}
 
 				if (data != null) {

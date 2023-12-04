@@ -133,7 +133,7 @@ public class RecentListAdapter extends FilterableListAdapter {
 		if(conversationModel.isGroupConversation()) {
 			fromtext = NameUtil.getDisplayName(groupModel, this.groupService);
 			subjecttext = groupService.getMembersString(groupModel);
-			holder.groupView.setImageResource(groupService.isGroupOwner(groupModel) ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline) : R.drawable.ic_group_filled);
+			holder.groupView.setImageResource(groupService.isGroupCreator(groupModel) ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline) : R.drawable.ic_group_filled);
 		}
 		else if(conversationModel.isDistributionListConversation()) {
 			fromtext = NameUtil.getDisplayName(distributionListModel, this.distributionListService);

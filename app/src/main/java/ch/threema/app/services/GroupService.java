@@ -31,22 +31,14 @@ import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
-import ch.threema.domain.protocol.csp.messages.GroupCreateMessage;
-import ch.threema.domain.protocol.csp.messages.GroupDeletePhotoMessage;
-import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage;
-import ch.threema.domain.protocol.csp.messages.GroupRenameMessage;
-import ch.threema.domain.protocol.csp.messages.GroupRequestSyncMessage;
-import ch.threema.domain.protocol.csp.messages.GroupSetPhotoMessage;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -54,6 +46,16 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.access.GroupAccessModel;
 
+/**
+ * The group service provides basic group operations. These include accessing the group model,
+ * checking for group members, and also creating or updating groups. Note that the group service
+ * does <b>not</b> handle incoming group control messages, but is partially used for them.
+ * <br>
+ * Note that methods ending with {@code fromLocal} denote methods must only be called when the
+ * change has been triggered locally (including the web client) - in contrast to {@code fromRemote}
+ * and {@code fromSync}. {@code fromLocal} methods usually also send the corresponding group control
+ * messages and fire the group listeners.
+ */
 public interface GroupService extends AvatarService<GroupModel> {
 
 	/**
@@ -74,24 +76,33 @@ public interface GroupService extends AvatarService<GroupModel> {
 	@interface GroupState {}
 
 	interface GroupFilter {
-		boolean sortingByDate();
-		boolean sortingAscending();
-		boolean sortingByName();
-		boolean withDeleted();
-		boolean withDeserted(); // include groups that the user is no longer a member of
-	}
+		/**
+		 * Sort the group list by date. If {@link #sortByName()} also returns true, then it is still
+		 * sorted by date.
+		 */
+		boolean sortByDate();
 
-	class GroupCreateMessageResult {
-		protected GroupModel groupModel;
-		protected boolean success;
+		/**
+		 * Sort the group list by name. If {@link #sortByDate()} also returns true, then it is
+		 * sorted by date.
+		 */
+		boolean sortByName();
 
-		public GroupModel getGroupModel() {
-			return this.groupModel;
-		}
+		/**
+		 * Sort the group list ascending. This is only applied, if {@link #sortByDate()} or
+		 * {@link #sortByName()} return true.
+		 */
+		boolean sortAscending();
 
-		public boolean success() {
-			return this.success;
-		}
+		/**
+		 * Include deleted groups.
+		 */
+		boolean includeDeletedGroups();
+
+		/**
+		 * Include groups that the user is no longer a member of.
+		 */
+		boolean includeLeftGroups();
 	}
 
 	/**
@@ -114,9 +125,58 @@ public interface GroupService extends AvatarService<GroupModel> {
 		DISCARD_MESSAGE,
 	}
 
-	@Nullable GroupModel getById(int intExtra);
+	/**
+	 * Reset the group model caches. This may be needed if group changes have been made outside of
+	 * the group service.
+	 *
+	 * @param groupModelId the local id of the group model
+	 */
+	void resetCache(int groupModelId);
 
-	GroupModel getGroup(AbstractGroupMessage message) throws SQLException;
+	/**
+	 * Get the group with the local group id.
+	 *
+	 * @param groupId the group id
+	 * @return the group model of the requested group, or null if not available
+	 */
+	@Nullable GroupModel getById(int groupId);
+
+	/**
+	 * Get the group by api group id and creator identity from the given abstract group message.
+	 *
+	 * @param message the abstract group message
+	 * @return the group that belongs to the abstract group message, or null if no group was found
+	 */
+	@Nullable
+	GroupModel getByGroupMessage(@NonNull AbstractGroupMessage message);
+
+	/**
+	 * Get the group by api group id and creator identity.
+	 *
+	 * @param apiGroupId      the api group id
+	 * @param creatorIdentity the creator identity
+	 * @return the group model that matches the group id and creator identity, null if there is no
+	 * group with the given group id and creator
+	 */
+	@Nullable
+	GroupModel getByApiGroupIdAndCreator(@NonNull GroupId apiGroupId, @NonNull String creatorIdentity);
+
+	/**
+	 * Get all groups.
+	 *
+	 * @return a list of group models
+	 */
+	@NonNull
+	List<GroupModel> getAll();
+
+	/**
+	 * Get all groups according to the given filter.
+	 *
+	 * @param filter the filter that is applied
+	 * @return a list of group models
+	 */
+	@NonNull
+	List<GroupModel> getAll(@Nullable GroupFilter filter);
 
 	/**
 	 * Run the common group receive steps. Note that we cache messages that have triggered a group
@@ -131,15 +191,21 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * sent, and {@link CommonGroupReceiveStepsResult#DISCARD_MESSAGE} if the steps failed and the
 	 * message should be discarded.
 	 */
-	CommonGroupReceiveStepsResult runCommonGroupReceiveSteps(AbstractGroupMessage message);
+	CommonGroupReceiveStepsResult runCommonGroupReceiveSteps(@NonNull AbstractGroupMessage message);
 
-	boolean requestSync(AbstractGroupMessage msg);
-
-	int requestSync(String groupCreator, GroupId groupId) throws ThreemaException;
-
-	GroupCreateMessageResult processGroupCreateMessage(GroupCreateMessage groupCreateMessage);
-
-	GroupModel createGroup(String name, String[] groupMemberIdentities, Bitmap picture) throws Exception;
+	/**
+	 * Create a new group. This fires the listeners and sends the messages to the members. Note that
+	 * this method is not used for creating groups based on incoming group setup messages. This is
+	 * handled in {@link ch.threema.app.groupcontrol.csp.IncomingGroupSetupTask}.
+	 *
+	 * @param name                  the name of the group
+	 * @param groupMemberIdentities the group members
+	 * @param picture               the group picture
+	 * @return the group model of the created group
+	 * @throws Exception if creating the group failed
+	 */
+	@NonNull
+	GroupModel createGroupFromLocal(String name, String[] groupMemberIdentities, Bitmap picture) throws Exception;
 
 	/**
 	 * Update group properties and members.
@@ -163,42 +229,63 @@ public interface GroupService extends AvatarService<GroupModel> {
 		boolean removePhoto
 	) throws Exception;
 
-	boolean renameGroup(GroupRenameMessage renameMessage) throws ThreemaException;
-
 	/**
-	 * Rename the group. This renames the group regardless whether the new name is the same or not.
-	 * If the user is the owner of the group, a rename message is sent to every member of the group.
-	 * Note that this method does not trigger the group listeners.
+	 * Add a member to a group. Will fetch the identity from the server if not known. If "block
+	 * unknown" is enabled, the contact (and group member) will not be created if not already in
+	 * contacts. Note that this does not fire any listeners nor sending any messages.
 	 *
-	 * @param group   the group model that may be updated
-	 * @param newName the new name of the group
-	 * @throws ThreemaException if sending the group rename message fails
+	 * @return true if the identity is added or already in the group, false if no contact with this
+	 * identity exists
 	 */
-	void renameGroup(GroupModel group, String newName) throws ThreemaException;
+	boolean addMemberToGroup(@NonNull GroupModel groupModel, @NonNull String identity);
 
 	/**
-	 * @return return true if a new member added, false a existing group member updated or null if a error occurred
-	 * @throws InvalidEntryException
+	 * Remove a member from a group. Note that this does not fire any listener nor sending any
+	 * messages.
+	 *
+	 * @param groupModel the group that is updated
+	 * @param identity   the identity of the member that is added
+	 * @return true if successful, false if the member could not be removed
 	 */
-	@Nullable Boolean addMemberToGroup(GroupModel groupModel, String identity);
+	boolean removeMemberFromGroup(@NonNull GroupModel groupModel, @NonNull String identity);
 
 	/**
-	 * Add one or more members to a group. Will fetch identities from server if not known
-	 * If "block unknown" is enabled, new contacts will not be created for group members not already in contacts
-	 * @param groupModel Group model to add members to
-	 * @param identities Array of identities to add
-	 * @return true if members have been added, false if no members have been specified, null if new identities could not be fetched
+	 * Remove the group. This includes deleting files, messages, pending messages, group invite
+	 * links, ballots, group avatar, and the settings specified for the group. Note that only left
+	 * groups can be removed.
+	 * <p>
+	 * The group model and the members are kept in the database. This is required to handle future
+	 * messages in this group correctly ({@link #runCommonGroupReceiveSteps(AbstractGroupMessage)}).
+	 * <br>
+	 * This fires the group listener.
+	 *
+	 * @param groupModel the group that will be deleted
+	 * @return true if the group has been deleted, false otherwise
 	 */
-	Boolean addMembersToGroup(final GroupModel groupModel, final String[] identities);
+	boolean remove(@NonNull GroupModel groupModel);
 
-	boolean remove(GroupModel groupModel);
-	boolean remove(GroupModel groupModel, boolean silent);
-	boolean removeAllMembersAndLeave(GroupModel groupModel);
-	boolean leaveGroup(GroupModel groupModel);
-
+	/**
+	 * Delete all groups. Note that this deletes all groups without triggering the listeners. The
+	 * groups are deleted completely from the database - including the api id and members.
+	 */
 	void removeAll();
-	boolean updateGroupPhoto(GroupSetPhotoMessage msg) throws Exception;
-	boolean deleteGroupPhoto(GroupDeletePhotoMessage msg);
+
+	/**
+	 * Remove all members from the group and then leave the group also. This can only be done by the
+	 * group creator.
+	 *
+	 * @param groupModel the group model
+	 */
+	void dissolveGroupFromLocal(@NonNull GroupModel groupModel);
+
+	/**
+	 * Leave the group. This updates the database, triggers the listeners, and sends a group leave
+	 * message to the creator and the members.
+	 *
+	 * @param groupModel the group that will be left
+	 * @return true if the group could be left successfully, false otherwise
+	 */
+	boolean leaveGroupFromLocal(@Nullable GroupModel groupModel);
 
 	/**
 	 * Return the identities of all members of this group including the creator and including the current user
@@ -206,40 +293,109 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @return String array of identities (i.e. Threema IDs)
 	 */
 	@NonNull String[] getGroupIdentities(@NonNull GroupModel groupModel);
-	GroupMemberModel getGroupMember(GroupModel groupModel, String identity);
-	List<GroupMemberModel> getGroupMembers(GroupModel groupModel);
-
-	List<GroupModel> getAll();
-	List<GroupModel> getAll(GroupFilter filter);
-
-	Collection<ContactModel> getMembers(GroupModel groupModel);
-
-	String getMembersString(GroupModel groupModel);
-
-	GroupMessageReceiver createReceiver(GroupModel groupModel);
-
-	boolean isGroupOwner(GroupModel groupModel);
-	boolean isGroupMember(@NonNull GroupModel groupModel);
-
-	GroupModel getByApiGroupIdAndCreator(@NonNull GroupId apiGroupId, @NonNull String creatorIdentity);
-
-	boolean removeMemberFromGroup(GroupLeaveMessage msg);
 
 	/**
-	 * Count members in a group
-	 * @param groupModel
+	 * Return the group member models of the group. This includes the group creator - except in
+	 * orphaned groups.
+	 *
+	 * @param groupModel the group model
+	 * @return a list of the group members
+	 */
+	List<GroupMemberModel> getGroupMemberModels(@NonNull GroupModel groupModel);
+
+	/**
+	 * Get the group members including the group creator.
+	 *
+	 * @param groupModel the group model
+	 * @return a list of the contact models
+	 */
+	@NonNull
+	Collection<ContactModel> getMembers(@NonNull GroupModel groupModel);
+
+	/**
+	 * Get a string where the group members' display names are concatenated and separated by a
+	 * comma. This includes the group creator (except in orphaned groups).
+	 *
+	 * @param groupModel the group model
+	 * @return a string of all members names, including the group creator
+	 */
+	@NonNull
+	String getMembersString(@Nullable GroupModel groupModel);
+
+	/**
+	 * Create a receiver for the given group model.
+	 *
+	 * @param groupModel the group model
+	 * @return a group message receiver
+	 */
+	@NonNull
+	GroupMessageReceiver createReceiver(@NonNull GroupModel groupModel);
+
+	/**
+	 * Check whether the user is the creator of the given group.
+	 *
+	 * @param groupModel the group model
+	 * @return {@code true} if the user is the creator, {@code false} otherwise.
+	 */
+	boolean isGroupCreator(@Nullable GroupModel groupModel);
+
+	/**
+	 * Check whether the user is a member of the given group. Note that the group creator is also a
+	 * member.
+	 *
+	 * @param groupModel the group model
+	 * @return {@code true} if the user is a group member, {@code false} otherwise
+	 */
+	boolean isGroupMember(@NonNull GroupModel groupModel);
+
+	/**
+	 * Check whether the group is orphaned or not. In an orphaned group, the group creator is not a
+	 * member. Additionally, the user must not be the creator, otherwise it is a dissolved group.
+	 * Legacy groups where no members are stored, are orphaned if the user is not the creator.
+	 * Otherwise it is a dissolved group. Note that for legacy groups there is no need to
+	 * distinguish between orphaned or dissolved, as we do not provide an option to clone the group
+	 * anyway because the former members are not known.
+	 *
+	 * @param groupModel the group model
+	 * @return true if the group is orphaned, false otherwise
+	 */
+	boolean isOrphanedGroup(@NonNull GroupModel groupModel);
+
+	/**
+	 * Count members in a group. This includes the group creator.
+	 *
+	 * @param groupModel the group model
 	 * @return Number of members in this group including group creator and the current user
 	 */
 	int countMembers(@NonNull GroupModel groupModel);
 
 	/**
-	 * Whether the provided group is an implicit note group (i.e. data is kept local)
-	 * @param groupModel of the group
+	 * Whether the provided group is an implicit note group (i.e. data is kept local). A group is
+	 * only a notes group, if the user is the creator of the group and there are no other members.
+	 *
+	 * @param groupModel the model of the group
 	 * @return true if the group is a note group, false otherwise
 	 */
 	boolean isNotesGroup(@NonNull GroupModel groupModel);
 
-	int getOtherMemberCount(GroupModel model);
+	/**
+	 * Get the group state of a group.
+	 *
+	 * @param groupModel the group model
+	 * @return the group state of the group, UNDEFINED when the group model is null
+	 */
+	@GroupState
+	int getGroupState(@Nullable GroupModel groupModel);
+
+	/**
+	 * Get the number of other members in the group (including the group creator). Note that in
+	 * orphaned groups, this may return zero even if the user is not the creator. To check for notes
+	 * groups use {@link #isNotesGroup(GroupModel)}.
+	 *
+	 * @param model the group model
+	 * @return the number of other members
+	 */
+	int getOtherMemberCount(@NonNull GroupModel model);
 
 	/**
 	 * Get a map from the group member identity to its id color index.
@@ -247,15 +403,55 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @param model the group model
 	 * @return a map with the ID color indices of the members
 	 */
-	Map<String, Integer> getGroupMemberIDColorIndices(GroupModel model);
+	@NonNull
+	Map<String, Integer> getGroupMemberIDColorIndices(@NonNull GroupModel model);
 
-	boolean sendEmptySync(GroupModel groupModel, String receiverIdentity);
+	/**
+	 * Send a group sync request for the group id to the creator.
+	 *
+	 * @param groupCreator the group creator identity
+	 * @param groupId the local group id
+	 * @return true if the request has been sent, false otherwise
+	 * @throws ThreemaException if the encoding of the message fails
+	 */
+	boolean requestSync(String groupCreator, GroupId groupId) throws ThreemaException;
 
+	/**
+	 * Send a group setup message with an empty member list to the given identity.
+	 *
+	 * @param groupModel       the group model
+	 * @param receiverIdentity the receiver identity
+	 * @return true if the message was sent successfully, false otherwise
+	 */
+	boolean sendEmptyGroupSetup(@NonNull GroupModel groupModel, @NonNull String receiverIdentity);
+
+	/**
+	 * Send a group sync to the members of the group. This includes a group setup message, followed
+	 * by a group name message and finally a set profile picture or delete profile picture message.
+	 *
+	 * @param groupModel the group model
+	 * @return true if the sync was successful, false otherwise
+	 */
 	boolean sendSync(GroupModel groupModel);
-	boolean sendSync(GroupModel groupModel, String[] memberIdentities);
-	boolean processRequestSync(GroupRequestSyncMessage msg);
 
-	List<GroupModel> getGroupsByIdentity(String identity);
+	/**
+	 * Send a group sync to the members of the group. This includes a group setup message, followed
+	 * by a group name message and finally a set profile picture or delete profile picture message.
+	 *
+	 * @param groupModel         the group model
+	 * @param receiverIdentities to these identities the sync messages are sent
+	 * @return true if the sync messages have been sent to all given identities, false otherwise
+	 */
+	boolean sendSync(GroupModel groupModel, String[] receiverIdentities);
+
+	/**
+	 * Get all the groups where the given identity is a member (or creator) of.
+	 *
+	 * @param identity the identity
+	 * @return a list of groups
+	 */
+	@NonNull
+	List<GroupModel> getGroupsByIdentity(@Nullable String identity);
 
 	/**
 	 * Get group status info for the provided group
@@ -263,7 +459,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @param allowEmpty Whether to allow access even if there are no other members in this group
 	 * @return GroupAccessModel
 	 */
-	GroupAccessModel getAccess(GroupModel groupModel, boolean allowEmpty);
+	GroupAccessModel getAccess(@Nullable GroupModel groupModel, boolean allowEmpty);
 
 	@Deprecated
 	int getUniqueId(GroupModel groupModel);
@@ -273,10 +469,22 @@ public interface GroupService extends AvatarService<GroupModel> {
 
 	void setIsArchived(GroupModel groupModel, boolean archived);
 
+	/**
+	 * Check whether the group contains the maximum supported amount of members.
+	 *
+	 * @param groupModel the group model
+	 * @return true if the group is full, false otherwise
+	 */
 	boolean isFull(GroupModel groupModel);
 
-	Intent getGroupEditIntent(@NonNull GroupModel groupModel, @NonNull Activity activity);
-	void save(GroupModel model);
+	/**
+	 * Get the intent to open the group details.
+	 *
+	 * @param groupModel the group model
+	 * @param activity   the current activity
+	 * @return the intent to open the group details
+	 */
+	Intent getGroupDetailIntent(@NonNull GroupModel groupModel, @NonNull Activity activity);
 
 	/**
 	 * Add or update an identity-specific state to the specified group message

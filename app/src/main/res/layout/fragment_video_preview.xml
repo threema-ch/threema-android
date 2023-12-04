@@ -8,11 +8,18 @@
 	android:layout_height="match_parent"
 	android:background="@color/gallery_background">
 
-	<androidx.media3.ui.PlayerView
-		android:id="@+id/video_view"
+	<com.alexvasilkov.gestures.views.GestureFrameLayout
+		android:id="@+id/video_gesture_frame"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:controller_layout_id="@layout/exo_player_control_view_central_button_only"
-		app:use_controller="true" />
+		android:layout_height="match_parent">
+
+		<androidx.media3.ui.PlayerView
+			android:id="@+id/video_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			app:controller_layout_id="@layout/exo_player_control_view_central_button_only"
+			app:use_controller="true" />
+
+	</com.alexvasilkov.gestures.views.GestureFrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

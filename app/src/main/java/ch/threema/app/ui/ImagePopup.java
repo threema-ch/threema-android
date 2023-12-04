@@ -36,11 +36,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 
-import com.google.android.material.card.MaterialCardView;
-
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
@@ -61,7 +57,7 @@ public class ImagePopup extends DimmingPopupWindow {
 
 		topLayout = LayoutInflater.from(context).inflate(R.layout.popup_image_nomargin, null, true);
 
-		this.imageView = topLayout.findViewById(R.id.image_view);
+		this.imageView = topLayout.findViewById(R.id.thumbnail_view);
 
 		int borderSize = context.getResources().getDimensionPixelSize(R.dimen.image_popup_screen_border_width);
 		setContentView(topLayout);

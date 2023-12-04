@@ -13,6 +13,8 @@
 
 	<style name="AppBaseTheme" parent="Theme.Material3.Light">
 		<item name="elevationOverlayEnabled">true</item>
+		<!-- disable forced dark mode as used by MIUI 12.x -->
+		<item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
 
 		<item name="colorPrimary">@color/md_theme_light_primary</item>
 		<item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
@@ -96,6 +98,7 @@
 		<item name="snackbarButtonStyle">@style/Threema.Snackbar.ButtonStyle</item>
 		<item name="snackbarTextViewStyle">@style/Threema.Snackbar.TextViewStyle</item>
 		<item name="materialSearchBarStyle">@style/Threema.SearchBar.Style</item>
+		<item name="actionOverflowButtonStyle">@style/Threema.ActionOverflowButtonStyle</item>
 
 		<!-- preferences -->
 		<item name="preferenceFragmentCompatStyle">@style/Threema.MaterialPreferencesFragment</item>
@@ -118,6 +121,13 @@
 	<style name="Theme.Threema.WithToolbar" parent="AppBaseTheme">
 		<item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
+	</style>
+
+	<style name="Theme.Threema.StarredMessages" parent="Theme.Threema.WithToolbar">
+		<item name="windowActionBar">false</item>
+		<item name="windowNoTitle">true</item>
+
+		<item name="actionModeStyle">@style/Threema.ActionMode.StarredMessages</item>
 	</style>
 
 	<style name="Theme.Threema.WithToolbar.NoAnim" parent="Theme.Threema.WithToolbar">

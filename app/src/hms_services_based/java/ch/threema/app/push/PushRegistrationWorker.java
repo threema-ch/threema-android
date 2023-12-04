@@ -23,7 +23,7 @@ package ch.threema.app.push;
 
 import android.content.Context;
 
-import com.huawei.agconnect.config.AGConnectServicesConfig;
+import com.huawei.agconnect.AGConnectOptionsBuilder;
 import com.huawei.hms.aaid.HmsInstanceId;
 
 import org.slf4j.Logger;
@@ -65,8 +65,8 @@ public class PushRegistrationWorker extends Worker {
 		String error = null;
 		if (clearToken) {
 			try {
-				// Obtain the app ID from the agconnect-service.json file.
-				String appId = AGConnectServicesConfig.fromContext(appContext).getString(APP_ID_CONFIG_FIELD);
+
+				String appId = getAppId(appContext);
 
 				// Delete the token.
 				HmsInstanceId.getInstance(appContext).deleteToken(appId, TOKEN_SCOPE);
@@ -79,8 +79,9 @@ public class PushRegistrationWorker extends Worker {
 		}
         else {
 			try {
-				String appId = AGConnectServicesConfig.fromContext(appContext).getString(APP_ID_CONFIG_FIELD);
+				String appId = getAppId(appContext);
 
+				// Note that this will only work in release builds as the app signature is tested by huawei
 				String token = HmsInstanceId.getInstance(appContext).getToken(appId, TOKEN_SCOPE);
 				logger.info("Received HMS registration token");
 				PushUtil.sendTokenToServer(appContext, appId + '|' +token, ProtocolDefines.PUSHTOKEN_TYPE_HMS);
@@ -97,6 +98,13 @@ public class PushRegistrationWorker extends Worker {
 
 		// required by the Worker interface but is not used for any error handling in the push registration process
 		return Result.success();
+	}
+
+	/**
+	 * Obtain the app ID from the agconnect-service.json file.
+	 */
+	private String getAppId(Context context) {
+		return new AGConnectOptionsBuilder().build(context).getString(APP_ID_CONFIG_FIELD);
 	}
 
 }

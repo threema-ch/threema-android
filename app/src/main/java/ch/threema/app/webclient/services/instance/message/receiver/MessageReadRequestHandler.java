@@ -21,15 +21,15 @@
 
 package ch.threema.app.webclient.services.instance.message.receiver;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.WorkerThread;
+
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
 
-import java.sql.SQLException;
 import java.util.Map;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.WorkerThread;
 import ch.threema.app.routines.ReadMessagesRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
@@ -94,55 +94,55 @@ public class MessageReadRequestHandler extends MessageReceiver {
 				break;
 		}
 
-		if(receiver != null) {
-			try {
-				final MessageService.MessageFilter filter = new MessageService.MessageFilter() {
-					@Override
-					public long getPageSize() {
-						return 0;
-					}
+		if (receiver != null) {
+			final MessageService.MessageFilter filter = new MessageService.MessageFilter() {
+				@Override
+				public long getPageSize() {
+					return 0;
+				}
 
-					@Override
-					public Integer getPageReferenceId() {
-						return null;
-					}
+				@Override
+				public Integer getPageReferenceId() {
+					return null;
+				}
 
-					@Override
-					public boolean withStatusMessages() {
-						return false;
-					}
+				@Override
+				public boolean withStatusMessages() {
+					return false;
+				}
 
-					@Override
-					public boolean withUnsaved() {
-						return false;
-					}
+				@Override
+				public boolean withUnsaved() {
+					return false;
+				}
 
-					@Override
-					public boolean onlyUnread() {
-						return true;
-					}
+				@Override
+				public boolean onlyUnread() {
+					return true;
+				}
 
-					@Override
-					public boolean onlyDownloaded() {
-						return false;
-					}
+				@Override
+				public boolean onlyDownloaded() {
+					return false;
+				}
 
-					@Override
-					public MessageType[] types() {
-						return new MessageType[0];
-					}
+				@Override
+				public MessageType[] types() {
+					return new MessageType[0];
+				}
 
-					@Override
-					public int[] contentTypes() {
-						return null;
-					}
-				};
-				new ReadMessagesRoutine(receiver.loadMessages(filter), messageService, notificationService).run();
-				notificationService.cancel(receiver);
-			} catch (SQLException e) {
-				logger.error("Exception", e);
-				//do nothing more
-			}
+				@Override
+				public int[] contentTypes() {
+					return null;
+				}
+
+				@Override
+				public int[] displayTags() {
+					return null;
+				}
+			};
+			new ReadMessagesRoutine(receiver.loadMessages(filter), messageService, notificationService).run();
+			notificationService.cancel(receiver);
 		}
 	}
 

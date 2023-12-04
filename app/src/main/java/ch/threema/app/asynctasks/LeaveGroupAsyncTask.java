@@ -63,7 +63,7 @@ public class LeaveGroupAsyncTask extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected Void doInBackground(Void... params) {
-		groupService.leaveGroup(groupModel);
+		groupService.leaveGroupFromLocal(groupModel);
 		return null;
 	}
 

@@ -21,9 +21,10 @@
 
 package ch.threema.app.services;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -34,10 +35,18 @@ import ch.threema.storage.models.GroupModel;
 public interface ConversationService {
 
 	interface Filter {
-		boolean onlyUnread();
-		boolean noDistributionLists();
-		boolean noHiddenChats();
-		boolean noInvalid();
+		default boolean onlyUnread() {
+			return false;
+		}
+		default boolean noDistributionLists() {
+			return false;
+		}
+		default boolean noHiddenChats() {
+			return false;
+		}
+		default boolean noInvalid() {
+			return false;
+		}
 		default String filterQuery() {
 			return null;
 		}
@@ -132,6 +141,12 @@ public interface ConversationService {
 	 * clear a conversation (remove all messages)
 	 */
 	boolean clear(ConversationModel conversation);
+
+	/**
+	 * clear a conversation (remove all messages)
+	 * @param silentMessageUpdate do not fire MessageListener updates if true
+	 */
+	boolean clear(ConversationModel conversation, boolean silentMessageUpdate);
 
 	/**
 	 * clear multiple conversations and fire appropriate listeners. this does not delete the messages itself!

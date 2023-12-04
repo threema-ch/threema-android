@@ -21,6 +21,8 @@
 
 package ch.threema.app.services;
 
+import static ch.threema.app.utils.AutoDeleteUtil.validateKeepMessageDays;
+
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -216,11 +218,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean isEnterToSend() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__enter_to_send));
-	}
-
-	@Override
-	public boolean isFullscreenIme() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__fullscreen_ime));
 	}
 
 	@Override
@@ -1628,5 +1625,66 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setBackupWarningDismissedTime(long time) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__backup_warning_dismissed_time), time);
+	}
+
+	@Override
+	@StarredMessagesSortOrder
+	public int getStarredMessagesSortOrder() {
+		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__starred_messages_sort_order));
+	}
+
+	@Override
+	public void setStarredMessagesSortOrder(@StarredMessagesSortOrder int order) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__starred_messages_sort_order), order);
+	}
+
+	@Override
+	public void setAutoDeleteDays(int i) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__auto_delete_days), i);
+	}
+
+	@Override
+	public int getAutoDeleteDays() {
+		Integer autoDeleteDays = this.preferenceStore.getInt(this.getKeyName(R.string.preferences__auto_delete_days));
+		if (autoDeleteDays != null) {
+			return validateKeepMessageDays(autoDeleteDays);
+		}
+		return 0;
+	}
+
+	public void setLastNotificationRationaleShown(long date) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__last_notification_rationale_shown), date);
+	}
+
+	@Override
+	public long getLastNotificationRationaleShown() {
+		return this.preferenceStore.getDateAsLong(this.getKeyName(R.string.preferences__last_notification_rationale_shown));
+	}
+
+    @Override
+    public void getMediaGalleryContentTypes(boolean[] contentTypes) {
+		Arrays.fill(contentTypes, true);
+		JSONArray array = this.preferenceStore.getJSONArray(this.getKeyName(R.string.preferences__media_gallery_content_types), false);
+		if (array != null && array.length() > 0 && array.length() == contentTypes.length) {
+			for (int i = 0; i < array.length(); i++) {
+				try {
+					boolean value = array.getBoolean(i);
+					contentTypes[i] = value;
+				} catch (JSONException e) {
+					logger.error("JSON error", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void setMediaGalleryContentTypes(boolean[] contentTypes) {
+		JSONArray jsonArray;
+		try {
+			jsonArray = new JSONArray(contentTypes);
+			this.preferenceStore.save(this.getKeyName(R.string.preferences__media_gallery_content_types), jsonArray);
+		} catch (JSONException e) {
+			logger.error("JSON error", e);
+		}
 	}
 }

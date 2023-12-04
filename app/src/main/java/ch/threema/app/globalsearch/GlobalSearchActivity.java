@@ -25,9 +25,11 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_SETTLING;
+import static ch.threema.app.services.MessageServiceImpl.FILTER_CHATS;
+import static ch.threema.app.services.MessageServiceImpl.FILTER_GROUPS;
+import static ch.threema.app.services.MessageServiceImpl.FILTER_INCLUDE_ARCHIVED;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,31 +54,25 @@ import com.google.android.material.shape.MaterialShapeDrawable;
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.utils.EditTextUtil;
+import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 
 public class GlobalSearchActivity extends ThreemaToolbarActivity implements ThreemaSearchView.OnQueryTextListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalSearchActivity");
 	private static final int QUERY_MIN_LENGTH = 2;
-	private static final long QUERY_TIMEOUT_MS = 500;
-
-	public static final int FILTER_CHATS = 0x1;
-	public static final int FILTER_GROUPS = 0x2;
-	public static final int FILTER_INCLUDE_ARCHIVED = 0x4;
+	private static final long GLOBAL_SEARCH_QUERY_TIMEOUT_MS = 500;
 
 	private GlobalSearchAdapter chatsAdapter;
 	private GlobalSearchViewModel chatsViewModel;
@@ -87,13 +83,13 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 	private ContactService contactService;
 	private GroupService groupService;
 
-	private int filterFlags = FILTER_CHATS | FILTER_GROUPS | FILTER_INCLUDE_ARCHIVED;
+	private @MessageService.MessageFilterFlags int filterFlags = FILTER_CHATS | FILTER_GROUPS | FILTER_INCLUDE_ARCHIVED;
 	private String queryText;
 	private final Handler queryHandler = new Handler();
 	private final Runnable queryTask = new Runnable() {
 		@Override
 		public void run() {
-			chatsViewModel.onQueryChanged(queryText, filterFlags);
+			chatsViewModel.onQueryChanged(queryText, filterFlags, false, false);
 			chatsAdapter.onQueryChanged(queryText);
 		}
 	};
@@ -104,7 +100,6 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 		return true;
 	}
 
-	@SuppressLint("StaticFieldLeak")
 	@Override
 	public boolean onQueryTextChange(String newText) {
 		queryText = newText;
@@ -113,9 +108,9 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 
 			queryHandler.removeCallbacksAndMessages(null);
 			if (queryText != null && queryText.length() >= QUERY_MIN_LENGTH) {
-				queryHandler.postDelayed(queryTask, QUERY_TIMEOUT_MS);
+				queryHandler.postDelayed(queryTask, GLOBAL_SEARCH_QUERY_TIMEOUT_MS);
 			} else {
-				chatsViewModel.onQueryChanged(null, filterFlags);
+				chatsViewModel.onQueryChanged(null, filterFlags, false, false);
 				chatsAdapter.onQueryChanged(null);
 			}
 		}
@@ -182,12 +177,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 			}
 		});
 
-		findViewById(R.id.parent_layout).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				bottomSheetBehavior.setState(STATE_HIDDEN);
-			}
-		});
+		findViewById(R.id.parent_layout).setOnClickListener(v -> bottomSheetBehavior.setState(STATE_HIDDEN));
 
 		getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
 
@@ -197,12 +187,17 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 		emptyTextView = findViewById(R.id.empty_text);
 		progressBar = findViewById(R.id.progress);
 
-		chatsAdapter = new GlobalSearchAdapter(this, Glide.with(this));
-		chatsAdapter.setOnClickItemListener(this::showMessage);
+		chatsAdapter = new GlobalSearchAdapter(
+			this,
+			Glide.with(this),
+			R.layout.item_global_search,
+			17
+		);
+		chatsAdapter.setOnClickItemListener((messageModel, view, position) -> showMessage(messageModel, view));
 
-		setupChip(R.id.chats, FILTER_CHATS);
-		setupChip(R.id.groups, FILTER_GROUPS);
-		setupChip(R.id.archived, FILTER_INCLUDE_ARCHIVED);
+		setupChip(R.id.chats, FILTER_CHATS, true);
+		setupChip(R.id.groups, FILTER_GROUPS, true);
+		setupChip(R.id.archived, FILTER_INCLUDE_ARCHIVED, true);
 
 		RecyclerView chatsRecyclerView = this.findViewById(R.id.recycler_chats);
 		chatsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -247,17 +242,17 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 		return true;
 	}
 
-	private void setupChip(@IdRes int id, int flag) {
+	private void setupChip(@IdRes int id, int flag, boolean checked) {
 		// https://github.com/material-components/material-components-android/issues/1419
 		Chip chip = findViewById(id);
-		chip.setChecked(true);
+		chip.setChecked(checked);
 		chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			if (isChecked) {
 				filterFlags |= flag;
 			} else {
 				filterFlags  &= ~flag;
 			}
-			chatsViewModel.onQueryChanged(queryText, filterFlags);
+			chatsViewModel.onQueryChanged(queryText, filterFlags, false, false);
 		});
 	}
 
@@ -270,19 +265,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 			EditTextUtil.hideSoftKeyboard(searchView);
 		}
 
-		Intent intent = new Intent(this, ComposeMessageActivity.class);
-
-		if (messageModel instanceof GroupMessageModel) {
-			intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, ((GroupMessageModel) messageModel).getGroupId());
-		} else if (messageModel instanceof DistributionListMessageModel) {
-			intent.putExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST, ((DistributionListMessageModel) messageModel).getDistributionListId());
-		} else {
-			intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, messageModel.getIdentity());
-		}
-		intent.putExtra(ComposeMessageFragment.EXTRA_API_MESSAGE_ID, messageModel.getApiMessageId());
-		intent.putExtra(ComposeMessageFragment.EXTRA_SEARCH_QUERY, queryText);
-
-		startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
+		startActivityForResult(IntentDataUtil.getJumpToMessageIntent(this, messageModel), ThreemaActivity.ACTIVITY_ID_COMPOSE_MESSAGE);
 
 		finish();
 	}

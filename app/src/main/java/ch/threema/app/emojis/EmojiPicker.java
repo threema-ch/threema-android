@@ -34,17 +34,17 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.tabs.TabLayout;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.R;
 import ch.threema.app.ui.LockableViewPager;
-import ch.threema.app.utils.EditTextUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.EmojiSearchListener {
@@ -163,11 +163,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 		this.emojiService.saveRecentEmojis();
 	}
 
-	public void onKeyboardShown() {
-		if (!emojiSearchWidget.isShown() || !emojiSearchWidget.searchInput.hasFocus()) {
-			hide();
-		}
-	}
+	public void onKeyboardShown() {}
 
 	public void onKeyboardHidden() {
 		if (emojiSearchWidget.isShown()) {
@@ -201,7 +197,6 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 		setLayoutParams(searchLayoutParams);
 		emojiSearchWidget.setVisibility(VISIBLE);
 		emojiSearchWidget.searchInput.requestFocus();
-		EditTextUtil.showSoftKeyboard(emojiSearchWidget.searchInput);
 		pickerHeader.setVisibility(GONE);
 		viewPager.setVisibility(GONE);
 	}
@@ -388,9 +383,13 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 		refreshRecentView();
 	}
 
+	public boolean isEmojiSearchShown() {
+		return emojiSearchWidget.isShown();
+	}
+
 	public interface EmojiPickerListener {
-		void onEmojiPickerOpen();
-		void onEmojiPickerClose();
+		default void onEmojiPickerOpen() {};
+		default void onEmojiPickerClose() {};
 	}
 
 	public interface EmojiKeyListener {

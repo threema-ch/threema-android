@@ -3,6 +3,8 @@
 
 	<style name="AppBaseTheme" parent="Theme.Material3.Dark">
 		<item name="elevationOverlayEnabled">true</item>
+		<!-- disable forced dark mode as used by MIUI 12.x -->
+		<item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
 
 		<item name="colorPrimary">@color/md_theme_dark_primary</item>
 		<item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>

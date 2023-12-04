@@ -10,10 +10,20 @@
 		"CN_back":"connect-drcn.hispace.hicloud.com",
 		"DE":"connect-dre.dbankcloud.cn",
 		"DE_back":"connect-dre.hispace.hicloud.com",
-		"RU":"connect-drru.dbankcloud.cn",
-		"RU_back":"connect-drru.hispace.hicloud.com",
+		"RU":"connect-drru.hispace.dbankcloud.ru",
+		"RU_back":"connect-drru.hispace.dbankcloud.cn",
 		"SG":"connect-dra.dbankcloud.cn",
 		"SG_back":"connect-dra.hispace.hicloud.com"
+	},
+	"websocketgw_all":{
+		"CN":"connect-ws-drcn.hispace.dbankcloud.cn",
+		"CN_back":"connect-ws-drcn.hispace.dbankcloud.com",
+		"DE":"connect-ws-dre.hispace.dbankcloud.cn",
+		"DE_back":"connect-ws-dre.hispace.dbankcloud.com",
+		"RU":"connect-ws-drru.hispace.dbankcloud.ru",
+		"RU_back":"connect-ws-drru.hispace.dbankcloud.cn",
+		"SG":"connect-ws-dra.hispace.dbankcloud.cn",
+		"SG_back":"connect-ws-dra.hispace.dbankcloud.com"
 	},
 	"client":{
 		"cp_id":"5190041000024384032",
@@ -24,16 +34,32 @@
 		"api_key":"CgB6e3x98OfTmUe8UCBVyRYd0YNHT43DjNTgXXxNV3MEWkr8+vKRC5vhyWbdX/JFZqDA+MTdmBPjCrx6YQWHm6aC",
 		"package_name":"ch.threema.app.work.hms"
 	},
+	"app_info":{
+		"app_id":"103858571",
+		"package_name":"ch.threema.app.work.hms"
+	},
 	"region":"DE",
-	"configuration_version":"2.0",
+	"configuration_version":"3.0",
 	"appInfos":[
 		{
-			"package_name":"ch.threema.app.hms",
-			"app_id":"103713829"
+			"package_name":"ch.threema.app.work.hms",
+			"client":{
+				"app_id":"103858571"
 			},
-		{
+			"app_info":{
 				"package_name":"ch.threema.app.work.hms",
 				"app_id":"103858571"
+			}
+		},
+		{
+			"package_name":"ch.threema.app.hms",
+			"client":{
+				"app_id":"103713829"
+			},
+			"app_info":{
+				"package_name":"ch.threema.app.hms",
+				"app_id":"103713829"
+			}
 		}
 	]
 }

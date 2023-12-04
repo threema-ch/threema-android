@@ -47,7 +47,7 @@ class MessageListAdapterItem(
     private val mutedChatsListService: DeadlineListService,
     private val mentionOnlyChatsListService: DeadlineListService,
     private val ringtoneService: RingtoneService,
-    hiddenChatsListService: DeadlineListService
+    private val hiddenChatsListService: DeadlineListService
 ) {
 
     val group: GroupModel? = conversationModel.group
@@ -61,7 +61,8 @@ class MessageListAdapterItem(
     private val uniqueId = conversationModel.receiver?.uniqueIdString ?: ""
     val uid: String = conversationModel.uid
 
-    val isHidden = hiddenChatsListService.has(uniqueId)
+    val isHidden: Boolean
+        get() = hiddenChatsListService.has(uniqueId)
     val isPinTagged = conversationModel.isPinTagged
     val isTyping = conversationModel.isTyping
 

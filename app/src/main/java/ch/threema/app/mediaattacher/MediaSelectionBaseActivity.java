@@ -30,13 +30,10 @@ import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_SELECTED;
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -68,7 +65,6 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.PopupMenuWrapper;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -292,7 +288,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		MaterialToolbar previewToolbar = findViewById(R.id.preview_toolbar);
 		previewToolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-		if (!ConfigUtils.isPermissionGranted(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+		if (!ConfigUtils.isVideoImagePermissionGranted(this)) {
 			findViewById(R.id.permission_container).setVisibility(View.VISIBLE);
 			this.permissionButton.setOnClickListener(v -> ConfigUtils.requestStoragePermissions(MediaSelectionBaseActivity.this, null, PERMISSION_REQUEST_ATTACH_STORAGE));
 		} else {
@@ -573,8 +569,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	 * @return true if option has been enabled by user and permissions are available
 	 */
 	protected boolean shouldShowMediaGrid() {
-		return preferenceService.isShowImageAttachPreviewsEnabled() &&
-			ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+		return preferenceService.isShowImageAttachPreviewsEnabled()
+			&& ConfigUtils.isVideoImagePermissionGranted(this);
 	}
 
 	protected void setListeners() {
@@ -629,7 +625,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 							.setThumbDrawable(Objects.requireNonNull(thumbDrawable))
 							.setTrackDrawable(Objects.requireNonNull(AppCompatResources.getDrawable(context, R.drawable.fastscroll_track_media)))
 							.setPopupStyle(RecyclerViewUtil.thumbScrollerPopupStyle)
-							.setPopupTextProvider(position -> {
+							.setPopupTextProvider((view, position) -> {
 								int firstVisible = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
 								if (firstVisible >= 0) {
 									MediaAttachItem item = mediaAttachAdapter.getMediaAttachItems().get(firstVisible);
@@ -657,7 +653,12 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		logger.debug("*** onBackPressed");
 		synchronized (previewLock) {
 			if (pagerContainer.getVisibility() == View.VISIBLE) {
@@ -680,7 +681,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 					isPreviewMode = false;
 				}
 			} else {
-				super.onBackPressed();
+				finish();
 			}
 		}
 	}

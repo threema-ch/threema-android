@@ -122,7 +122,7 @@ public class AppRestrictionService {
 	 * If at least one Threema-MDM parameter is active, append "m" is returned.
 	 * If at least one external MDM parameter is active, append "e" is returned.
 	 *
-	 * (See https://confluence.threema.ch/display/EN/Update+Work+Info)
+	 * (See "Update Work Info" in documentation)
 	 *
 	 * @return the source(s) of active mdm parameters as text, null if no mdm parameters are active
 	 */
@@ -208,7 +208,11 @@ public class AppRestrictionService {
 				credentials.password,
 				new String[]{});
 
-		this.storeWorkMDMSettings(result.mdm);
+		if (result.responseCode > 0) {
+			logger.error("Failed to fetch2 work data. Server response code = {}", result.responseCode);
+		} else {
+			this.storeWorkMDMSettings(result.mdm);
+		}
 	}
 
 	/**

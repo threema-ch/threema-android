@@ -24,6 +24,8 @@ package ch.threema.app.jobs;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 
+import androidx.work.Configuration;
+
 import org.slf4j.Logger;
 
 import ch.threema.app.ThreemaApplication;
@@ -33,12 +35,15 @@ import ch.threema.base.utils.LoggingUtil;
 public class ReConnectJobService extends JobService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ReConnectJobService");
 	private static boolean isStopped;
-
 	private PollingHelper pollingHelper = null;
+
+	public ReConnectJobService() {
+		new Configuration.Builder().setJobSchedulerJobIdRange(20000, 21000).build();
+	}
 
 	@Override
 	public boolean onStartJob(final JobParameters jobParameters) {
-		logger.info("Reconnect job started");
+		logger.info("Reconnect job {} started", jobParameters.getJobId());
 
 		isStopped = false;
 
@@ -57,6 +62,7 @@ public class ReConnectJobService extends JobService {
 					if (!isStopped) {
 						try {
 							jobFinished(jobParameters, !success);
+							logger.info("Reconnect job {} finished. Success = {}", jobParameters.getJobId(), success);
 						} catch (Exception e) {
 							logger.error("Exception while finishing ReConnectJob", e);
 						}
@@ -71,7 +77,7 @@ public class ReConnectJobService extends JobService {
 	@Override
 	public boolean onStopJob(JobParameters jobParameters) {
 		isStopped = true;
-		logger.info("Reconnect job stopped");
+		logger.info("Reconnect job {} stopped", jobParameters.getJobId());
 
 		return false;
 	}

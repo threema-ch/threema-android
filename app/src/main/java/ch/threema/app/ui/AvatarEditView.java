@@ -217,7 +217,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 					// Get default avatar as no custom avatar is available
 					bitmap = contactService.getAvatar(contactModel, new AvatarOptions.Builder()
 						.setHighRes(true)
-						.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_AVATAR)
+						.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK)
 						.setDarkerBackground(isAvatarEditable())
 						.toOptions()
 					);
@@ -323,7 +323,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 			.toOptions());
 
 		Bitmap scaledAvatar = scaleToSize(customAvatar);
-		if (scaledAvatar != customAvatar && groupService.isGroupOwner(groupModel)) {
+		if (scaledAvatar != customAvatar && groupService.isGroupCreator(groupModel)) {
 			executor.execute(() -> {
 				try {
 					logger.info("Updating resized group avatar");
@@ -729,7 +729,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		if (this.avatarData.getContactModel() != null) {
 			return isEditable && ContactUtil.canHaveCustomAvatar(this.avatarData.getContactModel()) && !(preferenceService.getProfilePicReceive() && fileService.hasContactPhotoFile(this.avatarData.getContactModel()));
 		} else if (this.avatarData.getGroupModel() != null) {
-			return isEditable && groupService.isGroupOwner(this.avatarData.getGroupModel());
+			GroupModel group = avatarData.getGroupModel();
+			return isEditable && groupService.isGroupCreator(group) && groupService.isGroupMember(group);
 		}
 
 		// we have neither a group model nor a contact model => user is creating a new group

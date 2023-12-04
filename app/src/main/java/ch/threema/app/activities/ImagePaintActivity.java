@@ -331,7 +331,12 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	protected void handleOnBackPressed() {
 		if (hasChanges()) {
 			GenericAlertDialog dialogFragment = GenericAlertDialog.newInstance(
 					R.string.discard_changes_title,
@@ -770,7 +775,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 			@Override
 			protected void onPreExecute() {
-				GenericProgressDialog.newInstance(-1, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_BLUR_FACES);
+				GenericProgressDialog.newInstance(0, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_BLUR_FACES);
 			}
 
 			@Override
@@ -1255,7 +1260,9 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			protected void onPreExecute() {
 				super.onPreExecute();
 
-				GenericProgressDialog.newInstance(R.string.draw, R.string.saving_media).show(getSupportFragmentManager(), DIALOG_TAG_SAVING_IMAGE);
+				String message = String.format(ConfigUtils.getSafeQuantityString(ImagePaintActivity.this, R.plurals.saving_media, 1, 1));
+				String title = getString(R.string.draw);
+				GenericProgressDialog.newInstance(title, message).show(getSupportFragmentManager(), DIALOG_TAG_SAVING_IMAGE);
 			}
 
 			@Override
@@ -1305,6 +1312,19 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		}
 
 		captionEditText = findViewById(R.id.caption_edittext);
+		captionEditText.setOnClickListener(v -> {
+			if (emojiPicker != null) {
+				if (emojiPicker.isShown()) {
+					if (ConfigUtils.isLandscape(this) &&
+						!ConfigUtils.isTabletLayout()) {
+						emojiPicker.hide();
+					} else {
+						openSoftKeyboard(emojiPicker, captionEditText);
+						runOnSoftKeyboardOpen(() -> emojiPicker.hide());
+					}
+				}
+			}
+		});
 
 		SendButton sendButton = findViewById(R.id.send_button);
 		sendButton.setEnabled(true);
@@ -1382,7 +1402,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 		emojiPicker = (EmojiPicker) ((ViewStub) findViewById(R.id.emoji_stub)).inflate();
 		emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService());
-		emojiButton.attach(this.emojiPicker, preferenceService.isFullscreenIme());
+		emojiButton.attach(this.emojiPicker);
 		emojiPicker.setEmojiKeyListener(emojiKeyListener);
 
 		ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.image_paint_root).getRootView(), (v, insets) -> {
@@ -1424,14 +1444,11 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 				if (emojiPicker.isShown()) {
 					logger.info("EmojiPicker currently shown. Closing.");
 					if (ConfigUtils.isLandscape(this) &&
-						!ConfigUtils.isTabletLayout() &&
-						preferenceService.isFullscreenIme()) {
+						!ConfigUtils.isTabletLayout()) {
 						emojiPicker.hide();
 					} else {
 						openSoftKeyboard(emojiPicker, captionEditText);
-						if (getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
-							emojiPicker.hide();
-						}
+						runOnSoftKeyboardOpen(() -> emojiPicker.hide());
 					}
 				} else {
 					emojiPicker.show(loadStoredSoftKeyboardHeight());

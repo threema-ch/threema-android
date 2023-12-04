@@ -43,6 +43,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
@@ -57,11 +58,11 @@ public abstract class BottomSheetAbstractDialog extends BottomSheetDialogFragmen
 	private Activity activity;
 
 	public interface BottomSheetDialogCallback {
-		void onSelected(String tag);
+		void onSelected(String tag, @Nullable String data);
 	}
 
 	public interface BottomSheetDialogInlineClickListener extends Parcelable {
-		void onSelected(String tag);
+		void onSelected(String tag, @Nullable String data);
 		void onCancel(String tag);
 	}
 
@@ -142,9 +143,9 @@ public abstract class BottomSheetAbstractDialog extends BottomSheetDialogFragmen
 				if (items != null && i < items.size()) {
 					dismiss();
 					if (inlineCallback != null) {
-						inlineCallback.onSelected(items.get(i).getTag());
+						inlineCallback.onSelected(items.get(i).getTag(), items.get(i).getData());
 					} else if (callback != null) {
-						callback.onSelected(items.get(i).getTag());
+						callback.onSelected(items.get(i).getTag(), items.get(i).getData());
 					}
 				}
 			}

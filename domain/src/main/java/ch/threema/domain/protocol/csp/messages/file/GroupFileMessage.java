@@ -60,6 +60,11 @@ public class GroupFileMessage extends AbstractGroupMessage
 	}
 
 	@Override
+	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
 	public void setData(FileData ballotData) {
 		this.fileData = ballotData;
 	}

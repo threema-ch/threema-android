@@ -545,7 +545,9 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 				}
 
 				val dialog = BottomSheetListDialog.newInstance(0, items, currentDeviceIndex)
-				dialog.setCallback { tag -> viewModel.selectAudioDevice(AudioDevice.values()[tag.toInt()]) }
+				dialog.setCallback(fun(tag: String, data: String?) {
+					viewModel.selectAudioDevice(AudioDevice.values()[tag.toInt()])
+				})
 				dialog.show(supportFragmentManager, DIALOG_TAG_SELECT_AUDIO_DEVICE)
 			}
 		}

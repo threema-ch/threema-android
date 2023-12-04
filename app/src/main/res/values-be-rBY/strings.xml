@@ -219,7 +219,6 @@
     <string name="ringtone_none">Без гуку</string>
     <string name="no_camera_installed">Няма даступнай для выкарыстання камеры</string>
     <string name="save_message_action">Захаваць</string>
-    <string name="saving_media">Захав. мультымедыя</string>
     <string name="file_is_not_a_video">Выбраны файл не з\'яўляецца відэа</string>
     <string name="masterkey_is_unlocked">Галоўны ключ разблакаваны</string>
     <string name="file_too_large">Памер файла перавышае дапушчальныя %1$d Мб.</string>
@@ -539,7 +538,7 @@
     <string name="prefs_sum_passphrase">Патрабаваць кодавую фразу для разблакавання лакальнага шыфравання</string>
     <string name="prefs_title_masterkey_change_passphrase">Змяніць кодавую фразу</string>
     <string name="storage_total">Месца на ўнутраным сховішчы</string>
-    <string name="storage_threema">Ужываецца %s</string>
+    <string name="storage_threema">Выкарыстоўваецца %s</string>
     <string name="storage_total_free">Усяго вольнага месца</string>
     <string name="storage_total_in_use">Ужываецца</string>
     <string name="one_year">1 года</string>
@@ -1010,14 +1009,6 @@
     <string name="open_in_maps_app">Адк-ць у праграме \"Мапы\"</string>
     <string name="delete">Выдаліць</string>
     <string name="continue_recording">Працягнуць запіс</string>
-    <string name="whatsnew_title">Вітаем у %1$s 5.1</string>
-    <string name="whatsnew_headline"><![CDATA[<p>This release focuses on security, usability and modernization of the app.</p>
-
-<p>By popular demand, the app has been redesigned completely to fully support the “Material You” paradigm introduced with Android 12. An optional “Dynamic Colors” setting allows the app to adapt to your personalized color scheme.</p>
-
-<p>Perfect Forward Secrecy цяпер уключана па змаўчанні для ўсіх кантактаў, у якіх усталявана апошняя версія %1$s.</p>
-
-<p>Іншыя паляпшэнні ўключаюць новы прайгравальнік галасавых паведамленняў, які працягвае прайгравацца ў апавяшчэнні, калі праграма пераходзіць у фонавы рэжым, і новыя інструкцыі карыстальніка пры запыце дазволаў.</p>]]></string>
     <string name="tap_to_start">Націсьніце тут, каб запусціць %s.</string>
     <string name="two_years">2 года</string>
     <string name="invalid_backup_path">Нядзейнічае.шлях да рэз.копіі</string>
@@ -1359,7 +1350,7 @@
     <string name="organization_type">Арганізацыя</string>
     <string name="permission_bluetooth_connect_required">Актывуйце дазвол \"Прылады паблізу\" для пошуку падлучаных гарнітур Bluetooth</string>
     <string name="threema_push_start_webclient_sessions_manually">Функцыя Threema Push актыўная. Такім чынам, сеансы вэб-версіі і версіі для ПК трэба запускаць уручную.</string>
-    <string name="tooltip_multiple_recipients_title">Навінка: некалькі атрымальнікаў</string>
+    <string name="tooltip_multiple_recipients_title">Некалькі атрымальнікаў</string>
     <string name="tooltip_multiple_recipients_text">Зацісніце кнопку, каб выбраць некалькі атрымальнікаў для адпраўкі ім аднаго і таго ж паведамлення.</string>
     <string name="synchronizing">Сінхранізацыя…</string>
     <string name="forward_security">Адпраўляйце паведамленні ў рэжыме PFS</string>
@@ -1408,7 +1399,7 @@
     <string name="prefs_summary_hibernation_api_32">Каб прадухіліць прыпыненне Threema сістэмай пасля працяглай бяздзейнасці, адключыце сістэмны параметр «Выдаліць дазволы і вызваліць месца».</string>
     <string name="prefs_summary_hibernation_api">Каб прадухіліць прыпыненне Threema сістэмай пасля працяглай бяздзейнасці, адключыце сістэмны параметр «Прыпыніць дзейнасць праграмы, калі яна не выкарыстоўваецца».</string>
     <string name="unable_to_fetch_configuration">Немагчыма атрымаць дадзеныя з сервера.  Паўтарыце спробу пазней.</string>
-    <string name="rogue_device_warning">Было выяўлена злучэнне з іншай прылады з такім жа ID Threema.  Ці выкарыстоўвалі вы нядаўна свой ідэнтыфікатар Threema на іншай прыладзе?  &lt;br&gt;&lt;br&gt; Калі ёсць, то можаце праігнараваць гэтае паведамленне.  &lt;br&gt;&lt;br&gt; Калі вы гэтага не зрабілі, ваш асабісты ключ можа быць узламаны.  Калі ласка, <a href="https://threema.ch/en/faq/another_connection">прытрымлівайцеся нашых рэкамендацый</a>, каб абараніць вашу прыладу і даныя перад стварэннем новага ідэнтыфікатара.</string>
+    <string name="rogue_device_warning"><![CDATA[Было выяўлена злучэнне з іншай прылады з такім жа ID Threema.  Ці выкарыстоўвалі вы нядаўна свой ідэнтыфікатар Threema на іншай прыладзе?  &lt;br&gt;&lt;br&gt; Калі ёсць, то можаце праігнараваць гэтае паведамленне.  &lt;br&gt;&lt;br&gt; Калі вы гэтага не зрабілі, ваш асабісты ключ можа быць узламаны.  Калі ласка, <a href="https://threema.ch/en/faq/another_connection">прытрымлівайцеся нашых рэкамендацый</a>, каб абараніць вашу прыладу і даныя перад стварэннем новага ідэнтыфікатара.]]></string>
     <string name="fetch2_failure">Збой сінхранізацыі з серверам забеспячэння.</string>
     <string name="no_members_support_group_calls">У гэтай суполцы няма іншых удзельнікаў, якія могуць адказваць на супольныя выклікі</string>
     <string name="group_calls">Супольныя званкі</string>
@@ -1438,6 +1429,7 @@
     <string name="group_call_inactivity_left">Суполкавы выклік пакінуты з-за бяздзейнасці</string>
     <string name="missing_permission_external_storage">Немагчыма скапіяваць файл. Паспрабуйце наступныя крокі:\n 1. Адкрыйце праграму налад.\n 2. Перайдзіце ў раздзел «Праграмы» і абярыце «Доступ да спецыяльных праграм».\n 3. Націсніце на «Доступ да ўсіх файлаў».\n 4. Націсніце на тры кропкі ў правым верхнім куце і абярыце «Паказаць сістэму».\n 5. Націсніце на «Знешняе сховішча» і пераканайцеся, што «Дазволены доступ для кіравання ўсімі файламі».\n 6. Паспрабуйце яшчэ раз аднавіць рэзервовую копію.</string>
     <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy быў адключаны ў гэтай размове, таму што версія праграмы вашага партнёра па чаце не падтрымлівае яе.</string>
+    <string name="forward_security_illegal_session_status_message">Сеанс Perfect Forward Secrecy быў скінуты з-за несапраўднасці.</string>
     <string name="crop_image_title">Абрэзаць відарыс</string>
     <string name="scroll_to_bottom">Пракруціце ўніз</string>
     <string name="scroll_to_top">Пракруціце ўверх</string>

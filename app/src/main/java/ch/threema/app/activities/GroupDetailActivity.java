@@ -30,11 +30,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +44,7 @@ import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.app.ActivityCompat;
@@ -82,6 +83,7 @@ import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.emojis.EmojiEditText;
+import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.grouplinks.GroupLinkOverviewActivity;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
@@ -110,6 +112,7 @@ import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -123,6 +126,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private final int MODE_READONLY = 2;
 
 	private static final String DIALOG_TAG_LEAVE_GROUP = "leaveGroup";
+	private static final String DIALOG_TAG_DISSOLVE_GROUP = "dissolveGroup";
 	private static final String DIALOG_TAG_UPDATE_GROUP = "updateGroup";
 	private static final String DIALOG_TAG_QUIT = "quit";
 	private static final String DIALOG_TAG_CHOOSE_ACTION = "chooseAction";
@@ -176,7 +180,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			groupDetailViewModel.setAvatarFile(avatarFile1);
 			groupDetailViewModel.setIsAvatarRemoved(false);
 			hasAvatarChanges = true;
-			updateFloatingActionButton();
+			updateFloatingActionButtonAndMenu();
 		}
 
 		@Override
@@ -185,7 +189,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			groupDetailViewModel.setIsAvatarRemoved(true);
 			avatarEditView.setDefaultAvatar(null, groupModel);
 			hasAvatarChanges = true;
-			updateFloatingActionButton();
+			updateFloatingActionButtonAndMenu();
 		}
 	};
 
@@ -381,7 +385,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		setTitle();
 		setHasMemberChanges(false);
 
-		if (this.groupService.isGroupOwner(this.groupModel)) {
+		if (groupService.isGroupCreator(groupModel) && groupService.isGroupMember(groupModel)) {
 			operationMode = MODE_EDIT;
 			actionBar.setHomeButtonEnabled(false);
 			actionBar.setDisplayHomeAsUpEnabled(true);
@@ -399,7 +403,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 				@Override
 				public void afterTextChanged(Editable s) {
-					updateFloatingActionButton();
+					updateFloatingActionButtonAndMenu();
 				}
 			});
 		} else {
@@ -414,10 +418,25 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			groupNameEditText.setPadding(0, 0, 0, 0);
 
 			floatingActionButton.setVisibility(View.GONE);
+
+			// If the user is not a member of the group, then display the group name with strike
+			// through style
+			if (!groupService.isGroupMember(groupModel)) {
+				// Get the paint flags and add the strike through flag
+				int paintFlags = groupNameEditText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG;
+				groupNameEditText.setPaintFlags(paintFlags);
+			}
 		}
 
 		groupDetailRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-		setupAdapter();
+
+		try {
+			setupAdapter();
+		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+			logger.error("Could not setup group detail adapter", e);
+			finish();
+			return;
+		}
 
 		Fragment dialogFragment = getSupportFragmentManager().findFragmentByTag(DIALOG_TAG_CHANGE_GROUP_DESC);
 		if (dialogFragment instanceof GroupDescEditDialog) {
@@ -444,7 +463,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		collapsingToolbar.setContentScrimColor(color);
 		collapsingToolbar.setStatusBarScrimColor(color);
 
-		updateFloatingActionButton();
+		updateFloatingActionButtonAndMenu();
 
 		if (toolbar.getNavigationIcon() != null) {
 			toolbar.getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
@@ -455,13 +474,25 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		ListenerManager.contactListeners.add(this.contactListener);
 	}
 
-	private void setupAdapter() {
-		this.groupDetailAdapter = new GroupDetailAdapter(this, this.groupModel, groupDetailViewModel);
+	private void setupAdapter() throws MasterKeyLockedException, FileSystemNotPresentException {
+		Runnable onCloneGroupRunnable = null;
+		if (groupService.isOrphanedGroup(groupModel) && groupService.getOtherMemberCount(groupModel) > 0) {
+			onCloneGroupRunnable = this::showCloneDialog;
+		}
+
+		this.groupDetailAdapter = new GroupDetailAdapter(
+			this,
+			this.groupModel,
+			groupDetailViewModel,
+			serviceManager,
+			onCloneGroupRunnable
+		);
+
 		this.groupDetailAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
 			@Override
 			public void onChanged() {
 				super.onChanged();
-				updateFloatingActionButton();
+				updateFloatingActionButtonAndMenu();
 			}
 		});
 		this.groupDetailAdapter.setOnClickListener(this);
@@ -520,7 +551,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 	private void setHasMemberChanges(boolean hasChanges) {
 		this.hasMemberChanges = hasChanges;
-		updateFloatingActionButton();
+		updateFloatingActionButtonAndMenu();
 	}
 
 	@Override
@@ -543,6 +574,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem groupSyncMenu = menu.findItem(R.id.menu_resync);
 		MenuItem leaveGroupMenu = menu.findItem(R.id.menu_leave_group);
+		MenuItem dissolveGroupMenu = menu.findItem(R.id.menu_dissolve_group);
 		MenuItem deleteGroupMenu = menu.findItem(R.id.menu_delete_group);
 		MenuItem cloneMenu = menu.findItem(R.id.menu_clone_group);
 		MenuItem mediaGalleryMenu = menu.findItem(R.id.menu_gallery);
@@ -556,21 +588,32 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		if (groupModel != null) {
 			GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
 			groupCallMenu.setVisible(GroupCallUtilKt.qualifiesForGroupCalls(groupService, groupModel) && !hasChanges() && call == null);
-			leaveGroupMenu.setVisible(true);
+
+			boolean isMember = groupService.isGroupMember(groupModel);
+			boolean isCreator = groupService.isGroupCreator(groupModel);
+			boolean hasOtherMembers = groupService.getOtherMemberCount(groupModel) > 0;
+
+			// The clone menu only makes sense if at least one other member is present
+			cloneMenu.setVisible(hasOtherMembers);
+
+			// The leave option is only available for members
+			leaveGroupMenu.setVisible(isMember && !isCreator);
+
+			// The dissolve option is only available for the creator (if it is not yet dissolved)
+			dissolveGroupMenu.setVisible(isMember && isCreator && hasOtherMembers);
+
+			// The delete option is always available
 			deleteGroupMenu.setVisible(true);
-			if (groupService.isGroupOwner(this.groupModel)) {
-				// MODE_EDIT
-				groupSyncMenu.setVisible(true);
-				if (ConfigUtils.supportsGroupLinks()) {
-					groupLinkMenu.setVisible(true);
-				}
-			}
+
+			// The group sync option is only available for the creator when other members are in the group
+			groupSyncMenu.setVisible(isCreator && isMember && hasOtherMembers);
+
+			// The group link menu is only available for the creator and if enabled in configuration
+			groupLinkMenu.setVisible(isCreator && isMember && ConfigUtils.supportsGroupLinks());
 
 			mediaGalleryMenu.setVisible(!hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel)));
-		}
 
-		if (operationMode != MODE_READONLY) {
-			menu.findItem(R.id.action_send_message).setVisible(false);
+			menu.findItem(R.id.action_send_message).setVisible(!hasChanges());
 		}
 
 		return super.onPrepareOptionsMenu(menu);
@@ -596,13 +639,11 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		if (itemId == android.R.id.home) {
 			onBackPressed();
 			return true;
-		}
-		else if (itemId == R.id.menu_group_links_manage) {
+		} else if (itemId == R.id.menu_group_links_manage) {
 			Intent groupLinkOverviewIntent = new Intent(this, GroupLinkOverviewActivity.class);
 			groupLinkOverviewIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
 			startActivityForResult(groupLinkOverviewIntent, ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS);
-		}
-		else if (itemId == R.id.action_send_message) {
+		} else if (itemId == R.id.action_send_message) {
 			if (groupModel != null) {
 				Intent intent = new Intent(this, ComposeMessageActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -611,37 +652,55 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				startActivity(intent);
 				finish();
 			}
-		}
-		else if (itemId == R.id.menu_resync) {
+		} else if (itemId == R.id.menu_resync) {
 			this.syncGroup();
-		}
-		else if (itemId == R.id.menu_leave_group) {
-			int leaveMessageRes = operationMode == MODE_READONLY ? R.string.really_leave_group_message : R.string.really_leave_group_admin_message;
-
+		} else if (itemId == R.id.menu_leave_group) {
 			GenericAlertDialog.newInstance(
 				R.string.action_leave_group,
-				Html.fromHtml(getString(leaveMessageRes)),
+				R.string.really_leave_group_message,
 				R.string.ok,
-				R.string.cancel)
-				.show(getSupportFragmentManager(), DIALOG_TAG_LEAVE_GROUP);
-		}
-		else if (itemId == R.id.menu_delete_group) {
+				R.string.cancel
+			).show(getSupportFragmentManager(), DIALOG_TAG_LEAVE_GROUP);
+		} else if (itemId == R.id.menu_dissolve_group) {
 			GenericAlertDialog.newInstance(
-				R.string.action_delete_group,
-				groupService.isGroupOwner(groupModel) ? R.string.delete_my_group_message : R.string.delete_group_message,
+				R.string.action_dissolve_group,
+				getString(R.string.really_dissolve_group),
+				R.string.ok,
+				R.string.cancel
+			).show(getSupportFragmentManager(), DIALOG_TAG_DISSOLVE_GROUP);
+		} else if (itemId == R.id.menu_delete_group) {
+			@StringRes int title;
+			@StringRes int description;
+			boolean isGroupCreator = groupService.isGroupCreator(groupModel);
+			boolean isGroupMember = groupService.isGroupMember(groupModel);
+			if (isGroupCreator && isGroupMember) {
+				// Group creator and still member
+				title = R.string.action_dissolve_and_delete_group;
+				description = R.string.delete_my_group_message;
+			} else if (isGroupMember) {
+				// Just a member
+				title = R.string.action_leave_and_delete_group;
+				description = R.string.delete_group_message;
+			} else {
+				// Not even a member anymore
+				title = R.string.action_delete_group;
+				description = R.string.delete_left_group_message;
+			}
+
+			GenericAlertDialog.newInstance(
+				title,
+				description,
 				R.string.ok,
 				R.string.cancel)
 				.show(getSupportFragmentManager(), DIALOG_TAG_DELETE_GROUP);
-		}
-		else if (itemId == R.id.menu_clone_group) {
+		} else if (itemId == R.id.menu_clone_group) {
 			GenericAlertDialog.newInstance(
 				R.string.action_clone_group,
 				R.string.clone_group_message,
 				R.string.yes,
 				R.string.no)
 				.show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP_CONFIRM);
-		}
-		else if (itemId == R.id.menu_gallery) {
+		} else if (itemId == R.id.menu_gallery) {
 			if (groupId > 0 && !hiddenChatsListService.has(groupService.getUniqueIdString(this.groupModel))) {
 				Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
 				mediaGalleryIntent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
@@ -657,8 +716,13 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		new LeaveGroupAsyncTask(groupModel, groupService, this, null, this::finish).execute();
 	}
 
+	private void dissolveGroupAndQuit() {
+		groupService.dissolveGroupFromLocal(groupModel);
+		finish();
+	}
+
 	private void deleteGroupAndQuit() {
-		if (groupService.isGroupOwner(groupModel)) {
+		if (groupService.isGroupCreator(groupModel)) {
 			new DeleteMyGroupAsyncTask(groupModel, groupService, this, null, this::navigateHome).execute();
 		} else {
 			new DeleteGroupAsyncTask(groupModel, groupService, this, null, this::navigateHome).execute();
@@ -680,7 +744,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				try {
 					Bitmap avatar = groupService.getAvatar(groupModel, true, false);
 
-					model = groupService.createGroup(
+					model = groupService.createGroupFromLocal(
 							newGroupName,
 							groupService.getGroupIdentities(groupModel),
 							avatar);
@@ -760,7 +824,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		groupModel.setGroupDesc(groupDetailViewModel.getGroupDesc());
 		groupModel.setGroupDescTimestamp(groupDetailViewModel.getGroupDescTimestamp());
 
-
 		new AsyncTask<Void, Void, GroupModel>() {
 			@Override
 			protected void onPreExecute() {
@@ -812,6 +875,18 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}.execute();
 	}
 
+	private void showCloneDialog() {
+		TextEntryDialog.newInstance(
+				R.string.action_clone_group,
+				R.string.name,
+				R.string.ok,
+				R.string.cancel,
+				groupModel.getName(),
+				0,
+				0)
+			.show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP);
+	}
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK) {
@@ -821,7 +896,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				sortGroupMembers();
 				setHasMemberChanges(true);
 			}
-			else if (this.groupService.isGroupOwner(this.groupModel) && requestCode == ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS) {
+			else if (this.groupService.isGroupCreator(this.groupModel) && requestCode == ThreemaActivity.ACTIVITY_ID_MANAGE_GROUP_LINKS) {
 				// make sure we reset the default link switch if the default link was deleted
 				groupDetailAdapter.notifyDataSetChanged();
 			}
@@ -926,6 +1001,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			case DIALOG_TAG_LEAVE_GROUP:
 				leaveGroupAndQuit();
 				break;
+			case DIALOG_TAG_DISSOLVE_GROUP:
+				dissolveGroupAndQuit();
+				break;
 			case DIALOG_TAG_DELETE_GROUP:
 				deleteGroupAndQuit();
 				break;
@@ -933,15 +1011,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				saveGroupSettings();
 				break;
 			case DIALOG_TAG_CLONE_GROUP_CONFIRM:
-				TextEntryDialog.newInstance(
-						R.string.action_clone_group,
-						R.string.name,
-						R.string.ok,
-						R.string.cancel,
-						groupModel.getName(),
-						0,
-						0)
-						.show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP);
+				showCloneDialog();
 				break;
 			default:
 				break;
@@ -949,7 +1019,12 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	}
 
 	@Override
-	public void onBackPressed() {
+	protected boolean enableOnBackPressedCallback() {
+		return true;
+	}
+
+	@Override
+	public void handleOnBackPressed() {
 		if (this.operationMode == MODE_EDIT && hasChanges()) {
 			GenericAlertDialog.newInstance(
 					R.string.leave,
@@ -988,7 +1063,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		return !editedGroupNameText.equals(currentGroupName);
 	}
 
-	private void updateFloatingActionButton() {
+	private void updateFloatingActionButtonAndMenu() {
 		if (this.groupService == null ||
 			this.groupDetailAdapter == null) {
 			logger.error("Required instances not available");
@@ -999,11 +1074,13 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			return;
 		}
 
-		if (this.groupService.isGroupOwner(this.groupModel) && hasChanges()) {
+		if (this.groupService.isGroupCreator(this.groupModel) && hasChanges()) {
 			this.floatingActionButton.show();
 		} else {
 			this.floatingActionButton.hide();
 		}
+
+		invalidateOptionsMenu();
 	}
 
 	private void navigateHome() {

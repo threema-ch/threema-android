@@ -41,7 +41,8 @@ import java.lang.annotation.RetentionPolicy;
 	MessageContentsType.GIF,
 	MessageContentsType.CONTACT,
 	MessageContentsType.GROUP_CALL_STATUS,
-	MessageContentsType.FORWARD_SECURITY_STATUS
+	MessageContentsType.FORWARD_SECURITY_STATUS,
+	MessageContentsType.GROUP_STATUS
 })
 
 @Retention(RetentionPolicy.SOURCE)
@@ -61,5 +62,6 @@ public @interface MessageContentsType {
 	int CONTACT = 12;
 	int GROUP_CALL_STATUS = 13;
 	int FORWARD_SECURITY_STATUS = 14;
+	int GROUP_STATUS = 15;
 }
 
