@@ -227,7 +227,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	private final ActivityResultLauncher<String> notificationPermissionLauncher =
 		registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-			if (!Boolean.TRUE.equals(isGranted)) {
+			if (preferenceService != null && !Boolean.TRUE.equals(isGranted)) {
 				// Show permission rationale only once a week
 				long current = System.currentTimeMillis();
 				long last = preferenceService.getLastNotificationRationaleShown();
@@ -351,8 +351,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		protected Long doInBackground(Void... voids) {
 			MessageService messageService;
 			try {
-				messageService = ThreemaApplication.getServiceManager().getMessageService();
-				return messageService.countStarredMessages();
+				ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+				if (serviceManager != null) {
+					messageService = serviceManager.getMessageService();
+					return messageService.countStarredMessages();
+				} else {
+					logger.warn("Could not count starred messages because service manager is null");
+					return 0L;
+				}
 			} catch (Exception e) {
 				logger.error("Unable to count starred messages", e);
 				return 0L;
@@ -652,14 +658,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						}
 					}
 				}
-			}
-		}
-
-		if (isAppStart) {
-			ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher);
-
-			if (serviceManager != null) {
-				LocaleUtil.switchToAndroidXPerAppLanguageSelection(this, serviceManager.getPreferenceService());
 			}
 		}
 	}
@@ -971,6 +969,16 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 		if (this.isInitialized) {
 			return;
+		}
+
+		boolean isAppStart = savedInstanceState == null;
+
+		if (isAppStart) {
+			ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher);
+
+			if (serviceManager != null) {
+				LocaleUtil.switchToAndroidXPerAppLanguageSelection(this, serviceManager.getPreferenceService());
+			}
 		}
 
 		if (serviceManager != null) {
@@ -1714,22 +1722,21 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			new Thread(() -> {
 				try {
 					FileService fileService = serviceManager.getFileService();
-					if (fileService != null) {
-						fileService.cleanTempDirs();
-					}
+					fileService.cleanTempDirs();
 				} catch (FileSystemNotPresentException e) {
 					logger.error("Exception", e);
 				}
 			}).start();
 
+			try {
+				new UpdateStarredMessagesTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+			} catch (RejectedExecutionException e) {
+				logger.error("Could not execute update starred message task", e);
+			}
 		}
 		super.onResume();
 
 		showMainContent();
-
-		try {
-			new UpdateStarredMessagesTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-		} catch (RejectedExecutionException ignored) {}
 	}
 
 	@Override

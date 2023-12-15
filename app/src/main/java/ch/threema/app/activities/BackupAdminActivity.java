@@ -153,6 +153,7 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
 		return true;
 	}
 
+	@Override
 	protected boolean checkInstances() {
 		return TestUtil.required(
 				this.serviceManager,
@@ -161,6 +162,7 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
 		);
 	}
 
+	@Override
 	protected void instantiate() {
 		if (this.serviceManager != null) {
 			try {

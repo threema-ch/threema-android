@@ -63,7 +63,7 @@
     <string name="voip_reject_channel_name">呼叫狀態變更</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC 診斷</string>
-    <string name="voip_prefs_webrtc_debug_summary">啟動此工具以調試與設定語音通話連接有關的問題</string>
+    <string name="voip_prefs_webrtc_debug_summary">啟動此工具以偵錯與設定語音通話連接有關的問題</string>
     <string name="voip_webrtc_debug">WebRTC 診斷</string>
     <string name="voip_webrtc_debug_intro">按「開始」按鈕開始測試。</string>
     <string name="voip_webrtc_debug_start">開始</string>

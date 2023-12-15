@@ -26,9 +26,15 @@ import android.text.TextWatcher;
 import android.text.style.ReplacementSpan;
 import android.widget.EditText;
 
+import org.slf4j.Logger;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import ch.threema.base.utils.LoggingUtil;
+
 public class MentionTextWatcher implements TextWatcher {
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MentionTextWatcher");
+
 	private final EditText editText;
 	private final CharSequence hint;
 	private int maxLines;
@@ -50,6 +56,10 @@ public class MentionTextWatcher implements TextWatcher {
 		if (count == 1) {
 			int end = start + count;
 			Editable editableText = editText.getEditableText();
+			if (editableText == null) {
+				logger.error("Before text changed: Editable of edit text is null (text is not editable)");
+				return;
+			}
 			ReplacementSpan[] list = editableText.getSpans(start, end, ReplacementSpan.class);
 
 			for (ReplacementSpan span : list) {
@@ -73,6 +83,11 @@ public class MentionTextWatcher implements TextWatcher {
 //		logger.debug("afterTextChanged " + s);
 
 		Editable editableText = editText.getEditableText();
+
+		if (editableText == null) {
+			logger.error("After text changed: Editable of edit text is null (text is not editable)");
+			return;
+		}
 
 		for (ReplacementSpan span : spansToRemove) {
 			int start = editableText.getSpanStart(span);

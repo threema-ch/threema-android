@@ -34,7 +34,7 @@
     <string name="webclient_constrained_by_mdm">伺服器未經管理員批准。</string>
     <string name="webclient_clear_all_sessions">清除所有工作階段</string>
     <string name="webclient_clear_all_sessions_confirm">您確定要停止並移除所有工作階段嗎？</string>
-    <string name="webclient_prefs_debug_tool_summary">啟動此工具以調試與設定桌面版應用程式/網頁版連接有關的問題</string>
+    <string name="webclient_prefs_debug_tool_summary">啟動此工具以偵錯與設定桌面版應用程式/網頁版連接有關的問題</string>
     <string name="webclient_diagnostics">桌面版/網頁版診斷</string>
     <string name="webclient_diagnostics_start">開始</string>
     <string name="webclient_diagnostics_intro">點擊「開始」以啟動測試。</string>

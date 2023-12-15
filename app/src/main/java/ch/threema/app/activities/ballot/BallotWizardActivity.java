@@ -296,6 +296,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 		}
 	}
 
+	@Override
 	protected void instantiate() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
@@ -313,6 +314,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 		}
 	}
 
+	@Override
 	protected boolean checkInstances() {
 		return TestUtil.required(
 				this.messageService,

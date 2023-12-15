@@ -204,6 +204,7 @@
     <string name="unlinking_email">Выдал.прывязкі да email</string>
     <string name="unlink">Адвязаць</string>
     <string name="threema_version">Версія</string>
+    <string name="threema_version_code">Код версіі</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Адсутнічае падлучэнне да Інтэрнэту, няправільныя даныя экспарту ID ці няправільны пароль</string>
     <string name="prefs_header_other">Іншае</string>
     <string name="an_error_occurred">Адбылася памылка</string>
@@ -655,6 +656,8 @@
     <string name="backup_data">Рэз. копія даных</string>
     <string name="really_leave_group_admin_message">Вы з\'яўляецеся адміністратарам гэтай суполкі. Калі вы пакінеце яе зараз, яна стане некіравальнай. Іншыя ўдзельнікі будуць па-ранейшаму мець магчымасць мець зносіны, але змены больш будуць немагчымыя.</string>
     <string name="action_delete_group">Выдаліць суполку</string>
+    <string name="action_leave_and_delete_group">Пакінуць і выдаліць суполку</string>
+    <string name="action_dissolve_and_delete_group">Распусціць і выдаліць суполку</string>
     <string name="delete_my_group_message">Вы сапраўды хочаце выдаліць гэтую суполку? Усе яе ўдзельнікі будуць выдалены.</string>
     <string name="error_out_of_memory">Недастаткова месца ў сховішчы для завяршэння аперацыі</string>
     <string name="configure">Наладзіць</string>
@@ -1454,10 +1457,45 @@
     <string name="permission_microphone">Мікрафон</string>
     <string name="permission_read_phone_state">Тэлефон</string>
     <string name="permission_enable_in_settings_rationale">Уключыце дазвол у наладах.  Выберыце «Дазволы», а потым дазвольце «%s».</string>
+    <string name="post_notification_permission_rationale">Каб атрымліваць апавяшчэнні, вы павінны дазволіць %s паказваць апавяшчэнні.</string>
     <string name="group_name">Назва суполкі</string>
+    <string name="star_message">Паведамленне з зоркай</string>
+    <string name="starred_message">Пазначанае паведамленне</string>
+    <string name="starred">З зоркай</string>
+    <string name="starred_messages">Пазначаныя зорачкай паведамл</string>
+    <string name="sorting">Сартаванне</string>
+    <string name="sort_by">Сартаваць па…</string>
+    <string name="newest_first">спачатку самае новае</string>
+    <string name="oldest_first">спачатку самае старое</string>
+    <string name="no_starred_messages">Пазначаныя паведамленні не знойдзены.  Каб пазначыць паведамленне зорачкай, доўга націсніце на яго і абярыце кнопку з зорачкай.</string>
+    <string name="remove_all_stars">Выдаліць усе зоркі</string>
+    <string name="remove_star">Зняць зорку</string>
     <string name="samsung_permission_problem_explain">%1$s не можа атрымаць доступ да медыяфайлаў з-за адсутнасці дазволу ў сістэмнай праграме.  Каб выправіць гэта, упэўніцеся, што пераключальнік побач з \"Знешняе назапашвальнік\" уключаны на наступным экране, і перазапусціце %1$s.</string>
     <string name="min_n_chars">мін.  %d сімвалаў</string>
     <string name="prefs_title_grant_bluetooth_permission">Дайце дазвол Bluetooth</string>
+    <string name="safe_managed_password_confirm">Вызначаны кіраваны пароль для вашай рэзервовай копіі Threema Safe.\n\n Вы хочаце выкарыстоўваць гэты пароль?  Калі вы сумняваецеся, звярніцеся да адміністратара.</string>
+    <string name="safe_managed_new_password_confirm">Быў вызначаны новы кіраваны пароль для вашай рэзервовай копіі Threema Safe.\n\n Вы хочаце замяніць бягучы пароль на новы, кіраваны?  Калі вы сумняваецеся, звярніцеся да адміністратара.</string>
+    <string name="real_not_now">Не цяпер</string>
+    <string name="add_contact_in">Дадаць кантакт у…</string>
+    <string name="really_remove_all_stars">Вы сапраўды хочаце зняць зорачку з усіх паведамленняў?</string>
+    <string name="prefs_sum_storage_management">Кіраванне памяццю і выдаленне паведамленняў або мультымедыі</string>
+    <string name="delete_automatically">Выдаліць аўтаматычна</string>
+    <string name="keep_messages">Захоўваць паведамленні для:</string>
+    <string name="clean_up_manually">Ачысціць ўручную</string>
+    <string name="forever">Назаўжды</string>
+    <string name="autodelete_explain">Калі ўсталявана што-небудзь іншае, чым \"назаўсёды\", уваходныя і выходныя паведамленні будуць захоўвацца толькі на працягу вызначанага часу, а потым беззваротна выдаляцца.  Гэта ўключае ў сябе непрачытаныя і неадпраўленыя паведамленні.  Паведамленні ў групах нататак і пазначаныя зорачкай ніколі не будуць выдалены.  Працэс выдалення адбываецца перыядычна і неабавязкова адразу пасля актывацыі.</string>
+    <string name="autodelete_confirm">Паведамленні будуць выдаляцца аўтаматычна пасля %s.  Працягнуць?</string>
+    <string name="autodelete_activated">Аўтаматычнае выдаленне актывавана.</string>
+    <string name="autodelete_disabled">Аўтаматычнае выдаленне адключана.</string>
+    <string name="set_by_administrator">Значэнне ўстаноўлена адміністратарам і не можа быць зменена.</string>
+    <string name="action_dissolve_group">Распусціць суполку</string>
+    <string name="really_dissolve_group">Калі вы проста распусціце суполку, ніхто больш не зможа адпраўляць у суполку новыя паведамленні, і ёю больш нельга будзе кіраваць.  Распушчаную суполку ўсё яшчэ можна кланаваць.</string>
+    <string name="status_orphaned_group">*Гэтая суполка выдалена*\n Стваральнік суполкі пакінуў суполку, і яна больш не можа падтрымлівацца.  Адзін з астатніх членаў можа кланаваць суполку (праз дэталі суполкі), каб стаць новым адміністратарам.</string>
+    <string name="group_orphaned_notice">Гэтая суполка выдалена, бо яе стваральнік  пакінуў суполку.  Калі ласка, клануйце гэту суполку, каб стаць новым адміністратарам.</string>
+    <string name="group_not_a_member_notice">Вы больш не з\'яўляецеся часткай гэтай суполкі і больш не можаце ёй карыстацца.</string>
+    <string name="group_dissolved_notice">Гэтая суполка была распушчана і больш не можа выкарыстоўвацца.</string>
+    <string name="directory_request_failed">Не ўдалося запытаць каталог.  Паспрабуй яшчэ.</string>
+    <string name="add_shortcut_exists">Ярлык для гэтай мэты ўжо існуе.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d кантактаў</item>
         <item quantity="many">%d кантакты</item>
@@ -1499,6 +1537,9 @@
         <item quantity="many">%d файлы паспяхова захаваны.</item>
         <item quantity="one">%d файл паспяхова захаваны.</item>
         <item quantity="other">%d файлы паспяхова захаваны.</item>
+    </plurals>
+    <plurals name="saving_media" tools:ignore="MissingQuantity">
+        <item quantity="other">Захав. мультымедыя</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="few">Выдаліць апытанні</item>

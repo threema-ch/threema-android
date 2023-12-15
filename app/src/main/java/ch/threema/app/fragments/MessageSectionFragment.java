@@ -1150,7 +1150,6 @@ public class MessageSectionFragment extends MainFragment
 			return;
 		}
 		Intent intent = groupService.getGroupDetailIntent(groupModel, activity);
-		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
 		activity.startActivity(intent);
 	}
 

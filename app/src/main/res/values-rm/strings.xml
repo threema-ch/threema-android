@@ -1201,7 +1201,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="group_link_rename">Dar in auter num a la colliaziun</string>
     <string name="group_link_rename_tag">Nov num</string>
     <string name="tap_here_for_more">Clicca qua per dapli infurmaziuns</string>
-    <string name="another_connection_instructions">Il server ha identifitgà dus u plirs apparats colliads cun la medema ID da Threema.\n\nI n\'è betg pussaivel d\'utilisar in\'ID da Threema il medem mument sin plirs apparats. Novs messadis vegnan tramess sulettamain a l\'apparat ch\'è s\'annunzià sco ultim sin il server.\n\nSche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'apparat vegl e reaviescha suenter il nov apparat.</string>
+    <string name="another_connection_instructions"><![CDATA[Il server ha identifitgà dus u plirs apparats colliads cun la medema ID da Threema.<br><br>I n\'è betg pussaivel d\'utilisar in\'ID da Threema il medem mument sin plirs apparats. Novs messadis vegnan tramess sulettamain a l\'apparat ch\'è s\'annunzià sco ultim sin il server.<br><br>Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'apparat vegl e reaviescha suenter il nov apparat.]]></string>
     <string name="app_store_error_code">Code dal sbagl da l\'App Store: %d</string>
     <string name="backup_restore_type"><![CDATA[Tge tip da backup vuls ti restaurar? <br/><br/><a href=%s>Leger dapli davart backups en Threema</a>]]></string>
     <string name="data_backup_info">Restaurar tut incl. chats</string>

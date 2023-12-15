@@ -1537,8 +1537,8 @@ almacenado.</string>
         <item quantity="other">%d archivos guardados correctamente.</item>
     </plurals>
     <plurals name="saving_media">
-        <item quantity="one">El elemento multimedia se está guardando</item>
-        <item quantity="other"></item>
+        <item quantity="one">Guardando archivo multimedia</item>
+        <item quantity="other">Guardando %d archivos multimedia</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Eliminar sondeo</item>

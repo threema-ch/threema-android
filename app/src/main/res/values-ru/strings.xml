@@ -1547,6 +1547,12 @@
         <item quantity="one">%d файл успешно сохранен.</item>
         <item quantity="other">%d файлов успешно сохранено.</item>
     </plurals>
+    <plurals name="saving_media">
+        <item quantity="few">Сохранение %d медиафайлов</item>
+        <item quantity="many">Сохранение %d медиафайлов</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Сохранение медиафайла</item>
+        <item quantity="other">Сохранение %d медиафайлов</item>
+    </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="few">Удалить опросы</item>
         <item quantity="many">Удалить опросы</item>

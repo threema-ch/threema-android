@@ -454,6 +454,7 @@ public class MessageServiceImpl implements MessageService {
 			BallotModel ballotModel,
 			BallotDataModel.Type type,
 			MessageReceiver receiver,
+			int messageFlags,
 			ForwardSecurityMode forwardSecurityMode) {
 		AbstractMessageModel model = receiver.createLocalModel(MessageType.BALLOT, MessageContentsType.BALLOT, new Date());
 		if (model != null) {
@@ -463,6 +464,7 @@ public class MessageServiceImpl implements MessageService {
 			model.setBallotData(new BallotDataModel(type, ballotModel.getId()));
 			model.setOutbox(ballotModel.getCreatorIdentity().equals(identityStore.getIdentity()));
 			model.setApiMessageId(messageId.toString());
+			model.setMessageFlags(messageFlags);
 			model.setForwardSecurityMode(forwardSecurityMode);
 			receiver.saveLocalModel(model);
 			cache(model);
@@ -1726,6 +1728,7 @@ public class MessageServiceImpl implements MessageService {
 				message.getMessageId(),
 				message,
 				messageModel,
+				message.getMessageFlags(),
 				message.getForwardSecurityMode());
 	}
 
@@ -1743,6 +1746,7 @@ public class MessageServiceImpl implements MessageService {
 				message.getMessageId(),
 				message,
 				messageModel,
+				message.getMessageFlags(),
 				message.getForwardSecurityMode());
 	}
 
@@ -1750,6 +1754,7 @@ public class MessageServiceImpl implements MessageService {
 	                                                     MessageId messageId,
 	                                                     BallotCreateInterface message,
 	                                                     AbstractMessageModel messageModel,
+														 int messageFlags,
 	                                                     ForwardSecurityMode forwardSecurityMode)
 			throws ThreemaException, BadMessageException
 	{
@@ -1769,6 +1774,7 @@ public class MessageServiceImpl implements MessageService {
 							BallotDataModel.Type.BALLOT_CREATED:
 							BallotDataModel.Type.BALLOT_CLOSED),
 						receiver,
+						messageFlags,
 						forwardSecurityMode);
 		}
 

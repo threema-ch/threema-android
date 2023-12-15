@@ -1433,7 +1433,7 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_summary_hibernation_api_32">為防止 Threema 在長時間不使用後被系統暫停，請停用系統設定中的「移除權限並釋出空間」。</string>
     <string name="prefs_summary_hibernation_api">為防止 Threema 在長時間不使用後被系統暫停，請停用系統設定中的「暫停未使用的應用程式活動」。</string>
     <string name="unable_to_fetch_configuration">無法從配置伺服器取得資料，請稍後再試。</string>
-    <string name="rogue_device_warning">我們的伺服器檢測到有人試圖從另一台裝置登入現有的 Threema ID，您最近是否在其他裝置上登入過您的 Threema ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此訊息。&lt;br&gt;&lt;br&gt;如果沒有，您的私鑰可能已經洩露。在建立新ID之前，請<a href="https://threema.ch/en/faq/another_connection">按照我們的建議</a>保護您的裝置和資料。</string>
+    <string name="rogue_device_warning"><![CDATA[我們的伺服器檢測到有人試圖從另一台裝置登入現有的 Threema ID，您最近是否在其他裝置上登入過您的 Threema ID？<br><br>如果有，就可以忽略此訊息。<br><br>如果沒有，您的私鑰可能已經洩露。在建立新ID之前，請<a href="https://threema.ch/en/faq/another_connection">按照我們的建議</a>保護您的裝置和資料。]]></string>
     <string name="fetch2_failure">與配置伺服器同步失敗。</string>
     <string name="no_members_support_group_calls">此群組中沒有成員可以接聽群組通話</string>
     <string name="group_calls">群組通話</string>
@@ -1514,7 +1514,7 @@ Threema 支援的所有表情符號。</string>
     <string name="keep_messages">保留訊息期限：</string>
     <string name="clean_up_manually">手動清理</string>
     <string name="forever">永遠</string>
-    <string name="autodelete_explain">如果設定為「永遠」以外的其他選項，已收到和已傳送的訊息僅保留在已選定的時間內，之後訊息將徹底刪除，且不可還原，這包括未讀取和未傳送的訊息，已收藏和已加星號的訊息不會被刪除。自動刪除功能會定期執行，不一定是在啟用此功能後立即執行。</string>
+    <string name="autodelete_explain">如果設定為「永遠」以外的其他選項，已收到和已傳送的訊息僅保留在已選定的時間內，之後訊息將徹底刪除，且不可還原，這包括未讀取和未傳送的訊息，私人收藏和已加星號的訊息不會被刪除。自動刪除功能會定期執行，不一定是在啟用此功能後立即執行。</string>
     <string name="autodelete_confirm">訊息將在%s後自動刪除。是否繼續？</string>
     <string name="autodelete_activated">自動刪除已啟用。</string>
     <string name="autodelete_disabled">自動刪除已停用。</string>

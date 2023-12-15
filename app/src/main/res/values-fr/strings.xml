@@ -1527,6 +1527,10 @@ Veuillez saisir une question pour votre enquête.</string>
         <item quantity="one">%d fichier enregistré avec succès.</item>
         <item quantity="other">%d fichiers enregistrés avec succès.</item>
     </plurals>
+    <plurals name="saving_media"  tools:ignore="MissingQuantity">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Enregistrement du média</item>
+        <item quantity="other">Enregistrement de %d fichiers média</item>
+    </plurals>
     <plurals name="ballot_really_delete" tools:ignore="MissingQuantity">
         <item quantity="one" tools:ignore="ImpliedQuantity">Retirer l\'enquête</item>
         <item quantity="other">Retirer les enquêtes</item>

@@ -313,6 +313,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 				&& contactModels != null && contactModels.size() < BuildConfig.MAX_GROUP_SIZE;
 
 			if (contactModels != null && !contactModels.isEmpty()) {
+				headerHolder.groupMembersTitleView.setVisibility(View.VISIBLE);
 				headerHolder.groupMembersTitleView.setText(ConfigUtils.getSafeQuantityString(context, R.plurals.number_of_group_members, contactModels.size(), contactModels.size()));
 			} else {
 				headerHolder.groupMembersTitleView.setVisibility(View.GONE);

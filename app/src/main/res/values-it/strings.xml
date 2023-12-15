@@ -1031,11 +1031,6 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="open_in_maps_app">Apri in Mappe</string>
     <string name="delete">Elimina</string>
     <string name="continue_recording">Continua registrazione</string>
-    <string name="whatsnew_title">Novità: Chiamate di gruppo %1$s</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Ora è possibile effettuare chiamate end-to-end su %1$s per Android.</p>
-<p>Per avviare una chiamata, apri la chat di gruppo e tocca l\'icona della fotocamera in alto.</p>
-<p>I membri del gruppo ricevono una notifica e possono decidere se partecipare o no.</p>
-<p><b>Avviso:</b> La versione iOS sarà disponibile più avanti.</p>]]></string>
     <string name="tap_to_start">Tocca qui per iniziare %s adesso.</string>
     <string name="two_years">2 anni</string>
     <string name="invalid_backup_path">Percorso backup sbagliato</string>
@@ -1544,9 +1539,8 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
         <item quantity="one">%d file salvato con successo.</item>
         <item quantity="other">%d file salvati con successo</item>
     </plurals>
-    <plurals name="saving_media">
-        <item quantity="one">Salvataggio media in corso</item>
-        <item quantity="other"></item>
+    <plurals name="saving_media" tools:ignore="MissingQuantity">
+        <item quantity="other">Salvataggio media in corso</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Cancella sondaggio</item>

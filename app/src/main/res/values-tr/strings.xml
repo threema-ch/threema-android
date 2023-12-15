@@ -1014,8 +1014,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="whatsnew_headline"><![CDATA[<p>Yıldızlı mesajlar: Daha sonra kolayca bulmak için, önemli mesajlara uzun süre dokunarak bir yıldızla işaretleyin.</p>
 <p>Otomatik Silme: Sohbetlerinizin seçilebilir bir süre sonra otomatik olarak temizlenmesini sağlayın. Mesajlar için otomatik silme işlevi depolama yönetiminde etkinleştirilebilir.</p>
 <p>Diğer sayısız iyileştirme ve optimizasyon.</p>]]></string>
-    <string name="whatsnew2_title">(boş bir cümle)</string>
-    <string name="whatsnew2_body">(boş bir cümle)</string>
     <string name="tap_to_start">%s şimdi başlatmak için buraya dokunun.</string>
     <string name="two_years">2 yıl</string>
     <string name="invalid_backup_path">Geçersiz yedekleme dizini</string>
@@ -1402,7 +1400,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_summary_hibernation_api_32">Threema\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"İzinleri kaldır ve yer aç\" sistem ayarını devre dışı bırakın.</string>
     <string name="prefs_summary_hibernation_api">Threema\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"Kullanılmıyorsa uygulama etkinliğini duraklat\" sistem ayarını devre dışı bırakın.</string>
     <string name="unable_to_fetch_configuration">Yapılandırma sunucusundan veri alınamıyor. Daha sonra tekrar deneyin</string>
-    <string name="rogue_device_warning">Aynı Threema kimliğe sahip farklı bir cihazdan bağlantı tespit edildi. Yakın zamanda Threema kimliğinizi başka bir cihazda kullandınız mı? &lt;br&gt;&lt;br&gt; Evet ise, bu mesajı yok sayabilirsiniz. &lt;br&gt;&lt;br&gt; Hayır ise, özel anahtarınız tehlikeye girebilir. Yeni bir kimlik oluşturmadan önce cihazınızı ve verilerinizi korumak için lütfen <a href="https://threema.ch/en/faq/another_connection">önerilerimizi uygulayın</a>.</string>
+    <string name="rogue_device_warning"><![CDATA[Aynı Threema kimliğe sahip farklı bir cihazdan bağlantı tespit edildi. Yakın zamanda Threema kimliğinizi başka bir cihazda kullandınız mı? <br><br>; Evet ise, bu mesajı yok sayabilirsiniz. <br><br> Hayır ise, özel anahtarınız tehlikeye girebilir. Yeni bir kimlik oluşturmadan önce cihazınızı ve verilerinizi korumak için lütfen <a href="https://threema.ch/en/faq/another_connection">önerilerimizi uygulayın</a>.]]></string>
     <string name="fetch2_failure">Konfigurasyon sunucusuyla eşitleme başarısız oldu.</string>
     <string name="no_members_support_group_calls">Bu grupta grup aramalarına cevap verebilecek başka üye yok</string>
     <string name="group_calls">Grup aramaları</string>

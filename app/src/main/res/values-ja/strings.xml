@@ -210,6 +210,7 @@
     <string name="unlinking_email">Eメールのリンク解除</string>
     <string name="unlink">リンク解除</string>
     <string name="threema_version">バージョン</string>
+    <string name="threema_version_code">バージョンコード</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">インターネットに接続されていない、無効なIDエクスポートデータ、または誤ったパスワードの可能性があります。</string>
     <string name="prefs_header_other">その他</string>
     <string name="an_error_occurred">エラーが発生しました</string>
@@ -665,6 +666,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="really_leave_group_admin_message">あなたはこのグループの管理者です。このまま退会すると孤立してしまいます。
 他のメンバーはトークを行うことができますが、変更はできなくなります。</string>
     <string name="action_delete_group">グループを削除</string>
+    <string name="action_leave_and_delete_group">グループを削除し退会する</string>
+    <string name="action_dissolve_and_delete_group">グループを解散して削除する</string>
     <string name="delete_my_group_message">本当にこのグループを削除しますか？すべてのメッセージは削除され、残ったメンバーはもうこのグループを利用できません。</string>
     <string name="error_out_of_memory">この操作を完了するための十分なメモリがありません</string>
     <string name="configure">設定</string>
@@ -1018,6 +1021,10 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="open_in_maps_app">マップアプリで開く</string>
     <string name="delete">削除</string>
     <string name="continue_recording">録音を続ける</string>
+    <string name="whatsnew_title">%1$sのバージョン5.2での新機能は何ですか？</string>
+    <string name="whatsnew_headline"><![CDATA[<p>スター付きメッセージ: 重要なメッセージを後で簡単に見つけるために、長押しでスターを付けてください。</p>
+<p>自動削除: 選択可能な期間後にチャットが自動的に整理されるようにします。メッセージの自動削除機能はストレージ管理で有効にすることができます。</p>
+<p>その他多数の改善と最適化。</p>]]></string>
     <string name="tap_to_start">タップして %s を始めましょう</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">バックアップのパスが無効です</string>
@@ -1408,7 +1415,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_summary_hibernation_api_32">長期の不使用後に、Theemaがシステムによって中断されるのを防ぐために、システム設定の「権限を削除して空き容量を増やす」を無効にしてください。</string>
     <string name="prefs_summary_hibernation_api">長期の不使用後に、Theemaがシステムによって中断されるのを防ぐために、システム設定の「使用していないアプリを一時停止する」を無効にしてください。</string>
     <string name="unable_to_fetch_configuration">設定サーバーからデータを取得できません。後でもう一度お試しください。</string>
-    <string name="rogue_device_warning">異なるデバイスからの接続が、同じThreema IDで検出されました。最近、別の端末であなたのThreema IDを使用しましたか？&lt;br&gt;&lt;br&gt;もし使用したのであれば、このメッセージは無視してください。&lt;br&gt;&lt;br&gt;もし使用していないのであれば、あなたのプライベートキーが不正利用されている可能性があります。新しいIDを作成する前に、<a href="https://threema.ch/en/faq/another_connection">私たちの提案に従って</a>、あなたの端末とデータを保護してください。</string>
+    <string name="rogue_device_warning"><![CDATA[異なるデバイスからの接続が、同じThreema IDで検出されました。最近、別の端末であなたのThreema IDを使用しましたか？<br><br>もし使用したのであれば、このメッセージは無視してください。<br><br>もし使用していないのであれば、あなたのプライベートキーが不正利用されている可能性があります。新しいIDを作成する前に、<a href="https://threema.ch/en/faq/another_connection">私たちの提案に従って</a>、あなたの端末とデータを保護してください。]]></string>
     <string name="fetch2_failure">プロビジョニングサーバーとの同期に失敗しました。</string>
     <string name="no_members_support_group_calls">このグループにはグループ通話に応答できるメンバーがいません</string>
     <string name="group_calls">グループ通話</string>
@@ -1442,6 +1449,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="crop_image_title">画像を切り抜く</string>
     <string name="scroll_to_bottom">下部にスクロール</string>
     <string name="scroll_to_top">上部にスクロール</string>
+    <string name="contact_sync_mdm_rationale">管理者がお使いのデバイスで連絡先の同期を有効にしました。そのため、連絡先へのアクセス許可が必要です。</string>
     <string name="welcome_back">おかえりなさい！</string>
     <string name="id_restored_successfully">あなたのThreema IDが復元されました</string>
     <string name="prefs_dynamic_colors">ダイナミックカラー</string>
@@ -1451,6 +1459,10 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="notification_channel_voice_message_player">音声メッセージプレイヤー</string>
     <string name="voice_message_from">%sからの音声メッセージ</string>
     <string name="vm_fg_service_not_allowed">音声メッセージプレイバックエラー</string>
+    <string name="vm_fg_service_not_allowed_explain">メディア通知に再生ボタンがまだ表示されている場合は、そのボタンを押してください。表示されていない場合は、アプリを開いてトークから再生を開始してください。</string>
+    <string name="use_threema_without_this_permission">この権限なしで%sを使用する</string>
+    <string name="grant_permission">許可を与える</string>
+    <string name="grant_permission_settings">設定で許可を与える</string>
     <string name="ignore_permission">二度と尋ねない</string>
     <string name="permission_nearby_devices">近くの端末</string>
     <string name="permission_bluetooth">Bluetooth</string>
@@ -1458,7 +1470,45 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="permission_microphone">マイク</string>
     <string name="permission_read_phone_state">電話</string>
     <string name="permission_enable_in_settings_rationale">設定で権限を有効にしてください。「許可」 を選択し、次に 「%s」 を許可してください。</string>
+    <string name="post_notification_permission_rationale">通知を受け取るためには、%sが通知を表示することを許可する必要があります。</string>
     <string name="group_name">グループ名</string>
+    <string name="star_message">メッセージにスターを付ける</string>
+    <string name="starred_message">スター付きメッセージ</string>
+    <string name="starred">スター付き</string>
+    <string name="starred_messages">スター付きメッセージ</string>
+    <string name="sorting">並び替え</string>
+    <string name="sort_by">並び替え…</string>
+    <string name="newest_first">新しい順</string>
+    <string name="oldest_first">古い順</string>
+    <string name="no_starred_messages">スター付きメッセージが見つかりませんでした。メッセージにスターを付けるには、長押ししてスターのボタンを選択してください。</string>
+    <string name="remove_all_stars">すべてのスターを外す</string>
+    <string name="remove_star">スターを外す</string>
+    <string name="samsung_permission_problem_explain">%1$sはシステムアプリの許可が不足しているためメディアファイルにアクセスできません。これを解決するには、次の画面で「外部ストレージ」の隣のスイッチが有効になっていることを確認し、%1$sを再起動してください。</string>
+    <string name="min_n_chars">最低%d文字</string>
+    <string name="prefs_title_grant_bluetooth_permission">Bluetoothの許可を与える</string>
+    <string name="safe_managed_password_confirm">Threema Safeバックアップ用の管理されたパスワードが設定されています。\n\nこのパスワードを使用しますか？ 疑問がある場合は、管理者に連絡してください。</string>
+    <string name="safe_managed_new_password_confirm">Threema Safeバックアップ用の新しい管理されたパスワードが設定されました。\n\n現在のパスワードをこの新しい管理されたパスワードに置き換えますか？ 疑問がある場合は、管理者に連絡してください。</string>
+    <string name="real_not_now">今はしない</string>
+    <string name="add_contact_in">連絡先を追加…</string>
+    <string name="really_remove_all_stars">本当に全てのメッセージのスターを外しますか？</string>
+    <string name="prefs_sum_storage_management">メモリを管理し、メッセージやメディアを削除する</string>
+    <string name="delete_automatically">自動削除</string>
+    <string name="keep_messages">メッセージを保持する期間:</string>
+    <string name="clean_up_manually">手動で整理する</string>
+    <string name="forever">常に</string>
+    <string name="autodelete_explain">「常に」以外に設定されている場合、受信および送信メッセージは指定された時間だけ保持され、その後は回復不可能に削除されます。これには未読および未送信のメッセージも含まれます。ノートグループ内のメッセージやスターが付けられたメッセージは決して削除されません。削除プロセスは定期的に行われ、必ずしも有効化直後に行われるわけではありません。</string>
+    <string name="autodelete_confirm">%s後にメッセージが自動的に削除されます。続行しますか？</string>
+    <string name="autodelete_activated">自動削除が有効になりました。</string>
+    <string name="autodelete_disabled">自動削除が無効になりました。</string>
+    <string name="set_by_administrator">この値は管理者によって設定されており、変更することはできません。</string>
+    <string name="action_dissolve_group">グループを解散する</string>
+    <string name="really_dissolve_group">グループを解散すると、誰も新しいメッセージをグループに送ることができなくなり、もはや管理することもできません。解散したグループは、依然としてクローンされることが可能です。</string>
+    <string name="status_orphaned_group">*このグループは孤立しています*\nグループの作成者がグループを離れたため、これ以上管理することができません。残ったメンバーの中で、新しい管理者になるためにグループの詳細からグループをクローンすることができます。</string>
+    <string name="group_orphaned_notice">グループの作成者がグループを離れたため、このグループは孤立しています。新しい管理者になるために、このグループを複製してください。</string>
+    <string name="group_not_a_member_notice">あなたはもはやこのグループの一員ではなく、これ以上使用することはできません。</string>
+    <string name="group_dissolved_notice">このグループは解散され、もはや使用することはできません。</string>
+    <string name="directory_request_failed">ディレクトリ要求に失敗しました。もう一度試してください。</string>
+    <string name="add_shortcut_exists">この対象のためのショートカットは既に存在します。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d 連絡先</item>
     </plurals>

@@ -1226,7 +1226,7 @@
     <string name="group_link_rename">Hivatkozás átnevezése</string>
     <string name="group_link_rename_tag">Új név</string>
     <string name="tap_here_for_more">További információért kattintson ide</string>
-    <string name="another_connection_instructions">A kiszolgáló két vagy több különböző eszközről származó, azonos Threema ID-vel rendelkező kapcsolatot észlelt.\n\nEgy Threema ID-t nem lehet egyszerre több eszközön használni. Az új üzenetek csak arra az eszközre kézbesülnek, amelyik legutóbb bejelentkezett a kiszolgálóra.\n\nHa új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a régi eszközön, majd indítsa újra az új eszközt.</string>
+    <string name="another_connection_instructions"><![CDATA[A kiszolgáló két vagy több különböző eszközről származó, azonos Threema ID-vel rendelkező kapcsolatot észlelt.<br><br>Egy Threema ID-t nem lehet egyszerre több eszközön használni. Az új üzenetek csak arra az eszközre kézbesülnek, amelyik legutóbb bejelentkezett a kiszolgálóra.<br><br>Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a régi eszközön, majd indítsa újra az új eszközt.]]></string>
     <string name="app_store_error_code">App Store hibakód: %d</string>
     <string name="backup_restore_type"><![CDATA[Milyen típusú másolatot szeretne visszaállítani? <br/><br/> <a href=%s>Tudjon meg többet a Threema biztonsági mentésekről</a>]]></string>
     <string name="data_backup_info">Mindent visszaállít, csevegésekkel</string>

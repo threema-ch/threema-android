@@ -1216,7 +1216,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_link_rename">Renombrar</string>
     <string name="group_link_rename_tag">Nom nou</string>
     <string name="tap_here_for_more">Toqueu aquí per a més informació</string>
-    <string name="another_connection_instructions">El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de Threema.\n\nNo es pot utilitzar la mateixa ID de Threema simultàniament en diversos dispositius. Els missatges nous només es transmetran a l\'últim dispositiu que ha iniciat sessió al servidor.\n\nSi esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al dispositiu antic i llavors reinicieu el nou.</string>
+    <string name="another_connection_instructions"><![CDATA[El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de Threema.<br><br>No es pot utilitzar la mateixa ID de Threema simultàniament en diversos dispositius. Els missatges nous només es transmetran a l\'últim dispositiu que ha iniciat sessió al servidor.<br><br>Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al dispositiu antic i llavors reinicieu el nou.]]></string>
     <string name="app_store_error_code">Codi d\'error de la botiga d\'Apps: %d</string>
     <string name="backup_restore_type"><![CDATA[Quin tipus de còpia de seguretat voleu restaurar?<br/><br/><a href=%s>Apreneu-ne més sobre còpies de seguretat a Threema</a>]]></string>
     <string name="data_backup_info">Restaurar-ho tot incloent xats</string>

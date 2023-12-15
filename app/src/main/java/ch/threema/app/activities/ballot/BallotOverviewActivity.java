@@ -327,6 +327,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 		}
 	}
 
+	@Override
 	protected boolean checkInstances() {
 		return !TestUtil.empty(this.myIdentity) && TestUtil.required(
 				this.ballotService,
@@ -334,6 +335,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 				this.groupService);
 	}
 
+	@Override
 	protected void instantiate() {
 		if (serviceManager != null) {
 			try {

@@ -1530,8 +1530,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
         <item quantity="other">%d bestanden zijn opgeslagen.</item>
     </plurals>
     <plurals name="saving_media">
-        <item quantity="one">Media opslaan</item>
-        <item quantity="other"></item>
+        <item quantity="one">Media wordt opgeslagen</item>
+        <item quantity="other">%d mediabestanden worden opgeslagen</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Poll verwijderen</item>

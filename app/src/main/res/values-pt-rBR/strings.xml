@@ -1406,7 +1406,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="prefs_summary_hibernation_api_32">Para evitar que o Threema seja pausado pelo sistema após ficar inativo por algum tempo, desative a configuração do sistema “Remover permissões e liberar espaço”.</string>
     <string name="prefs_summary_hibernation_api">Para evitar que o Threema seja pausado pelo sistema após ficar inativo por algum tempo, desative a configuração do sistema “Pausar a atividade no app quando não usado”.</string>
     <string name="unable_to_fetch_configuration">Não foi possível obter os dados do servidor de configuração. Tente novamente mais tarde.</string>
-    <string name="rogue_device_warning">Foi detectada uma conexão de um dispositivo diferente com a mesma ID do Threema. Você usou recentemente sua ID do Threema em outro dispositivo?&lt;br&gt;&lt;br&gt;Se usou, você pode ignorar esta mensagem.&lt;br&gt;&lt;br&gt;Se não usou, sua chave privada por ter sido comprometida. <a href="https://threema.ch/en/faq/another_connection">Siga as nossas sugestões</a> para proteger seu dispositivo e os seus dados antes de criar uma nova ID.</string>
+    <string name="rogue_device_warning"><![CDATA[Foi detectada uma conexão de um dispositivo diferente com a mesma ID do Threema. Você usou recentemente sua ID do Threema em outro dispositivo?<br><br>Se usou, você pode ignorar esta mensagem.<br><br>Se não usou, sua chave privada por ter sido comprometida. <a href="https://threema.ch/en/faq/another_connection">Siga as nossas sugestões</a> para proteger seu dispositivo e os seus dados antes de criar uma nova ID.]]></string>
     <string name="fetch2_failure">A sincronização com o servidor de provisionamento falhou.</string>
     <string name="no_members_support_group_calls">Não há outros membros neste grupo que podem receber chamadas de grupo</string>
     <string name="group_calls">Chamadas de grupo</string>
@@ -1530,7 +1530,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     </plurals>
     <plurals name="saving_media">
         <item quantity="one" tools:ignore="ImpliedQuantity">Salvando mídia</item>
-        <item quantity="other"></item>
+        <item quantity="other">Salvando %d arquivos de mídia</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one" tools:ignore="ImpliedQuantity">Remover enquete</item>

@@ -213,6 +213,7 @@
     <string name="unlinking_email">Відв\'язування ел. пошти</string>
     <string name="unlink">Відв\'язати</string>
     <string name="threema_version">Версія</string>
+    <string name="threema_version_code">Код версії</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Немає з\'єднання з Інтернетом, недійсні дані експортованого ID або неправильний пароль</string>
     <string name="prefs_header_other">Інше</string>
     <string name="an_error_occurred">Сталася помилка</string>
@@ -698,8 +699,10 @@
     <string name="backup_id">Експортований ID</string>
     <string name="backup_data">Рез. копіювання</string>
     <string name="really_leave_group_admin_message">Ви адміністратор цієї групи. Якщо ви залишите її зараз, вона
-		стане загубленою. Інші учасники зможуть і далі спілкуватися в чаті, але вносити зміни в групу буде неможливо.</string>
+		стане покинутою. Інші учасники зможуть і далі спілкуватися в чаті, але вносити зміни в групу буде неможливо.</string>
     <string name="action_delete_group">Видалити групу</string>
+    <string name="action_leave_and_delete_group">Вийти з групи й видалити її</string>
+    <string name="action_dissolve_and_delete_group">Розпустити й видалити групу</string>
     <string name="delete_my_group_message">Справді видалити групу? Усі повідомлення буде вилучено, а інші учасники більше не зможуть використовувати групу.</string>
     <string name="error_out_of_memory">Недостатньо пам\'яті для виконання цієї дії</string>
     <string name="configure">Налаштувати</string>
@@ -711,8 +714,8 @@
     <string name="media_gallery_files">Файли</string>
     <string name="prefs_gif_autoplay">Відтворювати файли GIF</string>
     <string name="media_gallery_audio">Голосові повідомлення</string>
-    <string name="action_clone_group">Копіювати групу</string>
-    <string name="clone_group_message">Ви створите копію цієї групи та станете її адміністратором. Продовжити?</string>
+    <string name="action_clone_group">Клонувати групу</string>
+    <string name="clone_group_message">Цю групу буде клоновано, і ви станете її адміністратором. Продовжити?</string>
     <string name="prefs_proximity_sensor">Датчик відстані</string>
     <string name="prefs_proximity_sensor_explain">Відтворювати голосові повідомлення через слуховий динамік, коли ви тримаєте пристрій біля вуха</string>
     <string name="error_creating_group">Не вдалося створити або оновити групу</string>
@@ -780,7 +783,7 @@
     <string name="battery_optimizations_disable_guide_ctd">Знайдіть %s в списку й вимкніть оптимізацію</string>
     <string name="battery_optimizations_disable_confirm">Справді не вимикати оптимізацію використання акумулятора для %1$s? У цьому разі %2$s не працюватиме належним чином.</string>
     <string name="enter_text_hint">Введіть текст</string>
-    <string name="backup_explain_text">Якщо ви зміните або втратите свій пристрій, ніхто не зможе відновити ваш ID Threema або ваші чати за відсутності резервної копії. Збережіть свої дані, скориставшись функціями резервного копіювання.</string>
+    <string name="backup_explain_text">Якщо ви зміните або втратите пристрій, то не зможете відновити ID Threema або чати без резервної копії. Збережіть свої дані за допомогою резервного копіювання.</string>
     <string name="data_backup_explain">Резервні копії даних містять:\n\n&#9679; Ваші ID та пару ключів.\n&#9679; Контакти й рівні підтвердження.\n&#9679; Інформацію про участь у групах.\n&#9679; Чати.\n&#9679; Медіа- та інші файли (якщо ви їх додали).\n\nДані буде збережено у вигляді зашифрованого ZIP-файлу. Радимо перемістити цей файл на інший пристрій після завершення резервного копіювання.</string>
     <string name="draw">Малювати</string>
     <string name="edit">Редагувати</string>
@@ -948,7 +951,7 @@
     <string name="safe_upload_size_exceeded">Перевищено ліміт сервера на передавання</string>
     <string name="safe_connection_error">Помилка з\'єднання</string>
     <string name="safe_server_name">Назва сервера</string>
-    <string name="safe_max_backup_size">Макс. розмір рез. копії</string>
+    <string name="safe_max_backup_size">Максимальний розмір рез. копії</string>
     <string name="safe_retention">Термін зберігання рез. копії</string>
     <string name="safe_result">Результат рез. копіювання</string>
     <string name="number_of_days">%d дн.</string>
@@ -1053,6 +1056,12 @@
     <string name="open_in_maps_app">Відкрити в додатку для карт</string>
     <string name="delete">Видалити</string>
     <string name="continue_recording">Продовжити запис</string>
+    <string name="whatsnew_title">Що нового в %1$s 5.2?</string>
+    <string name="whatsnew_headline"><![CDATA[
+		<p>Повідомлення із зірочкою. Утримуйте й позначайте зірочкою важливі повідомлення, щоб легко знаходити їх пізніше.</p>
+		<p>Автоматичне видалення. Видаляйте чати автоматично через указаний час. Щоб ввімкнути цю функцію, відкрийте налаштування Threema й виберіть \"Медіафайли та сховище\" > \"Керування сховищем\".</p>
+		<p>Чимало інших покращень і оптимізацій.</p>
+		]]></string>
     <string name="whatsnew2_title">" "</string>
     <string name="whatsnew2_body">" "</string>
     <string name="tap_to_start">Торкніться тут, щоб запустити %s.</string>
@@ -1441,7 +1450,7 @@
     <string name="prefs_summary_hibernation_api_32">Щоб система не призупиняла роботу Threema після тривалого періоду неактивності, вимкніть налаштування системи \"Видалення дозволів і очищення місця\".</string>
     <string name="prefs_summary_hibernation_api">Щоб система не призупиняла роботу Threema після тривалого періоду неактивності, вимкніть налаштування системи \"Призупинити дії в додатку, якщо він не використовується\".</string>
     <string name="unable_to_fetch_configuration">Не вдалося завантажити дані з сервера конфігурації. Повторіть спробу пізніше.</string>
-    <string name="rogue_device_warning">Сервер виявив підключення з іншого пристрою з ідентичним ID Threema. Чи використовували ви нещодавно свій ID Threema на іншому пристрої? &lt;br&gt;&lt;br&gt; Якщо так, то можете не зважати на це повідомлення. &lt;br&gt;&lt;br&gt;Якщо ні, то ваш закритий ключ може бути скомпрометовано. <a href="https://threema.ch/en/faq/another_connection">Скористайтеся нашими порадами</a>, щоб захистити свої пристрій і дані, перш ніж створювати новий ID.</string>
+    <string name="rogue_device_warning"><![CDATA[Сервер виявив підключення з іншого пристрою з ідентичним ID Threema. Чи використовували ви нещодавно свій ID Threema на іншому пристрої? <br><br> Якщо так, то можете не зважати на це повідомлення. <br><br>Якщо ні, то ваш закритий ключ може бути скомпрометовано. <a href="https://threema.ch/en/faq/another_connection">Скористайтеся нашими порадами</a>, щоб захистити свої пристрій і дані, перш ніж створювати новий ID.]]></string>
     <string name="fetch2_failure">Помилка синхронізації з сервером підготовки.</string>
     <string name="no_members_support_group_calls">У цій групі немає інших учасників, які можуть відповідати на групові виклики</string>
     <string name="group_calls">Групові виклики</string>
@@ -1496,10 +1505,45 @@
     <string name="permission_microphone">Мікрофон</string>
     <string name="permission_read_phone_state">Телефон</string>
     <string name="permission_enable_in_settings_rationale">Увімкніть цей дозвіл у налаштуваннях. Виберіть \"Дозволи\" й увімкніть \"%s\".</string>
+    <string name="post_notification_permission_rationale">Щоб отримувати сповіщення, потрібно дозволити %s їх показувати.</string>
     <string name="group_name">Назва групи</string>
+    <string name="star_message">Позначити повідомлення зірочкою</string>
+    <string name="starred_message">Повідомлення із зірочкою</string>
+    <string name="starred">Із зірочкою</string>
+    <string name="starred_messages">Повідомлення із зірочкою</string>
+    <string name="sorting">Сортування</string>
+    <string name="sort_by">Сортувати за…</string>
+    <string name="newest_first">найновішими</string>
+    <string name="oldest_first">найстарішими</string>
+    <string name="no_starred_messages">Повідомлень із зірочкою не знайдено. Щоб позначити повідомлення, утримуйте його й виберіть значок зірочки.</string>
+    <string name="remove_all_stars">Вилучити всі зірочки</string>
+    <string name="remove_star">Вилучити зірочку</string>
     <string name="samsung_permission_problem_explain">%1$s не має доступу до медіафайлів, оскільки в системного додатку не надано відповідний дозвіл. Щоб усунути цю проблему, переконайтеся, що на наступному екрані активовано перемикач \"Зовнішня пам\'ять\", і перезапустіть %1$s.</string>
     <string name="min_n_chars">Мін. символів: %d</string>
     <string name="prefs_title_grant_bluetooth_permission">Надати доступ до Bluetooth</string>
+    <string name="safe_managed_password_confirm">Для вашої резервної копії Threema Safe налаштовано керований пароль.\n\nВикористовувати його? Якщо ви не впевнені, зверніться до адміністратора.</string>
+    <string name="safe_managed_new_password_confirm">Для вашої резервної копії Threema Safe налаштовано новий керований пароль.\n\nЗамінити поточний пароль на новий керований пароль? Якщо ви не впевнені, зверніться до адміністратора.</string>
+    <string name="real_not_now">Не зараз</string>
+    <string name="add_contact_in">Додати контакт у…</string>
+    <string name="really_remove_all_stars">Справді скасувати позначення всіх повідомлень?</string>
+    <string name="prefs_sum_storage_management">Керування пам\'яттю й видалення повідомлень або медіафайлів</string>
+    <string name="delete_automatically">Видаляти автоматично</string>
+    <string name="keep_messages">Зберігати повідомлення:</string>
+    <string name="clean_up_manually">Видалити вручну</string>
+    <string name="forever">Вічно</string>
+    <string name="autodelete_explain">Якщо вибрано будь-який варіант, крім \"Вічно\", вхідні та вихідні повідомлення (зокрема, непрочитані й ненадіслані) зберігатимуться лише вказаний час, а потім назавжди видалятимуться. Повідомлення в групах для нотаток і повідомлення із зірочкою не видалятимуться. Видалення виконується періодично, а не відразу після ввімкнення цієї функції.</string>
+    <string name="autodelete_confirm">Повідомлення буде видалено автоматично через %s. Продовжити?</string>
+    <string name="autodelete_activated">Автоматичне видалення ввімкнено.</string>
+    <string name="autodelete_disabled">Автоматичне видалення вимкнено.</string>
+    <string name="set_by_administrator">Значення встановлено адміністратором і змінити його неможливо.</string>
+    <string name="action_dissolve_group">Розпустити групу</string>
+    <string name="really_dissolve_group">Якщо ви лише розпустите групу, надсилати нові повідомлення до неї й керувати нею буде неможливо. Розпущену групу все ще можна клонувати.</string>
+    <string name="status_orphaned_group">*Цю групу покинуто*\nЗасновник вийшов із групи, тому її більше неможливо використовувати. Один із учасників, що залишилися, може клонувати цю групу (на екрані відомостей про неї), щоб стати новим адміністратором.</string>
+    <string name="group_orphaned_notice">Цю групу покинуто, оскільки засновник вийшов із неї. Клонуйте групу, щоб стати її новим адміністратором.</string>
+    <string name="group_not_a_member_notice">Ви більше не належите до цієї групи й не можете її використовувати.</string>
+    <string name="group_dissolved_notice">Цю групу розпущено, тому її більше неможливо використовувати.</string>
+    <string name="directory_request_failed">Помилка запиту каталогу. Повторіть спробу.</string>
+    <string name="add_shortcut_exists">Такий ярлик уже існує.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакти</item>
         <item quantity="many">%d контактів</item>
@@ -1541,6 +1585,12 @@
         <item quantity="many">%d файлів збережено.</item>
         <item quantity="one">%d файл збережено.</item>
         <item quantity="other">%d файлу збережено.</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="few">Збереження %d медіафайлів</item>
+        <item quantity="many">Збереження %d медіафайлів</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Збереження медіафайлу</item>
+        <item quantity="other">Збереження %d медіафайлу</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="few">Видалити опитування</item>

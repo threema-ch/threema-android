@@ -22,7 +22,6 @@
 package ch.threema.app.activities;
 
 import android.content.Intent;
-import android.widget.Toast;
 
 import org.slf4j.Logger;
 

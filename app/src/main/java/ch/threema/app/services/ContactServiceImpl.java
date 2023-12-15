@@ -772,6 +772,10 @@ public class ContactServiceImpl implements ContactService {
 
 		clearAvatarCache(model);
 
+		// Remove draft of this contact
+		ContactMessageReceiver receiver = createReceiver(model);
+		ThreemaApplication.putMessageDraft(receiver.getUniqueIdString(), null, null);
+
 		AccessModel access = this.getAccess(model);
 		if (access.canDelete()) {
 			// remove

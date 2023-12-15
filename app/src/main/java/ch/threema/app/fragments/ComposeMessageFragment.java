@@ -2000,7 +2000,7 @@ public class ComposeMessageFragment extends Fragment implements
 			this.actionBarAvatarView = actionBarTitleView.findViewById(R.id.avatar_view);
 			final RelativeLayout actionBarTitleContainer = actionBarTitleView.findViewById(R.id.title_container);
 			actionBarTitleContainer.setOnClickListener(v -> {
-				Intent intent = null;
+				Intent intent;
 				if (isGroupChat) {
 					intent = groupService.getGroupDetailIntent(groupModel, activity);
 				} else if (isDistributionListChat) {
@@ -2010,9 +2010,8 @@ public class ComposeMessageFragment extends Fragment implements
 					intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT_READONLY, true);
 				}
 				if (intent != null) {
-					intent = addExtrasToIntent(intent, messageReceiver);
-
-					activity.startActivityForResult(intent, 0);
+					addExtrasToIntent(intent, messageReceiver);
+					activity.startActivity(intent);
 				}
 			});
 

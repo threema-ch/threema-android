@@ -561,7 +561,9 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	public Intent getGroupDetailIntent(@NonNull GroupModel groupModel, @NonNull Activity activity) {
-		return new Intent(activity, GroupDetailActivity.class);
+		Intent intent = new Intent(activity, GroupDetailActivity.class);
+		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.getId());
+		return intent;
 	}
 
 	@Override

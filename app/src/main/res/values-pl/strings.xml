@@ -1421,7 +1421,7 @@ anonimowo?</string>
     <string name="prefs_summary_hibernation_api_32">Aby zapobiec wstrzymywaniu aplikacji Threema przez system po dłuższej nieaktywności, wyłącz ustawienie systemowe „Usuwaj uprawnienia i zwalniaj miejsce”.</string>
     <string name="prefs_summary_hibernation_api">Aby zapobiec wstrzymywaniu aplikacji Threema przez system po dłuższej nieaktywności, wyłącz ustawienie systemowe „Wstrzymuj aktywność aplikacji w razie nieużywania”.</string>
     <string name="unable_to_fetch_configuration">Nie można pobrać danych z serwera konfiguracji. Spróbuj ponownie później.</string>
-    <string name="rogue_device_warning">Wykryto połączenie z innego urządzenia z tym samym identyfikatorem Threema. Czy był on ostatnio używany na innym urządzeniu?&lt;br&gt;&lt;br&gt;Jeśli tak, to można zignorować tę wiadomość.&lt;br&gt;&lt;br&gt;Jeśli nie, to mogło nastąpić ujawnienie Twojego klucza prywatnego. <a href="https://threema.ch/en/faq/another_connection">Postępuj zgodnie z naszymi sugestiami</a>, aby zabezpieczyć swoje urzązenie i dane przed utworzeniem nowego identyfikatora.</string>
+    <string name="rogue_device_warning"><![CDATA[Wykryto połączenie z innego urządzenia z tym samym identyfikatorem Threema. Czy był on ostatnio używany na innym urządzeniu?<br><br>Jeśli tak, to można zignorować tę wiadomość.<br><br>Jeśli nie, to mogło nastąpić ujawnienie Twojego klucza prywatnego. <a href="https://threema.ch/en/faq/another_connection">Postępuj zgodnie z naszymi sugestiami</a>, aby zabezpieczyć swoje urzązenie i dane przed utworzeniem nowego identyfikatora.]]></string>
     <string name="fetch2_failure">Synchronizacja z serwerem udostępniającym nie powiodła się.</string>
     <string name="no_members_support_group_calls">W tej grupie nie ma innych członków, którzy mogą odpowiadać na połączenia grupowe</string>
     <string name="group_calls">Poł. grupowe</string>
@@ -1556,6 +1556,12 @@ anonimowo?</string>
         <item quantity="many">Zapisano %d plików.</item>
         <item quantity="one">Zapisano %d plik.</item>
         <item quantity="other">Zapisano %d plików.</item>
+    </plurals>
+    <plurals name="saving_media">
+        <item quantity="few">Zapisywanie %d plików mediów</item>
+        <item quantity="many">Zapisywanie %d plików mediów</item>
+        <item quantity="one">Zapisywanie pliku mediów</item>
+        <item quantity="other">Zapisywanie %d plików mediów</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="few">Usuń ankiety</item>

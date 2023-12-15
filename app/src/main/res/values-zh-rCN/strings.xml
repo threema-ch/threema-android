@@ -1439,7 +1439,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_summary_hibernation_api_32">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “撤销权限并释放空间” 。</string>
     <string name="prefs_summary_hibernation_api">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “暂停未使用应用的活动” 。</string>
     <string name="unable_to_fetch_configuration">无法从配置服务器获取数据，请稍后再试。</string>
-    <string name="rogue_device_warning">我们的服务器检测到有人试图从另一台设备登录现有的 Threema ID，您最近是否在其他设备上登录过您的 Threema ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此消息。&lt;br&gt;&lt;br&gt;如果没有，您的私钥可能已经泄露。在创建新ID之前，请<a href="https://threema.ch/en/faq/another_connection">按照我们的建议</a>保护您的设备和数据。</string>
+    <string name="rogue_device_warning"><![CDATA[我们的服务器检测到有人试图从另一台设备登录现有的 Threema ID，您最近是否在其他设备上登录过您的 Threema ID？<br><br>如果有，就可以忽略此消息。<br><br>如果没有，您的私钥可能已经泄露。在创建新ID之前，请<a href="https://threema.ch/en/faq/another_connection">按照我们的建议</a>保护您的设备和数据。]]></string>
     <string name="fetch2_failure">与配置服务器同步失败。</string>
     <string name="no_members_support_group_calls">此群组中没有成员可以接听群组通话</string>
     <string name="group_calls">群组通话</string>
@@ -1520,7 +1520,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="keep_messages">保留消息期限：</string>
     <string name="clean_up_manually">手动清理</string>
     <string name="forever">永远</string>
-    <string name="autodelete_explain">如果设置为 “永远” 以外的其他选项，已收到和已发送的消息仅保留在已选定的时间内，之后消息将彻底删除，且不可恢复，这包含未读和未发送的消息，已收藏和已加星标的消息不会被删除。自动删除功能会定期执行，不一定是在启用此功能后立即执行。</string>
+    <string name="autodelete_explain">如果设置为 “永远” 以外的其他选项，已收到和已发送的消息仅保留在已选定的时间内，之后消息将彻底删除，且不可恢复，这包含未阅读和未发送的消息，私人收藏和已加星标的消息不会被删除。自动删除功能会定期执行，不一定是在启用此功能后立即执行。</string>
     <string name="autodelete_confirm">消息将在%s后自动删除。是否继续？</string>
     <string name="autodelete_activated">自动删除已启用。</string>
     <string name="autodelete_disabled">自动删除已禁用。</string>
