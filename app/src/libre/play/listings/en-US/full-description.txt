@@ -1,0 +1,48 @@
+Threema is the world’s best-selling secure messenger and keeps your data out of the hands of hackers, corporations, and governments. The service can be used completely anonymously. Threema is open source and offers every feature one would expect from a state-of-the-art instant messenger. The app also allows you to make end-to-end encrypted voice, video, and group calls. Using the desktop app and the web client, you can also use Threema from your desktop.
+
+In contrast to the version distributed via Google Play, Threema Libre contains no proprietary libraries / components (like Google Play Services).
+
+<strong>PRIVACY AND ANONYMITY</strong>
+
+Threema is designed from the ground up to generate as little data on servers as possible. Group memberships and contact lists are managed on your device only and never stored on our servers. Messages are immediately deleted after they have been delivered. Local files are stored encrypted on your mobile phone or tablet. All this effectively prevents the collection and misuse of your personal information, including metadata. Threema is fully compliant with the European privacy legislation (GDPR).
+
+<strong>ROCK-SOLID ENCRYPTION</strong>
+
+Threema end-to-end encrypts all your communication, including messages, voice and video calls, group chats, files, and even status messages. Only the intended recipient, and nobody else, can read your messages. Threema uses the trusted open source NaCl cryptography library for encryption. The encryption keys are generated and safely stored on the users’ devices to prevent backdoor access or copies.
+
+<strong>COMPREHENSIVE FEATURES</strong>
+
+Threema is not only an encrypted and private messenger but also versatile and feature-rich.
+
+· Write text and send voice messages
+· Make voice, video and group calls
+· Share videos pictures and locations
+· Send any type of file (pdf animated gif, mp3, doc, zip, etc.)
+· Use the desktop app or the web client to chat from your computer
+· Create groups
+· Conduct polls with the poll feature
+· Choose between a dark and a light theme
+· Quickly and silently reply with the unique agree/disagree feature
+· Verify the identity of a contact by scanning their personal QR code
+· Use Threema as anonymous instant messaging tool
+· Synchronize your contacts (optional)
+
+<strong>SERVERS IN SWITZERLAND</strong>
+
+All our servers are located in Switzerland, and we develop our software in-house.
+
+<strong>FULL ANONYMITY</strong>
+
+Each Threema user receives a random Threema ID for identification. A phone number or email address is not required to use Threema. This unique feature allows you to use Threema completely anonymously – no need to give up private information or to open an account.
+
+<strong>OPEN SOURCE AND AUDITS</strong>
+
+The source code of the Threema app is open for everyone to review. On top of that, renowned experts are regularly commissioned to conduct systematic security audits of Threema’s code.
+
+<strong>NO ADS, NO TRACKERS</strong>
+
+Threema is not financed by advertising and does not collect user data.
+
+<strong>SUPPORT / CONTACT</strong>
+
+For questions or problems please consult our FAQs: <a href="https://threema.ch/en/faq">https://threema.ch/en/faq</a>

@@ -1,0 +1,5 @@
+* Fixed a crash that occurred when the app had no permission to show notifications
+
+* Fixed an UI bug in the group details
+
+* Added translations

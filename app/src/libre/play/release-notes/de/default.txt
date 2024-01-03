@@ -1,0 +1,5 @@
+* Behebung eines Absturzes bei fehlender Berechtigung der App für die Anzeige von Benachrichtigungen
+
+* Behebung eines Anzeigefehlers in den Gruppendetails
+
+* Übersetzungen hinzugefügt
