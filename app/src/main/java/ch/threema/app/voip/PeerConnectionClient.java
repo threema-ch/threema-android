@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2023 Threema GmbH
+ * Copyright (c) 2017-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -68,8 +68,8 @@ import org.webrtc.VideoEncoderFactory;
 import org.webrtc.VideoSink;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
-import org.webrtc.voiceengine.WebRtcAudioManager;
-import org.webrtc.voiceengine.WebRtcAudioUtils;
+import org.webrtc.audio.AudioDeviceModule;
+import org.webrtc.audio.JavaAudioDeviceModule;
 
 import java.io.File;
 import java.io.IOException;
@@ -131,7 +131,6 @@ public class PeerConnectionClient {
 
 	private static final String AUDIO_TRACK_ID = "3MACALLa0";
 	private static final String AUDIO_CODEC_OPUS = "opus";
-	private static final String AUDIO_LEVEL_CONTROL_CONSTRAINT = "levelControl";
 
 	private static final String VIDEO_TRACK_ID = "3MACALLv0";
 
@@ -196,8 +195,6 @@ public class PeerConnectionClient {
 	// Outgoing audio
 	private boolean enableLocalAudioTrack = true;
 
-	// Media constraints
-	private MediaConstraints audioConstraints;
 	private MediaConstraints sdpMediaConstraints;
 
 	// State
@@ -229,11 +226,8 @@ public class PeerConnectionClient {
 		final boolean tracing;
 
 		// Audio
-		final boolean useOpenSLES;
-		final boolean disableBuiltInAEC;
-		final boolean disableBuiltInAGC;
-		final boolean disableBuiltInNS;
-		final boolean enableLevelControl;
+		final boolean useHardwareEC;
+		final boolean useHardwareNS;
 
 		// Video
 		final boolean videoCallEnabled;
@@ -254,11 +248,8 @@ public class PeerConnectionClient {
 		 * Initialize the peer connection client.
 		 *
 		 * @param tracing Enable WebRTC trace logging. Should only be used for internal debugging.
-		 * @param useOpenSLES Use OpenSL ES
-		 * @param disableBuiltInAEC Disable acoustic echo cancelation
-		 * @param disableBuiltInAGC Disable automatic gain control
-		 * @param disableBuiltInNS Disable noise suppression
-		 * @param enableLevelControl Enable level control
+		 * @param useHardwareEC Disable acoustic echo cancelation
+		 * @param useHardwareNS Disable noise suppression
 		 * @param videoCallEnabled Enable video calls
 		 * @param videoCodecHwAcceleration Enable video codec hardware acceleration
 		 * @param rtpHeaderExtensionConfig See {@link SdpPatcher}
@@ -268,11 +259,8 @@ public class PeerConnectionClient {
 		 */
 		public PeerConnectionParameters(
 			boolean tracing,
-			boolean useOpenSLES,
-			boolean disableBuiltInAEC,
-			boolean disableBuiltInAGC,
-			boolean disableBuiltInNS,
-			boolean enableLevelControl,
+			boolean useHardwareEC,
+			boolean useHardwareNS,
 			boolean videoCallEnabled,
 			boolean videoCodecHwAcceleration,
 			boolean videoCodecEnableVP8,
@@ -286,11 +274,8 @@ public class PeerConnectionClient {
 			this.tracing = tracing;
 
 			// Audio
-			this.useOpenSLES = useOpenSLES;
-			this.disableBuiltInAEC = disableBuiltInAEC;
-			this.disableBuiltInAGC = disableBuiltInAGC;
-			this.disableBuiltInNS = disableBuiltInNS;
-			this.enableLevelControl = enableLevelControl;
+			this.useHardwareEC = useHardwareEC;
+			this.useHardwareNS = useHardwareNS;
 
 			// Video
 			this.videoCallEnabled = videoCallEnabled;
@@ -510,6 +495,11 @@ public class PeerConnectionClient {
 		WebRTCUtil.initializePeerConnectionFactory(
 			this.appContext, WebRTCUtil.Scope.CALL_OR_GROUP_CALL_OR_WEB_CLIENT);
 
+		final AudioDeviceModule adm = JavaAudioDeviceModule.builder(appContext)
+			.setUseHardwareAcousticEchoCanceler(peerConnectionParameters.useHardwareEC)
+			.setUseHardwareNoiseSuppressor(peerConnectionParameters.useHardwareNS)
+			.createAudioDeviceModule();
+
 		// Enable/disable tracing
 		//
 		// NOTE: For this to work, the "enableVerboseInternalTracing" option needs to be uncommented
@@ -519,42 +509,6 @@ public class PeerConnectionClient {
 				+ File.separator + "webrtc-trace.log";
 			logger.info("Writing WebRTC trace to {}", tracingFilePath);
 			PeerConnectionFactory.startInternalTracingCapture(tracingFilePath);
-		}
-
-		// Enable/disable OpenSL ES playback
-		if (!peerConnectionParameters.useOpenSLES) {
-			logger.info("Disable OpenSL ES audio even if device supports it");
-			WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(true /* enable */);
-		} else {
-			logger.info("Allow OpenSL ES audio if device supports it");
-			WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(false);
-		}
-
-		// Enable/disable acoustic echo cancelation
-		if (peerConnectionParameters.disableBuiltInAEC) {
-			logger.info("Disable built-in AEC even if device supports it");
-			WebRtcAudioUtils.setWebRtcBasedAcousticEchoCanceler(true);
-		} else {
-			logger.info("Enable built-in AEC if device supports it");
-			WebRtcAudioUtils.setWebRtcBasedAcousticEchoCanceler(false);
-		}
-
-		// Enable/disable automatic gain control
-		if (peerConnectionParameters.disableBuiltInAGC) {
-			logger.info("Disable built-in AGC even if device supports it");
-			WebRtcAudioUtils.setWebRtcBasedAutomaticGainControl(true);
-		} else {
-			logger.info("Enable built-in AGC if device supports it");
-			WebRtcAudioUtils.setWebRtcBasedAutomaticGainControl(false);
-		}
-
-		// Enable/disable built-in noise suppressor
-		if (peerConnectionParameters.disableBuiltInNS) {
-			logger.info("Disable built-in NS even if device supports it");
-			WebRtcAudioUtils.setWebRtcBasedNoiseSuppressor(true);
-		} else {
-			logger.info("Enable built-in NS if device supports it");
-			WebRtcAudioUtils.setWebRtcBasedNoiseSuppressor(false);
 		}
 
 		// Determine video encoder/decoder factory
@@ -588,6 +542,7 @@ public class PeerConnectionClient {
 		final PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
 		this.factory = PeerConnectionFactory.builder()
 				.setOptions(options)
+				.setAudioDeviceModule(adm)
 				.setVideoDecoderFactory(decoderFactory)
 				.setVideoEncoderFactory(encoderFactory)
 				.createPeerConnectionFactory();
@@ -596,6 +551,7 @@ public class PeerConnectionClient {
 			throw new RuntimeException("createPeerConnectionFactoryInternal: createPeerConnectionFactory returned null");
 		}
 		logger.info("Peer connection factory created");
+		adm.release();
 
 		this.factoryInitializing.release();
 		future.complete(true);
@@ -603,16 +559,6 @@ public class PeerConnectionClient {
 
 	@WorkerThread
 	private void createMediaConstraintsInternal() {
-		// Create audio constraints.
-		this.audioConstraints = new MediaConstraints();
-
-		// Added for audio performance measurements
-		if (this.peerConnectionParameters.enableLevelControl) {
-			logger.info("Enabling level control");
-			this.audioConstraints.mandatory.add(
-					new MediaConstraints.KeyValuePair(AUDIO_LEVEL_CONTROL_CONSTRAINT, "true"));
-		}
-
 		// Create SDP constraints.
 		this.sdpMediaConstraints = new MediaConstraints();
 		this.sdpMediaConstraints.mandatory.add(
@@ -1204,7 +1150,7 @@ public class PeerConnectionClient {
 	 */
 	private AudioTrack createAudioTrack() {
 		logger.trace("createAudioTrack");
-		this.audioSource = this.factory.createAudioSource(this.audioConstraints);
+		this.audioSource = this.factory.createAudioSource(new MediaConstraints());
 		this.localAudioTrack = this.factory.createAudioTrack(AUDIO_TRACK_ID, this.audioSource);
 		this.localAudioTrack.setEnabled(this.enableLocalAudioTrack);
 		return this.localAudioTrack;

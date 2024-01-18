@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2023 Threema GmbH
+ * Copyright (c) 2020-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -37,20 +37,18 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
-
 import com.google.android.material.card.MaterialCardView;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.base.utils.LoggingUtil;
-
 
 public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleObserver {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodePopup");
@@ -69,32 +67,23 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 			lifecycleOwner.getLifecycle().addObserver(this);
 		}
 
-		init(context, parentView, parentView.getWidth(), parentView.getHeight());
+		init(context, parentView);
 	}
 
-	private void init(Context context, View parentView, int screenWidth, int screenHeight) {
+	private void init(Context context, View parentView) {
 		this.parentView = parentView;
 
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		topLayout =  layoutInflater.inflate(R.layout.popup_qrcode, null, true);
+		topLayout = layoutInflater.inflate(R.layout.popup_qrcode, null, true);
 
 		this.containerView = topLayout.findViewById(R.id.qr_popup_container);
 		this.imageView = topLayout.findViewById(R.id.thumbnail_view);
 
-		// border around popup contents
-		int borderSize = context.getResources().getDimensionPixelSize(R.dimen.qrcode_min_margin) * 2;
-
 		setContentView(topLayout);
 
-		if (screenHeight > screenWidth) {
-			// portrait
-			setWidth(screenWidth - borderSize);
-			setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-		} else {
-			// landscape
-			setWidth(screenHeight - borderSize);
-			setHeight(screenHeight - borderSize);
-		}
+		setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+		setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+
 		setBackgroundDrawable(new BitmapDrawable());
 		setAnimationStyle(0);
 		setElevation(0);

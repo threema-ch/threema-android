@@ -25,7 +25,8 @@
 				android:layout_height="wrap_content"
 				android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
 				android:paddingRight="@dimen/wizard_contents_padding_horizontal"
-				android:paddingTop="@dimen/wizard_contents_padding">
+				android:paddingTop="@dimen/wizard_contents_padding"
+				android:paddingBottom="@dimen/wizard_contents_padding">
 
 			<TextView
 					style="@style/WizardTitleText"
@@ -149,13 +150,23 @@
 
 			<TextView
 				style="@style/WizardMediumText"
-				android:id="@+id/private_explain"
-				android:visibility="visible"
+				android:id="@+id/work_lost_credential_help"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:layout_below="@id/unlock_button_work"
 				android:gravity="center_horizontal"
 				android:layout_marginTop="32dp" />
+
+			<TextView
+				style="@style/WizardMediumText"
+				android:id="@+id/private_explain"
+				android:visibility="visible"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/work_lost_credential_help"
+				android:layout_alignParentBottom="true"
+				android:gravity="center_horizontal|bottom"
+				android:layout_marginTop="32dp"/>
 
 		</RelativeLayout>
 

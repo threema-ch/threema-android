@@ -127,7 +127,6 @@
 	<string name="preferences__threema_safe_error_code" translatable="false">pref_threema_safe_error_code</string>
 	<string name="preferences__threema_safe_create_error_date" translatable="false">pref_threema_safe_error_date</string>
 	<string name="preferences__threema_safe_enabled" translatable="false">pref_threema_safe_enabled</string>
-	<string name="preferences__background_data" translatable="false">pref_background_data</string>
 	<string name="preferences__threema_safe_server_retention" translatable="false">pref_safe_server_retention</string>
 	<string name="preferences__threema_safe_server_upload_size" translatable="false">pref_safe_server_max_size_long</string>
 	<string name="preferences__threema_safe_backup_size" translatable="false">pref_threema_safe_backup_size</string>
@@ -166,7 +165,6 @@
 	<string name="preferences__tooltip_work_hint_shown" translatable="false">pref_tooltip_work_hint_shown</string>
 	<string name="preferences__camera_flash_mode" translatable="false">pref_camera_flash_mode</string>
 	<string name="preferences__camera_lens_facing" translatable="false">pref_camera_lens_facing</string>
-	<string name="preferences__troubleshooting" translatable="false">pref_troubleshooting</string>
 	<string name="preferences__pip_position" translatable="false">pref_pip_position</string>
 	<string name="preferences__voip_video_enable" translatable="false">pref_voip_video_enable</string>
 	<string name="preferences__voip_video_profile" translatable="false">pref_voip_video_profile</string>
@@ -210,4 +208,6 @@
 	<string name="preferences__grant_bluetooth_permission" translatable="false">pref_grant_bluetooth_permission</string>
 	<string name="preferences__last_notification_rationale_shown" translatable="false">last_notification_rationale_shown</string>
     <string name="preferences__media_gallery_content_types" translatable="false">pref_media_gallery_content_types</string>
+	<string name="preferences__advanced_options" translatable="false">pref_advanced_options</string>
+
 </resources>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2023 Threema GmbH
+ * Copyright (c) 2014-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -26,6 +26,7 @@ import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -75,7 +76,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         super.onCreate(savedInstanceState)
 
         // set status bar color
-        window.statusBarColor = resources.getColor(R.color.attach_status_bar_color_collapsed)
+        window.statusBarColor = Color.TRANSPARENT
 
         toolbar = findViewById(R.id.toolbar_contact)
         appBarLayout = findViewById(R.id.appbar_layout_contact)
@@ -250,11 +251,11 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
             override fun onAnimationStart(animation: Animator) {}
             override fun onAnimationEnd(animation: Animator) {
                 appBarLayout.visibility = View.INVISIBLE
-                window.statusBarColor = resources.getColor(R.color.attach_status_bar_color_collapsed)
+                window.statusBarColor = Color.TRANSPARENT
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                window.statusBarColor = resources.getColor(R.color.attach_status_bar_color_collapsed)
+                window.statusBarColor = Color.TRANSPARENT
             }
 
             override fun onAnimationRepeat(animation: Animator) {}

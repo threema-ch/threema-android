@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2023 Threema GmbH
+ * Copyright (c) 2017-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,15 +27,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.text.format.DateUtils;
-
-import org.slf4j.Logger;
-
-import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -46,6 +39,11 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
+
+import org.slf4j.Logger;
+
+import java.util.Map;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.jobs.ReConnectJobService;
@@ -181,15 +179,7 @@ public class PushUtil {
 		Context appContext = ThreemaApplication.getAppContext();
 		PollingHelper pollingHelper = new PollingHelper(appContext, "fcm");
 
-		ConnectivityManager mgr = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-		boolean isBlocked;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			isBlocked = mgr.getRestrictBackgroundStatus() == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
-		} else {
-			NetworkInfo networkInfo = mgr.getActiveNetworkInfo();
-			isBlocked = networkInfo != null && networkInfo.getDetailedState() == NetworkInfo.DetailedState.BLOCKED;
-		}
-		if (isBlocked) {
+		if (ConfigUtils.isBackgroundDataRestricted(appContext, true)) {
 			logger.warn("Network blocked (background data disabled?)");
 			// The same message may arrive twice (due to a network change). so we simply ignore messages that we were unable to fetch due to a blocked network
 			// Simply schedule a poll when the device is back online

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022-2023 Threema GmbH
+ * Copyright (c) 2022-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -147,7 +147,7 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
                     .replace(layoutID, fragment)
             }
         // On tablets there is no need to add the fragment to the back stack except for nested fragments (i.e. troubleshooting)
-        if (!isTabletLayout() || fragment is SettingsTroubleshootingFragment) {
+        if (!isTabletLayout() || fragment is SettingsAdvancedOptionsFragment) {
             transaction.addToBackStack(null)
         }
         transaction.commit()

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022-2023 Threema GmbH
+ * Copyright (c) 2022-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -196,6 +196,11 @@ data class P2PContexts(
         return when {
             envelope == null -> null
             envelope.hasCaptureState() -> P2PMessageContent.CaptureState.fromProtobuf(envelope.captureState)
+                .also {
+                    if (it == null) {
+                        logger.warn("Cannot map capture state")
+                    }
+                }
             envelope.hasRekey() -> P2PMessageContent.MediaKey.fromProtobuf(envelope.rekey)
             else -> {
                 logger.warn("Cannot map P2P message")

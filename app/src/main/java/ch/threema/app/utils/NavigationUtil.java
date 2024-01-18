@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2023 Threema GmbH
+ * Copyright (c) 2014-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -30,7 +30,6 @@ import androidx.core.app.TaskStackBuilder;
 
 import org.slf4j.Logger;
 
-import ch.threema.app.activities.PinLockActivity;
 import ch.threema.base.utils.LoggingUtil;
 
 public class NavigationUtil {
@@ -61,9 +60,6 @@ public class NavigationUtil {
 			intent.addCategory(Intent.CATEGORY_HOME);
 			try {
 				activity.startActivity(intent);
-				if (!(activity instanceof PinLockActivity)) {
-					activity.finish();
-				}
 			} catch (RuntimeException ignored) {}
 		}
 	}

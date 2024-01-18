@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2023 Threema GmbH
+ * Copyright (c) 2017-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -150,15 +151,19 @@ public class DatabaseNonceStore extends SQLiteOpenHelper
 	}
 
 	/**
-	 * Get all the hashed nonces that are available in their hex string representation.
+	 * Get the hashed nonces of the provided chunk in their hex string representation.
 	 * See {@link Utils#byteArrayToHexString(byte[])} for more information about their
 	 * representation.
 	 *
+	 * @param chunkSize the number of nonces that is returned
+	 * @param offset    the offset where reading the nonces starts
 	 * @return a list of the hashed nonces in their hex string representation.
 	 */
-	public @NonNull List<String> getAllHashedNonces() {
-		List<String> nonces = new LinkedList<>();
-		Cursor c = this.getReadableDatabase().rawQuery("SELECT `nonce` FROM `threema_nonce`", null);
+	public void addHashedNonceChunk(int chunkSize, int offset, List<String> nonces) {
+		Cursor c = this.getReadableDatabase().rawQuery(
+			"SELECT `nonce` FROM `threema_nonce` LIMIT ? OFFSET ?",
+			new String[]{String.valueOf(chunkSize), String.valueOf(offset)}
+		);
 		if (c != null) {
 			if (c.moveToFirst()) {
 				int columnIndex = c.getColumnIndex("nonce");
@@ -168,8 +173,6 @@ public class DatabaseNonceStore extends SQLiteOpenHelper
 			}
 			c.close();
 		}
-
-		return nonces;
 	}
 
 	/**

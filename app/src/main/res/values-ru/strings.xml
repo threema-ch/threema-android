@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">Вибрация в приложении</string>
     <string name="prefs_inapp_vibrate_on">Вибрация при получении сообщений</string>
     <string name="prefs_inapp_vibrate_off">Нет вибрации при получении сообщений</string>
-    <string name="prefs_troubleshooting">Устранение неполадок</string>
-    <string name="prefs_sum_troubleshooting">Анализ и устранение проблем</string>
-    <string name="prefs_workarounds">Заплатки</string>
+    <string name="workarounds">Обходные пути</string>
     <string name="prefs_title_threema_push_switch">Использовать Threema Push</string>
     <string name="prefs_sum_threema_push_on">"Использовать функцию Threema Push для получения уведомлений о новых сообщениях "</string>
     <string name="prefs_sum_threema_push_off">Проверять наличие новых сообщений с помощью системной службы push-уведомлений</string>
@@ -821,8 +819,6 @@
     <string name="forward_location">Переслать местоположение</string>
     <string name="unknown_address">Неизвестный адрес</string>
     <string name="your_location">Ваше местоположение</string>
-    <string name="network_blocked_title">Фоновая передача данных отключена</string>
-    <string name="network_blocked_body">%s не может получать сообщения в фоновом режиме. Нажмите здесь, чтобы включить фоновую передачу данных в настройках.</string>
     <string name="reply_later">Свяжемся позже</string>
     <string name="reply_on_my_way">Я в пути</string>
     <string name="reply_thank_you">Спасибо</string>
@@ -1459,7 +1455,6 @@
     <string name="permission_microphone">Микрофон</string>
     <string name="permission_read_phone_state">Телефон</string>
     <string name="permission_enable_in_settings_rationale">Предоставьте это разрешение в настройках. Выберите «Разрешения», а затем разрешите «%s».</string>
-    <string name="post_notification_permission_rationale">Чтобы получать уведомления, вы должны разрешить программе %s показывать уведомления.</string>
     <string name="group_name">Название группы</string>
     <string name="star_message">Отметить звездочкой</string>
     <string name="starred_message">Сообщение со звездочкой</string>
@@ -1486,7 +1481,7 @@
     <string name="keep_messages">Хранить сообщения:</string>
     <string name="clean_up_manually">Очистка вручную</string>
     <string name="forever">Вечно</string>
-    <string name="autodelete_explain">Если выбрать любой другой вариант, кроме «Вечно», входящие и исходящие сообщения будут храниться только в течение заданного периода времени, затем они будут удалены без возможности восстановления. Это касается также непрочитанных и неотправленных сообщений. Сообщения в группах примечаний и сообщения, помеченные звездочкой, не будут удаляться. Процесс удаления происходит периодически, необязательно сразу после активации.</string>
+    <string name="autodelete_explain">Если выбрать любой другой вариант, кроме «Вечно», входящие и исходящие сообщения будут безвозвратно удалены по истечении указанного времени. Это касается также непрочитанных и неотправленных сообщений. Сообщения в группах примечаний и сообщения, помеченные звездочкой, не будут удаляться. Процесс удаления происходит периодически, необязательно сразу после активации.</string>
     <string name="autodelete_confirm">Сообщения будут удалены автоматически через %s. Продолжить?</string>
     <string name="autodelete_activated">Автоудаление активировано.</string>
     <string name="autodelete_disabled">Автоудаление отключено.</string>
@@ -1499,6 +1494,23 @@
     <string name="group_dissolved_notice">Группа распущена и больше не может использоваться.</string>
     <string name="directory_request_failed">Сбой запроса каталога. Повторите попытку.</string>
     <string name="add_shortcut_exists">Ярлык для этого элемента уже существует.</string>
+    <string name="work_lost_credentials_help">Забыли свои учетные данные? Обратитесь к своему администратору %1$s.</string>
+    <string name="problemsolver_intro">Некоторые проблемы с конфигурацией системы могут помешать %s работать правильно. Устраните их, следуя инструкциям ниже.</string>
+    <string name="problemsolver_title">Исправить проблемы конфигурации</string>
+    <string name="problemsolver_title_background">Работа в фоне ограничена</string>
+    <string name="problemsolver_title_background_data">Фоновая передача данных ограничена</string>
+    <string name="problemsolver_title_notifications">Уведомления отключены</string>
+    <string name="problemsolver_title_fullscreen_notifications">Полноэкранные уведомления запрещены</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Приложению запрещено отображать полноэкранные уведомления, поэтому вы можете пропустить входящие вызовы, когда телефон заблокирован. Исправьте это, включив переключатель рядом с «Разрешить полноэкранные уведомления для этого приложения».</string>
+    <string name="problemsolver_explain_notifications">Уведомления для этого приложения полностью отключены. Вы не будете получать информацию о входящих сообщениях или звонках асинхронно, приложение может работать не так, как ожидалось. Чтобы это исправить, включите переключатель рядом с «Все уведомления».</string>
+    <string name="problemsolver_explain_background_data">Приложение не может использовать мобильные данные в фоновом режиме. Вы не будете получать уведомления о входящих сообщениях, если приложение не активно. Чтобы это исправить, включите переключатель «Фоновая передача данных».</string>
+    <string name="problemsolver_explain_background">Приложению запрещено работать в фоновом режиме. Вы не будете получать никаких уведомлений и многие функции не будут работать должным образом. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
+    <string name="problemsolver_info_text">Названия некоторых из упомянутых выше параметров настройки системы могут различаться в зависимости от версии Android и производителя телефона.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Использование батареи приложением установлено на «оптимальное»</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Приложению не разрешено поддерживать постоянное подключение к серверам, которое требуется для работы Threema Push. Вы не будете получать уведомления о новых сообщениях, когда приложение работает в фоновом режиме. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
+    <string name="problemsolver_to_settings">К настройкам</string>
+    <string name="prefs_advanced_options">Дополнительные настройки</string>
+    <string name="push_service">Push-сервис</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>
@@ -1677,4 +1689,5 @@
         <item quantity="one">%d участник группы</item>
         <item quantity="other">%d участников группы</item>
     </plurals>
+    <string name="edit_and_send">Редактировать</string>
 </resources>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2023 Threema GmbH
+ * Copyright (c) 2023-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -337,8 +337,12 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
     }
 
     class SamsungQuirkRenderersFactory(val context: Context) : DefaultRenderersFactory(context) {
-        override fun buildAudioSink(context: Context, enableFloatOutput: Boolean, enableAudioTrackPlaybackParams: Boolean, enableOffload: Boolean): AudioSink {
-            return SamsungQuirkAudioSink(context, enableFloatOutput, enableAudioTrackPlaybackParams, enableOffload)
+        override fun buildAudioSink(
+            context: Context,
+            enableFloatOutput: Boolean,
+            enableAudioTrackPlaybackParams: Boolean
+        ): AudioSink {
+            return SamsungQuirkAudioSink(context, enableFloatOutput, enableAudioTrackPlaybackParams)
         }
     }
 }

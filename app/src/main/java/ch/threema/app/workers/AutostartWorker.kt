@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2023 Threema GmbH
+ * Copyright (c) 2014-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,8 +25,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -87,14 +85,6 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
         if (serviceManager == null) {
             logger.error("Service manager not available")
             return Result.retry()
-        }
-
-        // check if background data is disabled and issue a warning
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val connMgr = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
-            if (connMgr != null && connMgr.restrictBackgroundStatus == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED) {
-                serviceManager.notificationService.showNetworkBlockedNotification(false)
-            }
         }
 
         // fixes https://issuetracker.google.com/issues/36951052

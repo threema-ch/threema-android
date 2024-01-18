@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2023 Threema GmbH
+ * Copyright (c) 2019-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,15 +27,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.biometric.BiometricPrompt;
+
+import org.slf4j.Logger;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -141,7 +143,7 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
 				if (errorCode != BiometricPrompt.ERROR_USER_CANCELED && errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
 					Toast.makeText(BiometricLockActivity.this, errString + " (" + errorCode + ")", Toast.LENGTH_LONG).show();
 				}
-				BiometricLockActivity.this.onAuthenticationFailed();
+				BiometricLockActivity.this.onAuthenticationError(errorCode);
 			}
 
 			@Override
@@ -218,6 +220,19 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
 		logger.debug("Authentication failed");
 		if (!isCheckOnly) {
 			NavigationUtil.navigateToLauncher(this);
+		}
+		this.setResult(RESULT_CANCELED);
+		this.finish();
+	}
+
+	private void onAuthenticationError(int errorCode) {
+		logger.debug("Authentication error");
+		if (!isCheckOnly) {
+			NavigationUtil.navigateToLauncher(this);
+			if (errorCode == BiometricPrompt.ERROR_USER_CANCELED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+				// ugly hack for leaking content in app switcher
+				SystemClock.sleep(2000);
+			}
 		}
 		this.setResult(RESULT_CANCELED);
 		this.finish();

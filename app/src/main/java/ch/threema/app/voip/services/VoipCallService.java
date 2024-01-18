@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2023 Threema GmbH
+ * Copyright (c) 2017-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -220,8 +220,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	private MediaPlayerStateWrapper mediaPlayer;
 
 	// PeerConnection configuration
-	private Boolean useOpenSLES = null;
-	private Boolean disableBuiltInAEC = null;
+	private Boolean useHardwareEC = null;
 
 	// Network configuration
 	private @Nullable Boolean networkIsMetered; // Only used for change detection!
@@ -375,10 +374,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			// Create debug text
 			final StringBuilder builder = new StringBuilder();
 			stats.addShortRepresentation(builder);
-			builder.append("\n\nopensl=");
-			builder.append(useOpenSLES ? "yes" : "no");
 			builder.append(" aec=");
-			builder.append(disableBuiltInAEC ? "no" : "yes");
+			builder.append(useHardwareEC ? "hw" : "sw");
 			try (CloseableLock locked = videoQualityNegotiation.tryRead(50, TimeUnit.MILLISECONDS)) {
 				builder.append("\nL=").append(localVideoQualityProfile);
 				builder.append("\nR=").append(remoteVideoQualityProfile);
@@ -904,11 +901,15 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		}
 
 		// Initialize peer connection parameters
-		this.useOpenSLES = this.preferenceService.getAECMode().equals("sw");
-		this.disableBuiltInAEC = this.preferenceService.getAECMode().equals("sw"); // Hardware acoustic echo cancelation
-		final boolean disableBuiltInAGC = false; // Automatic gain control
-		final boolean disableBuiltInNS = false; // Noise suppression
-		final boolean enableLevelControl = false;
+		if (ConfigUtils.isDevBuild()) {
+			// Don't use hardware echo cancellation on debug and internal builds. Note that we
+			// override this setting to test software echo cancellation internally.
+			this.useHardwareEC = false;
+		} else {
+			// If the stored AEC mode is 'hw', we use hardware echo cancellation
+			this.useHardwareEC = this.preferenceService.getAECMode().equals("hw");
+		}
+		final boolean useHardwareNC = true; // Noise suppression
 		final boolean videoCallEnabled = this.videoEnabled;
 		final String videoCodec = this.preferenceService.getVideoCodec();
 		final boolean videoCodecHwAcceleration = this.videoEnabled && !videoCodec.equals(PreferenceService.VIDEO_CODEC_SW);
@@ -937,7 +938,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 		final PeerConnectionClient.PeerConnectionParameters peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
 				false,
-				this.useOpenSLES, this.disableBuiltInAEC, disableBuiltInAGC, disableBuiltInNS, enableLevelControl,
+				this.useHardwareEC, useHardwareNC,
 				videoCallEnabled, videoCodecHwAcceleration, videoCodecEnableVP8, videoCodecEnableH264HiP,
 				rtpHeaderExtensionConfig,
 				forceTurn, gatherContinually, this.preferenceService.allowWebrtcIpv6()

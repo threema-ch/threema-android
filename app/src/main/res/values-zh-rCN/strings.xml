@@ -66,9 +66,7 @@
     <string name="prefs_inapp_vibrate">应用内振动</string>
     <string name="prefs_inapp_vibrate_on">接收消息时振动</string>
     <string name="prefs_inapp_vibrate_off">接收消息时不要振动</string>
-    <string name="prefs_troubleshooting">故障排除</string>
-    <string name="prefs_sum_troubleshooting">分析并修复问题</string>
-    <string name="prefs_workarounds">解决方法</string>
+    <string name="workarounds">解决方法</string>
     <string name="prefs_title_threema_push_switch">使用 Threema Push</string>
     <string name="prefs_sum_threema_push_on">使用 Threema Push 以获取新消息通知</string>
     <string name="prefs_sum_threema_push_off">使用系统推送服务检查新消息</string>
@@ -837,7 +835,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="bold">粗体</string>
     <string name="shortcut_choice_title">为…创建快捷方式</string>
     <string name="prefs_title_device_info">设备信息</string>
-    <string name="notifications_disabled_title">通知已禁用</string>
+    <string name="notifications_disabled_title">禁用推送通知</string>
     <string name="notifications_disabled_text">在系统设置中已禁用 Threema 的通知。您将不会收到有关新消息的通知。</string>
     <string name="notifications_disabled_settings">编辑系统设置</string>
     <string name="error_attaching_files">添加附件时出错。</string>
@@ -856,8 +854,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="forward_location">转发位置</string>
     <string name="unknown_address">未知地址</string>
     <string name="your_location">您的位置</string>
-    <string name="network_blocked_title">后台数据已禁用</string>
-    <string name="network_blocked_body">%s 无法在后台接收消息。点击这里可启用设置中的背景数据。</string>
     <string name="reply_later">待会再聊</string>
     <string name="reply_on_my_way">我马上就到</string>
     <string name="reply_thank_you">谢谢</string>
@@ -1439,7 +1435,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_summary_hibernation_api_32">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “撤销权限并释放空间” 。</string>
     <string name="prefs_summary_hibernation_api">为防止 Threema 在长时间不使用后被系统暂停，请禁用系统设置中的 “暂停未使用应用的活动” 。</string>
     <string name="unable_to_fetch_configuration">无法从配置服务器获取数据，请稍后再试。</string>
-    <string name="rogue_device_warning"><![CDATA[我们的服务器检测到有人试图从另一台设备登录现有的 Threema ID，您最近是否在其他设备上登录过您的 Threema ID？<br><br>如果有，就可以忽略此消息。<br><br>如果没有，您的私钥可能已经泄露。在创建新ID之前，请<a href="https://threema.ch/en/faq/another_connection">按照我们的建议</a>保护您的设备和数据。]]></string>
+    <string name="rogue_device_warning"><![CDATA[我们的服务器检测到有人试图从另一台设备登录现有的 Threema ID，您最近是否在其他设备上登录过您的 Threema ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此消息。&lt;br&gt;&lt;br&gt;如果没有，您的私钥可能已经泄露。在创建新ID之前，请<a href="https://threema.ch/en/faq/another_connection">按照我们的建议</a>保护您的设备和数据。]]></string>
     <string name="fetch2_failure">与配置服务器同步失败。</string>
     <string name="no_members_support_group_calls">此群组中没有成员可以接听群组通话</string>
     <string name="group_calls">群组通话</string>
@@ -1494,7 +1490,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="permission_microphone">麦克风</string>
     <string name="permission_read_phone_state">电话</string>
     <string name="permission_enable_in_settings_rationale">请在设置中启用该权限。先选择 “权限”，然后点击允许 “%s”。</string>
-    <string name="post_notification_permission_rationale">如要接收通知，您必须允许 %s 显示通知。</string>
     <string name="group_name">群组名称</string>
     <string name="star_message">为消息加星标</string>
     <string name="starred_message">已加星标的消息</string>
@@ -1520,7 +1515,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="keep_messages">保留消息期限：</string>
     <string name="clean_up_manually">手动清理</string>
     <string name="forever">永远</string>
-    <string name="autodelete_explain">如果设置为 “永远” 以外的其他选项，已收到和已发送的消息仅保留在已选定的时间内，之后消息将彻底删除，且不可恢复，这包含未阅读和未发送的消息，私人收藏和已加星标的消息不会被删除。自动删除功能会定期执行，不一定是在启用此功能后立即执行。</string>
+    <string name="autodelete_explain">如果设置为 “永远” 以外的其他选项，已收到和已发送的消息将在已选定的时间后彻底删除，且不可恢复，这包含未阅读和未发送的消息。不过，私人收藏在备忘录 “一人群组” 内的消息、已加星标的消息不会被删除。自动删除功能会定期执行，不一定是在启用此功能后立即执行。</string>
     <string name="autodelete_confirm">消息将在%s后自动删除。是否继续？</string>
     <string name="autodelete_activated">自动删除已启用。</string>
     <string name="autodelete_disabled">自动删除已禁用。</string>
@@ -1533,6 +1528,23 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_dissolved_notice">由于这个群组已解散，因此您不能再参与这个群组的讨论。</string>
     <string name="directory_request_failed">目录请求失败，请再试一次。</string>
     <string name="add_shortcut_exists">此目标的快捷方式已经存在。</string>
+    <string name="work_lost_credentials_help">忘记了您的凭证？请联系您的 %1$s 管理员。</string>
+    <string name="problemsolver_intro">某些系统配置问题可能会阻止 %s 正常运行，请按照以下步骤以解决问题。</string>
+    <string name="problemsolver_title">修复配置问题</string>
+    <string name="problemsolver_title_background">后台使用量受限制</string>
+    <string name="problemsolver_title_background_data">后台数据受限制</string>
+    <string name="problemsolver_title_notifications">禁用推送通知</string>
+    <string name="problemsolver_title_fullscreen_notifications">全屏通知被禁止</string>
+    <string name="problemsolver_explain_fullscreen_notifications">此应用被禁止显示全屏通知。当手机锁屏时，您可能会错过来电。如要解决问题，请为此应用启用 “允许全屏通知”。</string>
+    <string name="problemsolver_explain_notifications">此应用的通知已被完全禁用，您将无法及时收到新信息或新来电的通知，而此应用可能无法正常运行。如要解决问题，请为此应用启用 \"所有通知\"。</string>
+    <string name="problemsolver_explain_background_data">此应用在后台运行时无法使用移动数据。除非您主动打开此应用，否则您将不会收到新消息的通知。如要解决问题，请为此应用启用 “后台数据”。</string>
+    <string name="problemsolver_explain_background">此应用在后台运行受到限制，您将不会收到任何通知，并且许多功能将无法正常运行。如要解决问题，请先点击 “应用程序电池使用量” ，然后选择 “无限制”。</string>
+    <string name="problemsolver_info_text">上述某些系统设置选项的命名可能会因 Android 版本和设备制造商而有所不同。</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">应用程序电池使用量设置为 “优化”。</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">此应用被禁止与服务器永久保持连接，以至 Threema Push 无法正常运行。当此应用在后台运行时，您将不会收到新消息的通知。如要解决问题，请先点击 “应用程序电池使用量” ，然后选择 “无限制”。</string>
+    <string name="problemsolver_to_settings">前往设置</string>
+    <string name="prefs_advanced_options">高级选项</string>
+    <string name="push_service">推送服务</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>
@@ -1611,4 +1623,5 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <plurals name="number_of_group_members">
         <item quantity="other">%d个群组成员</item>
     </plurals>
+    <string name="edit_and_send">编辑</string>
 </resources>

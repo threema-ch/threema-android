@@ -66,9 +66,7 @@ quan arribi el primer missatge.</string>
     <string name="prefs_inapp_vibrate">Vibració des de l\'aplicació</string>
     <string name="prefs_inapp_vibrate_on">Vibrar quan es rebin missatges</string>
     <string name="prefs_inapp_vibrate_off">No vibrar quan es rebin missatges</string>
-    <string name="prefs_troubleshooting">Resolució de problemes</string>
-    <string name="prefs_sum_troubleshooting">Analitzar i solucionar problemes</string>
-    <string name="prefs_workarounds">Solucions</string>
+    <string name="workarounds">Solucions</string>
     <string name="prefs_logging">Registre</string>
     <string name="prefs_title_message_log_switch">Registra a fitxer</string>
     <string name="prefs_title_sum_message_log_on">Esdeveniments i informació de xarxa es registraran al fitxer debug_log.txt</string>
@@ -816,8 +814,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="send_location">Enviar ubicació</string>
     <string name="unknown_address">Adreça desconeguda</string>
     <string name="your_location">La vostra ubicació</string>
-    <string name="network_blocked_title">Dades en segon pla desactivades</string>
-    <string name="network_blocked_body">%s no pot rebre missatges en segon pla. Toqueu aquí per activar les dades en segon pla a la configuració.</string>
     <string name="reply_later">Us truco més tard</string>
     <string name="reply_on_my_way">Estic de camí</string>
     <string name="reply_thank_you">Gràcies</string>
@@ -1346,4 +1342,5 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
         <item quantity="one">Desant multimèdia</item>
         <item quantity="other"></item>
     </plurals>
+    <string name="edit_and_send">Editar</string>
 </resources>

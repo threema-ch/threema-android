@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,6 +21,10 @@
 
 package ch.threema.app.preference;
 
+import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
+import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
+import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -30,14 +34,11 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
@@ -57,7 +58,6 @@ import java.util.Set;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.RingtoneSelectorDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.utils.AppRestrictionUtil;
@@ -65,24 +65,16 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
-import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
-import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
-
-public class SettingsNotificationsFragment extends ThreemaPreferenceFragment implements GenericAlertDialog.DialogClickListener, RingtoneSelectorDialog.RingtoneSelectorDialogClickListener {
+public class SettingsNotificationsFragment extends ThreemaPreferenceFragment implements RingtoneSelectorDialog.RingtoneSelectorDialogClickListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsNotificationsFragment");
 
-	private static final String DIALOG_TAG_NOTIFICATIONS_DISABLED = "ndd";
 	private static final String DIALOG_TAG_CONTACT_NOTIFICATION = "cn";
 	private static final String DIALOG_TAG_GROUP_NOTIFICATION = "gn";
 	private static final String DIALOG_TAG_VOIP_NOTIFICATION = "vn";
 	private static final String DIALOG_TAG_GROUP_CALLS_NOTIFICATION = "gc";
 	private static final String DIALOG_TAG_MIUI_NOTICE = "miui10_channel_notice";
 
-	private static final int INTENT_SYSTEM_NOTIFICATION_SETTINGS = 5199;
-
 	private SharedPreferences sharedPreferences;
-	private NotificationManagerCompat notificationManagerCompat;
 
 	// Weekdays used for work-life balance prefs
 	private final String[] weekdays = new String[7];
@@ -272,8 +264,6 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 			preferenceScreen.removePreference(getPref("pref_key_miui"));
 		}
 
-		notificationManagerCompat = NotificationManagerCompat.from(requireActivity());
-
 		initWorkingTimePrefs();
 
 		// setup defaults and callbacks
@@ -302,27 +292,21 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 				DIALOG_TAG_GROUP_NOTIFICATION);
 			return true;
 		});
-		voiceRingtonePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(@NonNull Preference preference) {
-				chooseRingtone(RingtoneManager.TYPE_RINGTONE,
-					getRingtoneFromRingtonePref(R.string.preferences__voip_ringtone),
-					RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
-					getString(R.string.prefs_voice_call_sound),
-					DIALOG_TAG_VOIP_NOTIFICATION);
-				return true;
-			}
+		voiceRingtonePreference.setOnPreferenceClickListener(preference -> {
+			chooseRingtone(RingtoneManager.TYPE_RINGTONE,
+				getRingtoneFromRingtonePref(R.string.preferences__voip_ringtone),
+				RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
+				getString(R.string.prefs_voice_call_sound),
+				DIALOG_TAG_VOIP_NOTIFICATION);
+			return true;
 		});
-		groupCallsRingtonePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(@NonNull Preference preference) {
-				chooseRingtone(RingtoneManager.TYPE_RINGTONE,
-					getRingtoneFromRingtonePref(R.string.preferences__group_calls_ringtone),
-					RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
-					getString(R.string.prefs_voice_call_sound),
-					DIALOG_TAG_GROUP_CALLS_NOTIFICATION);
-				return true;
-			}
+		groupCallsRingtonePreference.setOnPreferenceClickListener(preference -> {
+			chooseRingtone(RingtoneManager.TYPE_RINGTONE,
+				getRingtoneFromRingtonePref(R.string.preferences__group_calls_ringtone),
+				RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
+				getString(R.string.prefs_voice_call_sound),
+				DIALOG_TAG_GROUP_CALLS_NOTIFICATION);
+			return true;
 		});
 
 		TwoStatePreference systemRingtonePreference = getPref(getString(R.string.preferences__use_system_ringtone));
@@ -382,25 +366,10 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 				defaultUri,
 				true,
 				true);
-			dialog.setTargetFragment(SettingsNotificationsFragment.this, 0);
+			dialog.setTargetFragment(this, 0);
 			dialog.show(getParentFragmentManager(), tag);
 		}
 
-	}
-
-	@Override
-	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-
-		if (!notificationManagerCompat.areNotificationsEnabled()) {
-			showNotificationsDisabledDialog();
-		}
-	}
-
-	private void showNotificationsDisabledDialog() {
-		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.notifications_disabled_title, R.string.notifications_disabled_text, R.string.notifications_disabled_settings, R.string.cancel);
-		dialog.setTargetFragment(this, 0);
-		dialog.show(getParentFragmentManager(), DIALOG_TAG_NOTIFICATIONS_DISABLED);
 	}
 
 	private Uri getRingtoneFromRingtonePref(@StringRes int preference) {
@@ -441,34 +410,6 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 			startActivity(intent);
 		} catch (Exception e) {
 			logger.error("Exception", e);
-		}
-	}
-
-	@Override
-	public void onYes(String tag, Object data) {
-		Intent intent = new Intent();
-
-		intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-		// for Android 5-7
-		intent.putExtra("app_package", requireActivity().getPackageName());
-		intent.putExtra("app_uid", requireActivity().getApplicationInfo().uid);
-		// for Android O
-		intent.putExtra("android.provider.extra.APP_PACKAGE", requireActivity().getPackageName());
-		startActivityForResult(intent, INTENT_SYSTEM_NOTIFICATION_SETTINGS);
-	}
-
-	@Override
-	public void onNo(String tag, Object data) {
-		// ignore disabled notifications
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (requestCode == INTENT_SYSTEM_NOTIFICATION_SETTINGS && !notificationManagerCompat.areNotificationsEnabled()) {
-			// return from system settings but notifications still disabled
-			showNotificationsDisabledDialog();
 		}
 	}
 

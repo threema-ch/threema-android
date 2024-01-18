@@ -66,9 +66,7 @@
     <string name="prefs_inapp_vibrate">應用程式內震動</string>
     <string name="prefs_inapp_vibrate_on">接收訊息時震動</string>
     <string name="prefs_inapp_vibrate_off">接收訊息時不要震動</string>
-    <string name="prefs_troubleshooting">疑難排解</string>
-    <string name="prefs_sum_troubleshooting">分析並修復問題</string>
-    <string name="prefs_workarounds">解決方法</string>
+    <string name="workarounds">解決方法</string>
     <string name="prefs_title_threema_push_switch">使用 Threema Push</string>
     <string name="prefs_sum_threema_push_on">使用 Threema Push 以取得新訊息通知</string>
     <string name="prefs_sum_threema_push_off">使用系統推播服務檢查新訊息</string>
@@ -850,8 +848,6 @@ Threema 支援的所有表情符號。</string>
     <string name="forward_location">轉寄位置</string>
     <string name="unknown_address">未知地址</string>
     <string name="your_location">您的位置</string>
-    <string name="network_blocked_title">背景數據已停用</string>
-    <string name="network_blocked_body">%s 無法在背景接收訊息。點擊這裡可開啟設定中的背景數據。</string>
     <string name="reply_later">待會再聊</string>
     <string name="reply_on_my_way">我正在路上</string>
     <string name="reply_thank_you">謝謝</string>
@@ -1433,7 +1429,7 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_summary_hibernation_api_32">為防止 Threema 在長時間不使用後被系統暫停，請停用系統設定中的「移除權限並釋出空間」。</string>
     <string name="prefs_summary_hibernation_api">為防止 Threema 在長時間不使用後被系統暫停，請停用系統設定中的「暫停未使用的應用程式活動」。</string>
     <string name="unable_to_fetch_configuration">無法從配置伺服器取得資料，請稍後再試。</string>
-    <string name="rogue_device_warning"><![CDATA[我們的伺服器檢測到有人試圖從另一台裝置登入現有的 Threema ID，您最近是否在其他裝置上登入過您的 Threema ID？<br><br>如果有，就可以忽略此訊息。<br><br>如果沒有，您的私鑰可能已經洩露。在建立新ID之前，請<a href="https://threema.ch/en/faq/another_connection">按照我們的建議</a>保護您的裝置和資料。]]></string>
+    <string name="rogue_device_warning"><![CDATA[我們的伺服器檢測到有人試圖從另一台裝置登入現有的 Threema ID，您最近是否在其他裝置上登入過您的 Threema ID？&lt;br&gt;&lt;br&gt;如果有，就可以忽略此訊息。&lt;br&gt;&lt;br&gt;如果沒有，您的私鑰可能已經洩露。在建立新ID之前，請<a href="https://threema.ch/en/faq/another_connection">按照我們的建議</a>保護您的裝置和資料。]]></string>
     <string name="fetch2_failure">與配置伺服器同步失敗。</string>
     <string name="no_members_support_group_calls">此群組中沒有成員可以接聽群組通話</string>
     <string name="group_calls">群組通話</string>
@@ -1488,7 +1484,6 @@ Threema 支援的所有表情符號。</string>
     <string name="permission_microphone">麥克風</string>
     <string name="permission_read_phone_state">電話</string>
     <string name="permission_enable_in_settings_rationale">請在設定中啟用該權限。先選擇「權限」，然後按一下允許「%s」。</string>
-    <string name="post_notification_permission_rationale">如要接收通知，您必須允許 %s 顯示通知。</string>
     <string name="group_name">群組名稱</string>
     <string name="star_message">為訊息加上星號</string>
     <string name="starred_message">已加上星號的訊息</string>
@@ -1514,7 +1509,7 @@ Threema 支援的所有表情符號。</string>
     <string name="keep_messages">保留訊息期限：</string>
     <string name="clean_up_manually">手動清理</string>
     <string name="forever">永遠</string>
-    <string name="autodelete_explain">如果設定為「永遠」以外的其他選項，已收到和已傳送的訊息僅保留在已選定的時間內，之後訊息將徹底刪除，且不可還原，這包括未讀取和未傳送的訊息，私人收藏和已加星號的訊息不會被刪除。自動刪除功能會定期執行，不一定是在啟用此功能後立即執行。</string>
+    <string name="autodelete_explain">如果設定為「永遠」以外的其他選項，已收到和已傳送的訊息將在已選定的時間後徹底刪除，且不可還原，這包括未讀取和未傳送的訊息。不過，私人收藏在備忘錄「一人群組」內的訊息、已加星號的訊息不會被刪除。自動刪除功能會定期執行，不一定是在啟用此功能後立即執行。</string>
     <string name="autodelete_confirm">訊息將在%s後自動刪除。是否繼續？</string>
     <string name="autodelete_activated">自動刪除已啟用。</string>
     <string name="autodelete_disabled">自動刪除已停用。</string>
@@ -1527,6 +1522,23 @@ Threema 支援的所有表情符號。</string>
     <string name="group_dissolved_notice">因於這個群組已解散，因此您不能再參與這個群組的討論。</string>
     <string name="directory_request_failed">目錄要求失敗，請再試一次。</string>
     <string name="add_shortcut_exists">此目標的捷徑已經存在。</string>
+    <string name="work_lost_credentials_help">忘記了您的憑證？請聯絡您的 %1$s 管理員。</string>
+    <string name="problemsolver_intro">某些系統配置問題可能會阻止 %s 正常執行，請按照以下步驟以解決問題。</string>
+    <string name="problemsolver_title">修復配置問題</string>
+    <string name="problemsolver_title_background">背景使用量受限制</string>
+    <string name="problemsolver_title_background_data">背景數據受限制</string>
+    <string name="problemsolver_title_notifications">停用推播通知</string>
+    <string name="problemsolver_title_fullscreen_notifications">全螢幕通知被禁止</string>
+    <string name="problemsolver_explain_fullscreen_notifications">此應用程式被禁止顯示全螢幕通知。當手機鎖定時，您可能會錯過來電。如要解決問題，請為此應用程式啟用「允許全螢幕通知」。</string>
+    <string name="problemsolver_explain_notifications">此應用程式的通知已被完全停用，您將無法及時收到新訊息或新來電的通知，而此應用程式可能無法正常執行。如要解決問題，請為此應用程式啟用「所有通知」。</string>
+    <string name="problemsolver_explain_background_data">此應用程式在背景執行時無法使用行動數據。除非您主動打開此應用程式，否則您將不會收到新訊息的通知。如要解決問題，請為此應用程式啟用「背景數據」。</string>
+    <string name="problemsolver_explain_background">此應用程式在背景執行受到限制，您將不會收到任何通知，並且許多功能將無法正常執行。如要解決問題，請先按「應用程式電池使用量」，然後選擇「無限制」。</string>
+    <string name="problemsolver_info_text">上述某些系統設定選項的命名可能會因 Android 版本和裝置製造商而有所不同。</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">應用程式電池使用量設定為「最佳化」。</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">此應用程式被禁止與伺服器永久保持連線，以至 Threema Push 無法正常執行。當此應用程式在背景執行時，您將不會收到新訊息的通知。如要解決問題，請先按「應用程式電池使用量」，然後選擇「無限制」。</string>
+    <string name="problemsolver_to_settings">前往設定</string>
+    <string name="prefs_advanced_options">進階選項</string>
+    <string name="push_service">推播服務</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>
@@ -1602,4 +1614,5 @@ Threema 支援的所有表情符號。</string>
     <plurals name="number_of_group_members">
         <item quantity="other">%d個群組成員</item>
     </plurals>
+    <string name="edit_and_send">編輯</string>
 </resources>

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2023 Threema GmbH
+ * Copyright (c) 2014-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -337,9 +337,6 @@ public interface NotificationService {
 
 	void showMasterKeyLockedNewMessageNotification();
 	void showPinLockedNewMessageNotification(NotificationSchema notificationSchema, String uid, boolean quiet);
-
-	void showNetworkBlockedNotification(boolean noisy);
-	void cancelNetworkBlockedNotification();
 
 	void showServerMessage(ServerMessageModel m);
 	void cancelServerMessage();

@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">Вібрацыя ў праграме</string>
     <string name="prefs_inapp_vibrate_on">Вібраваць пры атрыманні паведамленняў</string>
     <string name="prefs_inapp_vibrate_off">Ня вібраваць пры атрыманні паведамленняў</string>
-    <string name="prefs_troubleshooting">Ліквідацыя непаладак</string>
-    <string name="prefs_sum_troubleshooting">Аналіз і ўхіленне праблем</string>
-    <string name="prefs_workarounds">Патчы</string>
+    <string name="workarounds">Патчы</string>
     <string name="prefs_title_threema_push_switch">Выкарыст. Threema Push</string>
     <string name="prefs_sum_threema_push_on">Выкарыст. функцыю Threema Push для атрым. апавяшч. аб новых паведамленнях</string>
     <string name="prefs_sum_threema_push_off">Правярайце наяўн. новых паведамл. з дапамогай сіст. службы push-паведамл</string>
@@ -820,8 +818,6 @@
     <string name="forward_location">Месцазнаходжанне</string>
     <string name="unknown_address">Невядомы адрас</string>
     <string name="your_location">Ваша месцазнаходж.</string>
-    <string name="network_blocked_title">Фонавая перадача даных адключана</string>
-    <string name="network_blocked_body">%s не можа атрымліваць паведамленні ў фонавым рэжыме.  Націсніце тут, каб уключыць фонавую перадачу даных у наладах.</string>
     <string name="reply_later">Звяжамся пазней</string>
     <string name="reply_on_my_way">Я ў дарозе</string>
     <string name="reply_thank_you">Дзякуй</string>
@@ -1457,8 +1453,7 @@
     <string name="permission_microphone">Мікрафон</string>
     <string name="permission_read_phone_state">Тэлефон</string>
     <string name="permission_enable_in_settings_rationale">Уключыце дазвол у наладах.  Выберыце «Дазволы», а потым дазвольце «%s».</string>
-    <string name="post_notification_permission_rationale">Каб атрымліваць апавяшчэнні, вы павінны дазволіць %s паказваць апавяшчэнні.</string>
-    <string name="group_name">Назва суполкі</string>
+	<string name="group_name">Назва суполкі</string>
     <string name="star_message">Паведамленне з зоркай</string>
     <string name="starred_message">Пазначанае паведамленне</string>
     <string name="starred">З зоркай</string>
@@ -1637,4 +1632,5 @@
         <item quantity="one">%d удзельнік суполкі</item>
         <item quantity="other">%d удзельнікаў суполкі</item>
     </plurals>
+    <string name="edit_and_send">Рэдагаваць</string>
 </resources>

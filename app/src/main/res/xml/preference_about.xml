@@ -62,14 +62,14 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory
-		android:key="pref_key_troubleshooting"
-		android:title="@string/prefs_troubleshooting">
+		android:key="pref_key_advanced_options"
+		android:title="@string/prefs_advanced_options">
 
 		<Preference
-			android:fragment="ch.threema.app.preference.SettingsTroubleshootingFragment"
-			android:key="@string/preferences__troubleshooting"
-			android:title="@string/prefs_troubleshooting"
-			android:icon="@drawable/ic_bug_outline"/>
+			android:fragment="ch.threema.app.preference.SettingsAdvancedOptionsFragment"
+			android:key="@string/preferences__advanced_options"
+			android:title="@string/prefs_advanced_options"
+			android:icon="@drawable/ic_outline_science"/>
 
 	</PreferenceCategory>
 

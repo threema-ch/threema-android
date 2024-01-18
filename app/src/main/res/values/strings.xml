@@ -66,10 +66,8 @@
 	<string name="prefs_inapp_vibrate">In-app vibration</string>
 	<string name="prefs_inapp_vibrate_on">Vibrate when receiving messages</string>
 	<string name="prefs_inapp_vibrate_off">Do not vibrate when receiving messages</string>
-	<string name="prefs_troubleshooting">Troubleshooting</string>
 	<string name="prefs_developers" translatable="false">Developers Developers Developers</string>
-	<string name="prefs_sum_troubleshooting">Analyze and fix issues</string>
-	<string name="prefs_workarounds">Workarounds</string>
+	<string name="workarounds">Workarounds</string>
 	<string name="prefs_title_threema_push_switch">Use Threema Push</string>
 	<string name="prefs_sum_threema_push_on">Use Threema Push to be notified about new messages</string>
 	<string name="prefs_sum_threema_push_off">Check for new messages using system push service</string>
@@ -866,8 +864,6 @@
 	<string name="forward_location">Forward location</string>
 	<string name="unknown_address">Unknown address</string>
 	<string name="your_location">Your location</string>
-	<string name="network_blocked_title">Background data disabled</string>
-	<string name="network_blocked_body">%s is unable to receive messages in the background. Tap here to enable background data in settings.</string>
 	<string name="reply_later">Talk to you later</string>
 	<string name="reply_on_my_way">I’m on my way</string>
 	<string name="reply_thank_you">Thank you</string>
@@ -1508,8 +1504,7 @@
 	<string name="permission_microphone">Microphone</string>
 	<string name="permission_read_phone_state">Phone</string>
 	<string name="permission_enable_in_settings_rationale">Please enable the permission in the settings. Select “Permissions” and then allow “%s”.</string>
-	<string name="post_notification_permission_rationale">To receive notifications, you must allow %s to show notifications.</string>
-    <string name="group_name">Group name</string>
+	<string name="group_name">Group name</string>
     <string name="star_message">Star message</string>
     <string name="starred_message">Starred message</string>
 	<string name="starred">Starred</string>
@@ -1547,6 +1542,25 @@
 	<string name="group_dissolved_notice">This group has been dissolved and cannot be used anymore.</string>
 	<string name="directory_request_failed">Directory request failed. Try again.</string>
 	<string name="add_shortcut_exists">A shortcut for this target already exists.</string>
+	<string name="work_lost_credentials_help">Forgot your credentials? Please contact your %1$s administrator.</string>
+	<string name="problemsolver_intro">Some system configuration issues possibly prevent %s from working correctly. Please fix these problems by following the instructions below.</string>
+	<string name="problemsolver_title">Fix configuration issues</string>
+	<string name="problemsolver_title_background">Background usage restricted</string>
+	<string name="problemsolver_title_background_data">Background data restricted</string>
+	<string name="problemsolver_title_notifications">Notifications disabled</string>
+	<string name="problemsolver_title_fullscreen_notifications">Full screen notifications disallowed</string>
+	<string name="problemsolver_explain_fullscreen_notifications">The app is not allowed to display full screen notifications. You may miss incoming calls when the device is locked. To fix this, activate “Allow full screen notifications.”</string>
+	<string name="problemsolver_explain_notifications">Notifications are completely disabled for this app. You will not be informed of incoming messages or calls, and the app may not work as expected. To fix this, activate “All notifications.”</string>
+	<string name="problemsolver_explain_background_data">The app cannot use mobile data when in the background. You will not be informed of incoming messages unless you actively open the app. To fix this, activate “Background data.”</string>
+	<string name="problemsolver_explain_background">The background usage of the app is restricted. You will not receive any notifications, and many features will not work as expected. To fix this, tap on “App battery usage” and select “Unrestricted.”</string>
+	<string name="problemsolver_info_text">The naming of some of the system-setting options mentioned above may vary depending on the Android version and device manufacturer.</string>
+	<string name="problemsolver_title_app_battery_usgae_optimized">App battery usage set to “optimized”</string>
+	<string name="problemsolver_explain_app_battery_usgae_optimized">The app is not allowed to maintain a permanent connection to the servers which is required for Threema Push to work. You will not be informed of new messages when the app is in the background. To fix this, tap on “App battery usage” and select “Unrestricted.”</string>
+	<string name="problemsolver_to_settings">To settings</string>
+	<string name="prefs_advanced_options">Advanced options</string>
+	<string name="push_service">Push service</string>
+	<string name="zoom_out">Zoom out</string>
+	<string name="zoom_in">Zoom in</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>
@@ -1727,4 +1741,5 @@
 		<item quantity="many">%d group members</item>
 		<item quantity="other">%d group members</item>
 	</plurals>
+	<string name="edit_and_send">Edit and send</string>
 </resources>

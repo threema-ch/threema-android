@@ -65,9 +65,6 @@
     <string name="prefs_inapp_vibrate">Vibrace v aplikaci</string>
     <string name="prefs_inapp_vibrate_on">Vibrovat po přijetí zprávy</string>
     <string name="prefs_inapp_vibrate_off">Nevibrovat po přijetí zprávy</string>
-    <string name="prefs_troubleshooting">Řešení potíží</string>
-    <string name="prefs_sum_troubleshooting">Analýza a oprava problémů</string>
-    <string name="prefs_workarounds">Řešení problémů</string>
     <string name="prefs_title_threema_push_switch">Použít službu Threema Push</string>
     <string name="prefs_sum_threema_push_on">Používat službu Threema Push k upozorňování na nové zprávy</string>
     <string name="prefs_sum_threema_push_off">Zjišťovat nové zprávy použitím systémové služby push</string>
@@ -823,8 +820,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="forward_location">Přeposlat polohu</string>
     <string name="unknown_address">Neznámá adresa</string>
     <string name="your_location">Vaše poloha</string>
-    <string name="network_blocked_title">Využití dat na pozadí je zakázáno</string>
-    <string name="network_blocked_body">%s nemůže přijímat zprávy na pozadí. Klepnutím sem v nastavení systému povolíte data na pozadí.</string>
     <string name="reply_later">Ozvu se později</string>
     <string name="reply_on_my_way">Jsem na cestě</string>
     <string name="reply_thank_you">Děkuji</string>
@@ -1461,7 +1456,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="permission_microphone">Mikrofon</string>
     <string name="permission_read_phone_state">Telefon</string>
     <string name="permission_enable_in_settings_rationale">Udělte prosím toto oprávnění v nastavení. Vyberte možnost „Oprávnění“ a poté povolte „%s“.</string>
-    <string name="post_notification_permission_rationale">Abyste mohli přijímat oznámení, musíte povolit aplikaci %s zobrazovat oznámení.</string>
     <string name="group_name">Název skupiny</string>
     <string name="star_message">Ohvězdičkovat zprávu</string>
     <string name="starred_message">Ohvězdičkovaná zpráva</string>
@@ -1487,7 +1481,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="keep_messages">Uchovávat zprávy po dobu:</string>
     <string name="clean_up_manually">Vyčistit ručně</string>
     <string name="forever">Navždy</string>
-    <string name="autodelete_explain">Pokud bude nastaveno cokoliv kromě „navždy“, příchozí a odchozí zprávy budou uchovávány pouze po specifikovanou dobu, a poté budou nenávratně odstraněny. Do toho jsou zahrnuty i nepřečtené a neodeslané zprávy. Zprávy ve skupinách pro poznámky a zprávy označené hvězdou nebudou odstraněny nikdy. Proces odstranění nastává periodicky a ne nutně ihned po aktivaci.</string>
+    <string name="autodelete_explain">Pokud bude nastaveno cokoliv kromě „navždy“, příchozí a odchozí zprávy budou nenávratně odstraněny po uplynutí specifikované doby. Do toho jsou zahrnuty i nepřečtené a neodeslané zprávy. Zprávy ve skupinách pro poznámky a ohvězdičkované zprávy nebudou odstraněny. Proces odstranění je spouštěn periodicky a ne nutně ihned po aktivaci.</string>
     <string name="autodelete_confirm">Zprávy budou automaticky odstraněny po %s. Pokračovat?</string>
     <string name="autodelete_activated">Automatické odstranění aktivováno.</string>
     <string name="autodelete_disabled">Automatické odstranění zakázáno.</string>
@@ -1500,6 +1494,12 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="group_dissolved_notice">Tato skupina byla rozpuštěna a nemůže být nadále používána.</string>
     <string name="directory_request_failed">Požadavek složky selhal. Zkuste to znovu.</string>
     <string name="add_shortcut_exists">Zástupce pro tento cíl již existuje.</string>
+    <string name="work_lost_credentials_help">Zapomněli jste své přihlašovací údaje? Obraťte se na svého správce %1$s.</string>
+    <string name="problemsolver_title_background_data">Data na pozadí omezena</string>
+    <string name="problemsolver_title_notifications">Oznámení vypnuta</string>
+    <string name="problemsolver_to_settings">Do nastavení</string>
+    <string name="prefs_advanced_options">Pokročilé možnosti</string>
+    <string name="push_service">Služba push</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>
@@ -1656,4 +1656,5 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
         <item quantity="one">%d člen skupiny</item>
         <item quantity="other">%d členů skupiny</item>
     </plurals>
+    <string name="edit_and_send">Upravit</string>
 </resources>

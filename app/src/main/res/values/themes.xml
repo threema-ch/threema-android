@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2019-2023 Threema GmbH
+  ~ Copyright (c) 2019-2024 Threema GmbH
   ~ All rights reserved.
   -->
 
@@ -159,9 +159,7 @@
 		<item name="android:windowAnimationStyle">@style/Threema.Animation.None</item>
 		<item name="android:statusBarColor">@android:color/transparent</item>
 		<item name="android:navigationBarColor">@android:color/transparent</item>
-		<item name="colorPrimary">@color/md_theme_light_primary</item>
 		<item name="colorPrimaryDark">@color/md_theme_light_outline</item>
-		<item name="colorAccent">@color/md_theme_light_primary</item>
 		<item name="actionBarStyle">@style/Threema.ThemeOverlay.TransparentToolbar</item>
 		<item name="bottomSheetStyle">@style/Threema.BottomSheetStyle</item>
 	</style>

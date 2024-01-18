@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">Vibrácie v aplikácii</string>
     <string name="prefs_inapp_vibrate_on">Vibrovať pri prijatí správy</string>
     <string name="prefs_inapp_vibrate_off">Nevibrovať pri prijatí správy</string>
-    <string name="prefs_troubleshooting">Riešenie problémov</string>
-    <string name="prefs_sum_troubleshooting">Analyzovať a opraviť problémy</string>
-    <string name="prefs_workarounds">Riešenie problémov</string>
+    <string name="workarounds">Riešenia</string>
     <string name="prefs_title_threema_push_switch">Použiť Threema Push</string>
     <string name="prefs_sum_threema_push_on">Ak chcete dostávať upozornenia na nové správy, použite Threema Push</string>
     <string name="prefs_sum_threema_push_off">Skontrolujte nové správy pomocou systémovej služby push</string>
@@ -831,8 +829,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="forward_location">Preposlanie polohy</string>
     <string name="unknown_address">Neznáma adresa</string>
     <string name="your_location">Vaša poloha</string>
-    <string name="network_blocked_title">Príjem dát na pozadí vypnutý</string>
-    <string name="network_blocked_body">%s nemôže prijímať správy na pozadí. Kliknutím sem povolíte v nastaveniach príjem dát na pozadí.</string>
     <string name="reply_later">Ozvem sa neskôr</string>
     <string name="reply_on_my_way">Som na ceste</string>
     <string name="reply_thank_you">Ďakujem</string>
@@ -1469,7 +1465,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="permission_microphone">Mikrofón</string>
     <string name="permission_read_phone_state">Telefón</string>
     <string name="permission_enable_in_settings_rationale">Udelte povolenie v nastaveniach. Vyberte „Povolenia“ a potom povoľte „%s“.</string>
-    <string name="post_notification_permission_rationale">Ak chcete prijímať notifikácie, musíte povoliť zobrazovanie notifikácií %s.</string>
     <string name="group_name">Názov skupiny</string>
     <string name="star_message">Označiť správu</string>
     <string name="starred_message">Označená správa</string>
@@ -1495,7 +1490,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="keep_messages">Ponechať správy po dobu:</string>
     <string name="clean_up_manually">Vyčistiť ručne</string>
     <string name="forever">Navždy</string>
-    <string name="autodelete_explain">Ak je nastavené na inú hodnotu ako \"navždy\", budú sa prichádzajúce a odchádzajúce správy uchovávať len počas zadaného času a potom sa nenávratne vymažú. To zahŕňa aj neprečítané a neodoslané správy. Správy v skupinách poznámok a správy označené hviezdičkou sa nikdy neodstránia. Proces vymazávania sa uskutočňuje pravidelne a nie nevyhnutne ihneď po aktivácii.</string>
+    <string name="autodelete_explain">Ak je nastavená na inú hodnotu ako \"navždy\", budú prichádzajúce a odchádzajúce správy po uplynutí zadaného času nenávratne vymazané. To zahŕňa aj neprečítané a neodoslané správy. Správy v skupinách poznámok a správy označené hviezdičkou sa však neodstránia. Proces vymazávania sa spúšťa pravidelne a nie nevyhnutne ihneď po aktivácii.</string>
     <string name="autodelete_confirm">Správy sa automaticky vymažú po %s. Pokračovať?</string>
     <string name="autodelete_activated">Automatické mazanie aktivované.</string>
     <string name="autodelete_disabled">Automatické mazanie deaktivované.</string>
@@ -1508,6 +1503,23 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="group_dissolved_notice">Táto skupina bola zrušená a už sa nedá používať.</string>
     <string name="directory_request_failed">Žiadosť o zložku sa nepodarila. Skúste to znova.</string>
     <string name="add_shortcut_exists">Odkaz pre tento cieľ už existuje.</string>
+    <string name="work_lost_credentials_help">Zabudli ste svoje poverenia? Obráťte sa na vášho správcu %1$s.</string>
+    <string name="problemsolver_intro">Niektoré problémy s konfiguráciou systému pravdepodobne bránia správnemu fungovaniu %s. Tieto problémy odstráňte podľa nižšie uvedených pokynov.</string>
+    <string name="problemsolver_title">Oprava problémov s konfiguráciou</string>
+    <string name="problemsolver_title_background">Používanie na pozadí obmedzené</string>
+    <string name="problemsolver_title_background_data">Dáta na pozadí obmedzené</string>
+    <string name="problemsolver_title_notifications">Oznámenia vypnuté</string>
+    <string name="problemsolver_title_fullscreen_notifications">Oznámenia na celú obrazovku sú zakázané</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Aplikácia nesmie zobrazovať oznámenia na celú obrazovku. Keď je zariadenie zamknuté, môžete zmeškať prichádzajúce hovory. Ak to chcete napraviť, aktivujte možnosť \"Povoliť oznámenia na celú obrazovku\".</string>
+    <string name="problemsolver_explain_notifications">Upozornenia sú pre túto aplikáciu úplne vypnuté. Nebudete informovaní o prichádzajúcich správach ani hovoroch a aplikácia nemusí fungovať podľa očakávania. Ak to chcete napraviť, aktivujte funkciu \"Všetky oznámenia\".</string>
+    <string name="problemsolver_explain_background_data">Keď je aplikácia na pozadí, nemôže používať mobilné údaje. O prichádzajúcich správach nebudete informovaní, pokiaľ aplikáciu aktívne neotvoríte. Ak to chcete napraviť, aktivujte funkciu \"Údaje na pozadí\".</string>
+    <string name="problemsolver_explain_background">Používanie aplikácie na pozadí je obmedzené. Nebudete dostávať žiadne oznámenia a mnohé funkcie nebudú fungovať tak, ako sa očakáva. Ak to chcete napraviť, ťuknite na položku \"Využitie batérie aplikácie\" a vyberte možnosť \"Neobmedzené\".</string>
+    <string name="problemsolver_info_text">Názvy niektorých vyššie uvedených možností nastavenia systému sa môžu líšiť v závislosti od verzie systému Android a výrobcu zariadenia.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Používanie batérie aplikácie nastavené na \"optimalizované\"</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikácia nemá povolené udržiavať trvalé pripojenie k serverom, ktoré je potrebné na fungovanie služby Threema Push. Keď je aplikácia na pozadí, nebudete informovaní o nových správach. Ak to chcete napraviť, klepnite na položku \"Využitie batérie aplikácie\" a vyberte možnosť \"Neobmedzené\".</string>
+    <string name="problemsolver_to_settings">K nastaveniam</string>
+    <string name="prefs_advanced_options">Rozšírené možnosti</string>
+    <string name="push_service">Služba Push</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">kontakty</item>
         <item quantity="many">kontakty</item>
@@ -1656,4 +1668,5 @@ Predtým prijaté žiadosti však možno stále prijať alebo odmietnuť.</item>
         <item quantity="one">%d člen skupiny</item>
         <item quantity="other">%d členov skupiny</item>
     </plurals>
+    <string name="edit_and_send">Upraviť</string>
 </resources>

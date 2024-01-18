@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2023 Threema GmbH
+ * Copyright (c) 2020-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -36,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -320,9 +321,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		contentFrameLayout.setOnClickListener(v -> finish());
 
 		// set status bar color
-		getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
-
 		expandedStatusBarColor = getResources().getColor(R.color.attach_status_bar_color_expanded);
+		getWindow().setStatusBarColor(Color.TRANSPARENT);
 
 		this.bottomSheetLayout.post(new Runnable() {
 			@Override
@@ -847,7 +847,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 							}
 						});
 					appBarLayout.postDelayed(() -> {
-						getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
+						getWindow().setStatusBarColor(Color.TRANSPARENT);
 					}, 50);
 				}
 				break;
@@ -1019,7 +1019,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		dragHandle.setVisibility(View.VISIBLE);
 		appBarLayout.setVisibility(View.GONE);
 		appBarLayout.post(() -> {
-			getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
+			getWindow().setStatusBarColor(Color.TRANSPARENT);
 		});
 
 		updateUI(STATE_COLLAPSED);

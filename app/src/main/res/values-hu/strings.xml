@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">Alkalmazáson belüli rezgés</string>
     <string name="prefs_inapp_vibrate_on">Rezgés üzenetek fogadásakor</string>
     <string name="prefs_inapp_vibrate_off">Nincs rezgés az üzenetek fogadásakor</string>
-    <string name="prefs_troubleshooting">Hibaelhárítás</string>
-    <string name="prefs_sum_troubleshooting">Problémák elemzése és megoldása</string>
-    <string name="prefs_workarounds">Megoldások</string>
+    <string name="workarounds">Megoldások</string>
     <string name="prefs_logging">Naplózás</string>
     <string name="prefs_title_message_log_switch">Fájlba naplózás</string>
     <string name="prefs_title_sum_message_log_on">Az események és a hálózati információk a debug_log.txt fájlba lesznek naplózva</string>
@@ -827,8 +825,6 @@
     <string name="send_location">Helyszín elküldése</string>
     <string name="unknown_address">Ismeretlen cím</string>
     <string name="your_location">Tartózkodási helye</string>
-    <string name="network_blocked_title">Háttéradatok letiltva</string>
-    <string name="network_blocked_body">%s nem tud üzeneteket fogadni a háttérben. A háttéradatok engedélyezéséhez kattintson ide.</string>
     <string name="reply_later">Később jelentkezem</string>
     <string name="reply_on_my_way">Úton vagyok</string>
     <string name="reply_thank_you">Köszönöm</string>
@@ -1350,4 +1346,5 @@
         <item quantity="one">A média mentése folyamatban van</item>
         <item quantity="other"></item>
     </plurals>
+    <string name="edit_and_send">Szerkesztés</string>
 </resources>

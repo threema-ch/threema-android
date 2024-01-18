@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2019-2023 Threema GmbH
+ * Copyright (c) 2019-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -368,10 +368,10 @@ public class LinkifyUtil {
 			return;
 		}
 
-		// handle contact Urls internally
+		// handle contact Urls internally but ignore contact Urls with a query such as "text=hello"
 		if (BuildConfig.contactActionUrl.equals(uri.getAuthority())) {
 			List<String> pathSegments = uri.getPathSegments();
-			if (pathSegments.size() == 1 && pathSegments.get(0).length() == 8) {
+			if (pathSegments.size() == 1 && pathSegments.get(0).length() == 8 && TestUtil.empty(uri.getEncodedQuery())) {
 				if (openContactLinkTargetAppSelector(fragment, activity)) {
 					// intent has been handled
 					return;

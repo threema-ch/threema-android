@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2023 Threema GmbH
+ * Copyright (c) 2017-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,6 +21,8 @@
 
 package ch.threema.app.voip.activities;
 
+import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
+
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -35,6 +37,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
+
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import org.slf4j.Logger;
 import org.webrtc.IceCandidate;
 import org.webrtc.PeerConnection;
@@ -45,14 +55,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
-
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -72,8 +74,6 @@ import ch.threema.app.voip.util.SdpPatcher;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.protobuf.callsignaling.O2OCall;
 import ch.threema.storage.models.ContactModel;
-
-import static ch.threema.app.preference.SettingsTroubleshootingFragment.THREEMA_SUPPORT_IDENTITY;
 
 /**
  * An activity to debug problems with WebRTC (in the context of Threema Calls).
@@ -220,11 +220,8 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		this.footerButtons.setVisibility(View.GONE);
 
 		// Initialize peer connection client
-		final boolean useOpenSLES = false;
-		final boolean disableBuiltInAEC = false;
-		final boolean disableBuiltInAGC = false;
-		final boolean disableBuiltInNS = false;
-		final boolean enableLevelControl = false;
+		final boolean useHardwareEC = true;
+		final boolean useHardwareNC = true;
 		final boolean videoCallEnabled = true;
 		final boolean useVideoHwAcceleration = true;
 		final boolean videoCodecEnableVP8 = true;
@@ -236,7 +233,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		final boolean allowIpv6 = true;
 		final PeerConnectionClient.PeerConnectionParameters peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
 				false,
-				useOpenSLES, disableBuiltInAEC, disableBuiltInAGC, disableBuiltInNS, enableLevelControl,
+				useHardwareEC, useHardwareNC,
 				videoCallEnabled, useVideoHwAcceleration, videoCodecEnableVP8, videoCodecEnableH264HiP,
 				rtpHeaderExtensionConfig,
 				forceTurn, gatherContinually, allowIpv6

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -1670,7 +1670,7 @@ public class MessageServiceImpl implements MessageService {
 		else if (message.getClass().equals(GroupBallotCreateMessage.class)) {
 			messageModel = saveGroupMessage((GroupBallotCreateMessage) message, messageModel);
 			// This is only used for debugging
-			if (ConfigUtils.isTestBuild()) {
+			if (ConfigUtils.isDevBuild()) {
 				logger.info("Processed GroupBallotCreateMessage {}", ((GroupBallotCreateMessage) message).getRawBallotData());
 			}
 		}

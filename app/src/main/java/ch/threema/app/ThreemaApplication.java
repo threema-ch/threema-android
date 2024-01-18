@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,7 +22,6 @@
 package ch.threema.app;
 
 import static android.app.NotificationManager.ACTION_NOTIFICATION_CHANNEL_GROUP_BLOCK_STATE_CHANGED;
-import static android.app.NotificationManager.ACTION_NOTIFICATION_POLICY_CHANGED;
 import static android.app.NotificationManager.EXTRA_BLOCKED_STATE;
 import static android.app.NotificationManager.EXTRA_NOTIFICATION_CHANNEL_GROUP_ID;
 
@@ -73,7 +72,6 @@ import com.datatheorem.android.trustkit.TrustKit;
 import com.datatheorem.android.trustkit.reporting.BackgroundReporter;
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
-import com.mapbox.mapboxsdk.Mapbox;
 
 import org.slf4j.Logger;
 
@@ -117,7 +115,6 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.push.PushService;
 import ch.threema.app.receivers.ConnectivityChangeReceiver;
 import ch.threema.app.receivers.PinningFailureReportBroadcastReceiver;
-import ch.threema.app.receivers.RestrictBackgroundChangedReceiver;
 import ch.threema.app.receivers.ShortcutAddedReceiver;
 import ch.threema.app.routines.OnFirstConnectRoutine;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
@@ -147,7 +144,6 @@ import ch.threema.app.utils.DeviceCookieManagerImpl;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LinuxSecureRandom;
 import ch.threema.app.utils.LoggingUEH;
-import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
@@ -515,15 +511,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
 				);
 
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					// Register "Restrict Background Changed" broadcast receiver.
-					// This is called when a change in the background metered network activity restriction has occurred.
-					getAppContext().registerReceiver(
-						new RestrictBackgroundChangedReceiver(),
-						new IntentFilter(ConnectivityManager.ACTION_RESTRICT_BACKGROUND_CHANGED)
-					);
-				}
-
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 					// Register "Device Idle Mode Changed" broadcast receiver.
 					// This is called when the state of isDeviceIdleMode() changes. This broadcast
@@ -570,21 +557,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 							}
 						}
 					}, new IntentFilter(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED));
-
-					// Register "Notification Policy Changed" broadcast receiver.
-					// This is called when the state of getNotificationPolicy() changes.
-					getAppContext().registerReceiver(new BroadcastReceiver() {
-						@Override
-						public void onReceive(Context context, Intent intent) {
-							try {
-								NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-								NotificationManager.Policy policy = notificationManager.getNotificationPolicy();
-								logger.info("*** Notification Policy changed: " + policy.toString());
-							} catch (Exception e) {
-								logger.error("Could not get notification policy", e);
-							}
-						}
-					}, new IntentFilter(ACTION_NOTIFICATION_POLICY_CHANGED));
 				}
 
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -863,7 +835,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 			PreferenceManager.setDefaultValues(getAppContext(), R.xml.preference_notifications, true);
 			PreferenceManager.setDefaultValues(getAppContext(), R.xml.preference_media, true);
 			PreferenceManager.setDefaultValues(getAppContext(), R.xml.preference_calls, true);
-			PreferenceManager.setDefaultValues(getAppContext(), R.xml.preference_troubleshooting, true);
+			PreferenceManager.setDefaultValues(getAppContext(), R.xml.preference_advanced_options, true);
 		} catch (Exception e) {
 			logger.error("Exception", e);
 		}

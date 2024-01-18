@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2023 Threema GmbH
+ * Copyright (c) 2014-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -59,6 +59,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1104,16 +1105,26 @@ public class BackupService extends Service {
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
 			CSVWriter csvWriter = new CSVWriter(outputStreamWriter, nonceHeader)
 		) {
-			List<String> nonces = databaseNonceStore.getAllHashedNonces();
-			for (int i = 0; i < nonces.size(); i += NONCES_PER_STEP) {
-				int chunkEnd = Math.min(i + NONCES_PER_STEP, nonces.size());
-				for (int n = i; n < chunkEnd; n++) {
-					csvWriter.createRow().write(Tags.TAG_NONCES, nonces.get(n)).write();
+			long start = System.currentTimeMillis();
+			long nonceCount = databaseNonceStore.getCount();
+			long numChunks = (long) Math.ceil((double) nonceCount / NONCES_PER_STEP);
+			List<String> nonces = new ArrayList<>(NONCES_PER_STEP);
+			for (int i = 0; i < numChunks; i++) {
+				databaseNonceStore.addHashedNonceChunk(NONCES_PER_STEP, NONCES_PER_STEP * i, nonces);
+				for (String nonce : nonces) {
+					csvWriter.createRow().write(Tags.TAG_NONCES, nonce).write();
 				}
+				nonces.clear();
 				if (!next("Backup nonce")) {
 					return;
 				}
+				// Periodically log nonce backup progress for debugging purposes
+				if ((i & 2047) == 0) {
+					logger.info("Nonce backup progress: {} of {} chunks backed up", i, numChunks);
+				}
 			}
+			long end = System.currentTimeMillis();
+			logger.info("Created row for all nonces in {} ms", end - start);
 		}
 		ZipUtil.addZipStream(
 			zipOutputStream,
@@ -1121,6 +1132,7 @@ public class BackupService extends Service {
 			Tags.NONCE_FILE_NAME + Tags.CSV_FILE_POSTFIX,
 			true
 		);
+		logger.info("Nonce backup completed");
 	}
 
 	/**

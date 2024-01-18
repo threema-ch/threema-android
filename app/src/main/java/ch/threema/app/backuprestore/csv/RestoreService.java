@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2023 Threema GmbH
+ * Copyright (c) 2014-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -1741,13 +1741,13 @@ public class RestoreService extends Service {
 		int p = (int) (100d / (double) this.progressSteps * (double) this.currentProgressStep);
 		if (p > this.latestPercentStep) {
 			this.latestPercentStep = p;
-			String timeRemaining = getRemainingTimeText(latestPercentStep, 100);
-			updatePersistentNotification(latestPercentStep, 100, false, timeRemaining);
+			String remainingTimeText = getRemainingTimeText(latestPercentStep, 100);
+			updatePersistentNotification(latestPercentStep, 100, false, remainingTimeText);
 			LocalBroadcastManager.getInstance(this)
 				.sendBroadcast(new Intent(RESTORE_PROGRESS_INTENT)
 					.putExtra(RESTORE_PROGRESS, latestPercentStep)
 					.putExtra(RESTORE_PROGRESS_STEPS, 100)
-					.putExtra(RESTORE_PROGRESS_MESSAGE, timeRemaining)
+					.putExtra(RESTORE_PROGRESS_MESSAGE, remainingTimeText)
 				);
 		}
 	}
@@ -1831,11 +1831,11 @@ public class RestoreService extends Service {
 		return notificationBuilder.build();
 	}
 
-	private void updatePersistentNotification(int currentStep, int steps, boolean indeterminate, @Nullable String timeRemaining) {
+	private void updatePersistentNotification(int currentStep, int steps, boolean indeterminate, @Nullable final String remainingTimeText) {
 		logger.debug("updatePersistentNotification {} of {}", currentStep, steps);
 
-		if (timeRemaining != null) {
-			notificationBuilder.setContentText(String.format(getString(R.string.time_remaining), timeRemaining));
+		if (remainingTimeText != null) {
+			notificationBuilder.setContentText(remainingTimeText);
 		}
 
 		notificationBuilder.setProgress(steps, currentStep, indeterminate);

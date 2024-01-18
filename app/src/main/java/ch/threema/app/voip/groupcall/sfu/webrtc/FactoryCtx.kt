@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022-2023 Threema GmbH
+ * Copyright (c) 2022-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -21,14 +21,15 @@
 
 package ch.threema.app.voip.groupcall.sfu.webrtc
 
+import android.content.Context
 import androidx.annotation.WorkerThread
 import ch.threema.base.utils.LoggingUtil
 import org.webrtc.*
-import org.webrtc.voiceengine.WebRtcAudioManager
-import org.webrtc.voiceengine.WebRtcAudioUtils
+import org.webrtc.audio.JavaAudioDeviceModule
 
 class FactoryCtx(
-    val parameters: Parameters,
+        context: Context,
+        val parameters: Parameters,
 ) {
     data class Parameters(
         val acousticEchoCancelerMode: AecMode,
@@ -58,14 +59,11 @@ class FactoryCtx(
         get() = checkNotNull(_factory) { "PeerConnectionFactory already disposed" }
 
     init {
-        // Use OpenSL ES playback when using software AEC
-        WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(
-            parameters.acousticEchoCancelerMode != Parameters.AecMode.SOFTWARE)
-        // Use software-based AEC when desired
-        WebRtcAudioUtils.setWebRtcBasedAcousticEchoCanceler(
-            parameters.acousticEchoCancelerMode == Parameters.AecMode.SOFTWARE)
-        // Use built-in noise suppressor (disable SW-based one)
-        WebRtcAudioUtils.setWebRtcBasedNoiseSuppressor(false)
+        // Apply audio device settings
+        val audioDeviceModule = JavaAudioDeviceModule.builder(context)
+                .setUseHardwareAcousticEchoCanceler(parameters.acousticEchoCancelerMode == Parameters.AecMode.HARDWARE)
+                .setUseHardwareNoiseSuppressor(true)
+                .createAudioDeviceModule()
 
         // Determine video encoder/decoder factories
         val (encoder, decoder) = parameters.hardwareVideoCodecs.let { hardwareVideoCodecs ->
@@ -91,10 +89,12 @@ class FactoryCtx(
         }
         logger.trace("Creating peer connection factory")
         _factory = checkNotNull(PeerConnectionFactory.builder()
+            .setAudioDeviceModule(audioDeviceModule)
             .setVideoEncoderFactory(encoder)
             .setVideoDecoderFactory(decoder)
             .createPeerConnectionFactory()
         )
+        audioDeviceModule.release()
 
         // Done
         logger.trace("Initialised")

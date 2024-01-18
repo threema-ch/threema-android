@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022-2023 Threema GmbH
+ * Copyright (c) 2022-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Collections;
-import java.util.List;
 
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
@@ -44,9 +43,7 @@ import ch.threema.domain.protocol.csp.fs.ForwardSecurityStatusListener;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataReject;
 import ch.threema.protobuf.csp.e2e.fs.Version;
-import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.ForwardSecurityStatusType;
 
 public class ForwardSecurityStatusSender implements ForwardSecurityStatusListener {
@@ -57,7 +54,7 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 	private final APIConnector apiConnector;
 
 	public ForwardSecurityStatusSender(ContactService contactService, MessageService messageService, APIConnector apiConnector) {
-		this.debug = ConfigUtils.isTestBuild();
+		this.debug = ConfigUtils.isDevBuild();
 		this.contactService = contactService;
 		this.messageService = messageService;
 		this.apiConnector = apiConnector;

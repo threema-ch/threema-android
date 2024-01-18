@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022-2023 Threema GmbH
+ * Copyright (c) 2022-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -163,11 +163,11 @@ sealed class P2PMessageContent {
 
     sealed class CaptureState : P2PMessageContent() {
         companion object {
-            fun fromProtobuf(captureState: ParticipantToParticipant.CaptureState): CaptureState {
+            fun fromProtobuf(captureState: ParticipantToParticipant.CaptureState): CaptureState? {
                 return when {
                     captureState.hasCamera() -> Camera(captureState.camera.hasOn())
                     captureState.hasMicrophone() -> Microphone(captureState.microphone.hasOn())
-                    else -> throw GroupCallException("Cannot map capture state")
+                    else -> null
                 }
             }
         }

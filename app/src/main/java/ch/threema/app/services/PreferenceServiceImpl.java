@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -1609,12 +1609,12 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public boolean isGroupCallSendInitEnabled() {
-		return ConfigUtils.isTestBuild() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_call_send_init), false);
+		return ConfigUtils.isDevBuild() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_call_send_init), false);
 	}
 
 	@Override
 	public boolean skipGroupCallCreateDelay() {
-		return ConfigUtils.isTestBuild() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_call_skip_delay), false);
+		return ConfigUtils.isDevBuild() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_call_skip_delay), false);
 	}
 
 	@Override
@@ -1652,13 +1652,12 @@ public class PreferenceServiceImpl implements PreferenceService {
 		return 0;
 	}
 
-	public void setLastNotificationRationaleShown(long date) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__last_notification_rationale_shown), date);
-	}
-
 	@Override
-	public long getLastNotificationRationaleShown() {
-		return this.preferenceStore.getDateAsLong(this.getKeyName(R.string.preferences__last_notification_rationale_shown));
+	public void removeLastNotificationRationaleShown() {
+		String key = this.getKeyName(R.string.preferences__last_notification_rationale_shown);
+		if (this.preferenceStore.has(key)) {
+			this.preferenceStore.remove(key);
+		}
 	}
 
     @Override

@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -182,6 +182,10 @@ public class EnterSerialActivity extends ThreemaActivity {
 		passwordText.addTextChangedListener(new TextChangeWatcher());
 		loginButton = findViewById(getResources().getIdentifier("unlock_button_work", "id", getPackageName()));
 		loginButton.setOnClickListener(v -> doUnlock());
+
+		String appName = getString(R.string.app_name);
+		TextView lostCredentialsHelp = findViewById(getResources().getIdentifier("work_lost_credential_help", "id", getPackageName()));
+		lostCredentialsHelp.setText(getString(R.string.work_lost_credentials_help, appName));
 
 		// Always enable login button
 		this.enableLogin(true);

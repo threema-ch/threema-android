@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2023 Threema GmbH
+ * Copyright (c) 2020-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -63,6 +64,10 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 
 	private static final int CONTEXT_MENU_FORWARD = 600;
 	private static final int CONTEXT_MENU_GROUP = 22200;
+	private static final float TEXT_SIZE_INCREMENT_DP = 2;
+
+	private int defaultTextSizeDp;
+	private MaterialToolbar toolbar;
 
 	private EmojiConversationTextView textView;
 
@@ -78,7 +83,7 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 			try {
 				menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_FORWARD, 200, R.string.forward_text);
 			} catch (Exception e) {
-				// some MIUI device crash when attempting to add a context menu
+				// some MIUI devices crash when attempting to add a context menu
 				logger.error("Error adding context menu (Xiaomi?)", e);
 			}
 			return true;
@@ -163,17 +168,25 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 			footerLayout = R.layout.conversation_bubble_footer_recv;
 		}
 
-		MaterialToolbar toolbar = findViewById(R.id.material_toolbar);
+		toolbar = findViewById(R.id.material_toolbar);
 		toolbar.setNavigationOnClickListener(view -> finish());
 		toolbar.setOnMenuItemClickListener(item -> {
-			if (item.isChecked()) {
-				item.setChecked(false);
-				textView.setIgnoreMarkup(true);
-				setText(messageModel);
-			} else {
-				item.setChecked(true);
-				textView.setIgnoreMarkup(false);
-				setText(messageModel);
+			if (item.getItemId() == R.id.enable_formatting) {
+				if (item.isChecked()) {
+					item.setChecked(false);
+					textView.setIgnoreMarkup(true);
+					setText(messageModel, true);
+				} else {
+					item.setChecked(true);
+					textView.setIgnoreMarkup(false);
+					setText(messageModel, false);
+				}
+			} else if (item.getItemId() == R.id.zoom_in) {
+				textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, getTextSizeDp(textView) + TEXT_SIZE_INCREMENT_DP);
+				updateMenus();
+			} else if (item.getItemId() == R.id.zoom_out) {
+				textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, getTextSizeDp(textView) - TEXT_SIZE_INCREMENT_DP);
+				updateMenus();
 			}
 			return true;
 		});
@@ -188,7 +201,8 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 		((ViewGroup) findViewById(R.id.footer)).addView(footerView);
 
 		textView = findViewById(R.id.text_view);
-		setText(messageModel);
+		setText(messageModel, false);
+		defaultTextSizeDp = getTextSizeDp(textView);
 
 		// display date
 		CharSequence s = MessageUtil.getDisplayDate(this, messageModel, true);
@@ -227,9 +241,25 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 		return R.layout.activity_text_chat_bubble;
 	}
 
-	private void setText(AbstractMessageModel messageModel) {
+	private void updateMenus() {
+		if (textView != null && toolbar != null) {
+			Menu menu = toolbar.getMenu();
+			if (menu != null) {
+				menu.findItem(R.id.zoom_in).setVisible(getTextSizeDp(textView) < (defaultTextSizeDp * 4));
+				menu.findItem(R.id.zoom_out).setVisible(getTextSizeDp(textView) > (defaultTextSizeDp / 2));
+			}
+		}
+	}
+
+	private int getTextSizeDp(TextView textView) {
+		return (int) Math.round(textView.getTextSize() / getResources().getDisplayMetrics().density);
+	}
+
+	private void setText(AbstractMessageModel messageModel, boolean ignoreMarkup) {
 		textView.setText(QuoteUtil.getMessageBody(messageModel, false));
-		LinkifyUtil.getInstance().linkify(null, this, textView, messageModel, true, false, null);
+		if (!ignoreMarkup) {
+			LinkifyUtil.getInstance().linkify(null, this, textView, messageModel, true, false, null);
+		}
 	}
 
 	@Override

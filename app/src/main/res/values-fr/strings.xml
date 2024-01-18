@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">Vibration dans l\'application</string>
     <string name="prefs_inapp_vibrate_on">Vibrer lors de la réception de messages</string>
     <string name="prefs_inapp_vibrate_off">Ne pas vibrer lors de la réception de messages</string>
-    <string name="prefs_troubleshooting">Résolution des problèmes</string>
-    <string name="prefs_sum_troubleshooting">Analyser et corriger les problèmes</string>
-    <string name="prefs_workarounds">Solutions</string>
+    <string name="workarounds">Solutions</string>
     <string name="prefs_title_threema_push_switch">Utiliser Threema Push</string>
     <string name="prefs_sum_threema_push_on">Utilisez Threema Push pour être informé en cas de nouveaux messages.</string>
     <string name="prefs_sum_threema_push_off">Vérifiez la présence de nouveaux messages en utilisant le service Push système</string>
@@ -822,8 +820,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="forward_location">Transférer l\'emplacement</string>
     <string name="unknown_address">Adresse inconnue</string>
     <string name="your_location">Votre emplacement</string>
-    <string name="network_blocked_title">Données en arrière-plan désactivées</string>
-    <string name="network_blocked_body">%s ne peut pas recevoir des messages en arrière plan. Touchez ici pour activer les données en arrière-plan dans les paramètres.</string>
     <string name="reply_later">On se parle plus tard</string>
     <string name="reply_on_my_way">Je suis en chemin</string>
     <string name="reply_thank_you">Merci</string>
@@ -1460,7 +1456,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="permission_microphone">Microphone</string>
     <string name="permission_read_phone_state">Téléphone</string>
     <string name="permission_enable_in_settings_rationale">Veuillez accorder l\'autorisation dans les paramètres. Sélectionnez « Autorisations » puis autorisez « %s ».</string>
-    <string name="post_notification_permission_rationale">Pour recevoir des notifications, vous devez autoriser %s à afficher des notifications.</string>
     <string name="group_name">Nom de groupe</string>
     <string name="star_message">Marquer le message d\'une étoile</string>
     <string name="starred_message">Message marqué d\'une étoile</string>
@@ -1499,6 +1494,23 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="group_dissolved_notice">Ce groupe a été dissous et ne peut plus être utilisé.</string>
     <string name="directory_request_failed">Échec de demande de répertoire. Réessayez.</string>
     <string name="add_shortcut_exists">Un raccourci pour cette cible existe déjà.</string>
+    <string name="work_lost_credentials_help">Vous avez oublié vos identifiants ? Veuillez contacter votre administrateur %1$s.</string>
+    <string name="problemsolver_intro">Certains problèmes de configuration du système peuvent empêcher %s de fonctionner correctement. Veuillez résoudre ces problèmes en suivant les instructions ci-dessous.</string>
+    <string name="problemsolver_title">Résoudre les problèmes de configuration</string>
+    <string name="problemsolver_title_background">Utilisation en arrière-plan restreinte</string>
+    <string name="problemsolver_title_background_data">Données en arrière-plan restreintes</string>
+    <string name="problemsolver_title_notifications">Notifications désactivées</string>
+    <string name="problemsolver_title_fullscreen_notifications">Notifications en plein écran désautorisées</string>
+    <string name="problemsolver_explain_fullscreen_notifications">L\'application n\'est pas autorisée à afficher des notifications en plein écran. Vous risquez de manquer des appels entrants lorsque l\'appareil est verrouillé. Pour résoudre ce problème, activez l\'option « Autoriser les notifications en plein écran ».</string>
+    <string name="problemsolver_explain_notifications">Les notifications sont complètement désactivées pour cette application. Vous ne serez pas informé des messages ou appels entrants, et l\'application risque de ne pas fonctionner comme prévu. Pour résoudre ce problème, activez « Toutes les notifications ».</string>
+    <string name="problemsolver_explain_background_data">L\'application ne peut pas utiliser de données mobiles lorsqu\'elle est en arrière-plan. Vous ne serez pas informé des messages entrants à moins d\'ouvrir activement l\'application. Pour résoudre ce problème, activez l\'option « Données en arrière-plan ».</string>
+    <string name="problemsolver_explain_background">L\'utilisation en arrière-plan de l\'application est restreinte. Vous ne recevrez pas de notifications et de nombreuses fonctionnalités ne marcheront pas comme prévu. Pour y remédier, touchez « Utilisation de la batterie par l\'application » et sélectionnez « Sans restriction ».</string>
+    <string name="problemsolver_info_text">Le nom de certaines des options de configuration du système mentionnées ci-dessus peut varier en fonction de la version d\'Android et du fabricant de l\'appareil.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Utilisation de la batterie par l\'application définie sur « Optimisée »</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">L\'application n\'est pas autorisée à maintenir une connexion permanente avec les serveurs, ce qui est nécessaire au fonctionnement de Threema Push. Vous ne serez pas informé des nouveaux messages lorsque l\'application est en arrière-plan. Pour y remédier, touchez « Utilisation de la batterie par l\'application » et sélectionnez « Sans restriction ».</string>
+    <string name="problemsolver_to_settings">Aux paramètres</string>
+    <string name="prefs_advanced_options">Options avancées</string>
+    <string name="push_service">Service Push</string>
     <plurals name="contacts_counter_label" tools:ignore="MissingQuantity">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>
@@ -1575,4 +1587,5 @@ Veuillez saisir une question pour votre enquête.</string>
         <item quantity="one">%d membre de groupe</item>
         <item quantity="other">%d membres de groupes</item>
     </plurals>
+    <string name="edit_and_send">Modifier</string>
 </resources>

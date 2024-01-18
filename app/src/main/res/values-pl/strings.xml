@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">Wibracje w aplikacji</string>
     <string name="prefs_inapp_vibrate_on">Wibruj podczas otrzymywania wiadomości</string>
     <string name="prefs_inapp_vibrate_off">Nie wibruj podczas otrzymywania wiadomości</string>
-    <string name="prefs_troubleshooting">Rozwiązywanie problemów</string>
-    <string name="prefs_sum_troubleshooting">Analizuj i rozwiąż problemy</string>
-    <string name="prefs_workarounds">Obejście problemu</string>
+    <string name="workarounds">Obejścia problemu</string>
     <string name="prefs_title_threema_push_switch">Użyj Threema Push</string>
     <string name="prefs_sum_threema_push_on">Użyj Threema Push, aby otrzymywać powiadomienia o nowych wiadomościach</string>
     <string name="prefs_sum_threema_push_off">Sprawdzaj nowe wiadomości, stosując usługę push systemu</string>
@@ -838,8 +836,6 @@ anonimowo?</string>
     <string name="forward_location">Przekaż lokalizację</string>
     <string name="unknown_address">Nieznany adres</string>
     <string name="your_location">Twoja lokalizacja</string>
-    <string name="network_blocked_title">Obsługa danych w tle wyłączona</string>
-    <string name="network_blocked_body">%s nie może odbierać wiadomości w tle. Dotknij tutaj, aby włączyć obsługę danych w tle w ustawieniach.</string>
     <string name="reply_later">Pogadamy później</string>
     <string name="reply_on_my_way">Jestem w drodze</string>
     <string name="reply_thank_you">Dzięki</string>
@@ -1421,7 +1417,7 @@ anonimowo?</string>
     <string name="prefs_summary_hibernation_api_32">Aby zapobiec wstrzymywaniu aplikacji Threema przez system po dłuższej nieaktywności, wyłącz ustawienie systemowe „Usuwaj uprawnienia i zwalniaj miejsce”.</string>
     <string name="prefs_summary_hibernation_api">Aby zapobiec wstrzymywaniu aplikacji Threema przez system po dłuższej nieaktywności, wyłącz ustawienie systemowe „Wstrzymuj aktywność aplikacji w razie nieużywania”.</string>
     <string name="unable_to_fetch_configuration">Nie można pobrać danych z serwera konfiguracji. Spróbuj ponownie później.</string>
-    <string name="rogue_device_warning"><![CDATA[Wykryto połączenie z innego urządzenia z tym samym identyfikatorem Threema. Czy był on ostatnio używany na innym urządzeniu?<br><br>Jeśli tak, to można zignorować tę wiadomość.<br><br>Jeśli nie, to mogło nastąpić ujawnienie Twojego klucza prywatnego. <a href="https://threema.ch/en/faq/another_connection">Postępuj zgodnie z naszymi sugestiami</a>, aby zabezpieczyć swoje urzązenie i dane przed utworzeniem nowego identyfikatora.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Wykryto połączenie z innego urządzenia z tym samym identyfikatorem Threema. Czy był on ostatnio używany na innym urządzeniu?&lt;br&gt;&lt;br&gt;Jeśli tak, to można zignorować tę wiadomość.&lt;br&gt;&lt;br&gt;Jeśli nie, to mogło nastąpić ujawnienie Twojego klucza prywatnego. <a href="https://threema.ch/en/faq/another_connection">Postępuj zgodnie z naszymi sugestiami</a>, aby zabezpieczyć swoje urzązenie i dane przed utworzeniem nowego identyfikatora.]]></string>
     <string name="fetch2_failure">Synchronizacja z serwerem udostępniającym nie powiodła się.</string>
     <string name="no_members_support_group_calls">W tej grupie nie ma innych członków, którzy mogą odpowiadać na połączenia grupowe</string>
     <string name="group_calls">Poł. grupowe</string>
@@ -1476,7 +1472,6 @@ anonimowo?</string>
     <string name="permission_microphone">Mikrofon</string>
     <string name="permission_read_phone_state">Telefon</string>
     <string name="permission_enable_in_settings_rationale">Przyznaj uprawnienie w ustawieniach. Wybierz „Uprawnienia”, a potem przyznaj „%s”.</string>
-    <string name="post_notification_permission_rationale">Aby otrzymywać powiadomienia, musisz zezwolić na pokazywanie powiadomień przez aplikację %s.</string>
     <string name="group_name">Nazwa grupy</string>
     <string name="star_message">Oznacz gwiazdką</string>
     <string name="starred_message">Wiadomość z gwiazdką</string>
@@ -1515,6 +1510,23 @@ anonimowo?</string>
     <string name="group_dissolved_notice">Grupa ta została rozwiązana i nie można już z niej korzystać.</string>
     <string name="directory_request_failed">Żądanie katalogu nie powiodło się. Spróbuj ponownie.</string>
     <string name="add_shortcut_exists">Skrót tego obiektu docelowego już istnieje.</string>
+    <string name="work_lost_credentials_help">Nie pamiętasz swoich referencji? Skontakuj się ze swoim administratorem %1$s.</string>
+    <string name="problemsolver_intro">Niektóre problemy z konfiguracją systemu mogą uniemożliwiać prawidłowe działanie %s. Napraw te problemy, postępując zgodnie z poniższymi instrukcjami.</string>
+    <string name="problemsolver_title">Napraw błędy konfiguracji</string>
+    <string name="problemsolver_title_background">Ograniczone użycie tła</string>
+    <string name="problemsolver_title_background_data">Dane w tle ograniczone</string>
+    <string name="problemsolver_title_notifications">Powiadomienia wyłączone</string>
+    <string name="problemsolver_title_fullscreen_notifications">Powiadomienia pełnoekranowe niedozwolone</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Aplikacja nie może wyświetlać powiadomień na pełnym ekranie. Możesz przegapić połączenia przychodzące, gdy urządzenie jest zablokowane. Aby to zmienić, aktywuj opcję \"Zezwalaj na powiadomienia pełnoekranowe\".</string>
+    <string name="problemsolver_explain_notifications">Powiadomienia tej aplikacji są całkowicie wyłączone. Nie będziesz informowany o przychodzących wiadomościach lub połączeniach, a aplikacja może nie działać zgodnie z oczekiwaniami. Aby to zmienić, włącz opcję \"Wszystkie powiadomienia\".</string>
+    <string name="problemsolver_explain_background_data">Aplikacja nie może korzystać z danych mobilnych w tle. Nie będziesz informowany o przychodzących wiadomościach, chyba że aktywnie otworzysz aplikację. Aby to zmienić, aktywuj opcję \"Dane w tle\".</string>
+    <string name="problemsolver_explain_background">Korzystanie z aplikacji w tle jest ograniczone. Nie będziesz otrzymywać żadnych powiadomień, a wiele funkcji nie będzie działać zgodnie z oczekiwaniami. Aby to naprawić, stuknij w \"Użycie baterii przez aplikację\" i wybierz \"Bez ograniczeń\".</string>
+    <string name="problemsolver_info_text">Nazwy niektórych opcji ustawień systemowych wymienionych powyżej mogą się różnić w zależności od wersji Androida i producenta urządzenia.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Zużycie baterii przez aplikację ustawione na \"zoptymalizowane\"</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikacja nie ma uprawnień do utrzymywania stałego połączenia z serwerami, które jest wymagane do działania Threema Push. Nie będziesz informowany o nowych wiadomościach, gdy aplikacja działa w tle. Aby to naprawić, dotknij \"Wykorzystanie baterii przez aplikację\" i wybierz \"Bez ograniczeń\".</string>
+    <string name="problemsolver_to_settings">Do ustawień</string>
+    <string name="prefs_advanced_options">Opcje zaawansowane</string>
+    <string name="push_service">Usługa push</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktów</item>
@@ -1629,4 +1641,5 @@ anonimowo?</string>
         <item quantity="one">%d członek grupy</item>
         <item quantity="other">%d członków grupy</item>
     </plurals>
+    <string name="edit_and_send">Edytuj</string>
 </resources>

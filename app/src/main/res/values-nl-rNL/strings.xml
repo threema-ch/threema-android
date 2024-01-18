@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">"Trilling in-app "</string>
     <string name="prefs_inapp_vibrate_on">Trillen bij ontvangen van berichten</string>
     <string name="prefs_inapp_vibrate_off">Niet trillen bij ontvangen van berichten</string>
-    <string name="prefs_troubleshooting">Problemen oplossen</string>
-    <string name="prefs_sum_troubleshooting">Problemen analyseren en oplossen</string>
-    <string name="prefs_workarounds">Workarounds</string>
+    <string name="workarounds">Workarounds</string>
     <string name="prefs_title_threema_push_switch">Gebruik Threema Push</string>
     <string name="prefs_sum_threema_push_on">Gebruik Threema Push om meldingen te ontvangen over nieuwe berichten</string>
     <string name="prefs_sum_threema_push_off">Kijk of er nieuwe berichten zijn met behulp van systeem-push-service</string>
@@ -824,8 +822,6 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="forward_location">Locatie doorsturen</string>
     <string name="unknown_address">Onbekend adres</string>
     <string name="your_location">Je locatie</string>
-    <string name="network_blocked_title">Achtergronddata uitgeschakeld</string>
-    <string name="network_blocked_body">%s kan geen berichten in de achtergrond ontvangen. Tik hier om achtergronddata via instellingen in te schakelen.</string>
     <string name="reply_later">Spreek je later</string>
     <string name="reply_on_my_way">Ik ben onderweg</string>
     <string name="reply_thank_you">Bedankt</string>
@@ -1462,7 +1458,6 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="permission_microphone">Microfoon</string>
     <string name="permission_read_phone_state">Telefoon</string>
     <string name="permission_enable_in_settings_rationale">Schakel de toestemming in de instellingen in. Selecteer \'Toestemmingen\' en sta dan \'%s\' toe.</string>
-    <string name="post_notification_permission_rationale">Om meldingen te ontvangen moet u %s toestaan om meldingen te tonen.</string>
     <string name="group_name">Groepsnaam</string>
     <string name="star_message">Ster toevoegen aan bericht</string>
     <string name="starred_message">Bericht met ster</string>
@@ -1501,6 +1496,23 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="group_dissolved_notice">Deze groep is opgeheven en kan niet langer worden gebruikt.</string>
     <string name="directory_request_failed">Directory-aanvraag is mislukt. Probeer het opnieuw.</string>
     <string name="add_shortcut_exists">Er bestaat al een snelkoppeling voor dit doel.</string>
+    <string name="work_lost_credentials_help">Bent u uw toegangsgegevens vergeten? Neem contact op met de beheerder van %1$s.</string>
+    <string name="problemsolver_intro">Een paar problemen met de systeemconfiguratie kunnen verhinderen dat %s juist werkt. Volg de onderstaande instructies om deze problemen op te lossen.</string>
+    <string name="problemsolver_title">Configuratieproblemen oplossen</string>
+    <string name="problemsolver_title_background">Achtergrondgebruik is beperkt</string>
+    <string name="problemsolver_title_background_data">Achtergrondgegevens zijn beperkt</string>
+    <string name="problemsolver_title_notifications">Meldingen uitgeschakeld</string>
+    <string name="problemsolver_title_fullscreen_notifications">Meldingen op volledig scherm zijn niet toegestaan</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Deze app kan geen meldingen op volledig scherm weergeven. U mist mogelijk inkomende gesprekken wanneer het apparaat is vergrendeld. Activeer \'Meldingen op volledig scherm toestaan\' om dit probleem op te lossen.</string>
+    <string name="problemsolver_explain_notifications">Meldingen zijn volledig uitgeschakeld voor deze app. U wordt niet op de hoogte gebracht van inkomende berichten of gesprekken en de app werkt mogelijk niet als verwacht. Activeer \'Alle meldingen\' om dit probleem op te lossen.</string>
+    <string name="problemsolver_explain_background_data">Op de achtergrond kan de app geen mobiele gegevens gebruiken. U wordt niet op de hoogte gebracht van inkomende berichten tenzij u de app opent. Activeer \'Achtergrondgegevens\' om dit op te lossen.</string>
+    <string name="problemsolver_explain_background">Het achtergrondgebruik van de app is beperkt. U ontvangt geen meldingen en veel functies werken niet zoals verwacht. Tik op \'Batterijgebruik van de app\' en selecteer \'Onbeperkt\' om dit op te lossen.</string>
+    <string name="problemsolver_info_text">De benoeming van enkele van de hierboven vermelde systeeminstellingen kunnen afwijken afhankelijk van de Android-versie en de fabrikant van het apparaat.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Batterijgebruik van de app is ingesteld op \'geoptimaliseerd\'</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">De app kan geen permanente verbinding met de servers onderhouden en dit is nodig om Threema Push te laten werken. U wordt niet op de hoogte gebracht van nieuwe berichten wanneer de app op de achtergrond is. Tik op \'Batterijgebruik van de app\' en selecteer \'Onbeperkt\' om dit probleem op te lossen.</string>
+    <string name="problemsolver_to_settings">Naar de instellingen</string>
+    <string name="prefs_advanced_options">Geavanceerde opties</string>
+    <string name="push_service">Pushdienst</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>
@@ -1577,4 +1589,5 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
         <item quantity="one">%d groepslid</item>
         <item quantity="other">%d groepsleden</item>
     </plurals>
+    <string name="edit_and_send">Bewerken</string>
 </resources>

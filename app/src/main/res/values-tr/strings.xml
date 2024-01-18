@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">Uygulama içi titreşim</string>
     <string name="prefs_inapp_vibrate_on">Mesaj alırken titret</string>
     <string name="prefs_inapp_vibrate_off">Mesaj alırken titretme</string>
-    <string name="prefs_troubleshooting">Sorun giderme</string>
-    <string name="prefs_sum_troubleshooting">Sorunları incele ve onar</string>
-    <string name="prefs_workarounds">Geçici çözümler</string>
+    <string name="workarounds">Geçici Çözümler</string>
     <string name="prefs_title_threema_push_switch">Threema Push\'u kullan</string>
     <string name="prefs_sum_threema_push_on">Yeni mesajlardan haberdar olmak için Threema Push\'u kullan</string>
     <string name="prefs_sum_threema_push_off">Sistem push hizmetini kullanarak yeni mesajları kontrol et</string>
@@ -819,8 +817,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="forward_location">Konumu ilet</string>
     <string name="unknown_address">Bilinmeyen adres</string>
     <string name="your_location">Konumunuz</string>
-    <string name="network_blocked_title">Arka plan verileri devre dışı bırakıldı</string>
-    <string name="network_blocked_body">%s arka planda mesaj alamıyor. Ayarlarda arka plan verilerini etkinleştirmek için buraya dokunun.</string>
     <string name="reply_later">Sonra konuşuruz</string>
     <string name="reply_on_my_way">Yoldayım</string>
     <string name="reply_thank_you">Teşekkür ederim</string>
@@ -1400,7 +1396,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_summary_hibernation_api_32">Threema\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"İzinleri kaldır ve yer aç\" sistem ayarını devre dışı bırakın.</string>
     <string name="prefs_summary_hibernation_api">Threema\'nın uzun süre kullanılmadığında sistem tarafından duraklatılmasını önlemek için lütfen \"Kullanılmıyorsa uygulama etkinliğini duraklat\" sistem ayarını devre dışı bırakın.</string>
     <string name="unable_to_fetch_configuration">Yapılandırma sunucusundan veri alınamıyor. Daha sonra tekrar deneyin</string>
-    <string name="rogue_device_warning"><![CDATA[Aynı Threema kimliğe sahip farklı bir cihazdan bağlantı tespit edildi. Yakın zamanda Threema kimliğinizi başka bir cihazda kullandınız mı? <br><br>; Evet ise, bu mesajı yok sayabilirsiniz. <br><br> Hayır ise, özel anahtarınız tehlikeye girebilir. Yeni bir kimlik oluşturmadan önce cihazınızı ve verilerinizi korumak için lütfen <a href="https://threema.ch/en/faq/another_connection">önerilerimizi uygulayın</a>.]]></string>
+    <string name="rogue_device_warning"><![CDATA[Aynı Threema kimliğe sahip farklı bir cihazdan bağlantı tespit edildi. Yakın zamanda Threema kimliğinizi başka bir cihazda kullandınız mı? &lt;br&gt;&lt;br&gt; Evet ise, bu mesajı yok sayabilirsiniz. &lt;br&gt;&lt;br&gt; Hayır ise, özel anahtarınız tehlikeye girebilir. Yeni bir kimlik oluşturmadan önce cihazınızı ve verilerinizi korumak için lütfen <a href="https://threema.ch/en/faq/another_connection">önerilerimizi uygulayın</a>.]]></string>
     <string name="fetch2_failure">Konfigurasyon sunucusuyla eşitleme başarısız oldu.</string>
     <string name="no_members_support_group_calls">Bu grupta grup aramalarına cevap verebilecek başka üye yok</string>
     <string name="group_calls">Grup aramaları</string>
@@ -1455,7 +1451,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="permission_microphone">Mikrofon</string>
     <string name="permission_read_phone_state">Telefon</string>
     <string name="permission_enable_in_settings_rationale">Lütfen ayarlarda izni etkinleştirin. \"İzinler\"i seçin ve ardından \"%s\"ye izin verin.</string>
-    <string name="post_notification_permission_rationale">Bildirimleri almak için %s bildirimleri göstermesine izin vermelisiniz.</string>
     <string name="group_name">Grup adı</string>
     <string name="star_message">Mesajı yıldızla</string>
     <string name="starred_message">Yıldızlı mesaj</string>
@@ -1481,7 +1476,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="keep_messages">Mesajları sakla:</string>
     <string name="clean_up_manually">Manuel olarak temizle</string>
     <string name="forever">Sonsuza dek</string>
-    <string name="autodelete_explain">\"Sonsuza kadar\" dışında bir değere ayarlanırsa, gelen ve giden mesajlar yalnızca belirtilen süre boyunca saklanır ve ardından geri alınamaz şekilde silinir. Buna okunmamış ve gönderilmemiş mesajlar da dahildir. Not gruplarındaki ve yıldızla işaretlenmiş mesajlar asla silinmez. Silme işlemi periyodik olarak gerçekleşir ve aktivasyondan hemen sonra gerçekleşmesi gerekmez.</string>
+    <string name="autodelete_explain">\"Sonsuza kadar\" dışında bir değere ayarlanırsa, gelen ve giden mesajlar belirtilen süre sonunda geri alınamayacak şekilde silinir. Buna okunmamış ve gönderilmemiş mesajlar da dahildir. Ancak, not gruplarındaki mesajlar ve yıldızlı mesajlar silinmez. Silme işlemi periyodik olarak tetiklenir ve aktivasyondan hemen sonra olması gerekmez.</string>
     <string name="autodelete_confirm">Mesajlar %s sonra otomatik olarak silinecektir. Devam edelim mi?</string>
     <string name="autodelete_activated">Otomatik silme etkinleştirildi.</string>
     <string name="autodelete_disabled">Otomatik silme devre dışı.</string>
@@ -1494,6 +1489,23 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="group_dissolved_notice">Bu grup dağıtılmıştır ve artık kullanılamaz.</string>
     <string name="directory_request_failed">Dizin isteği başarısız oldu. Tekrar deneyin.</string>
     <string name="add_shortcut_exists">Bu hedef için bir kısayol zaten mevcut.</string>
+    <string name="work_lost_credentials_help">Kimlik bilgilerinizi mi unuttunuz? Lütfen %1$s yöneticinizle iletişime geçin.</string>
+    <string name="problemsolver_intro">Bazı sistem yapılandırma sorunları %s\'nin düzgün çalışmasını engelleyebilir. Lütfen aşağıdaki talimatları izleyerek bu sorunları giderin.</string>
+    <string name="problemsolver_title">Yapılandırma sorunlarını düzelt</string>
+    <string name="problemsolver_title_background">Arka plan kullanımı kısıtlandı</string>
+    <string name="problemsolver_title_background_data">Arka plan verileri kısıtlandı</string>
+    <string name="problemsolver_title_notifications">Bildirimler devre dışı</string>
+    <string name="problemsolver_title_fullscreen_notifications">Tam ekran bildirimlere izin verilmiyor</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Uygulamanın tam ekran bildirimleri görüntülemesine izin verilmez. Cihaz kilitliyken gelen aramaları kaçırabilirsiniz. Bunu düzeltmek için \"Tam ekran bildirimlerine izin ver\" seçeneğini etkinleştirin.</string>
+    <string name="problemsolver_explain_notifications">Bu uygulama için bildirimler tamamen devre dışı bırakılmıştır. Gelen mesajlardan veya aramalardan haberdar olmazsınız ve uygulama beklendiği gibi çalışmayabilir. Bunu düzeltmek için \"Tüm bildirimler\" seçeneğini etkinleştirin.</string>
+    <string name="problemsolver_explain_background_data">Uygulama arka plandayken mobil veri kullanamaz. Uygulamayı aktif olarak açmadığınız sürece gelen mesajlardan haberdar olmazsınız. Bunu düzeltmek için \"Arka plan verisi\" seçeneğini etkinleştirin.</string>
+    <string name="problemsolver_explain_background">Uygulamanın arka plan kullanımı kısıtlanmıştır. Herhangi bir bildirim almazsınız ve birçok özellik beklendiği gibi çalışmaz. Bunu düzeltmek için \"Uygulama pil kullanımı\" seçeneğine dokunun ve \"Kısıtlanmamış\" seçeneğini seçin.</string>
+    <string name="problemsolver_info_text">Yukarıda belirtilen bazı sistem ayarı seçeneklerinin adlandırılması Android sürümüne ve cihaz üreticisine bağlı olarak değişebilir.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Uygulama pil kullanımı \"optimize\" olarak ayarlandı</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Uygulamanın, Threema Push\'un çalışması için gerekli olan sunucularla kalıcı bir bağlantı kurmasına izin verilmez. Uygulama arka plandayken yeni mesajlardan haberdar olmazsınız. Bunu düzeltmek için \"Uygulama pil kullanımı\" seçeneğine dokunun ve \"Kısıtlanmamış\" seçeneğini seçin.</string>
+    <string name="problemsolver_to_settings">Ayarlara</string>
+    <string name="prefs_advanced_options">Gelişmiş seçenekler</string>
+    <string name="push_service">Push hizmeti</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>
@@ -1596,4 +1608,5 @@ Daha önce alınan istekler yine de kabul edilebilir veya reddedilebilir.</item>
         <item quantity="one">%d grup üyesi</item>
         <item quantity="other">%d grup üyesi</item>
     </plurals>
+    <string name="edit_and_send">Düzenle</string>
 </resources>

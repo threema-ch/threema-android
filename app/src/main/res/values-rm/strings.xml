@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">Vibrar en l\'app</string>
     <string name="prefs_inapp_vibrate_on">Activar la vibraziun cun retschaiver in messadi</string>
     <string name="prefs_inapp_vibrate_off">Nagina vibraziun cura che jau retschaiv in messadi</string>
-    <string name="prefs_troubleshooting">Reparar disturbis</string>
-    <string name="prefs_sum_troubleshooting">Analisar e curreger disturbis</string>
-    <string name="prefs_workarounds">Soluziuns</string>
+    <string name="workarounds">Soluziuns</string>
     <string name="prefs_title_threema_push_switch">Duvrar Threema Push</string>
     <string name="prefs_sum_threema_push_on">Duvrar Threema Push per survegnir infurmaziuns davart novs messadis</string>
     <string name="prefs_sum_threema_push_off">Controllar, sch\'i dat novs messadis cun agid dal servetsch push dal sistem</string>
@@ -801,8 +799,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="forward_location">Transmetter il lieu</string>
     <string name="unknown_address">Adressas nunenconuschenta</string>
     <string name="your_location">Voss lieu</string>
-    <string name="network_blocked_title">Deactivà las datas davos las culissas</string>
-    <string name="network_blocked_body">%s na survegn nagins messadis davos las culissas. Tippescha qua per activar las datas davos las culissas.</string>
     <string name="reply_later">Jau m\'annunziel pli tard</string>
     <string name="reply_on_my_way">Jau sun en viadi</string>
     <string name="reply_thank_you">Grazia</string>
@@ -1364,4 +1360,5 @@ Endatescha in pled-clav per tes backup da datas.</string>
         <item quantity="one">Il medium vegn memorisà</item>
         <item quantity="other"></item>
     </plurals>
+    <string name="edit_and_send">Elavurar</string>
 </resources>

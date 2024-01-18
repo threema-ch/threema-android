@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2020-2023 Threema GmbH
+ * Copyright (c) 2020-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -337,7 +337,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			} else {
 				editButton.setAlpha(1.0f);
 				editButton.setClickable(true);
-				editButton.setLabelText(R.string.edit);
+				editButton.setLabelText(R.string.edit_and_send);
 			}
 			selectCounterButton.setText(String.format(LocaleUtil.getCurrentLocale(this), "%d", count));
 			selectCounterButton.setContentDescription(ConfigUtils.getSafeQuantityString(this, R.plurals.selection_counter_label, count, count));

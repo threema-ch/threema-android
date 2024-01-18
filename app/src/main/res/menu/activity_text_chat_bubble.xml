@@ -3,6 +3,24 @@
 	xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<item
+		android:id="@+id/zoom_out"
+		android:title="@string/zoom_out"
+		android:checkable="false"
+		android:orderInCategory="10"
+		android:icon="@drawable/ic_zoom_out"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="always" />
+
+	<item
+		android:id="@+id/zoom_in"
+		android:title="@string/zoom_in"
+		android:checkable="false"
+		android:orderInCategory="20"
+		android:icon="@drawable/ic_zoom_in"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="always" />
+
+	<item
 		android:id="@+id/enable_formatting"
 		android:title="@string/enable_formatting"
 		android:checkable="true"

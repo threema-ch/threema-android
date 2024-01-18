@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2023 Threema GmbH
+ * Copyright (c) 2016-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -135,14 +135,11 @@ public class ModifyGroupHandler extends MessageReceiver {
 		}
 
 		// Update avatar
-		Bitmap avatar = groupService.getAvatar(groupModel, true);
+		Bitmap avatar = null;
 		if (data.containsKey(Protocol.ARGUMENT_AVATAR)) {
 			try {
 				final Value avatarValue = data.get(Protocol.ARGUMENT_AVATAR);
-				if (avatarValue == null || avatarValue.isNilValue()) {
-					// Clear avatar
-					avatar = null;
-				} else {
+				if (avatarValue != null && !avatarValue.isNilValue()) {
 					// Set avatar
 					final byte[] bmp = avatarValue.asBinaryValue().asByteArray();
 					if (bmp.length > 0) {

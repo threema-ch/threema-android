@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2023 Threema GmbH
+ * Copyright (c) 2014-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -58,6 +58,8 @@ import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -93,6 +95,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.ViewCompat;
@@ -687,7 +690,7 @@ public class ConfigUtils {
 		return preferenceService.getOnPremServer() != null && preferenceService.getOnPremServer().toLowerCase().contains(".3ma.ch/");
 	}
 
-	public static boolean isTestBuild() {
+	public static boolean isDevBuild() {
 		return BuildFlavor.getName().contains("DEBUG") ||
 			BuildFlavor.getName().equals("Red") || BuildFlavor.getName().equals("DEV") ||
 			BuildFlavor.getName().equals("Sandbox");
@@ -1523,12 +1526,69 @@ public class ConfigUtils {
 	}
 
 	@UiThread
-	@NonNull
-	public static Mapbox getMapLibreInstance() {
+	public static void getMapLibreInstance() {
 		if (mapbox == null) {
 			mapbox = Mapbox.getInstance(ThreemaApplication.getAppContext());
 			logger.info("MapLibre enabled");
 		}
-		return mapbox;
+	}
+
+	/**
+	 * Query whether the user has enabled background restrictions for this app.
+	 * The user may chose to do this, if they see that an app is consuming an unreasonable amount of battery while in the background.
+	 * (Android directs the user to do this - many users are not aware of the consequences)
+	 * If true, any work that the app tries to do will be aggressively restricted while it is in the background. At a minimum, jobs and alarms will not execute and foreground services cannot be started unless an app activity is in the foreground.
+	 * Note that these restrictions stay in effect even when the device is charging.
+	 * @param context A context
+	 * @return true if background restrictions are enabled
+	 */
+	public static boolean isBackgroundRestricted(@NonNull Context context) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+			return activityManager.isBackgroundRestricted();
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Check whether the user has restricted the app from network use when in the background
+	 * @param context A context
+	 * @param compatibilityMode whether to check for network blocked state instead on API <24
+	 * @return true if the app cannot access the network when in background
+	 */
+	public static boolean isBackgroundDataRestricted(@NonNull Context context, boolean compatibilityMode) {
+		ConnectivityManager mgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			return mgr.getRestrictBackgroundStatus() == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
+		} else if (compatibilityMode) {
+			//noinspection deprecation
+			NetworkInfo networkInfo = mgr.getActiveNetworkInfo();
+			//noinspection deprecation
+			return networkInfo != null && networkInfo.getDetailedState() == NetworkInfo.DetailedState.BLOCKED;
+		}
+		return false;
+	}
+
+	/**
+	 * Check whether the app can post full screen notifications (e.g. used for calls)
+	 * @param context A context
+	 * @return true if the app is forbidden to use fullscreen notifications
+	 */
+	public static boolean isFullScreenNotificationsDisabled(@NonNull Context context) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+			NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+			return !notificationManagerCompat.canUseFullScreenIntent();
+		}
+		return false;
+	}
+
+	/**
+	 * Check whether the app can post any notifications
+	 * @param context A context
+	 * @return true if the app if notifications are completely disabled for this app
+	 */
+	public static boolean isNotificationsDisabled(@NonNull Context context) {
+		return !NotificationManagerCompat.from(context).areNotificationsEnabled();
 	}
 }

@@ -1,5 +1,3 @@
-* Behebung eines Absturzes bei fehlender Berechtigung der App für die Anzeige von Benachrichtigungen
+* Geführte Hilfestellung für verschiedene Probleme der Systemkonfiguration
 
-* Behebung eines Anzeigefehlers in den Gruppendetails
-
-* Übersetzungen hinzugefügt
+* Fehlerbehebung und Performance-Verbesserungen

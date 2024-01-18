@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.Material3.CardView.Outlined"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    app:contentPadding="16dp">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:importantForAccessibility="no"
+                android:layout_gravity="center_vertical"
+                android:baselineAlignBottom="false"
+                android:layout_marginRight="8dp"
+                app:srcCompat="@drawable/ic_warning"
+                app:tint="@color/material_red" />
+
+            <TextView
+                android:id="@+id/item_title"
+                style="@style/Threema.TextAppearance.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/problemsolver_title_background" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <TextView
+        style="@style/Threema.TextAppearance.BodyMedium"
+        android:id="@+id/item_explain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/problemsolver_explain_background"/>
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Threema.MaterialButton.Icon"
+        android:id="@+id/item_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="right"
+        app:icon="@drawable/ic_settings_outline_24dp"
+        app:iconPadding="4dp"
+        android:text="@string/problemsolver_to_settings"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</com.google.android.material.card.MaterialCardView>

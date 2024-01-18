@@ -66,9 +66,7 @@ når den første meldingen mottas.</string>
     <string name="prefs_inapp_vibrate">In-app vibrasjon</string>
     <string name="prefs_inapp_vibrate_on">Vibrer når du mottar meldinger</string>
     <string name="prefs_inapp_vibrate_off">Ikke vibrer når du mottar meldinger</string>
-    <string name="prefs_troubleshooting">Feilsøking</string>
-    <string name="prefs_sum_troubleshooting">Analyser og fiks problemer</string>
-    <string name="prefs_workarounds">Løsninger</string>
+    <string name="workarounds">Løsninger</string>
     <string name="prefs_title_threema_push_switch">Bruk Threema Push</string>
     <string name="prefs_sum_threema_push_on">Bruk Threema Push for for å bli varslet om nye meldinger.</string>
     <string name="prefs_sum_threema_push_off">Sjekk for nye meldinger ved bruk av systemets push-tjeneste</string>
@@ -819,8 +817,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="forward_location">Videresend posisjon</string>
     <string name="unknown_address">Ukjent adresse</string>
     <string name="your_location">Din posisjon</string>
-    <string name="network_blocked_title">Bakgrunnsdata er deaktivert</string>
-    <string name="network_blocked_body">%s kan ikke motta meldinger i bakgrunnen. Trykk her for å aktivere bakgrunnsdata i innstillinger.</string>
     <string name="reply_later">Snakkes senere</string>
     <string name="reply_on_my_way">Jeg er på vei</string>
     <string name="reply_thank_you">Takk</string>
@@ -1469,7 +1465,6 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="permission_microphone">Mikrofon</string>
     <string name="permission_read_phone_state">Telefon</string>
     <string name="permission_enable_in_settings_rationale">Vennligst aktiver tillatelsen i innstillingene. Velg \"Tillatelser\" og gi tillatelse til \"%s\".</string>
-    <string name="post_notification_permission_rationale">For å motta varslinger så må du gi %s tilgang til å vise varslinger.</string>
     <string name="group_name">Gruppenavn</string>
     <string name="star_message">Stjernemelding</string>
     <string name="starred_message">Stjernemerket melding</string>
@@ -1495,7 +1490,7 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="keep_messages">Behold meldinger i:</string>
     <string name="clean_up_manually">Slett manuelt</string>
     <string name="forever">For alltid</string>
-    <string name="autodelete_explain">Om du velger noe annet enn \"For alltid\", så blir både innkommende og utgående meldinger beholdt i den valgte tiden og deretter slettet for alltid. Dette inkluderer uleste og usendte meldinger. Meldinger i \"Note group\"/Lokal gruppe og stjernemerkede meldinger vil aldri bli slettet. Prosessen med å slette meldinger skjer periodevis og ikke nødvendigvis rett etter aktivering av funksjonen.</string>
+    <string name="autodelete_explain">Om du velger noe annet enn \"For alltid\", så blir både innkommende og utgående meldinger slettet for alltid etter den valgte tiden. Dette inkluderer uleste og usendte meldinger. Meldinger i \"Note group\"/Lokal gruppe og stjernemerkede meldinger vil aldri bli slettet. Prosessen med å slette meldinger skjer periodevis og ikke nødvendigvis rett etter aktivering av funksjonen.</string>
     <string name="autodelete_confirm">Meldinger vil bli slettet automatisk etter %s. Vil du fortsette?</string>
     <string name="autodelete_activated">Automatisk sletting aktivert.</string>
     <string name="autodelete_disabled">Automatisk sletting deaktivert.</string>
@@ -1508,6 +1503,23 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="group_dissolved_notice">Gruppen har blitt oppløst og kan ikke bli brukt lenger.</string>
     <string name="directory_request_failed">Katalogforespørsel mislyktes. Prøv igjen.</string>
     <string name="add_shortcut_exists">En snarvei for dette finnes allerede.</string>
+    <string name="work_lost_credentials_help">Glemt innloggingsdetaljene dine? Vennligst kontakt din %1$s administrator.</string>
+    <string name="problemsolver_intro">Noen systemkonfigurasjoner kan føre til at %s ikke fungerer skikkelig. Vennligst rett opp i disse ved å følge instruksjonene nedenfor.</string>
+    <string name="problemsolver_title">Løs problemer med konfigurasjon</string>
+    <string name="problemsolver_title_background">Begrenset bakgrunnsaktivitet</string>
+    <string name="problemsolver_title_background_data">Begrenset bakgrunnsdata</string>
+    <string name="problemsolver_title_notifications">Varsler er deaktivert</string>
+    <string name="problemsolver_title_fullscreen_notifications">Varsler i fullskjerm er ikke tillatt</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Appen har ikke tilgang til å vise varsler i fullskjerm, noe som kan gjøre at du ikke får varsel om innkommende anrop når telefonen er låst. Løs dette ved å tillate valget \"Tillat fullskjermvarslinger fra denne appen\".</string>
+    <string name="problemsolver_explain_notifications">Varslinger er helt deaktivert for denne appen. Du får derfor ingen varsel om innkommende meldinger eller anrop, og appen vil kanskje ikke fungere som forventet. For å fikse dette, tillat alle varsler.</string>
+    <string name="problemsolver_explain_background_data">Appen kan ikke bruke mobildata når det er i bakgrunnen. Du får ikke varsel om innkommende meldinger uten å aktivt åpne appen. For å løs dette, tillat bakgrunnsdata.</string>
+    <string name="problemsolver_explain_background">Appen får ikke lov til å kjøre i bakgrunnen. Du får derfor ingen varsler og mange funksjoner vil ikke fungere som normalt. For å løse dette, trykk på \"Batterbruk\" og velg \"Ubegenset\".</string>
+    <string name="problemsolver_info_text">Navnet på noen av disse systeminnstillingene kan variere basert på hvilken enhet du har.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Batteribruk satt til \"Optimalisert\"</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Appen har ikke tillatelse til å opprettholde en permanent tilkobling til serverne, noe som er nødvendig for at Threema Push skal fungere. Du vil ikke få varsel om nye meldinger så lenge appen er i bakgrunnen. For å løse dette, trykk på \"Batteribruk\" og velg \"Ubegrenset\".</string>
+    <string name="problemsolver_to_settings">Til innstillinger</string>
+    <string name="prefs_advanced_options">Avanserte innstillinger</string>
+    <string name="push_service">Push-tjeneste</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1610,4 +1622,5 @@ Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</
         <item quantity="one">%d gruppemedlem</item>
         <item quantity="other">%d gruppemedlemmer</item>
     </plurals>
+    <string name="edit_and_send">Rediger</string>
 </resources>

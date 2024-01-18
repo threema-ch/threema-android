@@ -664,6 +664,15 @@
 		<item name="ensureMinTouchTargetSize">false</item>
 	</style>
 
+	<style name="Threema.MaterialButton.Minimal.SmallPadding" parent="@style/Widget.Material3.Button.IconButton">
+		<item name="android:paddingLeft">0dp</item>
+		<item name="android:paddingRight">0dp</item>
+		<item name="android:paddingTop">0dp</item>
+		<item name="android:paddingBottom">0dp</item>
+		<item name="android:padding">0dp</item>
+		<item name="ensureMinTouchTargetSize">false</item>
+	</style>
+
 	<style name="Threema.MaterialButton.Borderless.Flush" parent="@style/Threema.MaterialButton.Action.Outline">
 		<item name="strokeWidth">0dp</item>
 		<item name="android:paddingLeft">4dp</item>
@@ -1084,6 +1093,11 @@
 
 	<style name="Threema.EditText.Compose" parent="@style/Widget.Material3.TextInputEditText.FilledBox">
 		<item name="android:textColor">?attr/colorOnSurface</item>
+	</style>
+
+	<style name="Threema.EditText.Pin" parent="@style/Widget.AppCompat.EditText">
+		<item name="android:textColor">?attr/colorOnBackground</item>
+		<item name="colorControlActivated">?attr/colorPrimary</item>
 	</style>
 
 	<style name="Threema.ShapeAppearance.Arrow.Up" parent="@style/ShapeAppearance.Material3.Corner.Medium">

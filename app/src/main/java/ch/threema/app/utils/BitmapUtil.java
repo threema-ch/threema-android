@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -484,7 +484,13 @@ public class BitmapUtil {
 				String[] projection = {MediaStore.Images.Media.ORIENTATION};
 				try (Cursor c = context.getContentResolver().query(uri, projection, null, null, null)) {
 					if (c != null && c.moveToFirst()) {
-						retVal.rotation = (float) c.getInt(0);
+						orientation = c.getInt(0);
+						// sanity check for returned value
+						if (orientation >= 0 && orientation < 360) {
+							retVal.rotation = (float) orientation;
+						} else {
+							retVal.rotation = ExifInterface.ORIENTATION_UNDEFINED;
+						}
 					}
 				} catch (Exception e) {
 					logger.debug("No orientation column");

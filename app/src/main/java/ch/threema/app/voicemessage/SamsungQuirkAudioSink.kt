@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2023 Threema GmbH
+ * Copyright (c) 2023-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -33,12 +33,11 @@ import java.nio.ByteBuffer
  * Handle audio sink error on some Samsung devices when changing AudioAttributes by retrying
  */
 @UnstableApi
-class SamsungQuirkAudioSink(context: Context, enableFloatOutput: Boolean, enableAudioTrackPlaybackParams: Boolean, enableOffload: Boolean,
+class SamsungQuirkAudioSink(context: Context, enableFloatOutput: Boolean, enableAudioTrackPlaybackParams: Boolean,
     private val delegate: AudioSink = DefaultAudioSink.Builder()
         .setAudioCapabilities(AudioCapabilities.getCapabilities(context))
         .setEnableFloatOutput(enableFloatOutput)
         .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
-        .setOffloadMode(if (enableOffload) DefaultAudioSink.OFFLOAD_MODE_ENABLED_GAPLESS_REQUIRED else DefaultAudioSink.OFFLOAD_MODE_DISABLED)
         .build()
 ) : AudioSink by delegate {
     private val logger = LoggingUtil.getThreemaLogger("SamsungQuirkAudioSink")

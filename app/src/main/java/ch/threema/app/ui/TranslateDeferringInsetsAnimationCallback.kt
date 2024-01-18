@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2023 Threema GmbH
+ * Copyright (c) 2014-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -65,11 +65,23 @@ class TranslateDeferringInsetsAnimationCallback(
     private val deferredInsetTypes: Int,
     dispatchMode: Int = DISPATCH_MODE_STOP
 ) : WindowInsetsAnimationCompat.Callback(dispatchMode) {
+    private var isPreserveViewBounds: Boolean = false
+
     init {
         require(persistentInsetTypes and deferredInsetTypes == 0) {
             "persistentInsetTypes and deferredInsetTypes can not contain any of " +
                     " same WindowInsetsCompat.Type values"
         }
+    }
+
+    override fun onPrepare(animation: WindowInsetsAnimationCompat) {
+        // do not adjust view bounds of conversation if list is scrolled up to avoid jumping
+        isPreserveViewBounds = if (view is ConversationListView) {
+            view.canScrollList(View.SCROLL_AXIS_VERTICAL)
+        } else {
+            false
+        }
+        super.onPrepare(animation)
     }
 
     override fun onProgress(
@@ -91,15 +103,19 @@ class TranslateDeferringInsetsAnimationCallback(
 
         // The resulting `diff` insets contain the values for us to apply as a translation
         // to the view
-        view.translationX = (diff.left - diff.right).toFloat()
-        view.translationY = (diff.top - diff.bottom).toFloat()
+        if (!isPreserveViewBounds) {
+            view.translationX = (diff.left - diff.right).toFloat()
+            view.translationY = (diff.top - diff.bottom).toFloat()
+        }
 
         return insets
     }
 
     override fun onEnd(animation: WindowInsetsAnimationCompat) {
         // Once the animation has ended, reset the translation values
-        view.translationX = 0f
-        view.translationY = 0f
+        if (!isPreserveViewBounds) {
+            view.translationX = 0f
+            view.translationY = 0f
+        }
     }
 }

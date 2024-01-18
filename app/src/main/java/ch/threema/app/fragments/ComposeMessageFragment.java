@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -266,6 +266,7 @@ import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.SoundUtil;
+import ch.threema.app.utils.TapTargetViewUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ToolbarUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
@@ -1342,10 +1343,16 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 			}
 
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+				rootView.setBackgroundColor(ConfigUtils.getColorFromAttribute(requireContext(), android.R.attr.colorBackground));
+			}
+
 			deferringInsetsListener = new RootViewDeferringInsetsCallback(emojiPicker, activity);
 
 			ViewCompat.setWindowInsetsAnimationCallback(rootView, deferringInsetsListener);
+
 			ViewCompat.setOnApplyWindowInsetsListener(rootView, deferringInsetsListener);
+
 			ViewCompat.setWindowInsetsAnimationCallback(
 				bottomPanel,
 				new TranslateDeferringInsetsAnimationCallback(
@@ -1637,7 +1644,7 @@ public class ComposeMessageFragment extends Fragment implements
 								}
 							} else {
 								if (scrollButtonManager != null) {
-									scrollButtonManager.hideButton(ScrollButtonManager.TYPE_UP);
+									scrollButtonManager.hideButton(ScrollButtonManager.TYPE_DOWN);
 								}
 								recentlyAddedCount = 0;
 							}
@@ -1649,7 +1656,7 @@ public class ComposeMessageFragment extends Fragment implements
 								}
 							} else {
 								if (scrollButtonManager != null) {
-									scrollButtonManager.hideButton(ScrollButtonManager.TYPE_DOWN);
+									scrollButtonManager.hideButton(ScrollButtonManager.TYPE_UP);
 								}
 							}
 						}
@@ -1737,12 +1744,11 @@ public class ComposeMessageFragment extends Fragment implements
 							if (searchActionMode != null) {
 								searchActionMode.finish();
 							}
-							startQuoteMode(abstractMessageModel, () -> RuntimeUtil.runOnUiThread(() -> {
-								EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
-								if (isEmojiPickerShown()) {
-									activity.runOnSoftKeyboardOpen(() -> emojiPicker.hide());
-								}
-							}));
+							if (activity.isSoftKeyboardOpen() || isEmojiPickerShown()) {
+								startQuoteMode(abstractMessageModel, () -> RuntimeUtil.runOnUiThread(() -> messageText.requestFocus()), 0);
+							} else {
+								startQuoteMode(abstractMessageModel, () -> RuntimeUtil.runOnUiThread(() -> EditTextUtil.focusWindowAndShowSoftKeyboard(messageText)), 500);
+							}
 						}
 					}
 				}
@@ -2071,8 +2077,10 @@ public class ComposeMessageFragment extends Fragment implements
 					final View itemView = toolbar.findViewById(R.id.menu_threema_call);
 					final @ColorInt int textColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnPrimary);
 
+					final ViewGroup contentView = activity.findViewById(R.id.main_content);
+
 					try {
-						TapTargetView.showFor(activity,
+						TapTargetViewUtil.showFor(activity,
 							TapTarget.forView(itemView, getString(R.string.group_calls_tooltip_title), getString(R.string.group_calls_tooltip_text))
 								.outerCircleColorInt(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary))      // Specify a color for the outer circle
 								.outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
@@ -2095,7 +2103,8 @@ public class ComposeMessageFragment extends Fragment implements
 									super.onTargetClick(view);
 									itemView.performClick();
 								}
-							});
+							},
+							contentView);
 						preferenceService.setGroupCallsTooltipShown(true);
 					} catch (Exception ignore) {
 						// catch null typeface exception on CROSSCALL Action-X3
@@ -2960,7 +2969,9 @@ public class ComposeMessageFragment extends Fragment implements
 
 				}
 				final int finalUnreadCount = unreadCount;
-				unreadCount = 0;
+				if (!isHidden()) {
+					unreadCount = 0;
+				}
 
 				if (position > 0) {
 					final int finalPosition = position;
@@ -3346,7 +3357,11 @@ public class ComposeMessageFragment extends Fragment implements
 				quoteInfo.quoteText,
 				quoteInfo.messageModel
 			);
-			closeQuoteMode();
+			// Close quote mode and then scroll to bottom. Note that the scrolling is needed because
+			// scrolling down will be interrupted when the quote panel's visibility is set to gone.
+			// Therefore we may need to initiate a scroll down again after the panel has been set to
+			// gone.
+			closeQuoteMode(() -> scrollList(Integer.MAX_VALUE));
 		} else {
 			message = this.messageText.getText();
 		}
@@ -3536,9 +3551,13 @@ public class ComposeMessageFragment extends Fragment implements
 			new ArrayList<>(uris), text);
 	}
 
-	private void startQuoteMode(AbstractMessageModel messageModel, Runnable onFinishRunnable) {
+	private void startQuoteMode(@Nullable AbstractMessageModel messageModel, Runnable onFinishRunnable, int delay) {
 		if (messageModel == null) {
 			messageModel = selectedMessages.get(0);
+		}
+
+		if (messageModel == null) {
+			return;
 		}
 
 		String body = QuoteUtil.getMessageBody(messageModel, true);
@@ -3584,21 +3603,26 @@ public class ComposeMessageFragment extends Fragment implements
 			quoteInfo.quoteTypeImage.setVisibility(View.VISIBLE);
 		}
 
-		if (activity.isSoftKeyboardOpen()) {
-			AnimationUtil.expand(quoteInfo.quotePanel, onFinishRunnable, false);
-		} else {
-			if (onFinishRunnable != null) {
-				onFinishRunnable.run();
-			}
-			convListView.postDelayed(() -> AnimationUtil.expand(quoteInfo.quotePanel, null, false), 350);
+		quoteInfo.quotePanel.postDelayed(() -> quoteInfo.quotePanel.setVisibility(View.VISIBLE), delay);
+
+		if (onFinishRunnable != null) {
+			onFinishRunnable.run();
 		}
 	}
 
 	private void closeQuoteMode() {
+		closeQuoteMode(null);
+	}
+
+	private void closeQuoteMode(@Nullable Runnable runAfterQuotePanelClosed) {
 		quoteInfo.quoteIdentityView.setText("");
 		quoteInfo.quoteTextView.setText("");
 		if (isQuotePanelShown()) {
-			AnimationUtil.collapse(quoteInfo.quotePanel, () -> updateSendButton(messageText.getText()), false);
+			quoteInfo.quotePanel.setVisibility(View.GONE);
+			updateSendButton(messageText.getText());
+			if (runAfterQuotePanelClosed != null) {
+				runAfterQuotePanelClosed.run();
+			}
 		}
 	}
 
@@ -4346,12 +4370,11 @@ public class ComposeMessageFragment extends Fragment implements
 				shareMessages();
 				mode.finish();
 			} else if (id == R.id.menu_message_quote) {
-				startQuoteMode(null, () -> RuntimeUtil.runOnUiThread(() -> {
-					EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
-					if (isEmojiPickerShown()) {
-						activity.runOnSoftKeyboardOpen(() -> emojiPicker.hide());
-					}
-				}));
+				if (activity.isSoftKeyboardOpen() || isEmojiPickerShown()) {
+					startQuoteMode(null, () -> RuntimeUtil.runOnUiThread(() -> messageText.requestFocus()), 0);
+				} else {
+					startQuoteMode(null, () -> RuntimeUtil.runOnUiThread(() -> EditTextUtil.focusWindowAndShowSoftKeyboard(messageText)), 500);
+				}
 				mode.finish();
 			} else if (id == R.id.menu_show_text) {
 				showTextChatBubble(selectedMessages.get(0));
@@ -4504,13 +4527,15 @@ public class ComposeMessageFragment extends Fragment implements
 	private void preserveListInstanceValues() {
 		listInstancePosition = AbsListView.INVALID_POSITION;
 
-		if (convListView != null && composeMessageAdapter != null) {
-			if (convListView.getLastVisiblePosition() != composeMessageAdapter.getCount() - 1) {
-				listInstancePosition = convListView.getFirstVisiblePosition();
-				View v = convListView.getChildAt(0);
-				listInstanceTop = (v == null) ? 0 : (v.getTop() - convListView.getPaddingTop());
-				if (messageReceiver != null) {
-					listInstanceReceiverId = messageReceiver.getUniqueIdString();
+		if (!isHidden()) {
+			if (convListView != null && composeMessageAdapter != null) {
+				if (convListView.getLastVisiblePosition() != composeMessageAdapter.getCount() - 1) {
+					listInstancePosition = convListView.getFirstVisiblePosition();
+					View v = convListView.getChildAt(0);
+					listInstanceTop = (v == null) ? 0 : (v.getTop() - convListView.getPaddingTop());
+					if (messageReceiver != null) {
+						listInstanceReceiverId = messageReceiver.getUniqueIdString();
+					}
 				}
 			}
 		}
@@ -4885,7 +4910,7 @@ public class ComposeMessageFragment extends Fragment implements
 				if (apiMessageId != null) {
 					AbstractMessageModel quotedMessageModel = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, messageReceiver);
 					if (quotedMessageModel != null && QuoteUtil.isQuoteable(quotedMessageModel)) {
-						startQuoteMode(quotedMessageModel, null);
+						startQuoteMode(quotedMessageModel, null, 0);
 					}
 				}
 				// If the draft is just "@", then dismiss the mention popup when restoring the draft

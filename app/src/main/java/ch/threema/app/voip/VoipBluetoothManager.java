@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2023 Threema GmbH
+ * Copyright (c) 2017-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -56,6 +56,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.util.AppRTCUtils;
@@ -186,9 +189,9 @@ public class VoipBluetoothManager {
 		 */
 		private void onConnectionStateChange(Intent intent) {
 			final int state =
-					intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, BluetoothHeadset.STATE_DISCONNECTED);
-			logger.debug("BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_CONNECTION_STATE_CHANGED, s={}, sb={}, BT state: {}",
-				headsetStateToString(state), isInitialStickyBroadcast(), bluetoothState);
+				intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, BluetoothHeadset.STATE_DISCONNECTED);
+			logger.info("BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_CONNECTION_STATE_CHANGED, s={}, sb={}, BT state={}, d={}",
+				headsetStateToString(state), isInitialStickyBroadcast(), bluetoothState, getDeviceNameFromIntent(intent));
 			switch (state) {
 				case BluetoothHeadset.STATE_CONNECTED:
 					scoConnectionAttempts = 0;
@@ -214,8 +217,8 @@ public class VoipBluetoothManager {
 			final int state = intent.getIntExtra(
 				BluetoothHeadset.EXTRA_STATE, BluetoothHeadset.STATE_AUDIO_DISCONNECTED);
 
-			logger.debug("BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s={}, sb={}, BT state: {}",
-				headsetStateToString(state), isInitialStickyBroadcast(), bluetoothState);
+			logger.info("BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s={}, sb={}, BT state={}, d={}",
+				headsetStateToString(state), isInitialStickyBroadcast(), bluetoothState, getDeviceNameFromIntent(intent));
 
 			// Switch BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s=A_DISCONNECTED, sb=false, BT state: HEADSET_AVAILABLE
 			// Btn BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s=A_DISCONNECTED, sb=false, BT state: SCO_CONNECTED
@@ -275,6 +278,16 @@ public class VoipBluetoothManager {
 					VoipBluetoothManager.this.updateAudioDeviceState();
 				}
 			}
+		}
+
+		@Nullable
+		private String getDeviceNameFromIntent(@NonNull Intent intent) {
+			final BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+			if (device != null
+				&& ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+				return device.getName();
+			}
+			return "";
 		}
 	}
 

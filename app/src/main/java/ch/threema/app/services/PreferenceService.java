@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -580,8 +580,9 @@ public interface PreferenceService {
 
 	void setAutoDeleteDays(int i);
 	int getAutoDeleteDays();
-	void setLastNotificationRationaleShown(long date);
-	long getLastNotificationRationaleShown();
+
+	// TODO(ANDR-2816): Remove
+	void removeLastNotificationRationaleShown();
 
 	void getMediaGalleryContentTypes(boolean[] contentTypes);
 }

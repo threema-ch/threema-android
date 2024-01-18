@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,9 +22,7 @@
 package ch.threema.app.activities;
 
 import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_UNREAD;
-import static ch.threema.app.utils.PowermanagerUtil.isIgnoringBatteryOptimizations;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -62,7 +60,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
@@ -148,6 +145,7 @@ import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
+import ch.threema.app.utils.PowermanagerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
@@ -227,23 +225,20 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	private final ActivityResultLauncher<String> notificationPermissionLauncher =
 		registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-			if (preferenceService != null && !Boolean.TRUE.equals(isGranted)) {
-				// Show permission rationale only once a week
-				long current = System.currentTimeMillis();
-				long last = preferenceService.getLastNotificationRationaleShown();
-				if (current - last >= DateUtils.WEEK_IN_MILLIS) {
-					showNotificationPermissionRationale();
-					preferenceService.setLastNotificationRationaleShown(current);
-				}
+			if (!Boolean.TRUE.equals(isGranted)) {
+				logger.warn("Notification permission was not granted");
 			}
 		});
+
+	private final ActivityResultLauncher<Intent> problemSolverLauncher =
+		registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> updateWarningButton());
 
 	private BroadcastReceiver checkLicenseBroadcastReceiver = null;
 	private final BroadcastReceiver currentCheckAppReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, final Intent intent) {
 			RuntimeUtil.runOnUiThread(() -> {
-				if (intent.getAction().equals(IntentDataUtil.ACTION_LICENSE_NOT_ALLOWED)) {
+				if (IntentDataUtil.ACTION_LICENSE_NOT_ALLOWED.equals(intent.getAction())) {
 					if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.SERIAL ||
 						BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK ||
 						BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.HMS_WORK ||
@@ -253,7 +248,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					} else {
 						showErrorTextAndExit(IntentDataUtil.getMessage(intent));
 					}
-				} else if (intent.getAction().equals(IntentDataUtil.ACTION_UPDATE_AVAILABLE) && !ConfigUtils.isWorkBuild() && userService != null && userService.hasIdentity()) {
+				} else if (IntentDataUtil.ACTION_UPDATE_AVAILABLE.equals(intent.getAction()) && !ConfigUtils.isWorkBuild() && userService != null && userService.hasIdentity()) {
 					new Handler().postDelayed(() -> {
 						Intent dialogIntent = new Intent(intent);
 						dialogIntent.setClass(HomeActivity.this, DownloadApkActivity.class);
@@ -265,7 +260,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	};
 
 	private BottomNavigationView bottomNavigationView;
-	private View mainContent;
+	private View mainContent, toolbarWarningButton;
 
 	private String currentFragmentTag;
 
@@ -575,7 +570,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		logger.debug("onCreate");
 
-		final boolean isAppStart = savedInstanceState == null;
+		final boolean isColdStart = savedInstanceState == null;
 
 		ConfigUtils.configureSystemBars(this);
 
@@ -600,7 +595,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				this.startMainActivity(savedInstanceState);
 
 				// only execute this on first startup
-				if (isAppStart) {
+				if (isColdStart) {
 					if (preferenceService != null && userService != null && userService.hasIdentity()) {
 						if (ConfigUtils.isWorkRestricted()) {
 							// update configuration
@@ -712,12 +707,29 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	}
 
+	private void updateWarningButton() {
+		logger.debug("updateWarningButton");
+		if (toolbarWarningButton != null) {
+			toolbarWarningButton.setVisibility(shouldShowToolbarWarning() ? View.VISIBLE : View.GONE);
+		}
+	}
+
+	private boolean shouldShowToolbarWarning() {
+		return
+			ConfigUtils.isBackgroundRestricted(ThreemaApplication.getAppContext()) ||
+			ConfigUtils.isBackgroundDataRestricted(ThreemaApplication.getAppContext(), false) ||
+			ConfigUtils.isNotificationsDisabled(ThreemaApplication.getAppContext()) ||
+			ConfigUtils.isFullScreenNotificationsDisabled(ThreemaApplication.getAppContext()) ||
+			((preferenceService.useThreemaPush() || BuildFlavor.forceThreemaPush()) && !PowermanagerUtil.isIgnoringBatteryOptimizations(ThreemaApplication.getAppContext()));
+	}
+
 	private void showWhatsNew() {
 		final boolean skipWhatsNew = false; // set this to false if you want to show a What's New screen
 
 		if (preferenceService != null) {
 			if (!preferenceService.isLatestVersion(this)) {
 				// so the app has just been updated
+				ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher);
 
 				if (preferenceService.getPrivacyPolicyAccepted() == null) {
 					preferenceService.setPrivacyPolicyAccepted(new Date(), PreferenceService.PRIVACY_POLICY_ACCEPT_UPDATE);
@@ -974,8 +986,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		boolean isAppStart = savedInstanceState == null;
 
 		if (isAppStart) {
-			ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher);
-
 			if (serviceManager != null) {
 				LocaleUtil.switchToAndroidXPerAppLanguageSelection(this, serviceManager.getPreferenceService());
 			}
@@ -998,6 +1008,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				finish();
 				return;
 			}
+
+			// TODO(ANDR-2816): Remove
+			preferenceService.removeLastNotificationRationaleShown();
 
 			// reset connectivity status
 			preferenceService.setLastOnlineStatus(serviceManager.getDeviceService().isOnline());
@@ -1089,8 +1102,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 		// Checks on app start
 		if (isAppStart) {
-			// If a non-libre build of Threema cannot find push services, fall back to Threema Push
-			if (!BuildFlavor.forceThreemaPush() && !PushService.servicesInstalled(this)) {
+			if (BuildFlavor.forceThreemaPush()) {
+				preferenceService.setUseThreemaPush(true);
+			} else if (!preferenceService.useThreemaPush() && !PushService.servicesInstalled(this)) {
+				// If a non-libre build of Threema cannot find push services, fall back to Threema Push
 				this.enableThreemaPush();
 				if (!ConfigUtils.isAmazonDevice() && !ConfigUtils.isWorkBuild()) {
 					RuntimeUtil.runOnUiThread(() -> {
@@ -1101,21 +1116,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					});
 				}
 			}
-
-			// For libre builds of Threema, always ask user to disable battery permissions
-			if (BuildFlavor.forceThreemaPush()) {
-				preferenceService.setUseThreemaPush(true);
-
-				if (!isIgnoringBatteryOptimizations(this)) {
-					final Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
-					intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.threema_push));
-					intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_CONFIRM, true);
-					startActivityForResult(intent, 12345);
-				}
-			}
 		}
 
 		this.mainContent = findViewById(R.id.main_content);
+		this.toolbarWarningButton = findViewById(R.id.toolbar_warning);
+		this.toolbarWarningButton.setOnClickListener(v -> {
+			Intent intent = new Intent(HomeActivity.this, ProblemSolverActivity.class);
+			problemSolverLauncher.launch(intent);
+		});
 		this.noticeSMSLayout = findViewById(R.id.notice_sms_layout);
 		findViewById(R.id.notice_sms_button_enter_code).setOnClickListener(v -> SMSVerificationDialog.newInstance(userService.getLinkedMobile(true)).show(getSupportFragmentManager(), DIALOG_TAG_VERIFY_CODE));
 		findViewById(R.id.notice_sms_button_cancel).setOnClickListener(v -> GenericAlertDialog.newInstance(R.string.verify_title, R.string.really_cancel_verify, R.string.yes, R.string.no)
@@ -1737,6 +1745,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		super.onResume();
 
 		showMainContent();
+		updateWarningButton();
 	}
 
 	@Override
@@ -1937,15 +1946,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			GenericAlertDialog.newInstance(R.string.threema_channel, R.string.threema_channel_intro, R.string.ok, R.string.cancel, 0).show(getSupportFragmentManager(), DIALOG_TAG_THREEMA_CHANNEL_VERIFY);
 		} else {
 			launchThreemaChannelChat();
-		}
-	}
-
-	private void showNotificationPermissionRationale() {
-		if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)) {
-			ConfigUtils.showPermissionRationale(
-				this,
-				findViewById(R.id.main_content),
-				getString(R.string.post_notification_permission_rationale, getString(R.string.app_name)));
 		}
 	}
 

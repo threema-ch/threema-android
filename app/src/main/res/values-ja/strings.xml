@@ -13,7 +13,7 @@
     <string name="invite_via">共有先を選択...</string>
     <string name="invite_email_body">こんにちは！\n\nこれはユーザーのプライバシーを守る安全なインスタントメッセンジャーの %1$s の招待です。\n\nThreema ID: https://threema.id/%2$s\n\nそれではまた %1$s で！\n\n良い一日を！\n</string>
     <string name="invite_sms_body">こんにちは！%1$sを使って安全にプライベートな会話をしましょう！Threema ID: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema。私たちのプライバシーを守る安全なメッセンジャー</string>
+    <string name="invite_email_subject">Threema。プライバシーを守る安全なメッセンジャー</string>
     <string name="enter_id_hint">Threema IDを入力</string>
     <string name="account_links">紐付けされたアカウント</string>
     <string name="menu_settings">設定</string>
@@ -42,7 +42,7 @@
     <string name="prefs_sum_block_unknown_on">連絡先に追加されているユーザーのみがメッセージを送ることができます。</string>
     <string name="prefs_title_block_unknown">不明な連絡先をブロック</string>
     <string name="prefs_title_read_receipts">「既読」の送信</string>
-    <string name="prefs_title_typing_indicator">「入力中」の送信</string>
+    <string name="prefs_title_typing_indicator">\"入力中\"の送信</string>
     <string name="prefs_media_title">メディアとストレージ</string>
     <string name="prefs_sum_media_title">メディアとストレージ設定</string>
     <string name="prefs_image_size">画像サイズ</string>
@@ -66,9 +66,7 @@
     <string name="prefs_inapp_vibrate">アプリ内でのバイブレーション</string>
     <string name="prefs_inapp_vibrate_on">メッセージを受信するとバイブレーションを鳴らします</string>
     <string name="prefs_inapp_vibrate_off">メッセージを受信してもバイブレーションを鳴らしません</string>
-    <string name="prefs_troubleshooting">トラブルシューティング</string>
-    <string name="prefs_sum_troubleshooting">問題の分析と修正</string>
-    <string name="prefs_workarounds">回避策</string>
+    <string name="workarounds">回避策</string>
     <string name="prefs_title_threema_push_switch">Threemaプッシュを使用</string>
     <string name="prefs_sum_threema_push_on">Threemaプッシュを使用して新しいメッセージの通知を受ける</string>
     <string name="prefs_sum_threema_push_off">システムのプッシュサービスを使用して新しいメッセージを確認する</string>
@@ -830,8 +828,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="forward_location">位置を転送</string>
     <string name="unknown_address">不明な住所</string>
     <string name="your_location">あなたの位置情報</string>
-    <string name="network_blocked_title">バックグラウンドデータは無効化されました</string>
-    <string name="network_blocked_body">%sはバックグラウンドでメッセージを受信することができません。ここをタップして、設定でバックグラウンドデータを有効にしてください。</string>
     <string name="reply_later">あとで話す</string>
     <string name="reply_on_my_way">私は我が道を行く</string>
     <string name="reply_thank_you">ありがとうございます</string>
@@ -1415,7 +1411,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_summary_hibernation_api_32">長期の不使用後に、Theemaがシステムによって中断されるのを防ぐために、システム設定の「権限を削除して空き容量を増やす」を無効にしてください。</string>
     <string name="prefs_summary_hibernation_api">長期の不使用後に、Theemaがシステムによって中断されるのを防ぐために、システム設定の「使用していないアプリを一時停止する」を無効にしてください。</string>
     <string name="unable_to_fetch_configuration">設定サーバーからデータを取得できません。後でもう一度お試しください。</string>
-    <string name="rogue_device_warning"><![CDATA[異なるデバイスからの接続が、同じThreema IDで検出されました。最近、別の端末であなたのThreema IDを使用しましたか？<br><br>もし使用したのであれば、このメッセージは無視してください。<br><br>もし使用していないのであれば、あなたのプライベートキーが不正利用されている可能性があります。新しいIDを作成する前に、<a href="https://threema.ch/en/faq/another_connection">私たちの提案に従って</a>、あなたの端末とデータを保護してください。]]></string>
+    <string name="rogue_device_warning"><![CDATA[異なるデバイスからの接続が、同じThreema IDで検出されました。最近、別の端末であなたのThreema IDを使用しましたか？&lt;br&gt;&lt;br&gt;もし使用したのであれば、このメッセージは無視してください。&lt;br&gt;&lt;br&gt;もし使用していないのであれば、あなたのプライベートキーが不正利用されている可能性があります。新しいIDを作成する前に、<a href="https://threema.ch/en/faq/another_connection">私たちの提案に従って</a>、あなたの端末とデータを保護してください。]]></string>
     <string name="fetch2_failure">プロビジョニングサーバーとの同期に失敗しました。</string>
     <string name="no_members_support_group_calls">このグループにはグループ通話に応答できるメンバーがいません</string>
     <string name="group_calls">グループ通話</string>
@@ -1470,7 +1466,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="permission_microphone">マイク</string>
     <string name="permission_read_phone_state">電話</string>
     <string name="permission_enable_in_settings_rationale">設定で権限を有効にしてください。「許可」 を選択し、次に 「%s」 を許可してください。</string>
-    <string name="post_notification_permission_rationale">通知を受け取るためには、%sが通知を表示することを許可する必要があります。</string>
     <string name="group_name">グループ名</string>
     <string name="star_message">メッセージにスターを付ける</string>
     <string name="starred_message">スター付きメッセージ</string>
@@ -1496,7 +1491,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="keep_messages">メッセージを保持する期間:</string>
     <string name="clean_up_manually">手動で整理する</string>
     <string name="forever">常に</string>
-    <string name="autodelete_explain">「常に」以外に設定されている場合、受信および送信メッセージは指定された時間だけ保持され、その後は回復不可能に削除されます。これには未読および未送信のメッセージも含まれます。ノートグループ内のメッセージやスターが付けられたメッセージは決して削除されません。削除プロセスは定期的に行われ、必ずしも有効化直後に行われるわけではありません。</string>
+    <string name="autodelete_explain">このメッセージは、「常に」以外に設定された場合、指定された時間が経過すると、受信および送信メッセージが回復不能に削除されます。これには未読および未送信のメッセージも含まれます。ただし、ノートグループ内のメッセージやスター付きメッセージは削除されません。削除プロセスは定期的に行われ、必ずしもアクティベーション直後に行われるわけではありません。</string>
     <string name="autodelete_confirm">%s後にメッセージが自動的に削除されます。続行しますか？</string>
     <string name="autodelete_activated">自動削除が有効になりました。</string>
     <string name="autodelete_disabled">自動削除が無効になりました。</string>
@@ -1509,6 +1504,23 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="group_dissolved_notice">このグループは解散され、もはや使用することはできません。</string>
     <string name="directory_request_failed">ディレクトリ要求に失敗しました。もう一度試してください。</string>
     <string name="add_shortcut_exists">この対象のためのショートカットは既に存在します。</string>
+    <string name="work_lost_credentials_help">資格情報を忘れましたか？%1$sの管理者に連絡してください。</string>
+    <string name="problemsolver_intro">以下の指示に従ってこれらの問題を解決することによって、%sが正しく動作することを妨げる可能性のあるシステム設定の問題を修正してください。</string>
+    <string name="problemsolver_title">構成の問題を修正する</string>
+    <string name="problemsolver_title_background">バックグラウンド使用が制限されています</string>
+    <string name="problemsolver_title_background_data">バックグラウンドデータが制限されています</string>
+    <string name="problemsolver_title_notifications">通知が無効になっています</string>
+    <string name="problemsolver_title_fullscreen_notifications">フルスクリーン通知が許可されていません</string>
+    <string name="problemsolver_explain_fullscreen_notifications">このアプリはフルスクリーン通知を表示することが許可されていません。デバイスがロックされている場合、着信通話を見逃す可能性があります。これを修正するには、”フルスクリーン通知を許可する”を有効にしてください。</string>
+    <string name="problemsolver_explain_notifications">このアプリの通知は完全に無効になっています。着信メッセージや通話の通知が届かず、アプリが期待通りに動作しない可能性があります。これを修正するには、\"すべての通知\"を有効にしてください。</string>
+    <string name="problemsolver_explain_background_data">このアプリは、バックグラウンドで使用している間にモバイルデータを使用できません。アプリをアクティブに開かない限り、着信メッセージの通知は届きません。これを修正するには、\"バックグラウンドデータ\"を有効にしてください。</string>
+    <string name="problemsolver_explain_background">アプリのバックグラウンド使用が制限されています。通知は届かず、多くの機能が期待通りに動作しない可能性があります。これを修正するには、”アプリのバッテリー使用量”をタップし、”制限なし”を選択してください。</string>
+    <string name="problemsolver_info_text">上記で言及されたシステム設定オプションの名称は、Androidのバージョンやデバイスメーカーによって異なる場合があります。</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">アプリのバッテリー使用量が\"最適化\"に設定されています</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">このアプリは、Threema Pushが機能するために必要なサーバーへの恒常的な接続を維持することが許可されていません。アプリがバックグラウンドにあるときに新しいメッセージの通知が届かない可能性があります。これを修正するには、\"アプリのバッテリー使用量\"をタップし、\"制限なし\"を選択してください。</string>
+    <string name="problemsolver_to_settings">設定へ</string>
+    <string name="prefs_advanced_options">高度なオプション</string>
+    <string name="push_service">プッシュサービス</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d 連絡先</item>
     </plurals>
@@ -1591,4 +1603,5 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <plurals name="number_of_group_members">
         <item quantity="other">%d名のグループメンバー</item>
     </plurals>
+    <string name="edit_and_send">編集</string>
 </resources>

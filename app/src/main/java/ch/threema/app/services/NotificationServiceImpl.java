@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2023 Threema GmbH
+ * Copyright (c) 2014-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -44,13 +44,11 @@ import android.content.AsyncQueryHandler;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,7 +56,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.os.storage.StorageManager;
-import android.provider.Settings;
 import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -1644,53 +1641,6 @@ public class NotificationServiceImpl implements NotificationService {
 		this.notify(ThreemaApplication.NEW_MESSAGE_LOCKED_NOTIFICATION_ID, builder, null, NOTIFICATION_CHANNEL_CHAT);
 
 		logger.info("Showing generic notification (master key locked)");
-	}
-
-	@Override
-	@TargetApi(Build.VERSION_CODES.N)
-	public void showNetworkBlockedNotification(boolean noisy) {
-		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		if (connectivityManager != null) {
-			if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null) {
-
-				String message = String.format(this.context.getString(R.string.network_blocked_body), this.context.getString(R.string.app_name));
-
-				NotificationCompat.Builder builder =
-					new NotificationBuilderWrapper(this.context, noisy ? NOTIFICATION_CHANNEL_ALERT : NOTIFICATION_CHANNEL_NOTICE, noisy ? this.getDefaultNotificationSchema() : null)
-						.setSmallIcon(R.drawable.ic_error_red_24dp)
-						.setContentTitle(this.context.getString(R.string.network_blocked_title))
-						.setContentText(message)
-						.setStyle(new NotificationCompat.BigTextStyle().bigText(message))
-						.setCategory(NotificationCompat.CATEGORY_ERROR)
-						.setPriority(noisy ? preferenceService.getNotificationPriority() : NotificationCompat.PRIORITY_LOW)
-						.setAutoCancel(true)
-						.setTimeoutAfter(DateUtils.HOUR_IN_MILLIS)
-						.setLocalOnly(true)
-						.setOnlyAlertOnce(true);
-
-				Intent notificationIntent = new Intent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS);
-				notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				notificationIntent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
-
-				PackageManager packageManager = context.getPackageManager();
-				if (notificationIntent.resolveActivity(packageManager) != null) {
-					PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, this.pendingIntentFlags);
-					createPendingIntentWithTaskStack(notificationIntent);
-					builder.setContentIntent(pendingIntent);
-
-					this.notify(ThreemaApplication.NETWORK_BLOCKED_NOTIFICATION_ID, builder, null, noisy ? NOTIFICATION_CHANNEL_ALERT : NOTIFICATION_CHANNEL_NOTICE);
-					logger.info("Showing network blocked notification");
-					return;
-				}
-			}
-		}
-		logger.warn("Failed showing network blocked notification");
-	}
-
-	@Override
-	public void cancelNetworkBlockedNotification() {
-		this.cancel(ThreemaApplication.NETWORK_BLOCKED_NOTIFICATION_ID);
-		logger.info("Cancel network blocked notification");
 	}
 
 	private void cancelPinLockedNewMessagesNotification() {

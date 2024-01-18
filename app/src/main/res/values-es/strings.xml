@@ -65,9 +65,7 @@
     <string name="prefs_inapp_vibrate">Vibración en la aplicación</string>
     <string name="prefs_inapp_vibrate_on">Vibrar al recibir mensajes</string>
     <string name="prefs_inapp_vibrate_off">No vibrar al recibir mensajes</string>
-    <string name="prefs_troubleshooting">Resolución de problemas</string>
-    <string name="prefs_sum_troubleshooting">Analizar y resolver problemas</string>
-    <string name="prefs_workarounds">Soluciones</string>
+    <string name="workarounds">Soluciones</string>
     <string name="prefs_title_threema_push_switch">Use Threema Push</string>
     <string name="prefs_sum_threema_push_on">Use Threema Push para ser notificado acerca de nuevos mensajes</string>
     <string name="prefs_sum_threema_push_off">Revise si hay nuevos mensajes usando el servicio push del sistema</string>
@@ -831,8 +829,6 @@ almacenado.</string>
     <string name="forward_location">Reenviar ubicación</string>
     <string name="unknown_address">Dirección desconocida</string>
     <string name="your_location">Su ubicación</string>
-    <string name="network_blocked_title">Datos en segundo plano desactivados</string>
-    <string name="network_blocked_body">%s no puede recibir mensajes en segundo plano. Toque aquí para activar los datos en segundo plano en los ajustes.</string>
     <string name="reply_later">Hablamos luego</string>
     <string name="reply_on_my_way">Voy de camino</string>
     <string name="reply_thank_you">Gracias</string>
@@ -1469,7 +1465,6 @@ almacenado.</string>
     <string name="permission_microphone">Micrófono</string>
     <string name="permission_read_phone_state">Teléfono</string>
     <string name="permission_enable_in_settings_rationale">Habilite el permiso desde la configuración. Seleccione «Permisos» y luego permita «%s».</string>
-    <string name="post_notification_permission_rationale">Para recibir notificaciones, tiene que permitir que %s muestre notificaciones.</string>
     <string name="group_name">Nombre del grupo</string>
     <string name="star_message">Destacar mensaje</string>
     <string name="starred_message">Mensaje destacado</string>
@@ -1508,6 +1503,23 @@ almacenado.</string>
     <string name="group_dissolved_notice">Este grupo se ha disuelto y ya no puede usarse.</string>
     <string name="directory_request_failed">Error en la solicitud de directorio. Inténtelo de nuevo.</string>
     <string name="add_shortcut_exists">Ya existe un acceso directo para este objetivo.</string>
+    <string name="work_lost_credentials_help">¿Ha olvidado sus credenciales? Póngase en contacto con su administrador de %1$s.</string>
+    <string name="problemsolver_intro">Es posible que algunos problemas de configuración del sistema impidan que %s funcione correctamente. Solucione estos problemas siguiendo las siguientes instrucciones.</string>
+    <string name="problemsolver_title">Problemas de configuración de reparaciones</string>
+    <string name="problemsolver_title_background">Uso en segundo plano restringido</string>
+    <string name="problemsolver_title_background_data">Datos en segundo plano restringidos</string>
+    <string name="problemsolver_title_notifications">Notificaciones desactivadas</string>
+    <string name="problemsolver_title_fullscreen_notifications">Notificaciones a pantalla completa no permitidas</string>
+    <string name="problemsolver_explain_fullscreen_notifications">La app no tiene permiso para mostrar notificaciones a pantalla completa. Podría perderse llamadas entrantes cuando el dispositivo esté bloqueado. Para solucionarlo, active \"Permitir notificaciones a pantalla completa\".</string>
+    <string name="problemsolver_explain_notifications">Las notificaciones están completamente desactivadas para esta app. No se le informará de mensajes ni llamadas entrantes, y es posible que la app no funcione como se espera. Para solucionarlo, active \"Todas las notificaciones\".</string>
+    <string name="problemsolver_explain_background_data">La app no puede utilizar datos móviles cuando esté en segundo plano. No se le informará de mensajes entrantes a menos que abra activamente la app. Para solucionarlo, active \"Datos en segundo plano\".</string>
+    <string name="problemsolver_explain_background">El uso en segundo plano de la app está restringido. No recibirá notificaciones y muchas funciones no funcionarán como se espera. Para solucionarlo, pulse \"Uso de la batería de la app\" y seleccione \"Sin restricciones\".</string>
+    <string name="problemsolver_info_text">Los nombres de algunas de las opciones de configuración del sistema mencionados podrían variar en función de la versión de Android y del fabricante del dispositivo.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Uso de la batería de la app establecido como \"optimizado\".</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">La app no tiene permiso para mantener una conexión permanente con los servidores, necesaria para que funcione Threema Push. No se le informará de nuevos mensajes cuando la app esté en segundo plano. Para solucionarlo, pulse \"Uso de la batería de la app\" y seleccione \"Sin restricciones\".</string>
+    <string name="problemsolver_to_settings">A la configuración</string>
+    <string name="prefs_advanced_options">Opciones avanzadas</string>
+    <string name="push_service">Servicio Push</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>
@@ -1584,4 +1596,5 @@ almacenado.</string>
         <item quantity="one">%d miembro del grupo</item>
         <item quantity="other">%d miembros del grupo</item>
     </plurals>
+    <string name="edit_and_send">Editar</string>
 </resources>

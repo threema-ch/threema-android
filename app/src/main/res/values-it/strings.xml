@@ -66,9 +66,7 @@
     <string name="prefs_inapp_vibrate">Vibrazione in app</string>
     <string name="prefs_inapp_vibrate_on">Attivare vibrazione per invio/ricezione di messaggi</string>
     <string name="prefs_inapp_vibrate_off">Disattivare vibrazione per invio/ricezione di messaggi</string>
-    <string name="prefs_troubleshooting">Debugging</string>
-    <string name="prefs_sum_troubleshooting">Analizzare e risolvere problemi</string>
-    <string name="prefs_workarounds">Workaround</string>
+    <string name="workarounds">Workaround</string>
     <string name="prefs_title_threema_push_switch">Usa Threema Push</string>
     <string name="prefs_sum_threema_push_on">Usa Threema Push per ricevere le ultime notizie</string>
     <string name="prefs_sum_threema_push_off">Controlla se hai ricevuto nuove notizie tramite il servizio push del sistema</string>
@@ -840,8 +838,6 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="forward_location">Inoltra luogo</string>
     <string name="unknown_address">Indirizzo sconosciuto</string>
     <string name="your_location">La tua posizione</string>
-    <string name="network_blocked_title">Dati in background disabilitati</string>
-    <string name="network_blocked_body">%s non può ricevere messaggi in background. Tocca qui per abilitare nelle impostazioni i dati in background.</string>
     <string name="reply_later">Ci sentiamo più tardi</string>
     <string name="reply_on_my_way">Sto arrivando</string>
     <string name="reply_thank_you">Grazie</string>
@@ -1031,6 +1027,12 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="open_in_maps_app">Apri in Mappe</string>
     <string name="delete">Elimina</string>
     <string name="continue_recording">Continua registrazione</string>
+    <string name="whatsnew_title">Nuove funzioni in %1$s 5.2</string>
+    <string name="whatsnew_headline"><![CDATA[
+<p>Contrassegnare i messaggi: Contrassegna i messaggi importanti con una stella toccando e tenendo premuto per ritrovarli più facilmente.</p>
+<p>Cancellazione automatica: Le chat vengono cancellate automaticamente dopo un periodo di tempo selezionabile. La funzione di cancellazione automatica dei messaggi può essere attivata nella gestione della memoria.</p>
+<p>
+Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
     <string name="tap_to_start">Tocca qui per iniziare %s adesso.</string>
     <string name="two_years">2 anni</string>
     <string name="invalid_backup_path">Percorso backup sbagliato</string>
@@ -1472,7 +1474,6 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="permission_microphone">Microfono</string>
     <string name="permission_read_phone_state">Telefono</string>
     <string name="permission_enable_in_settings_rationale">Concedi l\'autorizzazione nelle impostazioni. Seleziona \"Autorizzazioni\" e concedi l\'autorizzazione a “%s”.</string>
-    <string name="post_notification_permission_rationale">Per ricevere notifiche attiva le notifiche per %s alla voce «Autorizzazioni».</string>
     <string name="group_name">Nome del gruppo</string>
     <string name="star_message">Contrassegna con asterisco</string>
     <string name="starred_message">Contrassegnato con asterisco</string>
@@ -1498,7 +1499,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="keep_messages">Conserva messaggi per:</string>
     <string name="clean_up_manually">Mettere in ordine manualmente</string>
     <string name="forever">Sempre</string>
-    <string name="autodelete_explain">Con un\'impostazione diversa da «per sempre», i messaggi in entrata e in uscita vengono conservati solo per il periodo di tempo specificato e poi vengono automaticamente cancellati in modo permanente. Questo vale anche per i messaggi non letti e non inviati. I messaggi nei gruppi di note e quelli contrassegnati da un asterisco non vengono mai eliminati. La cancellazione avviene periodicamente e non necessariamente subito dopo l\'attivazione.</string>
+    <string name="autodelete_explain">Se non hai impostato «per sempre», i messaggi in entrata e in uscita vengono cancellati in modo permanente a termine del periodo di tempo specificato. Questo vale anche per i messaggi non letti e non inviati. Non vengono invece eliminati i messaggi nei gruppi di note e quelli contrassegnati da un asterisco. La cancellazione avviene periodicamente e non necessariamente subito dopo l\'attivazione.</string>
     <string name="autodelete_confirm">I messaggi saranno eliminati automaticamente dopo %s. Vuoi continuare?</string>
     <string name="autodelete_activated">Cancellazione automatica attivata.</string>
     <string name="autodelete_disabled">Cancellazione automatica disattivata.</string>
@@ -1511,6 +1512,23 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="group_dissolved_notice">Questo gruppo è stato chiuso e non può più essere utilizzato.</string>
     <string name="directory_request_failed">Consultazione della directory non riuscita. Riprova.</string>
     <string name="add_shortcut_exists">Esiste già un collegamento con questo obiettivo.</string>
+    <string name="work_lost_credentials_help">Hai dimenticato le credenziali? Contatta l\'amministratore %1$s.</string>
+    <string name="problemsolver_intro">Problemi di configurazione nelle impostazioni del sistema possono impedire il corretto funzionamento di %s. Per risolvere il problema segui le istruzioni riportate di seguito.</string>
+    <string name="problemsolver_title">Risolvere problemi di configurazione</string>
+    <string name="problemsolver_title_background">Vietato l\'uso in background</string>
+    <string name="problemsolver_title_background_data">Dati in background disabilitati</string>
+    <string name="problemsolver_title_notifications">Notifiche disattivate</string>
+    <string name="problemsolver_title_fullscreen_notifications">Notifiche a schermo intero disattivate</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Poiché l\'app non può visualizzare le notifiche a schermo intero potresti perdere le chiamate in arrivo se il cellulare è bloccato. Per risolvere questo problema, attiva l\'opzione \"Consenti notifiche a schermo intero da questa app\".</string>
+    <string name="problemsolver_explain_notifications">Poiché le notifiche sono completamente disattivate non sarai informato di nuovi messaggi o chiamate e l\'app potrebbe non funzionare come previsto. Per risolvere il problema, attiva l\'opzione \"Tutte le notifiche\".</string>
+    <string name="problemsolver_explain_background_data">Poiché l\'utilizzo dei dati mobili in background è disattivato non riceverai notifiche di nuovi messaggi o chiamate, a meno che non apri attivamente l\'app. Per risolvere il problema, attiva l\'opzione \"Dati in background\".</string>
+    <string name="problemsolver_explain_background">Poiché l\'uso dell\'app in background è limitato, non riceverai notifiche e l\'app funzionerà solo parzialmente o non come previsto. Per risolvere il problema, tocca \"Utilizzo batteria app\" e seleziona \"Senza restrizioni\".</string>
+    <string name="problemsolver_info_text">Le denominazioni di alcune delle opzioni nelle impostazioni di sistema menzionate possono variare a seconda della versione di Android e del produttore del dispositivo.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Utilizzo batteria app \"ottimizzato\"</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">L\'applicazione non può mantenere una connessione permanente ai server, necessaria per il funzionamento di Threema Push. Quando l\'app è in background, i nuovi messaggi non vengono notificati. Per risolvere il problema, tocca \"Utilizzo batteria app\" e seleziona \"Senza restrizioni\".</string>
+    <string name="problemsolver_to_settings">Alle impostazioni</string>
+    <string name="prefs_advanced_options">Opzioni avanzate</string>
+    <string name="push_service">Servizio push</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contatto</item>
         <item quantity="other">%d contatti</item>
@@ -1539,8 +1557,9 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
         <item quantity="one">%d file salvato con successo.</item>
         <item quantity="other">%d file salvati con successo</item>
     </plurals>
-    <plurals name="saving_media" tools:ignore="MissingQuantity">
-        <item quantity="other">Salvataggio media in corso</item>
+    <plurals name="saving_media">
+        <item quantity="one">Salvataggio media in corso</item>
+        <item quantity="other">Salvataggio %d media in corso</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Cancella sondaggio</item>
@@ -1598,4 +1617,5 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
         <item quantity="one">%d membro del gruppo</item>
         <item quantity="other">%d membri del gruppo</item>
     </plurals>
+    <string name="edit_and_send">Modifica</string>
 </resources>

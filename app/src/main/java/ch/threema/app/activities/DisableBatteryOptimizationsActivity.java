@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2023 Threema GmbH
+ * Copyright (c) 2016-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -22,14 +22,12 @@
 package ch.threema.app.activities;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.view.Gravity;
@@ -38,6 +36,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.camera.core.processing.SurfaceProcessorNode;
 
 import org.slf4j.Logger;
 
@@ -82,9 +81,15 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 	 */
 	public static final String EXTRA_WIZARD = "wizard";
 
+	/**
+	 * Set this to true to disable the rationale dialog before guiding the user through the disable process
+	 */
+	public static final String EXTRA_DISABLE_RATIONALE = "disable_rationale";
+
+
 	private String name;
 	@StringRes private int cancelLabel;
-	private boolean confirm;
+	private boolean confirm, disableRationale;
 	private int actionBarSize = 0;
 	private Handler dropDownHandler, listSelectHandler;
 
@@ -101,7 +106,7 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 
 		Intent intent = getIntent();
 
-		if (ConfigUtils.isTheDarkSide(this) || intent.getBooleanExtra(EXTRA_WIZARD, false)) {
+		if (intent.getBooleanExtra(EXTRA_WIZARD, false)) {
 			setTheme(R.style.Theme_Threema_Translucent_Dark);
 		}
 
@@ -115,11 +120,16 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 		this.name = intent.getStringExtra(EXTRA_NAME);
 		this.confirm = intent.getBooleanExtra(EXTRA_CONFIRM, false);
 		this.cancelLabel = intent.getIntExtra(EXTRA_CANCEL_LABEL, R.string.continue_anyway);
+		this.disableRationale = intent.getBooleanExtra(EXTRA_DISABLE_RATIONALE, false);
 
 		// Determine action bar size
 		this.actionBarSize = ConfigUtils.getActionBarSize(this);
 
-		showDisableDialog();
+		if (this.disableRationale) {
+			launchDisableFlow();
+		} else {
+			showRationaleDialog();
+		}
 	}
 
 	@Override
@@ -127,7 +137,7 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 		super.onConfigurationChanged(newConfig);
 	}
 
-	private void showDisableDialog() {
+	private void showRationaleDialog() {
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(
 			R.string.battery_optimizations_title,
 			String.format(getString(R.string.battery_optimizations_explain), name, getString(R.string.app_name)),
@@ -137,53 +147,11 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 		dialog.show(getSupportFragmentManager(), DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS);
 	}
 
-	@TargetApi(Build.VERSION_CODES.M)
 	@Override
 	public void onYes(String tag, Object data) {
 		switch (tag) {
 			case DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS:
-				// If the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission is granted (versions that
-				// aren't distributed through Google Play), then a permission can be requested directly.
-				if (ConfigUtils.checkManifestPermission(this, getPackageName(), "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")) {
-					final Uri appUri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
-					final Intent newIntent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, appUri);
-					try {
-						startActivityForResult(newIntent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
-					} catch (Exception e) {
-						// Some Samsung devices don't bother implementing this API
-						logger.error("Could not request battery optimization exemption", e);
-						setResult(RESULT_OK);
-						finish();
-					}
-
-				// Otherwise we need to guide the user through the battery optimization settings.
-				} else {
-					final Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-					// Samsung Galaxy S5 with API 23 does not know this intent
-					if (intent.resolveActivity(getPackageManager()) != null) {
-						startActivityForResult(intent, REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS);
-
-						dropDownHandler = new Handler();
-						dropDownHandler.postDelayed(new Runnable() {
-							@Override
-							public void run() {
-								Toast toast = Toast.makeText(getApplicationContext(), R.string.battery_optimizations_disable_guide, Toast.LENGTH_LONG);
-								toast.setGravity(Gravity.TOP | Gravity.LEFT, 0, actionBarSize * 2);
-								toast.show();
-							}
-						}, 2 * DateUtils.SECOND_IN_MILLIS);
-
-						listSelectHandler = new Handler();
-						listSelectHandler.postDelayed(new Runnable() {
-							@Override
-							public void run() {
-								Toast ctdToast = Toast.makeText(getApplicationContext(), String.format(getString(R.string.battery_optimizations_disable_guide_ctd), getString(R.string.app_name)), Toast.LENGTH_LONG);
-								ctdToast.setGravity(Gravity.CENTER, 0, 0);
-								ctdToast.show();
-							}
-						}, 8 * DateUtils.SECOND_IN_MILLIS);
-					}
-				}
+				launchDisableFlow();
 				break;
 			case DIALOG_TAG_BATTERY_OPTIMIZATIONS_REMINDER:
 				// user wants to continue at his own risk
@@ -194,6 +162,58 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 				setResult(RESULT_CANCELED);
 				finish();
 				break;
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.M)
+	private void launchDisableFlow() {
+		// If the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission is granted (versions that
+		// aren't distributed through Google Play), then a permission can be requested directly.
+		if (ConfigUtils.checkManifestPermission(this, getPackageName(), "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")) {
+			final Uri appUri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
+			final Intent newIntent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, appUri);
+			try {
+				startActivityForResult(newIntent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
+			} catch (Exception e) {
+				// Some Samsung devices don't bother implementing this API
+				logger.error("Could not request battery optimization exemption", e);
+				setResult(RESULT_OK);
+				finish();
+			}
+
+			// Otherwise we need to guide the user through the battery optimization settings.
+		} else {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+				Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+				intent.setData(Uri.parse("package:" + getPackageName()));
+				startActivityForResult(intent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
+			} else {
+				final Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+				// Samsung Galaxy S5 with API 23 does not know this intent
+				if (intent.resolveActivity(getPackageManager()) != null) {
+					startActivityForResult(intent, REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS);
+
+					dropDownHandler = new Handler();
+					dropDownHandler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							Toast toast = Toast.makeText(getApplicationContext(), R.string.battery_optimizations_disable_guide, Toast.LENGTH_LONG);
+							toast.setGravity(Gravity.TOP | Gravity.LEFT, 0, actionBarSize * 2);
+							toast.show();
+						}
+					}, 2 * DateUtils.SECOND_IN_MILLIS);
+
+					listSelectHandler = new Handler();
+					listSelectHandler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							Toast ctdToast = Toast.makeText(getApplicationContext(), String.format(getString(R.string.battery_optimizations_disable_guide_ctd), getString(R.string.app_name)), Toast.LENGTH_LONG);
+							ctdToast.setGravity(Gravity.CENTER, 0, 0);
+							ctdToast.show();
+						}
+					}, 8 * DateUtils.SECOND_IN_MILLIS);
+				}
+			}
 		}
 	}
 
@@ -210,7 +230,7 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 				}
 				break;
 			case DIALOG_TAG_BATTERY_OPTIMIZATIONS_REMINDER:
-				showDisableDialog();
+				showRationaleDialog();
 				break;
 		}
 	}
@@ -241,11 +261,11 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 			case REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS:
 				// backup from overlay hack
 				removeHandlers();
-				if (isIgnoringBatteryOptimizations(this)) {
+				if (isIgnoringBatteryOptimizations(this) || disableRationale) {
 					setResult(RESULT_OK);
 					finish();
 				} else {
-					showDisableDialog();
+					showRationaleDialog();
 				}
 				break;
 			default:

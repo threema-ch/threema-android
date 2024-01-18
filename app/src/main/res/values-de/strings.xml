@@ -68,9 +68,7 @@
 	<string name="prefs_inapp_vibrate">In App-Vibration</string>
 	<string name="prefs_inapp_vibrate_on">Vibrieren beim Empfang von Nachrichten</string>
 	<string name="prefs_inapp_vibrate_off">Keine Vibration beim Empfang von Nachrichten</string>
-	<string name="prefs_troubleshooting">Fehlerbehebung</string>
-	<string name="prefs_sum_troubleshooting">Probleme analysieren und beheben</string>
-	<string name="prefs_workarounds">Workarounds</string>
+	<string name="workarounds">Workarounds</string>
 	<string name="threema_push">Threema Push</string>
 	<string name="threema_push_notification_text">Tippen für mehr Informationen.</string>
 	<string name="threema_push_notification_info_text_1">Threema Push ist im Hintergrund aktiv, um Sie über eingehende Nachrichten und Anrufe zu informieren.</string>
@@ -932,8 +930,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="forward_location">Ort weiterleiten</string>
 	<string name="unknown_address">Unbekannte Adresse</string>
 	<string name="your_location">Ihr Standort</string>
-	<string name="network_blocked_title">Hintergrunddaten deaktiviert</string>
-	<string name="network_blocked_body">%s kann im Hintergrund keine Nachrichten erhalten. Tippen Sie hier, um Hintergrunddaten zu aktivieren.</string>
 	<string name="reply_later">Melde mich später</string>
 	<string name="reply_on_my_way">Bin auf dem Weg</string>
 	<string name="reply_thank_you">Danke</string>
@@ -1570,8 +1566,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="permission_microphone">Mikrofon</string>
 	<string name="permission_read_phone_state">Telefon</string>
 	<string name="permission_enable_in_settings_rationale">Bitte erlauben Sie die Berechtigung in den Einstellungen. Wählen Sie «Berechtigungen» aus und lassen Sie danach «%s» zu.</string>
-	<string name="post_notification_permission_rationale">Um Benachrichtigungen zu erhalten, müssen Sie unter «Berechtigungen» für %s die Benachrichtigungen einschalten.</string>
-    <string name="group_name">Name der Gruppe</string>
+	<string name="group_name">Name der Gruppe</string>
 	<string name="samsung_permission_problem_explain">%1$s hat keinen Zugriff auf Mediendaten aufgrund der fehlenden Berechtigung einer System-App. Um das Problem zu beheben, stellen Sie sicher, dass der Schalter neben «Externer Speicher» im folgenden Bildschirm aktiviert ist, und starten Sie %1$s neu.</string>
     <string name="star_message">Mit Stern markieren</string>
 	<string name="starred_message">Mit Stern markiert</string>
@@ -1609,6 +1604,25 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="group_dissolved_notice">Diese Gruppe wurde aufgelöst und kann nicht mehr verwendet werden.</string>
 	<string name="directory_request_failed">Verzeichnis-Abfrage fehlgeschlagen. Versuchen Sie es nochmals.</string>
 	<string name="add_shortcut_exists">Eine Verknüpfung für dieses Ziel existiert bereits.</string>
+	<string name="work_lost_credentials_help">Zugangsdaten vergessen? – Melden Sie sich bei Ihrem %1$s-Administrator.</string>
+    <string name="problemsolver_intro">Konfigurationsprobleme in den System-Einstellungen verhindern möglicherweise, dass %s korrekt funktioniert. Bitte beheben Sie diese Probleme, indem Sie den untenstehenden Anleitungen folgen.</string>
+	<string name="problemsolver_title">Konfigurationsprobleme beheben</string>
+	<string name="problemsolver_title_background">Hintergrundnutzung eingeschränkt</string>
+	<string name="problemsolver_title_background_data">Hintergrunddaten deaktiviert</string>
+	<string name="problemsolver_title_notifications">Benachrichtigungen deaktiviert</string>
+	<string name="problemsolver_title_fullscreen_notifications">Vollbild-Benachrichtigungen deaktiviert</string>
+	<string name="problemsolver_explain_fullscreen_notifications">Die App darf keine Vollbild-Benachrichtigungen anzeigen. Dadurch verpassen Sie möglicherweise eingehende Anrufe, wenn das Handy gesperrt ist. Um dies zu beheben, aktivieren Sie die Option «Volldbildbenachrichtigungen von dieser App erlauben».</string>
+	<string name="problemsolver_explain_notifications">Benachrichtigungen sind vollständig deaktiviert. Sie werden nicht über neue Nachrichten oder Anrufe informiert, weshalb die App möglicherweise nicht wie erwartet funktioniert. Um dies zu beheben, aktivieren Sie die Option «Alle Benachrichtigungen».</string>
+	<string name="problemsolver_explain_background_data">Die Nutzung mobiler Daten im Hintergrund ist deaktiviert. Sie werden nicht über neue Nachrichten oder Anrufe informiert, es sei denn Sie öffnen die App aktiv. Um dies zu beheben, aktivieren Sie die Option «Hintergrunddaten».</string>
+	<string name="problemsolver_explain_background">Die Nutzung der App im Hintergrund ist eingeschränkt. Dadurch erhalten Sie keine Benachrichtigungen und die App funktioniert nur teilweise oder nicht wie erwartet. Um dies zu beheben, tippen Sie auf «Akkunutzung der App» und wählen Sie «Uneingeschränkt».</string>
+	<string name="problemsolver_info_text">Die Bezeichnungen einiger der genannten Optionen in den Systemeinstellungen können je nach Android-Version und Gerätehersteller variieren.</string>
+	<string name="problemsolver_to_settings">Zu den Einstellungen</string>
+	<string name="problemsolver_title_app_battery_usgae_optimized">Akkunutzung der App «optimiert»</string>
+	<string name="problemsolver_explain_app_battery_usgae_optimized">Die App kann keine permanente Verbindung zu den Servern aufrechterhalten, was für die Funktion von Threema Push jedoch erforderlich ist. Befindet sich die App im Hintergrund, werden Sie nicht über neue Nachrichten informiert. Um dies zu beheben, tippen Sie auf «Akkunutzung der App» und wählen Sie «Uneingeschränkt».</string>
+	<string name="prefs_advanced_options">Erweiterte Optionen</string>
+	<string name="push_service">Push-Dienst</string>
+    <string name="zoom_out">Vergrössern</string>
+	<string name="zoom_in">Verkleinern</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>
@@ -1721,4 +1735,5 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 		<item quantity="one">%d Gruppenmitglied</item>
 		<item quantity="other">%d Gruppenmitglieder</item>
 	</plurals>
+    <string name="edit_and_send">Bearbeiten und senden</string>
 </resources>

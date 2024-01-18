@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -30,11 +30,6 @@ import android.text.format.DateUtils;
 import android.util.SparseArray;
 import android.widget.ImageView;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.bumptech.glide.RequestManager;
 import com.neilalexander.jnacl.NaCl;
 
@@ -59,6 +54,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -138,6 +138,13 @@ public class GroupServiceImpl implements GroupService {
 		public byte[] encryptionKey;
 		public int size;
 	}
+
+	// String-enum used when updating certain group fields, e.g. name or profile picture
+	@IntDef({UPDATE_UNCHANGED, UPDATE_SUCCESS, UPDATE_ERROR})
+	public @interface UpdateResult {}
+	public static final int UPDATE_UNCHANGED = 0;
+	public static final int UPDATE_SUCCESS = 1;
+	public static final int UPDATE_ERROR = 2;
 
 	public GroupServiceImpl(
 			Context context,
@@ -789,7 +796,8 @@ public class GroupServiceImpl implements GroupService {
 			sendGroupSetup(groupModel, updatedGroupMemberIdentities, updatedGroupMemberIdentities);
 		}
 
-		if (name != null) {
+		final boolean nameChanged = name != null && groupNameChanged(groupModel, name);
+		if (nameChanged) {
 			// Rename the group (for all members) if the group name has changed. This includes the
 			// new members of the group.
 			updateGroupNameFromLocal(groupModel, name);
@@ -799,11 +807,18 @@ public class GroupServiceImpl implements GroupService {
 			sendGroupRenameToIdentitiesIfOwner(groupModel, newMemberIdentities);
 		}
 
-		if (removePicture || picture != null) {
+		boolean sendPictureToNewMembers = true;
+		if (picture != null || removePicture) {
 			// If there is a group picture change (either remove, or a new picture), update it. Note
 			// that this includes the new members.
-			updateGroupPictureFromLocal(groupModel, picture);
-		} else if (hasNewMembers) {
+			final @UpdateResult int result = updateGroupPictureFromLocal(groupModel, picture);
+			if (result != UPDATE_UNCHANGED) {
+				// If there was a change, then the method above already dealt with sending sync
+				// messages to all members (including new members).
+				sendPictureToNewMembers = false;
+			}
+		}
+		if (sendPictureToNewMembers && hasNewMembers) {
 			// If there are new members, we need to send a set profile picture or delete profile
 			// picture message - depending on whether there is a group picture set or not. Note that
 			// this must be done according to the protocol.
@@ -835,6 +850,15 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	/**
+	 * Return whether or not the specified {@param newName} is different from the existing group name.
+	 */
+	private static boolean groupNameChanged(@NonNull GroupModel groupModel, @NonNull String newName) {
+		String oldName = groupModel.getName();
+		oldName = oldName != null ? oldName : "";
+		return !oldName.equals(newName);
+	}
+
+	/**
 	 * Update the group name. Besides updating the database and group model, this fires the group
 	 * listeners and sends the group name message to the members. If the new name is the same as the
 	 * old name, nothing is done.
@@ -850,10 +874,7 @@ public class GroupServiceImpl implements GroupService {
 			return false;
 		}
 
-		String oldName = groupModel.getName();
-		oldName = oldName != null ? oldName : "";
-
-		if (oldName.equals(newName)) {
+		if (!groupNameChanged(groupModel, newName)) {
 			return true;
 		}
 
@@ -885,29 +906,31 @@ public class GroupServiceImpl implements GroupService {
 	 *
 	 * @param groupModel the group model
 	 * @param picture    the new picture
-	 * @return true if the picture has changed successfully or it is the same as the old picture,
-	 * false if an error occurred
+	 * @return an {@link UpdateResult}
 	 */
-	private boolean updateGroupPictureFromLocal(@NonNull GroupModel groupModel, @Nullable Bitmap picture) {
+	private @UpdateResult int updateGroupPictureFromLocal(@NonNull GroupModel groupModel, @Nullable Bitmap picture) {
 		if (!isGroupCreator(groupModel)) {
 			logger.error("Cannot rename group where the user is not the creator");
-			return false;
+			return UPDATE_ERROR;
 		}
 
 		try {
 			if (picture == null && fileService.hasGroupAvatarFile(groupModel)) {
-				return deleteGroupPictureFromLocal(groupModel);
+				return deleteGroupPictureFromLocal(groupModel) ? UPDATE_SUCCESS : UPDATE_ERROR;
 			} else if (picture != null) {
 				Bitmap existingGroupPicture = fileService.getGroupAvatar(groupModel);
-				if (!picture.sameAs(existingGroupPicture)) {
-					return setGroupPictureFromLocal(groupModel, picture);
+				if (picture.sameAs(existingGroupPicture)) {
+					return UPDATE_UNCHANGED;
+				} else {
+					return setGroupPictureFromLocal(groupModel, picture) ? UPDATE_SUCCESS : UPDATE_ERROR;
 				}
 			}
 		} catch (Exception e) {
 			logger.error("Failed to update group picture", e);
+			return UPDATE_ERROR;
 		}
 
-		return true;
+		return UPDATE_SUCCESS;
 	}
 
 	/**

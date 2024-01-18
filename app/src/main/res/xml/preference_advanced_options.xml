@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:key="pref_key_troubleshooting"
+                  android:key="pref_key_advanced_options"
                   android:persistent="true"
-                  android:summary="@string/prefs_sum_troubleshooting"
-                  android:title="@string/prefs_troubleshooting">
+                  android:title="@string/prefs_advanced_options">
+	<PreferenceCategory
+		android:key="pref_key_push"
+		android:title="@string/push_service">
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:disableDependentsState="true"
+			android:key="@string/preferences__threema_push_switch"
+			android:summaryOff="@string/prefs_sum_threema_push_off"
+			android:summaryOn="@string/prefs_sum_threema_push_on"
+			android:title="@string/prefs_title_threema_push_switch"
+			android:widgetLayout="@layout/preference_switch_layout"/>
+		<Preference
+			android:dependency="@string/preferences__threema_push_switch"
+			android:key="@string/preferences__reset_push"
+			android:summary="@string/prefs_sum_reset_push"
+			android:title="@string/prefs_reset_push"/>
+	</PreferenceCategory>
 	<PreferenceCategory
 		android:key="pref_key_logging"
 		android:title="@string/prefs_logging">
@@ -51,30 +67,9 @@
 			android:summary="@string/prefs_fix_powermanager_problems_desc"
 			android:title="@string/prefs_fix_powermanager_problems"/>
 		<Preference
-			android:key="@string/preferences__background_data"
-			android:summary="@string/prefs_fix_background_data_desc"
-			android:title="@string/prefs_fix_background_data"/>
-		<Preference
 			android:key="@string/preferences__hibernation_mode"
 			android:summary="@string/prefs_summary_hibernation_api"
 			android:title="@string/prefs_title_hibernation"/>
-	</PreferenceCategory>
-	<PreferenceCategory
-		android:key="pref_key_workarounds"
-		android:title="@string/prefs_workarounds">
-		<CheckBoxPreference
-			android:defaultValue="false"
-			android:disableDependentsState="true"
-			android:key="@string/preferences__threema_push_switch"
-			android:summaryOff="@string/prefs_sum_threema_push_off"
-			android:summaryOn="@string/prefs_sum_threema_push_on"
-			android:title="@string/prefs_title_threema_push_switch"
-			android:widgetLayout="@layout/preference_switch_layout"/>
-		<Preference
-			android:dependency="@string/preferences__threema_push_switch"
-			android:key="@string/preferences__reset_push"
-			android:summary="@string/prefs_sum_reset_push"
-			android:title="@string/prefs_reset_push"/>
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:key="pref_key_voip"

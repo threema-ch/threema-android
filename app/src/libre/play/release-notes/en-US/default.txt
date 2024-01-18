@@ -1,5 +1,3 @@
-* Fixed a crash that occurred when the app had no permission to show notifications
+* Guided self-help for various system configuration problems
 
-* Fixed an UI bug in the group details
-
-* Added translations
+* Bug fixes and performance improvements

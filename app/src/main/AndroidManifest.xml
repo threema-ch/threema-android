@@ -719,13 +719,13 @@
 		<activity
 			android:name=".voicemessage.VoiceRecorderActivity"
 			android:theme="@style/Theme.Threema.Translucent"
-			android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
+			android:configChanges="orientation|keyboardHidden|screenSize|screenLayout|uiMode"
 			android:clearTaskOnLaunch="true"
 			android:windowSoftInputMode="stateAlwaysHidden"/>
 		<activity
 			android:name=".locationpicker.LocationPickerActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
-			android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
+			android:configChanges="orientation|keyboardHidden|screenSize|screenLayout|uiMode"
 			/>
 		<activity
 			android:name=".mediaattacher.MediaAttachActivity"
@@ -819,7 +819,7 @@
 			android:windowSoftInputMode="adjustResize" />
 		<activity
 			android:name=".activities.MapActivity"
-			android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
+			android:configChanges="orientation|keyboardHidden|screenSize|screenLayout|uiMode"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:exported="true">
 			<intent-filter>
@@ -844,7 +844,6 @@
 			android:name=".camera.QRScannerActivity"
 			android:clearTaskOnLaunch="true"
 			android:stateNotNeeded="true"
-			android:configChanges="orientation|keyboardHidden"
 			android:theme="@style/Theme.Threema.Camera"
 			android:windowSoftInputMode="stateAlwaysHidden" />
 		<activity
@@ -866,6 +865,10 @@
 			android:launchMode="singleTask"
 			android:exported="false">
 		</activity>
+		<activity
+			android:name=".activities.ProblemSolverActivity"
+			android:theme="@style/Theme.Threema.WithToolbar"
+			android:launchMode="singleTop"/>
 
 		<!-- services -->
 		<service
@@ -980,8 +983,6 @@
 			</intent-filter>
 		</receiver>
 		<receiver android:name=".receivers.ConnectivityChangeReceiver">
-		</receiver>
-		<receiver android:name=".receivers.RestrictBackgroundChangedReceiver">
 		</receiver>
 		<receiver android:name=".receivers.AlarmManagerBroadcastReceiver">
 		</receiver>

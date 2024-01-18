@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2023 Threema GmbH
+ * Copyright (c) 2018-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -20,6 +20,8 @@
  */
 
 package ch.threema.app.webclient.activities;
+
+import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -39,6 +41,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.neovisionaries.ws.client.DualStackMode;
@@ -78,11 +86,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.dialogs.TextEntryDialog;
@@ -101,8 +104,6 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
-
-import static ch.threema.app.preference.SettingsTroubleshootingFragment.THREEMA_SUPPORT_IDENTITY;
 
 @SuppressWarnings("FieldCanBeLocal")
 @UiThread

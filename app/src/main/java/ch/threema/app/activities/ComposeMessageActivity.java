@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2013-2023 Threema GmbH
+ * Copyright (c) 2013-2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,6 +23,8 @@ package ch.threema.app.activities;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -74,6 +76,10 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		// This is similar to the now deprecated:
 		// view.setSystemUiVisibility(LAYOUT_STABLE | LAYOUT_FULLSCREEN | LAYOUT_FULLSCREEN)
 		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			getWindow().setStatusBarColor(Color.TRANSPARENT);
+			getWindow().setNavigationBarColor(Color.TRANSPARENT);
+		}
 
 		this.currentIntent = getIntent();
 

@@ -1,30 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.constraintlayout.widget.ConstraintLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/qr_popup_container"
+	android:id="@+id/qr_popup"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:paddingLeft="@dimen/qrcode_min_margin"
-	android:paddingRight="@dimen/qrcode_min_margin"
-	android:paddingTop="@dimen/qrcode_min_margin"
-	android:paddingBottom="@dimen/qrcode_min_margin"
-	app:cardCornerRadius="24dp"
-	app:strokeColor="@android:color/white"
-	app:strokeWidth="3dp"
-	app:cardBackgroundColor="@android:color/white"
-	app:cardElevation="0dp">
+	android:padding="@dimen/qrcode_min_margin" >
 
-	<ImageView
-		android:id="@+id/thumbnail_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:adjustViewBounds="true"
-		android:scaleType="fitCenter"
-		android:contentDescription="@string/qr_code"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintRight_toRightOf="parent"
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/qr_popup_container"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:padding="@dimen/qrcode_min_margin"
+		app:cardCornerRadius="24dp"
+		app:strokeColor="@android:color/white"
+		app:strokeWidth="3dp"
+		app:cardBackgroundColor="@android:color/white"
+		app:cardElevation="0dp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintBottom_toBottomOf="parent" />
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintDimensionRatio="1:1">
 
-</com.google.android.material.card.MaterialCardView>
+		<ImageView
+			android:id="@+id/thumbnail_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:adjustViewBounds="true"
+			android:scaleType="fitCenter"
+			android:contentDescription="@string/qr_code" />
+
+	</com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
