@@ -18,9 +18,9 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 }
 
 // version codes
-def app_version = "5.2.2"
+def app_version = "5.2.3"
 def beta_suffix = "" // with leading dash
-def defaultVersionCode = 935
+def defaultVersionCode = 936
 
 /**
  * Return the git hash, if git is installed.

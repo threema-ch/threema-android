@@ -122,7 +122,7 @@ class IncomingGroupSetupTask(
         // 5. For each member of members, create a hidden contact if not already present in the
         // contact list.
         val unknownContacts = members.filter { contactService.getByIdentity(it) == null }
-        contactService.createContactsByIdentities(unknownContacts)
+        contactService.createContactsByIdentities(unknownContacts, true)
 
         // 6. Create or update the group with the given members plus the sender (creator).
         if (group == null) {

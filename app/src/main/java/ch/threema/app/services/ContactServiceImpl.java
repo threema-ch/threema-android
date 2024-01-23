@@ -1009,7 +1009,7 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public void createContactsByIdentities(@NonNull List<String> identities) {
+	public void createContactsByIdentities(@NonNull List<String> identities, boolean hideContactByDefault) {
 		List<String> newIdentities = StreamSupport.stream(identities)
 				.filter(identity -> {
 					if (identity == null) {
@@ -1034,7 +1034,7 @@ public class ContactServiceImpl implements ContactService {
 			for (APIConnector.FetchIdentityResult result : apiConnector.fetchIdentities(newIdentities)) {
 				ContactModel contactModel = createContactByFetchIdentityResult(result);
 				if (contactModel != null) {
-					contactStore.addContact(contactModel);
+					contactStore.addContact(contactModel, hideContactByDefault);
 				}
 			}
 		} catch (Exception e) {
@@ -1614,7 +1614,7 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	/**
-	 * Create a contact by an identity fetch result.
+	 * Create a visible (i.e. non-hidden) contact by an identity fetch result but do NOT save it yet.
 	 *
 	 * @param result the result of the identity fetch
 	 * @return the contact model if the fetch was successful, null otherwise

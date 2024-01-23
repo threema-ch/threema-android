@@ -1,3 +1,1 @@
-* Guided self-help for various system configuration problems
-
-* Bug fixes and performance improvements
+* Fixed a bug where unknown group members were accidentally added to the contact list

@@ -337,7 +337,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 	@NonNull ContactModel createContactByIdentity(String identity, boolean force, boolean hiddenDefault) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException;
 
 	/**
-	 * Create contacts for all provided identities. Note that contacts are also created when block
+	 * Create (optionally hidden) contacts for all provided identities. Note that contacts are also created when block
 	 * unknown is active or th_disable_add_contact is set to true.
 	 * Contacts are added with acquaintance level 'group'.
 	 * There is no contact created for an identity if
@@ -345,7 +345,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 *  - there is already a contact for that identity
 	 *  - the identity public key cannot be fetched (404)
 	 */
-	void createContactsByIdentities(@NonNull List<String> identities);
+	void createContactsByIdentities(@NonNull List<String> identities, boolean hideContactByDefault);
 
 	VerificationLevel getInitialVerificationLevel(ContactModel contactModel);
 

@@ -1,3 +1,1 @@
-* Geführte Hilfestellung für verschiedene Probleme der Systemkonfiguration
-
-* Fehlerbehebung und Performance-Verbesserungen
+* Ein Fehler wurde behoben, durch den unbekannte Gruppenmitglieder versehentlich zur Kontaktliste hinzugefügt wurden.
