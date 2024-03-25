@@ -1064,7 +1064,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="prefs_working_days_enable_title">Politique temps libre</string>
     <string name="prefs_working_days_enable_sum">Désactiver les notifications et rejeter les appels en dehors des heures de travail</string>
     <string name="work_life_dnd_active">Temps libre activé</string>
-    <string name="pencil">Crayon</string>
     <string name="warning">Attention !</string>
     <string name="password_remember_warning">Souvenez-vous de ce que vous entrez ici ! Comme %s ne stocke pas les mots de passe sur les serveurs, nous ne pouvons pas vous aider si vous oubliez votre code NIP ou votre phrase secrète.</string>
     <string name="safe_backup_tap_to_restart">Tapez sur la notification pour redémarrer l\'application maintenant.</string>
@@ -1153,6 +1152,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="notes">Notes</string>
     <string name="blur_faces">Brouiller les visages</string>
     <string name="brush">Pinceau</string>
+    <string name="pencil">Crayon</string>
+    <string name="highlighter">Surbrillance</string>
     <string name="error_detecting_faces">Erreur de détection des visages</string>
     <string name="no_faces_detected">Aucun visage détecté</string>
     <string name="smiley">Émoticône</string>
@@ -1511,81 +1512,85 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="problemsolver_to_settings">Aux paramètres</string>
     <string name="prefs_advanced_options">Options avancées</string>
     <string name="push_service">Service Push</string>
-    <plurals name="contacts_counter_label" tools:ignore="MissingQuantity">
+    <string name="zoom_out">Zoom arrière</string>
+    <string name="zoom_in">Zoom avant</string>
+    <string name="edit_and_send">Modifier et envoyer</string>
+    <string name="media_gallery_animated_webps">WebP animés</string>
+    <string name="unsupported_image_type">Type d\'image non pris en charge : %s</string>
+    <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>
     </plurals>
-    <plurals name="really_delete_thread_message" tools:ignore="MissingQuantity">
+    <plurals name="really_delete_thread_message">
         <item quantity="one" tools:ignore="ImpliedQuantity">Souhaitez-vous vraiment supprimer ce fil?</item>
         <item quantity="other">Souhaitez-vous vraiment supprimer %d fils?</item>
     </plurals>
-    <plurals name="sending_message_failed" tools:ignore="MissingQuantity">
+    <plurals name="sending_message_failed">
         <item quantity="one" tools:ignore="ImpliedQuantity">Impossible d\'envoyer un message</item>
         <item quantity="other">Impossible d\'envoyer %1$d messages</item>
     </plurals>
-    <plurals name="selection_counter_label" tools:ignore="MissingQuantity">
+    <plurals name="selection_counter_label">
         <item quantity="one">%d image sélectionnée</item>
         <item quantity="other">%d images sélectionnées</item>
     </plurals>
-    <plurals name="message_copied" tools:ignore="MissingQuantity">
+    <plurals name="message_copied">
         <item quantity="one" tools:ignore="ImpliedQuantity">Message copié</item>
         <item quantity="other">Messages copiés</item>
     </plurals>
-    <plurals name="new_messages" tools:ignore="MissingQuantity">
+    <plurals name="new_messages">
         <item quantity="one">%d nouveau message</item>
         <item quantity="other">%d nouveaux messages</item>
     </plurals>
-    <plurals name="file_saved" tools:ignore="MissingQuantity">
+    <plurals name="file_saved">
         <item quantity="one">%d fichier enregistré avec succès.</item>
         <item quantity="other">%d fichiers enregistrés avec succès.</item>
     </plurals>
-    <plurals name="saving_media"  tools:ignore="MissingQuantity">
+    <plurals name="saving_media">
         <item quantity="one" tools:ignore="ImpliedQuantity">Enregistrement du média</item>
         <item quantity="other">Enregistrement de %d fichiers média</item>
     </plurals>
-    <plurals name="ballot_really_delete" tools:ignore="MissingQuantity">
+    <plurals name="ballot_really_delete">
         <item quantity="one" tools:ignore="ImpliedQuantity">Retirer l\'enquête</item>
         <item quantity="other">Retirer les enquêtes</item>
     </plurals>
-    <plurals name="ballot_really_delete_text" tools:ignore="MissingQuantity">
+    <plurals name="ballot_really_delete_text">
         <item quantity="one">Voulez-vous vraiment supprimer %1$d enquête ? Vous ne pourrez pas récupérer les votes.</item>
         <item quantity="other">Voulez-vous vraiment supprimer %1$d enquêtes ? Vous ne pourrez pas récupérer les votes.</item>
     </plurals>
-    <plurals name="message_deleted" tools:ignore="MissingQuantity">
+    <plurals name="message_deleted">
         <item quantity="one">%d message supprimé</item>
         <item quantity="other">%d messages supprimés</item>
     </plurals>
-    <plurals name="notifications_for_x_hours" tools:ignore="MissingQuantity">
+    <plurals name="notifications_for_x_hours">
         <item quantity="one">Pendant %d heure</item>
         <item quantity="other">Pendant %d heures</item>
     </plurals>
-    <plurals name="some_contacts_not_deleted" tools:ignore="MissingQuantity">
+    <plurals name="some_contacts_not_deleted">
         <item quantity="one">%d contact n\'a pas pu être supprimé, car il fait encore partie d\'un groupe.</item>
         <item quantity="other">%d contacts n\'ont pas pu être supprimés, car il font encore partie d\'un groupe.</item>
     </plurals>
-    <plurals name="message_archived" tools:ignore="MissingQuantity">
+    <plurals name="message_archived">
         <item quantity="one">%d chat archivé</item>
         <item quantity="other">%d chats archivés</item>
     </plurals>
-    <plurals name="webclient_running_sessions" tools:ignore="MissingQuantity">
+    <plurals name="webclient_running_sessions">
         <item quantity="one">%d session en cours d\'exécution</item>
         <item quantity="other">%d sessions en cours d\'exécution</item>
     </plurals>
-    <plurals name="chat_deleted" tools:ignore="MissingQuantity">
+    <plurals name="chat_deleted">
         <item quantity="one">%d chat supprimé.</item>
         <item quantity="other">%d chats supprimés.</item>
     </plurals>
-    <plurals name="forward_security_messages_skipped" tools:ignore="MissingQuantity">
+    <plurals name="forward_security_messages_skipped">
         <item quantity="one" tools:ignore="ImpliedQuantity">Un message a été perdu depuis le dernier message.</item>
         <item quantity="other">%d messages ont été perdus depuis le dernier message.</item>
     </plurals>
-    <plurals name="delete_messages" tools:ignore="MissingQuantity">
+    <plurals name="delete_messages">
         <item quantity="one">Supprimer %d message sur cet appareil ?</item>
         <item quantity="other">Supprimer %d messages sur cet appareil ?</item>
     </plurals>
-    <plurals name="number_of_group_members" tools:ignore="MissingQuantity">
+    <plurals name="number_of_group_members">
         <item quantity="one">%d membre de groupe</item>
         <item quantity="other">%d membres de groupes</item>
     </plurals>
-    <string name="edit_and_send">Modifier</string>
 </resources>

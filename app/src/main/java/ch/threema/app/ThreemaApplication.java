@@ -243,11 +243,9 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final int SERVER_MESSAGE_NOTIFICATION_ID = 730;
 	public static final int NOT_ENOUGH_DISK_SPACE_NOTIFICATION_ID = 731;
 	public static final int UNSENT_MESSAGE_NOTIFICATION_ID = 732;
-	public static final int NETWORK_BLOCKED_NOTIFICATION_ID = 733;
 	public static final int WORK_SYNC_NOTIFICATION_ID = 735;
 	public static final int NEW_SYNCED_CONTACTS_NOTIFICATION_ID = 736;
 	public static final int WEB_RESUME_FAILED_NOTIFICATION_ID = 737;
-	public static final int IDENTITY_SYNC_NOTIFICATION_ID = 748;
 	public static final int VOICE_MSG_PLAYER_NOTIFICATION_ID = 749;
 	public static final int INCOMING_CALL_NOTIFICATION_ID = 800;
 	public static final int GROUP_RESPONSE_NOTIFICATION_ID = 801;
@@ -281,7 +279,6 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 	public static final String WORKER_CONNECTIVITY_CHANGE = "ConnectivityChange";
 	public static final String WORKER_AUTO_DELETE = "AutoDelete";
 	public static final String WORKER_AUTOSTART = "Autostart";
-	public static final String WORKER_RESTRICT_BACKGROUND_CHANGED = "RestrictBackgroundChanged";
 
 	public static final Lock onAndroidContactChangeLock = new ReentrantLock();
 
@@ -1306,36 +1303,9 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 							null,
 							null
 						);
-
-						if ((!myIdentity.equals(group.getCreatorIdentity())) || previousMemberCount > 1) {
-							//send all open ballots to the new group member
-							BallotService ballotService = serviceManager.getBallotService();
-							List<BallotModel> openBallots = ballotService.getBallots(new BallotService.BallotFilter() {
-								@Override
-								public MessageReceiver getReceiver() {
-									return receiver;
-								}
-
-								@Override
-								public BallotModel.State[] getStates() {
-									return new BallotModel.State[]{BallotModel.State.OPEN};
-								}
-
-								@Override
-								public boolean filter(BallotModel ballotModel) {
-									//only my ballots please
-									return ballotModel.getCreatorIdentity().equals(myIdentity);
-								}
-							});
-
-							for (BallotModel ballotModel : openBallots) {
-								ballotService.publish(receiver, ballotModel, null, newIdentity);
-							}
-						}
 					}
-
 				} catch (ThreemaException x) {
-					logger.error("Exception", x);
+					logger.error("Could not create group state after new member was added", x);
 				}
 
 				//reset avatar to recreate it!
@@ -1343,7 +1313,7 @@ public class ThreemaApplication extends MultiDexApplication implements DefaultLi
 					serviceManager.getAvatarCacheService()
 							.reset(group);
 				} catch (FileSystemNotPresentException e) {
-					logger.error("Exception", e);
+					logger.error("Could not reset avatar cache", e);
 				}
 			}
 

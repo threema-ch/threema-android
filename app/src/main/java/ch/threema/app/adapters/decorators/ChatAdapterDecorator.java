@@ -35,6 +35,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.media3.session.MediaController;
 
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.slf4j.Logger;
@@ -57,6 +59,7 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
+import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
@@ -420,7 +423,14 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		return highlightMatches(string, filterString);
 	}
 
-	abstract protected void configureChatMessage(final ComposeMessageHolder holder, final int position);
+	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+		if (holder.attachmentImage instanceof ShapeableImageView) {
+			ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel.Builder()
+				.setAllCornerSizes(ImageViewUtil.getCornerRadius(getContext()))
+				.build();
+			((ShapeableImageView) holder.attachmentImage).setShapeAppearanceModel(shapeAppearanceModel);
+		}
+	}
 
 	protected void setDatePrefix(String prefix) {
 		datePrefix = prefix;

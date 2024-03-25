@@ -29,6 +29,7 @@ import android.widget.ImageView
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
 import ch.threema.app.R
 import ch.threema.app.camera.VideoEditView
@@ -38,25 +39,34 @@ import ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL
 import ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL
 import ch.threema.base.utils.LoggingUtil
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.Rotate
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import pl.droidsonroids.gif.GifImageView
 
 private val logger = LoggingUtil.getThreemaLogger("BigMediaFragment")
 
+@UnstableApi
 class BigMediaFragment : Fragment() {
     private var mediaItem: MediaItem? = null
     private var viewPager: ViewPager2? = null
     private lateinit var bigFileView: BigFileView
     private lateinit var bigImageView: ImageView
     private lateinit var bigGifImageView: GifImageView
-    private lateinit var videoEditView: VideoEditView
+    private var videoEditView: VideoEditView? = null
     private lateinit var bigProgressBar: CircularProgressIndicator
     private var bottomElemHeight: Int = 0
     private var isVideo = false
+    private val timelineDragListener : VideoEditView.OnTimelineDragListener = object :
+        VideoEditView.OnTimelineDragListener {
+        override fun onTimelineDragStart() {
+            viewPager?.isUserInputEnabled = false
+        }
+
+        override fun onTimelineDragStop() {
+            viewPager?.isUserInputEnabled = true
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,11 +98,14 @@ class BigMediaFragment : Fragment() {
     }
 
     override fun onPause() {
+        videoEditView?.releasePlayer()
         super.onPause()
+    }
 
-        if (isVideo) {
-            videoEditView.releasePlayer()
-        }
+    override fun onDestroyView() {
+        videoEditView?.setOnTimelineDragListener(null)
+        videoEditView = null
+        super.onDestroyView()
     }
 
     fun setMediaItem(mediaItem: MediaItem) {
@@ -119,7 +132,7 @@ class BigMediaFragment : Fragment() {
 
 
         when (item.type) {
-            MediaItem.TYPE_IMAGE, MediaItem.TYPE_IMAGE_CAM, MediaItem.TYPE_GIF -> {
+            MediaItem.TYPE_IMAGE, MediaItem.TYPE_IMAGE_CAM, MediaItem.TYPE_GIF, MediaItem.TYPE_IMAGE_ANIMATED -> {
                 showBigImage(item)
             }
             MediaItem.TYPE_VIDEO, MediaItem.TYPE_VIDEO_CAM -> {
@@ -141,25 +154,21 @@ class BigMediaFragment : Fragment() {
     }
 
     fun updateVideoPlayerSound() {
-        if (isVideo) {
-            if (mediaItem?.isMuted == true) {
-                videoEditView.mutePlayer()
-            } else {
-                videoEditView.unmutePlayer()
-            }
+        if (mediaItem?.isMuted == true) {
+            videoEditView?.mutePlayer()
+        } else {
+            this.videoEditView?.unmutePlayer()
         }
     }
 
     fun updateSendAsFileState() {
-        if (isVideo) {
-            videoEditView.updateSendAsFileState()
-        }
+        this.videoEditView?.updateSendAsFileState()
     }
 
     private fun showBigFile(item: MediaItem) {
         this.bigGifImageView.visibility = View.GONE
         this.bigImageView.visibility = View.GONE
-        this.videoEditView.visibility = View.GONE
+        this.videoEditView?.visibility = View.GONE
         this.bigFileView.visibility = View.VISIBLE
         this.bigFileView.setPadding(0, 0, 0, bottomElemHeight)
         this.bigFileView.setMediaItem(item)
@@ -169,27 +178,18 @@ class BigMediaFragment : Fragment() {
         this.bigFileView.visibility = View.GONE
         this.bigImageView.visibility = View.GONE
         this.bigGifImageView.visibility = View.GONE
-        this.videoEditView.visibility = View.VISIBLE
-        this.videoEditView.setOnTimelineDragListener(object :
-            VideoEditView.OnTimelineDragListener {
-            override fun onTimelineDragStart() {
-                viewPager?.isUserInputEnabled = false
-            }
-
-            override fun onTimelineDragStop() {
-                viewPager?.isUserInputEnabled = true
-            }
-        })
-        this.videoEditView.doOnLayout {
-            this.videoEditView.setVideo(item)
+        this.videoEditView?.visibility = View.VISIBLE
+        this.videoEditView?.setOnTimelineDragListener(timelineDragListener)
+        this.videoEditView?.doOnLayout {
+            this.videoEditView?.setVideo(item)
         }
-        this.videoEditView.requestLayout()
+        this.videoEditView?.requestLayout()
     }
 
     private fun showBigImage(item: MediaItem) {
         bigImageView.visibility = View.VISIBLE
         bigFileView.visibility = View.GONE
-        videoEditView.visibility = View.GONE
+        videoEditView?.visibility = View.GONE
         if (item.type == MediaItem.TYPE_GIF) {
             bigProgressBar.visibility = View.GONE
             bigImageView.visibility = View.GONE
@@ -212,8 +212,8 @@ class BigMediaFragment : Fragment() {
 
             Glide.with(context ?: return).load(item.uri)
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .apply(RequestOptions.fitCenterTransform())
-                .transform(Rotate(item.rotation), FitCenter())
+                .optionalFitCenter()
+                .optionalTransform(Rotate(item.rotation))
                 .error(R.drawable.ic_baseline_broken_image_200)
                 .into(bigImageView)
         }

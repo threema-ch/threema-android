@@ -40,6 +40,7 @@ import java.util.List;
 public class PaintView extends View {
 	private float mX, mY;
 	private int currentColor, currentStrokeWidth, currentWidth, currentHeight;
+	private boolean isTransparent = false;
 	private static final float TOUCH_TOLERANCE = 4;
 	private boolean isActive = true, hasMoved;
 	private TouchListener onTouchListener;
@@ -79,19 +80,20 @@ public class PaintView extends View {
 		return path;
 	}
 
-	private Paint createPaint() {
+	private void createPaint() {
 		Paint paint = new Paint();
 		paints.add(paint);
 
 		paint.setAntiAlias(true);
 		paint.setDither(true);
 		paint.setColor(currentColor);
+		if (isTransparent) {
+			paint.setAlpha(128);
+		}
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setStrokeJoin(Paint.Join.ROUND);
 		paint.setStrokeCap(Paint.Cap.ROUND);
 		paint.setStrokeWidth(currentStrokeWidth);
-
-		return paint;
 	}
 
 	private Path getCurrentPath() {
@@ -255,6 +257,10 @@ public class PaintView extends View {
 
 	public void setColor(int color) {
 		currentColor = color;
+	}
+
+	public void setTransparent(boolean isTransparent) {
+		this.isTransparent = isTransparent;
 	}
 
 	public void setStrokeWidth(int width) {

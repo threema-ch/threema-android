@@ -30,7 +30,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.os.Binder
 import android.os.Build
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
@@ -112,7 +111,7 @@ class GroupCallService : Service() {
 
     private val serviceRunning = AtomicBoolean(false)
 
-    private val binder = GroupCallServiceBinder()
+    private var binder : GroupCallServiceBinder? = null
 
     private var groupCallController: GroupCallControllerImpl? = null
     private val controllerDeferred = CompletableDeferred<GroupCallController>()
@@ -145,12 +144,13 @@ class GroupCallService : Service() {
         }
     }
 
-    override fun onBind(intent: Intent?): GroupCallServiceBinder {
+    override fun onBind(intent: Intent?): GroupCallServiceBinder? {
         return binder
     }
 
     override fun onCreate() {
         super.onCreate()
+        binder = GroupCallServiceBinder(controllerDeferred, audioManagerDeferred)
         initDependencies()
     }
 
@@ -374,18 +374,9 @@ class GroupCallService : Service() {
         audioManagerDeferred.completeExceptionally(exception)
         audioManager?.stop()
         audioManager = null
+        binder = null
         getJoinCallPendingIntent(PendingIntent.FLAG_NO_CREATE)?.cancel()
         getLeaveCallPendingIntent(PendingIntent.FLAG_NO_CREATE)?.cancel()
-    }
-
-    inner class GroupCallServiceBinder : Binder() {
-        suspend fun getGroupCallController(): GroupCallController {
-            return controllerDeferred.await()
-        }
-
-        suspend fun getCallAudioManager(): CallAudioManager {
-            return audioManagerDeferred.await()
-        }
     }
 
     // wrapper for group id to make it an object and `lateinit` can be used

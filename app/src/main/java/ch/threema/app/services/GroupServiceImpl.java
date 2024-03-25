@@ -766,9 +766,6 @@ public class GroupServiceImpl implements GroupService {
 		for (String newMember: newMembers) {
 			logger.debug("Add member {} to group", newMember);
 			this.addMemberToGroup(groupModel, newMember);
-			ListenerManager.groupListeners.handle(listener ->
-				listener.onNewMember(groupModel, newMember, previousMemberCount)
-			);
 		}
 
 		boolean hasNewMembers = !newMembers.isEmpty();
@@ -832,6 +829,14 @@ public class GroupServiceImpl implements GroupService {
 
 		if (groupDesc != null) {
 			this.changeGroupDesc(groupModel, groupDesc);
+		}
+
+		// Trigger the listeners for the new members. Note that this sends out open polls to the new
+		// members and must therefore be called *after* the group setup has been sent.
+		for (String newMember : newMembers) {
+			ListenerManager.groupListeners.handle(listener ->
+				listener.onNewMember(groupModel, newMember, previousMemberCount)
+			);
 		}
 
 		sendGroupCallStart(groupModel, newMembers);

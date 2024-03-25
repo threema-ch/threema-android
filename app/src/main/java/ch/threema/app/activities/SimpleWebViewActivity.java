@@ -30,7 +30,9 @@ import android.webkit.WebView;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -81,6 +83,11 @@ public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity imple
 		progressBar = findViewById(R.id.progress);
 		webView = findViewById(R.id.simple_webview);
 		webView.getSettings().setJavaScriptEnabled(requiresJavaScript());
+
+		ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.webview_scroller), (v, insets) -> {
+			v.setPadding(0, 0, 0, insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom);
+			return WindowInsetsCompat.CONSUMED;
+		});
 
 		if (requiresConnection()) {
 			webView.setWebChromeClient(new WebChromeClient() {

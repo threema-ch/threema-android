@@ -65,6 +65,7 @@
     <string name="prefs_inapp_vibrate">Vibrace v aplikaci</string>
     <string name="prefs_inapp_vibrate_on">Vibrovat po přijetí zprávy</string>
     <string name="prefs_inapp_vibrate_off">Nevibrovat po přijetí zprávy</string>
+    <string name="workarounds">Náhradní řešení</string>
     <string name="prefs_title_threema_push_switch">Použít službu Threema Push</string>
     <string name="prefs_sum_threema_push_on">Používat službu Threema Push k upozorňování na nové zprávy</string>
     <string name="prefs_sum_threema_push_off">Zjišťovat nové zprávy použitím systémové služby push</string>
@@ -667,7 +668,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="select_all">Vybrat vše</string>
     <string name="deleting_messages">Odstraňování zpráv</string>
     <string name="media_gallery_files">Soubory</string>
-    <string name="prefs_gif_autoplay">Automaticky přehrávat animované GIFy</string>
+    <string name="prefs_gif_autoplay">Automaticky přehrávat animované obrázky</string>
     <string name="media_gallery_audio">Hlasové zprávy</string>
     <string name="action_clone_group">Kopírovat skupinu</string>
     <string name="clone_group_message">Tímto vytvoříte kopii této skupiny, ve které budete správcem. Přejete si pokračovat?</string>
@@ -1064,7 +1065,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="prefs_working_days_enable_title">Zásady po pracovní době</string>
     <string name="prefs_working_days_enable_sum">Zakázat oznámení a odmítat hovory mimo pracovní dobu</string>
     <string name="work_life_dnd_active">Pravidla po pracovní době aktivní</string>
-    <string name="pencil">Tužka</string>
     <string name="warning">Varování</string>
     <string name="password_remember_warning">Pamatujte si, co zde zadáte! Vzhledem k tomu, že aplikace %s neukládá žádná hesla na serverech, nemůžeme vám pomoci, pokud zapomenete svůj PIN nebo heslo.</string>
     <string name="safe_backup_tap_to_restart">Klepnutím na zobrazené oznámení restartujete aplikaci ihned. Jestliže oznámení nevidíte, přejeďte prosím na vašem zařízení dolů přes panel oznámení.</string>
@@ -1153,6 +1153,8 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="notes">Poznámky</string>
     <string name="blur_faces">Rozmazat tváře</string>
     <string name="brush">Štětec</string>
+    <string name="pencil">Tužka</string>
+    <string name="highlighter">Zvýrazňovač</string>
     <string name="error_detecting_faces">Chyba během detekce tváří</string>
     <string name="no_faces_detected">Nebyly nalezeny žádné tváře</string>
     <string name="smiley">Smajlík</string>
@@ -1495,11 +1497,27 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="directory_request_failed">Požadavek složky selhal. Zkuste to znovu.</string>
     <string name="add_shortcut_exists">Zástupce pro tento cíl již existuje.</string>
     <string name="work_lost_credentials_help">Zapomněli jste své přihlašovací údaje? Obraťte se na svého správce %1$s.</string>
+    <string name="problemsolver_intro">Nějaké problémy s nastavením systému pravděpodobně způsobují, že aplikace %s nefunguje správně. Opravte prosím tyto problémy podle níže uvedených pokynů.</string>
+    <string name="problemsolver_title">Opravte problémy s nastavením</string>
+    <string name="problemsolver_title_background">Použití na pozadí je omezeno</string>
     <string name="problemsolver_title_background_data">Data na pozadí omezena</string>
     <string name="problemsolver_title_notifications">Oznámení vypnuta</string>
+    <string name="problemsolver_title_fullscreen_notifications">Oznámení na celou obrazovku jsou zakázána</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Aplikaci není dovoleno zobrazovat oznámení na celou obrazovku. Když je zařízení zamknuté, můžete zmeškat příchozí hovory. Chcete‑li tento problém opravit, aktivujte možnost „Povolit oznámení na celou obrazovku“.</string>
+    <string name="problemsolver_explain_notifications">Oznámení jsou pro tuto aplikaci zcela zakázána. Nebudete informováni o příchozích zprávách nebo hovorech a aplikace nemusí fungovat podle očekávání. Chcete‑li tento problém opravit, aktivujte možnost „Všechna oznámení“.</string>
+    <string name="problemsolver_explain_background_data">Aplikace nemůže využívat mobilní data, když je na pozadí. Nebudete informováni o příchozích zprávách, pokud aplikaci aktivně neotevřete. Chcete‑li tento problém opravit, aktivujte možnost „Data na pozadí“.</string>
+    <string name="problemsolver_explain_background">Využití aplikace na pozadí je omezeno. Nebudete dostávat žádná oznámení a mnoho funkcí nebude fungovat podle očekávání. Chcete‑li tento problém opravit, klepněte na „Využití baterie“ a vyberte „Neomezeno“.</string>
+    <string name="problemsolver_info_text">Pojmenování některých voleb systémových nastavení uvedených výše se může lišit v závislosti na verzi systému Android a výrobci zařízení.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Využití baterie aplikace nastaveno na „optimalizované“</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikaci není dovoleno udržovat trvalé připojení k serverům, které je nutné pro fungování Threema Push. Když bude aplikace na pozadí, nebudete informováni o nových zprávách. Chcete‑li tento problém opravit, klepněte na „Využití baterie“ a vyberte „Neomezeno“.</string>
     <string name="problemsolver_to_settings">Do nastavení</string>
     <string name="prefs_advanced_options">Pokročilé možnosti</string>
     <string name="push_service">Služba push</string>
+    <string name="zoom_out">Oddálit</string>
+    <string name="zoom_in">Přiblížit</string>
+    <string name="edit_and_send">Upravit a odeslat</string>
+    <string name="media_gallery_animated_webps">Animované WebP</string>
+    <string name="unsupported_image_type">Nepodporovaný typ obrázku: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>
@@ -1656,5 +1674,4 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
         <item quantity="one">%d člen skupiny</item>
         <item quantity="other">%d členů skupiny</item>
     </plurals>
-    <string name="edit_and_send">Upravit</string>
 </resources>

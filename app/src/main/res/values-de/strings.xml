@@ -775,7 +775,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="select_all">Alle auswählen</string>
 	<string name="deleting_messages">Nachrichten werden gelöscht</string>
 	<string name="media_gallery_files">Dateien</string>
-	<string name="prefs_gif_autoplay">Anim-GIFs autom. abspielen</string>
+	<string name="prefs_gif_autoplay">Animierte Bilder autom. abspielen</string>
 	<string name="media_gallery_audio">Sprachnachrichten</string>
 	<string name="action_clone_group">Gruppe klonen</string>
 	<string name="clone_group_message">Es wird eine Kopie der aktuellen Gruppe mit Ihnen als Administrator erstellt. Fortfahren?</string>
@@ -1176,7 +1176,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_working_days_enable_title">Ruhezeit-Regelung</string>
 	<string name="prefs_working_days_enable_sum">Ausserhalb der Arbeitszeit keine Benachrichtigungen anzeigen und Threema-Anrufe ablehnen</string>
 	<string name="work_life_dnd_active">Ruhezeit aktiv</string>
-	<string name="pencil">Bleistift</string>
 	<string name="warning">Warnung</string>
 	<string name="password_remember_warning">Merken Sie sich, was Sie hier eingeben! Da %s keine Passwörter auf Servern speichert, können wir Ihnen nicht helfen, wenn Sie die PIN oder die Passphrase vergessen haben.</string>
 	<string name="safe_backup_tap_to_restart">Tippen Sie auf die angezeigte System-Benachrichtigung, um die App jetzt neu zu starten. Wenn Sie die Benachrichtigung nicht sehen, ziehen Sie bitte die Benachrichtigungsleiste Ihres Handys herunter.</string>
@@ -1258,7 +1257,9 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="group_create_no_members">Sind Sie sicher, dass Sie eine leere Gruppe erstellen möchten?</string>
 	<string name="notes">Notizen</string>
 	<string name="blur_faces">Gesichter verwischen</string>
+	<string name="pencil">Bleistift</string>
 	<string name="brush">Pinsel</string>
+	<string name="highlighter">Textmarker</string>
 	<string name="error_detecting_faces">Bei der Gesichtserkennung ist ein Fehler aufgetreten</string>
 	<string name="no_faces_detected">Keine Gesichter gefunden</string>
 	<string name="smiley">Smiley</string>
@@ -1623,6 +1624,9 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="push_service">Push-Dienst</string>
     <string name="zoom_out">Vergrössern</string>
 	<string name="zoom_in">Verkleinern</string>
+	<string name="edit_and_send">Bearbeiten &amp; senden</string>
+	<string name="media_gallery_animated_webps">Animierte WebPs</string>
+	<string name="unsupported_image_type">Nicht unterstütztes Bildformat: %s</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>
@@ -1735,5 +1739,4 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 		<item quantity="one">%d Gruppenmitglied</item>
 		<item quantity="other">%d Gruppenmitglieder</item>
 	</plurals>
-    <string name="edit_and_send">Bearbeiten und senden</string>
 </resources>

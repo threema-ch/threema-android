@@ -170,6 +170,8 @@
 
 	<dimen name="bottomsheet_gridview_width">80dp</dimen>
 	<dimen name="bottomsheet_gridview_height">121dp</dimen>
+    <dimen name="bottomsheet_corner_size">16dp</dimen>
+    <dimen name="imagepaint_highlighter_stroke_width">18dp</dimen>
 	<dimen name="imagepaint_brush_stroke_width">6dp</dimen>
 	<dimen name="imagepaint_pencil_stroke_width">3dp</dimen>
 	<dimen name="sticker_width">80dp</dimen>
@@ -187,9 +189,14 @@
 	<dimen name="incoming_call_slider_height">74dp</dimen>
 	<dimen name="incoming_call_slider_margin_bottom">64dp</dimen>
 	<dimen name="call_shortcut_shadow_offset">1dp</dimen>
+
+	<!-- mediaviewer dimensions -->
 	<dimen name="mediaviewer_caption_border_bottom">72dp</dimen>
 	<dimen name="mediaviewer_caption_border_horizontal">16dp</dimen>
 	<dimen name="mediaviewer_caption_background_radius">12dp</dimen>
+	<dimen name="mediaviewer_caption_text_size">18sp</dimen>
+	<dimen name="mediaviewer_caption_container_padding_vertical">8dp</dimen>
+	<dimen name="mediaviewer_play_button_radius">20dp</dimen>
 
 	<!-- message list item swipe background -->
 	<dimen name="swipe_icon_inset">28dp</dimen>
@@ -324,4 +331,5 @@
 
 	<!-- offset of badge on overflow toolbar item -->
     <dimen name="overflow_badge_offset">18dp</dimen>
+
 </resources>

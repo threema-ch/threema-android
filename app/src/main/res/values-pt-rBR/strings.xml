@@ -1065,7 +1065,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="prefs_working_days_enable_title">Política de folga</string>
     <string name="prefs_working_days_enable_sum">Desativar notificações e rejeitar chamadas fora do horário de trabalho</string>
     <string name="work_life_dnd_active">Folga ativa</string>
-    <string name="pencil">Lápis</string>
     <string name="warning">Atenção!</string>
     <string name="password_remember_warning">Lembre-se do que você entra aqui! Como o %s não armazena senhas em servidores, não podemos ajudá-lo se você esquecer seu PIN ou senha.</string>
     <string name="safe_backup_tap_to_restart">Toque na notificação para reiniciar o aplicativo agora.</string>
@@ -1154,6 +1153,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="notes">Anotações</string>
     <string name="blur_faces">Desfocar rostos</string>
     <string name="brush">Pincel</string>
+    <string name="pencil">Lápis</string>
+    <string name="highlighter">Marcador</string>
     <string name="error_detecting_faces">Erro ao detectar rostos</string>
     <string name="no_faces_detected">Nenhum rosto detectado</string>
     <string name="smiley">Smiley</string>
@@ -1512,6 +1513,11 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="problemsolver_to_settings">Ir a Configurações</string>
     <string name="prefs_advanced_options">Opções avançadas</string>
     <string name="push_service">Serviço de push</string>
+    <string name="zoom_out">Diminuir</string>
+    <string name="zoom_in">Ampliar</string>
+    <string name="edit_and_send">Editar e enviar</string>
+    <string name="media_gallery_animated_webps">WebPs animados</string>
+    <string name="unsupported_image_type">Tipo de imagem não suportado: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>
@@ -1600,5 +1606,4 @@ Por favor, insira uma pergunta para a sua enquete.</string>
         <item quantity="one">%d membro do grupo</item>
         <item quantity="other">%d membros do grupo</item>
     </plurals>
-    <string name="edit_and_send">Editar</string>
 </resources>

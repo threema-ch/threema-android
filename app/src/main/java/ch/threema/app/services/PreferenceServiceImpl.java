@@ -788,7 +788,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public boolean isGifAutoplay() {
+	public boolean isAnimationAutoplay() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__gif_autoplay));
 	}
 
@@ -1685,5 +1685,35 @@ public class PreferenceServiceImpl implements PreferenceService {
 		} catch (JSONException e) {
 			logger.error("JSON error", e);
 		}
+	}
+
+    @Override
+    public int getEmailSyncHashCode() {
+		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__email_sync_hash));
+    }
+
+	@Override
+	public int getPhoneNumberSyncHashCode() {
+		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__phone_number_sync_hash));
+	}
+
+	@Override
+	public void setEmailSyncHashCode(int emailsHash) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__email_sync_hash), emailsHash);
+	}
+
+	@Override
+	public void setPhoneNumberSyncHashCode(int phoneNumbersHash) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__phone_number_sync_hash), phoneNumbersHash);
+	}
+
+	@Override
+	public void setTimeOfLastContactSync(long timeMs) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__contact_sync_time), timeMs);
+	}
+
+	@Override
+	public long getTimeOfLastContactSync() {
+		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__contact_sync_time));
 	}
 }

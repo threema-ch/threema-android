@@ -40,6 +40,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.ShapeAppearanceModel;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import java.text.Collator;
 import java.text.Normalizer;
@@ -68,9 +69,11 @@ import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 public class ContactListAdapter extends FilterableListAdapter implements SectionIndexer {
+	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactListAdapter");
 
 	private static final int MAX_RECENTLY_ADDED_CONTACTS = 1;
 
@@ -342,6 +345,13 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 			}
 		} else {
 			holder = (ContactListHolder) itemView.getTag();
+			if (holder.avatarView != null) {
+				try {
+					requestManager.clear(holder.avatarView);
+				} catch (IllegalArgumentException e) {
+					logger.debug("Invalid destination view");
+				}
+			}
 		}
 
 		final ContactModel contactModel = values.get(position);

@@ -28,6 +28,7 @@ import static ch.threema.app.ui.MediaItem.TIME_UNDEFINED;
 import static ch.threema.app.ui.MediaItem.TYPE_FILE;
 import static ch.threema.app.ui.MediaItem.TYPE_GIF;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
+import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_ANIMATED;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
 import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
@@ -4125,9 +4126,12 @@ public class MessageServiceImpl implements MessageService {
 					logger.error("Exception", e);
 				}
 				break;
-			case TYPE_VOICEMESSAGE:
+			case TYPE_IMAGE_ANIMATED:
+				metaData.put(FileDataModel.METADATA_KEY_ANIMATED, true);
 				// fallthrough
 			case TYPE_GIF:
+				// fallthrough
+			case TYPE_VOICEMESSAGE:
 				// fallthrough
 			case TYPE_FILE:
 				// "regular" file messages
@@ -4182,7 +4186,7 @@ public class MessageServiceImpl implements MessageService {
 		int mediaType = mediaItem.getType();
 
 		// we want thumbnails for images and videos even if they are to be sent as files
-		if (MimeUtil.isImageFile(fileDataModel.getMimeType()))  {
+		if (MimeUtil.isSupportedImageFile(fileDataModel.getMimeType()))  {
 			mediaType = TYPE_IMAGE;
 		} else if (MimeUtil.isVideoFile(fileDataModel.getMimeType())) {
 			mediaType = TYPE_VIDEO;
@@ -4529,6 +4533,17 @@ public class MessageServiceImpl implements MessageService {
 			mimeType = FileUtil.getMimeTypeFromUri(context, mediaItem.getUri());
 		}
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			// non-animated images are being sent as png files
+			// we should fix the mime type before creating a local message model in order not to confuse the chat adapter
+			if (ConfigUtils.isSupportedAnimatedImageFormat(mimeType)
+				&& mediaItem.getType() != TYPE_IMAGE_ANIMATED
+				&& mediaItem.getType() != TYPE_FILE
+				&& mediaItem.getImageScale() != PreferenceService.ImageScale_SEND_AS_FILE) {
+				mimeType = MimeUtil.MIME_TYPE_IMAGE_PNG;
+			}
+		}
+
 		@FileData.RenderingType int renderingType = mediaItem.getRenderingType();
 
 		// rendering type overrides
@@ -4538,6 +4553,7 @@ public class MessageServiceImpl implements MessageService {
 				renderingType = FileData.RENDERING_MEDIA;
 				break;
 			case TYPE_GIF:
+			case TYPE_IMAGE_ANIMATED:
 				if (renderingType == FileData.RENDERING_DEFAULT) {
 					// do not override stickers
 					renderingType = FileData.RENDERING_MEDIA;

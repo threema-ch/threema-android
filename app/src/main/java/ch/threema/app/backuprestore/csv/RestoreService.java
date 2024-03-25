@@ -857,8 +857,9 @@ public class RestoreService extends Service {
 									if (thumbnailBytes != null && thumbnailBytes.length < MAX_THUMBNAIL_SIZE_BYTES) {
 										this.fileService.saveThumbnail(model, thumbnailBytes);
 									}
+								} catch (OutOfMemoryError e) {
+									logger.error("Not enough memory for thumbnail", e);
 								}
-								//
 							}
 						}
 					} else {
@@ -868,6 +869,7 @@ public class RestoreService extends Service {
 								imageData = IOUtils.toByteArray(inputStream);
 								this.fileService.writeConversationMedia(model, imageData);
 							} catch (OutOfMemoryError e) {
+								logger.error("Not enough memory for media", e);
 								imageData = null;
 							}
 

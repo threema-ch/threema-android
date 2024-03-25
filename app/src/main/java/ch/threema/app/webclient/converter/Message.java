@@ -198,7 +198,7 @@ public class Message extends Converter {
 					// Nothing to be done
 					break;
 				case FileData.RENDERING_MEDIA:
-					if (MimeUtil.isImageFile(mediaType) && !MimeUtil.isGifFile(mediaType)) {
+					if (MimeUtil.isSupportedImageFile(mediaType) && !MimeUtil.isGifFile(mediaType)) {
 						virtualMessageType = ch.threema.storage.models.MessageType.IMAGE;
 					} else if (MimeUtil.isAudioFile(mediaType)) {
 						virtualMessageType = ch.threema.storage.models.MessageType.VOICEMESSAGE;
@@ -207,7 +207,7 @@ public class Message extends Converter {
 					}
 					break;
 				case FileData.RENDERING_STICKER:
-					if (MimeUtil.isImageFile(mediaType)) {
+					if (MimeUtil.isSupportedImageFile(mediaType)) {
 						virtualMessageType = ch.threema.storage.models.MessageType.IMAGE;
 					}
 					break;

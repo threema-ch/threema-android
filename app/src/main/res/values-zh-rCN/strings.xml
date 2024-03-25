@@ -701,7 +701,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="select_all">全选</string>
     <string name="deleting_messages">正在删除消息</string>
     <string name="media_gallery_files">文件</string>
-    <string name="prefs_gif_autoplay">自动播放GIF动画</string>
+    <string name="prefs_gif_autoplay">自动播放动画图像</string>
     <string name="media_gallery_audio">语音消息</string>
     <string name="action_clone_group">克隆群组</string>
     <string name="clone_group_message">这将创建这个群组的克隆，并由您作为管理员。是否继续？</string>
@@ -1044,8 +1044,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="delete">删除</string>
     <string name="continue_recording">继续录音</string>
     <string name="whatsnew_title">%1$s 5.2 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p>
-<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p>
+    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p> 
+<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p> 
 <p>这次更新还有大量其他改进和优化。</p> ]]></string>
     <string name="whatsnew2_title">" "</string>
     <string name="whatsnew2_body">" "</string>
@@ -1098,7 +1098,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_working_days_enable_title">非工作时间政策</string>
     <string name="prefs_working_days_enable_sum">在工作时间以外禁用通知并拒绝通话</string>
     <string name="work_life_dnd_active">非工作时间在线</string>
-    <string name="pencil">铅笔</string>
     <string name="warning">警告</string>
     <string name="password_remember_warning">请您记住在这里输入的内容！由于 %s 不会在服务器上保存任何密码，如果您忘记了 PIN 码或密码，我们无法帮助您找回密码。</string>
     <string name="safe_backup_tap_to_restart">点击系统通知以重启应用程序。如果看不到通知，请向下滑动打开手机的通知栏。</string>
@@ -1187,6 +1186,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="notes">注意</string>
     <string name="blur_faces">脸部模糊</string>
     <string name="brush">笔刷</string>
+    <string name="pencil">铅笔</string>
+    <string name="highlighter">荧光笔</string>
     <string name="error_detecting_faces">检测面部时出错</string>
     <string name="no_faces_detected">未检测到面部</string>
     <string name="smiley">笑脸</string>
@@ -1545,6 +1546,11 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="problemsolver_to_settings">前往设置</string>
     <string name="prefs_advanced_options">高级选项</string>
     <string name="push_service">推送服务</string>
+    <string name="zoom_out">缩小</string>
+    <string name="zoom_in">放大</string>
+    <string name="edit_and_send">编辑并发送</string>
+    <string name="media_gallery_animated_webps">动画 WebP 文件</string>
+    <string name="unsupported_image_type">不支持的图像类型：%s</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>
@@ -1562,6 +1568,9 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     </plurals>
     <plurals name="new_messages">
         <item quantity="other">%d条新消息</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="other">%d条未读消息</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="other">%d个文件已成功保存。</item>
@@ -1623,5 +1632,4 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <plurals name="number_of_group_members">
         <item quantity="other">%d个群组成员</item>
     </plurals>
-    <string name="edit_and_send">编辑</string>
 </resources>

@@ -9,7 +9,7 @@
 
 LOCAL_PATH       := $(call my-dir)
 
-TARGET_PLATFORM  := android-26
+TARGET_PLATFORM  := android-33
 
 # libscrypt
 

@@ -53,7 +53,34 @@ public class ImageViewUtil {
 		@Nullable Bitmap bitmap,
 		int width
 	) {
-		showRoundedBitmapOrPlaceholder(
+		if (blockView != null && imageView != null) {
+			ViewGroup.LayoutParams params = blockView.getLayoutParams();
+			params.width = width;
+			params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+			blockView.setLayoutParams(params);
+
+			Bitmap bitmapOrPlaceholder = bitmap == null
+				? getPlaceholderImage(context, width, R.drawable.ic_image_outline)
+				: bitmap;
+
+			RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory
+				.create(context.getResources(), bitmapOrPlaceholder);
+			roundedBitmapDrawable.setCornerRadius(getCornerRadius(context));
+
+			if (bitmapOrPlaceholder != null) {
+				showBitmap(imageView, bitmapOrPlaceholder, roundedBitmapDrawable, width);
+			}
+		}
+	}
+
+	public static void showBitmapOrImagePlaceholder(
+		@NonNull Context context,
+		@Nullable View blockView,
+		@Nullable ImageView imageView,
+		@Nullable Bitmap bitmap,
+		int width
+	) {
+		showBitmapOrPlaceholder(
 			context,
 			blockView,
 			imageView,
@@ -63,14 +90,14 @@ public class ImageViewUtil {
 		);
 	}
 
-	public static void showRoundedBitmapOrMoviePlaceholder(
+	public static void showBitmapOrMoviePlaceholder(
 		@NonNull Context context,
 		@Nullable View blockView,
 		@Nullable ImageView imageView,
 		@Nullable Bitmap bitmap,
 		int width
 	) {
-		showRoundedBitmapOrPlaceholder(
+		showBitmapOrPlaceholder(
 			context,
 			blockView,
 			imageView,
@@ -80,7 +107,7 @@ public class ImageViewUtil {
 		);
 	}
 
-	private static void showRoundedBitmapOrPlaceholder(
+	public static void showBitmapOrPlaceholder(
 		@NonNull Context context,
 		@Nullable View blockView,
 		@Nullable ImageView imageView,
@@ -98,11 +125,9 @@ public class ImageViewUtil {
 				? getPlaceholderImage(context, width, drawableId)
 				: bitmap;
 
-			RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory
-				.create(context.getResources(), bitmapOrPlaceholder);
-			roundedBitmapDrawable.setCornerRadius(getCornerRadius(context));
-
-			showBitmap(imageView, bitmapOrPlaceholder, roundedBitmapDrawable, width);
+			if (bitmapOrPlaceholder != null) {
+				showBitmap(imageView, bitmapOrPlaceholder, null, width);
+			}
 		}
 	}
 

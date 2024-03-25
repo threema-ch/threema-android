@@ -23,13 +23,17 @@ package ch.threema.app.services.messageplayer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.widget.ImageView;
+
+import androidx.annotation.RequiresApi;
 
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.activities.ThreemaActivity;
@@ -37,7 +41,6 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -45,26 +48,30 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
-import pl.droidsonroids.gif.GifDrawable;
 
-public class GifMessagePlayer extends MessagePlayer {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("GifMessagePlayer");
+/**
+ * A message player for animated image formats supported by AnimatedImageDrawable
+ * Currently, this is limited to WebP
+ */
+@RequiresApi(Build.VERSION_CODES.P)
+public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AnimatedImageDrawableMessagePlayer");
 
 	private final PreferenceService preferenceService;
-	private GifDrawable gifDrawable;
+	private Drawable imageDrawable;
 	private ImageView imageContainer;
 
-	protected GifMessagePlayer(Context context,
-							   MessageService messageService,
-							   FileService fileService,
-							   PreferenceService preferenceService,
-							   MessageReceiver messageReceiver,
-							   AbstractMessageModel messageModel) {
+	protected AnimatedImageDrawableMessagePlayer(Context context,
+												 MessageService messageService,
+												 FileService fileService,
+												 PreferenceService preferenceService,
+												 MessageReceiver messageReceiver,
+												 AbstractMessageModel messageModel) {
 		super(context, messageService, fileService, messageReceiver, messageModel);
 		this.preferenceService = preferenceService;
 	}
 
-	public GifMessagePlayer attachContainer(ImageView container) {
+	public AnimatedImageDrawableMessagePlayer attachContainer(ImageView container) {
 		this.imageContainer = container;
 		return this;
 	}
@@ -101,24 +108,18 @@ public class GifMessagePlayer extends MessagePlayer {
 		logger.debug("autoPlay(decryptedFile)");
 
 		if (this.imageContainer != null && this.currentActivityRef != null && this.currentActivityRef.get() != null) {
-			if (this.gifDrawable != null && !gifDrawable.isRecycled()) {
-				this.gifDrawable.stop();
+			if (this.imageDrawable != null && this.imageDrawable instanceof AnimatedImageDrawable) {
+				((AnimatedImageDrawable) this.imageDrawable).stop();
 			}
 
 			final Uri uri = Uri.parse(decryptedFile.getPath());
-			try {
-				this.gifDrawable = new GifDrawable(uri.getPath());
-				this.gifDrawable.setCornerRadius(ImageViewUtil.getCornerRadius(getContext()));
-			} catch (IOException e) {
-				logger.error("I/O Exception", e);
-				return;
-			}
+			this.imageDrawable = Drawable.createFromPath(uri.getPath());
 
 			RuntimeUtil.runOnUiThread(() -> {
-				if (gifDrawable != null && !gifDrawable.isRecycled()) {
-					imageContainer.setImageDrawable(gifDrawable);
-					if (preferenceService.isAnimationAutoplay()) {
-						gifDrawable.start();
+				if (imageDrawable != null) {
+					imageContainer.setImageDrawable(imageDrawable);
+					if (imageDrawable instanceof AnimatedImageDrawable && preferenceService.isAnimationAutoplay()) {
+						((AnimatedImageDrawable) imageDrawable).start();
 					}
 				}
 			});
@@ -153,8 +154,11 @@ public class GifMessagePlayer extends MessagePlayer {
 	protected void makePause(int source) {
 		logger.debug("makePause");
 		if (this.imageContainer != null) {
-			if(this.gifDrawable != null && this.gifDrawable.isPlaying() && ! gifDrawable.isRecycled()) {
-				this.gifDrawable.pause();
+			if (this.imageDrawable != null && imageDrawable instanceof AnimatedImageDrawable) {
+				AnimatedImageDrawable animatedImageDrawable = (AnimatedImageDrawable) imageDrawable;
+				if (animatedImageDrawable.isRunning()) {
+					animatedImageDrawable.stop();
+				}
 			}
 		}
 	}
@@ -163,8 +167,11 @@ public class GifMessagePlayer extends MessagePlayer {
 	protected void makeResume(int source) {
 		logger.debug("makeResume: " + getMessageModel().getId());
 		if (this.imageContainer != null) {
-			if(this.gifDrawable != null && !this.gifDrawable.isPlaying() && !gifDrawable.isRecycled()) {
-				this.gifDrawable.start();
+			if (this.imageDrawable != null && imageDrawable instanceof AnimatedImageDrawable) {
+				AnimatedImageDrawable animatedImageDrawable = (AnimatedImageDrawable) imageDrawable;
+				if (!animatedImageDrawable.isRunning()) {
+					animatedImageDrawable.start();
+				}
 			}
 		}
 	}
@@ -188,11 +195,12 @@ public class GifMessagePlayer extends MessagePlayer {
 		super.removeListeners();
 		logger.debug("removeListeners");
 
-		// release animgif players if item comes out of view
-		if (this.gifDrawable != null && !this.gifDrawable.isRecycled()) {
-			this.gifDrawable.stop();
-			this.gifDrawable.recycle();
-			this.gifDrawable = null;
+		// release webp players if item comes out of view
+		if (this.imageDrawable != null) {
+			if (imageDrawable instanceof AnimatedImageDrawable) {
+				((AnimatedImageDrawable) this.imageDrawable).stop();
+			}
+			this.imageDrawable = null;
 		}
 	}
 }

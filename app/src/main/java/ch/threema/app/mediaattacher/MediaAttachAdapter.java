@@ -85,7 +85,8 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 		ShapeableImageView imageView;
 		FrameLayout mediaFrame;
 		CheckableFrameLayout contentView;
-		LinearLayout gifIndicator;
+		LinearLayout animatedFormatLabelContainer;
+		ImageView animatedFormatLabelIconView;
 		LinearLayout videoIndicator;
 		ImageView loadErrorIndicator;
 		TextView videoDuration;
@@ -96,7 +97,8 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 			contentView = (CheckableFrameLayout) itemView;
 			mediaFrame = itemView.findViewById(R.id.media_frame);
 			imageView = itemView.findViewById(R.id.thumbnail_view);
-			gifIndicator = itemView.findViewById(R.id.gif_marker_container);
+			animatedFormatLabelContainer = itemView.findViewById(R.id.animated_format_label_container);
+			animatedFormatLabelIconView = itemView.findViewById(R.id.animated_format_label_icon);
 			videoIndicator = itemView.findViewById(R.id.video_marker_container);
 			loadErrorIndicator = itemView.findViewById(R.id.load_error_indicator);
 			videoDuration = itemView.findViewById(R.id.video_duration_text);
@@ -128,7 +130,8 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 			holder.itemId = mediaAttachItem.getId();
 			CheckableFrameLayout contentView = holder.contentView;
 			ShapeableImageView imageView = holder.imageView;
-			LinearLayout gifIndicator = holder.gifIndicator;
+			LinearLayout gifIndicator = holder.animatedFormatLabelContainer;
+			ImageView gifIcon = holder.animatedFormatLabelIconView;
 			LinearLayout videoIndicator = holder.videoIndicator;
 			ImageView loadErrorIndicator = holder.loadErrorIndicator;
 			TextView videoDuration = holder.videoDuration;
@@ -151,6 +154,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 				Glide.with(context).load(mediaAttachItem.getUri())
 					.transition(withCrossFade())
 					.centerInside()
+					.optionalCenterInside()
 					.addListener(new RequestListener<>() {
 						@Override
 						public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -166,7 +170,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 						}
 
 						@Override
-						public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+						public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
 							loadErrorIndicator.setVisibility(View.GONE);
 							contentView.setOnClickListener(view -> {
 								toggleItemChecked(mediaAttachItem);
@@ -182,7 +186,12 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 
 							if (mediaAttachItem.getType() == MediaItem.TYPE_GIF) {
 								gifIndicator.setVisibility(View.VISIBLE);
+								gifIcon.setImageResource(R.drawable.ic_gif_24dp);
 								contentView.setContentDescription(context.getString(R.string.attach_gif) +  ": " + mediaAttachItem.getDisplayName());
+							} else if (mediaAttachItem.getType() == MediaItem.TYPE_IMAGE_ANIMATED) {
+								gifIndicator.setVisibility(View.VISIBLE);
+								gifIcon.setImageResource(R.drawable.ic_webp);
+								contentView.setContentDescription("WebP: " + mediaAttachItem.getDisplayName());
 							} else {
 								gifIndicator.setVisibility(View.GONE);
 							}

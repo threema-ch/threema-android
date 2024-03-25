@@ -6,8 +6,7 @@
 	android:layout_height="match_parent"
 	android:orientation="horizontal"
 	android:layout_marginRight="3dp"
-	android:visibility="gone"
-	android:animateLayoutChanges="true">
+	android:visibility="gone">
 
 	<ImageView
 		android:id="@+id/groupack_thumbsup"

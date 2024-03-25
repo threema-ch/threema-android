@@ -23,9 +23,9 @@ package ch.threema.app.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Outline
 import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -48,11 +48,9 @@ import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.MessageContentsType
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.target.CustomViewTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.imageview.ShapeableImageView
 
 class MediaGalleryAdapter(
@@ -78,8 +76,8 @@ class MediaGalleryAdapter(
     init {
         this.clickListener = clickListener
         this.columnCount = columnCount
-        this.messageReceiver = messageReceiver;
-        this.foregroundColor = ConfigUtils.getColorFromAttribute(context, R.attr.colorOnBackground);
+        this.messageReceiver = messageReceiver
+        this.foregroundColor = ConfigUtils.getColorFromAttribute(context, R.attr.colorOnBackground)
         this.fileService = ThreemaApplication.getServiceManager()?.fileService
 
         val cornerRadius: Int = context.resources.getDimensionPixelSize(R.dimen.media_gallery_container_radius)
@@ -93,7 +91,8 @@ class MediaGalleryAdapter(
     class MediaGalleryHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var imageView: ShapeableImageView? = null
         var videoContainerView: View? = null
-        var gifContainerView: View? = null
+        var animatedFormatLabelContainer: View? = null
+        var animatedFormatLabelIconView: ImageView? = null
         var videoDuration: TextView? = null
         var vmContainerView: View? = null
         var vmDuration: TextView? = null
@@ -103,7 +102,8 @@ class MediaGalleryAdapter(
 
         init {
             imageView = itemView.findViewById(R.id.thumbnail_view)
-            gifContainerView = itemView.findViewById(R.id.gif_marker_container)
+            animatedFormatLabelContainer = itemView.findViewById(R.id.animated_format_label_container)
+            animatedFormatLabelIconView = itemView.findViewById(R.id.animated_format_label_icon)
             videoContainerView = itemView.findViewById(R.id.video_marker_container)
             videoDuration = itemView.findViewById(R.id.video_duration_text)
             vmContainerView = itemView.findViewById(R.id.voicemessage_marker_container)
@@ -118,11 +118,11 @@ class MediaGalleryAdapter(
         val holder = MediaGalleryHolder(itemView)
         holder.vmContainerView?.outlineProvider = viewOutlineProvider
         holder.videoContainerView?.outlineProvider = viewOutlineProvider
-        holder.gifContainerView?.outlineProvider = viewOutlineProvider
+        holder.animatedFormatLabelContainer?.outlineProvider = viewOutlineProvider
         holder.textContainerView?.outlineProvider = viewOutlineProvider
         holder.vmContainerView?.clipToOutline = true
         holder.videoContainerView?.clipToOutline = true
-        holder.gifContainerView?.clipToOutline = true
+        holder.animatedFormatLabelContainer?.clipToOutline = true
         holder.textContainerView?.clipToOutline = true
 
         return holder
@@ -134,7 +134,7 @@ class MediaGalleryAdapter(
 
             if (holder.messageId != messageModel.id) {
                 val placeholderIcon : Int = if (messageModel.messageContentsType == MessageContentsType.VOICE_MESSAGE) {
-                    R.drawable.ic_keyboard_voice_outline;
+                    R.drawable.ic_keyboard_voice_outline
                 } else if (messageModel.type == MessageType.FILE) {
                     IconUtil.getMimeIcon(messageModel.fileData.mimeType)
                 } else {
@@ -143,47 +143,48 @@ class MediaGalleryAdapter(
 
                 // do not load contents again if it's unchanged
                 Glide.with(context)
-                    .asBitmap()
                     .load(messageModel)
-                    .transition(BitmapTransitionOptions.withCrossFade())
-                    .centerCrop()
+                    .transition(withCrossFade())
+                    .optionalCenterCrop()
                     .error(placeholderIcon)
-                    .addListener(object : RequestListener<Bitmap?> {
-                        override fun onLoadFailed(
-                            e: GlideException?,
-                            model: Any?,
-                            target: Target<Bitmap?>,
-                            isFirstResource: Boolean
-                        ): Boolean {
+                    .into(object : CustomViewTarget<ShapeableImageView?, Drawable?>(holder.imageView!!) {
+                        override fun onResourceCleared(placeholder: Drawable?) {}
+                        override fun onLoadFailed(errorDrawable: Drawable?) {
                             decorateItem(holder, messageModel)
-                            return false
+                            holder.imageView?.setImageDrawable(errorDrawable)
                         }
-
                         override fun onResourceReady(
-                            resource: Bitmap,
-                            model: Any,
-                            target: Target<Bitmap?>?,
-                            dataSource: DataSource,
-                            isFirstResource: Boolean
-                        ): Boolean {
+                            resource: Drawable,
+                            transition: Transition<in Drawable?>?
+                        ) {
                             holder.textContainerView?.visibility = View.GONE
                             holder.vmContainerView?.visibility = View.GONE
                             holder.imageView?.clearColorFilter()
                             holder.imageView?.scaleType = ImageView.ScaleType.CENTER_CROP
-
+                            holder.imageView?.setImageDrawable(resource)
                             if (messageModel.messageContentsType == MessageContentsType.GIF) {
-                                holder.gifContainerView?.visibility = View.VISIBLE
+                                holder.animatedFormatLabelContainer?.visibility = View.VISIBLE
+                                holder.animatedFormatLabelIconView?.setImageResource(R.drawable.ic_gif_24dp)
+                                holder.animatedFormatLabelIconView?.contentDescription = context.getString(R.string.attach_gif)
+                            } else if (messageModel.messageContentsType == MessageContentsType.IMAGE && ConfigUtils.isSupportedAnimatedImageFormat(messageModel.fileData.mimeType)) {
+                                holder.animatedFormatLabelContainer?.visibility = View.VISIBLE
+                                holder.animatedFormatLabelIconView?.setImageResource(R.drawable.ic_webp)
+                                holder.animatedFormatLabelIconView?.contentDescription = "WebP"
                             } else {
-                                holder.gifContainerView?.visibility = View.GONE
+                                holder.animatedFormatLabelContainer?.visibility = View.GONE
                             }
 
                             if (messageModel.messageContentsType == MessageContentsType.VIDEO) {
-                                val duration: Long = if (messageModel.type == MessageType.VIDEO) {
-                                    messageModel.videoData.duration.toLong()
-                                } else if (messageModel.type == MessageType.FILE) {
-                                    messageModel.fileData.durationSeconds
-                                } else {
-                                    0
+                                val duration: Long = when (messageModel.type) {
+                                    MessageType.VIDEO -> {
+                                        messageModel.videoData.duration.toLong()
+                                    }
+                                    MessageType.FILE -> {
+                                        messageModel.fileData.durationSeconds
+                                    }
+                                    else -> {
+                                        0
+                                    }
                                 }
 
                                 if (duration > 0) {
@@ -196,12 +197,8 @@ class MediaGalleryAdapter(
                             } else {
                                 holder.videoContainerView?.visibility = View.GONE
                             }
-
-                            return false
                         }
-
                     })
-                    .into(holder.imageView!!)
             }
             holder.messageId = messageModel.id
             (holder.itemView as CheckableFrameLayout).isChecked = checkedItems.get(position)
@@ -215,7 +212,7 @@ class MediaGalleryAdapter(
         holder.imageView?.scaleType = ImageView.ScaleType.CENTER
         holder.imageView?.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN)
         holder.videoContainerView?.visibility = View.GONE
-        holder.gifContainerView?.visibility = View.GONE
+        holder.animatedFormatLabelContainer?.visibility = View.GONE
 
         if (messageModel.messageContentsType == MessageContentsType.VOICE_MESSAGE) {
             val duration: Long = if (messageModel.type == MessageType.FILE) {

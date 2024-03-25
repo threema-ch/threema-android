@@ -50,10 +50,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -190,7 +193,7 @@ public class FileUtil {
 
 	private static @NonNull Intent getGetContentIntent(Context context, String[] mimeTypes, String initialPath) {
 		Intent intent = new Intent();
-		if (MimeUtil.isVideoFile(mimeTypes[0]) || MimeUtil.isImageFile(mimeTypes[0])) {
+		if (MimeUtil.isVideoFile(mimeTypes[0]) || MimeUtil.isSupportedImageFile(mimeTypes[0])) {
 			intent.setAction(Intent.ACTION_GET_CONTENT);
 		} else {
 			intent = new Intent(context, FilePickerActivity.class);
@@ -387,12 +390,10 @@ public class FileUtil {
 		// Pick up provider with action string
 		final Intent i = new Intent(DocumentsContract.PROVIDER_INTERFACE);
 		final List<ResolveInfo> providers = pm.queryIntentContentProviders(i, 0);
-		for (ResolveInfo info : providers)
-		{
-			if(info != null && info.providerInfo != null)
-			{
+		for (ResolveInfo info : providers) {
+			if (info != null && info.providerInfo != null) {
 				final String authority = info.providerInfo.authority;
-				if(isMediaDocument(Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + authority)))
+				if (isMediaDocument(Uri.parse(ContentResolver.SCHEME_CONTENT + "://" + authority)))
 					return true;
 			}
 		}
@@ -400,8 +401,8 @@ public class FileUtil {
 	}
 
 	/*
-	* Some content uri returned by systemUI file picker create intermittent permission problems
-	* To fix this, we convert it in a file uri
+	 * Some content uri returned by systemUI file picker create intermittent permission problems
+	 * To fix this, we convert it in a file uri
 	 */
 	public static Uri getFixedContentUri(Context context, Uri inUri) {
 		if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
@@ -471,7 +472,7 @@ public class FileUtil {
 
 				final String selection = "_id=?";
 				final String[] selectionArgs = new String[]{
-						split[1]
+					split[1]
 				};
 
 				return getDataColumn(context, contentUri, selection, selectionArgs);
@@ -509,18 +510,18 @@ public class FileUtil {
 
 	@Nullable
 	private static String getDataColumn(Context context, Uri uri, String selection,
-								 String[] selectionArgs) {
+										String[] selectionArgs) {
 
 		String data = null;
 		Cursor cursor = null;
 		final String column = "_data";
 		final String[] projection = {
-				column
+			column
 		};
 
 		try {
 			cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-					null);
+				null);
 			if (cursor != null && cursor.moveToFirst()) {
 				final int column_index = cursor.getColumnIndexOrThrow(column);
 				data = cursor.getString(column_index);
@@ -606,9 +607,8 @@ public class FileUtil {
 
 	@WorkerThread
 	public static boolean copyFile(@NonNull File source, @NonNull File dest) {
-		try (InputStream  inputStream = new FileInputStream(source);
-		     OutputStream outputStream = new FileOutputStream(dest))
-		{
+		try (InputStream inputStream = new FileInputStream(source);
+			 OutputStream outputStream = new FileOutputStream(dest)) {
 			IOUtils.copy(inputStream, outputStream);
 			return true;
 		} catch (Exception e) {
@@ -619,9 +619,8 @@ public class FileUtil {
 
 	@WorkerThread
 	public static boolean copyFile(@NonNull Uri source, @NonNull File dest, @NonNull ContentResolver contentResolver) {
-		try (InputStream  inputStream = contentResolver.openInputStream(source);
-		     OutputStream outputStream = new FileOutputStream(dest))
-		{
+		try (InputStream inputStream = contentResolver.openInputStream(source);
+			 OutputStream outputStream = new FileOutputStream(dest)) {
 			if (inputStream != null) {
 				IOUtils.copy(inputStream, outputStream);
 				return true;
@@ -637,9 +636,9 @@ public class FileUtil {
 	 *
 	 * Note: Do not use this if error recovery is important!
 	 *
-	 * @param file The file that should be deleted
+	 * @param file        The file that should be deleted
 	 * @param description The description of the file (e.g. "message queue database")
-	 * @param logger The logger to use
+	 * @param logger      The logger to use
 	 */
 	public static void deleteFileOrWarn(
 		@NonNull File file,
@@ -664,7 +663,7 @@ public class FileUtil {
 
 	/**
 	 * Create a new file or re-use existing file. Log if file already exists.
-	 * @param file The file that should be created or re-used
+	 * @param file   The file that should be created or re-used
 	 * @param logger The logger facility to use
 	 */
 	public static void createNewFileOrLog(
@@ -679,7 +678,7 @@ public class FileUtil {
 	/**
 	 * Try to generated a File with the given filename in the given path
 	 * If a file of the same name exists, add a number to the filename (possibly between name and extension)
-	 * @param destPath Destination path
+	 * @param destPath     Destination path
 	 * @param destFilename Desired filename
 	 * @return File object
 	 */
@@ -707,7 +706,7 @@ public class FileUtil {
 	/**
 	 * Returns the filename of the object referred to by mediaItem. If no filename can be found, generate one
 	 * @param contentResolver ContentResolver
-	 * @param mediaItem MediaItem representing the source file
+	 * @param mediaItem       MediaItem representing the source file
 	 * @return A filename
 	 */
 	public static @NonNull String getFilenameFromUri(@NonNull ContentResolver contentResolver, @NonNull MediaItem mediaItem) {
@@ -722,7 +721,7 @@ public class FileUtil {
 	/**
 	 * Returns the filename of the object referred to by uri by querying the content resolver
 	 * @param contentResolver ContentResolver
-	 * @param uri Uri pointing at the object
+	 * @param uri             Uri pointing at the object
 	 * @return A filename or null if none is found
 	 */
 	@Nullable
@@ -771,9 +770,9 @@ public class FileUtil {
 	/**
 	 * Select a file from a gallery app. Shows a selector first to allow for choosing the desired gallery app or SystemUIs file picker.
 	 * Does not necessarily need file permissions as a modern gallery app will return a content Uri with a temporary permission to access the file
- 	 * @param activity Activity where the result of the selection should end up
-	 * @param fragment Fragment where the result of the selection should end up
-	 * @param requestCode Request code to use for result
+	 * @param activity     Activity where the result of the selection should end up
+	 * @param fragment     Fragment where the result of the selection should end up
+	 * @param requestCode  Request code to use for result
 	 * @param includeVideo Whether to include the possibility to select video files (if supported by app)
 	 */
 	public static void selectFromGallery(@Nullable Activity activity, @Nullable Fragment fragment, int requestCode, boolean includeVideo) {
@@ -781,29 +780,36 @@ public class FileUtil {
 			activity = fragment.getActivity();
 		}
 
+		final String imageMimeTypes = String.join(",", MimeUtil.getSupportedImageMimeTypes());
+
 		try {
-			Intent startIntent;
-			Intent getContentIntent = new Intent();
-			if (includeVideo && (
-				ConfigUtils.isXiaomiDevice() ||
-					Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
-				getContentIntent.setType(MimeUtil.MIME_TYPE_IMAGE + ","+ MimeUtil.MIME_TYPE_VIDEO);
-				String[] mimetypes = {MimeUtil.MIME_TYPE_IMAGE, MimeUtil.MIME_TYPE_VIDEO};
-				getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-			} else {
-				getContentIntent.setType(includeVideo ? MimeUtil.MIME_TYPE_VIDEO : MimeUtil.MIME_TYPE_IMAGE);
-			}
+			final Intent startIntent;
+			final Intent getContentIntent = new Intent();
+
 			getContentIntent.setAction(Intent.ACTION_GET_CONTENT);
 			getContentIntent.addCategory(Intent.CATEGORY_OPENABLE);
-			getContentIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+			getContentIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 			getContentIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, MAX_BLOB_SIZE);
 
+			if (includeVideo && (
+					ConfigUtils.isXiaomiDevice() ||
+					Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
+				getContentIntent.setType(MimeUtil.MIME_TYPE_IMAGE + "," + MimeUtil.MIME_TYPE_VIDEO);
+				String[] mimetypes = Stream.concat(Arrays.stream(MimeUtil.getSupportedImageMimeTypes()), Arrays.stream(new String[]{MimeUtil.MIME_TYPE_VIDEO})).toArray(
+					size -> (String[]) Array.newInstance(String.class, size)
+				);
+				getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+			} else {
+				getContentIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
+				getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, imageMimeTypes);
+			}
+
 			if (includeVideo) {
-				Intent pickIntent = new Intent(Intent.ACTION_PICK);
-				pickIntent.setType(MimeUtil.MIME_TYPE_IMAGE);
 				if (ConfigUtils.isXiaomiDevice()) {
 					startIntent = getContentIntent;
 				} else {
+					Intent pickIntent = new Intent(Intent.ACTION_PICK);
+					pickIntent.setType(imageMimeTypes);
 					startIntent = Intent.createChooser(pickIntent, activity.getString(R.string.select_from_gallery));
 					startIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{getContentIntent});
 				}
@@ -819,5 +825,33 @@ public class FileUtil {
 			logger.debug("Exception", e);
 			Toast.makeText(activity, R.string.no_activity_for_mime_type, Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	/**
+	 * Check if the file at the provided Uri is an animated WebP file by looking at the file header
+	 * @param uri A File Uri pointing to an image file
+	 * @return true if the file is an animated WebP file, false if it is not animated, in another format, corrupt or not readable
+	 */
+	private static boolean isAnimatedWebPFile(@NonNull Uri uri) {
+		try (InputStream inputStream = StreamUtil.getFromUri(ThreemaApplication.getAppContext(), uri)) {
+			byte[] buffer = new byte[34];
+			return inputStream != null
+				&& inputStream.read(buffer) == 34
+				&& Arrays.equals(Arrays.copyOfRange(buffer, 0, 4), new byte[]{'R', 'I', 'F', 'F'})
+				&& Arrays.equals(Arrays.copyOfRange(buffer, 8, 12), new byte[]{'W', 'E', 'B', 'P'})
+				&& Arrays.equals(Arrays.copyOfRange(buffer, 12, 15), new byte[]{'V', 'P', '8'})
+				&& Arrays.equals(Arrays.copyOfRange(buffer, 30, 34), new byte[]{'A', 'N', 'I', 'M'});
+		} catch (IOException ignore) {
+			return false;
+		}
+	}
+
+	/**
+	 * Check if the file at the provided Uri is an animation. Currently, only animated WebP is supported
+	 * @param uri A File Uri pointing to an image file
+	 * @return true if the file an animated image
+	 */
+	public static boolean isAnimatedImageFile(@NonNull Uri uri) {
+		return isAnimatedWebPFile(uri);
 	}
 }

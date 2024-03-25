@@ -60,8 +60,11 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+		super.configureChatMessage(holder, position);
+
 		final MessagePlayer imageMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
 				(Activity) getContext(), helper.getMessageReceiver(), null);
+
 		logger.debug("configureChatMessage Image");
 
 		holder.messagePlayer = imageMessagePlayer;
@@ -162,7 +165,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 			thumbnail = null;
 		}
 
-		ImageViewUtil.showRoundedBitmapOrImagePlaceholder(
+		ImageViewUtil.showBitmapOrImagePlaceholder(
 			getContext(),
 			holder.contentView,
 			holder.attachmentImage,

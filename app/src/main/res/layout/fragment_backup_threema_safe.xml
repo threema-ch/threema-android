@@ -230,7 +230,7 @@
 					android:layout_width="180dp"
 					android:layout_height="180dp"
 					android:src="@drawable/ic_circle_white"
-					android:tint="@color/md_theme_light_surfaceVariant"/>
+					android:tint="?attr/colorSecondaryContainer"/>
 
 				<ImageView
 					android:layout_width="180dp"

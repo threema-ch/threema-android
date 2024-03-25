@@ -962,7 +962,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 							int renderingType = messageModel.getFileData().getRenderingType();
 
 							if (messageModel.getFileData().getRenderingType() != FileData.RENDERING_DEFAULT) {
-								mediaType = MimeUtil.getMediaTypeFromMimeType(mimeType);
+								mediaType = MimeUtil.getMediaTypeFromMimeType(mimeType, uri);
 							}
 							sendForwardedMedia(messageReceivers, uri, caption, mediaType, mimeType, renderingType, messageModel.getFileData().getFileName(), messageModel.getFileData().getDurationMs());
 							break;

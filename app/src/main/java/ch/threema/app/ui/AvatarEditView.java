@@ -27,6 +27,7 @@ import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_WIDTH_PX;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -83,6 +84,7 @@ import ch.threema.app.activities.CropImageActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.ContactListener;
+import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
@@ -94,6 +96,7 @@ import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -197,6 +200,27 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 			return false;
 		}
 	};
+
+	private final ProfileListener profileListener = new ProfileListener() {
+		@Override
+		public void onAvatarChanged() {
+			reloadProfilePicture();
+		}
+
+		@Override
+		public void onAvatarRemoved() {
+			reloadProfilePicture();
+		}
+
+		@Override
+		public void onNicknameChanged(String newNickname) {}
+	};
+
+	private void reloadProfilePicture() {
+		if (avatarData != null && avatarData.getContactModel() != null && avatarData.getContactModel() == contactService.getMe()) {
+			RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(avatarData.getContactModel(), null));
+		}
+	}
 
 	/**
 	 * Load saved avatar for the specified model - do not call this if changes are to be deferred
@@ -554,20 +578,26 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 					// return from image picker
 					if (intent != null && intent.getData() != null) {
 						try {
-							avatarData.setCameraFile(fileService.createTempFile(".camera", ".jpg", false));
-							try (InputStream is = getActivity().getContentResolver().openInputStream(intent.getData());
-							    FileOutputStream fos = new FileOutputStream(avatarData.getCameraFile())) {
-								if (is != null) {
-									IOUtils.copy(is, fos);
-								} else {
-									throw new Exception("Unable to open input stream");
+							ContentResolver contentResolver = getContext().getContentResolver();
+							String mimeType = contentResolver.getType(intent.getData());
+							if (MimeUtil.isSupportedImageFile(mimeType)) {
+								avatarData.setCameraFile(fileService.createTempFile(".camera", ".jpg", false));
+								try (InputStream is = contentResolver.openInputStream(intent.getData());
+									FileOutputStream fos = new FileOutputStream(avatarData.getCameraFile())) {
+									if (is != null) {
+										IOUtils.copy(is, fos);
+									} else {
+										throw new Exception("Unable to open input stream");
+									}
+								} catch (SecurityException e) {
+									logger.error("Unable to open file selected in picker", e);
+									startSamsungPermissionFixFlow();
+									break;
 								}
-							} catch (SecurityException e) {
-								logger.error("Unable to open file selected in picker", e);
-								startSamsungPermissionFixFlow();
-								break;
+								doCrop(avatarData.getCameraFile());
+							} else {
+								Toast.makeText(getContext(), getContext().getString(R.string.unsupported_image_type, mimeType), Toast.LENGTH_LONG).show();
 							}
-							doCrop(avatarData.getCameraFile());
 						} catch (Exception e) {
 							logger.error("Exception", e);
 						}
@@ -844,11 +874,13 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	@Override
 	public void onCreate(@NonNull LifecycleOwner owner) {
 		ListenerManager.contactListeners.add(this.contactListener);
+		ListenerManager.profileListeners.add(this.profileListener);
 	}
 
 	@Override
 	public void onDestroy(@NonNull LifecycleOwner owner) {
 		ListenerManager.contactListeners.remove(this.contactListener);
+		ListenerManager.profileListeners.remove(this.profileListener);
 	}
 
 	public interface AvatarEditListener {

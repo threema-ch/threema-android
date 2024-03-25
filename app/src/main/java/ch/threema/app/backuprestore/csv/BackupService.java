@@ -1087,7 +1087,15 @@ public class BackupService extends Service {
 		}
 
 		try (ByteArrayOutputStream outputStreamBuffer = new ByteArrayOutputStream()) {
-			writeNonces(outputStreamBuffer, zipOutputStream);
+			writeNonces(outputStreamBuffer);
+			// Write nonces to zip *after* the CSVWriter has been closed (and therefore flushed)
+			ZipUtil.addZipStream(
+				zipOutputStream,
+				new ByteArrayInputStream(outputStreamBuffer.toByteArray()),
+				Tags.NONCE_FILE_NAME + Tags.CSV_FILE_POSTFIX,
+				true
+			);
+			logger.info("Nonce backup completed");
 		} catch (IOException | ThreemaException e) {
 			logger.error("Error with byte array output stream", e);
 			return false;
@@ -1097,8 +1105,7 @@ public class BackupService extends Service {
 	}
 
 	private void writeNonces(
-		@NonNull ByteArrayOutputStream outputStream,
-		@NonNull ZipOutputStream zipOutputStream
+		@NonNull ByteArrayOutputStream outputStream
 	) throws ThreemaException, IOException {
 		final String[] nonceHeader = new String[]{Tags.TAG_NONCES};
 		try (
@@ -1126,13 +1133,6 @@ public class BackupService extends Service {
 			long end = System.currentTimeMillis();
 			logger.info("Created row for all nonces in {} ms", end - start);
 		}
-		ZipUtil.addZipStream(
-			zipOutputStream,
-			new ByteArrayInputStream(outputStream.toByteArray()),
-			Tags.NONCE_FILE_NAME + Tags.CSV_FILE_POSTFIX,
-			true
-		);
-		logger.info("Nonce backup completed");
 	}
 
 	/**

@@ -685,7 +685,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="select_all">Seleziona tutto</string>
     <string name="deleting_messages">Eliminazione messaggi</string>
     <string name="media_gallery_files">File</string>
-    <string name="prefs_gif_autoplay">Riproduci automaticamente le GIF animate</string>
+    <string name="prefs_gif_autoplay">Riproduci autom. le immagini animate</string>
     <string name="media_gallery_audio">Messaggi vocali</string>
     <string name="action_clone_group">Clona gruppo</string>
     <string name="clone_group_message">Verrà creato un gruppo clone che ti vedrà come amministratore. Vuoi continuare?</string>
@@ -1082,7 +1082,6 @@ Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
     <string name="prefs_working_days_enable_title">Politica straordinari</string>
     <string name="prefs_working_days_enable_sum">Disattiva notifiche e rifiuta telefonate al di fuori dell\'orario di lavoro</string>
     <string name="work_life_dnd_active">Attivo straordinari</string>
-    <string name="pencil">Matita</string>
     <string name="warning">Attenzione!</string>
     <string name="password_remember_warning">Ricordati cosa inserisci qui! Poiché %s non memorizza le password sui server, non possiamo aiutarti se dimentichi il PIN o la password.</string>
     <string name="safe_backup_tap_to_restart">Toccare la notifica per riavviare l\'applicazione.</string>
@@ -1171,6 +1170,8 @@ Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
     <string name="notes">Appunti</string>
     <string name="blur_faces">Sfocare i visi</string>
     <string name="brush">Pennello</string>
+    <string name="pencil">Matita</string>
+    <string name="highlighter">Evidenziatore</string>
     <string name="error_detecting_faces">Si è verificato un errore durante il riconoscimento facciale</string>
     <string name="no_faces_detected">Nessun viso trovato</string>
     <string name="smiley">Smiley</string>
@@ -1529,6 +1530,11 @@ Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
     <string name="problemsolver_to_settings">Alle impostazioni</string>
     <string name="prefs_advanced_options">Opzioni avanzate</string>
     <string name="push_service">Servizio push</string>
+    <string name="zoom_out">Ingrandisci</string>
+    <string name="zoom_in">Diminuisci</string>
+    <string name="edit_and_send">Modifica e invia</string>
+    <string name="media_gallery_animated_webps">WebP animati</string>
+    <string name="unsupported_image_type">Tipo di immagine non supportato: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contatto</item>
         <item quantity="other">%d contatti</item>
@@ -1617,5 +1623,4 @@ Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
         <item quantity="one">%d membro del gruppo</item>
         <item quantity="other">%d membri del gruppo</item>
     </plurals>
-    <string name="edit_and_send">Modifica</string>
 </resources>

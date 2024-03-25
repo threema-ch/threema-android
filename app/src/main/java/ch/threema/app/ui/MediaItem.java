@@ -78,7 +78,7 @@ public class MediaItem implements Parcelable {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaItem");
 
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE, TYPE_TEXT, TYPE_LOCATION})
+	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE, TYPE_TEXT, TYPE_LOCATION, TYPE_IMAGE_ANIMATED})
 	public @interface MediaType {}
 	public static final int TYPE_FILE = 0;
 	public static final int TYPE_IMAGE = 1;
@@ -89,6 +89,7 @@ public class MediaItem implements Parcelable {
 	public static final int TYPE_VOICEMESSAGE = 6;
 	public static final int TYPE_TEXT = 7;
 	public static final int TYPE_LOCATION = 8;
+	public static final int TYPE_IMAGE_ANIMATED = 9; // animated images such as animated WebP
 
 	public static final long TIME_UNDEFINED = Long.MIN_VALUE;
 
@@ -233,7 +234,7 @@ public class MediaItem implements Parcelable {
 		mediaItem.setOriginalUri(originalUri);
 		mediaItem.setFilename(FileUtil.getFilenameFromUri(context.getContentResolver(), mediaItem));
 		if (asFile) {
-			if (MimeUtil.isImageFile(mimeType)) {
+			if (MimeUtil.isSupportedImageFile(mimeType)) {
 				mediaItem.setImageScale(PreferenceService.ImageScale_SEND_AS_FILE);
 			} else if (MimeUtil.isVideoFile(mimeType)) {
 				mediaItem.setVideoSize(PreferenceService.VideoSize_SEND_AS_FILE);
@@ -263,7 +264,7 @@ public class MediaItem implements Parcelable {
 	public MediaItem(Uri uri, String mimeType, String caption) {
 		init();
 
-		this.type = MimeUtil.getMediaTypeFromMimeType(mimeType);
+		this.type = MimeUtil.getMediaTypeFromMimeType(mimeType, uri);
 		if (this.type == TYPE_FILE) {
 			this.renderingType = FileData.RENDERING_DEFAULT;
 		}
@@ -469,8 +470,7 @@ public class MediaItem implements Parcelable {
 	}
 
 	/**
-	 * get MimeType override
-	 * @return
+	 * @return the MimeType override
 	 */
 	public String getMimeType() {
 		return mimeType;
@@ -478,7 +478,6 @@ public class MediaItem implements Parcelable {
 
 	/**
 	 * set MimeType override
-	 * @param mimeType
 	 */
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
@@ -595,7 +594,7 @@ public class MediaItem implements Parcelable {
 		} else if (type == TYPE_IMAGE || type == TYPE_IMAGE_CAM) {
 			return getImageScale() == PreferenceService.ImageScale_SEND_AS_FILE;
 		} else {
-			return type == TYPE_FILE || type == TYPE_GIF;
+			return type == TYPE_FILE || type == TYPE_GIF || type == TYPE_IMAGE_ANIMATED;
 		}
 	}
 

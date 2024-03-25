@@ -56,7 +56,7 @@ class SendMediaPreviewAdapter(
         mm.setMediaPreviewAdapter(this)
     }
 
-    @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+    @Retention(AnnotationRetention.SOURCE)
     @IntDef(VIEW_TYPE_NORMAL, VIEW_TYPE_ADD)
     annotation class ViewType
 
@@ -253,9 +253,10 @@ class SendMediaPreviewAdapter(
      * Initialize the qualifier view
      */
     private fun setQualifierView(item: MediaItem, holder: SendMediaItemHolder) {
+        val imageView: AppCompatImageView = holder.qualifierView.findViewById(R.id.video_icon)
+
         if (item.type == TYPE_VIDEO_CAM || item.type == TYPE_VIDEO) {
             holder.qualifierView.visibility = View.VISIBLE
-            val imageView: AppCompatImageView = holder.qualifierView.findViewById(R.id.video_icon)
             imageView.setImageResource(R.drawable.ic_videocam_black_24dp)
             val durationView = holder.qualifierView.findViewById<TextView>(R.id.video_duration_text)
             if (item.durationMs > 0) {
@@ -266,8 +267,11 @@ class SendMediaPreviewAdapter(
             }
         } else if (item.type == TYPE_GIF) {
             holder.qualifierView.visibility = View.VISIBLE
-            val imageView: AppCompatImageView = holder.qualifierView.findViewById(R.id.video_icon)
             imageView.setImageResource(R.drawable.ic_gif_24dp)
+            holder.qualifierView.findViewById<View>(R.id.video_duration_text).visibility = View.GONE
+        } else if (item.type == TYPE_IMAGE_ANIMATED && MimeUtil.isWebPFile(item.mimeType)) {
+            holder.qualifierView.visibility = View.VISIBLE
+            imageView.setImageResource(R.drawable.ic_webp)
             holder.qualifierView.findViewById<View>(R.id.video_duration_text).visibility = View.GONE
         } else {
             holder.qualifierView.visibility = View.GONE

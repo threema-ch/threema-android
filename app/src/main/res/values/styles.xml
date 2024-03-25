@@ -636,8 +636,8 @@
 	<style name="Threema.ShapeAppearanceOverlay.BottomSheetDialog" parent="">
 		<item name="cornerSize">0dp</item>
 		<item name="cornerFamilyTopLeft">rounded</item>
-		<item name="cornerSizeTopLeft">16dp</item>
-		<item name="cornerSizeTopRight">16dp</item>
+		<item name="cornerSizeTopLeft">@dimen/bottomsheet_corner_size</item>
+		<item name="cornerSizeTopRight">@dimen/bottomsheet_corner_size</item>
 	</style>
 
 	<style name="Threema.BottomSheet.DragHandle" parent="@style/Widget.Material3.BottomSheet.DragHandle">
@@ -1162,5 +1162,4 @@
 		<item name="android:textStyle">bold</item>
 		<item name="android:fontFamily">sans-serif-condensed</item>
 	</style>
-
 </resources>

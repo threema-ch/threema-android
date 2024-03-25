@@ -51,8 +51,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.view.ViewCompat;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
 
 import org.slf4j.Logger;
 
@@ -81,7 +79,7 @@ import ch.threema.app.utils.VideoUtil;
 import ch.threema.app.video.VideoTimelineThumbnailTask;
 import ch.threema.base.utils.LoggingUtil;
 
-@UnstableApi public class VideoEditView extends FrameLayout implements DefaultLifecycleObserver, VideoTimelineThumbnailTask.VideoTimelineListener {
+@UnstableApi public class VideoEditView extends FrameLayout implements VideoTimelineThumbnailTask.VideoTimelineListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoEditView");
 
 	private static final int MOVING_NONE = 0;
@@ -153,8 +151,6 @@ import ch.threema.base.utils.LoggingUtil;
 		int progressWidth = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_progress_width);
 
 		this.touchTargetWidth = context.getResources().getDimensionPixelSize(R.dimen.video_timeline_touch_target_width);
-
-		((LifecycleOwner)context).getLifecycle().addObserver(this);
 
 		LayoutInflater.from(context).inflate(R.layout.view_video_edit, this, true);
 
@@ -270,6 +266,10 @@ import ch.threema.base.utils.LoggingUtil;
 	 * @param listener the timeline drag listener
 	 */
 	public void setOnTimelineDragListener(@Nullable OnTimelineDragListener listener) {
+		if (this.timelineDragListener != null) {
+			timelineDragListener.onTimelineDragStop();
+		}
+
 		this.timelineDragListener = listener;
 	}
 
@@ -635,7 +635,7 @@ import ch.threema.base.utils.LoggingUtil;
 	}
 
 	private void updateVideoTimelineVisibility() {
-		int visibility = videoItem.getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE ? INVISIBLE : VISIBLE;
+		int visibility = videoItem != null && videoItem.getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE ? INVISIBLE : VISIBLE;
 
 		timelineGridLayout.setVisibility(visibility);
 		startContainer.setVisibility(visibility);
@@ -753,7 +753,9 @@ import ch.threema.base.utils.LoggingUtil;
 	}
 
 	@Override
-	public void onDestroy(@NonNull LifecycleOwner owner) {
+	protected void onDetachedFromWindow() {
+		this.timelineDragListener = null;
+
 		if (thumbnailThread != null && thumbnailThread.isAlive()) {
 			thumbnailThread.interrupt();
 		}
@@ -766,7 +768,7 @@ import ch.threema.base.utils.LoggingUtil;
 
 		releasePlayer();
 
-		this.context = null;
+		super.onDetachedFromWindow();
 	}
 
 	@Override

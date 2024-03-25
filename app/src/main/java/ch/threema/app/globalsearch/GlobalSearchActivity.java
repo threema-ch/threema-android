@@ -50,6 +50,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.shape.MaterialShapeDrawable;
+import com.google.android.material.shape.ShapeAppearanceModel;
 
 import org.slf4j.Logger;
 
@@ -144,19 +145,27 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 		};
 
 		ConstraintLayout bottomSheetLayout = findViewById(R.id.bottom_sheet);
+		final float cornerSize = getResources().getDimensionPixelSize(R.dimen.bottomsheet_corner_size);
+
 		final BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
 		bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
 			@Override
 			public void onStateChanged(@NonNull View bottomSheet, int newState) {
+				Drawable background = bottomSheetLayout.getBackground();
+
 				switch (newState) {
 					case STATE_HIDDEN:
 						finish();
 						break;
 					case STATE_EXPANDED:
 						findViewById(R.id.drag_handle).setVisibility(View.INVISIBLE);
-						Drawable background = bottomSheetLayout.getBackground();
 						if (background instanceof MaterialShapeDrawable) {
-							getWindow().setStatusBarColor(((MaterialShapeDrawable) background).getResolvedTintColor());
+							MaterialShapeDrawable materialShapeDrawable = (MaterialShapeDrawable) background;
+							getWindow().setStatusBarColor(materialShapeDrawable.getResolvedTintColor());
+							ShapeAppearanceModel shapeAppearanceModel = materialShapeDrawable.getShapeAppearanceModel().toBuilder()
+								.setAllCornerSizes(0)
+								.build();
+							materialShapeDrawable.setShapeAppearanceModel(shapeAppearanceModel);
 						} else {
 							getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_expanded));
 						}
@@ -166,6 +175,15 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 						break;
 					case STATE_DRAGGING:
 						getWindow().setStatusBarColor(getResources().getColor(R.color.attach_status_bar_color_collapsed));
+						if (background instanceof MaterialShapeDrawable) {
+							MaterialShapeDrawable materialShapeDrawable = (MaterialShapeDrawable) background;
+							materialShapeDrawable.setShapeAppearanceModel(
+								materialShapeDrawable.getShapeAppearanceModel().toBuilder()
+									.setTopLeftCornerSize(cornerSize)
+									.setTopRightCornerSize(cornerSize)
+									.build()
+							);
+						}
 					default:
 						break;
 				}
@@ -279,5 +297,13 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 			logger.debug("hide progress");
 			progressBar.setVisibility(View.GONE);
 		}
+	}
+
+	@Override
+	public void finish() {
+		try {
+			super.finish();
+			overridePendingTransition(0, 0);
+		} catch (Exception ignored) {}
 	}
 }

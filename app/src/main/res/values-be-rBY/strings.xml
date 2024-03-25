@@ -65,7 +65,7 @@
     <string name="prefs_inapp_vibrate">Вібрацыя ў праграме</string>
     <string name="prefs_inapp_vibrate_on">Вібраваць пры атрыманні паведамленняў</string>
     <string name="prefs_inapp_vibrate_off">Ня вібраваць пры атрыманні паведамленняў</string>
-    <string name="workarounds">Патчы</string>
+    <string name="workarounds">Абыходныя шляхі</string>
     <string name="prefs_title_threema_push_switch">Выкарыст. Threema Push</string>
     <string name="prefs_sum_threema_push_on">Выкарыст. функцыю Threema Push для атрым. апавяшч. аб новых паведамленнях</string>
     <string name="prefs_sum_threema_push_off">Правярайце наяўн. новых паведамл. з дапамогай сіст. службы push-паведамл</string>
@@ -665,7 +665,7 @@
     <string name="select_all">Выбраць усе</string>
     <string name="deleting_messages">Выдаленне паведамленняў</string>
     <string name="media_gallery_files">Файлы</string>
-    <string name="prefs_gif_autoplay">Аўтаматыч. прайгр. анім. GIF-файлаў</string>
+    <string name="prefs_gif_autoplay">Аўта-прайграванне анімаваных відарысаў</string>
     <string name="media_gallery_audio">Галасавыя паведамленні</string>
     <string name="action_clone_group">Кланаваць суполку</string>
     <string name="clone_group_message">Будзе створаны клон суполкі з вамі, у якасці адміністратара.  Працягнуць?</string>
@@ -1008,6 +1008,10 @@
     <string name="open_in_maps_app">Адк-ць у праграме \"Мапы\"</string>
     <string name="delete">Выдаліць</string>
     <string name="continue_recording">Працягнуць запіс</string>
+    <string name="whatsnew_title">Што новага ў %1$s 5.2?</string>
+    <string name="whatsnew_headline"><![CDATA[<p>Пазначаныя зорачкай паведамленні: каб лёгка знайсці іх пазней, пазначце важныя паведамленні зорачкай доўгім націскам.</p>
+ <p>Аўтаматычнае выдаленне: вашыя чаты ачышчаюцца аўтаматычна праз пэўны перыяд часу.  Функцыю аўтаматычнага выдалення паведамленняў можна актываваць у кіраванні сховішчам.</p>
+ <p>Шматлікія іншыя паляпшэнні і аптымізацыі.</p>]]></string>
     <string name="tap_to_start">Націсьніце тут, каб запусціць %s.</string>
     <string name="two_years">2 года</string>
     <string name="invalid_backup_path">Нядзейнічае.шлях да рэз.копіі</string>
@@ -1057,7 +1061,6 @@
     <string name="prefs_working_days_enable_title">Правілы для непрац. часу</string>
     <string name="prefs_working_days_enable_sum">Адключыць апавяшчэння і адхіляць званкі ў непрацоўны час</string>
     <string name="work_life_dnd_active">Цяпер непрацоўны час</string>
-    <string name="pencil">Аловак</string>
     <string name="warning">Увага!</string>
     <string name="password_remember_warning">Запомніце, што вы тут уводзіце!  Паколькі %s не захоўвае ніякіх пароляў на серверах, мы не можам дапамагчы вам, калі вы забудзеце PIN-код або пароль.</string>
     <string name="safe_backup_tap_to_restart">Націсніце на апавяшчэнне, каб перазапусціць праграму зараз.</string>
@@ -1146,6 +1149,8 @@
     <string name="notes">Нататкі</string>
     <string name="blur_faces">Размыццё твару</string>
     <string name="brush">Пэндзаль</string>
+    <string name="pencil">Аловак</string>
+    <string name="highlighter">Хайлайтер</string>
     <string name="error_detecting_faces">Памылка распазнання твараў</string>
     <string name="no_faces_detected">Твары не распазнаныя</string>
     <string name="smiley">Смайл</string>
@@ -1453,7 +1458,7 @@
     <string name="permission_microphone">Мікрафон</string>
     <string name="permission_read_phone_state">Тэлефон</string>
     <string name="permission_enable_in_settings_rationale">Уключыце дазвол у наладах.  Выберыце «Дазволы», а потым дазвольце «%s».</string>
-	<string name="group_name">Назва суполкі</string>
+    <string name="group_name">Назва суполкі</string>
     <string name="star_message">Паведамленне з зоркай</string>
     <string name="starred_message">Пазначанае паведамленне</string>
     <string name="starred">З зоркай</string>
@@ -1478,7 +1483,7 @@
     <string name="keep_messages">Захоўваць паведамленні для:</string>
     <string name="clean_up_manually">Ачысціць ўручную</string>
     <string name="forever">Назаўжды</string>
-    <string name="autodelete_explain">Калі ўсталявана што-небудзь іншае, чым \"назаўсёды\", уваходныя і выходныя паведамленні будуць захоўвацца толькі на працягу вызначанага часу, а потым беззваротна выдаляцца.  Гэта ўключае ў сябе непрачытаныя і неадпраўленыя паведамленні.  Паведамленні ў групах нататак і пазначаныя зорачкай ніколі не будуць выдалены.  Працэс выдалення адбываецца перыядычна і неабавязкова адразу пасля актывацыі.</string>
+    <string name="autodelete_explain">Калі ўсталявана што-небудзь іншае, акрамя «назаўсёды», уваходныя і выходныя паведамленні будуць беззваротна выдаляцца праз зададзены прамежак часу.  Гэта ўключае ў сябе непрачытаныя і неадпраўленыя паведамленні.  Аднак паведамленні ў  суполках нататак і пазначаныя зорачкай паведамленні не будуць выдалены.  Працэс выдалення запускаецца перыядычна і неабавязкова адразу пасля актывацыі.</string>
     <string name="autodelete_confirm">Паведамленні будуць выдаляцца аўтаматычна пасля %s.  Працягнуць?</string>
     <string name="autodelete_activated">Аўтаматычнае выдаленне актывавана.</string>
     <string name="autodelete_disabled">Аўтаматычнае выдаленне адключана.</string>
@@ -1491,6 +1496,28 @@
     <string name="group_dissolved_notice">Гэтая суполка была распушчана і больш не можа выкарыстоўвацца.</string>
     <string name="directory_request_failed">Не ўдалося запытаць каталог.  Паспрабуй яшчэ.</string>
     <string name="add_shortcut_exists">Ярлык для гэтай мэты ўжо існуе.</string>
+    <string name="work_lost_credentials_help">Забыліся ўліковыя даныя?  Звярніцеся да адміністратара %1$s.</string>
+    <string name="problemsolver_intro">Некаторыя праблемы канфігурацыі сістэмы, магчыма, перашкаджаюць карэктнай працы %s.  Вырашыце гэтыя праблемы, выконваючы інструкцыі ніжэй.</string>
+    <string name="problemsolver_title">Выправіць праблемы канфігурацыі</string>
+    <string name="problemsolver_title_background">Фонавае выкарыстанне абмежавана</string>
+    <string name="problemsolver_title_background_data">Фонавыя дадзеныя абмежаваныя</string>
+    <string name="problemsolver_title_notifications">Апавяшчэнні адключаны</string>
+    <string name="problemsolver_title_fullscreen_notifications">Поўнаэкранныя апавяшчэнні забароненыя</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Праграме забаронена паказваць поўнаэкранныя апавяшчэнні.  Вы можаце прапусціць уваходныя выклікі, калі прылада заблакіравана.  Каб выправіць гэта, актывуйце «Дазволіць поўнаэкранныя апавяшчэнні».</string>
+    <string name="problemsolver_explain_notifications">Апавяшчэнні цалкам адключаны для гэтай праграмы.  Вы не будзеце інфармаваны аб уваходных паведамленнях або выкліках, і праграма можа працаваць не так, як чакалася.  Каб выправіць гэта, актывуйце «Усе апавяшчэнні».</string>
+    <string name="problemsolver_explain_background_data">Праграма не можа выкарыстоўваць мабільную перадачу дадзеных у фонавым рэжыме.  Вы не будзеце атрымліваць інфармацыю аб уваходных паведамленнях, пакуль вы актыўна не адкрыеце праграму.  Каб выправіць гэта, актывуйце «Фонавыя дадзеныя».</string>
+    <string name="problemsolver_explain_background">Фонавае выкарыстанне праграмы абмежавана.  Вы не будзеце атрымліваць ніякіх апавяшчэнняў, і многія функцыі не будуць працаваць належным чынам.  Каб выправіць гэта, націсніце «Выкарыстанне батарэі праграмы» і выберыце «Без абмежаванняў».</string>
+    <string name="problemsolver_info_text">Назвы некаторых параметраў сістэмных налад, згаданых вышэй, могуць адрознівацца ў залежнасці ад версіі Android і вытворцы прылады.</string>
+    <string name="problemsolver_title_app_battery_usgae_optimized">Выкарыстанне акумулятара усталявана як «аптымізаванае»</string>
+    <string name="problemsolver_explain_app_battery_usgae_optimized">Праграме не дазваляецца падтрымліваць пастаяннае злучэнне з серверамі, якое патрабуецца для працы Threema Push.  Вы не будзеце атрымліваць інфармацыю аб новых паведамленнях, калі праграма працуе ў фонавым рэжыме.  Каб выправіць гэта, націсніце «Выкарыстанне батарэі праграмы» і выберыце «Без абмежаванняў».</string>
+    <string name="problemsolver_to_settings">Да налад</string>
+    <string name="prefs_advanced_options">Дадатковыя параметры</string>
+    <string name="push_service">Паслуга Push</string>
+    <string name="zoom_out">Зменшыць</string>
+    <string name="zoom_in">Павялічыць</string>
+    <string name="edit_and_send">Адрэдагуйце і адпраўце</string>
+    <string name="media_gallery_animated_webps">Аніміраваныя WebP</string>
+    <string name="unsupported_image_type">Тып відарыса не падтрымліваецца: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d кантактаў</item>
         <item quantity="many">%d кантакты</item>
@@ -1526,6 +1553,12 @@
         <item quantity="many">%d новых паведамленняў</item>
         <item quantity="one">%d новае паведамленне</item>
         <item quantity="other">%d новых паведамленняў</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="few">%d непрачытаных паведамленняў</item>
+        <item quantity="many">%d непрачытаных паведамленняў</item>
+        <item quantity="one">%d непрачытанае паведамленне</item>
+        <item quantity="other">%d непрачытаных паведамленняў</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="few">%d файлы паспяхова захаваны.</item>
@@ -1632,5 +1665,4 @@
         <item quantity="one">%d удзельнік суполкі</item>
         <item quantity="other">%d удзельнікаў суполкі</item>
     </plurals>
-    <string name="edit_and_send">Рэдагаваць</string>
 </resources>

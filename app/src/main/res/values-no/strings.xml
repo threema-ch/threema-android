@@ -664,7 +664,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="select_all">Velg alle</string>
     <string name="deleting_messages">Sletter meldinger</string>
     <string name="media_gallery_files">Filer</string>
-    <string name="prefs_gif_autoplay">Autoavspill animerte GIF-er</string>
+    <string name="prefs_gif_autoplay">Autoavspill animerte bilder</string>
     <string name="media_gallery_audio">Lydmeldinger</string>
     <string name="action_clone_group">Klone gruppe</string>
     <string name="clone_group_message">Det blir laget en klone av denne gruppen, med deg som administrator. Vil du fortsette?</string>
@@ -1065,7 +1065,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_working_days_enable_title">Regler utenom arbeidstid</string>
     <string name="prefs_working_days_enable_sum">Slå av varsler og avvis anrop utenom arbeidstid</string>
     <string name="work_life_dnd_active">Utenom arbiedstid: Aktiv</string>
-    <string name="pencil">Blyant</string>
     <string name="warning">Varsel</string>
     <string name="password_remember_warning">Husk det du skriver inn her! Fordi %s ikke lagrer passord på serveren, så kan vi ikke hjelpe om du glemmer passord eller PIN-kode.</string>
     <string name="safe_backup_tap_to_restart">Trykk på system-varselet for å restarte appen nå. Om du ikke kan se varselet, vennligst sveip ned fra telefonens varselområde.</string>
@@ -1154,6 +1153,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="notes">Notater</string>
     <string name="blur_faces">Gjør uskarpt</string>
     <string name="brush">Børste</string>
+    <string name="pencil">Blyant</string>
+    <string name="highlighter">Markeringstusj</string>
     <string name="error_detecting_faces">Feil ved gjenkjenning av ansikter</string>
     <string name="no_faces_detected">Ingen ansikter gjenkjent</string>
     <string name="smiley">Smilefjes</string>
@@ -1520,6 +1521,11 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="problemsolver_to_settings">Til innstillinger</string>
     <string name="prefs_advanced_options">Avanserte innstillinger</string>
     <string name="push_service">Push-tjeneste</string>
+    <string name="zoom_out">Zoom ut</string>
+    <string name="zoom_in">Zoom inn</string>
+    <string name="edit_and_send">Rediger og send</string>
+    <string name="media_gallery_animated_webps">Animerte WebP-er</string>
+    <string name="unsupported_image_type">Ustøttet bildeformat: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1543,6 +1549,10 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <plurals name="new_messages">
         <item quantity="one">%d ny melding</item>
         <item quantity="other">%d nye meldinger</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="one">%d ulest melding</item>
+        <item quantity="other">%d uleste meldinger</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="one">%d fil lagret vellykket</item>
@@ -1622,5 +1632,4 @@ Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</
         <item quantity="one">%d gruppemedlem</item>
         <item quantity="other">%d gruppemedlemmer</item>
     </plurals>
-    <string name="edit_and_send">Rediger</string>
 </resources>

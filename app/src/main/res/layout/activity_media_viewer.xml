@@ -41,8 +41,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="bottom|center_horizontal"
-		app:contentPaddingTop="8dp"
-		app:contentPaddingBottom="8dp"
+		app:contentPaddingTop="@dimen/mediaviewer_caption_container_padding_vertical"
+		app:contentPaddingBottom="@dimen/mediaviewer_caption_container_padding_vertical"
 		app:contentPaddingLeft="16dp"
 		app:contentPaddingRight="16dp"
 		android:visibility="gone">
@@ -53,8 +53,9 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
 			android:text=""
+			android:ellipsize="end"
 			android:textColor="@android:color/white"
-			android:textSize="18sp"/>
+			android:textSize="@dimen/mediaviewer_caption_text_size"/>
 
 	</com.google.android.material.card.MaterialCardView>
 

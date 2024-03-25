@@ -739,14 +739,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					if (skipWhatsNew) {
 						isWhatsNewShown = false; // make sure isWhatsNewShown is set to false here if whatsnew is skipped - otherwise pin unlock will not be shown once
 					} else {
-						isWhatsNewShown = true;
-
 						int previous = preferenceService.getLatestVersion() % 1000;
 
 						// To not show the same dialog twice, it is only shown if the previous version
 						// is prior to the first version that used this dialog.
 						// Use the version code of the first version where this dialog should be shown.
 						if (previous < 925) { // do not show to users of previous release candidate
+							isWhatsNewShown = true;
+
 							Intent intent = new Intent(this, WhatsNewActivity.class);
 							startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
 							overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);

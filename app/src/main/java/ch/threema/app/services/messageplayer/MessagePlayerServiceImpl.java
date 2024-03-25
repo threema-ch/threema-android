@@ -41,6 +41,7 @@ import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -123,6 +124,17 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 							mediaControllerFuture,
 							messageModel
 						);
+					} else if (ConfigUtils.isSupportedAnimatedImageFormat(messageModel.getFileData().getMimeType())
+							&& (messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA
+							|| messageModel.getFileData().getRenderingType() == FileData.RENDERING_STICKER)) {
+						o = new AnimatedImageDrawableMessagePlayer(
+							this.context,
+							this.messageService,
+							this.fileService,
+							this.preferenceService,
+							messageReceiver,
+							messageModel
+						);
 					} else {
 						o = new FileMessagePlayer(
 								this.context,
@@ -144,7 +156,7 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 					messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
 					o.setData(messageModel.getFileData());
 				}
-				logger.debug("recycling existing player " + key);
+				logger.debug("recycling existing player {}", key);
 			}
 			if (o != null) {
 				if (activity != null) {

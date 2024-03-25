@@ -711,7 +711,7 @@
 	<string name="select_all">Select all</string>
 	<string name="deleting_messages">Deleting messages</string>
 	<string name="media_gallery_files">Files</string>
-	<string name="prefs_gif_autoplay">Auto-play animated GIFs</string>
+	<string name="prefs_gif_autoplay">Auto-play animated images</string>
 	<string name="media_gallery_audio">Voice messages</string>
 	<string name="action_clone_group">Clone group</string>
 	<string name="clone_group_message">This will create a clone of this group with you as the administrator. Continue?</string>
@@ -1112,7 +1112,6 @@
 	<string name="prefs_working_days_enable_title">Off-hours policy</string>
 	<string name="prefs_working_days_enable_sum">Disable notifications and reject calls outside of working hours</string>
 	<string name="work_life_dnd_active">Off-hours active</string>
-	<string name="pencil">Pencil</string>
 	<string name="warning">Warning</string>
 	<string name="password_remember_warning">Remember what you enter here! Since %s does not save any passwords on servers, we cannot help you out, if you forget your PIN or password.</string>
 	<string name="safe_backup_tap_to_restart">Tap on the system notification shown to restart the app now. If you cannot see the notification, please swipe down your phone’s notification bar.</string>
@@ -1201,6 +1200,8 @@
 	<string name="notes">Notes</string>
 	<string name="blur_faces">Blur faces</string>
 	<string name="brush">Brush</string>
+	<string name="pencil">Pencil</string>
+	<string name="highlighter">Highlighter</string>
 	<string name="error_detecting_faces">Error while detecting faces</string>
 	<string name="no_faces_detected">No faces detected</string>
 	<string name="smiley">Smiley</string>
@@ -1561,6 +1562,9 @@
 	<string name="push_service">Push service</string>
 	<string name="zoom_out">Zoom out</string>
 	<string name="zoom_in">Zoom in</string>
+	<string name="edit_and_send">Edit and send</string>
+	<string name="media_gallery_animated_webps">Animated WebPs</string>
+	<string name="unsupported_image_type">Unsupported image type: %s</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>
@@ -1741,5 +1745,4 @@
 		<item quantity="many">%d group members</item>
 		<item quantity="other">%d group members</item>
 	</plurals>
-	<string name="edit_and_send">Edit and send</string>
 </resources>

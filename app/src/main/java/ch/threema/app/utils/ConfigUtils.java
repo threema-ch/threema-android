@@ -144,7 +144,7 @@ public class ConfigUtils {
 	private static final int CONTENT_PROVIDER_BATCH_SIZE = 50;
 	private static final String WORKER_RESTART_AFTER_RESTORE = "restartAfterRestore";
 
-	/* app theme settings in shared preferences */
+    /* app theme settings in shared preferences */
 	@StringDef({THEME_LIGHT, THEME_DARK, THEME_FOLLOW_SYSTEM})
 	public @interface AppThemeSetting {}
 	public static final String THEME_LIGHT = "0";
@@ -847,6 +847,22 @@ public class ConfigUtils {
 		return metrics.widthPixels;
 	}
 
+	/**
+	 * Get real height of window including system insets in case of a fullscreen window
+	 * Also works for floating or split screen windows
+	 * @param windowManager WindowManager
+	 * @return Height in pixel
+	 */
+	public static int getRealWindowHeight(@NonNull WindowManager windowManager) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			return windowManager.getCurrentWindowMetrics().getBounds().height();
+		} else {
+			DisplayMetrics metrics = new DisplayMetrics();
+			windowManager.getDefaultDisplay().getRealMetrics(metrics);
+			return metrics.heightPixels;
+		}
+	}
+
 	public static boolean checkManifestPermission(Context context, String packageName, final String permission) {
 		if (TextUtils.isEmpty(permission)) {
 			return false;
@@ -1493,7 +1509,7 @@ public class ConfigUtils {
 	 * @param searchBar The search bar
 	 */
 	public static void adjustSearchBarTextViewMargin(@NonNull Context context, @NonNull SearchBar searchBar) {
-		TextView searchBarTextView = searchBar.findViewById(R.id.search_bar_text_view);
+		TextView searchBarTextView = searchBar.findViewById(R.id.open_search_bar_text_view);
 		if (searchBarTextView != null) {
 			try {
 				SearchBar.LayoutParams layoutParams = (SearchBar.LayoutParams) searchBarTextView.getLayoutParams();
@@ -1590,5 +1606,15 @@ public class ConfigUtils {
 	 */
 	public static boolean isNotificationsDisabled(@NonNull Context context) {
 		return !NotificationManagerCompat.from(context).areNotificationsEnabled();
+	}
+
+	/**
+	 * Check whether the provided mime type hints at an image format capable of animations and natively supported by the operating system
+	 * @param mimeType Mime type to check
+	 * @return true if conditions are met
+	 */
+	public static boolean isSupportedAnimatedImageFormat(@Nullable String mimeType) {
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+			MimeUtil.isWebPFile(mimeType);
 	}
 }

@@ -22,14 +22,13 @@
 package ch.threema.app.utils;
 
 import android.content.Context;
+import android.net.Uri;
 import android.provider.DocumentsContract;
 
-import java.lang.annotation.Retention;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -46,7 +45,6 @@ import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
 import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
 import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_MEDIA;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public class MimeUtil {
 
@@ -57,9 +55,11 @@ public class MimeUtil {
 	public static final String MIME_TYPE_IMAGE_JPG = "image/jpeg";
 	public static final String MIME_TYPE_IMAGE_PNG = "image/png";
 	public static final String MIME_TYPE_IMAGE_GIF = "image/gif";
+	public static final String MIME_TYPE_IMAGE_WEBP = "image/webp";
 	public static final String MIME_TYPE_IMAGE_HEIF = "image/heif";
 	public static final String MIME_TYPE_IMAGE_HEIC = "image/heic";
 	public static final String MIME_TYPE_IMAGE_TIFF = "image/tiff";
+	public static final String MIME_TYPE_IMAGE_SVG = "image/svg+xml";
 	public static final String MIME_TYPE_VIDEO_MPEG = "video/mpeg";
 	public static final String MIME_TYPE_VIDEO_MP4 = "video/mp4";
 	public static final String MIME_TYPE_VIDEO_AVC = "video/avc";
@@ -83,13 +83,6 @@ public class MimeUtil {
 
 	public static final String MIME_VIDEO = "video/";
 	public static final String MIME_AUDIO = "audio/";
-
-	@Retention(SOURCE)
-	@IntDef({MIME_TYPE_VIDEO_IND, MIME_TYPE_IMAGES_IND, MIME_TYPE_GIF_IND})
-	public @interface NavigationMode {}
-	public static final int MIME_TYPE_VIDEO_IND = 101;
-	public static final int MIME_TYPE_IMAGES_IND = 102;
-	public static final int MIME_TYPE_GIF_IND = 103;
 
 	// map from icon resource id to string resource id
 	protected static final EnumMap<MimeCategory, Integer> mimeToDescription = new EnumMap<>(MimeCategory.class);
@@ -266,6 +259,17 @@ public class MimeUtil {
 		mimeMap.put("application/vnd.openxmlformats-officedocument.presentationml.slideshow", MimeCategory.POWERPOINT);
 	}
 
+	/**
+	 * List of bitmap image mime types natively supported by android
+	 */
+	private static final String[] supportedImageMimeTypes = {
+		MIME_TYPE_IMAGE_JPG,
+		MIME_TYPE_IMAGE_PNG,
+		MIME_TYPE_IMAGE_GIF,
+		MIME_TYPE_IMAGE_WEBP,
+		MIME_TYPE_IMAGE_HEIC
+	};
+
 	public enum MimeCategory {
 		APK,
 		AUDIO,
@@ -328,17 +332,27 @@ public class MimeUtil {
 	}
 
 	public static boolean isImageFile(@Nullable String mimeType) {
-		return mimeType != null && mimeType.startsWith("image/");
+		return mimeType != null && mimeType.startsWith("image/") && !MimeUtil.isSVGFile(mimeType);
 	}
 
-	public static boolean isLabelableImageFile(@Nullable String mimeType) {
-		return mimeType != null && (mimeType.startsWith(MIME_TYPE_IMAGE_PNG) || mimeType.startsWith(MIME_TYPE_IMAGE_JPG)
-			|| mimeType.startsWith(MIME_TYPE_IMAGE_GIF) || mimeType.startsWith(MIME_TYPE_IMAGE_HEIF) || mimeType.startsWith(MIME_TYPE_IMAGE_HEIC));
+	/**
+	 * Check if the current mime type hints to an Android-natively supported bitmap image format
+	 * @param mimeType Mime Type to check such as "image/png"
+	 * @return true if format is supported, false otherwise
+	 */
+	public static boolean isSupportedImageFile(@Nullable String mimeType) {
+		if (mimeType != null && mimeType.startsWith("image/")) {
+			for (String type: supportedImageMimeTypes) {
+				if (mimeType.startsWith(type)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
-	public static boolean isStaticImageFile(@Nullable String mimeType) {
-		return mimeType != null && (mimeType.startsWith(MIME_TYPE_IMAGE_PNG) || mimeType.startsWith(MIME_TYPE_IMAGE_JPG)
-			|| mimeType.startsWith(MIME_TYPE_IMAGE_HEIF) || mimeType.startsWith(MIME_TYPE_IMAGE_HEIC) || mimeType.startsWith(MIME_TYPE_IMAGE_TIFF));
+	public static String[] getSupportedImageMimeTypes() {
+		return supportedImageMimeTypes;
 	}
 
 	public static boolean isVideoFile(@Nullable String mimeType) {
@@ -361,12 +375,20 @@ public class MimeUtil {
 		return mimeType != null && mimeType.startsWith(MIME_TYPE_IMAGE_GIF);
 	}
 
+	public static boolean isWebPFile(@Nullable String mimeType) {
+		return mimeType != null && mimeType.startsWith(MIME_TYPE_IMAGE_WEBP);
+	}
+
 	public static boolean isPdfFile(@Nullable String mimeType) {
 		return mimeType != null && mimeType.startsWith(MIME_TYPE_PDF);
 	}
 
 	public static boolean isContactFile(@Nullable String mimeType) {
 		return mimeType != null && (mimeType.startsWith(MIME_TYPE_VCARD) || mimeType.startsWith(MIME_TYPE_VCARD_ALT));
+	}
+
+	public static boolean isSVGFile(String mimeType) {
+		return mimeType != null && mimeType.startsWith(MIME_TYPE_IMAGE_SVG);
 	}
 
 	@NonNull
@@ -462,11 +484,14 @@ public class MimeUtil {
 		return mimeType;
 	}
 
-	public static @MediaItem.MediaType int getMediaTypeFromMimeType(String mimeType) {
-		if (MimeUtil.isImageFile(mimeType)) {
+	public static @MediaItem.MediaType int getMediaTypeFromMimeType(String mimeType, Uri uri) {
+		if (MimeUtil.isSupportedImageFile(mimeType)) {
 			if (MimeUtil.isGifFile(mimeType)) {
 				return TYPE_GIF;
 			} else {
+				if (ConfigUtils.isSupportedAnimatedImageFormat(mimeType) && FileUtil.isAnimatedImageFile(uri)) {
+					return MediaItem.TYPE_IMAGE_ANIMATED;
+				}
 				return TYPE_IMAGE;
 			}
 		} else if (MimeUtil.isVideoFile(mimeType)) {

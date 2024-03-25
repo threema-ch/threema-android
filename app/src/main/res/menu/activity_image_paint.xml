@@ -71,7 +71,7 @@
 					android:orderInCategory="40"
 					android:title="@string/brush"
 					app:iconTint="?attr/colorOnSurface"
-					app:showAsAction="always" />
+					app:showAsAction="never" />
 
 				<item
 					android:id="@+id/item_pencil"
@@ -80,7 +80,16 @@
 					android:orderInCategory="60"
 					android:title="@string/pencil"
 					app:iconTint="?attr/colorOnSurface"
-					app:showAsAction="always" />
+					app:showAsAction="never" />
+
+				<item
+					android:id="@+id/item_highlighter"
+					android:enabled="true"
+					android:icon="@drawable/ic_ink_highlighter_outline"
+					android:orderInCategory="80"
+					android:title="@string/highlighter"
+					app:iconTint="?attr/colorOnSurface"
+					app:showAsAction="never" />
 
 			</menu>
 

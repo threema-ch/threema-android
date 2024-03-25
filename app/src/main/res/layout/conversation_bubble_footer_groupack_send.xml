@@ -6,8 +6,7 @@
 	android:layout_height="match_parent"
 	android:layout_marginLeft="3dp"
 	android:orientation="horizontal"
-	android:visibility="gone"
-	android:animateLayoutChanges="true">
+	android:visibility="gone">
 
 	<ImageView
 		android:id="@+id/groupack_thumbsup"
@@ -17,8 +16,7 @@
 		android:layout_gravity="center_vertical"
 		android:src="@drawable/ic_thumb_up_grey600_24dp"
 		app:tint="@color/material_green"
-		android:contentDescription="@string/message_acknowledged"
-		/>
+		android:contentDescription="@string/message_acknowledged" />
 
 	<TextView
 		android:id="@+id/groupack_thumbsup_count"

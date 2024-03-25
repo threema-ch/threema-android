@@ -695,7 +695,7 @@ Threema 支援的所有表情符號。</string>
     <string name="select_all">選擇所有</string>
     <string name="deleting_messages">正在刪除訊息</string>
     <string name="media_gallery_files">檔案</string>
-    <string name="prefs_gif_autoplay">自動播放GIF動畫</string>
+    <string name="prefs_gif_autoplay">自動播放動畫圖像</string>
     <string name="media_gallery_audio">語音訊息</string>
     <string name="action_clone_group">克隆群組</string>
     <string name="clone_group_message">這將建立這個群組的克隆，並由您作為管理員。是否繼續？</string>
@@ -1092,7 +1092,6 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_working_days_enable_title">非工作時間政策</string>
     <string name="prefs_working_days_enable_sum">在工作時間以外停用通知並拒絕通話</string>
     <string name="work_life_dnd_active">非工作時間在線</string>
-    <string name="pencil">鉛筆</string>
     <string name="warning">警告</string>
     <string name="password_remember_warning">請您記住在這裡輸入的內容！由於 %s 不會在伺服器上儲存任何密碼，如果您忘記了 PIN 碼或密碼，我們無法協助您找回密碼。</string>
     <string name="safe_backup_tap_to_restart">點擊系統通知以重新啟動應用程式。如果看不到通知，請向下滑動開啟電話的通知欄。</string>
@@ -1181,6 +1180,8 @@ Threema 支援的所有表情符號。</string>
     <string name="notes">注意</string>
     <string name="blur_faces">臉部模糊處理</string>
     <string name="brush">筆刷</string>
+    <string name="pencil">鉛筆</string>
+    <string name="highlighter">螢光筆</string>
     <string name="error_detecting_faces">檢測臉部時出錯</string>
     <string name="no_faces_detected">未檢測到臉部</string>
     <string name="smiley">笑臉</string>
@@ -1539,6 +1540,11 @@ Threema 支援的所有表情符號。</string>
     <string name="problemsolver_to_settings">前往設定</string>
     <string name="prefs_advanced_options">進階選項</string>
     <string name="push_service">推播服務</string>
+    <string name="zoom_out">縮小</string>
+    <string name="zoom_in">放大</string>
+    <string name="edit_and_send">編輯並傳送</string>
+    <string name="media_gallery_animated_webps">動畫 WebP 檔案</string>
+    <string name="unsupported_image_type">不支援的圖像類型：%s</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>
@@ -1556,6 +1562,9 @@ Threema 支援的所有表情符號。</string>
     </plurals>
     <plurals name="new_messages">
         <item quantity="other">%d則新訊息</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="other">%d則未讀訊息</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="other">%d個檔案已成功儲存。</item>
@@ -1614,5 +1623,4 @@ Threema 支援的所有表情符號。</string>
     <plurals name="number_of_group_members">
         <item quantity="other">%d個群組成員</item>
     </plurals>
-    <string name="edit_and_send">編輯</string>
 </resources>

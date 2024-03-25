@@ -468,6 +468,9 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 							case MediaItem.TYPE_GIF:
 								item.setIcon(R.drawable.ic_gif_24dp);
 								break;
+							case MediaItem.TYPE_IMAGE_ANIMATED:
+								item.setIcon(R.drawable.ic_webp);
+								break;
 						}
 						ConfigUtils.tintMenuItem(MediaSelectionBaseActivity.this, item, R.attr.colorOnSurface);
 					}
@@ -742,6 +745,9 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		else if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_gifs))) {
 			mimeTypeIndex = MediaItem.TYPE_GIF;
 		}
+		else if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_animated_webps))) {
+			mimeTypeIndex = MediaItem.TYPE_IMAGE_ANIMATED;
+		}
 
 		if (mimeTypeIndex != 0) {
 			mediaAttachViewModel.setMediaByType(mimeTypeIndex);
@@ -764,6 +770,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				return getResources().getString(R.string.media_gallery_videos);
 			case (MediaItem.TYPE_GIF):
 				return getResources().getString(R.string.media_gallery_gifs);
+			case (MediaItem.TYPE_IMAGE_ANIMATED):
+				return getResources().getString(R.string.media_gallery_animated_webps);
 			default:
 				return null;
 		}
@@ -966,6 +974,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		}
 	}
 
+	@Override
 	public abstract void onItemChecked(int count);
 
 	protected void showPermissionRationale(int stringResource) {

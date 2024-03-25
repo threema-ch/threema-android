@@ -1072,7 +1072,6 @@ almacenado.</string>
     <string name="prefs_working_days_enable_title">Política fuera de horario</string>
     <string name="prefs_working_days_enable_sum">Deshabilite las notificaciones y rechace llamadas fuera del horario laborable.</string>
     <string name="work_life_dnd_active">Fuera de horario activo</string>
-    <string name="pencil">Lápiz</string>
     <string name="warning">¡Atención!</string>
     <string name="password_remember_warning">¡Recuerda lo que escribes aquí! Dado que %s no almacena contraseñas en los servidores, no podemos ayudarte si olvidas tu PIN o frase de contraseña.</string>
     <string name="safe_backup_tap_to_restart">Pulse en la notificación para reiniciar la aplicación ahora.</string>
@@ -1161,6 +1160,8 @@ almacenado.</string>
     <string name="notes">Notas</string>
     <string name="blur_faces">Cara difuminada</string>
     <string name="brush">Pincel</string>
+    <string name="pencil">Lápiz</string>
+    <string name="highlighter">Subrayador</string>
     <string name="error_detecting_faces">Error al detectar caras</string>
     <string name="no_faces_detected">No se detectan caras</string>
     <string name="smiley">Sonrisa</string>
@@ -1520,6 +1521,11 @@ almacenado.</string>
     <string name="problemsolver_to_settings">A la configuración</string>
     <string name="prefs_advanced_options">Opciones avanzadas</string>
     <string name="push_service">Servicio Push</string>
+    <string name="zoom_out">Alejar</string>
+    <string name="zoom_in">Acercar</string>
+    <string name="edit_and_send">Editar y enviar</string>
+    <string name="media_gallery_animated_webps">WebP animados</string>
+    <string name="unsupported_image_type">Tipo de imagen no admitido: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>
@@ -1596,5 +1602,4 @@ almacenado.</string>
         <item quantity="one">%d miembro del grupo</item>
         <item quantity="other">%d miembros del grupo</item>
     </plurals>
-    <string name="edit_and_send">Editar</string>
 </resources>

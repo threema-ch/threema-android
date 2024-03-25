@@ -57,6 +57,8 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -83,6 +85,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
@@ -178,6 +182,12 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 	private static final int STROKE_MODE_BRUSH = 0;
 	private static final int STROKE_MODE_PENCIL = 1;
+
+	private static final int STROKE_MODE_HIGHLIGHTER = 2;
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({STROKE_MODE_BRUSH, STROKE_MODE_PENCIL, STROKE_MODE_HIGHLIGHTER})
+	private @interface StrokeMode {}
+
 	private static final int MAX_FACES = 16;
 
 	private static final int ANIMATION_DURATION_MS = 200;
@@ -206,14 +216,14 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 	@ColorInt private int penColor, backgroundColor;
 
-	private MenuItem undoItem, drawParentItem, paintItem, pencilItem, blurFacesItem, cropItem;
-	private Drawable brushIcon, pencilIcon;
+	private MenuItem undoItem, drawParentItem, paintItem, pencilItem, highlighterItem, blurFacesItem, cropItem;
+	private Drawable brushIcon, pencilIcon, highlighterIcon;
 	private PaintSelectionPopup paintSelectionPopup;
 	private final Deque<ActionEntity> undoHistory = new LinkedList<>();
 	private long lastAnimationStart = 0;
 	private final MediaItem.Orientation currentOrientation = new MediaItem.Orientation();
 	private boolean saveSemaphore = false;
-	private int strokeMode = STROKE_MODE_BRUSH;
+	private @StrokeMode int strokeMode = STROKE_MODE_BRUSH;
 	private ActivityMode activityMode = ActivityMode.EDIT_IMAGE;
 	private int groupId = -1;
 	private final ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
@@ -401,13 +411,10 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			@Override
 			protected void onPostExecute(final Bitmap bitmap) {
 				if (bitmap != null) {
-					motionView.post(new Runnable() {
-						@Override
-						public void run() {
-							Layer layer = new Layer();
-							ImageEntity entity = new ImageEntity(layer, bitmap, motionView.getWidth(), motionView.getHeight());
-							motionView.addEntityAndPosition(entity);
-						}
+					motionView.post(() -> {
+						Layer layer = new Layer();
+						ImageEntity entity = new ImageEntity(layer, bitmap, motionView.getWidth(), motionView.getHeight());
+						motionView.addEntityAndPosition(entity);
 					});
 				}
 			}
@@ -488,6 +495,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 		this.brushIcon = AppCompatResources.getDrawable(this, R.drawable.ic_brush);
 		this.pencilIcon = AppCompatResources.getDrawable(this, R.drawable.ic_pencil_outline);
+		this.highlighterIcon = AppCompatResources.getDrawable(this, R.drawable.ic_ink_highlighter_outline);
 
 		this.penColor = getResources().getColor(R.color.material_red);
 		this.backgroundColor = Color.WHITE;
@@ -754,12 +762,12 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	}
 
 	private void selectSticker() {
-		startActivityForResult(new Intent(ImagePaintActivity.this, StickerSelectorActivity.class), REQUEST_CODE_STICKER_SELECTOR);
+		startActivityForResult(new Intent(this, StickerSelectorActivity.class), REQUEST_CODE_STICKER_SELECTOR);
 		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 	}
 
 	private void enterText() {
-		Intent intent = new Intent(ImagePaintActivity.this, ImagePaintKeyboardActivity.class);
+		Intent intent = new Intent(this, ImagePaintKeyboardActivity.class);
 		intent.putExtra(ImagePaintKeyboardActivity.INTENT_EXTRA_COLOR, penColor);
 		startActivityForResult(intent, REQUEST_CODE_ENTER_TEXT);
 		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
@@ -921,28 +929,38 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 
-		if (this.strokeMode == STROKE_MODE_PENCIL) {
-			drawParentItem.setIcon(pencilIcon);
-		} else {
-			drawParentItem.setIcon(brushIcon);
+		switch (this.strokeMode) {
+			case STROKE_MODE_PENCIL:
+				drawParentItem.setIcon(pencilIcon);
+				break;
+			case STROKE_MODE_HIGHLIGHTER:
+				drawParentItem.setIcon(highlighterIcon);
+				break;
+			default:
+				drawParentItem.setIcon(brushIcon);
+				break;
 		}
 
 		ConfigUtils.tintMenuItem(this, drawParentItem, R.attr.colorOnSurface);
 		ConfigUtils.tintMenuItem(this, paintItem, R.attr.colorOnSurface);
 		ConfigUtils.tintMenuItem(this, pencilItem, R.attr.colorOnSurface);
+		ConfigUtils.tintMenuItem(this, highlighterItem, R.attr.colorOnSurface);
 
 		if (motionView.getSelectedEntity() == null) {
 			// no selected entities => draw mode or neutral mode
 			if (paintView.getActive()) {
-				if (this.strokeMode == STROKE_MODE_PENCIL) {
-					ConfigUtils.tintMenuItem(pencilItem, this.penColor);
-					drawParentItem.setIcon(pencilIcon);
-					ConfigUtils.tintMenuItem(drawParentItem, this.penColor);
-				} else {
-					ConfigUtils.tintMenuItem(paintItem, this.penColor);
-					drawParentItem.setIcon(brushIcon);
-					ConfigUtils.tintMenuItem(drawParentItem, this.penColor);
+				switch (this.strokeMode) {
+					case STROKE_MODE_PENCIL:
+						ConfigUtils.tintMenuItem(pencilItem, this.penColor);
+						break;
+					case STROKE_MODE_HIGHLIGHTER:
+						ConfigUtils.tintMenuItem(highlighterItem, this.penColor);
+						break;
+					default:
+						ConfigUtils.tintMenuItem(paintItem, this.penColor);
+						break;
 				}
+				ConfigUtils.tintMenuItem(drawParentItem, this.penColor);
 			}
 		}
 		undoItem.setVisible(hasChanges());
@@ -972,6 +990,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		drawParentItem = menu.findItem(R.id.item_draw_parent);
 		paintItem = menu.findItem(R.id.item_draw);
 		pencilItem = menu.findItem(R.id.item_pencil);
+		highlighterItem = menu.findItem(R.id.item_highlighter);
 		blurFacesItem = menu.findItem(R.id.item_face);
 
 		if (activityMode == ActivityMode.DRAWING) {
@@ -1023,6 +1042,14 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 				setDrawMode(false);
 			} else {
 				setStrokeMode(STROKE_MODE_PENCIL);
+				setDrawMode(true);
+			}
+		} else if (id == R.id.item_highlighter) {
+			if (strokeMode == STROKE_MODE_HIGHLIGHTER && this.paintView.getActive()) {
+				// switch to selection mode
+				setDrawMode(false);
+			} else {
+				setStrokeMode(STROKE_MODE_HIGHLIGHTER);
 				setDrawMode(true);
 			}
 		} else if (id == R.id.item_face_blur) {
@@ -1084,10 +1111,23 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 	private void setStrokeMode(int strokeMode) {
 		this.strokeMode = strokeMode;
-		this.paintView.setStrokeWidth(
-			getResources().getDimensionPixelSize(strokeMode == STROKE_MODE_PENCIL ?
-				R.dimen.imagepaint_pencil_stroke_width :
-				R.dimen.imagepaint_brush_stroke_width));
+		@DimenRes int strokeWidthDimension;
+		switch (strokeMode) {
+			case STROKE_MODE_HIGHLIGHTER:
+				paintView.setTransparent(true);
+				strokeWidthDimension = R.dimen.imagepaint_highlighter_stroke_width;
+				break;
+			case STROKE_MODE_PENCIL:
+				paintView.setTransparent(false);
+				strokeWidthDimension = R.dimen.imagepaint_pencil_stroke_width;
+				break;
+			default:
+				paintView.setTransparent(false);
+				strokeWidthDimension = R.dimen.imagepaint_brush_stroke_width;
+				break;
+
+		}
+		this.paintView.setStrokeWidth(getResources().getDimensionPixelSize(strokeWidthDimension));
 	}
 
 	private void deleteEntity() {

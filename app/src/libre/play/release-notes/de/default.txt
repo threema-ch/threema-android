@@ -1,1 +1,3 @@
-* Ein Fehler wurde behoben, durch den unbekannte Gruppenmitglieder versehentlich zur Kontaktliste hinzugefügt wurden.
+* Textmarker-Funktion in der Bildbearbeitung
+* Unterstützung von animierten WebP-Bildern
+* Zahlreiche Optimierungen und Fehlerbehebung

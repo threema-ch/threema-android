@@ -61,6 +61,7 @@ public class Config {
 		"Samsung;SM-A320FL;8.", // Galaxy A3 (2017), Ticket #926673
 		"Samsung;SM-G930F;7.", // Galaxy S7, Ticket #573851
 		"Samsung;SM-G960F;8.", // Galaxy S9, Ticket #379708
+		"Fairphone;FP5;13.", // Fairphone 5, Ticket #641579
 	};
 
 	/**

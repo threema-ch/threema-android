@@ -21,9 +21,11 @@
 
 package ch.threema.app.adapters
 
+import androidx.annotation.OptIn
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentViewHolder
 import androidx.viewpager2.widget.ViewPager2
@@ -54,14 +56,14 @@ class SendMediaAdapter(
 
     override fun getItemCount() = mm.size()
 
-    override fun createFragment(position: Int): Fragment {
+    @OptIn(UnstableApi::class) override fun createFragment(position: Int): Fragment {
         return BigMediaFragment.newInstance(mm.get(position), bottomElemHeight).also {
             fragments[position] = it
             it.setViewPager(viewPager)
         }
     }
 
-    override fun onBindViewHolder(
+    @OptIn(UnstableApi::class) override fun onBindViewHolder(
         holder: FragmentViewHolder,
         position: Int,
         payloads: MutableList<Any>
@@ -80,7 +82,7 @@ class SendMediaAdapter(
         return mm.getItems().map { it.uri.hashCode().toLong() }.contains(itemId)
     }
 
-    override fun filenameUpdated(position: Int) {
+    @OptIn(UnstableApi::class) override fun filenameUpdated(position: Int) {
         if (position < 0 || position >= itemCount) {
             logger.error("Could not update filename at position {} of {} items", position, itemCount)
             return
@@ -88,7 +90,7 @@ class SendMediaAdapter(
         fragments[position]?.updateFilename()
     }
 
-    override fun videoMuteStateUpdated(position: Int) {
+    @OptIn(UnstableApi::class) override fun videoMuteStateUpdated(position: Int) {
         if (position < 0 || position >= itemCount) {
             logger.error("Could not update video at position {} of {} items", position, itemCount)
             return
@@ -100,7 +102,7 @@ class SendMediaAdapter(
         // Nothing to do as the view pager position is updated via the layout
     }
 
-    override fun sendAsFileStateUpdated(position: Int) {
+    @OptIn(UnstableApi::class) override fun sendAsFileStateUpdated(position: Int) {
         fragments[position]?.updateSendAsFileState()
     }
 }

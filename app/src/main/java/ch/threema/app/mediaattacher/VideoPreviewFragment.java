@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.media3.common.AudioAttributes;
@@ -51,7 +52,6 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
-@UnstableApi
 public class VideoPreviewFragment extends PreviewFragment implements DefaultLifecycleObserver, Player.Listener, PreviewFragmentInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoPreviewFragment");
 
@@ -59,6 +59,7 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 	private ExoPlayer videoPlayer;
 	private GestureFrameLayout gestureFrameLayout;
 	private final GestureController.OnStateChangeListener onGestureStateChangeListener = new GestureController.OnStateChangeListener() {
+		@OptIn(markerClass = UnstableApi.class)
 		@Override
 		public void onStateChanged(State state) {
 			if (state.getZoom() > 1.05f || state.getZoom() < 0.95f) {
@@ -143,6 +144,7 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 		initializePlayer(false);
 	}
 
+	@OptIn(markerClass = UnstableApi.class)
 	public void initializePlayer(boolean playWhenReady) {
 		try {
 			AudioAttributes audioAttributes = new AudioAttributes.Builder()

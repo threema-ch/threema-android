@@ -61,6 +61,8 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+		super.configureChatMessage(holder, position);
+
 		final MessagePlayer videoMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
 			(Activity) getContext(), helper.getMessageReceiver(), null);
 
@@ -277,7 +279,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 			thumbnail = null;
 		}
 
-		ImageViewUtil.showRoundedBitmapOrMoviePlaceholder(
+		ImageViewUtil.showBitmapOrMoviePlaceholder(
 			getContext(),
 			holder.contentView,
 			holder.attachmentImage,

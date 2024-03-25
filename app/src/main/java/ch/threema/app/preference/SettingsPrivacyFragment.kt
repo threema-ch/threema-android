@@ -171,6 +171,10 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
             contactSyncPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
                 val newCheckedValue = newValue == true
                 if ((preference as TwoStatePreference).isChecked != newCheckedValue) {
+                    requirePreferenceService().emailSyncHashCode = 0
+                    requirePreferenceService().phoneNumberSyncHashCode = 0
+                    requirePreferenceService().timeOfLastContactSync = 0L
+
                     if (newCheckedValue) {
                         enableSync()
                     } else {

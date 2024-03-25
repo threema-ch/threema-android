@@ -29,7 +29,7 @@
 			android:foreground="@drawable/bubble_overlay_selector"
 			android:minHeight="@dimen/media_thumbnail_min_height">
 
-			<ImageView
+			<com.google.android.material.imageview.ShapeableImageView
 				android:id="@+id/attachment_image_view"
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"

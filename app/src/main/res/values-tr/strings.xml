@@ -4,17 +4,17 @@
     <string name="title_section1">Sohbetler</string>
     <string name="title_compose_message">Sohbet başlat</string>
     <string name="title_choose_recipient">Alıcı Seçin</string>
-    <string name="title_keyfingerprint">Parmak izi anahtarı</string>
-    <string name="title_mythreemaid">Threema kimliğim</string>
+    <string name="title_keyfingerprint">Anahtar Parmak İzi</string>
+    <string name="title_mythreemaid">Threema Kimliğim</string>
     <string name="title_threemaid">Threema kimliği</string>
     <string name="title_adduser">Yeni kişi ekle</string>
     <string name="title_enter_id">Kimlik gir</string>
-    <string name="title_invite_friend">Threema\'ya davet et</string>
+    <string name="title_invite_friend">Arkadaşını davet et</string>
     <string name="invite_via">Davet bağlantısı paylaş</string>
     <string name="invite_email_body">Merhaba,\n\nI kullanıcıların gizliliğini koruyan güvenli anlık mesajlaşma programı olan %1$s kullanın.\n\nThreema kimliğim: https://threema.id/%2$s\n\n%1$s üzerinden haberleşelim!\n\nGörüşmek üzere,\n</string>
     <string name="invite_sms_body">Merhaba! Güvenli ve gizliliğe uygun bir şekilde iletişim kurmak için %1$s kullanalım! Threema ID kimliğim: https:// threema.id/%2$s</string>
     <string name="invite_email_subject">Threema. Gizliliğinizi koruyan güvenli mesajlaşma programı.</string>
-    <string name="enter_id_hint">Threema kimliğini gir</string>
+    <string name="enter_id_hint">Threema kimliğini girin</string>
     <string name="account_links">Bağlı hesaplar</string>
     <string name="menu_settings">Ayarlar</string>
     <string name="menu_about">Threema Hakkında</string>
@@ -37,7 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">%s kullanıcıyı cihazın adres defteriyle eşitle</string>
     <string name="prefs_sum_sync_contacts_off">%s kullanıcıyı cihazın adres defteriyle eşitleme</string>
     <string name="prefs_title_sync_contacts">Kişileri eşitle</string>
-    <string name="prefs_sum_block_unknown_off">Herhangi biri size mesaj gönderebilir. İlk mesaj geldiğinde yeni kişiler otomatik olarak eklenecektir.</string>
+    <string name="prefs_sum_block_unknown_off">Herhangi biri size mesaj gönderebilir. İlk mesaj geldiğinde yeni kişilere otomatik olarak eklenecektir.</string>
     <string name="prefs_sum_block_unknown_on">Yalnızca adres defterinizdeki kişiler size mesaj gönderebilir.</string>
     <string name="prefs_title_block_unknown">Bilinmeyeni engelle</string>
     <string name="prefs_title_read_receipts">Okundu bilgisini gönder</string>
@@ -664,7 +664,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="select_all">Hepsini seç</string>
     <string name="deleting_messages">Mesajlar siliniyor</string>
     <string name="media_gallery_files">Dosyalar</string>
-    <string name="prefs_gif_autoplay">Hareketli GIF\'leri otomatik oynat</string>
+    <string name="prefs_gif_autoplay">Animasyonlu görüntüleri otomatik oynat</string>
     <string name="media_gallery_audio">Sesli mesajlar</string>
     <string name="action_clone_group">Grubu kopyala</string>
     <string name="clone_group_message">Bu, yönetici olarak sizinle birlikte bu grubun bir kopyasını oluşturacaktır. Devam edilsin mi?</string>
@@ -1059,7 +1059,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_working_days_enable_title">Mesai dışı politikası</string>
     <string name="prefs_working_days_enable_sum">Bildirimleri devre dışı bırak ve çalışma saatleri dışındaki aramaları reddet</string>
     <string name="work_life_dnd_active">Mesai saatleri dışı aktif</string>
-    <string name="pencil">Kalem</string>
     <string name="warning">Uyarı</string>
     <string name="password_remember_warning">Buraya ne yazdığınızı unutmayın! %s sunucularda herhangi bir parola kaydetmediğinden, PIN kodunuzu veya parolanızı unutursanız size yardımcı olamayız.</string>
     <string name="safe_backup_tap_to_restart">Uygulamayı şimdi yeniden başlatmak için gösterilen sistem bildirimine dokunun. Bildirimi göremiyorsanız, lütfen telefonunuzun bildirim çubuğunu aşağı kaydırın.</string>
@@ -1148,6 +1147,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="notes">Notlar</string>
     <string name="blur_faces">Yüzleri bulanıklaştır</string>
     <string name="brush">Fırça</string>
+    <string name="pencil">Kalem</string>
+    <string name="highlighter">Fosforlu Kalem</string>
     <string name="error_detecting_faces">Yüzler algılanırken hata oluştu</string>
     <string name="no_faces_detected">Yüz algılanmadı</string>
     <string name="smiley">Gülenyüz</string>
@@ -1506,6 +1507,11 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="problemsolver_to_settings">Ayarlara</string>
     <string name="prefs_advanced_options">Gelişmiş seçenekler</string>
     <string name="push_service">Push hizmeti</string>
+    <string name="zoom_out">Uzaklaştır</string>
+    <string name="zoom_in">Yakınlaştır</string>
+    <string name="edit_and_send">Düzenle ve gönder</string>
+    <string name="media_gallery_animated_webps">Animasyonlu WebP\'ler</string>
+    <string name="unsupported_image_type">Desteklenmeyen görüntü türü: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>
@@ -1529,6 +1535,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <plurals name="new_messages">
         <item quantity="one">%d yeni mesaj</item>
         <item quantity="other">%d yeni mesaj</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="one">%d okunmamış Mesaj</item>
+        <item quantity="other">%d okunmamış Mesaj</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="one">%d dosya başarıyla kaydedildi.</item>
@@ -1608,5 +1618,4 @@ Daha önce alınan istekler yine de kabul edilebilir veya reddedilebilir.</item>
         <item quantity="one">%d grup üyesi</item>
         <item quantity="other">%d grup üyesi</item>
     </plurals>
-    <string name="edit_and_send">Düzenle</string>
 </resources>

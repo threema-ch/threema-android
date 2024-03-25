@@ -60,6 +60,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.util.AppRTCUtils;
 import ch.threema.app.voip.util.VoipUtil;
@@ -108,6 +109,7 @@ public class VoipBluetoothManager {
 	int scoConnectionAttempts;
 	private State bluetoothState;
 	private Long bluetoothAudioConnectedAt;
+	private String connectedBluetoothDeviceAddress;
 	private final BluetoothProfile.ServiceListener bluetoothServiceListener;
 	private BluetoothAdapter bluetoothAdapter;
 	private BluetoothHeadset bluetoothHeadset;
@@ -190,8 +192,8 @@ public class VoipBluetoothManager {
 		private void onConnectionStateChange(Intent intent) {
 			final int state =
 				intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, BluetoothHeadset.STATE_DISCONNECTED);
-			logger.info("BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_CONNECTION_STATE_CHANGED, s={}, sb={}, BT state={}, d={}",
-				headsetStateToString(state), isInitialStickyBroadcast(), bluetoothState, getDeviceNameFromIntent(intent));
+			logger.info("BluetoothHeadsetBroadcastReceiver.onReceive while in BT state={}: a=ACTION_CONNECTION_STATE_CHANGED, headsetState={}, sb={}, d={}",
+				bluetoothState, headsetStateToString(state), isInitialStickyBroadcast(), getDeviceNameFromIntent(intent));
 			switch (state) {
 				case BluetoothHeadset.STATE_CONNECTED:
 					scoConnectionAttempts = 0;
@@ -202,9 +204,23 @@ public class VoipBluetoothManager {
 					// No action needed
 					break;
 				case BluetoothHeadset.STATE_DISCONNECTED:
-					// Bluetooth is probably powered off during the call.
-					stopScoAudio();
-					updateAudioDeviceState();
+					String disconnectedBluetoothDeviceAddress = getDeviceAddressFromIntent(intent);
+					if (TestUtil.compare(connectedBluetoothDeviceAddress, disconnectedBluetoothDeviceAddress)) {
+						logger.info(
+							"The connected bluetooth device '{}' is now disconnected",
+							disconnectedBluetoothDeviceAddress
+						);
+						// Bluetooth is probably powered off during the call.
+						stopScoAudio();
+						updateAudioDeviceState();
+						connectedBluetoothDeviceAddress = null;
+					} else {
+						logger.info(
+							"Another bluetooth device '{}' has been disconnected. Connected device: '{}'",
+							disconnectedBluetoothDeviceAddress,
+							connectedBluetoothDeviceAddress
+						);
+					}
 					break;
 			}
 		}
@@ -217,8 +233,8 @@ public class VoipBluetoothManager {
 			final int state = intent.getIntExtra(
 				BluetoothHeadset.EXTRA_STATE, BluetoothHeadset.STATE_AUDIO_DISCONNECTED);
 
-			logger.info("BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s={}, sb={}, BT state={}, d={}",
-				headsetStateToString(state), isInitialStickyBroadcast(), bluetoothState, getDeviceNameFromIntent(intent));
+			logger.info("BluetoothHeadsetBroadcastReceiver.onReceive while in BT state={}: a=ACTION_AUDIO_STATE_CHANGED, headsetState={}, sb={}, d={}",
+				bluetoothState, headsetStateToString(state), isInitialStickyBroadcast(), getDeviceNameFromIntent(intent));
 
 			// Switch BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s=A_DISCONNECTED, sb=false, BT state: HEADSET_AVAILABLE
 			// Btn BluetoothHeadsetBroadcastReceiver.onReceive: a=ACTION_AUDIO_STATE_CHANGED, s=A_DISCONNECTED, sb=false, BT state: SCO_CONNECTED
@@ -229,6 +245,11 @@ public class VoipBluetoothManager {
 					logger.debug("+++ Bluetooth audio SCO is now connected");
 					bluetoothState = State.SCO_CONNECTED;
 					bluetoothAudioConnectedAt = System.nanoTime();
+					connectedBluetoothDeviceAddress = getDeviceAddressFromIntent(intent);
+					logger.info(
+						"Bluetooth audio SCO is now connected with device {}",
+						connectedBluetoothDeviceAddress
+					);
 					scoConnectionAttempts = 0;
 					updateAudioDeviceState();
 				} else {
@@ -282,10 +303,27 @@ public class VoipBluetoothManager {
 
 		@Nullable
 		private String getDeviceNameFromIntent(@NonNull Intent intent) {
-			final BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-			if (device != null
-				&& ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+			final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+			// On versions prior to S, devices already have this permission by default
+			boolean hasBluetoothConnectPermission =
+				Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+					|| ContextCompat.checkSelfPermission(
+					ThreemaApplication.getAppContext(),
+					Manifest.permission.BLUETOOTH_CONNECT
+				) == PackageManager.PERMISSION_GRANTED;
+
+			if (device != null && hasBluetoothConnectPermission) {
 				return device.getName();
+			}
+			return "";
+		}
+
+		@Nullable
+		private String getDeviceAddressFromIntent(@NonNull Intent intent) {
+			final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+			if (device != null) {
+				return device.getAddress();
 			}
 			return "";
 		}

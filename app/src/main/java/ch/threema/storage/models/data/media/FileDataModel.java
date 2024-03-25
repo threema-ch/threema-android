@@ -48,6 +48,7 @@ public class FileDataModel implements MediaMessageDataInterface {
 	public static final String METADATA_KEY_DURATION = "d";
 	public static final String METADATA_KEY_WIDTH = "w";
 	public static final String METADATA_KEY_HEIGHT = "h";
+	public static final String METADATA_KEY_ANIMATED = "a";
 
 	private byte[] fileBlobId;
 	private byte[] encryptionKey;

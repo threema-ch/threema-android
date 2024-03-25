@@ -59,7 +59,7 @@
 								android:layout_width="128dp"
 								android:layout_height="128dp"
 								android:src="@drawable/ic_circle_white"
-								android:tint="@color/md_theme_light_surfaceVariant"
+								android:tint="?attr/colorSecondaryContainer"
 								android:importantForAccessibility="no"/>
 
 							<ImageView
@@ -69,7 +69,7 @@
 								android:adjustViewBounds="true"
 								android:src="@drawable/ic_backup_data_black_192dp"
 								android:importantForAccessibility="no"
-								app:tint="@color/md_theme_light_onSurfaceVariant" />
+								app:tint="?attr/colorOnSecondaryContainer" />
 
 						</FrameLayout>
 

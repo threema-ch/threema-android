@@ -239,6 +239,9 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 			return msg;
 		}, null, filteredIdentities);
+
+		// Save the message model as it now contains the message id
+		saveLocalModel(abstractMessageModel);
 	}
 
 	@Override

@@ -1371,6 +1371,15 @@ public class ComposeMessageFragment extends Fragment implements
 					DISPATCH_MODE_STOP
 				)
 			);
+			ViewCompat.setWindowInsetsAnimationCallback(
+				emojiPicker,
+				new TranslateDeferringInsetsAnimationCallback(
+					emojiPicker,
+					WindowInsetsCompat.Type.systemBars(),
+					WindowInsetsCompat.Type.ime(),
+					DISPATCH_MODE_STOP
+				)
+			);
 		} catch (NullPointerException e) {
 			logger.error("Exception", e);
 		}
@@ -1829,7 +1838,6 @@ public class ComposeMessageFragment extends Fragment implements
 	 */
 	private void setupMessageTextClickListener() {
 		if (ConfigUtils.isDefaultEmojiStyle() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-			this.messageText.setShowSoftInputOnFocus(false);
 			this.messageText.setOnClickListener(v -> {
 				if (isEmojiPickerShown()) {
 					if (ConfigUtils.isLandscape(activity) &&
@@ -1844,7 +1852,6 @@ public class ComposeMessageFragment extends Fragment implements
 				activity.openSoftKeyboard(emojiPicker, messageText);
 			});
 		} else {
-			this.messageText.setShowSoftInputOnFocus(true);
 			this.messageText.setOnClickListener(null);
 		}
 	}

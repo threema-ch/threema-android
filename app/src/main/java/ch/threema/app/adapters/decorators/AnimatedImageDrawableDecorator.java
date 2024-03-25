@@ -21,9 +21,11 @@
 
 package ch.threema.app.adapters.decorators;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.view.View;
 import android.widget.Toast;
 
@@ -32,8 +34,8 @@ import org.slf4j.Logger;
 import java.io.File;
 
 import ch.threema.app.services.MessageServiceImpl;
-import ch.threema.app.services.messageplayer.GifMessagePlayer;
 import ch.threema.app.services.messageplayer.MessagePlayer;
+import ch.threema.app.services.messageplayer.AnimatedImageDrawableMessagePlayer;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.FileUtil;
@@ -46,26 +48,31 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.media.FileDataModel;
 
-public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AnimGifChatAdapterDecorator");
+/**
+ * A decorator for animated image formats natively supported by AnimatedImageDrawable
+ * Currently, this is limited to WebP
+ */
+@TargetApi(Build.VERSION_CODES.P)
+public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AnimatedImageDrawableDecorator");
 
 	private static final String LISTENER_TAG = "decorator";
-	private GifMessagePlayer gifMessagePlayer;
+	private AnimatedImageDrawableMessagePlayer animatedImageDrawableMessagePlayer;
 
-	public AnimGifChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper decoratorHelper) {
+	public AnimatedImageDrawableDecorator(Context context, AbstractMessageModel messageModel, Helper decoratorHelper) {
 		super(context, messageModel, decoratorHelper);
 	}
 
 	@Override
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		super.configureChatMessage(holder, position);
-
 		final long fileSize;
+
+		super.configureChatMessage(holder, position);
 
 		logger.debug("configureChatMessage - position " + position);
 
-		gifMessagePlayer = (GifMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) getContext(), helper.getMessageReceiver(), null);
-		holder.messagePlayer = gifMessagePlayer;
+		animatedImageDrawableMessagePlayer = (AnimatedImageDrawableMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) getContext(), helper.getMessageReceiver(), null);
+		holder.messagePlayer = animatedImageDrawableMessagePlayer;
 
 		/*
 		 * setup click listeners
@@ -80,7 +87,7 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 						break;
 					case ControllerView.STATUS_READY_TO_PLAY:
 					case ControllerView.STATUS_READY_TO_DOWNLOAD:
-						gifMessagePlayer.open();
+						animatedImageDrawableMessagePlayer.open();
 						break;
 					case ControllerView.STATUS_PROGRESSING:
 						if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.TRANSCODING ||
@@ -88,7 +95,7 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 							getMessageModel().getState() == MessageState.SENDING)) {
 							getMessageService().remove(getMessageModel());
 						} else {
-							gifMessagePlayer.cancel();
+							animatedImageDrawableMessagePlayer.cancel();
 						}
 						break;
 					default:
@@ -101,10 +108,10 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 			if (!isInChoiceMode()) {
 				if ((!getPreferenceService().isAnimationAutoplay() ||
 					holder.controller.getStatus() == ControllerView.STATUS_READY_TO_DOWNLOAD)) {
-					gifMessagePlayer.open();
+					animatedImageDrawableMessagePlayer.open();
 				}
 				if (getPreferenceService().isAnimationAutoplay() && holder.controller.getStatus() == ControllerView.STATUS_NONE) {
-					gifMessagePlayer.openInExternalPlayer();
+					animatedImageDrawableMessagePlayer.openInExternalPlayer();
 				}
 			}
 		}, holder.messageBlockView);
@@ -124,7 +131,7 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 		final FileDataModel fileData = getMessageModel().getFileData();
 		fileSize = fileData.getFileSize();
 
-		ImageViewUtil.showRoundedBitmapOrImagePlaceholder(
+		ImageViewUtil.showBitmapOrImagePlaceholder(
 			getContext(),
 			holder.contentView,
 			holder.attachmentImage,
@@ -146,9 +153,9 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 
 		RuntimeUtil.runOnUiThread(() -> setControllerState(holder, fileData, fileSize));
 
-		setDatePrefix(FileUtil.getFileMessageDatePrefix(getContext(), getMessageModel(), "GIF"));
+		setDatePrefix(FileUtil.getFileMessageDatePrefix(getContext(), getMessageModel(), "WebP"));
 
-		gifMessagePlayer
+		animatedImageDrawableMessagePlayer
 				.attachContainer(holder.attachmentImage)
 				// decryption
 				.addListener(LISTENER_TAG, new MessagePlayer.DecryptionListener() {
@@ -247,15 +254,15 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 		logger.debug("setAutoPlay holder position " + holder.position);
 
 		if (fileData.isDownloaded()) {
-			if (helper.getPreferenceService().isAnimationAutoplay() && gifMessagePlayer != null) {
-				gifMessagePlayer.autoPlay();
+			if (helper.getPreferenceService().isAnimationAutoplay() && animatedImageDrawableMessagePlayer != null) {
+				animatedImageDrawableMessagePlayer.autoPlay();
 				holder.controller.setVisibility(View.INVISIBLE);
 			} else {
 				holder.controller.setPlay();
 			}
 		} else {
-			if (helper.getPreferenceService().isAnimationAutoplay() && gifMessagePlayer != null && fileSize < MessageServiceImpl.FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO) {
-				gifMessagePlayer.autoPlay();
+			if (helper.getPreferenceService().isAnimationAutoplay() && animatedImageDrawableMessagePlayer != null && fileSize < MessageServiceImpl.FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO) {
+				animatedImageDrawableMessagePlayer.autoPlay();
 				holder.controller.setVisibility(View.INVISIBLE);
 			} else {
 				holder.controller.setReadyToDownload();

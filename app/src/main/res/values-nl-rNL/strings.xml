@@ -1066,7 +1066,6 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_working_days_enable_title">Buiten bedrijfstijden</string>
     <string name="prefs_working_days_enable_sum">Meldingen uitschakelen en oproepen buiten kantooruren afwijzen</string>
     <string name="work_life_dnd_active">Actief buiten kantooruren</string>
-    <string name="pencil">Potlood</string>
     <string name="warning">Waarschuwing!</string>
     <string name="password_remember_warning">Onthoud wat je hier binnenkomt! Aangezien %s geen wachtwoorden opslaat op servers, kunnen we u niet helpen als u uw PIN of passphrase vergeet.</string>
     <string name="safe_backup_tap_to_restart">Tik op de melding om de app nu opnieuw te starten.</string>
@@ -1155,6 +1154,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="notes">Notities</string>
     <string name="blur_faces">Gezichten vervagen</string>
     <string name="brush">Penseel</string>
+    <string name="pencil">Potlood</string>
+    <string name="highlighter">Markeerstift</string>
     <string name="error_detecting_faces">Fout tijdens detecteren van gezichten</string>
     <string name="no_faces_detected">Geen gezichten gedetecteerd</string>
     <string name="smiley">Smiley</string>
@@ -1513,6 +1514,11 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="problemsolver_to_settings">Naar de instellingen</string>
     <string name="prefs_advanced_options">Geavanceerde opties</string>
     <string name="push_service">Pushdienst</string>
+    <string name="zoom_out">Uitzoomen</string>
+    <string name="zoom_in">Inzoomen</string>
+    <string name="edit_and_send">Bewerken en verzenden</string>
+    <string name="media_gallery_animated_webps">Geanimeerde WebP\'s</string>
+    <string name="unsupported_image_type">Niet-ondersteund afbeeldingstype: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>
@@ -1589,5 +1595,4 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
         <item quantity="one">%d groepslid</item>
         <item quantity="other">%d groepsleden</item>
     </plurals>
-    <string name="edit_and_send">Bewerken</string>
 </resources>

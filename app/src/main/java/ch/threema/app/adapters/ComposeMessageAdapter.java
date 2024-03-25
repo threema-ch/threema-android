@@ -25,6 +25,7 @@ import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DE
 
 import android.animation.LayoutTransition;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -72,6 +73,7 @@ import ch.threema.app.adapters.decorators.StatusChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.TextChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.VideoChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.VoipStatusDataChatAdapterDecorator;
+import ch.threema.app.adapters.decorators.AnimatedImageDrawableDecorator;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
@@ -153,7 +155,9 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		TYPE_FILE_MEDIA_RECV,
 		TYPE_FILE_VIDEO_SEND,
 		TYPE_GROUP_CALL_STATUS,
-		TYPE_FORWARD_SECURITY_STATUS
+		TYPE_FORWARD_SECURITY_STATUS,
+		TYPE_IMAGE_ANIMATED_SEND,
+		TYPE_IMAGE_ANIMATED_RECV
 	})
 	public @interface ItemType {}
 
@@ -183,9 +187,11 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	public static final int TYPE_FILE_VIDEO_SEND = 23;
 	public static final int TYPE_GROUP_CALL_STATUS = 24;
 	public static final int TYPE_FORWARD_SECURITY_STATUS = 25;
+	public static final int TYPE_IMAGE_ANIMATED_SEND = 26;
+	public static final int TYPE_IMAGE_ANIMATED_RECV = 27;
 
 	// don't forget to update this after adding new types:
-	private static final int TYPE_MAX_COUNT = TYPE_FORWARD_SECURITY_STATUS + 1;
+	private static final int TYPE_MAX_COUNT = TYPE_IMAGE_ANIMATED_RECV + 1;
 
 	private OnClickListener onClickListener;
 	private Map<String, Integer> identityColors = null;
@@ -387,8 +393,12 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 						} else if (MimeUtil.isAudioFile(mimeType) && renderingType == FileData.RENDERING_MEDIA) {
 							return o ? TYPE_AUDIO_SEND : TYPE_AUDIO_RECV;
 						} else if (renderingType == FileData.RENDERING_MEDIA || renderingType == FileData.RENDERING_STICKER) {
-							if (MimeUtil.isImageFile(mimeType)) {
-								return o ? TYPE_FILE_MEDIA_SEND : TYPE_FILE_MEDIA_RECV;
+							if (MimeUtil.isSupportedImageFile(mimeType)) {
+								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ConfigUtils.isSupportedAnimatedImageFormat(mimeType)) {
+									return o ? TYPE_IMAGE_ANIMATED_SEND : TYPE_IMAGE_ANIMATED_RECV;
+								} else {
+									return o ? TYPE_FILE_MEDIA_SEND : TYPE_FILE_MEDIA_RECV;
+								}
 							} else if (MimeUtil.isVideoFile(mimeType)) {
 								return o ? TYPE_FILE_VIDEO_SEND : TYPE_FILE_MEDIA_RECV;
 							}
@@ -426,9 +436,11 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				return R.layout.conversation_list_item_unread;
 			case TYPE_MEDIA_SEND:
 			case TYPE_FILE_MEDIA_SEND:
+			case TYPE_IMAGE_ANIMATED_SEND:
 				return R.layout.conversation_list_item_media_send;
 			case TYPE_MEDIA_RECV:
 			case TYPE_FILE_MEDIA_RECV:
+			case TYPE_IMAGE_ANIMATED_RECV:
 				return R.layout.conversation_list_item_media_recv;
 			case TYPE_FILE_VIDEO_SEND:
 				return R.layout.conversation_list_item_video_send;
@@ -528,8 +540,6 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					holder.groupAckThumbsDownImage = itemView.findViewById(R.id.groupack_thumbsdown);
 					holder.tapToResend = itemView.findViewById(R.id.tap_to_resend);
 					holder.starredIcon = itemView.findViewById(R.id.star_icon);
-
-					((ViewGroup) holder.groupAckContainer).getLayoutTransition().enableTransitionType(LayoutTransition.DISAPPEARING|LayoutTransition.APPEARING);
 				}
 				itemView.setTag(holder);
 			}
@@ -598,6 +608,10 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					} else if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType()) &&
 						messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
 						decorator = new AudioChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+					} else if (ConfigUtils.isSupportedAnimatedImageFormat(messageModel.getFileData().getMimeType()) &&
+						(messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA ||
+							messageModel.getFileData().getRenderingType() == FileData.RENDERING_STICKER)) {
+						decorator = new AnimatedImageDrawableDecorator(this.context, messageModel, this.decoratorHelper);
 					} else {
 						decorator = new FileChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
 					}

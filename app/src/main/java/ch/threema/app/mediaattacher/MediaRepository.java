@@ -45,6 +45,8 @@ import java.util.List;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.ui.MediaItem;
+import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -71,19 +73,25 @@ public class MediaRepository {
 		final String[] videoProjection = this.getVideoProjection();
 
 		final List<MediaAttachItem> mediaList = new ArrayList<>();
+		final String imageSelection = MediaStore.Images.ImageColumns.MIME_TYPE + " IN ('" + String.join("','", MimeUtil.getSupportedImageMimeTypes()) + "')";
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			Bundle queryBundle = new Bundle();
-			queryBundle.putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, new String[]{MediaStore.Images.Media.DATE_MODIFIED});
-			queryBundle.putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, ContentResolver.QUERY_SORT_DIRECTION_DESCENDING);
+			Bundle videoQueryBundle = new Bundle();
+			videoQueryBundle.putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, new String[]{MediaStore.Images.Media.DATE_MODIFIED});
+			videoQueryBundle.putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, ContentResolver.QUERY_SORT_DIRECTION_DESCENDING);
 			if (limit != 0) {
-				queryBundle.putInt(ContentResolver.QUERY_ARG_LIMIT, limit);
+				videoQueryBundle.putInt(ContentResolver.QUERY_ARG_LIMIT, limit);
 			}
+
+			Bundle imageQueryBundle = new Bundle(videoQueryBundle);
+			// exclude unsupported mime types from image query
+			imageQueryBundle.putString(ContentResolver.QUERY_ARG_SQL_SELECTION, imageSelection);
+
 			// Process images
 			try (Cursor imageCursor = appContext.getContentResolver().query(
 				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 				imageProjection,
-				queryBundle,
+				imageQueryBundle,
 				null
 			)) {
 				addToMediaResults(imageCursor, mediaList, false);
@@ -95,7 +103,7 @@ public class MediaRepository {
 			try (Cursor videoCursor = appContext.getContentResolver().query(
 				MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
 				videoProjection,
-				queryBundle,
+				videoQueryBundle,
 				null
 			)) {
 				addToMediaResults(videoCursor, mediaList, true);
@@ -113,7 +121,7 @@ public class MediaRepository {
 			try (Cursor imageCursor = appContext.getContentResolver().query(
 				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 				imageProjection,
-				null,
+				imageSelection,
 				null,
 				MediaStore.Images.Media.DATE_MODIFIED + " DESC " + addLimitQuery
 			)) {
@@ -215,6 +223,8 @@ public class MediaRepository {
 					}
 				} else if (MimeUtil.isGifFile(mimeType)) {
 					type = MediaItem.TYPE_GIF;
+				} else if (ConfigUtils.isSupportedAnimatedImageFormat(mimeType) && FileUtil.isAnimatedImageFile(contentUri)) {
+					type = MediaItem.TYPE_IMAGE_ANIMATED;
 				} else {
 					type = MediaItem.TYPE_IMAGE;
 				}

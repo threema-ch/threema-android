@@ -698,8 +698,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		int newPosition = mediaAdapterManager.getCurrentPosition();
 		if (viewPager.getCurrentItem() != newPosition) {
-			viewPager.postDelayed(() -> viewPager.setCurrentItem(newPosition, true), 50);
-			mediaAdapterManager.update(newPosition, NOTIFY_ADAPTER);
+			viewPager.postDelayed(() -> {
+				viewPager.setCurrentItem(newPosition, true);
+				mediaAdapterManager.update(newPosition, NOTIFY_ADAPTER);
+			}, 50);
 		}
 	}
 
@@ -1152,6 +1154,16 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	@Override
 	protected void onDestroy() {
 		new Thread(() -> VideoTimelineCache.getInstance().flush()).start();
+
+		if (this.viewPager != null) {
+			this.viewPager.setAdapter(null);
+		}
+		this.sendMediaAdapter = null;
+
+		if (this.recyclerView != null) {
+			this.recyclerView.setAdapter(null);
+		}
+		this.sendMediaPreviewAdapter = null;
 
 		if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
 			removeAllListeners();

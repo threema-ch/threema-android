@@ -45,6 +45,7 @@ import java.util.ArrayList;
 
 import ch.threema.app.R;
 import ch.threema.app.ui.LockableViewPager;
+import ch.threema.app.utils.EditTextUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.EmojiSearchListener {
@@ -197,6 +198,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 		setLayoutParams(searchLayoutParams);
 		emojiSearchWidget.setVisibility(VISIBLE);
 		emojiSearchWidget.searchInput.requestFocus();
+		EditTextUtil.showSoftKeyboard(emojiSearchWidget.searchInput);
 		pickerHeader.setVisibility(GONE);
 		viewPager.setVisibility(GONE);
 	}

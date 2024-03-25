@@ -53,6 +53,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.ref.WeakReference
 import java.security.SecureRandom
 import java.util.*
 import kotlin.math.max
@@ -88,7 +89,7 @@ class GroupCallManagerImpl(
 	}
 
 	private val generalCallObservers: MutableSet<GroupCallObserver> = Collections.synchronizedSet(mutableSetOf())
-	private val callObservers: MutableMap<LocalGroupId, MutableSet<GroupCallObserver>> = mutableMapOf()
+	private val callObservers: MutableMap<LocalGroupId, MutableSet<WeakReference<GroupCallObserver>>> = mutableMapOf()
 	private val callRefreshTimers: MutableMap<LocalGroupId, Job> = Collections.synchronizedMap(mutableMapOf())
 
 	// TODO(ANDR-1957): Unsure if this is guarded properly for use outside of the GC thread. There
@@ -142,7 +143,7 @@ class GroupCallManagerImpl(
 				callObservers[groupId] = Collections.synchronizedSet(mutableSetOf())
 			}
 		}
-		if (callObservers[groupId]?.add(observer) == true) {
+		if (callObservers[groupId]?.add(WeakReference(observer)) == true) {
 			observer.onGroupCallUpdate(chosenCalls[groupId])
 		}
 	}
@@ -155,7 +156,9 @@ class GroupCallManagerImpl(
 	@AnyThread
 	override fun removeGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver) {
 		synchronized(callObservers) {
-			callObservers[groupId]?.remove(observer)
+			callObservers[groupId]?.removeIf {
+				it.get()?.equals(observer) ?: false
+			}
 		}
 	}
 
@@ -776,7 +779,7 @@ class GroupCallManagerImpl(
 
 	private fun notifyCallObservers(groupId: LocalGroupId, call: GroupCallDescription?) {
 		synchronized(callObservers) {
-			callObservers[groupId]?.forEach { it.onGroupCallUpdate(call) }
+			callObservers[groupId]?.forEach { it.get()?.onGroupCallUpdate(call) }
 		}
 		notifyGeneralCallObservers(call)
 	}

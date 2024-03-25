@@ -42,9 +42,6 @@ import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public interface PreferenceService {
-
-	void setMediaGalleryContentTypes(boolean[] contentTypes);
-
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({ImageScale_DEFAULT, ImageScale_SMALL, ImageScale_MEDIUM, ImageScale_LARGE, ImageScale_XLARGE, ImageScale_ORIGINAL, ImageScale_SEND_AS_FILE})
 	@interface ImageScale {}
@@ -294,7 +291,7 @@ public interface PreferenceService {
 
 	boolean getWizardRunning();
 
-	boolean isGifAutoplay();
+	boolean isAnimationAutoplay();
 
 	boolean isUseProximitySensor();
 
@@ -585,4 +582,18 @@ public interface PreferenceService {
 	void removeLastNotificationRationaleShown();
 
 	void getMediaGalleryContentTypes(boolean[] contentTypes);
+
+	void setMediaGalleryContentTypes(boolean[] contentTypes);
+
+	int getEmailSyncHashCode();
+
+	int getPhoneNumberSyncHashCode();
+
+	void setEmailSyncHashCode(int emailsHash);
+
+	void setPhoneNumberSyncHashCode(int phoneNumbersHash);
+
+	void setTimeOfLastContactSync(long timeMs);
+
+	long getTimeOfLastContactSync();
 }

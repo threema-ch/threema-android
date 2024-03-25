@@ -34,6 +34,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -187,6 +188,22 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		getToolbar().setSubtitleTextAppearance(this, R.style.Threema_TextAppearance_MediaViewer_SubTitle);
 
 		this.caption = findViewById(R.id.caption);
+		ViewCompat.setOnApplyWindowInsetsListener(this.caption, (v, insets) -> {
+			Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+			// limit height so that caption doesn't overlap UI elements such as the play button
+			final int lineHeight = ((TextView) v).getLineHeight();
+			final int halfWindowHeight = ConfigUtils.getRealWindowHeight(getWindowManager()) / 2;
+			final int maxTextViewHeight = halfWindowHeight
+				- systemInsets.bottom
+				- getResources().getDimensionPixelSize(R.dimen.mediaviewer_play_button_radius)
+				- getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_bottom)
+				- (getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_container_padding_vertical) * 2);
+			((TextView) v).setMaxLines(maxTextViewHeight / lineHeight);
+			((TextView) v).setEllipsize(TextUtils.TruncateAt.END);
+
+			return insets;
+		});
 
 		this.captionContainer = findViewById(R.id.caption_container);
 		ViewCompat.setOnApplyWindowInsetsListener(this.captionContainer, (v, insets) -> {
@@ -704,7 +721,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 						String mimeType = messageModel.getFileData().getMimeType();
 						if (MimeUtil.isGifFile(mimeType)) {
 							f = new GifViewFragment();
-						} else if (MimeUtil.isImageFile(mimeType)) {
+						} else if (MimeUtil.isSupportedImageFile(mimeType)) {
 							f = new ImageViewFragment();
 						} else if (MimeUtil.isVideoFile(mimeType)) {
 							f = new VideoViewFragment();

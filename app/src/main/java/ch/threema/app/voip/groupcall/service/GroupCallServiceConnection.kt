@@ -36,12 +36,12 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallServiceConnection")
 
 class GroupCallServiceConnection : ServiceConnection {
     private var groupCallController: GroupCallController? = null
-    private val deferredServiceBinder: CompletableDeferred<GroupCallService.GroupCallServiceBinder> = CompletableDeferred()
+    private val deferredServiceBinder: CompletableDeferred<GroupCallServiceBinder> = CompletableDeferred()
     private var disconnected = false
 
     override fun onServiceConnected(name: ComponentName?, serviceBinder: IBinder?) {
         logger.debug("Service connected")
-        if (serviceBinder !is GroupCallService.GroupCallServiceBinder) {
+        if (serviceBinder !is GroupCallServiceBinder) {
             deferredServiceBinder.completeExceptionally(ThreemaException("Bound to incompatible service"))
         } else {
             deferredServiceBinder.complete(serviceBinder)

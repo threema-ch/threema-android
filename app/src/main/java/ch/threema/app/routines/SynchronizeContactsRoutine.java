@@ -27,6 +27,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.text.format.DateUtils;
 
 import androidx.annotation.RequiresPermission;
 
@@ -176,9 +177,25 @@ public class SynchronizeContactsRoutine implements Runnable {
 
 			//read emails
 			final Map<String, ContactMatchKeyEmail> emails = this.readEmails();
+			final int emailsHash = emails.keySet().hashCode();
 
 			//read phone numbers
 			final Map<String, ContactMatchKeyPhone> phoneNumbers = this.readPhoneNumbers();
+			final int phoneNumbersHash = phoneNumbers.keySet().hashCode();
+
+			if (preferenceService.getEmailSyncHashCode() == emailsHash
+				&& preferenceService.getPhoneNumberSyncHashCode() == phoneNumbersHash
+				&& (preferenceService.getTimeOfLastContactSync() + DateUtils.DAY_IN_MILLIS) > System.currentTimeMillis()) {
+				logger.info("Contacts are unchanged. Not syncing.");
+				success = true;
+				return;
+			}
+
+			preferenceService.setEmailSyncHashCode(emailsHash);
+			preferenceService.setPhoneNumberSyncHashCode(phoneNumbersHash);
+			preferenceService.setTimeOfLastContactSync(System.currentTimeMillis());
+
+			logger.info("Attempting to sync contacts {} - {}", emails.size(), phoneNumbers.size());
 
 			//send hashes to server and get result
 			MatchTokenStore matchTokenStore = new MatchTokenStore(this.preferenceService);
@@ -348,12 +365,9 @@ public class SynchronizeContactsRoutine implements Runnable {
 					List<ContactModel> contactModels = this.contactService.getByIdentities(preSynchronizedIdentities);
 					this.contactService.save(
 						contactModels,
-						new ContactService.ContactProcessor() {
-							@Override
-							public boolean process(ContactModel contactModel) {
-								contactModel.setAndroidContactLookupKey(null);
-								return true;
-							}
+						contactModel -> {
+							contactModel.setAndroidContactLookupKey(null);
+							return true;
 						}
 					);
 				}

@@ -28,7 +28,7 @@
             android:visibility="gone" />
 
         <LinearLayout
-            android:id="@+id/gif_marker_container"
+            android:id="@+id/animated_format_label_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -40,7 +40,7 @@
             android:visibility="gone">
 
             <ImageView
-                android:id="@+id/gif_icon"
+                android:id="@+id/animated_format_label_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/attach_gif"

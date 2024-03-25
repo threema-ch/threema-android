@@ -23,6 +23,7 @@ package ch.threema.app.fragments.mediaviews;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,8 +40,10 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
+
 import ch.threema.app.R;
 import ch.threema.app.utils.BitmapUtil;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -162,25 +165,40 @@ public class ImageViewFragment extends MediaViewFragment {
 	 * @param file the image file
 	 */
 	private void showImage(@NonNull File file) {
-		imageViewReference.get().setVisibility(View.VISIBLE);
-		imageViewReference.get().setImage(ImageSource.uri(file.getPath()));
+		Drawable drawable = null;
 
-		BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(requireContext(), Uri.fromFile(file));
-		logger.debug("Orientation = " + exifOrientation);
-		int rotation = (int) exifOrientation.getRotation();
-
-		if (exifOrientation.getFlip() != BitmapUtil.FLIP_NONE) {
-			if ((exifOrientation.getFlip() & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
-				imageViewReference.get().setScaleY(-1f);
-			}
-			if ((exifOrientation.getFlip() & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
-				imageViewReference.get().setScaleX(-1f);
-				// invert rotation to compensate for flip
-				rotation = 360 - rotation;
+		if (ConfigUtils.isSupportedAnimatedImageFormat(getMessageModel().getFileData().getMimeType())) {
+			drawable = Drawable.createFromPath(file.getPath());
+			if (drawable instanceof AnimatedImageDrawable) {
+				previewViewReference.get().setImageDrawable(drawable);
+				((AnimatedImageDrawable) drawable).start();
+				imageViewReference.get().setVisibility(View.GONE);
+			} else {
+				drawable = null;
 			}
 		}
-		if (exifOrientation.getRotation() != 0F) {
-			imageViewReference.get().setOrientation(rotation);
+
+		if (drawable == null) {
+			imageViewReference.get().setImage(ImageSource.uri(file.getPath()));
+			imageViewReference.get().setVisibility(View.VISIBLE);
+
+			BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(requireContext(), Uri.fromFile(file));
+			logger.debug("Orientation = " + exifOrientation);
+			int rotation = (int) exifOrientation.getRotation();
+
+			if (exifOrientation.getFlip() != BitmapUtil.FLIP_NONE) {
+				if ((exifOrientation.getFlip() & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
+					imageViewReference.get().setScaleY(-1f);
+				}
+				if ((exifOrientation.getFlip() & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
+					imageViewReference.get().setScaleX(-1f);
+					// invert rotation to compensate for flip
+					rotation = 360 - rotation;
+				}
+			}
+			if (exifOrientation.getRotation() != 0F) {
+				imageViewReference.get().setOrientation(rotation);
+			}
 		}
 	}
 }

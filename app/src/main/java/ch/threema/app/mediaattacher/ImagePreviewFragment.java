@@ -21,12 +21,15 @@
 
 package ch.threema.app.mediaattacher;
 
+import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomViewTarget;
@@ -45,7 +48,8 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 
 public class ImagePreviewFragment extends PreviewFragment {
 	private GifImageView gifView;
-	private SubsamplingScaleImageView imageView;
+	private SubsamplingScaleImageView scaleImageView;
+	private ImageView imageView;
 
 	ImagePreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel){
 		super(mediaItem, mediaAttachViewModel);
@@ -63,10 +67,12 @@ public class ImagePreviewFragment extends PreviewFragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		if (rootView != null) {
-			this.imageView = rootView.findViewById(R.id.thumbnail_view);
+			this.scaleImageView = rootView.findViewById(R.id.scale_image_view);
 			this.gifView = rootView.findViewById(R.id.gif_view);
+			this.imageView = rootView.findViewById(R.id.image_view);
 
 			if (mediaItem.getType() == MediaItem.TYPE_GIF) {
+				scaleImageView.setVisibility(View.GONE);
 				imageView.setVisibility(View.GONE);
 				Glide.with(ThreemaApplication.getAppContext())
 					.load(mediaItem.getUri())
@@ -77,7 +83,9 @@ public class ImagePreviewFragment extends PreviewFragment {
 				Glide.with(this)
 					.load(mediaItem.getUri())
 					.transition(withCrossFade())
-					.into(new CustomViewTarget<SubsamplingScaleImageView, Drawable>(imageView) {
+					.optionalCenterInside()
+					.error(R.drawable.ic_baseline_broken_image_200)
+					.into(new CustomViewTarget<SubsamplingScaleImageView, Drawable>(scaleImageView) {
 						@Override
 						public void onLoadFailed(@Nullable Drawable errorDrawable) {
 						}
@@ -85,7 +93,17 @@ public class ImagePreviewFragment extends PreviewFragment {
 						@Override
 						public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
 							if (resource instanceof BitmapDrawable) {
-								imageView.setImage(ImageSource.bitmap(((BitmapDrawable) resource).getBitmap()));
+								scaleImageView.setImage(ImageSource.bitmap(((BitmapDrawable) resource).getBitmap()));
+
+								scaleImageView.setVisibility(View.VISIBLE);
+								imageView.setVisibility(View.GONE);
+
+							} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && resource instanceof AnimatedImageDrawable) {
+								imageView.setImageDrawable(resource);
+								((AnimatedImageDrawable)resource).start();
+
+								imageView.setVisibility(View.VISIBLE);
+								scaleImageView.setVisibility(View.GONE);
 							}
 						}
 

@@ -209,5 +209,7 @@
 	<string name="preferences__last_notification_rationale_shown" translatable="false">last_notification_rationale_shown</string>
     <string name="preferences__media_gallery_content_types" translatable="false">pref_media_gallery_content_types</string>
 	<string name="preferences__advanced_options" translatable="false">pref_advanced_options</string>
-
+    <string name="preferences__email_sync_hash" translatable="false">pref_email_sync_hash</string>
+    <string name="preferences__phone_number_sync_hash" translatable="false">pref_phone_number_sync_hash</string>
+    <string name="preferences__contact_sync_time" translatable="false">pref_contact_sync_time</string>
 </resources>

@@ -29,9 +29,11 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.util.UnstableApi;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.MediaViewerActivity;
@@ -57,7 +59,7 @@ public class ImagePreviewPagerAdapter extends FragmentStateAdapter {
 			args.putBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, true);
 
 			PreviewFragment fragment = null;
-			if (mimeType == MediaItem.TYPE_IMAGE || mimeType == MediaItem.TYPE_GIF) {
+			if (mimeType == MediaItem.TYPE_IMAGE || mimeType == MediaItem.TYPE_GIF || mimeType == MediaItem.TYPE_IMAGE_ANIMATED) {
 				fragment = new ImagePreviewFragment(mediaAttachItem, mediaAttachViewModel);
 			} else if (mimeType == MediaItem.TYPE_VIDEO) {
 				fragment = new VideoPreviewFragment(mediaAttachItem, mediaAttachViewModel);

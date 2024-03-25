@@ -666,7 +666,7 @@
     <string name="select_all">Выбрать все</string>
     <string name="deleting_messages">Удаление сообщений</string>
     <string name="media_gallery_files">Файлы</string>
-    <string name="prefs_gif_autoplay">Автоматическое воспроизведение анимированных GIF-файлов</string>
+    <string name="prefs_gif_autoplay">Автоматическое воспроизведение анимированных изображений</string>
     <string name="media_gallery_audio">Голосовые сообщения</string>
     <string name="action_clone_group">Клонировать группу</string>
     <string name="clone_group_message">Будет создан клон группы с вами, в качестве администратора. Продолжить?</string>
@@ -1063,7 +1063,6 @@
     <string name="prefs_working_days_enable_title">Правила для нерабочего времени</string>
     <string name="prefs_working_days_enable_sum">Отключить уведомления и отклонять звонки в нерабочее время</string>
     <string name="work_life_dnd_active">Сейчас нерабочее время</string>
-    <string name="pencil">Карандаш</string>
     <string name="warning">Внимание!</string>
     <string name="password_remember_warning">Запомните, что вы вводите здесь! Поскольку %s не хранит пароли на серверах, мы не сможем помочь вам, если вы забудете свой PIN-код или парольную фразу.</string>
     <string name="safe_backup_tap_to_restart">Нажмите на уведомление, чтобы перезапустить приложение сейчас.</string>
@@ -1152,6 +1151,8 @@
     <string name="notes">Примечания</string>
     <string name="blur_faces">Размытие лиц</string>
     <string name="brush">Кисть</string>
+    <string name="pencil">Карандаш</string>
+    <string name="highlighter">Маркер</string>
     <string name="error_detecting_faces">Ошибка распознавания лиц</string>
     <string name="no_faces_detected">Лица не распознаны</string>
     <string name="smiley">Смайл</string>
@@ -1502,15 +1503,20 @@
     <string name="problemsolver_title_notifications">Уведомления отключены</string>
     <string name="problemsolver_title_fullscreen_notifications">Полноэкранные уведомления запрещены</string>
     <string name="problemsolver_explain_fullscreen_notifications">Приложению запрещено отображать полноэкранные уведомления, поэтому вы можете пропустить входящие вызовы, когда телефон заблокирован. Исправьте это, включив переключатель рядом с «Разрешить полноэкранные уведомления для этого приложения».</string>
-    <string name="problemsolver_explain_notifications">Уведомления для этого приложения полностью отключены. Вы не будете получать информацию о входящих сообщениях или звонках асинхронно, приложение может работать не так, как ожидалось. Чтобы это исправить, включите переключатель рядом с «Все уведомления».</string>
+    <string name="problemsolver_explain_notifications">Уведомления для этого приложения полностью отключены. Вы не будете получать информацию о входящих сообщениях или звонках, приложение может работать не так, как ожидалось. Чтобы это исправить, включите переключатель рядом с «Все уведомления».</string>
     <string name="problemsolver_explain_background_data">Приложение не может использовать мобильные данные в фоновом режиме. Вы не будете получать уведомления о входящих сообщениях, если приложение не активно. Чтобы это исправить, включите переключатель «Фоновая передача данных».</string>
     <string name="problemsolver_explain_background">Приложению запрещено работать в фоновом режиме. Вы не будете получать никаких уведомлений и многие функции не будут работать должным образом. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
-    <string name="problemsolver_info_text">Названия некоторых из упомянутых выше параметров настройки системы могут различаться в зависимости от версии Android и производителя телефона.</string>
+    <string name="problemsolver_info_text">Названия некоторых из упомянутых выше параметров настройки системы могут различаться в зависимости от версии Android и производителя устройства.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Использование батареи приложением установлено на «оптимальное»</string>
     <string name="problemsolver_explain_app_battery_usgae_optimized">Приложению не разрешено поддерживать постоянное подключение к серверам, которое требуется для работы Threema Push. Вы не будете получать уведомления о новых сообщениях, когда приложение работает в фоновом режиме. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
     <string name="problemsolver_to_settings">К настройкам</string>
     <string name="prefs_advanced_options">Дополнительные настройки</string>
     <string name="push_service">Push-сервис</string>
+    <string name="zoom_out">Уменьшить</string>
+    <string name="zoom_in">Увеличить</string>
+    <string name="edit_and_send">Изменить и отправить</string>
+    <string name="media_gallery_animated_webps">Анимированные WebPs</string>
+    <string name="unsupported_image_type">Неподдерживаемый тип изображения: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>
@@ -1689,5 +1695,4 @@
         <item quantity="one">%d участник группы</item>
         <item quantity="other">%d участников группы</item>
     </plurals>
-    <string name="edit_and_send">Редактировать</string>
 </resources>

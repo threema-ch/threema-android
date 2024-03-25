@@ -85,16 +85,18 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 	private final DrawableCrossFadeFactory factory = new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
 
+	private final int avatarSizeSmall;
+
 	public AvatarCacheServiceImpl(Context context) {
 		this.context = context;
 
 		this.contactPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_contact, null);
 		this.groupPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_group, null);
 		this.distributionListPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_distribution_list, null);
+		this.avatarSizeSmall = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
 
 		// Use dark theme default gray for placeholder
 		int color = ColorUtil.COLOR_GRAY_DARK;
-		int avatarSizeSmall = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
 		if (contactPlaceholder != null) {
 			AvatarConverterUtil.getAvatarBitmap(contactPlaceholder, color, avatarSizeSmall);
 		}
@@ -233,6 +235,9 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 			RequestBuilder<Bitmap> requestBuilder = requestManager.asBitmap().load(config).placeholder(placeholder).transition(BitmapTransitionOptions.withCrossFade(factory)).diskCacheStrategy(DiskCacheStrategy.NONE).signature(new ObjectKey(config.state));
 			if (config.options.disableCache) {
 				requestBuilder = requestBuilder.skipMemoryCache(true);
+			}
+			if (!config.options.highRes) {
+				requestBuilder = requestBuilder.override(avatarSizeSmall);
 			}
 			requestBuilder.into(view);
 		} catch (Exception e) {

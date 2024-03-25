@@ -34,6 +34,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.RequestManager;
 import com.google.android.material.button.MaterialButton;
 
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,10 +53,13 @@ import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.voip.groupcall.GroupCallManager;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
 
 public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationModel, RecyclerView.ViewHolder> {
+
+	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageListAdapter");
 
 	private static final int MAX_SELECTED_ITEMS = 0;
 
@@ -201,6 +206,13 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			MessageListAdapterItem item = ((MessageListViewHolder) holder).getMessageListAdapterItem();
 			if (item != null) {
 				conversationModel = item.getConversationModel();
+			}
+			if (((MessageListViewHolder) holder).avatarView != null) {
+				try {
+					requestManager.clear(((MessageListViewHolder) holder).avatarView);
+				} catch (IllegalArgumentException e) {
+					logger.debug("Invalid destination view");
+				}
 			}
 		}
 		if (conversationModel != null && conversationModel.isGroupConversation()) {

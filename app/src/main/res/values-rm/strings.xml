@@ -65,7 +65,6 @@
     <string name="prefs_inapp_vibrate">Vibrar en l\'app</string>
     <string name="prefs_inapp_vibrate_on">Activar la vibraziun cun retschaiver in messadi</string>
     <string name="prefs_inapp_vibrate_off">Nagina vibraziun cura che jau retschaiv in messadi</string>
-    <string name="workarounds">Soluziuns</string>
     <string name="prefs_title_threema_push_switch">Duvrar Threema Push</string>
     <string name="prefs_sum_threema_push_on">Duvrar Threema Push per survegnir infurmaziuns davart novs messadis</string>
     <string name="prefs_sum_threema_push_off">Controllar, sch\'i dat novs messadis cun agid dal servetsch push dal sistem</string>
@@ -1037,7 +1036,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_working_days_enable_title">Regulaziun dal temp da paus</string>
     <string name="prefs_working_days_enable_sum">Na mussar nagins messadis e refusar telefonats da Threema ordaifer il temp da lavur</string>
     <string name="work_life_dnd_active">Temp da paus activ</string>
-    <string name="pencil">Rispli</string>
     <string name="warning">Avertiment</string>
     <string name="password_remember_warning">Tegna endament quai che ti endateschas qua! Cunquai che %s na memorisescha nagins pleds-clav sin servers, na pudain nus betg gidar tai, sche ti has emblidà il pin u la frasa d\'access.</string>
     <string name="safe_backup_tap_to_restart">Smatga sin il messadi per reaviar l\'app.</string>
@@ -1124,6 +1122,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="notes">Notizias</string>
     <string name="blur_faces">Disfar las fatschas</string>
     <string name="brush">Penel</string>
+    <string name="pencil">Rispli</string>
     <string name="error_detecting_faces">Igl ha dà in\'errur tar l\'identificaziun da fatschas</string>
     <string name="no_faces_detected">Chattà naginas fatschas</string>
     <string name="smiley">Smiley</string>
@@ -1197,7 +1196,11 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="group_link_rename">Dar in auter num a la colliaziun</string>
     <string name="group_link_rename_tag">Nov num</string>
     <string name="tap_here_for_more">Clicca qua per dapli infurmaziuns</string>
-    <string name="another_connection_instructions"><![CDATA[Il server ha identifitgà dus u plirs apparats colliads cun la medema ID da Threema.<br><br>I n\'è betg pussaivel d\'utilisar in\'ID da Threema il medem mument sin plirs apparats. Novs messadis vegnan tramess sulettamain a l\'apparat ch\'è s\'annunzià sco ultim sin il server.<br><br>Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'apparat vegl e reaviescha suenter il nov apparat.]]></string>
+    <string name="another_connection_instructions"><![CDATA[Il server ha identifitgà dus u plirs apparats colliads cun la medema ID da Threema.
+
+I n\'è betg pussaivel d\'utilisar in\'ID da Threema il medem mument sin plirs apparats. Novs messadis vegnan tramess sulettamain a l\'apparat ch\'è s\'annunzià sco ultim sin il server.
+
+Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'apparat vegl e reaviescha suenter il nov apparat.]]></string>
     <string name="app_store_error_code">Code dal sbagl da l\'App Store: %d</string>
     <string name="backup_restore_type"><![CDATA[Tge tip da backup vuls ti restaurar? <br/><br/><a href=%s>Leger dapli davart backups en Threema</a>]]></string>
     <string name="data_backup_info">Restaurar tut incl. chats</string>
@@ -1356,9 +1359,64 @@ Endatescha in pled-clav per tes backup da datas.</string>
         <item quantity="one">Tschernì %d maletg</item>
         <item quantity="other">Tschernì %d maletgs</item>
     </plurals>
+    <plurals name="message_copied">
+        <item quantity="one">Copiar messadi</item>
+        <item quantity="other">Copiar messadis</item>
+    </plurals>
+    <plurals name="new_messages">
+        <item quantity="one">%d nov messadi</item>
+        <item quantity="other">%d novs messadis</item>
+    </plurals>
+    <plurals name="file_saved">
+        <item quantity="one">Memorisà la %d datoteca.</item>
+        <item quantity="other">Memorisà las %d datotecas.</item>
+    </plurals>
     <plurals name="saving_media">
         <item quantity="one">Il medium vegn memorisà</item>
-        <item quantity="other"></item>
+        <item quantity="other">Il medium vegn memorisà</item>
     </plurals>
-    <string name="edit_and_send">Elavurar</string>
+    <plurals name="ballot_really_delete">
+        <item quantity="one">Stizzar l\'enquista</item>
+        <item quantity="other">Stizzar las enquistas</item>
+    </plurals>
+    <plurals name="ballot_really_delete_text">
+        <item quantity="one">Vulst ti propi stizzar %1$d enquista? Las vuschs na pon betg pli vegnir restauradas.</item>
+        <item quantity="other">Vulst ti propi stizzar %1$d enquistas? Las vuschs na pon betg pli vegnir restauradas.</item>
+    </plurals>
+    <plurals name="message_deleted">
+        <item quantity="one">Stizzà %d messadi</item>
+        <item quantity="other">Stizzà %d messadis</item>
+    </plurals>
+    <plurals name="notifications_for_x_hours">
+        <item quantity="one">Per %d ura</item>
+        <item quantity="other">Per %d uras</item>
+    </plurals>
+    <plurals name="some_contacts_not_deleted">
+        <item quantity="one">%d contact n\'ha betg pudì vegnir stizzads, perquai ch\'el èn anc en ina gruppa</item>
+        <item quantity="other">%d contacts n\'han betg pudì vegnir stizzads, perquai ch\'els èn anc en ina gruppa</item>
+    </plurals>
+    <plurals name="message_archived">
+        <item quantity="one">Archivà %d chat</item>
+        <item quantity="other">Archivà %d chats</item>
+    </plurals>
+    <plurals name="webclient_running_sessions">
+        <item quantity="one">%d sesida activa</item>
+        <item quantity="other">%d sesidas activas</item>
+    </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="one">Vuls ti propi stizzar %d dumonda da gruppa? La dumonda averta na vegn betg retratga e ti pos pli tard tuttina aderir a la gruppa.</item>
+        <item quantity="other">Vuls ti propi stizzar %d dumondas da gruppa? La dumonda averta na vegn betg retratga e ti pos pli tard tuttina aderir a la gruppa.</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="one">Vuls ti propi stizzar %d dumonda da gruppa? Sche la dumonda è stizzada, na pos ti betg pli respunder ad ellas.</item>
+        <item quantity="other">Vuls ti propi stizzar %d dumondas da gruppa? Sche las dumondas èn stizzadas, na pos ti betg pli respunder ad ellas.</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="one">Vuls ti propi stizzar %d colliaziun da gruppa? Sche la colliaziun è stizzada, na pon utilisaders betg pli trametter dumondas valaivlas. Dumondas gia tramessas pon però anc vegnir acceptadas u refusadas.</item>
+        <item quantity="other">Vuls ti propi stizzar %d colliaziuns da gruppa? Sche la colliaziun è stizzada, na pon utilisaders betg pli trametter dumondas valaivlas. Dumondas gia tramessas pon però anc vegnir acceptadas u refusadas.</item>
+    </plurals>
+    <plurals name="chat_deleted">
+        <item quantity="one">Stizzà %d chat</item>
+        <item quantity="other">Stizzà %d chats</item>
+    </plurals>
 </resources>
