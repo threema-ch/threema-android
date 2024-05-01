@@ -200,8 +200,8 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		this.clipboardString = "";
 		this.addToLog("Starting Call Diagnostics...");
 		this.addToLog("----------------");
-		this.addToLog("Device info: " + ConfigUtils.getDeviceInfo(this, false));
-		this.addToLog("App version: " + ConfigUtils.getAppVersion(this));
+		this.addToLog("Device info: " + ConfigUtils.getDeviceInfo(false));
+		this.addToLog("App version: " + ConfigUtils.getAppVersion());
 		this.addToLog("App language: " + LocaleUtil.getAppLanguage());
 		this.addToLog("----------------");
 
@@ -413,7 +413,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 	}
 
 	@Override
-	public void onYes(String tag, String text) {
+	public void onYes(@NonNull String tag, @NonNull String text) {
 		if (DIALOG_TAG_SEND_WEBRTC_DEBUG.equals(tag)) {
 			// User confirmed that log should be sent to support
 			sendToSupport(text);
@@ -444,8 +444,8 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 						"\n---\n" +
 						caption +
 						"\n---\n" +
-						ConfigUtils.getSupportDeviceInfo(WebRTCDebugActivity.this) + "\n" +
-						"Threema " + ConfigUtils.getAppVersion(WebRTCDebugActivity.this) + "\n" +
+						ConfigUtils.getSupportDeviceInfo() + "\n" +
+						"Threema " + ConfigUtils.getAppVersion() + "\n" +
 						getMyIdentity(), messageReceiver);
 
 					return true;

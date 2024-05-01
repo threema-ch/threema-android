@@ -27,10 +27,12 @@ import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * Create readAt and deliveredAt fields in message model
  */
-public class SystemUpdateToVersion68 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion68 implements UpdateSystemService.SystemUpdate {
 	public static final int VERSION = 68;
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -42,10 +44,10 @@ public class SystemUpdateToVersion68 extends UpdateToVersion implements UpdateSy
 	@Override
 	public boolean runDirectly() throws SQLException {
 		for(String table: new String[]{"message", "m_group_message", "distribution_list_message"}) {
-			if(!this.fieldExist(this.sqLiteDatabase, table, "deliveredAtUtc")) {
+			if(!fieldExists(this.sqLiteDatabase, table, "deliveredAtUtc")) {
 				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN deliveredAtUtc DATETIME DEFAULT NULL");
 			}
-			if(!this.fieldExist(this.sqLiteDatabase, table, "readAtUtc")) {
+			if(!fieldExists(this.sqLiteDatabase, table, "readAtUtc")) {
 				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN readAtUtc DATETIME DEFAULT NULL");
 			}
 		}
@@ -55,7 +57,7 @@ public class SystemUpdateToVersion68 extends UpdateToVersion implements UpdateSy
 
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

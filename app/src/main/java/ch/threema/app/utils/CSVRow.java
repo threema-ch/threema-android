@@ -23,6 +23,7 @@ package ch.threema.app.utils;
 
 import java.util.Date;
 
+import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
 
 public class CSVRow {
@@ -49,18 +50,22 @@ public class CSVRow {
 		return this.data[pos];
 	}
 
-	public Integer getInteger(int pos) throws ThreemaException {
+	public @NonNull Integer getInteger(int pos) throws ThreemaException {
 		return Integer.valueOf(this.getString(pos));
 	}
 
-	public Boolean getBoolean(int pos) throws ThreemaException {
+	public @NonNull Long getLong(int pos) throws ThreemaException {
+		return Long.valueOf(this.getString(pos));
+	}
+
+	public boolean getBoolean(int pos) throws ThreemaException {
 		return TestUtil.compare("1", this.getString(pos));
 	}
 
 	public Date getDate(int pos) throws ThreemaException {
 		String cell = this.getString(pos);
 		if(cell != null && cell.length() > 0) {
-			return new Date(Long.valueOf(cell));
+			return new Date(Long.parseLong(cell));
 		}
 
 		return null;
@@ -77,7 +82,7 @@ public class CSVRow {
 
 	public CSVRow write(int pos, Object v) throws ThreemaException {
 		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + String.valueOf(pos) + "]");
+			throw new ThreemaException("invalid position to write [" + pos + "]");
 		}
 
 		this.data[pos] = this.escape(v);
@@ -94,7 +99,7 @@ public class CSVRow {
 
 	public CSVRow write(int pos, String v) throws ThreemaException {
 		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + String.valueOf(pos) + "]");
+			throw new ThreemaException("invalid position to write [" + pos + "]");
 		}
 
 		this.data[pos] = this.escape(v);
@@ -112,7 +117,7 @@ public class CSVRow {
 
 	public CSVRow write(int pos, int v) throws ThreemaException {
 		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + String.valueOf(pos) + "]");
+			throw new ThreemaException("invalid position to write [" + pos + "]");
 		}
 
 		this.data[pos] = this.escape(v);
@@ -130,7 +135,7 @@ public class CSVRow {
 
 	public CSVRow write(int pos, boolean v) throws ThreemaException {
 		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + String.valueOf(pos) + "]");
+			throw new ThreemaException("invalid position to write [" + pos + "]");
 		}
 
 		this.data[pos] = this.escape(v);
@@ -148,7 +153,7 @@ public class CSVRow {
 
 	public CSVRow write(int pos, Date v) throws ThreemaException {
 		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + String.valueOf(pos) + "]");
+			throw new ThreemaException("invalid position to write [" + pos + "]");
 		}
 
 		this.data[pos] = this.escape(v);
@@ -166,7 +171,7 @@ public class CSVRow {
 
 	public CSVRow write(int pos, Object[] v) throws ThreemaException {
 		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + String.valueOf(pos) + "]");
+			throw new ThreemaException("invalid position to write [" + pos + "]");
 		}
 
 		this.data[pos] = this.escape(v);
@@ -186,7 +191,7 @@ public class CSVRow {
 		return this.getString(pos);
 	}
 
-	public Integer getInteger(String fieldName) throws ThreemaException {
+	public @NonNull Integer getInteger(String fieldName) throws ThreemaException {
 		int pos = this.getValuePosition(fieldName);
 		if(pos < 0) {
 			throw new ThreemaException("invalid csv header position [" + fieldName + "]");
@@ -194,7 +199,15 @@ public class CSVRow {
 		return this.getInteger(pos);
 	}
 
-	public Boolean getBoolean(String fieldName) throws ThreemaException {
+	public @NonNull Long getLong(String fieldName) throws ThreemaException {
+		int pos = this.getValuePosition(fieldName);
+		if(pos < 0) {
+			throw new ThreemaException("invalid csv header position [" + fieldName + "]");
+		}
+		return this.getLong(pos);
+	}
+
+	public boolean getBoolean(String fieldName) throws ThreemaException {
 		int pos = this.getValuePosition(fieldName);
 		if(pos < 0) {
 			throw new ThreemaException("invalid csv header position [" + fieldName + "]");
@@ -220,7 +233,11 @@ public class CSVRow {
 
 	}
 
-
+	/**
+	 * Return the CSV column index for the specified column name.
+	 *
+	 * @return the index, or -1 if the column was not found.
+	 */
 	public int getValuePosition(String fieldName) {
 		if(this.header != null && fieldName != null) {
 			for(int n = 0; n < this.header.length; n++) {
@@ -242,8 +259,6 @@ public class CSVRow {
 
 	/**
 	 * return a csv well formed string
-	 * @param date
-	 * @return
 	 */
 	private String escape(Date date) {
 		if(date == null) {
@@ -254,16 +269,12 @@ public class CSVRow {
 
 	/**
 	 * return a csv well formed string
-	 * @param bool
-	 * @return
 	 */
 	private String escape(boolean bool) {
 		return bool ? "1" : "0";
 	}
 	/**
 	 * return a csv well formed string
-	 * @param ns
-	 * @return
 	 */
 	private String escape(String ns) {
 		if (ns == null) {
@@ -289,8 +300,6 @@ public class CSVRow {
 
 	/**
 	 * return a csv well formed string
-	 * @param ns
-	 * @return
 	 */
 	private String escape(Object ns) {
 		if (ns == null) {

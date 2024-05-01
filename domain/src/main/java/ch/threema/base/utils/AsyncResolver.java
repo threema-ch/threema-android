@@ -24,6 +24,8 @@ package ch.threema.base.utils;
 import java.net.InetAddress;
 import java.util.concurrent.*;
 
+import androidx.annotation.NonNull;
+
 public class AsyncResolver implements Callable<InetAddress[]> {
 	private final String host;
 
@@ -36,6 +38,7 @@ public class AsyncResolver implements Callable<InetAddress[]> {
 		return InetAddress.getAllByName(host);
 	}
 
+	 @NonNull
 	public static InetAddress[] getAllByName(String host) throws ExecutionException, InterruptedException {
 		AsyncResolver resolver = new AsyncResolver(host);
 		ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {

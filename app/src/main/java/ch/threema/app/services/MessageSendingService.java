@@ -31,7 +31,6 @@ import ch.threema.storage.models.AbstractMessageModel;
  */
 public interface MessageSendingService {
 	interface MessageSendingServiceState{
-		void processingFinished(@NonNull AbstractMessageModel messageModel, @NonNull MessageReceiver<AbstractMessageModel> receiver);
 		void processingFailed(AbstractMessageModel messageModel, MessageReceiver<AbstractMessageModel> receiver);
 		void exception(Exception x, int tries);
 	}

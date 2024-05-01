@@ -25,13 +25,12 @@ import android.content.Context
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.WebRTCUtil
 import ch.threema.app.voip.groupcall.sfu.*
-import ch.threema.app.voip.groupcall.sfu.GroupCall
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.Utils.hexStringToByteArray
 import ch.threema.storage.models.ContactModel
 import org.webrtc.RtcCertificatePem
-import java.security.MessageDigest
-import javax.security.cert.X509Certificate
 
+private val FINGERPRINT_REGEX = Regex("^sha-256 (([0-9a-zA-Z]{2}:?){32})\$")
 private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState.Joining")
 
 class Joining internal constructor(
@@ -54,11 +53,13 @@ class Joining internal constructor(
 
     private suspend fun getNextState(): GroupCallConnectionState {
         val certificate = RtcCertificatePem.generateCertificate()
-
-        // Extract fingerprint from PEM certificate
-        val x509Certificate = X509Certificate.getInstance(certificate.certificate.toByteArray(Charsets.UTF_8))
-        val fingerprint = MessageDigest.getInstance("SHA-256")
-                .digest(x509Certificate.encoded)
+        logger.debug("Generated certificate with fingerprint {}", certificate.fingerprint)
+        val fingerprint = FINGERPRINT_REGEX.find(certificate.fingerprint)?.groups?.get(1).let {
+            if (it == null) {
+                throw Error("Expected fingerprint to be a SHA-256 digest")
+            }
+            hexStringToByteArray(it.value.replace(":", ""))
+        }
 
         val joinResponse = join(fingerprint, 2)
         return if (!joinResponse.isHttpOk || joinResponse.body == null) {

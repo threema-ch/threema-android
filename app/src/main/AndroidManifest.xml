@@ -180,7 +180,7 @@
 		tools:replace="android:supportsRtl,android:allowBackup"
 		android:dataExtractionRules="@xml/data_extraction_rules"
 		android:enableOnBackInvokedCallback="true"
-		android:localeConfig="@xml/locales_config">
+        android:localeConfig="@xml/locales_config">
 		<!-- Note: The "replace" entry above should be kept to ensure that a library cannot accidentally
 		override rtl or backup support. Unfortunately the linter warning cannot be silenced. -->
 		<meta-data
@@ -586,6 +586,13 @@
 			android:configChanges="uiMode"
 			tools:ignore="LockedOrientationActivity">
 		</activity>
+
+		<!-- MD activities -->
+		<activity android:name=".multidevice.LinkedDevicesActivity"
+			android:launchMode="singleTop"
+			android:parentActivityName=".activities.HomeActivity"
+			android:theme="@style/Theme.Threema.WithToolbar"
+			android:configChanges="uiMode" />
 
 		<!-- VoIP activities -->
 		<activity

@@ -22,13 +22,13 @@
 package ch.threema.app.services.group;
 
 import androidx.annotation.NonNull;
-import ch.threema.app.processors.MessageProcessor;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
 public interface IncomingGroupJoinRequestService {
-	@NonNull MessageProcessor.ProcessingResult process(@NonNull GroupJoinRequestMessage message);
+	// TODO(ANDR-2607): include into tasks
+	@NonNull boolean process(@NonNull GroupJoinRequestMessage message);
 
 	void accept(@NonNull IncomingGroupJoinRequestModel model) throws Exception;
 

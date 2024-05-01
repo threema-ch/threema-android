@@ -29,7 +29,7 @@ import ch.threema.app.services.UpdateSystemService;
 import ch.threema.storage.DatabaseServiceNew;
 
 
-public class SystemUpdateToVersion37 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion37 implements UpdateSystemService.SystemUpdate {
 
 	private final DatabaseServiceNew databaseService;
 	private final SQLiteDatabase sqLiteDatabase;
@@ -50,7 +50,7 @@ public class SystemUpdateToVersion37 extends  UpdateToVersion implements UpdateS
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

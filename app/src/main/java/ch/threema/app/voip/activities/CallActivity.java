@@ -34,6 +34,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.app.KeyguardManager;
 import android.app.PictureInPictureParams;
@@ -1855,6 +1856,11 @@ public class CallActivity extends ThreemaActivity implements
 							insets.getDisplayCutout().getSafeInsetBottom()
 						);
 					}
+
+					// Uncomment the following line for running screenshot tests. The notch of the
+					// device frame is 97 pixels high and therefore we need to add this padding to
+					// the top.
+					// v.setPadding(0, 97, 0, 0);
 				} else {
 					// reset notch margins for PIP
 					v.setPadding(0, 0, 0, 0);

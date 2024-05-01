@@ -32,11 +32,14 @@ import java.security.SecureRandom;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.ServerAddressProvider;
 
 /**
  * Send ratings to the threema server
@@ -44,17 +47,25 @@ import ch.threema.base.utils.Utils;
 public class RatingService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("RatingService");
 
+	@NonNull
 	private final PreferenceService preferenceService;
+	@NonNull
+	private final ServerAddressProvider serverAddressProvider;
 
-	public RatingService(PreferenceService preferenceService) {
+	public RatingService(
+		@NonNull PreferenceService preferenceService,
+		@NonNull ServerAddressProvider serverAddressProvider
+	) {
 		this.preferenceService = preferenceService;
+		this.serverAddressProvider = serverAddressProvider;
 	}
 
-	private String getRatingUrl(int rating) {
-		return "https://threema.ch/app-rating/android/" + rating;
+	private String getRatingUrl(int rating) throws ThreemaException {
+		return serverAddressProvider.getAppRatingUrl().replace("{rating}", Integer.toString(rating));
 	}
 
-	public boolean sendRating(int rating, String text) {
+	@WorkerThread
+	public boolean sendRating(int rating, @NonNull String text, @NonNull String version) {
 		String ref = this.preferenceService.getRandomRatingRef();
 		boolean success = false;
 
@@ -69,12 +80,14 @@ public class RatingService {
 			this.preferenceService.setRandomRatingRef(ref);
 		}
 
+		// Append app version to rating text
+		String textWithVersion = text.strip() + "\n\n---\n" + version;
 
 		HttpsURLConnection connection = null;
 		try {
 			byte[] query = new Uri.Builder()
 				.appendQueryParameter("ref", ref)
-				.appendQueryParameter("feedback", text)
+				.appendQueryParameter("feedback", textWithVersion)
 				.build().getEncodedQuery().getBytes();
 
 			URL url = new URL(this.getRatingUrl(rating));
@@ -95,7 +108,7 @@ public class RatingService {
 			success = true;
 		} catch (Exception e) {
 			// Log to Logfile and ignore
-			logger.error("Exception", e);
+			logger.error("Could not send rating", e);
 		} finally {
 			if (connection != null) {
 				connection.disconnect();

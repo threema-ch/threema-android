@@ -57,7 +57,7 @@ public class ThumbnailUtil {
 		Bitmap thumbnail = getThumbnailBitmapFromFile(context, file, mimeType);
 
 		if (thumbnail != null) {
-			byte[] thumbnailData = MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mimeType)
+			byte[] thumbnailData = MimeUtil.MIME_TYPE_IMAGE_JPEG.equals(mimeType)
 				? BitmapUtil.bitmapToJpegByteArray(thumbnail)
 				: BitmapUtil.bitmapToPngByteArray(thumbnail);
 			thumbnail.recycle();

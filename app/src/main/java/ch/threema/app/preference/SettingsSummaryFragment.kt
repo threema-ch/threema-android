@@ -61,6 +61,12 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
             pref.summary = summary
         }
 
+        // Remove the rate preference in onprem builds
+        val feedbackPref = getPrefOrNull<Preference>(getString(R.string.preferences__rate))
+        if (feedbackPref != null && isOnPremBuild()) {
+            preferenceScreen.removePreference(feedbackPref)
+        }
+
         val workPref = getPref<Preference>("pref_key_work")
         if (!isWorkBuild()) {
             workPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {

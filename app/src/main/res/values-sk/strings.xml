@@ -935,6 +935,10 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="empty_chat_title">Vyčistiť správy</string>
     <string name="empty_chat_confirm">Všetky správy v tejto konverzácii budú odstránené. Pokračovať?</string>
     <string name="emptying_chat">Odstraňujú sa správy</string>
+    <string name="emptying_chat_deleting_messages">Mažú sa správy...</string>
+    <string name="delete_chat_title">Zmazať konverzáciu</string>
+    <string name="delete_chat_confirm">Všetky správy v tejto konverzácii budú vymazané a konverzácia bude odstránená. Pokračovať?</string>
+    <string name="deleting_chat">Odstránenie konverzácie</string>
     <string name="set_private">Označiť ako \"súkromná konverzácia\"</string>
     <string name="unset_private">Zrušiť označenie \"súkromná konverzácia\"</string>
     <string name="delete_group_message">Naozaj chcete opustiť túto skupinu a celú ju odstrániť? Všetky správy v nej budú vymazané.</string>
@@ -1022,7 +1026,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="whatsnew_headline"><![CDATA[
 <p>Hviezdičkové správy: </p> <p>Dôležité správy môžete označiť hviezdičkou dlhým ťuknutím, aby ste ich neskôr ľahko našli.</p>
  <p>Automatické vymazanie: Po uplynutí zvoleného času môžete svoje konverzácie automaticky vyčistiť. Funkciu automatického mazania správ môžete aktivovať v správe úložiska.</p>
-  <p>Množstvo ďalších vylepšení a optimalizácií.</p> 
+  <p>Množstvo ďalších vylepšení a optimalizácií.</p>
  ]]></string>
     <string name="tap_to_start">Kliknutím sem spustíte aplikáciu %s.</string>
     <string name="two_years">2 roky</string>
@@ -1095,7 +1099,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="tooltip_voip_turn_on_camera">Kliknutím sem zapnete fotoaparát</string>
     <string name="prefs_videocall_profile_explain">Skutočná kvalita obrazu závisí na sieti a nastavení osoby, s ktorou komunikujete</string>
     <string name="permission_camera_videocall_required">Pre video hovory prosím povolte prístup k fotoaparátu</string>
-    <string name="feedback">Spätná väzba</string>
     <string name="tooltip_voip_enable_speakerphone">Kliknutím sem zapnete reproduktor</string>
     <string name="ballot_open">Otvorené ankety</string>
     <string name="translators">Prekladatelia</string>
@@ -1367,16 +1370,21 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="synchronizing">Synchronizuje sa…</string>
     <string name="forward_security">Odosielať správy s funkciou Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
-    <string name="forward_security_mode_none">nie</string>
+    <string name="forward_security_mode_none">žiadny</string>
     <string name="clear_forward_security">Resetovať Perfect Forward Secrecy pre tento kontakt</string>
     <string name="clear_forward_security_warning">Túto akciu vykonajte iba vtedy, keď k tomu dostanete pokyn od podporného tímu spoločnosti Threema.</string>
     <string name="forward_security_cleared">Relácie Perfect Forward Secrecy s týmto kontaktom boli odstránené</string>
     <string name="message_without_forward_security">Bola prijatá správa bez Perfect Forward Secrecy. Overte, či odosielateľ úmyselne zakázal funkciu Perfect Forward Secrecy.</string>
-    <string name="forward_security_established">Správy v tomto rozhovore sú teraz chránené systémom Perfect Forward Secrecy.</string>
+    <string name="forward_security_established">Správy s týmto partnerom sú teraz chránené technológiou Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Správy prijaté v tejto konverzácii sú odteraz chránené systémom Perfect Forward Secrecy (PFS).</string>
     <string name="forward_security_reset">Relácia Perfect Forward Secrecy bola resetovaná. Môže sa to stať, keď partner rozhovoru zmení zariadenie alebo preinštaluje aplikáciu.</string>
     <string name="forward_security_reset_simple">Relácia Perfect Forward Secrecy s týmto kontaktom bola resetovaná.</string>
     <string name="forward_security_message_out_of_order">Správa bola prijatá ako nefunkčná a nedá sa dešifrovať.</string>
+    <string name="forward_security_notification_channel_name">Upozornenie Perfect Forward Secrecy</string>
+    <string name="forward_security_notification_rejected_title">Odosielanie správ zlyhalo</string>
+    <string name="forward_security_notification_rejected_text_contact">Jednu alebo viac správ sa nepodarilo odoslať na %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">Jednu alebo viac správ sa nepodarilo odoslať na \"%1$s\".</string>
+    <string name="forward_security_notification_rejected_text_generic">Jednu alebo viac správ sa nepodarilo odoslať.</string>
     <string name="self_updater_installation_failed">Sťahovanie aktualizácie zlyhalo. Stiahnite si a nainštalujte aktualizáciu z <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuálne.</string>
     <string name="spam_first_contact">Táto konverzácia pochádza od neznámeho kontaktu</string>
     <string name="spam_report">Nahlásiť spam</string>
@@ -1388,6 +1396,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="spam_report_short">Nahlásiť</string>
     <string name="wizard_incompatible_contact_sync_params">Sú nastavené nekompatibilné parametre MDM. Parameter Threema MDM th_contact_sync nemožno nastaviť na hodnotu true, ak je nastavené obmedzenie používateľa DISALLOW_MODIFY_ACCOUNTS. Kontaktujte správcu svojho zariadenia.</string>
     <string name="messages_cannot_be_recovered">Nebude možné obnoviť tieto správy.</string>
+    <string name="groups_left_or_dissolved">Skupiny budú opustené alebo rozpustené a následne vymazané.</string>
     <string name="contact_deleted">Kontakt vymazaný</string>
     <string name="last_added_contact">Najnovší kontakt</string>
     <string name="directory_explain_text">V adresári spoločnosti vyhľadajte zamestnancov, ktorí ešte nie sú vo vašom zozname kontaktov.</string>
@@ -1435,8 +1444,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="group_calls_tooltip_text">Klepnutím sem pozvete všetkých členov skupiny, aby sa pripojili k hovoru. Všetci členovia skupiny dostanú upozornenie a môžu sa rozhodnúť, či sa chcú k hovoru pripojiť alebo nie.</string>
     <string name="prefs_title_calls">Bezpečné hovory</string>
     <string name="prefs_sum_group_calls_vibration">Vyberte, či má po začatí skupinového hovoru vibrovať</string>
-    <string name="forward_security_mode_4dh">kompletné</string>
-    <string name="forward_security_mode_2dh">jednostranné</string>
+    <string name="forward_security_mode_4dh">Dokončené</string>
+    <string name="forward_security_mode_2dh">Jednostranné</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) chráni zaznamenanú komunikáciu pred spätným dešifrovaním, aj keď je ohrozený dlhodobý šifrovací kľúč.\n\nToto je možné povoliť, ak aplikácia na oboch stranách podporuje PFS.</string>
     <string name="group_call_inactivity_left">Skupinový hovor prerušený z dôvodu nečinnosti</string>
     <string name="missing_permission_external_storage">Súbor nie je možné skopírovať. Vyskúšajte nasledujúce kroky:\n1. Otvorte Nastavenia systému.\n2. Prejdite na „Aplikácie“ a kliknite na aplikáciu Threema\n3. Kliknite na „Povolenia“.\n4. Kliknite na \"Súbory a médiá\" a uistite sa, že má aplikácia povolený prístup k médiám.\n5. Skúste znova obnoviť zálohu.</string>
@@ -1526,6 +1535,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="edit_and_send">Upraviť a odoslať</string>
     <string name="media_gallery_animated_webps">Animované WebP</string>
     <string name="unsupported_image_type">Nepodporovaný typ obrázka: %s</string>
+    <string name="application_setup_steps_failed">Na kontrolu stavu kontaktov je potrebné aktívne internetové pripojenie. Uistite sa, že ste pripojení k internetu a skúste to znova.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">kontakty</item>
         <item quantity="many">kontakty</item>

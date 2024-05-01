@@ -31,7 +31,7 @@ import java.util.Date;
 
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
-import ch.threema.domain.protocol.csp.connection.Payload;
+import ch.threema.domain.protocol.connection.data.CspMessage;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.models.MessageId;
 
@@ -95,12 +95,10 @@ public class MessageBox implements Serializable {
 	}
 
 	/**
-	 * Serialize this boxed message into a payload that can be sent over the network.
-	 *
-	 * @return prepared payload
+	 * Serialize this boxed message into a csp message that can be sent over the network.
 	 */
-	public Payload makePayload() {
-		return new Payload(ProtocolDefines.PLTYPE_OUTGOING_MESSAGE, makeBinary());
+	public CspMessage creatCspMessage() {
+		return new CspMessage(ProtocolDefines.PLTYPE_OUTGOING_MESSAGE, makeBinary());
 	}
 
 	/**
@@ -159,16 +157,6 @@ public class MessageBox implements Serializable {
 		message.setBox(box);
 
 		return message;
-	}
-
-	/**
-	 * Attempt to parse the given payload into a boxed message
-	 * @param payload the payload to parse
-	 * @return parsed message
-	 * @throws Exception if a parse error occurs
-	 */
-	public static MessageBox parsePayload(Payload payload) throws Exception {
-		return parseBinary(payload.getData());
 	}
 
 	public String getFromIdentity() {

@@ -118,9 +118,17 @@ public class FileDataModel implements MediaMessageDataInterface {
 		this.renderingType = renderingType;
 	}
 
+	public void setBlobId(byte[] blobId) {
+		this.fileBlobId = blobId;
+	}
+
 	@Override
 	public byte[] getBlobId() {
 		return this.fileBlobId;
+	}
+
+	public void setEncryptionKey(byte[] encryptionKey) {
+		this.encryptionKey = encryptionKey;
 	}
 
 	@Override

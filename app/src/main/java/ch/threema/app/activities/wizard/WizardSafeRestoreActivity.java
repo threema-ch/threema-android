@@ -23,8 +23,8 @@ package ch.threema.app.activities.wizard;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.View;
@@ -56,10 +56,14 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
+import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+
+import static ch.threema.app.protocol.ApplicationSetupStepsKt.runApplicationSetupSteps;
 
 public class WizardSafeRestoreActivity extends WizardBackgroundActivity implements PasswordEntryDialog.PasswordEntryDialogClickListener,
 	WizardSafeSearchPhoneDialog.WizardSafeSearchPhoneDialogCallback,
@@ -73,8 +77,11 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 	private static final String DIALOG_TAG_ADVANCED = "adv";
 	private static final String DIALOG_TAG_WORK_SYNC = "workSync";
 	private static final String DIALOG_TAG_PASSWORD_PRESET_CONFIRM = "safe_pw_preset";
+	private static final String DIALOG_TAG_APPLICATION_SETUP_RETRY = "app-setup-retry";
 
 	private ThreemaSafeService threemaSafeService;
+
+	private final BackgroundExecutor executor = new BackgroundExecutor();
 
 	EditText identityEditText;
 	ThreemaSafeMDMConfig safeMDMConfig;
@@ -226,6 +233,8 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 			return;
 		}
 
+		preferenceService.setLatestVersion(this);
+
 		new AsyncTask<Void, Void, String>() {
 			@Override
 			protected void onPreExecute() {
@@ -268,27 +277,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_PROGRESS, true);
 
 				if (failureMessage == null) {
-					if (ConfigUtils.isWorkBuild()) {
-						GenericProgressDialog.newInstance(R.string.work_data_sync_desc,
-							R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC);
-
-						WorkSyncWorker.Companion.performOneTimeWorkSync(
-							WizardSafeRestoreActivity.this,
-							() -> {
-								// On success
-								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
-								onSuccessfulRestore();
-							},
-							() -> {
-								// On fail
-								DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
-								RuntimeUtil.runOnUiThread(() -> Toast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
-								logger.info("Unable to post work request for fetch2 or preset password was denied");
-								removeIdentity();
-							});
-					} else {
-						onSuccessfulRestore();
-					}
+					runApplicationSetupStepsAndFinish();
 				} else {
 					LongToast.makeText(WizardSafeRestoreActivity.this, getString(R.string.safe_restore_failed) + ". " + failureMessage, Toast.LENGTH_LONG).show();
 					if (safeMDMConfig.isRestoreForced()) {
@@ -297,6 +286,54 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 				}
 			}
 		}.execute();
+	}
+
+	private void runApplicationSetupStepsAndFinish() {
+		executor.execute(new BackgroundTask<Boolean>() {
+			@Override
+			public void runBefore() {
+				// Nothing to do
+			}
+
+			@Override
+			public Boolean runInBackground() {
+				return runApplicationSetupSteps(serviceManager, WizardSafeRestoreActivity.this);
+			}
+
+			@Override
+			public void runAfter(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					finishSuccessfully();
+				} else {
+					WizardDialog.newInstance(R.string.application_setup_steps_failed, R.string.retry)
+						.show(getSupportFragmentManager(), DIALOG_TAG_APPLICATION_SETUP_RETRY);
+				}
+			}
+		});
+	}
+
+	private void finishSuccessfully() {
+		if (ConfigUtils.isWorkBuild()) {
+			GenericProgressDialog.newInstance(R.string.work_data_sync_desc,
+				R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC);
+
+			WorkSyncWorker.Companion.performOneTimeWorkSync(
+				WizardSafeRestoreActivity.this,
+				() -> {
+					// On success
+					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
+					onSuccessfulRestore();
+				},
+				() -> {
+					// On fail
+					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
+					RuntimeUtil.runOnUiThread(() -> Toast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show());
+					logger.warn("Unable to post work request for fetch2 or preset password was denied");
+					removeIdentity();
+				});
+		} else {
+			onSuccessfulRestore();
+		}
 	}
 
 	private void removeIdentity() {
@@ -360,6 +397,8 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 	public void onYes(String tag, Object data) {
 		if (DIALOG_TAG_PASSWORD_PRESET_CONFIRM.equals(tag)) {
 			scheduleAppRestart();
+		} else if (DIALOG_TAG_APPLICATION_SETUP_RETRY.equals(tag)) {
+			runApplicationSetupStepsAndFinish();
 		}
 	}
 

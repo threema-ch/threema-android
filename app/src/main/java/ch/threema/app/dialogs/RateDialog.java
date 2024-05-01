@@ -22,13 +22,13 @@
 package ch.threema.app.dialogs;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -38,29 +38,35 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Optional;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RatingService;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.domain.protocol.ServerAddressProvider;
 
 public class RateDialog extends ThreemaDialogFragment {
 	private static final String BUNDLE_RATE_STAR = "rs";
 	private RateDialogClickListener callback;
-	private Activity activity;
+	private Context context;
 	private AlertDialog alertDialog;
 	private int rating;
 	private TextInputEditText editText = null;
 	private String tag = null;
 	private PreferenceService preferenceService;
+	private ServerAddressProvider serverAddressProvider;
 
 	private final Integer[] starMap = {
 			R.id.star_one,
@@ -91,13 +97,11 @@ public class RateDialog extends ThreemaDialogFragment {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager == null) {
 			dismiss();
+			return;
 		}
 
 		preferenceService = serviceManager.getPreferenceService();
-		if (preferenceService == null) {
-			dismiss();
-			return;
-		}
+		serverAddressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
 
 		if (callback == null) {
 			try {
@@ -108,29 +112,30 @@ public class RateDialog extends ThreemaDialogFragment {
 
 			// called from an activity rather than a fragment
 			if (callback == null) {
-				if (activity instanceof RateDialogClickListener) {
-					callback = (RateDialogClickListener) activity;
+				if (context instanceof RateDialogClickListener) {
+					callback = (RateDialogClickListener) context;
 				}
 			}
 		}
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+	public void onAttach(@NonNull Context context) {
+		super.onAttach(context);
 
-		this.activity = activity;
+		this.context = context;
 	}
 
 	@Override
+	@NonNull
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		String title = getArguments().getString("title");
+		String title = requireArguments().getString("title");
 		String positive = getString(R.string.rate_positive);
 		String negative = getString(R.string.cancel);
 
 		tag = this.getTag();
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_rate, null);
+		final View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_rate, null);
 		editText = dialogView.findViewById(R.id.feedback_edittext);
 		final LinearLayout feedbackLayout = dialogView.findViewById(R.id.feedback_layout);
 
@@ -142,15 +147,10 @@ public class RateDialog extends ThreemaDialogFragment {
 		for (int i = 0; i < starMap.length; i++) {
 			ImageView starView = dialogView.findViewById(starMap[i]);
 			starView.setTag(i + 1);
-			starView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					onStarClick((int) v.getTag(), feedbackLayout, dialogView);
-				}
-			});
+			starView.setOnClickListener(v -> onStarClick((int) v.getTag(), feedbackLayout, dialogView));
 		}
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, getTheme());
 		builder.setView(dialogView);
 
 		if (!TestUtil.empty(title)) {
@@ -165,12 +165,7 @@ public class RateDialog extends ThreemaDialogFragment {
 		}
 
 		builder.setPositiveButton(positive, null);
-		builder.setNegativeButton(negative, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-								callback.onCancel(tag);
-							}
-						}
-				);
+		builder.setNegativeButton(negative, (dialog, whichButton) -> callback.onCancel(tag));
 
 		alertDialog = builder.create();
 
@@ -197,11 +192,18 @@ public class RateDialog extends ThreemaDialogFragment {
 				}
 
 				// Create the rating service to send the rating
-				RatingService ratingService = new RatingService(preferenceService);
+				RatingService ratingService = new RatingService(
+					preferenceService,
+					serverAddressProvider
+				);
 
 				// simulate some activity to show progress bar
 				SystemClock.sleep(1500);
-				return ratingService.sendRating(rating, text);
+				return ratingService.sendRating(
+					rating,
+					text,
+					ConfigUtils.getRatingAppVersion()
+				);
 			}
 
 			@Override
@@ -269,7 +271,7 @@ public class RateDialog extends ThreemaDialogFragment {
 	}
 
 	public void slide_down(View v){
-		Animation a = AnimationUtils.loadAnimation(activity, R.anim.slide_down);
+		Animation a = AnimationUtils.loadAnimation(context, R.anim.slide_down);
 		if(a != null){
 			a.reset();
 			if(v != null){
@@ -280,7 +282,7 @@ public class RateDialog extends ThreemaDialogFragment {
 	}
 
 	public void slide_up(View v){
-		Animation a = AnimationUtils.loadAnimation(activity, R.anim.slide_up);
+		Animation a = AnimationUtils.loadAnimation(context, R.anim.slide_up);
 		if(a != null){
 			a.reset();
 			if(v != null){
@@ -299,21 +301,22 @@ public class RateDialog extends ThreemaDialogFragment {
 			Button negativeButton = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
 
 			positiveButton.setEnabled(rating > 0);
-			ColorStateList colorStateList = DialogUtil.getButtonColorStateList(activity);
+			ColorStateList colorStateList = DialogUtil.getButtonColorStateList(context);
 			positiveButton.setTextColor(colorStateList);
 			negativeButton.setTextColor(colorStateList);
 
-			positiveButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					sendReview(tag, rating, editText.getText().toString());
-				}
+			positiveButton.setOnClickListener(v -> {
+				String text = Optional
+					.ofNullable(editText.getText())
+					.map(Object::toString)
+					.orElse("");
+				sendReview(tag, rating, text);
 			});
 		}
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 
 		outState.putInt(BUNDLE_RATE_STAR, rating);

@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -75,6 +76,8 @@ public class MessageUtilTest  {
 
 	private GroupMessageModel groupMessageModelInbox;
 	private GroupMessageModel groupMessageModelOutbox;
+
+	private ServiceManager serviceManagerMock = mock(ServiceManager.class);
 
 
 	private DistributionListMessageModel distributionListMessageModelOutbox;
@@ -572,7 +575,7 @@ public class MessageUtilTest  {
 
 	private ContactMessageReceiver createContactMessageReceiver(@Nullable String identity) {
 		ContactModel contactModel = new ContactModel(identity, null);
-		return new ContactMessageReceiver(contactModel, null, null, null, null, null, null);
+		return new ContactMessageReceiver(contactModel, null, serviceManagerMock, null, null, null);
 
 	}
 
@@ -586,7 +589,7 @@ public class MessageUtilTest  {
 		ContactService contactService = mock(ContactService.class);
 		when(contactService.createReceiver(any())).thenAnswer(invocation -> {
 			ContactModel contactModel = invocation.getArgument(0, ContactModel.class);
-			return new ContactMessageReceiver(contactModel, null, null, null, null, null, null);
+			return new ContactMessageReceiver(contactModel, null, serviceManagerMock, null, null, null);
 		});
 
 		return new DistributionListMessageReceiver(null, contactService, null, distributionListService);

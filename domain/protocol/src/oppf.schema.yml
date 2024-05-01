@@ -1,0 +1,317 @@
+$schema: 'http://json-schema.org/draft-07/schema#'
+description: Threema OnPrem Provision File (OPPF) Format
+type: object
+properties:
+  version:
+    type: string
+    description: OPPF file format version, currently always `1.0`
+    examples:
+      - '1.0'
+  signatureKey:
+    type: string
+    description: A 32 byte, base64 encoded ED25519 public key (44 chararcters)
+    examples:
+      - ek1qBp4DyRmLL9J5sCmsKSfwbsiGNB4veDAODjkwe/k=
+  refresh:
+    type: integer
+    description: |-
+      The refresh interval in seconds
+
+      Clients should fetch the OPPF after the specified amount of time has passed.
+    minimum: 0
+    examples:
+      - 86400
+  license:
+    type: object
+    description: OnPrem license information
+    properties:
+      id:
+        type: string
+        description: License ID, for internal use only
+      expires:
+        type: string
+        description: |-
+          An ISO-Date that holds the expiration date of the license
+
+          Clients should not accept the OPPF after this date.
+        examples:
+          - '2024-03-15'
+      count:
+        type: integer
+        description: |-
+          The number of licenses in the package
+
+          Servers should not accept more user accounts (active Threema IDs) than
+          this.
+        examples:
+          - 1000
+    required:
+      - id
+      - expires
+      - count
+  # TODO(SE-432): Finalize this schema
+  #publicKeyPinning:
+  #  type: array
+  #  items:
+  #    type: object
+  #    properties:
+  #      domain:
+  #        type: string
+  #        description: The domain to which the SPKI values belong
+  #      spkis:
+  #        type: array
+  #        items:
+  #          type: object
+  #          properties:
+  #            value:
+  #              type: string
+  #              description:
+  #                A 32 byte, base64 encoded public key (44 characters)
+  #            algorithm:
+  #              type: string
+  #              description: The hashing algorithm. Currently always `sha256`
+  #          required:
+  #            - value
+  #            - algorithm
+  #    required:
+  #      - domain
+  #      - spkis
+  #  description:
+  #    The domains and their associated SPKI pins that should be registered in
+  #    the app. Optional if no pinning should be used.
+  chat:
+    type: object
+    description: Configuration for the chat server
+    properties:
+      hostname:
+        type: string
+        description: Chat server hostname
+        examples:
+          - threemaonprem.initrode.com
+      publicKey:
+        type: string
+        description:
+          The 32-byte, base64 encoded permanent public key of the chat server
+          (44 characters)
+        examples:
+          - r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=
+      ports:
+        type: array
+        items:
+          type: integer
+          minimum: 1
+          maximum: 65535
+        description: Array of chat server ports
+        examples:
+          - [5222]
+    required:
+      - hostname
+      - publicKey
+      - ports
+  directory:
+    type: object
+    description: Configuration for the directory server
+    properties:
+      url:
+        type: string
+        description: Base URL (ending with `/`) of the directory server
+        pattern: '^https://.*/$'
+    required:
+      - url
+  blob:
+    type: object
+    description: Configuration for the blob server
+    properties:
+      uploadUrl:
+        type: string
+        description: URL to the blob upload endpoint
+        pattern: '^https://'
+        examples:
+          - https://threemaonprem.initrode.com/blob/upload
+      downloadUrl:
+        type: string
+        description: |-
+          URL to the blob download endpoint
+
+          Valid placeholders:
+
+          - `{blobId}`: The blob ID (32 hex nibbles)
+          - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
+        pattern: '^https://'
+        examples:
+          - https://threemaonprem.initrode.com/blob/{blobId}
+      doneUrl:
+        type: string
+        description: |-
+          URL to the blob done endpoint
+
+          Valid placeholders:
+
+          - `{blobId}`: The blob ID (32 hex nibbles)
+          - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
+        pattern: '^https://'
+        examples:
+          - https://threemaonprem.initrode.com/blob/{blobId}/done
+    required:
+      - uploadUrl
+      - downloadUrl
+      - doneUrl
+  work:
+    type: object
+    description: Configuration for Threema Work
+    properties:
+      url:
+        type: string
+        description: Base URL (ending with `/`) of the Threema Work server
+        pattern: '^https://.*/$'
+        examples:
+          - https://threemaonprem.initrode.com/work/
+    required:
+      - url
+  avatar:
+    description:
+      Configuration for the avatar server, used for Threema Gateway IDs
+    type: object
+    properties:
+      url:
+        type: string
+        description: Base URL (ending with `/`) of the avatar server
+        pattern: '^https://.*/$'
+        examples:
+          - https://threemaonprem.initrode.com/avatar/
+    required:
+      - url
+  safe:
+    type: object
+    description: Configuration for Threema Safe
+    properties:
+      url:
+        type: string
+        description: Base URL (ending with `/`) of the Threema Safe server
+        pattern: '^https://.*/$'
+        examples:
+          - https://threemaonprem.initrode.com/safe/
+    required:
+      - url
+  web:
+    type: object
+    description: Configuration for Threema Web
+    properties:
+      url:
+        type: string
+        description: |-
+          URL to the Threema Web endpoint
+
+          Not required for app functionality, but is displayed in the app
+          (help/info text) so user knows where to go.
+        pattern: '^https://'
+      overrideSaltyRtcHost:
+        type: string
+        description: Override the SaltyRTC host specified in the QR code
+      overrideSaltyRtcPort:
+        type: integer
+        minimum: 1
+        maximum: 65535
+        description: Override the SaltyRTC port specified in the QR code
+    required:
+      - url
+  rendezvous:
+    type: object
+    description: |-
+      Configuration for the rendezvous server
+
+      Required for multi-device support.
+    properties:
+      url:
+        type: string
+        description: |-
+          Base URL (ending with `/`) of the rendezvous server
+
+          Valid placeholders:
+
+          - `{rendezvousPathPrefix4}`: The first hex nibble (4 bits) of the rendezvous path
+          - `{rendezvousPathPrefix8}`: The first two hex nibbles (8 bits) of the rendezvous path
+        pattern: '^wss://.*/$'
+        examples:
+          - wss://threemaonprem.initrode.com/rendezvous/
+          - wss://rendezvous-{rendezvousPathPrefix4}.initrode.com/{rendezvousPathPrefix8}/
+    required:
+      - url
+  mediator:
+    type: object
+    description: |-
+      Configuration for the mediator server and blob mirror
+
+      Required for multi-device support.
+    properties:
+      url:
+        type: string
+        description: |-
+          Base URL (ending with `/`) of the rendezvous server
+
+          Valid placeholders:
+
+          - `{deviceGroupIdPrefix4}`: The first hex nibble (4 bits) of the device group ID
+          - `{deviceGroupIdPrefix8}`: The first two hex nibbles (8 bits) of the device group ID
+        pattern: '^wss://.*/$'
+        examples:
+          - wss://threemaonprem.initrode.com/mediator/
+          - wss://mediator-{deviceGroupIdPrefix4}.initrode.com/{deviceGroupIdPrefix8}/
+      blob:
+        type: object
+        description: Configuration for the blob mirror
+        properties:
+          uploadUrl:
+            type: string
+            description: URL to the blob upload endpoint
+            pattern: '^https://'
+          downloadUrl:
+            type: string
+            description: |-
+              URL to the blob download endpoint
+
+              Valid placeholders:
+
+              - `{blobId}`: The blob ID (32 hex nibbles)
+              - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
+            pattern: '^https://'
+          doneUrl:
+            type: string
+            description: |-
+              URL to the blob done endpoint
+
+              Valid placeholders:
+
+              - `{blobId}`: The blob ID (32 hex nibbles)
+              - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
+            pattern: '^https://'
+        required:
+          - uploadUrl
+          - downloadUrl
+          - doneUrl
+    required:
+      - url
+      - blob
+  # TODO(DESK-1299): Finalize this schema
+  #updates:
+  #  type: object
+  #  description: URLs for update checks
+  #  properties:
+  #    desktop:
+  #      type: object
+  #      properties:
+  #        check:
+  #          type: string
+  #          description: URL to the Threema Desktop update check
+required:
+  - version
+  - signatureKey
+  - refresh
+  - license
+  - chat
+  - directory
+  - blob
+  - work
+  - avatar
+  - safe
+  - web

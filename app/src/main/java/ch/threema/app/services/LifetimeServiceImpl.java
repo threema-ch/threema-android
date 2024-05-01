@@ -42,9 +42,11 @@ import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TaskManager;
 import java8.util.stream.StreamSupport;
 
 /**
@@ -70,8 +72,6 @@ public class LifetimeServiceImpl implements LifetimeService {
 	private volatile boolean paused = false;
 	private long lingerUntil = 0;   /* time (in SystemClock.elapsedRealtime()) until which the connection must stay active in any case */
 
-	private @Nullable DownloadService downloadService;
-
 	private final List<LifetimeServiceListener> listeners = new ArrayList<>();
 
 	/**
@@ -87,12 +87,6 @@ public class LifetimeServiceImpl implements LifetimeService {
 	public LifetimeServiceImpl(@NonNull Context context) {
 		this.context = context;
 		this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-		try {
-			this.downloadService = ThreemaApplication.getServiceManager().getDownloadService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
 	}
 
 	@Override
@@ -267,12 +261,14 @@ public class LifetimeServiceImpl implements LifetimeService {
 		if (unpausableSlots == 0 && (this.connectionSlots.isEmpty() || this.paused)) {
 			long curTime = SystemClock.elapsedRealtime();
 
+			DownloadService downloadService = getDownloadService();
+
 			if (!this.active) {
 				logger.info("cleanupConnection: Connection not active");
 			} else if (lingerUntil > curTime && !ThreemaApplication.isIsDeviceIdle()) {
 				logger.info("cleanupConnection: Connection must linger for another {} milliseconds", lingerUntil - curTime);
 			} else if (downloadService != null && downloadService.isDownloading()) {
-				logger.info("cleanupConnection: Ctill downloading - linger on");
+				logger.info("cleanupConnection: Still downloading - linger on");
 				cancelAlarm(REQUEST_CODE_RELEASE);
 				acquireConnection("ongoingDownload");
 				releaseConnectionLinger("ongoingDownload", MESSAGE_SEND_TIME);
@@ -298,16 +294,12 @@ public class LifetimeServiceImpl implements LifetimeService {
 				this.active = false;
 				logger.info("cleanupConnection: Connection closed, #slots={}", this.connectionSlots.size());
 
-				/* check if any messages remain in the queue */
-				try {
-					int queueSize = ThreemaApplication.getServiceManager().getMessageQueue().getQueueSize();
-					if (queueSize > 0) {
-						long resendTime = SystemClock.elapsedRealtime() + MESSAGE_RESEND_INTERVAL;
-						logger.info("cleanupConnection: {} messages remaining in queue; scheduling resend at {}", queueSize, new Date(resendTime));
-						scheduleAlarm(REQUEST_CODE_RESEND, resendTime);
-					}
-				} catch (Exception e) {
-					logger.error("Exception", e);
+				// Check if there are any unprocessed messages in the task queue
+				TaskManager taskManager = getTaskManager();
+				if (taskManager != null && taskManager.hasPendingTasks()) {
+					long resendTime = SystemClock.elapsedRealtime() + MESSAGE_RESEND_INTERVAL;
+					logger.info("cleanupConnection: tasks are pending; scheduling resend at {}", new Date(resendTime));
+					scheduleAlarm(REQUEST_CODE_RESEND, resendTime);
 				}
 			}
 		} else {
@@ -359,5 +351,28 @@ public class LifetimeServiceImpl implements LifetimeService {
 		} catch (Exception e) {
 			logger.warn("Exception: Could not lock app ", e);
 		}
+	}
+
+	@Nullable
+	private DownloadService getDownloadService() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			try {
+				return serviceManager.getDownloadService();
+			} catch (Exception e) {
+				logger.error("Could not get download service", e);
+			}
+		}
+
+		return null;
+	}
+
+	@Nullable
+	private TaskManager getTaskManager() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			return serviceManager.getTaskManager();
+		}
+		return null;
 	}
 }

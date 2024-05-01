@@ -22,6 +22,8 @@
 package ch.threema.app.asynctasks;
 
 import android.os.AsyncTask;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -37,17 +39,19 @@ import ch.threema.storage.models.GroupModel;
 public class LeaveGroupAsyncTask extends AsyncTask<Void, Void, Void> {
 	private static final String DIALOG_TAG = "lg";
 
-	private final GroupModel groupModel;
+	private final @NonNull GroupModel groupModel;
 	private final GroupService groupService;
 	private final Fragment fragment;
 	private final AppCompatActivity activity;
 	private final Runnable runOnCompletion;
 
-	public LeaveGroupAsyncTask(GroupModel groupModel,
-	                    GroupService groupService,
-	                    AppCompatActivity activity,
-	                    Fragment fragment,
-	                    Runnable runOnCompletion) {
+	public LeaveGroupAsyncTask(
+		@NonNull GroupModel groupModel,
+	    GroupService groupService,
+	    AppCompatActivity activity,
+	    Fragment fragment,
+	    Runnable runOnCompletion
+	) {
 
 		this.groupModel = groupModel;
 		this.groupService = groupService;

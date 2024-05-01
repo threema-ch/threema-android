@@ -26,15 +26,13 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.MessageModel;
+
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 /**
  * add caption field to normal, group and distribution list message models
  */
-public class SystemUpdateToVersion35 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion35 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -46,27 +44,27 @@ public class SystemUpdateToVersion35 extends  UpdateToVersion implements UpdateS
 	@Override
 	public boolean runDirectly() throws SQLException {
 
-		//add new isQueued field to message model fields
+		//add new caption field to message model fields
 		for(String table: new String[]{
-				MessageModel.TABLE,
-				GroupMessageModel.TABLE,
-				DistributionListMessageModel.TABLE
+			"message",
+			"m_group_message",
+			"distribution_list_message"
 		}) {
-			if(!this.fieldExist(this.sqLiteDatabase, table, AbstractMessageModel.COLUMN_CAPTION)) {
+			if(!fieldExists(this.sqLiteDatabase, table, "caption")) {
 				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table
-						+ " ADD COLUMN " + AbstractMessageModel.COLUMN_CAPTION + " VARCHAR NULL");
+						+ " ADD COLUMN caption VARCHAR NULL");
 			}
 		}
 		return true;
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 
 	@Override
 	public String getText() {
-		return "version 35)";
+		return "version 35 (add caption)";
 	}
 }

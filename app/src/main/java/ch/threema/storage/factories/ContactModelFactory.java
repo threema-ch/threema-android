@@ -25,6 +25,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 
 public class ContactModelFactory extends ModelFactory {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactModelFactory");
@@ -118,7 +120,7 @@ public class ContactModelFactory extends ModelFactory {
 		final ContactModel[] cm = new ContactModel[1];
 		cursorFactory.current(new CursorHelper.Callback() {
 			@Override
-			public boolean next(CursorHelper cursorFactory) {
+			public boolean next(@NonNull CursorHelper cursorFactory) {
 				ContactModel c = new ContactModel(
 					cursorFactory.getString(ContactModel.COLUMN_IDENTITY),
 					cursorFactory.getBlob(ContactModel.COLUMN_PUBLIC_KEY)
@@ -135,12 +137,17 @@ public class ContactModelFactory extends ModelFactory {
 					.setIsSynchronized(cursorFactory.getInt(ContactModel.COLUMN_IS_SYNCHRONIZED) == 1)
 					.setIsWork(cursorFactory.getInt(ContactModel.COLUMN_IS_WORK) == 1)
 					.setIdentityType(cursorFactory.getInt(ContactModel.COLUMN_TYPE))
-					.setFeatureMask(cursorFactory.getInt(ContactModel.COLUMN_FEATURE_LEVEL))
+					.setFeatureMask(cursorFactory.getLong(ContactModel.COLUMN_FEATURE_LEVEL))
 					.setIdColorIndex(cursorFactory.getInt(ContactModel.COLUMN_ID_COLOR_INDEX))
-					.setIsHidden(cursorFactory.getInt(ContactModel.COLUMN_IS_HIDDEN) == 1)
+					.setAcquaintanceLevel(
+						cursorFactory.getInt(ContactModel.COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP) == 1
+						? AcquaintanceLevel.GROUP
+						: AcquaintanceLevel.DIRECT
+					)
 					.setAvatarExpires(cursorFactory.getDate(ContactModel.COLUMN_AVATAR_EXPIRES))
 					.setProfilePicBlobID(cursorFactory.getBlob(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID))
 					.setDateCreated(cursorFactory.getDate(ContactModel.COLUMN_DATE_CREATED))
+					.setLastUpdate(cursorFactory.getDate(ContactModel.COLUMN_LAST_UPDATE))
 					.setIsRestored(cursorFactory.getInt(ContactModel.COLUMN_IS_RESTORED) == 1)
 					.setArchived(cursorFactory.getInt(ContactModel.COLUMN_IS_ARCHIVED) == 1)
 					.setReadReceipts(cursorFactory.getInt(ContactModel.COLUMN_READ_RECEIPTS))
@@ -227,9 +234,9 @@ public class ContactModelFactory extends ModelFactory {
 		contentValues.put(ContactModel.COLUMN_IS_WORK, contactModel.isWork());
 		contentValues.put(ContactModel.COLUMN_TYPE, contactModel.getIdentityType());
 		contentValues.put(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID, contactModel.getProfilePicBlobID());
-		contentValues.put(ContactModel.COLUMN_DATE_CREATED, contactModel.getDateCreated() != null ? contactModel.getDateCreated().getTime()
-				: null);
-		contentValues.put(ContactModel.COLUMN_IS_HIDDEN, contactModel.isHidden());
+		contentValues.put(ContactModel.COLUMN_DATE_CREATED, contactModel.getDateCreated() != null ? contactModel.getDateCreated().getTime() : null);
+		contentValues.put(ContactModel.COLUMN_LAST_UPDATE, contactModel.getLastUpdate() != null ? contactModel.getLastUpdate().getTime() : null);
+		contentValues.put(ContactModel.COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP, contactModel.getAcquaintanceLevel() == AcquaintanceLevel.GROUP);
 		contentValues.put(ContactModel.COLUMN_IS_RESTORED, contactModel.isRestored());
 		contentValues.put(ContactModel.COLUMN_IS_ARCHIVED, contactModel.isArchived());
 		contentValues.put(ContactModel.COLUMN_READ_RECEIPTS, contactModel.getReadReceipts());
@@ -238,7 +245,6 @@ public class ContactModelFactory extends ModelFactory {
 
 		if (insert) {
 			//never update identity field
-			//just set on update
 			contentValues.put(ContactModel.COLUMN_IDENTITY, contactModel.getIdentity());
 			this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
 		}
@@ -282,7 +288,8 @@ public class ContactModelFactory extends ModelFactory {
 						"`" + ContactModel.COLUMN_TYPE + "` INT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_PROFILE_PIC_BLOB_ID + "` BLOB DEFAULT NULL," +
 						"`" + ContactModel.COLUMN_DATE_CREATED + "` BIGINT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_IS_HIDDEN + "` TINYINT DEFAULT 0," +
+						"`" + ContactModel.COLUMN_LAST_UPDATE + "` INTEGER," +
+						"`" + ContactModel.COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_IS_RESTORED + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_READ_RECEIPTS + "` TINYINT DEFAULT 0," +

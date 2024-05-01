@@ -21,14 +21,15 @@
 
 package ch.threema.domain.protocol.csp.messages.voip;
 
+import org.slf4j.Logger;
+
+import java.io.ByteArrayOutputStream;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import org.slf4j.Logger;
-
-import java.io.ByteArrayOutputStream;
 
 /**
  * This packet is sent to indicate that one of the call participants has ended the call.
@@ -76,7 +77,45 @@ public class VoipCallHangupMessage extends VoipMessage {
 	}
 
 	@Override
+	public boolean allowUserProfileDistribution() {
+		return false;
+	}
+
+	@Override
 	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
+	public boolean createImplicitlyDirectContact() {
+		return false;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return true;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return false;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
+		// Note: Incoming hangup messages should trigger lastUpdate, but only if the call was
+		//       missed. Thus, we set the field to `false` here, and handle it in the "call missed"
+		//       logic instead.
 		return false;
 	}
 }

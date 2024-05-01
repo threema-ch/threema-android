@@ -55,7 +55,7 @@ public class UrlUtilTest {
 	private void assertUri(boolean legalExpected, String host) {
 		when(uri.getHost()).thenReturn(host);
 		callCount++;
-		assertEquals(legalExpected, UrlUtil.isLegalUri(uri));
+		assertEquals(legalExpected, UrlUtil.isSafeUri(uri));
 		verify(uri, times(callCount)).getHost();
 	}
 

@@ -151,8 +151,11 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 					clearForwardSecurityButton.setOnClickListener(clearButton -> {
 						try {
 							ThreemaApplication.requireServiceManager()
-								.getForwardSecurityMessageProcessor()
-								.clearAndTerminateAllSessions(contactModel, Terminate.Cause.RESET);
+								.getTaskCreator()
+								.scheduleDeleteAndTerminateFSSessionsTaskAsync(
+									contactModel,
+									Terminate.Cause.RESET
+								);
 							Toast.makeText(clearButton.getContext(), R.string.forward_security_cleared, Toast.LENGTH_LONG).show();
 						} catch (Exception e) {
 							Toast.makeText(clearButton.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();

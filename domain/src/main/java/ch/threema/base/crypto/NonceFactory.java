@@ -21,24 +21,25 @@
 
 package ch.threema.base.crypto;
 
+import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
 import com.neilalexander.jnacl.NaCl;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 /**
  * Interface for identity stores.
  */
 final public class NonceFactory {
-	private static final int RANDMON_TRIES = 5;
 	private final SecureRandom secureRandom;
-	private final NonceStoreInterface nonceStore;
+	private final NonceStore nonceStore;
 
-	public NonceFactory(NonceStoreInterface nonceStore) {
+	public NonceFactory(NonceStore nonceStore) {
 		this(new SecureRandom(), nonceStore);
 	}
 	public NonceFactory(SecureRandom secureRandom,
-						NonceStoreInterface nonceStore) {
+						NonceStore nonceStore) {
 		this.secureRandom = secureRandom;
 		this.nonceStore = nonceStore;
 	}
@@ -50,22 +51,22 @@ final public class NonceFactory {
 	public synchronized byte[] next() throws ThreemaException {
 		return this.next(true);
 	}
+
 	/**
 	 * Create the next unique nonce
 	 * @param save
 	 * @return nonce
 	 */
-	public synchronized byte[] next(boolean save) throws ThreemaException {
+	public synchronized byte[] next(boolean save) {
 		byte[] nonce = new byte[NaCl.NONCEBYTES];
-		int tries = 0;
-		boolean success = !save;
+		boolean success;
 		do {
 			this.secureRandom.nextBytes(nonce);
+			// The nonce has been created successfully if it does not exist yet.
 			if (save) {
 				success = this.store(nonce);
-				if (!success && tries++ > RANDMON_TRIES) {
-					throw new ThreemaException("failed to generate a random nonce");
-				}
+			} else {
+				success = !this.exists(nonce);
 			}
 		} while(!success);
 
@@ -89,5 +90,10 @@ final public class NonceFactory {
 	 */
 	public boolean exists(byte[] nonce) {
 		return this.nonceStore.exists(nonce);
+	}
+
+	@NonNull
+	public List<byte[]> getAllHashedNonces() {
+		return this.nonceStore.getAllHashedNonces();
 	}
 }

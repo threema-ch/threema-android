@@ -927,6 +927,10 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="empty_chat_title">Odstranit zprávy</string>
     <string name="empty_chat_confirm">Všechny zprávy v této konverzaci budou odstraněny. Přejete si pokračovat?</string>
     <string name="emptying_chat">Odstraňují se zprávy</string>
+    <string name="emptying_chat_deleting_messages">Odstraňování zpráv…</string>
+    <string name="delete_chat_title">Odstranit konverzaci</string>
+    <string name="delete_chat_confirm">Všechny zprávy v této konverzaci, včetně konverzace samotné, budou odstraněny. Pokračovat?</string>
+    <string name="deleting_chat">Odstraňování konverzace</string>
     <string name="set_private">Označit jako „soukromá konverzace“</string>
     <string name="unset_private">Zrušit označení „soukromá konverzace“</string>
     <string name="delete_group_message">Skutečně si přejete tuto skupinu opustit a zcela ji odstranit? Všechny zprávy v ní obsažené budou odstraněny.</string>
@@ -1087,7 +1091,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="tooltip_voip_turn_on_camera">Klepnutím sem zapnete fotoaparát</string>
     <string name="prefs_videocall_profile_explain">Skutečná kvalita obrazu závisí na použité síti a nastavení osoby, se kterou hovoříte</string>
     <string name="permission_camera_videocall_required">Chcete‑li spustit video hovor, povolte prosím přístup k fotoaparátu</string>
-    <string name="feedback">Zpětná vazba</string>
     <string name="tooltip_voip_enable_speakerphone">Klepnutím sem zapnete hlasitý odposlech</string>
     <string name="ballot_open">Probíhající ankety</string>
     <string name="translators">Překladatelé</string>
@@ -1359,16 +1362,21 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="synchronizing">Synchronizace…</string>
     <string name="forward_security">Odesílat zprávy s Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
-    <string name="forward_security_mode_none">Ne</string>
+    <string name="forward_security_mode_none">Žádný</string>
     <string name="clear_forward_security">Resetovat Perfect Forward Secrecy pro tento kontakt</string>
     <string name="clear_forward_security_warning">Tuto akci provádějte pouze na pokyn týmu podpory společnosti Threema.</string>
     <string name="forward_security_cleared">Perfect Forward Secrecy relace s tímto kontaktem byly vyčištěny</string>
     <string name="message_without_forward_security">Byla přijata zpráva bez Perfect Forward Secrecy. Ověřte, zda odesílatel záměrně zakázal Perfect Forward Secrecy.</string>
-    <string name="forward_security_established">Zprávy v této konverzaci jsou nyní chráněny protokolem Perfect Forward Secrecy.</string>
+    <string name="forward_security_established">Zprávy s touto protistranou jsou nyní chráněny protokolem Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Zprávy přijaté v této konverzaci jsou nyní chráněny protokolem Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Funkce Perfect Forward Secrecy byla resetována. K tomu může dojít, pokud partner v konverzaci změní své zařízení nebo přeinstaluje aplikaci.</string>
     <string name="forward_security_reset_simple">Perfect Forward Secrecy relace s tímto kontaktem byla resetována.</string>
     <string name="forward_security_message_out_of_order">Zpráva byla přijata mimo provoz a nemohla být dešifrována.</string>
+    <string name="forward_security_notification_channel_name">Perfect Forward Secrecy varování</string>
+    <string name="forward_security_notification_rejected_title">Odesílání zpráv selhalo</string>
+    <string name="forward_security_notification_rejected_text_contact">Jednu nebo více zpráv se nezdařilo odeslat kontaktu %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">Jednu nebo více zpráv se nezdařilo odeslat kontaktu „%1$s“.</string>
+    <string name="forward_security_notification_rejected_text_generic">Jednu nebo více zpráv se nezdařilo odeslat.</string>
     <string name="self_updater_installation_failed">Stažení aktualizace selhalo. Stáhněte a nainstalujte aktualizaci z <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ručně.</string>
     <string name="spam_first_contact">Tato konverzace pochází od neznámého kontaktu</string>
     <string name="spam_report">Nahlásit spam</string>
@@ -1380,6 +1388,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="spam_report_short">Nahlásit</string>
     <string name="wizard_incompatible_contact_sync_params">Jsou nastaveny nekompatibilní MDM parametry. Threema MDM parametr th_contact_sync nemůže být nastaven na „true“, jestliže je nastaveno uživatelské omezení DISALLOW_MODIFY_ACCOUNTS. Kontaktujte prosím správce vašeho zařízení.</string>
     <string name="messages_cannot_be_recovered">Zprávy z nich už poté nebudete moci obnovit.</string>
+    <string name="groups_left_or_dissolved">Skupiny budou opuštěny nebo rozpuštěny a poté smazány.</string>
     <string name="contact_deleted">Kontakt odstraněn</string>
     <string name="last_added_contact">Naposledy přidaný</string>
     <string name="directory_explain_text">Vyhledá v adresáři společnosti všechny zaměstnance, kteří dosud nejsou ve vašem seznamu kontaktů.</string>
@@ -1427,8 +1436,8 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="group_calls_tooltip_text">Klepnutím sem pozvete všechny členy skupiny k připojení se k hovoru. Všichni členové skupiny obdrží oznámení a mohou se rozhodnout, zda se hovoru zúčastní nebo ne.</string>
     <string name="prefs_title_calls">Zabezpečené hovory</string>
     <string name="prefs_sum_group_calls_vibration">Vyberte, zda má zařízení po zahájení skupinového hovoru vibrovat</string>
-    <string name="forward_security_mode_4dh">kompletní</string>
-    <string name="forward_security_mode_2dh">unilaterální</string>
+    <string name="forward_security_mode_4dh">Kompletní</string>
+    <string name="forward_security_mode_2dh">Unilaterální</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) chrání zaznamenanou komunikaci před zpětným dešifrováním i když je dlouhodobý šifrovací klíč kompromitován.\n\nTato možnost může být povolena v případě, když aplikace na obou stranách podporuje PFS.</string>
     <string name="group_call_inactivity_left">Skupinový hovor byl opuštěn z důvodu neaktivity</string>
     <string name="missing_permission_external_storage">Soubor nelze zkopírovat. Vyzkoušejte následující postup:\n1. Otevřete aplikaci nastavení.\n2. Přejděte do kategorie „Aplikace“ a zvolte položku „Aplikace se speciálním přístupem“.\n3. Klepněte na „Přístup ke všem souborům“.\n4. Klepněte na tři tečky v pravém horním rohu obrazovky a zvolte „Zobrazit systémové aplikace“.\n5. Klepněte na „Externí úložiště“ a ujistěte se, že je povolena volba „Povolit přístup ke správě všech souborů“.\n6. Znovu vyzkoušejte obnovit zálohu.</string>
@@ -1518,6 +1527,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="edit_and_send">Upravit a odeslat</string>
     <string name="media_gallery_animated_webps">Animované WebP</string>
     <string name="unsupported_image_type">Nepodporovaný typ obrázku: %s</string>
+    <string name="application_setup_steps_failed">Ke kontrole stavu vašich kontaktů je vyžadováno aktivní připojení k Internetu. Ujistěte se prosím, že jste připojeni k Internetu a zkuste to znovu.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>

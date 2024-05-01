@@ -64,7 +64,7 @@ public class SupportActivity extends SimpleWebViewActivity {
 		}
 
 		return baseURL + "?lang=" + LocaleUtil.getAppLanguage()
-			+ "&version=" + UrlUtil.urlencode(ConfigUtils.getDeviceInfo(this, true))
+			+ "&version=" + UrlUtil.urlencode(ConfigUtils.getDeviceInfo(true))
 			+ "&identity=" + getIdentity();
 	}
 

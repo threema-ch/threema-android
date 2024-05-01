@@ -22,7 +22,6 @@
 package ch.threema.app.services.group;
 
 import androidx.annotation.NonNull;
-import ch.threema.app.processors.MessageProcessor;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseData;
@@ -30,7 +29,8 @@ import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage;
 
 public interface GroupJoinResponseService {
 
-	@NonNull MessageProcessor.ProcessingResult process(
+	// TODO(ANDR-2607): integrate properly in tasks
+	@NonNull boolean process(
 		GroupJoinResponseMessage message
 	) throws ThreemaException;
 

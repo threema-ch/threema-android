@@ -59,6 +59,7 @@ import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 
 public class SynchronizeContactsRoutine implements Runnable {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsRoutine");
@@ -286,7 +287,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 					AndroidContactUtil.getInstance().updateNameByAndroidContact(contact); // throws an exception if no name can be determined
 					AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
 
-					contact.setIsHidden(false);
+					contact.setAcquaintanceLevel(AcquaintanceLevel.DIRECT);
 					if (contact.getVerificationLevel() == VerificationLevel.UNVERIFIED) {
 						contact.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
 					}

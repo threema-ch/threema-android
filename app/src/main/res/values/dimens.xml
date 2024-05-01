@@ -218,8 +218,11 @@
 	<dimen name="compose_title_avatar_size">40dp</dimen>
 	<dimen name="compose_bottom_panel_height">56dp</dimen>
 	<dimen name="compose_bottom_panel_padding_vertical">4dp</dimen>
+    <dimen name="compose_bottom_panel_padding_horizontal">8dp</dimen>
+    <dimen name="compose_textinputlayout_radius">24dp</dimen>
+    <dimen name="compose_textinputlayout_radius_expanded">0dp</dimen>
 
-	<!-- material dialogs -->
+    <!-- material dialogs -->
 	<dimen name="directory_header_height">24dp</dimen>
 	<dimen name="directory_search_bar_height">58dp</dimen>
 

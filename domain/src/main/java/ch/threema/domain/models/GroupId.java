@@ -26,6 +26,8 @@ import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
@@ -56,7 +58,7 @@ public class GroupId implements Serializable {
 	}
 
 	public GroupId(long groupId) {
-		this.value = Utils.longToByteArrayBigEndian(groupId);
+		this.value = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(groupId).array();
 	}
 
 	public GroupId(String groupId) {
@@ -72,12 +74,8 @@ public class GroupId implements Serializable {
 		return Utils.byteArrayToHexString(this.value);
 	}
 
-	public int toInt() {
-		return Utils.byteArrayToIntBigEndian(this.value);
-	}
-
 	public long toLong() {
-		return Utils.byteArrayToLongBigEndian(this.value);
+		return ByteBuffer.wrap(value).order(ByteOrder.LITTLE_ENDIAN).getLong();
 	}
 
 	@Override

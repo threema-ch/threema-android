@@ -38,12 +38,15 @@
 	<string name="preferences__default_contact_picture_colored" translatable="false">prefs_key_default_contact_picture_colored</string>
 	<string name="preferences__hide_screenshots" translatable="false">prefs_key_hide_screenshots</string>
     <string name="preferences__transmitted_feature_level" translatable="false">pref_key_transmitted_feature_level</string>
+	<string name="preferences__transmitted_feature_mask" translatable="false">pref_key_transmitted_feature_mask</string>
+	<string name="preferences__last_feature_mask_transmission" translatable="false">pref_key_last_feature_mask_transmission</string>
     <string name="preferences__show_inactive_contacts" translatable="false">pref_key_show_inactive_contacts</string>
 	<string name="preferences__last_online_status" translatable="false">last_online</string>
 	<string name="preferences__video_size" translatable="false">pref_key_video_size</string>
 	<string name="preferences__remove_wallpapers" translatable="false">pref_key_remove_wallpapers</string>
 	<string name="preferences__individual_ringtones" translatable="false">pref_individual_ringtones</string>
 	<string name="preferences__latest_version" translatable="false">pref_latest_version</string>
+	<string name="preferences__build_version" translatable="false">pref_build_version</string>
 	<string name="preferences__filesend_info_shown" translatable="false">pref_key_filedata_info_shown</string>
 	<string name="preferences__theme" translatable="false">pref_key_theme</string>
 	<string name="preferences__storage_management" translatable="false">pref_key_storage_mgmt</string>
@@ -154,7 +157,6 @@
 	<string name="preferences__rate" translatable="false">pref_key_rate</string>
 	<string name="preferences__data_backup_uri" translatable="false">pref_data_backup_uri</string>
 	<string name="preferences__show_unread_badge" translatable="false">pref_show_unread_badge</string>
-	<string name="preferences__privacy_policy_accept_version" translatable="false">pref_privacy_policy_accept_version</string>
 	<string name="preferences__match_token" translatable="false">pref_match_token</string>
 	<string name="preferences__auto_download_explain" translatable="false">pref_auto_download_explain</string>
 	<string name="preferences__working_days" translatable="false">pref_working_days</string>
@@ -212,4 +214,6 @@
     <string name="preferences__email_sync_hash" translatable="false">pref_email_sync_hash</string>
     <string name="preferences__phone_number_sync_hash" translatable="false">pref_phone_number_sync_hash</string>
     <string name="preferences__contact_sync_time" translatable="false">pref_contact_sync_time</string>
+	<string name="preferences__md_unlocked" translatable="false">pref_md_unlocked</string>
+	<string name="preferences__show_last_update_prefix" translatable="false">pref_show_last_update_prefix</string>
 </resources>

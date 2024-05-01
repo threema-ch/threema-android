@@ -608,7 +608,7 @@
     <string name="fontsize_xlarge">Дуже великий</string>
     <string name="no_app_for_location">На цьому пристрої не знайдено додаток для карт</string>
     <string name="prefs_sendlog">Надіслати журнал</string>
-    <string name="prefs_sendlog_summary">Надішліть файл журналу в Threema для подальшого аналізу, якщо ви зіткнулися з несправностями</string>
+    <string name="prefs_sendlog_summary">Надішліть нам файл журналу для подальшого аналізу в разі проблем</string>
     <string name="prefs_exportlog">Експортувати журнал</string>
     <string name="prefs_exportlog_summary">Поділіться файлом журналу в іншому додатку</string>
     <string name="permission_storage_required">Щоб зберігати та надсилати медіафайли, надайте Threema доступ до сховища.</string>
@@ -1131,7 +1131,6 @@
     <string name="tooltip_voip_turn_on_camera">Торкніться тут, щоб увімкнути камеру</string>
     <string name="prefs_videocall_profile_explain">Фактична якість зображення залежить від мережі та налаштувань контакта, з яким ви спілкуєтеся.</string>
     <string name="permission_camera_videocall_required">Щоб здійснювати відеовиклики, надайте доступ до камери.</string>
-    <string name="feedback">Відгуки</string>
     <string name="tooltip_voip_enable_speakerphone">Торкніться тут, щоб увімкнути гучний зв\'язок</string>
     <string name="ballot_open">Діючі опитування</string>
     <string name="translators">Перекладачі</string>

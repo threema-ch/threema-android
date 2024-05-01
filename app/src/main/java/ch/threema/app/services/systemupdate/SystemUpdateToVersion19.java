@@ -58,7 +58,7 @@ public class SystemUpdateToVersion19 implements UpdateSystemService.SystemUpdate
 		return true;
 	}
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

@@ -22,22 +22,17 @@
 package ch.threema.app.utils;
 
 
-import static ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT;
-import static ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST;
-import static ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP;
-
 import android.content.Context;
 import android.graphics.Bitmap;
-
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.cache.ThumbnailCache;
@@ -52,6 +47,10 @@ import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
+
+import static ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT;
+import static ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST;
+import static ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP;
 
 public class QuoteUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("QuoteUtil");
@@ -355,6 +354,10 @@ public class QuoteUtil {
 		}
 
 		return "> quote #" + messageModel.getApiMessageId() + "\n\n" + text;
+	}
+
+	public static String quote(@NonNull String text, @NonNull String messageId) {
+		return "> quote #" + messageId + "\n\n" + text;
 	}
 
 	public static class QuoteContent {

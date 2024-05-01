@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.DialogFragment;
@@ -310,8 +311,8 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
 		}
 	}
 
-	public void onYes(String tag, final String text) {
-		if (text != null && text.length() == ProtocolDefines.IDENTITY_LEN) {
+	public void onYes(@NonNull String tag, final @NonNull String text) {
+		if (text.length() == ProtocolDefines.IDENTITY_LEN) {
 			excludeIdentity(text);
 		}
 	}

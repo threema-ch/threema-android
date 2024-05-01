@@ -25,10 +25,12 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 import ch.threema.app.services.UpdateSystemService;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * Create all correlationId fields
  */
-public class SystemUpdateToVersion59 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion59 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -40,9 +42,9 @@ public class SystemUpdateToVersion59 extends UpdateToVersion implements UpdateSy
 	@Override
 	public boolean runDirectly() throws SQLException {
 
-		//add new isQueued field to message model fields
+		//add new correlationId field to message model fields
 		for(String table: new String[]{"message", "m_group_message", "distribution_list_message"}) {
-			if(!this.fieldExist(this.sqLiteDatabase, table, "correlationId")) {
+			if(!fieldExists(this.sqLiteDatabase, table, "correlationId")) {
 				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN correlationId VARCHAR NULL");
 			}
 		}
@@ -56,7 +58,7 @@ public class SystemUpdateToVersion59 extends UpdateToVersion implements UpdateSy
 
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

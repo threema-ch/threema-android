@@ -68,7 +68,8 @@ public abstract class ForwardSecurityData implements ProtobufDataInterface<Envel
 					final Reject reject = protobufMessage.getReject();
 					return new ForwardSecurityDataReject(
 						sessionId,
-						new MessageId(reject.getRejectedEncapsulatedMessageId()),
+						new MessageId(reject.getMessageId()),
+						reject.getGroupIdentity(),
 						reject.getCause()
 					);
 				}
@@ -81,6 +82,7 @@ public abstract class ForwardSecurityData implements ProtobufDataInterface<Envel
 						encapsulated.getCounter(),
 						encapsulated.getOfferedVersion(),
 						encapsulated.getAppliedVersion(),
+						encapsulated.hasGroupIdentity() ? encapsulated.getGroupIdentity() : null,
 						encapsulated.getEncryptedInner().toByteArray());
 				}
 				default:

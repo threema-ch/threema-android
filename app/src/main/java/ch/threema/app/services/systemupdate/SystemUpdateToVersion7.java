@@ -77,7 +77,7 @@ public class SystemUpdateToVersion7 implements UpdateSystemService.SystemUpdate 
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		FilenameFilter filter = new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String filename) {

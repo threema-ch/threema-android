@@ -42,7 +42,7 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 /**
  * add profile pic field to normal, group and distribution list message models
  */
-public class SystemUpdateToVersion42 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion42 implements UpdateSystemService.SystemUpdate {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion42");
 
 	private final SQLiteDatabase sqLiteDatabase;
@@ -57,7 +57,7 @@ public class SystemUpdateToVersion42 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		final File appPath = new File(ThreemaApplication.getAppContext().getExternalFilesDir(null), "data");
 		final File avatarPath = new File(appPath, "/.avatar");
 		final File wallpaperPath = new File(appPath.getPath() + "/.wallpaper");

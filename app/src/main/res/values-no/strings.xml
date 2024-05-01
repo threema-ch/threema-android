@@ -1087,7 +1087,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="tooltip_voip_turn_on_camera">Trykk her for å skru på kameraet</string>
     <string name="prefs_videocall_profile_explain">Den faktiske bildekvaliteten avhenger av nettverket og innstillingene til personen du snakker med</string>
     <string name="permission_camera_videocall_required">For videoanrop, vennligst tillat tilgang til kameraet</string>
-    <string name="feedback">Tilbakemelding</string>
     <string name="tooltip_voip_enable_speakerphone">Trykk her for å skru på høyttaler</string>
     <string name="ballot_open">Aktive avstemninger</string>
     <string name="translators">Oversettere</string>

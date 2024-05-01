@@ -21,15 +21,17 @@
 
 package ch.threema.domain.helpers;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import androidx.annotation.NonNull;
-import ch.threema.base.crypto.NonceStoreInterface;
+import ch.threema.base.crypto.NonceStore;
 
 /**
  * An in-memory identity store, used for testing.
  */
-public class InMemoryNonceStore implements NonceStoreInterface {
+public class InMemoryNonceStore implements NonceStore {
 	private final HashSet<byte[]> nonces = new HashSet<>();
 
 	@Override
@@ -40,5 +42,13 @@ public class InMemoryNonceStore implements NonceStoreInterface {
 	@Override
 	public boolean store(@NonNull byte[] nonce) {
 		return this.nonces.add(nonce);
+	}
+
+	@NonNull
+	@Override
+	public List<byte[]> getAllHashedNonces() {
+		List<byte[]> hashedNonces = new ArrayList<>(nonces.size());
+		hashedNonces.addAll(nonces);
+		return hashedNonces;
 	}
 }

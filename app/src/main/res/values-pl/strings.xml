@@ -683,7 +683,7 @@ anonimowo?</string>
     <string name="select_all">Wybierz wszystkie</string>
     <string name="deleting_messages">Usuwanie wiadomości</string>
     <string name="media_gallery_files">Pliki</string>
-    <string name="prefs_gif_autoplay">Automatycznie odtwarzaj animowane GIF-y</string>
+    <string name="prefs_gif_autoplay">Automatycznie odtwarzaj animowane obrazy</string>
     <string name="media_gallery_audio">Wiadomości głosowe</string>
     <string name="action_clone_group">Kopiuj grupę</string>
     <string name="clone_group_message">Utworzona zostanie kopia tej grupy, w której będziesz administratorem. Kontynuować?</string>
@@ -942,6 +942,10 @@ anonimowo?</string>
     <string name="empty_chat_title">Wyczyść czat</string>
     <string name="empty_chat_confirm">Wszystkie wiadomości w tym czacie zostaną usunięte. Czy chcesz kontynuować?</string>
     <string name="emptying_chat">Czyszczenie czatu</string>
+    <string name="emptying_chat_deleting_messages">Usuwanie wiadomości...</string>
+    <string name="delete_chat_title">Usuń czat</string>
+    <string name="delete_chat_confirm">Wszystkie wiadomości w tym czacie zostaną skasowane, a czat zostanie usunięty. Kontynuować?</string>
+    <string name="deleting_chat">Usuwanie czatu</string>
     <string name="set_private">Ukryj czat</string>
     <string name="unset_private">Pokaż czat</string>
     <string name="delete_group_message">Czy chcesz opuścić i usunąć tę grupę? Wszystkie wiadomości również zostaną usunięte.</string>
@@ -1102,7 +1106,6 @@ anonimowo?</string>
     <string name="tooltip_voip_turn_on_camera">Dotknij, aby włączyć kamerę</string>
     <string name="prefs_videocall_profile_explain">Faktyczna jakość obrazu zależy od połączenia sieciowego i ustawień  Twojego rozmówcy.</string>
     <string name="permission_camera_videocall_required">Połączenia wideo wymagają dostępu do kamery.</string>
-    <string name="feedback">Opinia</string>
     <string name="tooltip_voip_enable_speakerphone">Dotknij, aby włączyć mikrofon</string>
     <string name="ballot_open">Otwarty sondaż</string>
     <string name="translators">Tłumacze</string>
@@ -1374,16 +1377,21 @@ anonimowo?</string>
     <string name="synchronizing">Synchronizacja…</string>
     <string name="forward_security">Wysyłaj wiadomości z Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
-    <string name="forward_security_mode_none">nie</string>
+    <string name="forward_security_mode_none">Brak</string>
     <string name="clear_forward_security">Resetuj Perfect Forward Secrecy dla tego kontaktu</string>
     <string name="clear_forward_security_warning">Wykonaj tę czynności tylko, gdy poleci to zespół pomocy Threema.</string>
     <string name="forward_security_cleared">Sesje Perfect Forward Secrecy z tym kontaktem zostały wyczyszczone</string>
     <string name="message_without_forward_security">Odebrano wiadomość bez Perfect Forward Secrecy. Sprawdź, że nadawca rozmyślnie wyłączył Perfect Forward Secrecy.</string>
-    <string name="forward_security_established">Wiadomości w tym czacie są teraz chronione przez Perfect Forward Secrecy.</string>
+    <string name="forward_security_established">Wiadomości z tym partnerem czatu są teraz chronione przez Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Wiadomości odbierane w tym czacie są teraz chronione przez Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Zresetowano sesję Perfect Forward Secrecy. Może się to zdarzyć, gdy partner na czacie zmienił urządzenia lub ponownie zainstalował aplikację.</string>
     <string name="forward_security_reset_simple">Zresetowano sesję Perfect Forward Secrecy z tym kontaktem.</string>
     <string name="forward_security_message_out_of_order">Wiadomość została odebrana poza kolejnością i nie można jej odszyfrować.</string>
+    <string name="forward_security_notification_channel_name">Ostrzeżenia Perfect Forward Secrecy</string>
+    <string name="forward_security_notification_rejected_title">Wysyłanie wiadomości nie powiodło się</string>
+    <string name="forward_security_notification_rejected_text_contact">Nie powiodło się wysłanie co najmniej jednej wiadomości do %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">Nie powiodło się wysłanie co najmniej jednej wiadomości do „%1$s”.</string>
+    <string name="forward_security_notification_rejected_text_generic">Nie powiodło się wysłanie co najmniej jednej wiadomości.</string>
     <string name="self_updater_installation_failed">Pobranie aktualizacji nie powiodło się. Pobierz ją ze strony <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> i zainstaluj ręcznie.</string>
     <string name="spam_first_contact">Ten czat jest z nieznanym kontaktem</string>
     <string name="spam_report">Zgłoś Spam</string>
@@ -1395,6 +1403,7 @@ anonimowo?</string>
     <string name="spam_report_short">Zgłoś</string>
     <string name="wizard_incompatible_contact_sync_params">Ustawione są niezgodne parametry MDM. Parametr MDM Threema th_contact_sync nie może być ustawiony na wartość prawda, jeśli ustawiono ograniczenie użytkownika DISALLOW_MODIFY_ACCOUNTS. Skontaktuj się z administratorem urządzenia.</string>
     <string name="messages_cannot_be_recovered">Nie będzie mógł ich odzyskać.</string>
+    <string name="groups_left_or_dissolved">Grupy zostaną opuszczone lub rozwiązane, a następnie usunięte.</string>
     <string name="contact_deleted">Kontakt usunięty</string>
     <string name="last_added_contact">Ostatnio dodany</string>
     <string name="directory_explain_text">Przeszukaj katalog firmowy, by znaleźć pracowników, których nie ma na liście kontaktów.</string>
@@ -1442,8 +1451,8 @@ anonimowo?</string>
     <string name="group_calls_tooltip_text">Stuknij tutaj, aby zaprosić wszystkich członków grupy do połączenia. Wszyscy członkowie grupy otrzymają powiadomienie i będą mogli zdecydować, czy chcą dołączyć do połączenia.</string>
     <string name="prefs_title_calls">Bezpieczne poł.</string>
     <string name="prefs_sum_group_calls_vibration">Wybierz powiadomienia wibracjami po rozpoczęciu połączenia grupowego</string>
-    <string name="forward_security_mode_4dh">całkowite</string>
-    <string name="forward_security_mode_2dh">jednostronne</string>
+    <string name="forward_security_mode_4dh">Całkowite</string>
+    <string name="forward_security_mode_2dh">Jednostronne</string>
     <string name="forward_security_explanation">Doskonałe utajnianie z wyprzedzeniem (Perfect Forward Secrecy – PFS) chroni rejestrowaną komunikację przed odszyfrowaniem po fakcie, nawet jeśli zostaną ujawnione długoterminowe klucze szyfrujące.\n\nOpcję tę można włączyć, jeśli aplikacja po obu stronach obsługuje PFS.</string>
     <string name="group_call_inactivity_left">Opuszczono rozmowę grupową z powodu nieaktywności</string>
     <string name="missing_permission_external_storage">Nie udało się skopiować pliku. Spróbuj następujących kroków:\n1. Otwórz aplikację Ustawienia.\n2. Przejdź do \"Aplikacje\" i wybierz \"Dostęp specjalny\".\n3. Dotknij \"Dostęp do wszystkich plików\".\n4. Dotknij trzech kropek w prawym górnym rogu i wybierz \"Pokaż aplikacje systemowe\".\n5. Dotknij \"Pamięć zewnętrzna\" i upewnij się, że \"Zezwól na dostęp do zarządzania wszystkimi plikami\" jest przyznane.\n6. Spróbuj ponownie przywrócić kopię zapasową.</string>
@@ -1533,6 +1542,7 @@ anonimowo?</string>
     <string name="edit_and_send">Edytuj i wyślij</string>
     <string name="media_gallery_animated_webps">Animowane obrazy WebP</string>
     <string name="unsupported_image_type">Nieobsługiwany typ obrazu: %s</string>
+    <string name="application_setup_steps_failed">Do sprawdzenia stanu kontaktów wymagane jest aktywne połączenie internetowe. Sprawdź, czy jesteś połączony z Internetem i spróbuj ponownie.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktów</item>

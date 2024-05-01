@@ -21,13 +21,8 @@
 
 package ch.threema.storage.factories;
 
-import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
-
 import android.content.ContentValues;
 import android.database.Cursor;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.JsonUtil;
 import ch.threema.domain.models.MessageId;
@@ -46,7 +43,10 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
+
+import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
 
 public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 	public GroupMessageModelFactory(DatabaseServiceNew databaseService) {
@@ -109,6 +109,20 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 				new String[]{
 						uid
 				});
+	}
+
+	public List<GroupMessageModel> getAllRejectedMessagesInGroup(@NonNull GroupModel group) {
+		return convertList(
+			this.databaseService.getReadableDatabase().query(
+				getTableName(),
+				null,
+				GroupMessageModel.COLUMN_GROUP_ID + "=? AND " + AbstractMessageModel.COLUMN_STATE + "=?",
+				new String[]{String.valueOf(group.getId()), MessageState.FS_KEY_MISMATCH.toString()},
+				null,
+				null,
+				null
+			)
+		);
 	}
 
 	public List<AbstractMessageModel> getMessagesByText(@Nullable String text, boolean includeArchived, boolean starredOnly, boolean sortAscending) {
@@ -494,8 +508,12 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 				"CREATE INDEX `m_group_message_identity_idx` ON `"+ GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_IDENTITY + "` );",
 				"CREATE INDEX `m_group_message_groupId_idx` ON `"+ GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_GROUP_ID + "` );",
 				"CREATE INDEX `groupMessageApiMessageIdIdx` ON `"+ GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_API_MESSAGE_ID + "` );",
-				"CREATE INDEX `groupMessageCorrelationIdIdx` ON `"+ GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_CORRELATION_ID + "` );"
-
+				"CREATE INDEX `groupMessageCorrelationIdIdx` ON `"+ GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_CORRELATION_ID + "` );",
+				"CREATE INDEX `group_message_state_idx` ON `" + GroupMessageModel.TABLE
+					+ "`(`"  + AbstractMessageModel.COLUMN_TYPE
+					+ "`, `" + AbstractMessageModel.COLUMN_STATE
+					+ "`, `" + AbstractMessageModel.COLUMN_OUTBOX
+					+ "`)",
 		};
 	}
 }

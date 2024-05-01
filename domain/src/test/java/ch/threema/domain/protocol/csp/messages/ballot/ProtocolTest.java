@@ -51,7 +51,7 @@ public class ProtocolTest {
 		GroupId groupId = new GroupId(new byte[ProtocolDefines.GROUP_ID_LEN]);
 		String groupCreator = ballotCreator;
 
-		GroupBallotCreateMessage b = new GroupBallotCreateMessage();
+		GroupPollSetupMessage b = new GroupPollSetupMessage();
 		b.setFromIdentity(ballotCreator);
 		b.setToIdentity(myIdentity);
 		b.setApiGroupId(groupId);
@@ -82,15 +82,15 @@ public class ProtocolTest {
 		NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 		MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
-		MessageBox boxmsg = messageCoder.encode(b, nonceFactory);
+		MessageBox boxmsg = messageCoder.encode(b, nonceFactory.next(false), nonceFactory);
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
 		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
 		Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
-		Assert.assertTrue(decodedBoxMessage instanceof GroupBallotCreateMessage);
+		Assert.assertTrue(decodedBoxMessage instanceof GroupPollSetupMessage);
 
-		GroupBallotCreateMessage db = (GroupBallotCreateMessage) decodedBoxMessage;
+		GroupPollSetupMessage db = (GroupPollSetupMessage) decodedBoxMessage;
 
 		BallotData d = db.getData();
 		Assert.assertNotNull(d);
@@ -115,7 +115,7 @@ public class ProtocolTest {
 		String ballotCreator = toIdentity;
 
 
-		BallotCreateMessage b = new BallotCreateMessage();
+		PollSetupMessage b = new PollSetupMessage();
 		b.setFromIdentity(ballotCreator);
 		b.setToIdentity(myIdentity);
 		b.setBallotId(ballotId);
@@ -143,15 +143,15 @@ public class ProtocolTest {
 
 		NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 
-		MessageBox boxmsg = messageCoder.encode(b, nonceFactory);
+		MessageBox boxmsg = messageCoder.encode(b, nonceFactory.next(false), nonceFactory);
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
 		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
 		Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
-		Assert.assertTrue(decodedBoxMessage instanceof BallotCreateMessage);
+		Assert.assertTrue(decodedBoxMessage instanceof PollSetupMessage);
 
-		BallotCreateMessage db = (BallotCreateMessage) decodedBoxMessage;
+		PollSetupMessage db = (PollSetupMessage) decodedBoxMessage;
 
 		BallotData d = db.getData();
 		Assert.assertNotNull(d);

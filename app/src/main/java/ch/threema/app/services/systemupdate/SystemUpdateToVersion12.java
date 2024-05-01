@@ -75,7 +75,7 @@ public class SystemUpdateToVersion12 implements UpdateSystemService.SystemUpdate
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		//make a manually sync
 		SynchronizeContactsUtil.startDirectly();
 

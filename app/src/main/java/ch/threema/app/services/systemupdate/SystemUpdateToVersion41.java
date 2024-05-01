@@ -26,12 +26,13 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.storage.models.ContactModel;
+
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 /**
  * add profile pic field to normal, group and distribution list message models
  */
-public class SystemUpdateToVersion41 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion41 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -42,14 +43,14 @@ public class SystemUpdateToVersion41 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, "contacts", "profilePicSent")) {
+		if (!fieldExists(this.sqLiteDatabase, "contacts", "profilePicSent")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN profilePicSent BIGINT DEFAULT 0");
 		}
 		return true;
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

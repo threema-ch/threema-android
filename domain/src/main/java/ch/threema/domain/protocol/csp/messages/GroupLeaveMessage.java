@@ -45,12 +45,47 @@ public class GroupLeaveMessage extends AbstractGroupMessage {
 	@Override
 	@Nullable
 	public Version getMinimumRequiredForwardSecurityVersion() {
-		return null;
+		return Version.V1_2;
+	}
+
+	@Override
+	public boolean allowUserProfileDistribution() {
+		return false;
 	}
 
 	@Override
 	public boolean exemptFromBlocking() {
 		return true;
+	}
+
+	@Override
+	public boolean createImplicitlyDirectContact() {
+		return false;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return true;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return false;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
+		return false;
 	}
 
 	@Override

@@ -26,14 +26,13 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.MessageModel;
+
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 /**
  * Create forwardSecurityMode field in message model and forwardSecurityEnabled field in contact model
  */
-public class SystemUpdateToVersion73 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion73 implements UpdateSystemService.SystemUpdate {
 	public static final int VERSION = 73;
 
 	private final SQLiteDatabase sqLiteDatabase;
@@ -44,10 +43,10 @@ public class SystemUpdateToVersion73 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, "message", "forwardSecurityMode")) {
+		if (!fieldExists(this.sqLiteDatabase, "message", "forwardSecurityMode")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE message ADD COLUMN forwardSecurityMode TINYINT DEFAULT 0");
 		}
-		if (!this.fieldExist(this.sqLiteDatabase, "contacts", "forwardSecurityEnabled")) {
+		if (!fieldExists(this.sqLiteDatabase, "contacts", "forwardSecurityEnabled")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN forwardSecurityEnabled TINYINT DEFAULT 0");
 		}
 
@@ -55,7 +54,7 @@ public class SystemUpdateToVersion73 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

@@ -76,7 +76,7 @@ public interface WebClientServiceListener {
     ) {}
 
     /**
-     * Called when the GCM push token has been changed and after that token
+     * Called when the FCM push token has been changed and after that token
      * has been sent to the browser.
      */
     default void onPushTokenChanged(

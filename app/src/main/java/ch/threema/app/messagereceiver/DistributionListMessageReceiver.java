@@ -24,32 +24,27 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
-import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.MessageType;
@@ -60,7 +55,6 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	private final List<ContactMessageReceiver> affectedMessageReceivers = new ArrayList<>();
 
 	private final DatabaseServiceNew databaseServiceNew;
-	private final ContactService contactService;
 	private final DistributionListModel distributionListModel;
 	private final DistributionListService distributionListService;
 
@@ -70,12 +64,11 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 				DistributionListModel distributionListModel,
 				DistributionListService distributionListService) {
 		this.databaseServiceNew = databaseServiceNew;
-		this.contactService = contactService;
 		this.distributionListModel = distributionListModel;
 		this.distributionListService = distributionListService;
 
 		for(ContactModel c: this.distributionListService.getMembers(this.distributionListModel)) {
-			ContactMessageReceiver contactMessageReceiver = this.contactService.createReceiver(c);
+			ContactMessageReceiver contactMessageReceiver = contactService.createReceiver(c);
 			this.affectedMessageReceivers.add(new DistributionListContactMessageReceiver(contactMessageReceiver));
 		}
 	}
@@ -129,29 +122,33 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 		this.databaseServiceNew.getDistributionListMessageModelFactory().createOrUpdate(save);
 	}
 
-	@Override
-	public boolean createBoxedTextMessage(final String text, final DistributionListMessageModel messageModel) {
-		return this.handleSendImage(messageModel);
-	}
-
-	@Override
-	public boolean createBoxedLocationMessage(final DistributionListMessageModel messageModel) throws ThreemaException {
-		return this.handleSendImage(messageModel);
-	}
-
-	private boolean handleSendImage(DistributionListMessageModel model) {
-		model.setIsQueued(true);
+	private void initializeMessageModel() {
 		distributionListService.setIsArchived(distributionListModel, false);
-		return true;
 	}
 
 	@Override
-	public boolean createBoxedFileMessage(
-		byte[] thumbnailBlobId,
-		byte[] fileBlobId,
-		SymmetricEncryptionResult encryptionResult,
-		DistributionListMessageModel messageModel
-	) {	//disabled
+	public void createAndSendTextMessage(@NonNull DistributionListMessageModel messageModel) {
+		initializeMessageModel();
+		bumpLastUpdate();
+	}
+
+	@Override
+	public void createAndSendLocationMessage(
+		final @NonNull DistributionListMessageModel messageModel
+	) {
+		initializeMessageModel();
+		bumpLastUpdate();
+	}
+
+	@Override
+	public void createAndSendFileMessage(
+		@Nullable byte[] thumbnailBlobId,
+		@Nullable byte[] fileBlobId,
+		@Nullable SymmetricEncryptionResult encryptionResult,
+		@NonNull DistributionListMessageModel messageModel,
+		@Nullable MessageId messageId,
+		@Nullable Collection<String> recipientIdentities
+	) {
 		for (ContactMessageReceiver receiver : affectedMessageReceivers) {
 			if (receiver instanceof DistributionListContactMessageReceiver) {
 				((DistributionListContactMessageReceiver) receiver).setFileMessageParameters(
@@ -159,20 +156,25 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 				);
 			}
 		}
-		return this.handleSendImage(messageModel);
+		initializeMessageModel();
+
+		// Note that lastUpdate must not be bumped, as it is bumped by message service when the
+		// file message is created
 	}
 
 	@Override
-	public void createBoxedBallotMessage(
-											BallotData ballotData,
-											BallotModel ballotModel,
-											final String[] filteredIdentities,
-											DistributionListMessageModel abstractMessageModel) {
+	public void createAndSendBallotSetupMessage(
+		BallotData ballotData,
+		BallotModel ballotModel,
+		DistributionListMessageModel abstractMessageModel,
+		@Nullable MessageId messageId,
+		@Nullable Collection<String> recipientIdentities
+	) {
 		// Not supported in distribution lists
 	}
 
 	@Override
-	public void createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) {
+	public void createAndSendBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) {
 		// Not supported in distribution lists
 	}
 
@@ -272,6 +274,13 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 	@Override
 	public String[] getIdentities() {
 		return this.distributionListService.getDistributionListIdentities(this.distributionListModel);
+	}
+
+	@Override
+	public void bumpLastUpdate() {
+		if (distributionListModel != null) {
+			distributionListService.bumpLastUpdate(distributionListModel);
+		}
 	}
 
 	@Override

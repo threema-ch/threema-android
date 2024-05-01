@@ -32,10 +32,12 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * add caption field to normal, group and distribution list message models
  */
-public class SystemUpdateToVersion61 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion61 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -53,7 +55,7 @@ public class SystemUpdateToVersion61 extends UpdateToVersion implements UpdateSy
 			"m_group_message",
 			"distribution_list_message"
 		}) {
-			if (!this.fieldExist(this.sqLiteDatabase, table, "messageContentsType")) {
+			if (!fieldExists(this.sqLiteDatabase, table, "messageContentsType")) {
 				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table
 					+ " ADD COLUMN messageContentsType TINYINT DEFAULT " + MessageContentsType.UNDEFINED);
 			}
@@ -85,7 +87,7 @@ public class SystemUpdateToVersion61 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

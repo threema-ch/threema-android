@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.grouplinks.IncomingGroupJoinRequestListener;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.processors.MessageProcessor;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.UserService;
 import ch.threema.base.Result;
@@ -81,7 +80,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 	 */
 	@Override
 	public @NonNull
-	MessageProcessor.ProcessingResult process(@NonNull final GroupJoinRequestMessage message) {
+	boolean process(@NonNull final GroupJoinRequestMessage message) {
 		final GroupJoinRequestData joinRequest = message.getData();
 		final GroupInviteToken token = joinRequest.getToken();
 		GroupInviteModelFactory groupInviteModelFactory = databaseServiceNew.getGroupInviteModelFactory();
@@ -90,35 +89,31 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 
 		if (optionalGroupInvite.isEmpty()) {
 			logger.info("Group Join Request: Ignore with unknown token");
-			return MessageProcessor.ProcessingResult.IGNORED;
+			return false;
 		}
 
 		final GroupInviteModel groupInvite  = optionalGroupInvite.get();
 		if (!groupInvite.getOriginalGroupName().equals(joinRequest.getGroupName())) {
 			logger.warn("Group Join Request: Received with invalid group name");
-			return MessageProcessor.ProcessingResult.IGNORED;
+			return false;
 		}
 
 		final @Nullable Date expirationDate = groupInvite.getExpirationDate();
 		if ((expirationDate != null && expirationDate.before(new Date())) || groupInvite.isInvalidated()) {
 			logger.info("Group Join Request: Received with expired date or group invite was invalidated/deleted");
-			return trySendingResponse(message, new GroupJoinResponseData.Expired()) ?
-				MessageProcessor.ProcessingResult.SUCCESS :
-				MessageProcessor.ProcessingResult.IGNORED;
+			return trySendingResponse(message, new GroupJoinResponseData.Expired());
 		}
 
 		final GroupModel group = databaseServiceNew.getGroupModelFactory().getByApiGroupIdAndCreator(groupInvite.getGroupApiId().toString(), userService.getIdentity());
 		if (group == null) {
 			logger.error("Group Join Request: Corresponding group not found");
-			return MessageProcessor.ProcessingResult.IGNORED;
+			return false;
 		}
 
 		if (Arrays.asList(this.groupService.getGroupIdentities(group)).contains(message.getFromIdentity())) {
 			logger.info("Group Join Request: Requesting identity already part of the group, accept and return a group sync message");
-			groupService.sendSync(group, new String[]{message.getFromIdentity()});
-			return trySendingResponse(message, new GroupJoinResponseData.Accept(groupInvite.getGroupApiId().toLong())) ?
-				MessageProcessor.ProcessingResult.SUCCESS :
-				MessageProcessor.ProcessingResult.IGNORED;
+			groupService.scheduleSync(group, new String[]{message.getFromIdentity()});
+			return trySendingResponse(message, new GroupJoinResponseData.Accept(groupInvite.getGroupApiId().toLong()));
 		}
 
 		final @Nullable IncomingGroupJoinRequestModel joinRequestModel;
@@ -132,7 +127,8 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 				joinRequestModel = this.persistRequest(message, groupInvite.getId());
 			} catch(ThreemaException e) {
 				logger.error("Group Join Request: failed to insert request to db ", e);
-				return MessageProcessor.ProcessingResult.IGNORED;
+				// TODO(ANDR-2607): check error handling when run inside of task
+				return false;
 			}
 		}
 		else {
@@ -148,9 +144,7 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 			incomingGroupJoinRequestModelFactory
 				.updateStatus(joinRequestModel,IncomingGroupJoinRequestModel.ResponseStatus.GROUP_FULL);
 
-			return trySendingResponse(message, new GroupJoinResponseData.GroupFull()) ?
-				MessageProcessor.ProcessingResult.SUCCESS :
-				MessageProcessor.ProcessingResult.IGNORED;
+			return trySendingResponse(message, new GroupJoinResponseData.GroupFull());
 		}
 
 		if (groupInvite.getManualConfirmation()) {
@@ -158,17 +152,18 @@ public class IncomingGroupJoinRequestServiceImpl implements IncomingGroupJoinReq
 			ListenerManager.incomingGroupJoinRequestListener.handle(
 				listener -> listener.onReceived(joinRequestModel, group)
 			);
-			return MessageProcessor.ProcessingResult.SUCCESS;
+			return true;
 		}
 
 		try {
 			this.accept(joinRequestModel);
 		} catch(Exception e) {
 			logger.error("Group Join Request: Group Service Exception", e);
-			return MessageProcessor.ProcessingResult.IGNORED;
+			// TODO(ANDR-2607): check error handling when run inside of task
+			return false;
 		}
 
-		return MessageProcessor.ProcessingResult.SUCCESS;
+		return true;
 	}
 
 	/**

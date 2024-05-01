@@ -79,7 +79,7 @@ public class WorkUserMemberListFragment extends MemberListFragment {
 					}
 
 					@Override
-					public Integer requiredFeature() {
+					public Long requiredFeature() {
 						return groups ? ThreemaFeature.GROUP_CHAT : null;
 					}
 

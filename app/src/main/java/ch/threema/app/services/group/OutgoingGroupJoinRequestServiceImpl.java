@@ -26,7 +26,6 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import ch.threema.base.Result;
 import ch.threema.base.ThreemaException;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteData;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestData;
@@ -38,15 +37,12 @@ import java8.util.Optional;
 
 public class OutgoingGroupJoinRequestServiceImpl implements OutgoingGroupJoinRequestService {
 
-	private final @NonNull MessageQueue messageQueue;
 	private final @NonNull OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
 
 	public OutgoingGroupJoinRequestServiceImpl(
-		@NonNull final DatabaseServiceNew databaseService,
-		@NonNull MessageQueue messageQueue
+		@NonNull final DatabaseServiceNew databaseService
 	) {
 		this.outgoingGroupJoinRequestModelFactory = databaseService.getOutgoingGroupJoinRequestModelFactory();
-		this.messageQueue = messageQueue;
 	}
 
 	/**
@@ -90,7 +86,7 @@ public class OutgoingGroupJoinRequestServiceImpl implements OutgoingGroupJoinReq
 			}
 		}
 		message.setToIdentity(groupInvite.getAdminIdentity());
-		this.messageQueue.enqueue(message);
+		// TODO(ANDR-2607): message was enqueued here in the message queue. Create a task for this.
 	}
 
 	/**
@@ -120,6 +116,6 @@ public class OutgoingGroupJoinRequestServiceImpl implements OutgoingGroupJoinReq
 			throw new ThreemaException("No previous request found to resend");
 		}
 		message.setToIdentity(groupJoinRequestModel.getAdminIdentity());
-		this.messageQueue.enqueue(message);
+		// TODO(ANDR-2607): message was enqueued here in the message queue. Create a task for this.
 	}
 }

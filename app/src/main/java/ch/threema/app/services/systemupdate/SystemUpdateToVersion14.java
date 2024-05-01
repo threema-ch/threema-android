@@ -41,7 +41,7 @@ public class SystemUpdateToVersion14 implements UpdateSystemService.SystemUpdate
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		//check if auto sync is enabled
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if(serviceManager != null) {

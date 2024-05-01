@@ -25,11 +25,13 @@ import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import ch.threema.app.services.MessageService;
@@ -41,6 +43,7 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageModel;
+import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
 public class MessageModelFactory extends AbstractMessageModelFactory {
@@ -242,6 +245,28 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 						identity
 				}
 		));
+	}
+
+	/**
+	 * Get the number of contact messages that are currently in rejected state. Only messages up to
+	 * two weeks old are considered.
+	 *
+	 * @return the number of recent messages that have been rejected
+	 */
+	public long countRecentForwardSecurityFailedMessages() {
+		long currentDate = new Date().getTime();
+		long twoWeeks = 2 * DateUtils.WEEK_IN_MILLIS;
+
+		return DatabaseUtil.count(databaseService.getReadableDatabase().rawQuery(
+				"SELECT COUNT(*) FROM " + getTableName()
+					+ " WHERE " + AbstractMessageModel.COLUMN_STATE + "=?"
+					+ " AND " + AbstractMessageModel.COLUMN_CREATED_AT + ">?",
+				new String[]{
+					MessageState.FS_KEY_MISMATCH.toString(),
+					String.valueOf(currentDate - twoWeeks)
+				}
+			)
+		);
 	}
 
 	public List<MessageModel> getUnreadMessages(String identity) {
@@ -516,11 +541,11 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 						+ "`, `" + MessageModel.COLUMN_IS_READ
 						+ "`, `" + MessageModel.COLUMN_IS_STATUS_MESSAGE
 						+ "`)",
-				"CREATE INDEX `message_queue_idx` ON `" + MessageModel.TABLE
-						+ "`(`"  + MessageModel.COLUMN_TYPE
-						+ "`, `" + MessageModel.COLUMN_IS_QUEUED
-						+ "`, `" + MessageModel.COLUMN_OUTBOX
-						+ "`)"
+				"CREATE INDEX `message_state_idx` ON `" + MessageModel.TABLE
+					+ "`(`"  + AbstractMessageModel.COLUMN_TYPE
+					+ "`, `" + AbstractMessageModel.COLUMN_STATE
+					+ "`, `" + AbstractMessageModel.COLUMN_OUTBOX
+					+ "`)"
 		};
 	}
 }

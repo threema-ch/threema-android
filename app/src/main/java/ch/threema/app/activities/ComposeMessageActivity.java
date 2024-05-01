@@ -60,6 +60,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 	private MessageSectionFragment messageSectionFragment;
 
 	private Intent currentIntent;
+	private int savedSoftInputMode;
 
 	private final String COMPOSE_FRAGMENT_TAG = "compose_message_fragment";
 	private final String MESSAGES_FRAGMENT_TAG = "message_section_fragment";
@@ -199,6 +200,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		super.onResume();
 
 		// Set the soft input mode to resize when activity resumes because it is set to adjust nothing while it is paused
+		savedSoftInputMode = getWindow().getAttributes().softInputMode;
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 	}
 
@@ -208,7 +210,9 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		super.onPause();
 
 		// Set the soft input mode to adjust nothing while paused. This is needed when the keyboard is opened to edit the contact before sending.
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+		if (savedSoftInputMode > 0) {
+			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+		}
 	}
 
 	@Override

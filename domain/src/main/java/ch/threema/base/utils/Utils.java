@@ -23,6 +23,7 @@ package ch.threema.base.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -42,6 +43,9 @@ public class Utils {
 
 	private Utils() {}
 
+	/**
+	 * Convert a lowercase hex string to a byte array.
+	 */
 	public static byte[] hexStringToByteArray(@NonNull String s) {
 		int len = s.length();
 
@@ -98,37 +102,27 @@ public class Utils {
 		return byteArrayToHexString(sha256bytes);
 	}
 
-	public static @NonNull byte[] intToByteArrayBigEndian(int value) {
-		return new byte[] {
-				(byte)(value >>> 24),
-				(byte)(value >>> 16),
-				(byte)(value >>> 8),
-				(byte)value
-		};
-	}
-
-	public static int byteArrayToIntBigEndian(@NonNull byte[] bytes) {
-		 return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
-	}
-
 	public static @NonNull byte[] longToByteArrayBigEndian(long value) {
-		byte[] result = new byte[8];
-		for (int i = 7; i >= 0; i--) {
-			result[i] = (byte)(value & 0xFF);
-			value >>= 8;
-		}
-		return result;
+		return ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(value).array();
 	}
 
 	public static long byteArrayToLongBigEndian(final @NonNull byte[] bytes) {
-		long result = 0;
-		for (int i = 0; i < 8; i++) {
-			result <<= 8;
-			result |= (bytes[i] & 0xFF);
+		if (bytes.length != 8) {
+			throw new IllegalArgumentException("Cannot call byteArrayToLongBigEndian with " + bytes.length + "-byte array");
 		}
-		return result;
+		return ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).getLong();
 	}
 
+	public static @NonNull byte[] longToByteArrayLittleEndian(long value) {
+		return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
+	}
+
+	public static long byteArrayToLongLittleEndian(final @NonNull byte[] bytes) {
+		if (bytes.length != 8) {
+			throw new IllegalArgumentException("Cannot call byteArrayToLongLittleEndian with " + bytes.length + "-byte array");
+		}
+		return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getLong();
+	}
 
 	private static final String HEX_UPPER = "0123456789ABCDEF";
 	private static final String HEX_LOWER = "0123456789abcdef";
@@ -159,11 +153,6 @@ public class Utils {
 	 * or equal to the desired maximum length. This avoids producing invalid UTF-8 encoded strings
 	 * which are possible if the encoded byte array is truncated, potentially in the middle of
 	 * an encoded multi-byte character.
-	 *
-	 * @param str
-	 * @param maxLen
-	 * @return byte array
-	 * @throws UnsupportedEncodingException
 	 */
 	public static byte[] truncateUTF8StringToByteArray(String str, int maxLen) throws UnsupportedEncodingException {
 		if(str == null || maxLen <= 0) {
@@ -184,11 +173,6 @@ public class Utils {
 	 * or equal to the desired maximum length. This avoids producing invalid UTF-8 encoded strings
 	 * which are possible if the encoded byte array is truncated, potentially in the middle of
 	 * an encoded multi-byte character.
-	 *
-	 * @param str
-	 * @param maxLen
-	 * @return truncated string
-	 * @throws UnsupportedEncodingException
 	 */
 	public static @Nullable String truncateUTF8String(@Nullable String str, int maxLen) {
 		if (str == null || str.length() == 0) {

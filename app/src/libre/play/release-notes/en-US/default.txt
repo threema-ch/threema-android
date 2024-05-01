@@ -1,3 +1,5 @@
-* Added a highlighter function to image editor
-* Support for animated WebP images
+* New and improved communications layer
+* Perfect Forward Secrecy enhancements
+* WebRTC update
+* Swiss German translation
 * Numerous optimizations and bug fixes

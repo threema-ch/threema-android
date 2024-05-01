@@ -23,28 +23,68 @@ package ch.threema.app.services;
 
 import java.sql.SQLException;
 
-public interface UpdateSystemService {
-	public interface SystemUpdate {
-		boolean runASync();
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+public interface UpdateSystemService {
+	/**
+	 * Every system update must implement this interface.
+	 */
+	interface SystemUpdate {
+		/**
+		 * This method will be run synchronously when opening the database.
+		 *
+		 * If you want to do database schema updates, this is where you should implement them!
+		 *
+		 * Note: All system updates are processed sequentially, i.e. "SystemUpdateToVersion56"
+		 * will be processed before "SystemUpdateToVersion57".
+		 */
 		boolean runDirectly() throws SQLException;
 
+		/**
+		 * This method will be run asynchronously when opening the
+		 * {@link ch.threema.app.activities.HomeActivity}.
+		 *
+		 * WARNING: Not currently guaranteed to run! See ANDR-2736.
+		 */
+		boolean runAsync();
+
+		/**
+		 * A string that describes this update.
+		 *
+		 * Usually it should contain something like "version 42".
+		 */
 		String getText();
 	}
 
+	/**
+	 * Register a system update.
+	 *
+	 * The {@link SystemUpdate#runDirectly} method will be run directly (and synchronously).
+	 */
+	void addUpdate(@NonNull SystemUpdate systemUpdate);
 
-	public interface OnSystemUpdateRun {
-		void onStart(SystemUpdate systemUpdate);
-		void onFinished(SystemUpdate systemUpdate, boolean success);
+	interface OnSystemUpdateRun {
+		/**
+		 * This method will be called before running the ({@link SystemUpdate#runAsync} method of
+		 * the specified {@link SystemUpdate}.
+		 */
+		void onStart(@NonNull SystemUpdate systemUpdate);
+
+		/**
+		 * This method will be called after running the ({@link SystemUpdate#runAsync} method of
+		 * the specified {@link SystemUpdate}.
+		 */
+		void onFinished(@NonNull SystemUpdate systemUpdate, boolean success);
 	}
 
-	void addUpdate(SystemUpdate systemUpdate);
+	/**
+	 * Run async updates.
+	 */
+	void update(@Nullable OnSystemUpdateRun onSystemUpdateRun);
 
-	void update(OnSystemUpdateRun onSystemUpdateRun);
-
-	void update();
-
+	/**
+	 * Return whether or not there are updates.
+	 */
 	boolean hasUpdates();
-
-	void prepareForTest();
 }

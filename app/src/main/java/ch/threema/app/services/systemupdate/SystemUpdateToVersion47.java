@@ -28,10 +28,12 @@ import java.sql.SQLException;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.storage.models.ContactModel;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * add profile pic field to normal, group and distribution list message models
  */
-public class SystemUpdateToVersion47 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion47 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -42,7 +44,7 @@ public class SystemUpdateToVersion47 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_DATE_CREATED)) {
+		if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_DATE_CREATED)) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
 					+ " ADD COLUMN " + ContactModel.COLUMN_DATE_CREATED + " BIGINT DEFAULT 0");
 		}
@@ -50,7 +52,7 @@ public class SystemUpdateToVersion47 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

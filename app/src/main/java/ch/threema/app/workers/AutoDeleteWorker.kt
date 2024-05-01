@@ -196,19 +196,10 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
 
         for (messageModel in messageModels) {
             if (messageModel.isOutbox) {
-                // do not delete messages in outbox that are not yet queued or sent
-                // but exclude status messages from this check as they are local
-                if (MessageType.VOIP_STATUS != messageModel.type
-                    && MessageType.GROUP_CALL_STATUS != messageModel.type
-                    && MessageType.GROUP_STATUS != messageModel.type
-                    && MessageType.STATUS != messageModel.type
-                    && !messageModel.isQueued) {
-                    continue
-                }
-
-                val messageState = messageModel.state;
-                if (messageState == MessageState.SENDING || messageState == MessageState.PENDING) {
-                    continue
+                when (messageModel.state) {
+                    // Do not delete messages that have not yet been sent
+                    MessageState.SENDING, MessageState.PENDING, MessageState.UPLOADING -> continue
+                    else -> Unit
                 }
 
                 // exclude starred messages

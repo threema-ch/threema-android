@@ -108,7 +108,13 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion82;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion83;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion84;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion85;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion86;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion87;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion88;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion89;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion9;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion90;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion91;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -125,7 +131,6 @@ import ch.threema.storage.factories.GroupCallModelFactory;
 import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.factories.GroupMemberModelFactory;
 import ch.threema.storage.factories.GroupMessageModelFactory;
-import ch.threema.storage.factories.GroupMessagePendingMessageIdModelFactory;
 import ch.threema.storage.factories.GroupModelFactory;
 import ch.threema.storage.factories.GroupRequestSyncLogModelFactory;
 import ch.threema.storage.factories.IdentityBallotModelFactory;
@@ -133,7 +138,9 @@ import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
 import ch.threema.storage.factories.MessageModelFactory;
 import ch.threema.storage.factories.ModelFactory;
 import ch.threema.storage.factories.OutgoingGroupJoinRequestModelFactory;
+import ch.threema.storage.factories.RejectedGroupMessageFactory;
 import ch.threema.storage.factories.ServerMessageModelFactory;
+import ch.threema.storage.factories.TaskArchiveFactory;
 import ch.threema.storage.factories.WebClientSessionModelFactory;
 
 public class DatabaseServiceNew extends SQLiteOpenHelper {
@@ -141,7 +148,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 
 	public static final String DATABASE_NAME_V4 = "threema4.db";
 	public static final String DATABASE_BACKUP_EXT = ".backup";
-	private static final int DATABASE_VERSION = SystemUpdateToVersion85.VERSION;
+	private static final int DATABASE_VERSION = SystemUpdateToVersion91.VERSION;
 
 	private final Context context;
 	private final UpdateSystemService updateSystemService;
@@ -160,7 +167,6 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	private BallotVoteModelFactory ballotVoteModelFactory;
 	private IdentityBallotModelFactory identityBallotModelFactory;
 	private GroupBallotModelFactory groupBallotModelFactory;
-	private GroupMessagePendingMessageIdModelFactory groupMessagePendingMessageIdModelFactory;
 	private WebClientSessionModelFactory webClientSessionModelFactory;
 	private ConversationTagFactory conversationTagFactory;
 	private GroupInviteModelFactory groupInviteModelFactory;
@@ -168,6 +174,8 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	private IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory;
 	private GroupCallModelFactory groupCallModelFactory;
 	private ServerMessageModelFactory serverMessageModelFactory;
+	private TaskArchiveFactory taskArchiveFactory;
+	private RejectedGroupMessageFactory rejectedGroupMessageFactory;
 
 	public DatabaseServiceNew(final Context context,
 	                          final String databaseKey,
@@ -235,7 +243,6 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 			this.getBallotVoteModelFactory(),
 			this.getIdentityBallotModelFactory(),
 			this.getGroupBallotModelFactory(),
-			this.getGroupMessagePendingMessageIdModelFactory(),
 			this.getWebClientSessionModelFactory(),
 			this.getConversationTagFactory(),
 			this.getGroupInviteModelFactory(),
@@ -243,6 +250,8 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 			this.getOutgoingGroupJoinRequestModelFactory(),
 			this.getGroupCallModelFactory(),
 			this.getServerMessageModelFactory(),
+			this.getTaskArchiveFactory(),
+			this.getRejectedGroupMessageFactory(),
 		}) {
 			String[] createTableStatement = f.getStatements();
 			if(createTableStatement != null) {
@@ -368,14 +377,6 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	}
 
 	@NonNull
-	public GroupMessagePendingMessageIdModelFactory getGroupMessagePendingMessageIdModelFactory() {
-		if(this.groupMessagePendingMessageIdModelFactory == null) {
-			this.groupMessagePendingMessageIdModelFactory = new GroupMessagePendingMessageIdModelFactory(this);
-		}
-		return this.groupMessagePendingMessageIdModelFactory;
-	}
-
-	@NonNull
 	public WebClientSessionModelFactory getWebClientSessionModelFactory() {
 		if(this.webClientSessionModelFactory == null) {
 			this.webClientSessionModelFactory = new WebClientSessionModelFactory(this);
@@ -429,6 +430,22 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 			this.serverMessageModelFactory = new ServerMessageModelFactory(this);
 		}
 		return this.serverMessageModelFactory;
+	}
+
+	@NonNull
+	public TaskArchiveFactory getTaskArchiveFactory() {
+		if (this.taskArchiveFactory == null) {
+			this.taskArchiveFactory = new TaskArchiveFactory(this);
+		}
+		return this.taskArchiveFactory;
+	}
+
+	@NonNull
+	public RejectedGroupMessageFactory getRejectedGroupMessageFactory() {
+		if (this.rejectedGroupMessageFactory == null) {
+			this.rejectedGroupMessageFactory = new RejectedGroupMessageFactory(this);
+		}
+		return this.rejectedGroupMessageFactory;
 	}
 
 	// Note: Enable this to allow database downgrades.
@@ -682,6 +699,24 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		}
 		if (oldVersion < SystemUpdateToVersion85.VERSION) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion85(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion86.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion86(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion87.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion87(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion88.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion88(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion89.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion89(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion90.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion90(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion91.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion91(this.context));
 		}
 	}
 

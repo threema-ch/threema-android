@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -56,17 +57,17 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
+import ch.threema.domain.protocol.csp.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateInterface;
-import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotDataChoice;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
-import ch.threema.domain.protocol.csp.messages.ballot.GroupBallotCreateMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.GroupBallotModelFactory;
 import ch.threema.storage.factories.IdentityBallotModelFactory;
@@ -428,16 +429,16 @@ public class BallotServiceImpl implements BallotService {
 			);
 		}
 
-		if(createMessage instanceof GroupBallotCreateMessage) {
+		if(createMessage instanceof GroupPollSetupMessage) {
 			GroupModel groupModel;
-			groupModel = this.groupService.getByGroupMessage((GroupBallotCreateMessage) createMessage);
+			groupModel = this.groupService.getByGroupMessage((GroupPollSetupMessage) createMessage);
 			if (groupModel == null) {
 				throw new ThreemaException("invalid group");
 			}
 			//link with group
 			this.link(groupModel, ballotModel);
 		}
-		else if(createMessage instanceof BallotCreateMessage) {
+		else if(createMessage instanceof PollSetupMessage) {
 			ContactModel contactModel = this.contactService.getByIdentity(createMessage.getBallotCreator());
 			if (contactModel == null) {
 				throw new ThreemaException("invalid identity");
@@ -786,7 +787,8 @@ public class BallotServiceImpl implements BallotService {
 	public BallotPublishResult publish(MessageReceiver messageReceiver,
 	                                   final BallotModel ballotModel,
 	                                   AbstractMessageModel abstractMessageModel,
-	                                   String receivingIdentity) throws NotAllowedException, MessageTooLongException {
+	                                   @Nullable Collection<String> receivingIdentities
+	) throws NotAllowedException, MessageTooLongException {
 		BallotPublishResult result = new BallotPublishResult();
 
 		this.checkAccess();
@@ -862,7 +864,7 @@ public class BallotServiceImpl implements BallotService {
 		HashMap<String, Integer> votersPositions = new HashMap<>();
 		List<BallotVoteModel> voteModels = null;
 		int votersCount = 0;
-		if(isClosing || receivingIdentity != null) {
+		if (isClosing || receivingIdentities != null) {
 			// load a list of voters
 			String[] voters = this.getVotedParticipants(ballotModel.getId()).toArray(new String[0]);
 
@@ -881,7 +883,7 @@ public class BallotServiceImpl implements BallotService {
 			choice.setName(c.getName());
 			choice.setOrder(c.getOrder());
 
-			if((isClosing || receivingIdentity != null) && TestUtil.required(voteModels, votersPositions)) {
+			if ((isClosing || receivingIdentities != null) && TestUtil.required(voteModels, votersPositions)) {
 
 				for(BallotVoteModel v: Functional.filter(voteModels, new IPredicateNonNull<BallotVoteModel>() {
 					@Override
@@ -900,11 +902,13 @@ public class BallotServiceImpl implements BallotService {
 		}
 
 		try {
-			messageReceiver.createBoxedBallotMessage(
-					ballotData,
-					ballotModel,
-					receivingIdentity != null ? new String[] {receivingIdentity} : null,
-					abstractMessageModel);
+			messageReceiver.createAndSendBallotSetupMessage(
+				ballotData,
+				ballotModel,
+				abstractMessageModel,
+				null,
+				receivingIdentities
+			);
 
 			//set as open
 			if(ballotModel.getState() == BallotModel.State.TEMPORARY) {
@@ -1109,7 +1113,7 @@ public class BallotServiceImpl implements BallotService {
 
 		try {
 			//send
-			messageReceiver.createBoxedBallotVoteMessage(votes, ballotModel);
+			messageReceiver.createAndSendBallotVoteMessage(votes, ballotModel);
 
 			//and save
 			this.databaseServiceNew.getBallotVoteModelFactory().deleteByBallotIdAndVotingIdentity(

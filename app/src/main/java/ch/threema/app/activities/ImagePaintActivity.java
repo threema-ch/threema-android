@@ -1409,7 +1409,8 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 				contactService,
 				userService,
 				preferenceService,
-				groupModel
+				groupModel,
+				null
 			);
 		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 			logger.error("Cannot enable mention popup", e);

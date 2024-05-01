@@ -33,29 +33,37 @@ def getGitVersion = { ->
 
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    api 'com.googlecode.libphonenumber:libphonenumber:8.13.19'
-    api 'androidx.annotation:annotation:1.7.0'
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
+    api 'com.googlecode.libphonenumber:libphonenumber:8.13.23'
+    api 'androidx.annotation:annotation:1.7.1'
     api 'net.sourceforge.streamsupport:streamsupport-flow:1.7.4'
 
-    api 'com.google.protobuf:protobuf-javalite:3.19.4'
+    api 'com.google.protobuf:protobuf-kotlin-lite:3.25.1'
 
     implementation "org.slf4j:slf4j-api:$slf4j_version"
     // commons-io >2.6 requires android 8
     implementation 'commons-io:commons-io:2.6'
     implementation 'net.i2p.crypto:eddsa:0.3.0'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version"
 
     testImplementation "junit:junit:$junit_version"
     testImplementation 'org.mockito:mockito-core:4.8.1'
     testImplementation "org.powermock:powermock-reflect:2.0.9"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
     testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+
+    // OkHttp
+    api platform('com.squareup.okhttp3:okhttp-bom:4.12.0')
+    api 'com.squareup.okhttp3:okhttp'
 }
 
 sourceSets {
-    def isProtobufSubrepositoryInitialized = file("./src/main/proto/common.proto").exists()
+    def isProtobufSubrepositoryInitialized = file("./protocol/src/common.proto").exists()
     assert isProtobufSubrepositoryInitialized : "Error: Git protobuf submodule missing. Please run `git submodule update --init`.\n"
 
     main {
-        java.srcDirs += "${protobuf.generatedFilesBaseDir}/main/java"
+        proto.srcDir './protocol/src'
     }
 }
 
@@ -68,6 +76,9 @@ protobuf {
         all().each { task ->
             task.builtins {
                 java {
+                    option 'lite'
+                }
+                kotlin {
                     option 'lite'
                 }
             }

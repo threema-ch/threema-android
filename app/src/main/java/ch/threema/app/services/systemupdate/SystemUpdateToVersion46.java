@@ -33,7 +33,7 @@ import ch.threema.app.services.UpdateSystemService;
 import ch.threema.base.utils.LoggingUtil;
 
 
-public class SystemUpdateToVersion46 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion46 implements UpdateSystemService.SystemUpdate {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion46");
 
 	private final String[] oldEmojiSet = {
@@ -1880,7 +1880,7 @@ public class SystemUpdateToVersion46 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager != null) {
 			PreferenceService preferenceService = serviceManager.getPreferenceService();

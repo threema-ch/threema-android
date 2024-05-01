@@ -52,9 +52,9 @@ import com.google.common.util.concurrent.ListenableFuture
 import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
 
-class WorkSyncWorker(private val context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
-    private val logger = LoggingUtil.getThreemaLogger("WorkSyncWorker")
+private val logger = LoggingUtil.getThreemaLogger("WorkSyncWorker")
 
+class WorkSyncWorker(private val context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
     private val contactService: ContactService?
     private val preferenceService: PreferenceService?
     private val fileService: FileService?
@@ -120,11 +120,15 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
             )
             val workManager = WorkManager.getInstance(ThreemaApplication.getAppContext())
             workManager.getWorkInfoByIdLiveData(workRequest.id)
-                .observe(activity) { workInfo: WorkInfo ->
-                    if (workInfo.state == WorkInfo.State.SUCCEEDED) {
+                .observe(activity) { workInfo: WorkInfo? ->
+                    if (workInfo?.state == WorkInfo.State.SUCCEEDED) {
                         onSuccess.run()
-                    } else if (workInfo.state == WorkInfo.State.FAILED) {
+                    } else if (workInfo?.state == WorkInfo.State.FAILED) {
                         onFail.run()
+                    } else if (workInfo == null) {
+                        // Just log this. It is likely that a non-null work info will be observed
+                        // later and the sync completes successfully.
+                        logger.info("Work info is null")
                     }
                 }
             workManager.enqueueUniqueWork(

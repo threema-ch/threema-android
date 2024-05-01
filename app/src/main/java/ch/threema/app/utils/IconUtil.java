@@ -112,7 +112,7 @@ public class IconUtil {
 		ContentResolver contentResolver = context.getContentResolver();
 		BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(context, uri);
 
-		if (!MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mimeType) && !MimeUtil.MIME_TYPE_IMAGE_PNG.equals(mimeType) && !MimeUtil.MIME_TYPE_IMAGE_HEIF.equals(mimeType) && !MimeUtil.MIME_TYPE_IMAGE_HEIC.equals(mimeType)) {
+		if (!MimeUtil.MIME_TYPE_IMAGE_JPEG.equals(mimeType) && !MimeUtil.MIME_TYPE_IMAGE_PNG.equals(mimeType) && !MimeUtil.MIME_TYPE_IMAGE_HEIF.equals(mimeType) && !MimeUtil.MIME_TYPE_IMAGE_HEIC.equals(mimeType)) {
 			if (DocumentsContract.isDocumentUri(context, uri)) {
 				// Note: these thumbnails MAY or MAY NOT have EXIF rotation already applied. So we can't use them for JPEG
 				Point thumbPoint = new Point(thumbSize, thumbSize);

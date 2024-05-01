@@ -67,7 +67,8 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public static final String COLUMN_TYPE = "type";
 	public static final String COLUMN_PROFILE_PIC_BLOB_ID = "profilePicBlobID"; /* the blob ID of the profile pic that was last sent to this contact */
 	public static final String COLUMN_DATE_CREATED = "dateCreated"; /* date when this contact was created locally */
-	public static final String COLUMN_IS_HIDDEN = "isHidden"; /* whether this contact is visible in the contact list */
+	public static final String COLUMN_LAST_UPDATE = "lastUpdate"; /* date when the conversation was last updated */
+	public static final String COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP = "isHidden"; /* whether this contact has the acquaintance level "GROUP" and should be hidden */
 	public static final String COLUMN_IS_RESTORED = "isRestored"; /* whether this contact has been restored from a backup and not yet been contacted */
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this contact has been archived by user */
 	public static final String COLUMN_READ_RECEIPTS = "readReceipts"; /* whether read receipts should be sent to this contact */
@@ -89,6 +90,22 @@ public class ContactModel extends Contact implements ReceiverModel {
 		 * Contact does not have a valid Threema-ID, or the ID was revoked.
 		 */
 		INVALID
+	}
+
+	/**
+	 * Acquaintance level of the contact.
+	 */
+	public enum AcquaintanceLevel {
+		/**
+		 * The contact was explicitly added by the user or a 1:1 conversation with the contact
+		 * has been initiated.
+		 */
+		DIRECT,
+		/**
+		 * The contact is part of a group the user is also part of. The contact was not explicitly
+		 * added and no 1:1 conversation has been initiated.
+		 */
+		GROUP
 	}
 
 	/**
@@ -121,10 +138,12 @@ public class ContactModel extends Contact implements ReceiverModel {
 	private String androidContactId;
 	private String threemaAndroidContactId;
 	private boolean isSynchronized;
-	private int featureMask;
+	private long featureMask;
 	private int colorIndex = -1;
-	private boolean isWork, isHidden, isRestored, isArchived;
+	private boolean isWork, isRestored, isArchived;
+	private AcquaintanceLevel acquaintanceLevel = AcquaintanceLevel.DIRECT;
 	private Date avatarExpires, dateCreated;
+	private @Nullable Date lastUpdate;
 	private byte[] profilePicBlobID;
 	private @IdentityType.Type int type;
 	private @OverridePolicy int readReceipts, typingIndicators;
@@ -133,13 +152,6 @@ public class ContactModel extends Contact implements ReceiverModel {
 
 	public ContactModel(String identity, byte[] publicKey) {
 		super(identity, publicKey);
-	}
-
-	public ContactModel(@NonNull Contact contact) {
-		super(contact.getIdentity(), contact.getPublicKey());
-		this.setFirstName(contact.getFirstName());
-		this.setLastName(contact.getLastName());
-		this.setVerificationLevel(contact.getVerificationLevel());
 	}
 
 	/**
@@ -302,11 +314,11 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return ColorUtil.getInstance().getIDColorDark(colorIndex);
 	}
 
-	public int getFeatureMask() {
+	public long getFeatureMask() {
 		return featureMask;
 	}
 
-	public ContactModel setFeatureMask(int featureMask) {
+	public ContactModel setFeatureMask(long featureMask) {
 		this.featureMask = featureMask;
 		return this;
 	}
@@ -359,17 +371,25 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return profilePicBlobID;
 	}
 
-	public @Nullable Date getDateCreated() {
-		return dateCreated;
-	}
-
-	public ContactModel setIsHidden(boolean isHidden) {
-		this.isHidden = isHidden;
+	/**
+	 * Set the {@link AcquaintanceLevel} of the contact.
+	 */
+	public ContactModel setAcquaintanceLevel(@NonNull AcquaintanceLevel acquaintanceLevel) {
+		this.acquaintanceLevel = acquaintanceLevel;
 		return this;
 	}
 
+	/**
+	 * Return the current {@link AcquaintanceLevel} of the contact.
+	 */
+	public @NonNull AcquaintanceLevel getAcquaintanceLevel() {
+		return this.acquaintanceLevel;
+	}
+
+	@Override
 	public boolean isHidden() {
-		return this.isHidden;
+		// Hide chat if acquaintance level with this contact is set to GROUP
+		return this.acquaintanceLevel == AcquaintanceLevel.GROUP;
 	}
 
 	public ContactModel setIsRestored(boolean isRestored) {
@@ -397,6 +417,21 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this;
 	}
 
+	public @Nullable Date getDateCreated() {
+		return dateCreated;
+	}
+
+	@Override
+	public ContactModel setLastUpdate(@Nullable Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
+		return this;
+	}
+
+	@Override
+	public @Nullable Date getLastUpdate() {
+		return this.lastUpdate;
+	}
+
 	/**
 	 * Set the {@link IdentityType} (regular or work).
 	 */
@@ -412,6 +447,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this.type;
 	}
 
+	@Override
 	public boolean isArchived() {
 		return isArchived;
 	}
@@ -482,7 +518,8 @@ public class ContactModel extends Contact implements ReceiverModel {
 			this.profilePicBlobID,
 			this.type,
 			this.dateCreated,
-			this.isHidden,
+			this.acquaintanceLevel,
+			this.lastUpdate,
 			this.isRestored,
 			this.isArchived,
 			this.readReceipts,

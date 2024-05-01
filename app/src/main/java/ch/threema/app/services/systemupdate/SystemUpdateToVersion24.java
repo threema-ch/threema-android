@@ -146,7 +146,7 @@ public class SystemUpdateToVersion24 implements UpdateSystemService.SystemUpdate
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

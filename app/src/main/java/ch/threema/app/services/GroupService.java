@@ -34,8 +34,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
+import ch.threema.app.processors.groupcontrol.IncomingGroupSetupTask;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
@@ -106,26 +108,6 @@ public interface GroupService extends AvatarService<GroupModel> {
 	}
 
 	/**
-	 * The result of the common group receive steps.
-	 */
-	enum CommonGroupReceiveStepsResult {
-		/**
-		 * The common group receive steps succeeded.
-		 */
-		SUCCESS,
-
-		/**
-		 * The common group receive steps triggered a group sync request.
-		 */
-		SYNC_REQUEST_SENT,
-
-		/**
-		 * The message should be discarded.
-		 */
-		DISCARD_MESSAGE,
-	}
-
-	/**
 	 * Reset the group model caches. This may be needed if group changes have been made outside of
 	 * the group service.
 	 *
@@ -179,24 +161,10 @@ public interface GroupService extends AvatarService<GroupModel> {
 	List<GroupModel> getAll(@Nullable GroupFilter filter);
 
 	/**
-	 * Run the common group receive steps. Note that we cache messages that have triggered a group
-	 * sync request to process them after we received the group setup message. The cached messages
-	 * should never be processed before running the common group receive steps successfully. To be
-	 * able to implement this behavior, we have {@link CommonGroupReceiveStepsResult#SYNC_REQUEST_SENT}
-	 * that is returned when a message could be cached.
+	 * Create a new group. This fires the listeners and sends the messages to the members.
 	 *
-	 * @param message the received message
-	 * @return {@link CommonGroupReceiveStepsResult#SUCCESS} if the steps completed successfully,
-	 * {@link CommonGroupReceiveStepsResult#SYNC_REQUEST_SENT} if a group sync request has been
-	 * sent, and {@link CommonGroupReceiveStepsResult#DISCARD_MESSAGE} if the steps failed and the
-	 * message should be discarded.
-	 */
-	CommonGroupReceiveStepsResult runCommonGroupReceiveSteps(@NonNull AbstractGroupMessage message);
-
-	/**
-	 * Create a new group. This fires the listeners and sends the messages to the members. Note that
-	 * this method is not used for creating groups based on incoming group setup messages. This is
-	 * handled in {@link ch.threema.app.groupcontrol.csp.IncomingGroupSetupTask}.
+	 * Note that this method is not used for creating groups based on incoming group setup messages.
+	 * This is handled in {@link IncomingGroupSetupTask}.
 	 *
 	 * @param name                  the name of the group
 	 * @param groupMemberIdentities the group members
@@ -205,7 +173,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @throws Exception if creating the group failed
 	 */
 	@NonNull
-	GroupModel createGroupFromLocal(String name, String[] groupMemberIdentities, Bitmap picture) throws Exception;
+	GroupModel createGroupFromLocal(String name, Set<String> groupMemberIdentities, Bitmap picture) throws Exception;
 
 	/**
 	 * Update group properties and members.
@@ -250,12 +218,22 @@ public interface GroupService extends AvatarService<GroupModel> {
 	boolean removeMemberFromGroup(@NonNull GroupModel groupModel, @NonNull String identity);
 
 	/**
+	 * Run the rejected messages refresh steps: The receivers that requested a re-send of a rejected
+	 * message of this group will be updated with the current group member list. The re-send mark
+	 * will be deleted if there is no receiver left. This method should always be called, after the
+	 * group members changed.
+	 *
+	 * @param groupModel the group model that is refreshed
+	 */
+	void runRejectedMessagesRefreshSteps(@NonNull GroupModel groupModel);
+
+	/**
 	 * Remove the group. This includes deleting files, messages, pending messages, group invite
 	 * links, ballots, group avatar, and the settings specified for the group. Note that only left
 	 * groups can be removed.
 	 * <p>
 	 * The group model and the members are kept in the database. This is required to handle future
-	 * messages in this group correctly ({@link #runCommonGroupReceiveSteps(AbstractGroupMessage)}).
+	 * messages in this group correctly (Common Group Receive Steps).
 	 * <br>
 	 * This fires the group listener.
 	 *
@@ -263,6 +241,14 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @return true if the group has been deleted, false otherwise
 	 */
 	boolean remove(@NonNull GroupModel groupModel);
+
+	/**
+	 * If the user is still member of this group, the group will be dissolved
+	 * through {@link #dissolveGroupFromLocal} (if own group)
+	 * or left through {@link #leaveGroupFromLocal} (if user is not creator).
+	 * Then, the group will be removed through {@link #remove}.
+	 */
+	void leaveOrDissolveAndRemoveFromLocal(@NonNull GroupModel groupModel);
 
 	/**
 	 * Delete all groups. Note that this deletes all groups without triggering the listeners. The
@@ -282,10 +268,18 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * Leave the group. This updates the database, triggers the listeners, and sends a group leave
 	 * message to the creator and the members.
 	 *
+	 * Note: If this group was created by the user, then an error will be logged
+	 * and nothing happens.
+	 *
 	 * @param groupModel the group that will be left
-	 * @return true if the group could be left successfully, false otherwise
 	 */
-	boolean leaveGroupFromLocal(@Nullable GroupModel groupModel);
+	void leaveGroupFromLocal(@NonNull GroupModel groupModel);
+
+	/**
+	 * Return the member identities of the group except the user.
+	 */
+	@NonNull
+	Set<String> getOtherMembers(@NonNull GroupModel groupModel);
 
 	/**
 	 * Return the identities of all members of this group including the creator and including the current user
@@ -411,19 +405,8 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 *
 	 * @param groupCreator the group creator identity
 	 * @param groupId the local group id
-	 * @return true if the request has been sent, false otherwise
-	 * @throws ThreemaException if the encoding of the message fails
 	 */
-	boolean requestSync(String groupCreator, GroupId groupId) throws ThreemaException;
-
-	/**
-	 * Send a group setup message with an empty member list to the given identity.
-	 *
-	 * @param groupModel       the group model
-	 * @param receiverIdentity the receiver identity
-	 * @return true if the message was sent successfully, false otherwise
-	 */
-	boolean sendEmptyGroupSetup(@NonNull GroupModel groupModel, @NonNull String receiverIdentity);
+	void scheduleSyncRequest(String groupCreator, GroupId groupId) throws ThreemaException;
 
 	/**
 	 * Send a group sync to the members of the group. This includes a group setup message, followed
@@ -432,7 +415,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @param groupModel the group model
 	 * @return true if the sync was successful, false otherwise
 	 */
-	boolean sendSync(GroupModel groupModel);
+	boolean scheduleSync(GroupModel groupModel);
 
 	/**
 	 * Send a group sync to the members of the group. This includes a group setup message, followed
@@ -442,7 +425,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @param receiverIdentities to these identities the sync messages are sent
 	 * @return true if the sync messages have been sent to all given identities, false otherwise
 	 */
-	boolean sendSync(GroupModel groupModel, String[] receiverIdentities);
+	boolean scheduleSync(GroupModel groupModel, String[] receiverIdentities);
 
 	/**
 	 * Get all the groups where the given identity is a member (or creator) of.
@@ -468,6 +451,18 @@ public interface GroupService extends AvatarService<GroupModel> {
 	String getUniqueIdString(int groupId);
 
 	void setIsArchived(GroupModel groupModel, boolean archived);
+
+	/**
+	 * Set the `lastUpdate` field of the specified group to the current date.
+	 *
+	 * Save the model and notify listeners.
+	 */
+	void bumpLastUpdate(@NonNull GroupModel groupModel);
+
+	/**
+	 * Save the given group model to the database.
+	 */
+	void save(@NonNull GroupModel groupModel);
 
 	/**
 	 * Check whether the group contains the maximum supported amount of members.

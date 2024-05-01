@@ -28,6 +28,7 @@ import ch.threema.domain.protocol.ThreemaFeature;
 
 public class ThreemaFeatureTest {
 
+	// TODO(ANDR-2708): Remove
 	@Test
 	public void testFeatureMaskToLevel() {
 		final int level0 = 0x00;
@@ -49,7 +50,7 @@ public class ThreemaFeatureTest {
 
 	@Test
 	public void testFeatureMaskBuilder() {
-		final int maskAllFeatures = new ThreemaFeature.Builder()
+		final long maskAllFeatures = new ThreemaFeature.Builder()
 			.audio(true)
 			.group(true)
 			.ballot(true)
@@ -57,10 +58,11 @@ public class ThreemaFeatureTest {
 			.voip(true)
 			.videocalls(true)
 			.forwardSecurity(true)
+			.groupCalls(true)
 			.build();
-		Assert.assertEquals(127, maskAllFeatures);
+		Assert.assertEquals(255, maskAllFeatures);
 
-		final int maskPartialFeatures = new ThreemaFeature.Builder()
+		final long maskPartialFeatures = new ThreemaFeature.Builder()
 			.audio(true)
 			.group(false)
 			.ballot(true)

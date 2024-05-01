@@ -26,29 +26,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.util.SparseArray;
 import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
-import com.neilalexander.jnacl.NaCl;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,15 +58,19 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.GroupDetailActivity;
 import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
-import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.glide.AvatarOptions;
-import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
+import ch.threema.app.services.ballot.BallotService;
+import ch.threema.app.tasks.OutgoingGroupDeleteProfilePictureTask;
+import ch.threema.app.tasks.OutgoingGroupLeaveTask;
+import ch.threema.app.tasks.OutgoingGroupNameTask;
+import ch.threema.app.tasks.OutgoingGroupProfilePictureTask;
+import ch.threema.app.tasks.OutgoingGroupSetupTask;
+import ch.threema.app.tasks.OutgoingGroupSyncRequestTask;
+import ch.threema.app.tasks.OutgoingGroupSyncTask;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
@@ -85,27 +83,20 @@ import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
-import ch.threema.domain.protocol.blob.BlobUploader;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
-import ch.threema.domain.protocol.csp.messages.GroupCreateMessage;
-import ch.threema.domain.protocol.csp.messages.GroupDeletePhotoMessage;
-import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage;
-import ch.threema.domain.protocol.csp.messages.GroupRenameMessage;
-import ch.threema.domain.protocol.csp.messages.GroupRequestSyncMessage;
-import ch.threema.domain.protocol.csp.messages.GroupSetPhotoMessage;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.domain.taskmanager.TaskManager;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.factories.GroupMemberModelFactory;
-import ch.threema.storage.factories.GroupMessagePendingMessageIdModelFactory;
-import ch.threema.storage.factories.GroupRequestSyncLogModelFactory;
+import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
+import ch.threema.storage.factories.RejectedGroupMessageFactory;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.GroupRequestSyncLogModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.access.Access;
 import ch.threema.storage.models.access.GroupAccessModel;
@@ -116,28 +107,22 @@ public class GroupServiceImpl implements GroupService {
 	private static final String GROUP_UID_PREFIX = "g-";
 
 	private final Context context;
-	private final ApiService apiService;
-	private final GroupMessagingService groupMessagingService;
-	private final UserService userService;
-	private final ContactService contactService;
-	private final DatabaseServiceNew databaseServiceNew;
-	private final AvatarCacheService avatarCacheService;
-	private final FileService fileService;
-	private final PreferenceService preferenceService;
-	private final WallpaperService wallpaperService;
-	private final DeadlineListService mutedChatsListService, hiddenChatsListService;
-	private final RingtoneService ringtoneService;
+
+	// Services
+	private final @NonNull ServiceManager serviceManager;
+	private final @NonNull UserService userService;
+	private final @NonNull ContactService contactService;
+	private final @NonNull DatabaseServiceNew databaseServiceNew;
+	private final @NonNull AvatarCacheService avatarCacheService;
+	private final @NonNull FileService fileService;
+	private final @NonNull WallpaperService wallpaperService;
+	private final @NonNull DeadlineListService mutedChatsListService, hiddenChatsListService;
+	private final @NonNull RingtoneService ringtoneService;
+
 	private final SparseArray<Map<String, Integer>> groupMemberColorCache;
 	private final SparseArray<GroupModel> groupModelCache;
 	private final SparseArray<String[]> groupIdentityCache;
-	private final List<AbstractGroupMessage> pendingGroupMessages = new ArrayList<>();
-
-	static class GroupPhotoUploadResult {
-		public byte[] bitmapArray;
-		public byte[] blobId;
-		public byte[] encryptionKey;
-		public int size;
-	}
+	private @Nullable TaskManager taskManager = null;
 
 	// String-enum used when updating certain group fields, e.g. name or profile picture
 	@IntDef({UPDATE_UNCHANGED, UPDATE_SUCCESS, UPDATE_ERROR})
@@ -147,34 +132,31 @@ public class GroupServiceImpl implements GroupService {
 	public static final int UPDATE_ERROR = 2;
 
 	public GroupServiceImpl(
-			Context context,
-			CacheService cacheService,
-			ApiService apiService,
-			GroupMessagingService groupMessagingService,
-			UserService userService,
-			ContactService contactService,
-			DatabaseServiceNew databaseServiceNew,
-			AvatarCacheService avatarCacheService,
-			FileService fileService,
-			PreferenceService preferenceService,
-			WallpaperService wallpaperService,
-			DeadlineListService mutedChatsListService,
-			DeadlineListService hiddenChatsListService,
-			RingtoneService ringtoneService) {
+		@NonNull Context context,
+		@NonNull CacheService cacheService,
+		@NonNull UserService userService,
+		@NonNull ContactService contactService,
+		@NonNull DatabaseServiceNew databaseServiceNew,
+		@NonNull AvatarCacheService avatarCacheService,
+		@NonNull FileService fileService,
+		@NonNull WallpaperService wallpaperService,
+		@NonNull DeadlineListService mutedChatsListService,
+		@NonNull DeadlineListService hiddenChatsListService,
+		@NonNull RingtoneService ringtoneService,
+		@NonNull ServiceManager serviceManager
+	) {
 		this.context = context;
-		this.apiService = apiService;
-		this.groupMessagingService = groupMessagingService;
 
 		this.userService = userService;
 		this.contactService = contactService;
 		this.databaseServiceNew = databaseServiceNew;
 		this.avatarCacheService = avatarCacheService;
 		this.fileService = fileService;
-		this.preferenceService = preferenceService;
 		this.wallpaperService = wallpaperService;
 		this.mutedChatsListService = mutedChatsListService;
 		this.hiddenChatsListService = hiddenChatsListService;
 		this.ringtoneService = ringtoneService;
+		this.serviceManager = serviceManager;
 
 		this.groupModelCache = cacheService.getGroupModelCache();
 		this.groupIdentityCache = cacheService.getGroupIdentityCache();
@@ -202,7 +184,7 @@ public class GroupServiceImpl implements GroupService {
 			}
 		}
 
-		for(GroupModel m: res) {
+		for (GroupModel m : res) {
 			this.cache(m);
 		}
 
@@ -210,13 +192,13 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	private GroupModel cache(GroupModel groupModel) {
-		if(groupModel == null) {
+		if (groupModel == null) {
 			return null;
 		}
 
 		synchronized (this.groupModelCache) {
 			GroupModel existingGroupModel = groupModelCache.get(groupModel.getId());
-			if(existingGroupModel != null) {
+			if (existingGroupModel != null) {
 				return existingGroupModel;
 			}
 
@@ -235,10 +217,13 @@ public class GroupServiceImpl implements GroupService {
 
 		// Send an empty sync
 		String[] identities = getGroupIdentities(groupModel);
-		sendEmptyGroupSetup(groupModel, identities);
+		scheduleEmptyGroupSetup(groupModel, Set.of(identities));
 
 		// Remove me from the group members
 		removeMemberFromGroup(groupModel, userService.getIdentity());
+
+		// Update the rejected message states
+		runRejectedMessagesRefreshSteps(groupModel);
 
 		// Trigger listener
 		ListenerManager.groupListeners.handle(listener -> listener.onMemberLeave(groupModel, myIdentity, identities.length));
@@ -246,27 +231,23 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public boolean leaveGroupFromLocal(@Nullable final GroupModel groupModel) {
-		if (groupModel == null || isGroupCreator(groupModel)) {
-			return false;
+	public void leaveGroupFromLocal(@NonNull final GroupModel groupModel) {
+		if (isGroupCreator(groupModel)) {
+			logger.error("Cannot leave own groups");
+			return;
 		}
 
 		String[] identities = this.getGroupIdentities(groupModel);
 
-		try {
-			this.groupMessagingService.sendMessage(groupModel, identities, messageId -> {
-				final GroupLeaveMessage groupLeaveMessage = new GroupLeaveMessage();
-				groupLeaveMessage.setMessageId(messageId);
-				return groupLeaveMessage;
-			});
-		} catch (ThreemaException e) {
-			logger.error("Exception", e);
-			return false;
-		}
+		// Send group leave to all members
+		scheduleGroupLeave(groupModel, Set.of(identities));
 
 		// Remove only me from the members
 		String myIdentity = userService.getIdentity();
 		removeMemberFromGroup(groupModel, myIdentity);
+
+		// Update the rejected message states
+		runRejectedMessagesRefreshSteps(groupModel);
 
 		ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(groupModel));
 		ShortcutUtil.deletePinnedShortcut(getUniqueIdString(groupModel));
@@ -278,8 +259,6 @@ public class GroupServiceImpl implements GroupService {
 		ListenerManager.groupListeners.handle(listener -> listener.onMemberLeave(groupModel, myIdentity, identities.length));
 		ListenerManager.groupListeners.handle(listener -> listener.onLeave(groupModel));
 		updateAllowedCallParticipants(groupModel);
-
-		return true;
 	}
 
 	@Override
@@ -293,32 +272,41 @@ public class GroupServiceImpl implements GroupService {
 		return this.remove(groupModel, false, false);
 	}
 
-	private boolean remove(@NonNull final GroupModel groupModel, boolean silent, boolean forceRemove) {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			try {
-				// cannot assign ballot service fixed in the constructor because of circular dependency
-				ThreemaApplication.getServiceManager().getBallotService().remove(createReceiver(groupModel));
-			} catch (MasterKeyLockedException | FileSystemNotPresentException | NoIdentityException e) {
-				logger.error("Exception removing ballot models", e);
-				return false;
+	@Override
+	public void leaveOrDissolveAndRemoveFromLocal(@NonNull GroupModel groupModel) {
+		if (this.isGroupMember(groupModel)) {
+			if (this.isGroupCreator(groupModel)) {
+				this.dissolveGroupFromLocal(groupModel);
+			} else {
+				this.leaveGroupFromLocal(groupModel);
 			}
 		}
-		else {
-			logger.error("Missing serviceManager, cannot delete ballot models for group");
+		this.remove(groupModel);
+	}
+
+	private boolean remove(@NonNull final GroupModel groupModel, boolean silent, boolean forceRemove) {
+		// Obtain some services through service manager
+		//
+		// Note: We cannot put these services in the constructor due to circular dependencies.
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager == null) {
+			logger.error("Missing serviceManager, cannot remove group");
+			return false;
+		}
+		final ConversationService conversationService;
+		final BallotService ballotService;
+		try {
+			conversationService = serviceManager.getConversationService();
+			ballotService = serviceManager.getBallotService();
+		} catch (ThreemaException e) {
+			logger.error("Could not obtain services when removing group", e);
 			return false;
 		}
 
-		final GroupMessagePendingMessageIdModelFactory groupPendingMessageIdModelFactory = this.databaseServiceNew.getGroupMessagePendingMessageIdModelFactory();
-		for(GroupMessageModel messageModel: this.databaseServiceNew.getGroupMessageModelFactory().getByGroupIdUnsorted(groupModel.getId())) {
-			//remove all message identity models
-			groupPendingMessageIdModelFactory.delete(messageModel.getId());
+		// Delete polls
+		ballotService.remove(createReceiver(groupModel));
 
-			//remove all files
-			this.fileService.removeMessageFiles(messageModel, true);
-		}
-
-		// remove all group invite links and requests
+		// Remove all group invite links and requests
 		final GroupInviteModelFactory groupInviteModelFactory = this.databaseServiceNew.getGroupInviteModelFactory();
 		final IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = this.databaseServiceNew.getIncomingGroupJoinRequestModelFactory();
 		for (GroupInviteModel groupInviteModel : groupInviteModelFactory.getByGroupApiId(groupModel.getApiGroupId())) {
@@ -326,14 +314,17 @@ public class GroupServiceImpl implements GroupService {
 			groupInviteModelFactory.delete(groupInviteModel);
 		}
 
-		//now remove all message models!
+		// Remove all messages
+		for (GroupMessageModel messageModel : this.databaseServiceNew.getGroupMessageModelFactory().getByGroupIdUnsorted(groupModel.getId())) {
+			this.fileService.removeMessageFiles(messageModel, true);
+		}
 		this.databaseServiceNew.getGroupMessageModelFactory().deleteByGroupId(groupModel.getId());
 
-		//remove avatar
+		// Remove avatar
 		this.fileService.removeGroupAvatar(groupModel);
 		this.avatarCacheService.reset(groupModel);
 
-		// remove wallpaper and stuff
+		// Remove chat settings (e.g. wallpaper or custom ringtones)
 		String uniqueIdString = getUniqueIdString(groupModel);
 		this.wallpaperService.removeWallpaper(uniqueIdString);
 		this.ringtoneService.removeCustomRingtone(uniqueIdString);
@@ -342,12 +333,18 @@ public class GroupServiceImpl implements GroupService {
 		ShortcutUtil.deleteShareTargetShortcut(uniqueIdString);
 		ShortcutUtil.deletePinnedShortcut(uniqueIdString);
 
+		// Update model
 		groupModel.setDeleted(true);
-
+		groupModel.setLastUpdate(null);
 		save(groupModel);
 
+		// Remove conversation
+		conversationService.removeFromCache(groupModel);
+
+		// Delete group members
 		this.databaseServiceNew.getGroupMemberModelFactory().deleteByGroupId(groupModel.getId());
 
+		// Delete group fully from database if `forceRemove` is set
 		if (forceRemove) {
 			this.databaseServiceNew.getGroupModelFactory().delete(groupModel);
 
@@ -358,13 +355,8 @@ public class GroupServiceImpl implements GroupService {
 
 		this.resetIdentityCache(groupModel.getId());
 
-		if(!silent) {
-			ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
-				@Override
-				public void handle(GroupListener listener) {
-					listener.onRemove(groupModel);
-				}
-			});
+		if (!silent) {
+			ListenerManager.groupListeners.handle(listener -> listener.onRemove(groupModel));
 		}
 
 		return true;
@@ -372,7 +364,7 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	public void removeAll() {
-		for(GroupModel g: this.getAll()) {
+		for (GroupModel g : this.getAll()) {
 			this.remove(g, true, true);
 		}
 		//remove last request sync table
@@ -388,158 +380,11 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public CommonGroupReceiveStepsResult runCommonGroupReceiveSteps(@NonNull AbstractGroupMessage message) {
-		// 1. Look up the group
-		final GroupModel groupModel = getByGroupMessage(message);
-
-		// 2. Check if the group could be found
-		if (groupModel == null) {
-			if (TestUtil.compare(message.getGroupCreator(), userService.getIdentity())) {
-				// 2.1 If the user is the creator of the group (as alleged by received message),
-				// discard the received message and abort these steps
-				logger.info("Could not find group with me as creator");
-				return CommonGroupReceiveStepsResult.DISCARD_MESSAGE;
-			}
-			// 2.2 Send a group-sync-request to the group creator and cache the received message for
-			// processing after receiving the group-sync.
-			boolean syncSent = requestSync(message);
-			if (!syncSent) {
-				logger.warn("Got message for an unknown group and sync could not be sent");
-				return CommonGroupReceiveStepsResult.DISCARD_MESSAGE;
-			}
-			return CommonGroupReceiveStepsResult.SYNC_REQUEST_SENT;
-		}
-
-		// 3. Check if the group is left
-		if (!isGroupMember(groupModel)) {
-			if (isGroupCreator(groupModel)) {
-				// 3.1 If the user is the creator, send a group-setup with an empty
-				// members list back to the sender and discard the received message.
-				logger.info("Got a message in a left group where I am the creator");
-				sendEmptyGroupSetup(groupModel, message.getFromIdentity());
-			} else {
-				// 3.2 Send a group leave to the sender and discard the received message
-				logger.info("Got a message in a left group");
-				sendLeaveToSender(message);
-			}
-			return CommonGroupReceiveStepsResult.DISCARD_MESSAGE;
-		}
-
-		// 4. If the sender is not a member of the group and the user is the creator of the group,
-		// send a group-setup with an empty members list back to the sender and discard the received
-		// message.
-		if (!isGroupMember(groupModel, message.getFromIdentity())) {
-			logger.info("Got a message in a group from a sender that is not a member");
-			if (isGroupCreator(groupModel)) {
-				sendEmptyGroupSetup(groupModel, message.getFromIdentity());
-			}
-			return CommonGroupReceiveStepsResult.DISCARD_MESSAGE;
-		}
-
-		return CommonGroupReceiveStepsResult.SUCCESS;
-	}
-
-	/**
-	 * Send a group sync request for the group of the given message. The sync is only sent, if there
-	 * was no sync request sent in the last week with this method to this group. Sync requests that
-	 * are sent by using {@link #requestSync(String, GroupId)} are not considered. If the sync
-	 * request should be sent in any case, then use {@link #requestSync(String, GroupId)}.
-	 *
-	 * @param msg the message that identifies the group
-	 * @return true if the request has been sent, false otherwise
-	 */
-	private boolean requestSync(AbstractGroupMessage msg) {
-		if (msg != null) {
-
-			// Do not send a request to myself
-			if (TestUtil.compare(msg.getGroupCreator(), this.userService.getIdentity())) {
-				return false;
-			}
-
-			try {
-				GroupRequestSyncLogModelFactory groupRequestSyncLogModelFactory = this.databaseServiceNew.getGroupRequestSyncLogModelFactory();
-				GroupRequestSyncLogModel model = groupRequestSyncLogModelFactory.get(msg.getApiGroupId().toString(),
-						msg.getGroupCreator());
-
-				// Send a request sync if the old request sync older than one week or null
-				if (model == null
-						|| model.getLastRequest() == null
-						|| model.getLastRequest().getTime() < (System.currentTimeMillis() - DateUtils.WEEK_IN_MILLIS)) {
-					// Send a request sync to the creator
-					boolean requestSent = requestSync(msg.getGroupCreator(), msg.getApiGroupId());
-
-					if (requestSent) {
-						if (model == null) {
-							GroupRequestSyncLogModel newModel = new GroupRequestSyncLogModel();
-							newModel.setAPIGroupId(msg.getApiGroupId().toString(), msg.getGroupCreator());
-							newModel.setCount(1);
-							newModel.setLastRequest(new Date());
-
-							groupRequestSyncLogModelFactory.create(newModel);
-						} else {
-							model.setLastRequest(new Date());
-							model.setCount(model.getCount() + 1);
-
-							groupRequestSyncLogModelFactory.update(model);
-						}
-					}
-				} else {
-					logger.info("Do not send request sync to group creator {}: last sync request was at {}", msg.getGroupCreator(), model.getLastRequest());
-				}
-
-				synchronized (this.pendingGroupMessages) {
-					if(Functional.select(this.pendingGroupMessages, new IPredicateNonNull<AbstractGroupMessage>() {
-						@Override
-						public boolean apply(@NonNull AbstractGroupMessage m) {
-							return m.getMessageId().toString().equals(m.getMessageId().toString());
-						}
-					}) == null) {
-						this.pendingGroupMessages.add(msg);
-					}
-				}
-
-				return true;
-			} catch (ThreemaException e) {
-				logger.error("Exception", e);
-			}
-
-		}
-		return false;
-	}
-
-	@Override
-	public boolean requestSync(@NonNull String groupCreator, @NonNull GroupId groupId) throws ThreemaException {
-		return this.groupMessagingService.sendMessage(
-			groupId,
-			groupCreator,
-			new String[] { groupCreator },
-			messageId -> {
-				GroupRequestSyncMessage groupRequestSyncMessage = new GroupRequestSyncMessage();
-				groupRequestSyncMessage.setMessageId(messageId);
-				return groupRequestSyncMessage;
-			},
-			null
-		) == 1;
-	}
-
-	private void sendLeaveToSender(AbstractGroupMessage msg) {
-		if (msg != null) {
-			try {
-				this.groupMessagingService.sendMessage(
-					msg.getApiGroupId(),
-					msg.getGroupCreator(),
-					new String[]{msg.getFromIdentity()},
-					messageId -> {
-						final GroupLeaveMessage groupLeaveMessage = new GroupLeaveMessage();
-						groupLeaveMessage.setMessageId(messageId);
-						return groupLeaveMessage;
-					},
-					null
-				);
-			} catch (ThreemaException e) {
-				logger.error("Exception", e);
-			}
-		}
+	public void scheduleSyncRequest(@NonNull String groupCreator, @NonNull GroupId groupId) {
+		getTaskManager().schedule(new OutgoingGroupSyncRequestTask(
+				groupId, groupCreator, null, serviceManager
+			)
+		);
 	}
 
 	@Override
@@ -548,7 +393,7 @@ public class GroupServiceImpl implements GroupService {
 		synchronized (this.groupModelCache) {
 			GroupModel model = Functional.select(this.groupModelCache, type -> apiGroupId.toString().equals(type.getApiGroupId().toString()) && creatorIdentity.equals(type.getCreatorIdentity()));
 
-			if(model == null) {
+			if (model == null) {
 				model = this.databaseServiceNew.getGroupModelFactory().getByApiGroupIdAndCreator(
 					apiGroupId.toString(),
 					creatorIdentity
@@ -557,8 +402,7 @@ public class GroupServiceImpl implements GroupService {
 				if (model != null) {
 					return this.cache(model);
 				}
-			}
-			else {
+			} else {
 				return model;
 			}
 
@@ -577,7 +421,7 @@ public class GroupServiceImpl implements GroupService {
 	public @Nullable GroupModel getById(int groupId) {
 		synchronized (this.groupModelCache) {
 			GroupModel existingGroupModel = groupModelCache.get(groupId);
-			if(existingGroupModel != null) {
+			if (existingGroupModel != null) {
 				return existingGroupModel;
 			}
 			return this.cache(this.databaseServiceNew.getGroupModelFactory().getById(groupId));
@@ -588,14 +432,14 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public GroupModel createGroupFromLocal(
 		@NonNull String name,
-		@NonNull String[] groupMemberIdentities,
+		@NonNull Set<String> groupMemberIdentities,
 		@Nullable Bitmap picture
 	) throws Exception {
 		if (AppRestrictionUtil.isCreateGroupDisabled(ThreemaApplication.getAppContext())) {
 			throw new PolicyViolationException();
 		}
 
-		GroupModel model = this.createGroupFromLocal(name, groupMemberIdentities);
+		final GroupModel model = this.createGroupFromLocal(name, groupMemberIdentities);
 
 		if (picture != null) {
 			// Always send the group picture if there is a group picture
@@ -611,7 +455,7 @@ public class GroupServiceImpl implements GroupService {
 	@NonNull
 	private GroupModel createGroupFromLocal(
 		@NonNull String name,
-		@NonNull final String[] groupMemberIdentities
+		@NonNull final Set<String> groupMemberIdentities
 	) throws ThreemaException, PolicyViolationException {
 		if (AppRestrictionUtil.isCreateGroupDisabled(ThreemaApplication.getAppContext())) {
 			throw new PolicyViolationException();
@@ -619,44 +463,42 @@ public class GroupServiceImpl implements GroupService {
 
 		final String creatorIdentity = userService.getIdentity();
 
-		// Note: don't set the group name in the model here, otherwise no group name message is sent
-		// because the group name looks up to date in updateGroupNameFromLocal
+		// Create group model in database and cache
+		//
+		// Note: Don't yet set the group name in the model here, otherwise no group name message is
+		// sent because the group name looks up to date in updateGroupNameFromLocal
 		final GroupModel groupModel = new GroupModel();
-		String randomId = UUID.randomUUID().toString();
-		GroupId id = new GroupId(Utils.hexStringToByteArray(randomId.substring(randomId.length() - (ProtocolDefines.GROUP_ID_LEN * 2))));
+		final String randomId = UUID.randomUUID().toString();
+		final GroupId id = new GroupId(Utils.hexStringToByteArray(randomId.substring(randomId.length() - (ProtocolDefines.GROUP_ID_LEN * 2))));
+		final Date now = new Date();
 		groupModel
-				.setApiGroupId(id)
-				.setCreatorIdentity(creatorIdentity)
-				.setCreatedAt(new Date())
-				.setSynchronizedAt(new Date());
-
+			.setApiGroupId(id)
+			.setCreatorIdentity(creatorIdentity)
+			.setCreatedAt(now)
+			.setLastUpdate(now)
+			.setSynchronizedAt(now);
 		this.databaseServiceNew.getGroupModelFactory().create(groupModel);
 		this.cache(groupModel);
 
+		// Add members to group (including own identity)
 		this.addMemberToGroup(groupModel, creatorIdentity);
-
 		for (String identity : groupMemberIdentities) {
 			this.addMemberToGroup(groupModel, identity);
 		}
 
+		// Notify listeners
 		for (String memberIdentity : groupMemberIdentities) {
 			ListenerManager.groupListeners.handle(listener ->
 				listener.onNewMember(groupModel, memberIdentity, 0)
 			);
 		}
-
-		ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
-			@Override
-			public void handle(GroupListener listener) {
-				listener.onCreate(groupModel);
-			}
-		});
-
+		ListenerManager.groupListeners.handle(listener -> listener.onCreate(groupModel));
 		ListenerManager.groupListeners.handle(listener -> listener.onGroupStateChanged(groupModel, UNDEFINED, getGroupState(groupModel)));
 
-		//send event to server
-		sendGroupSetup(groupModel, groupMemberIdentities, groupMemberIdentities);
+		// Schedule OutgoingGroupSetupTask to send group-setup message to all members
+		scheduleGroupSetup(groupModel, groupMemberIdentities, groupMemberIdentities);
 
+		// Update the group name and send group-name message to all members
 		updateGroupNameFromLocal(groupModel, name);
 
 		return groupModel;
@@ -698,6 +540,68 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
+	public void runRejectedMessagesRefreshSteps(@NonNull GroupModel groupModel) {
+		RejectedGroupMessageFactory rejectedGroupMessageFactory = databaseServiceNew.getRejectedGroupMessageFactory();
+		GroupMessageModelFactory groupMessageModelFactory = databaseServiceNew.getGroupMessageModelFactory();
+		List<GroupMessageModel> updatedMessages;
+
+		if (!isGroupMember(groupModel)) {
+			// If the group is marked as left, remove all reject marks and receivers requiring a re-send
+			rejectedGroupMessageFactory.removeAllMessageRejectsInGroup(groupModel);
+
+			updatedMessages = groupMessageModelFactory.getAllRejectedMessagesInGroup(groupModel);
+		} else {
+			// If the group is not marked left, we remove all ex-members from the reject table that
+			// have rejected a message in this group. Message models that do not have any rejecting
+			// member anymore after this cleanup will be updated.
+			updatedMessages = new ArrayList<>();
+			Set<String> members = Set.of(getGroupIdentities(groupModel));
+
+			List<GroupMessageModel> allRejectedMessages = groupMessageModelFactory.getAllRejectedMessagesInGroup(groupModel);
+			for (GroupMessageModel rejectedMessage : allRejectedMessages) {
+				// Try to get the message id of the group message
+				MessageId rejectedMessageId;
+				try {
+					rejectedMessageId = MessageId.fromString(rejectedMessage.getApiMessageId());
+				} catch (ThreemaException e) {
+					logger.error("Could not get message id from rejected message");
+					continue;
+				}
+
+				// Initialize the set with all identities that have rejected the message
+				Set<String> rejectedNonMembers = rejectedGroupMessageFactory.getMessageRejects(
+					rejectedMessageId,
+					groupModel
+				);
+
+				// Remove all group members from the rejected receivers so that only rejects from
+				// left group members are contained in this set
+				boolean messageHasRejectingGroupMember = rejectedNonMembers.removeAll(members);
+
+				// Remove ex-members from the reject list as they should not receive re-sends
+				for (String receiver : rejectedNonMembers) {
+					rejectedGroupMessageFactory.removeMessageRejectByGroupAndIdentity(groupModel, receiver);
+				}
+
+				// If there are no rejected identities left, update the message state
+				if (!messageHasRejectingGroupMember) {
+					updatedMessages.add(rejectedMessage);
+				}
+			}
+		}
+
+		// Update the state for each of the messages
+		for (GroupMessageModel message : updatedMessages) {
+			message.setState(MessageState.SENT);
+			groupMessageModelFactory.update(message);
+		}
+
+		ListenerManager.messageListeners.handle(
+			listener -> listener.onModified(new ArrayList<>(updatedMessages))
+		);
+	}
+
+	@Override
 	@GroupState
 	public int getGroupState(@Nullable GroupModel groupModel) {
 		if (groupModel != null) {
@@ -730,7 +634,7 @@ public class GroupServiceImpl implements GroupService {
 		Set<String> updatedGroupMembers = new HashSet<>();
 
 		// Determine new members and add them to all involved members
-		List<String> newMembers = new ArrayList<>();
+		Set<String> newMembers = new HashSet<>();
 		if (groupMemberIdentities != null) {
 			for (String identity : groupMemberIdentities) {
 				updatedGroupMembers.add(identity);
@@ -742,18 +646,15 @@ public class GroupServiceImpl implements GroupService {
 		} else {
 			updatedGroupMembers.addAll(existingMembers);
 		}
-		String[] newMemberIdentities = newMembers.toArray(new String[0]);
-		String[] updatedGroupMemberIdentities = updatedGroupMembers.toArray(new String[0]);
 
 		// List of all kicked identities
-		List<String> kickedGroupMembers = new ArrayList<>(existingMembers);
+		Set<String> kickedGroupMembers = new HashSet<>(existingMembers);
 		kickedGroupMembers.removeAll(updatedGroupMembers);
-		String[] kickedGroupMemberIdentities = kickedGroupMembers.toArray(new String[0]);
 
 		int previousMemberCount = countMembers(groupModel);
 
 		// Remove the kicked members from the database
-		for (final String kickedIdentity: kickedGroupMembers) {
+		for (final String kickedIdentity : kickedGroupMembers) {
 			logger.debug("Remove member {} from group", kickedIdentity);
 			removeMemberFromGroup(groupModel, kickedIdentity);
 
@@ -763,7 +664,7 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		// Add new members to the database
-		for (String newMember: newMembers) {
+		for (String newMember : newMembers) {
 			logger.debug("Add member {} to group", newMember);
 			this.addMemberToGroup(groupModel, newMember);
 		}
@@ -774,23 +675,25 @@ public class GroupServiceImpl implements GroupService {
 
 		if (hasMemberChanges) {
 			resetIdentityCache(groupModel.getId());
+
+			runRejectedMessagesRefreshSteps(groupModel);
 		}
 
 		// If the user wants to delete the group picture, we send a delete message to the removed
 		// members. Note that the delete group picture message is sent to the updated group after
 		// the new group setup message.
 		if (removePicture && hasKickedMembers) {
-			sendGroupDeletePhotoToMembers(groupModel, kickedGroupMemberIdentities);
+			scheduleGroupDeletePhoto(groupModel, kickedGroupMembers);
 		}
 
 		// Send a setup message with an empty member list to the removed members
 		if (hasKickedMembers) {
-			sendEmptyGroupSetup(groupModel, kickedGroupMemberIdentities);
+			scheduleEmptyGroupSetup(groupModel, kickedGroupMembers);
 		}
 
 		// Send a setup message with the updated group member list to all (updated) group members
 		if (hasMemberChanges) {
-			sendGroupSetup(groupModel, updatedGroupMemberIdentities, updatedGroupMemberIdentities);
+			scheduleGroupSetup(groupModel, updatedGroupMembers, updatedGroupMembers);
 		}
 
 		final boolean nameChanged = name != null && groupNameChanged(groupModel, name);
@@ -801,7 +704,7 @@ public class GroupServiceImpl implements GroupService {
 		} else if (hasNewMembers) {
 			// Send rename message to all new group members, so that they receive the group name,
 			// even if the group name did not change.
-			sendGroupRenameToIdentitiesIfOwner(groupModel, newMemberIdentities);
+			sendGroupRenameToIdentitiesIfOwner(groupModel, newMembers);
 		}
 
 		boolean sendPictureToNewMembers = true;
@@ -819,12 +722,7 @@ public class GroupServiceImpl implements GroupService {
 			// If there are new members, we need to send a set profile picture or delete profile
 			// picture message - depending on whether there is a group picture set or not. Note that
 			// this must be done according to the protocol.
-			if (fileService.hasGroupAvatarFile(groupModel)) {
-				GroupPhotoUploadResult result = uploadGroupPhoto(fileService.getGroupAvatar(groupModel));
-				sendGroupPhotoToMembers(groupModel, newMemberIdentities, result);
-			} else {
-				sendGroupDeletePhotoToMembers(groupModel, newMemberIdentities);
-			}
+			scheduleGroupPhoto(groupModel, newMembers);
 		}
 
 		if (groupDesc != null) {
@@ -839,7 +737,7 @@ public class GroupServiceImpl implements GroupService {
 			);
 		}
 
-		sendGroupCallStart(groupModel, newMembers);
+		scheduleGroupCallStart(groupModel, newMembers);
 
 		// Fire the group state listener if the group state has changed
 		@GroupState int newGroupState = getGroupState(groupModel);
@@ -870,17 +768,15 @@ public class GroupServiceImpl implements GroupService {
 	 *
 	 * @param groupModel the group model that is changed
 	 * @param newName    the new group name
-	 * @return true if the group name has changed or if it is the same as the old name, false if an
-	 * error occurred
 	 */
-	private boolean updateGroupNameFromLocal(@NonNull GroupModel groupModel, @NonNull String newName) {
+	private void updateGroupNameFromLocal(@NonNull GroupModel groupModel, @NonNull String newName) {
 		if (!isGroupCreator(groupModel)) {
 			logger.error("Cannot rename group where the user is not the creator");
-			return false;
+			return;
 		}
 
 		if (!groupNameChanged(groupModel, newName)) {
-			return true;
+			return;
 		}
 
 		// Update and save the group model
@@ -894,14 +790,8 @@ public class GroupServiceImpl implements GroupService {
 		ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(groupModel.getId()));
 
 		// Send rename message to group members if group owner
-		try {
-			String[] groupIdentities = getGroupIdentities(groupModel);
-			return sendGroupRenameToIdentitiesIfOwner(groupModel, groupIdentities)
-				== groupIdentities.length - 1; // The creator should not receive the message
-		} catch (ThreemaException e) {
-			logger.error("Could not send group name message", e);
-			return false;
-		}
+		Set<String> groupIdentities = Set.of(getGroupIdentities(groupModel));
+		sendGroupRenameToIdentitiesIfOwner(groupModel, groupIdentities);
 	}
 
 	/**
@@ -921,13 +811,15 @@ public class GroupServiceImpl implements GroupService {
 
 		try {
 			if (picture == null && fileService.hasGroupAvatarFile(groupModel)) {
-				return deleteGroupPictureFromLocal(groupModel) ? UPDATE_SUCCESS : UPDATE_ERROR;
+				deleteGroupPictureFromLocal(groupModel);
+				return UPDATE_SUCCESS;
 			} else if (picture != null) {
 				Bitmap existingGroupPicture = fileService.getGroupAvatar(groupModel);
 				if (picture.sameAs(existingGroupPicture)) {
 					return UPDATE_UNCHANGED;
 				} else {
-					return setGroupPictureFromLocal(groupModel, picture) ? UPDATE_SUCCESS : UPDATE_ERROR;
+					setGroupPictureFromLocal(groupModel, picture);
+					return UPDATE_SUCCESS;
 				}
 			}
 		} catch (Exception e) {
@@ -944,14 +836,13 @@ public class GroupServiceImpl implements GroupService {
 	 *
 	 * @param groupModel the group model
 	 * @param picture    the group picture
-	 * @return true if the group picture has been set successfully, false otherwise
 	 * @throws Exception if uploading, sending or saving the group picture failed
 	 */
-	private boolean setGroupPictureFromLocal(@NonNull GroupModel groupModel, @NonNull Bitmap picture) throws Exception {
-		GroupPhotoUploadResult result = uploadGroupPhoto(picture);
+	private void setGroupPictureFromLocal(@NonNull GroupModel groupModel, @NonNull Bitmap picture) throws Exception {
+		byte[] groupPicture = BitmapUtil.bitmapToJpegByteArray(picture);
 
 		// Save the image
-		boolean success = fileService.writeGroupAvatar(groupModel, result.bitmapArray);
+		boolean success = fileService.writeGroupAvatar(groupModel, groupPicture);
 
 		if (success) {
 			// Reset the avatar cache entry
@@ -961,9 +852,8 @@ public class GroupServiceImpl implements GroupService {
 			ListenerManager.groupListeners.handle(listener -> listener.onUpdatePhoto(groupModel));
 
 			// Send to the new blob to the users
-			return sendGroupPhotoToMembers(groupModel, getGroupIdentities(groupModel), result);
+			scheduleGroupPhoto(groupModel, Set.of(getGroupIdentities(groupModel)));
 		}
-		return false;
 	}
 
 	/**
@@ -972,9 +862,8 @@ public class GroupServiceImpl implements GroupService {
 	 * fired, if there was a group picture previously.
 	 *
 	 * @param groupModel the group that is updated
-	 * @return true if the profile picture was successfully deleted, false otherwise
 	 */
-	private boolean deleteGroupPictureFromLocal(@NonNull GroupModel groupModel) {
+	private void deleteGroupPictureFromLocal(@NonNull GroupModel groupModel) {
 		boolean hadGroupPicture = fileService.hasGroupAvatarFile(groupModel);
 
 		fileService.removeGroupAvatar(groupModel);
@@ -985,10 +874,10 @@ public class GroupServiceImpl implements GroupService {
 			ListenerManager.groupListeners.handle(listener -> listener.onUpdatePhoto(groupModel));
 		}
 
-		return sendGroupDeletePhotoToMembers(groupModel, getGroupIdentities(groupModel));
+		scheduleGroupPhoto(groupModel, Set.of(getGroupIdentities(groupModel)));
 	}
 
-	private void sendGroupCallStart(@NonNull GroupModel groupModel, @NonNull List<String> newMemberIdentities) {
+	private void scheduleGroupCallStart(@NonNull GroupModel groupModel, @NonNull Set<String> newMemberIdentities) {
 		if (newMemberIdentities.isEmpty()) {
 			return;
 		}
@@ -999,7 +888,7 @@ public class GroupServiceImpl implements GroupService {
 				return;
 			}
 			GroupCallManager groupCallManager = serviceManager.getGroupCallManager();
-			groupCallManager.sendGroupCallStartToNewMembers(groupModel, newMemberIdentities);
+			groupCallManager.scheduleGroupCallStartForNewMembers(groupModel, newMemberIdentities);
 		} catch (ThreemaException e) {
 			logger.error("Could not get group call manager. Aborting potential group call start send", e);
 		}
@@ -1018,74 +907,20 @@ public class GroupServiceImpl implements GroupService {
 		}
 	}
 
-	private int sendGroupRenameToIdentitiesIfOwner(@NonNull GroupModel groupModel, @NonNull String[] identities) throws ThreemaException {
+	private void sendGroupRenameToIdentitiesIfOwner(@NonNull GroupModel groupModel, @NonNull Set<String> identities) {
 		if (!isGroupCreator(groupModel)) {
 			// Don't send the group rename if the user is not the owner
-			return -1;
+			return;
 		}
 
 		final String groupName = groupModel.getName() != null ? groupModel.getName() : "";
-
-		return groupMessagingService.sendMessage(groupModel, identities, messageId -> {
-			final GroupRenameMessage rename = new GroupRenameMessage();
-			rename.setMessageId(messageId);
-			rename.setGroupName(groupName);
-			return rename;
-		});
+		scheduleGroupName(groupModel, identities, groupName);
 	}
 
 	// on Update new group desc
 	private void changeGroupDesc(final GroupModel group, final String newGroupDesc) {
 		group.setGroupDesc(newGroupDesc);
 		this.save(group);
-	}
-
-	private GroupPhotoUploadResult uploadGroupPhoto(Bitmap picture) throws IOException, ThreemaException {
-		GroupPhotoUploadResult result = new GroupPhotoUploadResult();
-		SecureRandom rnd = new SecureRandom();
-		result.encryptionKey = new byte[NaCl.SYMMKEYBYTES];
-		rnd.nextBytes(result.encryptionKey);
-
-		result.bitmapArray = BitmapUtil.bitmapToJpegByteArray(picture);
-		byte[] thumbnailBoxed = NaCl.symmetricEncryptData(result.bitmapArray, result.encryptionKey, ProtocolDefines.GROUP_PHOTO_NONCE);
-		BlobUploader blobUploaderThumbnail = this.apiService.createUploader(thumbnailBoxed);
-		result.blobId = blobUploaderThumbnail.upload();
-		result.size = thumbnailBoxed.length;
-
-		return result;
-	}
-
-	private boolean sendGroupPhotoToMembers(
-		@NonNull GroupModel groupModel,
-		@NonNull String[] identities,
-		@NonNull final GroupPhotoUploadResult uploadResult
-	) throws ThreemaException {
-		return this.groupMessagingService.sendMessage(groupModel, identities, messageId -> {
-			final GroupSetPhotoMessage msg = new GroupSetPhotoMessage();
-			msg.setMessageId(messageId);
-			msg.setBlobId(uploadResult.blobId);
-			msg.setEncryptionKey(uploadResult.encryptionKey);
-			msg.setSize(uploadResult.size);
-			return msg;
-		}) == identities.length;
-	}
-
-	private boolean sendGroupDeletePhotoToMembers(@NonNull GroupModel groupModel, @NonNull String[] identities) {
-		try {
-			this.groupMessagingService.sendMessage(
-				groupModel,
-				identities,
-				messageId -> {
-					GroupDeletePhotoMessage groupDeletePhotoMessage = new GroupDeletePhotoMessage();
-					groupDeletePhotoMessage.setMessageId(messageId);
-					return groupDeletePhotoMessage;
-				}
-			);
-		} catch (ThreemaException e) {
-			logger.error("Could not send group delete photo message", e);
-			return false;
-		}
-		return true;
 	}
 
 	@Override
@@ -1112,6 +947,14 @@ public class GroupServiceImpl implements GroupService {
 		synchronized (this.groupMemberColorCache) {
 			this.groupMemberColorCache.remove(groupModelId);
 		}
+	}
+
+	@NonNull
+	@Override
+	public Set<String> getOtherMembers(@NonNull GroupModel groupModel) {
+		Set<String> otherMembers = new HashSet<>(Arrays.asList(getGroupIdentities(groupModel)));
+		otherMembers.remove(userService.getIdentity());
+		return otherMembers;
 	}
 
 	@NonNull
@@ -1158,7 +1001,7 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public List<GroupMemberModel> getGroupMemberModels(@NonNull GroupModel groupModel) {
 		return this.databaseServiceNew.getGroupMemberModelFactory().getByGroupId(
-				groupModel.getId()
+			groupModel.getId()
 		);
 	}
 
@@ -1166,14 +1009,14 @@ public class GroupServiceImpl implements GroupService {
 	 * Get the group member model by group id and identity.
 	 *
 	 * @param groupModel the group model of the member
-	 * @param identity the identity of the member
+	 * @param identity   the identity of the member
 	 * @return the group member model if it exists, null otherwise
 	 */
 	@Nullable
 	private GroupMemberModel getGroupMember(@NonNull GroupModel groupModel, @NonNull String identity) {
 		return this.databaseServiceNew.getGroupMemberModelFactory().getByGroupIdAndIdentity(
-				groupModel.getId(),
-				identity);
+			groupModel.getId(),
+			identity);
 	}
 
 	@Override
@@ -1204,8 +1047,7 @@ public class GroupServiceImpl implements GroupService {
 			groupModel,
 			this,
 			this.databaseServiceNew,
-			this.groupMessagingService,
-			this.contactService
+			this.serviceManager
 		);
 	}
 
@@ -1251,8 +1093,8 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public boolean isGroupCreator(GroupModel groupModel) {
 		return groupModel != null
-				&& this.userService.getIdentity() != null
-				&& this.userService.isMe(groupModel.getCreatorIdentity());
+			&& this.userService.getIdentity() != null
+			&& this.userService.isMe(groupModel.getCreatorIdentity());
 	}
 
 	@Override
@@ -1270,7 +1112,7 @@ public class GroupServiceImpl implements GroupService {
 	public boolean isNotesGroup(@NonNull GroupModel groupModel) {
 		return
 			isGroupCreator(groupModel) &&
-			countMembers(groupModel) == 1;
+				countMembers(groupModel) == 1;
 	}
 
 	@Override
@@ -1291,7 +1133,7 @@ public class GroupServiceImpl implements GroupService {
 		Map<String, Integer> colors = this.groupMemberColorCache.get(model.getId());
 		if (colors == null || colors.isEmpty()) {
 			colors = this.databaseServiceNew.getGroupMemberModelFactory().getIDColorIndices(
-					model.getId()
+				model.getId()
 			);
 
 			this.groupMemberColorCache.put(model.getId(), colors);
@@ -1300,131 +1142,156 @@ public class GroupServiceImpl implements GroupService {
 		return colors;
 	}
 
+	private void scheduleEmptyGroupSetup(
+		@NonNull GroupModel groupModel,
+		@NonNull Set<String> receiverIdentities
+	) {
+		scheduleGroupSetup(groupModel, receiverIdentities, Collections.emptySet());
+	}
+
+	private void scheduleGroupSetup(
+		@NonNull GroupModel groupModel,
+		@NonNull Set<String> receiverIdentities,
+		@NonNull Set<String> memberIdentities
+	) {
+		getTaskManager().schedule(new OutgoingGroupSetupTask(
+			groupModel.getApiGroupId(),
+			groupModel.getCreatorIdentity(),
+			memberIdentities,
+			receiverIdentities,
+			null,
+			serviceManager
+		));
+	}
+
+	private void scheduleGroupName(
+		@NonNull GroupModel groupModel,
+		@NonNull Set<String> receiverIdentities,
+		@NonNull String groupName
+	) {
+		getTaskManager().schedule(new OutgoingGroupNameTask(
+			groupModel.getApiGroupId(),
+			groupModel.getCreatorIdentity(),
+			groupName,
+			receiverIdentities,
+			null,
+			serviceManager
+		));
+	}
+
+	/**
+	 * Schedule a group photo task. Note that this will send a set-profile-picture message if a
+	 * group avatar is set. If there is no group avatar set, a delete-profile-picture message is
+	 * sent.
+	 *
+	 * @param groupModel         the group model
+	 * @param receiverIdentities the receiver identities
+	 */
+	private void scheduleGroupPhoto(
+		@NonNull GroupModel groupModel,
+		@NonNull Set<String> receiverIdentities
+	) {
+		getTaskManager().schedule(new OutgoingGroupProfilePictureTask(
+			groupModel.getApiGroupId(),
+			groupModel.getCreatorIdentity(),
+			receiverIdentities,
+			null,
+			serviceManager
+		));
+	}
+
+	/**
+	 * Schedule a group delete photo task. Note that this will send a delete-profile-picture message
+	 * even if a group avatar is set for this group!
+	 *
+	 * @param groupModel         the group model
+	 * @param receiverIdentities the receiver identities
+	 */
+	private void scheduleGroupDeletePhoto(
+		@NonNull GroupModel groupModel,
+		@NonNull Set<String> receiverIdentities
+	) {
+		getTaskManager().schedule(new OutgoingGroupDeleteProfilePictureTask(
+			groupModel.getApiGroupId(),
+			groupModel.getCreatorIdentity(),
+			receiverIdentities,
+			null,
+			serviceManager
+		));
+	}
+
+	private void scheduleGroupLeave(
+		@NonNull GroupModel groupModel,
+		@NonNull Set<String> receiverIdentities
+	) {
+		getTaskManager().schedule(new OutgoingGroupLeaveTask(
+			groupModel.getApiGroupId(),
+			groupModel.getCreatorIdentity(),
+			receiverIdentities,
+			null,
+			serviceManager
+		));
+	}
+
 	@Override
-	public boolean sendEmptyGroupSetup(
-		@NonNull GroupModel groupModel,
-		@NonNull String receiverIdentity
-	) {
-		return sendEmptyGroupSetup(groupModel, new String[]{receiverIdentity});
-	}
-
-	private boolean sendEmptyGroupSetup(
-		@NonNull GroupModel groupModel,
-		@NonNull String[] receiverIdentities
-	) {
-		return sendGroupSetup(groupModel, receiverIdentities, new String[0]);
-	}
-
-	private boolean sendGroupSetup(
-		@NonNull GroupModel groupModel,
-		@NonNull String[] receiverIdentities,
-		@NonNull String[] memberIdentities
-	) {
-		try {
-			this.groupMessagingService.sendMessage(
-				groupModel,
-				receiverIdentities,
-				messageId -> {
-					GroupCreateMessage groupCreateMessage = new GroupCreateMessage();
-					groupCreateMessage.setMessageId(messageId);
-					groupCreateMessage.setMembers(memberIdentities);
-					return groupCreateMessage;
-				}
-			);
-			return true;
-		} catch (ThreemaException e) {
-			logger.error("Exception", e);
-		}
-		return false;
-	}
-
-	@Override
-	public boolean sendSync(GroupModel groupModel) {
+	public boolean scheduleSync(GroupModel groupModel) {
 		// Send event to clients
-		final String[] groupMemberIdentities =  this.getGroupIdentities(groupModel);
+		final String[] groupMemberIdentities = this.getGroupIdentities(groupModel);
 
 		// Send to ALL members!
-		return this.sendSync(groupModel, groupMemberIdentities);
+		return this.scheduleSync(groupModel, groupMemberIdentities);
 	}
 
 	@Override
-	public boolean sendSync(@NonNull final GroupModel groupModel, @NonNull final String[] receiverIdentities) {
+	public boolean scheduleSync(@NonNull final GroupModel groupModel, @NonNull final String[] receiverIdentities) {
 		String creatorIdentity = groupModel.getCreatorIdentity();
-		List<String> receivers = new LinkedList<>();
+		Set<String> receivers = new HashSet<>();
 		for (String identity : receiverIdentities) {
 			if (!creatorIdentity.equals(identity)) {
 				receivers.add(identity);
 			}
 		}
 
-		String[] finalReceiverIdentities;
+		Set<String> finalReceiverIdentities;
 		if (receivers.size() != receiverIdentities.length) {
-			finalReceiverIdentities = new String[receivers.size()];
-			receivers.toArray(finalReceiverIdentities);
+			finalReceiverIdentities = receivers;
 		} else {
-			finalReceiverIdentities = receiverIdentities;
+			finalReceiverIdentities = Set.of(receiverIdentities);
 		}
 
-		boolean success = false;
+		getTaskManager().schedule(new OutgoingGroupSyncTask(
+			groupModel.getApiGroupId(),
+			groupModel.getCreatorIdentity(),
+			finalReceiverIdentities,
+			serviceManager
+		));
 
-		try {
-			success = sendGroupSetup(groupModel, finalReceiverIdentities, getGroupIdentities(groupModel));
+		groupModel.setSynchronizedAt(new Date());
+		this.save(groupModel);
 
-			success &= sendGroupRenameToIdentitiesIfOwner(groupModel, finalReceiverIdentities)
-				== finalReceiverIdentities.length;
-
-			if (fileService.hasGroupAvatarFile(groupModel)) {
-				GroupPhotoUploadResult result = uploadGroupPhoto(fileService.getGroupAvatar(groupModel));
-				success &= sendGroupPhotoToMembers(groupModel, finalReceiverIdentities, result);
-			} else {
-				success &= sendGroupDeletePhotoToMembers(groupModel, finalReceiverIdentities);
-			}
-
-			// Update sync date if sync was successful
-			if (success) {
-				groupModel.setSynchronizedAt(new Date());
-				this.save(groupModel);
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-		return success;
-	}
-
-	@Nullable
-	private byte[] getGroupAvatarBytes(@Nullable GroupModel groupModel) {
-		if (groupModel == null) {
-			return null;
-		}
-		try (InputStream groupAvatarInputStream = fileService.getGroupAvatarStream(groupModel)) {
-			return IOUtils.toByteArray(groupAvatarInputStream);
-		} catch (Exception exception) {
-			logger.error("Could not get group avatar", exception);
-		}
-		return null;
+		return true;
 	}
 
 	@Override
 	@NonNull
 	public List<GroupModel> getGroupsByIdentity(@Nullable String identity) {
 		List<GroupModel> groupModels = new ArrayList<>();
-		if(TestUtil.empty(identity) || !TestUtil.required(this.databaseServiceNew, this.groupModelCache)) {
+		if (TestUtil.empty(identity) || !TestUtil.required(this.databaseServiceNew, this.groupModelCache)) {
 			return groupModels;
 		}
 
 		identity = identity.toUpperCase();
 
 		List<Integer> res = this.databaseServiceNew.getGroupMemberModelFactory().getGroupIdsByIdentity(
-				identity);
+			identity);
 
 		List<Integer> groupIds = new ArrayList<>();
 		synchronized (this.groupModelCache) {
 			for (int id : res) {
 				GroupModel existingGroupModel = this.groupModelCache.get(id);
-				if(existingGroupModel == null) {
+				if (existingGroupModel == null) {
 					groupIds.add(id);
-				}
-				else {
+				} else {
 					groupModels.add(existingGroupModel);
 				}
 			}
@@ -1432,9 +1299,9 @@ public class GroupServiceImpl implements GroupService {
 
 		if (groupIds.size() > 0) {
 			List<GroupModel> groups = this.databaseServiceNew.getGroupModelFactory().getInId(
-					groupIds);
+				groupIds);
 
-			for(GroupModel gm: groups) {
+			for (GroupModel gm : groups) {
 				groupModels.add(this.cache(gm));
 			}
 		}
@@ -1445,28 +1312,28 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public GroupAccessModel getAccess(@Nullable GroupModel groupModel, boolean allowEmpty) {
 		GroupAccessModel groupAccessModel = new GroupAccessModel();
-		if(groupModel != null) {
+		if (groupModel != null) {
 			// Don't allow to send and receive messages in left groups
-			if(!isGroupMember(groupModel)) {
+			if (!isGroupMember(groupModel)) {
 				groupAccessModel.setCanReceiveMessageAccess(new Access(
-						false,
-						R.string.you_are_not_a_member_of_this_group
+					false,
+					R.string.you_are_not_a_member_of_this_group
 				));
 
 				groupAccessModel.setCanSendMessageAccess(new Access(
-						false,
-						R.string.you_are_not_a_member_of_this_group
+					false,
+					R.string.you_are_not_a_member_of_this_group
 				));
 			} else if (getOtherMemberCount(groupModel) <= 0 && !allowEmpty) {
 				// Don't allow sending in empty groups (except allowEmpty is true)
 				groupAccessModel.setCanReceiveMessageAccess(new Access(
-						false,
-						R.string.can_not_send_no_group_members
+					false,
+					R.string.can_not_send_no_group_members
 				));
 
 				groupAccessModel.setCanSendMessageAccess(new Access(
-						false,
-						R.string.can_not_send_no_group_members
+					false,
+					R.string.can_not_send_no_group_members
 				));
 			}
 		}
@@ -1510,13 +1377,15 @@ public class GroupServiceImpl implements GroupService {
 				this.groupModelCache.remove(groupModel.getId());
 			}
 
-			ListenerManager.groupListeners.handle(new ListenerManager.HandleListener<GroupListener>() {
-				@Override
-				public void handle(GroupListener listener) {
-					listener.onUpdate(groupModel);
-				}
-			});
+			ListenerManager.groupListeners.handle(listener -> listener.onUpdate(groupModel));
 		}
+	}
+
+	@Override
+	public void bumpLastUpdate(@NonNull GroupModel groupModel) {
+		groupModel.setLastUpdate(new Date());
+		save(groupModel);
+		ListenerManager.groupListeners.handle(listener -> listener.onUpdate(groupModel));
 	}
 
 	@Override
@@ -1524,10 +1393,9 @@ public class GroupServiceImpl implements GroupService {
 		return this.countMembers(groupModel) >= BuildConfig.MAX_GROUP_SIZE;
 	}
 
-	private void save(GroupModel model) {
-		this.databaseServiceNew.getGroupModelFactory().createOrUpdate(
-				model
-		);
+	@Override
+	public void save(@NonNull GroupModel model) {
+		this.databaseServiceNew.getGroupModelFactory().createOrUpdate(model);
 	}
 
 	@Override
@@ -1547,5 +1415,14 @@ public class GroupServiceImpl implements GroupService {
 		} else {
 			logger.debug("Received state change for non existent group {}", messageModel.getGroupId());
 		}
+	}
+
+	@NonNull
+	private TaskManager getTaskManager() {
+		if (taskManager == null) {
+			taskManager = serviceManager.getTaskManager();
+		}
+
+		return taskManager;
 	}
 }

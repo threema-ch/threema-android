@@ -62,7 +62,10 @@ object UrlUtil {
     )
 
     /**
-     * Checks if the hostname of a given Uri consists of a mix of different unicode scripts implying a possible phishing attempt through similar looking characters.
+     * Checks if the hostname of a given Uri consists of a mix of different unicode scripts implying
+     * a possible IDNA homograph attack (https://en.wikipedia.org/wiki/IDN_homograph_attack) through
+     * similar looking characters.
+     *
      * Additionally, all the characters of the hostname must be valid unicode identifiers per UTS 39.
      * The script mixing rules apply for each domain label (component) separately.
      *
@@ -70,11 +73,11 @@ object UrlUtil {
      * @see <a href="https://chromium.googlesource.com/chromium/src/+/main/docs/idn.md">Chromium IDN</a>
      * @see <a href="https://wiki.mozilla.org/IDN_Display_Algorithm#Algorithm">Mozilla IDN Display Algorithm</a>
      *
-     * @param uri Uri to check
-     * @return true if hostname consists of either ascii or non-ascii characters only, false in case of a mix of ascii and non-ascii chars or if hostname is empty
+     * @param uri URI to check
+     * @return true if URI seems safe, false if it might be problematic
      */
     @JvmStatic
-    fun isLegalUri(uri: Uri): Boolean {
+    fun isSafeUri(uri: Uri): Boolean {
         val host = uri.host
 
         if (host.isNullOrEmpty()) {

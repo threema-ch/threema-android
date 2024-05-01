@@ -25,6 +25,7 @@ import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.sfu.ParticipantId
 import ch.threema.app.voip.groupcall.sfu.SfuException
 import ch.threema.app.voip.groupcall.sfu.webrtc.ParticipantCallMediaKeyState
+import ch.threema.base.utils.SecureRandomUtil.generateRandomProtobufPadding
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.groupcall.ParticipantToParticipant
 import ch.threema.protobuf.groupcall.ParticipantToSfu
@@ -60,7 +61,7 @@ sealed interface Handshake {
                 .build()
             return ParticipantToParticipant.Handshake.HelloEnvelope.newBuilder()
                 .setHello(hello)
-                .setPadding(createRandomPadding())
+                .setPadding(generateRandomProtobufPadding())
                 .build()
                 .toByteArray()
         }
@@ -123,7 +124,7 @@ sealed interface Handshake {
 
             return ParticipantToParticipant.Handshake.AuthEnvelope.newBuilder()
                 .setAuth(auth)
-                .setPadding(createRandomPadding())
+                .setPadding(generateRandomProtobufPadding())
                 .build()
                 .toByteArray()
         }
@@ -155,7 +156,7 @@ sealed class P2PMessageContent {
 
     fun toProtobufEnvelope(): ParticipantToParticipant.Envelope {
         return wrap(ParticipantToParticipant.Envelope.newBuilder())
-            .setPadding(createRandomPadding())
+            .setPadding(generateRandomProtobufPadding())
             .build()
     }
 

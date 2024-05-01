@@ -118,8 +118,6 @@ public static <fields>;
 # "Warning: org.webrtc.SoftwareVideoDecoderFactory: can't find referenced class org.webrtc.LibvpxVp8Decoder"
 -dontwarn org.webrtc.**
 
-
-
 # hms requirements
 -ignorewarnings
 -keep class com.huawei.updatesdk.**{*;}
@@ -230,3 +228,4 @@ public static <fields>;
 -dontwarn org.conscrypt.**
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
+

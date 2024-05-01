@@ -325,8 +325,8 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 						"\n---\n" +
 						caption +
 						"\n---\n" +
-						ConfigUtils.getSupportDeviceInfo(WebDiagnosticsActivity.this) + "\n" +
-						"Threema " + ConfigUtils.getAppVersion(WebDiagnosticsActivity.this) + "\n" +
+						ConfigUtils.getSupportDeviceInfo() + "\n" +
+						"Threema " + ConfigUtils.getAppVersion() + "\n" +
 						getMyIdentity(), messageReceiver);
 					Toast.makeText(getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
 					finish();
@@ -918,7 +918,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 	}
 
 	@Override
-	public void onYes(String tag, String text) {
+	public void onYes(@NonNull String tag, @NonNull String text) {
 		if (DIALOG_TAG_SEND_VOIP_DEBUG.equals(tag)) {
 			sendToSupport(text);
 		}

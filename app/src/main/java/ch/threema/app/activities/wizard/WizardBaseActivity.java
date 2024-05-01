@@ -22,6 +22,7 @@
 package ch.threema.app.activities.wizard;
 
 import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.protocol.ApplicationSetupStepsKt.runApplicationSetupSteps;
 
 import android.Manifest;
 import android.accounts.Account;
@@ -44,8 +45,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.viewpager.widget.ViewPager;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -72,7 +71,6 @@ import ch.threema.app.fragments.wizard.WizardFragment3;
 import ch.threema.app.fragments.wizard.WizardFragment4;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
-import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
@@ -89,7 +87,8 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
-import ch.threema.app.workers.IdentityStatesWorker;
+import ch.threema.app.utils.executor.BackgroundExecutor;
+import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkEmailException;
@@ -117,6 +116,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	private static final String DIALOG_TAG_PASSWORD_BAD = "pwb";
 	private static final String DIALOG_TAG_SYNC_CONTACTS_ENABLE = "scen";
 	private static final String DIALOG_TAG_SYNC_CONTACTS_MDM_ENABLE_RATIONALE = "scmer";
+	private static final String DIALOG_TAG_APPLICATION_SETUP_RETRY = "app-setup-retry";
 
 	private static final int PERMISSION_REQUEST_READ_CONTACTS = 2;
 	private static final int NUM_PAGES = 5;
@@ -143,6 +143,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	private ThreemaSafeService threemaSafeService;
 	private boolean errorRaised = false, isNewIdentity = false;
 	private WizardFragment4 fragment4;
+	private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
 	private final Handler finishHandler = new Handler();
 	private final Handler dialogHandler = new Handler();
@@ -702,6 +703,9 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 			case DIALOG_TAG_SYNC_CONTACTS_MDM_ENABLE_RATIONALE:
 				requestContactSyncPermission();
 				break;
+			case DIALOG_TAG_APPLICATION_SETUP_RETRY:
+				runApplicationSetupStepsAndRestart();
+				break;
 		}
 	}
 
@@ -914,23 +918,42 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 		}.execute();
 	}
 
-	private void finishAndRestart() {
-		preferenceService.setWizardRunning(false);
-		preferenceService.setLatestVersion(this);
-
-		addUser(ThreemaApplication.ECHO_USER_IDENTITY, "Echo", "Test");
-
-		// flush conversation cache (after a restore)
-		try {
-			ConversationService conversationService = serviceManager.getConversationService();
-			if (conversationService != null) {
-				conversationService.reset();
+	private void runApplicationSetupStepsAndRestart() {
+		backgroundExecutor.execute(new BackgroundTask<Boolean>() {
+			@Override
+			public void runBefore() {
+				// Nothing to do
 			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
 
-		ConfigUtils.recreateActivity(this);
+			@Override
+			public Boolean runInBackground() {
+				return runApplicationSetupSteps(serviceManager, WizardBaseActivity.this);
+			}
+
+			@Override
+			public void runAfter(Boolean result) {
+				if (!Boolean.TRUE.equals(result)) {
+					WizardDialog.newInstance(R.string.application_setup_steps_failed, R.string.retry)
+						.show(getSupportFragmentManager(), DIALOG_TAG_APPLICATION_SETUP_RETRY);
+					return;
+				}
+
+				preferenceService.setWizardRunning(false);
+				preferenceService.setLatestVersion(WizardBaseActivity.this);
+
+				addUser(ThreemaApplication.ECHO_USER_IDENTITY, "Echo", "Test");
+
+				// Flush conversation cache (after a restore) to ensure that the conversation list
+				// will be loaded from the database to prevent the list being incomplete.
+				try {
+					serviceManager.getConversationService().reset();
+				} catch (Exception e) {
+					logger.error("Exception", e);
+				}
+
+				ConfigUtils.recreateActivity(WizardBaseActivity.this);
+			}
+		});
 	}
 
 	private void ensureMasterKeyWrite() {
@@ -996,8 +1019,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 
 				@Override
 				protected void onPostExecute(Void result) {
-					startIdentityStatesSync();
-
 					finishHandler.removeCallbacks(finishTask);
 					finishHandler.postDelayed(finishTask, FINISH_DELAY);
 				}
@@ -1035,7 +1056,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 						Toast.makeText(WizardBaseActivity.this, R.string.safe_error_preparing, Toast.LENGTH_LONG).show();
 					}
 
-					finishAndRestart();
+					runApplicationSetupStepsAndRestart();
 				}
 			}.execute();
 		} else {
@@ -1044,7 +1065,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 			if (!(ConfigUtils.isWorkRestricted() && ThreemaSafeMDMConfig.getInstance().isBackupForced())) {
 				threemaSafeService.storeMasterKey(new byte[0]);
 			}
-			finishAndRestart();
+			runApplicationSetupStepsAndRestart();
 		}
 	}
 
@@ -1065,13 +1086,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 		}
 	}
 
-	private void startIdentityStatesSync() {
-		OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(IdentityStatesWorker.class)
-				.build();
-
-		WorkManager.getInstance(this).enqueue(workRequest);
-	}
-
 	private void syncContactsAndFinish() {
 		/* trigger a connection now - as application lifecycle was set to resumed state when there was no identity yet */
 		serviceManager.getLifetimeService().ensureConnection();
@@ -1081,7 +1095,6 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 			reallySyncContactsAndFinish();
 		} else {
 			preferenceService.setSyncContacts(false);
-			startIdentityStatesSync();
 			prepareThreemaSafe();
 		}
 	}

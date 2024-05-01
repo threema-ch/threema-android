@@ -22,12 +22,10 @@
 package ch.threema.app.utils;
 
 import java.security.SecureRandom;
-import java.util.Random;
 
 import ch.threema.app.voip.util.UnsignedHelper;
 
 public class RandomUtil {
-	private final static Random insecureRandom = new Random();
 	private final static SecureRandom secureRandom = new SecureRandom();
 
 	/**
@@ -45,20 +43,5 @@ public class RandomUtil {
 	 */
 	public static long generateRandomU32() {
 		return UnsignedHelper.getUnsignedInt(secureRandom.nextInt());
-	}
-
-	/**
-	 * Generate a NON-CRYPTOGRAPHICALLY-SECURE random ASCII string.
-	 */
-	public static String generateInsecureRandomAsciiString(int length) {
-		final int leftLimit = 97; // letter 'a'
-		final int rightLimit = 122; // letter 'z'
-		final int targetStringLength = 10;
-		StringBuilder buffer = new StringBuilder(targetStringLength);
-		for (int i = 0; i < length; i++) {
-			int randomLimitedInt = leftLimit + insecureRandom.nextInt(rightLimit - leftLimit + 1);
-			buffer.append((char) randomLimitedInt);
-		}
-		return buffer.toString();
 	}
 }

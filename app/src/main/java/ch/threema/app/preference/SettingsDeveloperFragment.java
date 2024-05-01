@@ -33,7 +33,9 @@ import java.util.Date;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
@@ -41,6 +43,7 @@ import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
@@ -48,7 +51,7 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.MessageId;
-import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
+import ch.threema.domain.protocol.csp.messages.TextMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
@@ -69,12 +72,16 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 	private ContactService contactService;
 	private MessageService messageService;
 	private UserService userService;
+	private MultiDeviceManager multiDeviceManager;
 
 	@Override
 	public void initializePreferences() {
 		if (!requiredInstances()) {
 			return;
 		}
+
+		initMdSetting();
+		initConversationSetting();
 
 		// Generate VoIP messages
 		final Preference generateVoipPreference = getPref(getResources().getString(R.string.preferences__generate_voip_messages));
@@ -201,7 +208,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 
 					// Create recursive quote
 					final MessageId messageIdRecursive = new MessageId();
-					BoxTextMessage messageRecursive = new BoxTextMessage();
+					TextMessage messageRecursive = new TextMessage();
 					messageRecursive.setFromIdentity(contact1.getIdentity());
 					messageRecursive.setToIdentity(userService.getIdentity());
 					messageRecursive.setDate(new Date());
@@ -212,14 +219,14 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 					// Create cross-chat quote
 					final MessageId messageIdCrossChat1 = new MessageId();
 					final MessageId messageIdCrossChat2 = new MessageId();
-					BoxTextMessage messageChat2 = new BoxTextMessage();
+					TextMessage messageChat2 = new TextMessage();
 					messageChat2.setFromIdentity(contact2.getIdentity());
 					messageChat2.setToIdentity(userService.getIdentity());
 					messageChat2.setDate(new Date());
 					messageChat2.setMessageId(messageIdCrossChat2);
 					messageChat2.setText("hello, this is a secret message");
 					messageService.processIncomingContactMessage(messageChat2);
-					BoxTextMessage messageChat1 = new BoxTextMessage();
+					TextMessage messageChat1 = new TextMessage();
 					messageChat1.setFromIdentity(contact1.getIdentity());
 					messageChat1.setToIdentity(userService.getIdentity());
 					messageChat1.setDate(new Date());
@@ -259,6 +266,19 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 		return true;
 	}
 
+	private void initMdSetting() {
+		CheckBoxPreference preference = getPref(R.string.preferences__md_unlocked);
+		preference.setEnabled(multiDeviceManager.isMultiDeviceActive() || preferenceService.isMdUnlocked() || BuildConfig.MD_ENABLED);
+		preference.setOnPreferenceChangeListener((p, v) -> {
+			p.setEnabled((boolean)v || BuildConfig.MD_ENABLED);
+			return true;
+		});
+	}
+
+	private void initConversationSetting() {
+		CheckBoxPreference preference = getPref(R.string.preferences__show_last_update_prefix);
+	}
+
 	final protected boolean requiredInstances() {
 		if (!this.checkInstances()) {
 			this.instantiate();
@@ -272,7 +292,8 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 			this.databaseService,
 			this.contactService,
 			this.messageService,
-			this.userService
+			this.userService,
+			this.multiDeviceManager
 		);
 	}
 
@@ -285,6 +306,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
 				this.contactService = serviceManager.getContactService();
 				this.messageService = serviceManager.getMessageService();
 				this.userService = serviceManager.getUserService();
+				this.multiDeviceManager = serviceManager.getMultiDeviceManager();
 			} catch (Exception e) {
 				logger.error("Exception", e);
 			}

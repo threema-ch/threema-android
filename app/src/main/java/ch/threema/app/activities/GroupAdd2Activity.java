@@ -31,6 +31,7 @@ import android.widget.Toast;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.util.Set;
 
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
@@ -76,7 +77,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 		}
 	}
 
-	private void createGroup(final String groupName, final String[] groupIdentities, final File avatarFile) {
+	private void createGroup(final String groupName, final Set<String> groupIdentities, final File avatarFile) {
 		new AsyncTask<Void, Void, GroupModel>() {
 			@Override
 			protected void onPreExecute() {
@@ -126,7 +127,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 
 	@Override
 	public void onYes(String tag, String text1, String text2, File avatarFile) {
-		createGroup(text1, this.groupIdentities, avatarFile);
+		createGroup(text1, Set.of(this.groupIdentities), avatarFile);
 	}
 
 	@Override

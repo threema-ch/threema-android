@@ -65,7 +65,6 @@
     <string name="prefs_inapp_vibrate">Alkalmazáson belüli rezgés</string>
     <string name="prefs_inapp_vibrate_on">Rezgés üzenetek fogadásakor</string>
     <string name="prefs_inapp_vibrate_off">Nincs rezgés az üzenetek fogadásakor</string>
-    <string name="workarounds">Megoldások</string>
     <string name="prefs_logging">Naplózás</string>
     <string name="prefs_title_message_log_switch">Fájlba naplózás</string>
     <string name="prefs_title_sum_message_log_on">Az események és a hálózati információk a debug_log.txt fájlba lesznek naplózva</string>
@@ -1062,7 +1061,6 @@
     <string name="prefs_working_days_enable_title">Pihenőidő-politika</string>
     <string name="prefs_working_days_enable_sum">Ne jelenítsen meg értesítéseket és utasítsa el a Threema hívásokat munkaidőn kívül</string>
     <string name="work_life_dnd_active">Pihenőidő aktív</string>
-    <string name="pencil">Ceruza</string>
     <string name="warning">Figyelmeztetés</string>
     <string name="password_remember_warning">Ne feledje, mit ír be ide! Mivel a %s nem tárolja a jelszavakat a kiszolgálón, nem tudunk segíteni, ha elfelejtette a PIN-kódot vagy a jelszót.</string>
     <string name="safe_backup_tap_to_restart">Kattintson a megjelenő rendszerértesítésre az alkalmazás újraindításához. Ha nem látja az értesítést, kérjük húzza le a telefonján az értesítési sávot.</string>
@@ -1085,7 +1083,6 @@
     <string name="tooltip_voip_turn_on_camera">Kattintson ide a kamera bekapcsolásához</string>
     <string name="prefs_videocall_profile_explain">A tényleges képminőség a hálózattól és a másik fél beállításaitól függ</string>
     <string name="permission_camera_videocall_required">Aktiválja a kamera engedélyt a videóhívásokhoz</string>
-    <string name="feedback">Visszajelzés</string>
     <string name="tooltip_voip_enable_speakerphone">Kattintson ide a beszélgetés kihangosításához</string>
     <string name="ballot_open">Nyílt szavazások</string>
     <string name="translators">Fordítók</string>
@@ -1149,6 +1146,7 @@
     <string name="notes">Megjegyzések</string>
     <string name="blur_faces">Arcok elmosása</string>
     <string name="brush">Ecset</string>
+    <string name="pencil">Ceruza</string>
     <string name="error_detecting_faces">Hiba történt az arcfelismerés során</string>
     <string name="no_faces_detected">Nem találtunk arcokat</string>
     <string name="smiley">Smiley</string>
@@ -1222,7 +1220,11 @@
     <string name="group_link_rename">Hivatkozás átnevezése</string>
     <string name="group_link_rename_tag">Új név</string>
     <string name="tap_here_for_more">További információért kattintson ide</string>
-    <string name="another_connection_instructions"><![CDATA[A kiszolgáló két vagy több különböző eszközről származó, azonos Threema ID-vel rendelkező kapcsolatot észlelt.<br><br>Egy Threema ID-t nem lehet egyszerre több eszközön használni. Az új üzenetek csak arra az eszközre kézbesülnek, amelyik legutóbb bejelentkezett a kiszolgálóra.<br><br>Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a régi eszközön, majd indítsa újra az új eszközt.]]></string>
+    <string name="another_connection_instructions"><![CDATA[A kiszolgáló két vagy több különböző eszközről származó, azonos Threema ID-vel rendelkező kapcsolatot észlelt.
+
+Egy Threema ID-t nem lehet egyszerre több eszközön használni. Az új üzenetek csak arra az eszközre kézbesülnek, amelyik legutóbb bejelentkezett a kiszolgálóra.
+
+Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a régi eszközön, majd indítsa újra az új eszközt.]]></string>
     <string name="app_store_error_code">App Store hibakód: %d</string>
     <string name="backup_restore_type"><![CDATA[Milyen típusú másolatot szeretne visszaállítani? <br/><br/> <a href=%s>Tudjon meg többet a Threema biztonsági mentésekről</a>]]></string>
     <string name="data_backup_info">Mindent visszaállít, csevegésekkel</string>

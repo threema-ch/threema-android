@@ -26,17 +26,17 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class FSDatabaseUpgradeToVersion2(
     private val sqLiteDatabase: SQLiteDatabase
-): UpdateToVersion(), UpdateSystemService.SystemUpdate {
+): UpdateSystemService.SystemUpdate {
 
     companion object {
         const val VERSION = 2
     }
 
-    override fun runASync() = true
+    override fun runAsync() = true
 
     override fun runDirectly(): Boolean {
         // Create negotiated version column with default value 0x0100 (Version 1.0)
-        if (!this.fieldExist(sqLiteDatabase, "session", "negotiatedVersion")) {
+        if (!fieldExists(sqLiteDatabase, "session", "negotiatedVersion")) {
             sqLiteDatabase.rawExecSQL("ALTER TABLE session ADD COLUMN negotiatedVersion INTEGER DEFAULT 256")
         }
         return true

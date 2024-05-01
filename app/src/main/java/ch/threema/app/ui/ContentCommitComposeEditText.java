@@ -135,7 +135,7 @@ public class ContentCommitComposeEditText extends ComposeEditText {
 							mediaItem.setCaption(caption);
 							mediaItem.setMimeType(mimeType);
 							mediaItem.setRenderingType(
-								MimeUtil.MIME_TYPE_IMAGE_JPG.equalsIgnoreCase(mimeType) ?
+								MimeUtil.MIME_TYPE_IMAGE_JPEG.equalsIgnoreCase(mimeType) ?
 								FileData.RENDERING_MEDIA :
 								FileData.RENDERING_STICKER);
 							messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));

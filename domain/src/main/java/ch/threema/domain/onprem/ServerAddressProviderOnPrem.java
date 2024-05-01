@@ -21,6 +21,9 @@
 
 package ch.threema.domain.onprem;
 
+import java.util.Objects;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.ServerAddressProvider;
@@ -138,6 +141,23 @@ public class ServerAddressProviderOnPrem implements ServerAddressProvider {
 	public byte[] getThreemaPushPublicKey() throws ThreemaException {
 		// TODO(ONPREM-164): Allow to configure for OnPrem
 		return null;
+	}
+
+	@NonNull
+	@Override
+	public String getMediatorUrl() throws ThreemaException {
+		OnPremConfigMediator onPremConfigMediator = getOnPremConfigFetcher().fetch().getMediatorConfig();
+
+		if (onPremConfigMediator == null) {
+			throw new ThreemaException("No mediator config available");
+		}
+		return Objects.requireNonNull(onPremConfigMediator.getUrl());
+	}
+
+	@NonNull
+	@Override
+	public String getAppRatingUrl() throws ThreemaException {
+		throw new ThreemaException("App rating is not supported in onprem");
 	}
 
 	private OnPremConfigFetcher getOnPremConfigFetcher() throws ThreemaException {

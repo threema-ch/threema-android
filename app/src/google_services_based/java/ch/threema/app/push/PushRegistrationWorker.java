@@ -83,7 +83,7 @@ public class PushRegistrationWorker extends Worker {
 					logger.info("Received FCM registration token");
 					String error = null;
 					try {
-						PushUtil.sendTokenToServer(appContext, token, ProtocolDefines.PUSHTOKEN_TYPE_GCM);
+						PushUtil.sendTokenToServer(token, ProtocolDefines.PUSHTOKEN_TYPE_FCM);
 					} catch (ThreemaException e) {
 						logger.error("Exception", e);
 						error = e.getMessage();

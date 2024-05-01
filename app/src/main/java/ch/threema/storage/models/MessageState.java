@@ -36,6 +36,13 @@ public enum MessageState {
 	TRANSCODING,
 
 	/**
+	 * Media is being uploaded. Note that this state is used between transcoding and sending. As
+	 * soon as a task to send the message is created and persisted, the state must be updated to
+	 * sending. Only use this state for file messages.
+	 */
+	UPLOADING,
+
+	/**
 	 * Message is being sent, but was not yet ACKed by the server.
 	 */
 	SENDING,

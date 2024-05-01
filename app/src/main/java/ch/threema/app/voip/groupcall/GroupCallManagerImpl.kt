@@ -26,7 +26,9 @@ import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.*
+import ch.threema.app.tasks.OutgoingGroupCallStartTask
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.activities.GroupCallActivity
@@ -44,6 +46,7 @@ import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData.Companion.GCK_LENGTH
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
+import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.storage.DatabaseServiceNew
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
@@ -63,12 +66,12 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallManagerImpl")
 @WorkerThread
 class GroupCallManagerImpl(
 	private val context: Context,
+	private val serviceManager: ServiceManager,
 	private val databaseService: DatabaseServiceNew,
 	private val groupService: GroupService,
 	private val contactService: ContactService,
 	private val preferenceService: PreferenceService,
 	private val messageService: MessageService,
-	private val groupMessagingService: GroupMessagingService,
 	private val notificationService: NotificationService,
 	private val sfuConnection: SfuConnection
 ) : GroupCallManager {
@@ -280,29 +283,46 @@ class GroupCallManagerImpl(
 	}
 
 	@AnyThread
-	override fun sendGroupCallStartToNewMembers(groupModel: GroupModel, newMembers: List<String>) {
-		if (newMembers.isEmpty()) {
-			return
-		}
-		CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
-			val groupCallDescription = getChosenCall(groupModel.localGroupId) ?: return@launch
-			val startData = try {
-				GroupCallStartData(
-					ProtocolDefines.GC_PROTOCOL_VERSION.toUInt(),
-					groupCallDescription.gck,
-					groupCallDescription.sfuBaseUrl
-				)
-			} catch (e: IllegalArgumentException) {
-				logger.warn("Could not create call start data", e)
-				null
-			}
-			if (startData == null) {
-				logger.warn("Could not send group call start to new members")
-			} else {
-				sendGroupCallStartMessage(groupModel, startData, groupCallDescription.getStartedAtDate(), newMembers.toTypedArray())
-			}
-		}
+	override fun sendGroupCallStartToNewMembers(groupModel: GroupModel, newMembers: Set<String>, handle: ActiveTaskCodec) {
+        scheduleOrSendGroupCallStartToNewMembers(groupModel, newMembers, handle)
 	}
+
+    @AnyThread
+    override fun scheduleGroupCallStartForNewMembers(groupModel: GroupModel, newMembers: Set<String>) {
+        scheduleOrSendGroupCallStartToNewMembers(groupModel, newMembers, null)
+    }
+
+    /**
+     * Schedule or send the group call start message based on whether the task codec is null or not.
+     */
+    @AnyThread
+    private fun scheduleOrSendGroupCallStartToNewMembers(groupModel: GroupModel, newMembers: Set<String>, handle: ActiveTaskCodec?) {
+        if (newMembers.isEmpty()) {
+            return
+        }
+        CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+            val groupCallDescription = getChosenCall(groupModel.localGroupId) ?: return@launch
+            val startData = try {
+                GroupCallStartData(
+                    ProtocolDefines.GC_PROTOCOL_VERSION.toUInt(),
+                    groupCallDescription.gck,
+                    groupCallDescription.sfuBaseUrl
+                )
+            } catch (e: IllegalArgumentException) {
+                logger.warn("Could not create call start data", e)
+                null
+            }
+            if (startData == null) {
+                logger.warn("Could not send group call start to new members")
+            } else {
+                if (handle != null) {
+                    sendGroupCallStartMessage(groupModel, startData, groupCallDescription.getStartedAtDate(), newMembers, handle)
+                } else {
+                    scheduleGroupCallStartMessage(groupModel, startData, groupCallDescription.getStartedAtDate(), newMembers)
+                }
+            }
+        }
+    }
 
 	override fun updateAllowedCallParticipants(groupModel: GroupModel) {
 		logger.debug("Update allowed call participants")
@@ -426,7 +446,7 @@ class GroupCallManagerImpl(
 			callController.confirmCall()
 		}
 
-		sendGroupCallStartMessage(group, callStartData, callDescription.getStartedAtDate(), null)
+		scheduleGroupCallStartMessage(group, callStartData, callDescription.getStartedAtDate(), null)
 		sendCallInitAsText(callId, group, callStartData)
 
 		addRunningCall(callDescription)
@@ -439,6 +459,8 @@ class GroupCallManagerImpl(
 				true,
 				callDescription.getStartedAtDate()
 		)
+
+		groupService.bumpLastUpdate(group)
 
 		return callController
 	}
@@ -558,6 +580,8 @@ class GroupCallManagerImpl(
 					isOutbox,
 					message.date)
 		}
+
+		groupService.bumpLastUpdate(group)
 
 		notifyGroupCallStart(group, callerContactModel)
 	}
@@ -715,32 +739,69 @@ class GroupCallManagerImpl(
 	 * set. This method assumes that the feature masks are updated and therefore does not fetch the
 	 * newest feature masks from the server.
 	 *
-	 * The same create date is used for all messages. If a call is already running, then the call
-	 * duration is subtracted from current time to match the original created at from the first
-	 * group call start message.
-	 *
-	 * @param group the group model where the group call message is sent to
-	 * @param data the group call start data
-	 * @param sendTo the list of identities who receive the message; if null it is sent to all group members
+	 * @param group     the group model where the group call message is sent to
+	 * @param data      the group call start data
+     * @param startedAt the time when the group call has been started
+	 * @param sendTo    the list of identities who receive the message
+     * @param handle    the active task codec used to send the message
 	 */
 	@WorkerThread
-	private fun sendGroupCallStartMessage(group: GroupModel, data: GroupCallStartData, startedAt: Date, sendTo: Array<String>?) {
+	private suspend fun sendGroupCallStartMessage(group: GroupModel, data: GroupCallStartData, startedAt: Date, sendTo: Collection<String>, handle: ActiveTaskCodec) {
 		GroupCallThreadUtil.assertDispatcherThread()
 
 		logger.debug("Send group call start message")
-		val identities = (sendTo ?: groupService.getGroupIdentities(group))
-			.filter { identity -> contactService.getByIdentity(identity)?.let { ThreemaFeature.canGroupCalls(it.featureMask) } ?: false }
-			.toTypedArray()
+		val identities =
+			sendTo
+                .filter { identity -> contactService.getByIdentity(identity)?.let { ThreemaFeature.canGroupCalls(it.featureMask) } ?: false }
+                .toTypedArray()
+				.toSet()
 
-		// TODO(ANDR-1766): Created at should most likely be injected in GroupMessagingService#sendMessage
-		val createdAt = startedAt
-		val count = groupMessagingService.sendMessage(group, identities) {
-			GroupCallStartMessage(data).apply {
-				date = createdAt
-				messageId = it }
-		}
-		logger.trace("{} group call start messages sent", count)
+        OutgoingGroupCallStartTask(
+            group.apiGroupId,
+            group.creatorIdentity,
+            identities,
+            data.protocolVersion,
+            data.gck,
+            data.sfuBaseUrl,
+            startedAt,
+            serviceManager
+        ).invoke(handle)
 	}
+
+    /**
+     * Schedule a task that creates a GroupCallStartMessage and sends it to the given group members.
+     * Note that the GroupCallStartMessage is never sent to group members where the group call
+     * feature mask is not set. This method assumes that the feature masks are updated and therefore
+     * does not fetch the newest feature masks from the server.
+     *
+     * @param group     the group model where the group call message is sent to
+     * @param data      the group call start data
+     * @param startedAt the time when the group call has been started
+     * @param sendTo    the members that should receive the group call; if null it is sent to all group members
+     */
+    @WorkerThread
+    private fun scheduleGroupCallStartMessage(group: GroupModel, data: GroupCallStartData, startedAt: Date, sendTo: Collection<String>?) {
+        GroupCallThreadUtil.assertDispatcherThread()
+
+        logger.debug("Schedule group call start message")
+        val identities = (sendTo?.toTypedArray() ?: groupService.getGroupIdentities(group))
+            .filter { identity -> contactService.getByIdentity(identity)?.let { ThreemaFeature.canGroupCalls(it.featureMask) } ?: false }
+            .toTypedArray()
+			.toSet()
+
+        serviceManager.taskManager.schedule(
+            OutgoingGroupCallStartTask(
+                group.apiGroupId,
+                group.creatorIdentity,
+                identities,
+                data.protocolVersion,
+                data.gck,
+                data.sfuBaseUrl,
+                startedAt,
+                serviceManager
+            )
+        )
+    }
 
 	@WorkerThread
 	private fun sendCallInitAsText(callId: CallId, group: GroupModel, callStartData: GroupCallStartData) {

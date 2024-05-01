@@ -98,8 +98,9 @@ public class Contact extends Converter {
 			builder.put(IDENTITY_TYPE, contact.getIdentityType() == IdentityType.WORK ? 1 : 0);
 			builder.put(IS_BLOCKED, getBlackListService().has(contact.getIdentity()));
 
-			final int featureMask = contact.getFeatureMask();
+			final long featureMask = contact.getFeatureMask();
 			builder.put(FEATURE_MASK, featureMask);
+			// TODO(ANDR-2708): Remove
 			builder.put(FEATURE_LEVEL, ThreemaFeature.featureMaskToLevel(featureMask));
 
 			boolean isSecretChat = getHiddenChatListService().has(getContactService().getUniqueIdString(contact));
@@ -254,7 +255,7 @@ public class Contact extends Converter {
 			}
 
 			@Override
-			public Integer requiredFeature() {
+			public Long requiredFeature() {
 				return null;
 			}
 

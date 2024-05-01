@@ -161,7 +161,7 @@ public class MessageUtil {
 			&& message.getState() != MessageState.CONSUMED
 			&& (message.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE ||
 				message.getMessageContentsType() == MessageContentsType.AUDIO )
-			&& (message.getState() == null || canChangeToState(message.getState(), MessageState.CONSUMED, message.isOutbox()));
+			&& (message.getState() == null || canChangeToState(message.getState(), MessageState.CONSUMED, message instanceof GroupMessageModel));
 	}
 
 	/**
@@ -343,10 +343,10 @@ public class MessageUtil {
 	 * Check if a MessageState change from fromState to toState is allowed
 	 * @param fromState State from which a state change is requested
 	 * @param toState State to which a state change is requested
-	 * @param isOutbox true, if it's an outgoing message
+	 * @param isGroupMessage true, if it's a group message
 	 * @return true if a state change is allowed, false otherwise
 	 */
-	public static boolean canChangeToState(@Nullable MessageState fromState, @Nullable MessageState toState, boolean isOutbox) {
+	public static boolean canChangeToState(@Nullable MessageState fromState, @Nullable MessageState toState, boolean isGroupMessage) {
 		if (fromState == null || toState == null) {
 			//invalid data
 			return false;
@@ -373,7 +373,8 @@ public class MessageUtil {
 			case SENDFAILED:
 				return fromState == MessageState.SENDING
 						|| fromState == MessageState.PENDING
-						|| fromState == MessageState.TRANSCODING;
+						|| fromState == MessageState.TRANSCODING
+					    || fromState == MessageState.UPLOADING;
 			case FS_KEY_MISMATCH:
 				return fromState == MessageState.SENDING
 						|| fromState == MessageState.PENDING
@@ -384,7 +385,8 @@ public class MessageUtil {
 						|| fromState == MessageState.SENDFAILED
 						|| fromState == MessageState.FS_KEY_MISMATCH
 						|| fromState == MessageState.PENDING
-						|| fromState == MessageState.TRANSCODING;
+						|| fromState == MessageState.TRANSCODING
+					    || fromState == MessageState.UPLOADING;
 			case USERACK:
 				return true;
 			case USERDEC:
@@ -394,12 +396,18 @@ public class MessageUtil {
 					&& fromState != MessageState.USERDEC;
 			case PENDING:
 				return fromState == MessageState.SENDFAILED
-						|| fromState == MessageState.FS_KEY_MISMATCH;
+						|| (fromState == MessageState.FS_KEY_MISMATCH && !isGroupMessage);
 			case SENDING:
 				return fromState == MessageState.SENDFAILED
-						|| fromState == MessageState.FS_KEY_MISMATCH
+						|| (fromState == MessageState.FS_KEY_MISMATCH && !isGroupMessage)
 						|| fromState == MessageState.PENDING
-						|| fromState == MessageState.TRANSCODING;
+						|| fromState == MessageState.TRANSCODING
+					    || fromState == MessageState.UPLOADING;
+			case UPLOADING:
+				return fromState == MessageState.SENDFAILED
+					|| fromState == MessageState.FS_KEY_MISMATCH
+					|| fromState == MessageState.PENDING
+					|| fromState == MessageState.TRANSCODING;
 			default:
 				logger.debug("message state {} not handled", toState);
 				return false;
@@ -712,7 +720,7 @@ public class MessageUtil {
 								}
 
 								return new MessageViewElement(
-									R.drawable.ic_group_call,
+									R.drawable.ic_phone_locked_outline,
 									context.getString(R.string.voip_gc_call_started),
 									body,
 									null,
@@ -720,7 +728,7 @@ public class MessageUtil {
 								);
 							case GroupCallStatusDataModel.STATUS_ENDED:
 								return new MessageViewElement(
-									R.drawable.ic_group_call,
+									R.drawable.ic_phone_locked_outline,
 									context.getString(R.string.voip_gc_call_ended),
 									context.getString(R.string.voip_gc_call_ended),
 									null,
@@ -798,6 +806,16 @@ public class MessageUtil {
 									null,
 									null
 								);
+							// TODO(ANDR-2519): Can this be removed when md supports fs? Only if this
+							//  type has never been stored to the database
+							case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED:
+								return new MessageViewElement(
+									R.drawable.ic_baseline_key_off_24,
+									context.getString(R.string.forward_security_disabled),
+									context.getString(R.string.forward_security_disabled),
+									null,
+									null
+								);
 							default:
 								return new MessageViewElement(
 									R.drawable.ic_baseline_key_24,
@@ -812,5 +830,19 @@ public class MessageUtil {
 			}
 		}
 		return new MessageViewElement(null, null, null, null, null);
+	}
+
+	/**
+	 * Check whether a file message is being sent. This includes the states PENDING, UPLOADING, and
+	 * SENDING. This method only returns true for outgoing messages. Note that for file messages
+	 * that are in state TRANSCODING this method returns false.
+	 */
+	public static boolean isFileMessageBeingSent(@NonNull AbstractMessageModel model) {
+		MessageState messageState = model.getState();
+		return model.isOutbox() && (
+			messageState == MessageState.PENDING ||
+				messageState == MessageState.UPLOADING ||
+				messageState == MessageState.SENDING
+		);
 	}
 }

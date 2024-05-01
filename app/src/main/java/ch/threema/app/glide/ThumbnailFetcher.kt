@@ -37,7 +37,6 @@ import com.bumptech.glide.load.data.DataFetcher
  * This class is used to get the thumbnails from the database or create placeholders. The results of the loaded bitmaps will be cached by glide (if possible).
  */
 class ThumbnailFetcher(
-    private val context: Context,
     private val messageModel: AbstractMessageModel,
     ) : DataFetcher<Bitmap> {
 

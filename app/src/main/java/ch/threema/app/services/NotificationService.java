@@ -70,6 +70,7 @@ public interface NotificationService {
 	String NOTIFICATION_CHANNEL_THREEMA_PUSH = "tpush";
 	String NOTIFICATION_CHANNEL_GROUP_CALL = "gcall"; // virtual notification channel used by wrapper
 	String NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER = "vmp";
+	String NOTIFICATION_CHANNEL_FORWARD_SECURITY = "fs";
 
 	String NOTIFICATION_CHANNELGROUP_CHAT = "group";
 	String NOTIFICATION_CHANNELGROUP_VOIP = "vgroup";
@@ -348,7 +349,22 @@ public interface NotificationService {
 	 */
 	void showNotEnoughDiskSpace(long availableSpace, long requiredSpace);
 
+	/**
+	 * Show a notification that a message could not be sent. Note that this is should not be used
+	 * for messages that were rejected because of forward security.
+	 *
+	 * @param failedMessages the failed message models
+	 */
 	void showUnsentMessageNotification(@NonNull List<AbstractMessageModel> failedMessages);
+
+	/**
+	 * Show a forward security message rejected notification for the given receiver. Note that for
+	 * every receiver only one notification is shown. If a notification is already shown, this call
+	 * has no effect. The notification remains visible until the user cancels (or clicks) it.
+	 */
+	void showForwardSecurityMessageRejectedNotification(
+		@NonNull MessageReceiver<?> messageReceiver
+	);
 
 	void showSafeBackupFailed(int numDays);
 

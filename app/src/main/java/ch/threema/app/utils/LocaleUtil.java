@@ -222,17 +222,6 @@ public class LocaleUtil {
 	) {
 		String localeOverride = preferenceService.getLocaleOverride();
 		if (localeOverride == null) {
-			// TODO(ANDR-2727)
-			// As soon as this workaround is not needed anymore, we can return if localeOverride is
-			// null without any further actions.
-			LocaleListCompat list = AppCompatDelegate.getApplicationLocales();
-			if (list.isEmpty() || (list.size() == 1 && list.get(0) != null && "".equals(list.get(0).getLanguage()))) {
-				// Note that this workaround is only needed to change the language to the system
-				// default for the users of the alpha and beta of 5.2 up to 5.2-beta2.
-				// Note that a new empty locale list must be created, otherwise the setting is not
-				// applied.
-				AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList());
-			}
 			return;
 		}
 

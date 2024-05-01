@@ -196,15 +196,22 @@ public interface PreferenceService {
 
 	boolean isPinCodeCorrect(String pinCode);
 
-	int getTransmittedFeatureLevel();
+	long getTransmittedFeatureMask();
 
-	void setTransmittedFeatureLevel(int featureLevel);
+	void setTransmittedFeatureMask(long featureMask);
+
+	long getLastFeatureMaskTransmission();
+
+	void setLastFeatureMaskTransmission(long timestamp);
 
 	@NonNull String[] getList(String listName);
 
 	@NonNull String[] getList(String listName, boolean encrypted);
 
 	void setList(String listName, String[] elements);
+
+	/* save list to preferences without triggering a listener */
+	void setListQuietly(String listName, String[] elements);
 
 	HashMap<Integer, String> getHashMap(String listName, boolean encrypted);
 
@@ -266,6 +273,15 @@ public interface PreferenceService {
 	int getLatestVersion();
 
 	void setLatestVersion(Context context);
+
+	/**
+	 * Check whether the app has been updated since the last check. Note that this returns true for
+	 * every app update. For the what's new dialog, we use {@link #getLatestVersion()}.
+	 * Note: This method can only be used once as it returns true only once per update. Currently,
+	 * it is used in {@link ch.threema.app.activities.HomeActivity} and must not be used anywhere
+	 * else.
+	 */
+	boolean checkForAppUpdate(@NonNull Context context);
 
 	boolean getFileSendInfoShown();
 
@@ -359,7 +375,7 @@ public interface PreferenceService {
 	boolean isWebClientEnabled();
 	void setWebClientEnabled(boolean enabled);
 
-	void setPushToken(String gcmToken);
+	void setPushToken(String fcmToken);
 	String getPushToken();
 
 	int getProfilePicRelease();
@@ -406,6 +422,12 @@ public interface PreferenceService {
 	 */
 	void setRejectMobileCalls(boolean value);
 
+	/**
+	 * This preference corresponds to the troubleshooting setting "IPv6 for messages"
+	 * @return true if ipv6 is enabled for messages, false otherwise
+	 */
+	boolean isIpv6Preferred();
+
 	boolean allowWebrtcIpv6();
 
 	int getNotificationPriority();
@@ -426,9 +448,6 @@ public interface PreferenceService {
 	Date getPrivacyPolicyAccepted();
 	void clearPrivacyPolicyAccepted();
 
-	float getPrivacyPolicyAcceptedVersion();
-	void  setPrivacyPolicyAcceptedVersion(float version);
-
 	boolean getIsGroupCallsTooltipShown();
 	void setGroupCallsTooltipShown(boolean shown);
 
@@ -444,8 +463,8 @@ public interface PreferenceService {
 	void setThreemaSafeMasterKey(byte[] masterKey);
 	byte[] getThreemaSafeMasterKey();
 
-	void setThreemaSafeServerInfo(ThreemaSafeServerInfo serverInfo);
-	ThreemaSafeServerInfo getThreemaSafeServerInfo();
+	void setThreemaSafeServerInfo(@Nullable ThreemaSafeServerInfo serverInfo);
+	@NonNull ThreemaSafeServerInfo getThreemaSafeServerInfo();
 
 	void setThreemaSafeUploadDate(Date date);
 	@Nullable
@@ -596,4 +615,8 @@ public interface PreferenceService {
 	void setTimeOfLastContactSync(long timeMs);
 
 	long getTimeOfLastContactSync();
+
+	boolean isMdUnlocked();
+
+	boolean showConversationLastUpdate();
 }

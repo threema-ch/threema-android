@@ -23,8 +23,6 @@ package ch.threema.base.crypto;
 import static org.mockito.Mockito.*;
 
 import ch.threema.base.ThreemaException;
-import ch.threema.base.crypto.NonceFactory;
-import ch.threema.base.crypto.NonceStoreInterface;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -61,7 +59,7 @@ public class NonceFactoryTest {
 
 	@Test
 	public void testNext() throws Exception {
-		NonceStoreInterface nonceStoreMock = mock(NonceStoreInterface.class);
+		NonceStore nonceStoreMock = mock(NonceStore.class);
 		SecureRandomMocken secureRandomMock = new SecureRandomMocken();
 
 		// Store always return true
@@ -79,7 +77,7 @@ public class NonceFactoryTest {
 
 	@Test
 	public void testNext2Times() throws Exception {
-		NonceStoreInterface nonceStoreMock = mock(NonceStoreInterface.class);
+		NonceStore nonceStoreMock = mock(NonceStore.class);
 		SecureRandomMocken secureRandomMock = new SecureRandomMocken();
 
 		byte[] existingNonce = new byte[]{0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
@@ -105,21 +103,9 @@ public class NonceFactoryTest {
 		Assert.assertEquals(24, result.length);
 	}
 
-
-	@Test(expected=ThreemaException.class)
-	public void testNextXTimes() throws Exception {
-		NonceStoreInterface nonceStoreMock = mock(NonceStoreInterface.class);
-
-		// Store always return true
-		when(nonceStoreMock.store(any())).thenReturn(false);
-
-		NonceFactory factory = new NonceFactory(new SecureRandom(), nonceStoreMock);
-		factory.next();
-	}
-
 	@Test
 	public void testNextWithoutStore() throws Exception {
-		NonceStoreInterface nonceStoreMock = mock(NonceStoreInterface.class);
+		NonceStore nonceStoreMock = mock(NonceStore.class);
 
 		NonceFactory factory = new NonceFactory(new SecureRandom(), nonceStoreMock);
 		factory.next(false);
@@ -133,7 +119,7 @@ public class NonceFactoryTest {
 				0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
 				0x01,0x01,0x01,0x01};
 
-		NonceStoreInterface nonceStoreMock = mock(NonceStoreInterface.class);
+		NonceStore nonceStoreMock = mock(NonceStore.class);
 		when(nonceStoreMock.exists(eq(existingNonce))).thenReturn(true);
 		NonceFactory factory = new NonceFactory(new SecureRandom(), nonceStoreMock);
 		Assert.assertTrue(factory.exists(existingNonce));

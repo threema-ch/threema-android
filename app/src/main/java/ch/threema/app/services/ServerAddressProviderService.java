@@ -21,8 +21,10 @@
 
 package ch.threema.app.services;
 
+import androidx.annotation.NonNull;
 import ch.threema.domain.protocol.ServerAddressProvider;
 
 public interface ServerAddressProviderService {
+	@NonNull
 	ServerAddressProvider getServerAddressProvider();
 }

@@ -4,19 +4,36 @@
                   android:persistent="true"
                   android:title="Developer Settings">
 	<PreferenceCategory
+		android:key="pref_key_multi_device"
+		android:title="Multi-Device">
+		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
+			android:key="@string/preferences__md_unlocked"
+			android:title="Unlock multi device"
+			android:summary="If enabled the multi device entry is shown in the main menu and multidevice can be 'activated' (this does not mean it will work...)." />
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:key="pref_key_conversation"
+		android:title="Conversations">
+		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
+			android:key="@string/preferences__show_last_update_prefix"
+			android:title="Show Last Update"
+			android:summary="Show the lastUpdate timestamp as prefix in the conversation name. Requires app restart."/>
+	</PreferenceCategory>
+
+	<PreferenceCategory
 		android:key="pref_key_generate"
 		android:title="Generate Data">
 		<Preference
 			android:key="@string/preferences__generate_voip_messages"
 			android:title="Generate VoIP Messages"/>
-	</PreferenceCategory>
-	<PreferenceCategory
-		android:key="pref_key_quotes_v2"
-		android:title="Quotes">
 		<Preference
 			android:key="@string/preferences__generate_test_quotes"
 			android:title="Generate Test Quotes"/>
 	</PreferenceCategory>
+
 	<PreferenceCategory
 		android:key="pref_key_poi"
 		android:title="POI">
@@ -35,6 +52,7 @@
 			android:title="Send group call init"
 			android:summary="If enabled, a text message containing encoded call info will be sent in the group when a call is started." />
 		<CheckBoxPreference
+			android:widgetLayout="@layout/preference_switch_layout"
 			android:key="@string/preferences__group_call_skip_delay"
 			android:title="Skip group call start delay"
 			android:summary="If enabled the artificial delay for group call creation will be skiped and the call created immediately" />

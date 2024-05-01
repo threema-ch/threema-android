@@ -27,10 +27,12 @@ import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * Add a messageFlags field
  */
-public class SystemUpdateToVersion62 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion62 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -44,7 +46,7 @@ public class SystemUpdateToVersion62 extends UpdateToVersion implements UpdateSy
 
 		// add new messageFlags field to message model table
 		for(String table: new String[]{"message", "m_group_message", "distribution_list_message"}) {
-			if(!this.fieldExist(this.sqLiteDatabase, table, "messageFlags")) {
+			if(!fieldExists(this.sqLiteDatabase, table, "messageFlags")) {
 				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN messageFlags INT DEFAULT 0");
 			}
 		}
@@ -54,7 +56,7 @@ public class SystemUpdateToVersion62 extends UpdateToVersion implements UpdateSy
 
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

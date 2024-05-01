@@ -141,7 +141,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
 				callContainer.isClickable = false
 				callContainer.isFocusable = false
 				actionButton.text = context.getString(R.string.voip_gc_open_call)
-				actionButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_group_call)
+				actionButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_phone_locked_outline)
 				callText.setText(R.string.voip_gc_in_call)
 				setParticipantsText(participantCount)
 			}

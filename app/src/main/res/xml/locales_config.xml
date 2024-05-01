@@ -7,6 +7,7 @@
 	<locale android:name="de"/> <!-- German -->
 	<locale android:name="es"/> <!-- Spanish (Spain) -->
 	<locale android:name="fr"/> <!-- French (France) -->
+    <locale android:name="gsw"/> <!-- Swiss German -->
 	<locale android:name="hu"/> <!-- Hungarian -->
 	<locale android:name="it"/> <!-- Italian -->
 	<locale android:name="ja"/> <!-- Japanese -->

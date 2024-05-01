@@ -30,10 +30,12 @@ import java.sql.SQLException;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * add contact restore state field to contact models
  */
-public class SystemUpdateToVersion56 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion56 implements UpdateSystemService.SystemUpdate {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion56");
 
 	private final SQLiteDatabase sqLiteDatabase;
@@ -45,21 +47,21 @@ public class SystemUpdateToVersion56 extends UpdateToVersion implements UpdateSy
 	@Override
 	public boolean runDirectly() throws SQLException {
 		logger.info("runDirectly");
-		if (!this.fieldExist(this.sqLiteDatabase, "contacts", "isArchived")) {
+		if (!fieldExists(this.sqLiteDatabase, "contacts", "isArchived")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN isArchived TINYINT DEFAULT 0");
 		}
-		if (!this.fieldExist(this.sqLiteDatabase, "m_group", "isArchived")) {
+		if (!fieldExists(this.sqLiteDatabase, "m_group", "isArchived")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE m_group ADD COLUMN isArchived TINYINT DEFAULT 0");
 		}
-		if (!this.fieldExist(this.sqLiteDatabase, "distribution_list", "isArchived")) {
+		if (!fieldExists(this.sqLiteDatabase, "distribution_list", "isArchived")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE distribution_list ADD COLUMN isArchived TINYINT DEFAULT 0");
 		}
 		return true;
 	}
 
 	@Override
-	public boolean runASync() {
-		logger.info("runASync");
+	public boolean runAsync() {
+		logger.info("runAsync");
 		return true;
 	}
 

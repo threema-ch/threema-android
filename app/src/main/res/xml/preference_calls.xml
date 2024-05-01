@@ -72,7 +72,7 @@
 	<CheckBoxPreference
 		android:defaultValue="true"
 		android:key="@string/preferences__group_calls_enable"
-		android:icon="@drawable/ic_group_call"
+		android:icon="@drawable/ic_phone_locked_outline"
 		android:title="@string/prefs_title_group_calls_enable"
 		android:widgetLayout="@layout/preference_switch_layout" />
 

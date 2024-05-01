@@ -51,9 +51,10 @@ public class GroupModel implements ReceiverModel {
 	public static final String COLUMN_API_GROUP_ID = "apiGroupId";
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_CREATOR_IDENTITY = "creatorIdentity";
-	public static final String COLUMN_CREATED_AT= "createdAt";
-	public static final String COLUMN_SYNCHRONIZED_AT= "synchronizedAt";
-	public static final String COLUMN_DELETED= "deleted";
+	public static final String COLUMN_CREATED_AT = "createdAt";
+	public static final String COLUMN_SYNCHRONIZED_AT = "synchronizedAt";
+	public static final String COLUMN_LAST_UPDATE = "lastUpdate"; /* date when the conversation was last updated */
+	public static final String COLUMN_DELETED = "deleted";
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this group has been archived by user */
 	public static final String COLUMN_GROUP_DESC = "groupDesc";
 	public static final String COLUMN_GROUP_DESC_CHANGED_TIMESTAMP = "changedGroupDescTimestamp";
@@ -67,6 +68,7 @@ public class GroupModel implements ReceiverModel {
 	private String creatorIdentity;
 	private Date createdAt;
 	private Date synchronizedAt;
+	private @Nullable Date lastUpdate;
 	private boolean deleted;
 	private boolean isArchived;
 	private int colorIndex = -1;
@@ -118,6 +120,18 @@ public class GroupModel implements ReceiverModel {
 		return this;
 	}
 
+	@Override
+	public GroupModel setLastUpdate(@Nullable Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
+		return this;
+	}
+
+	@Override
+	public @Nullable Date getLastUpdate() {
+		// Note: Never return null for groups, they should always be visible
+		return this.lastUpdate == null ? new Date(0) : this.lastUpdate;
+	}
+
 	public boolean isDeleted() {
 		return this.deleted;
 	}
@@ -136,6 +150,7 @@ public class GroupModel implements ReceiverModel {
 		return this;
 	}
 
+	@Override
 	public boolean isArchived() {
 		return isArchived;
 	}
@@ -145,6 +160,11 @@ public class GroupModel implements ReceiverModel {
 		return this;
 	}
 
+	@Override
+	public boolean isHidden() {
+		// Groups can't currently be hidden from the conversation list
+		return false;
+	}
 
 	public GroupModel setGroupDesc(String description) {
 		groupDesc = description;

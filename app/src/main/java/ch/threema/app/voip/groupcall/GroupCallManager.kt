@@ -26,6 +26,7 @@ import androidx.annotation.WorkerThread
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.sfu.GroupCallController
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
+import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.storage.models.GroupModel
 
 @JvmInline
@@ -175,7 +176,14 @@ interface GroupCallManager {
      * the group or no new members, nothing is done.
      */
     @AnyThread
-    fun sendGroupCallStartToNewMembers(groupModel: GroupModel, newMembers: List<String>)
+    fun sendGroupCallStartToNewMembers(groupModel: GroupModel, newMembers: Set<String>, handle: ActiveTaskCodec)
+
+    /**
+     * Schedules the current group call of the given group to the new members. If there is no call
+     * in the group or no new members, nothing is done.
+     */
+    @AnyThread
+    fun scheduleGroupCallStartForNewMembers(groupModel: GroupModel, newMembers: Set<String>)
 
     @AnyThread
     fun updateAllowedCallParticipants(groupModel: GroupModel)

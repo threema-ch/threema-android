@@ -148,6 +148,7 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 		final float cornerSize = getResources().getDimensionPixelSize(R.dimen.bottomsheet_corner_size);
 
 		final BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 		bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
 			@Override
 			public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -257,6 +258,10 @@ public class GlobalSearchActivity extends ThreemaToolbarActivity implements Thre
 				showProgressBar(isLoading);
 			}
 		});
+
+		EditTextUtil.focusWindowAndShowSoftKeyboard(searchView);
+		searchView.postDelayed(() -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED), 500);
+
 		return true;
 	}
 

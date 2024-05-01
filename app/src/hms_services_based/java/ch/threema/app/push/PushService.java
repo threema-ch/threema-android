@@ -24,7 +24,6 @@ package ch.threema.app.push;
 import android.content.Context;
 import android.text.format.DateUtils;
 
-import com.huawei.agconnect.AGConnectOptionsBuilder;
 import com.huawei.hms.aaid.HmsInstanceId;
 import com.huawei.hms.api.ConnectionResult;
 import com.huawei.hms.api.HuaweiMobileServicesUtil;
@@ -36,8 +35,9 @@ import org.slf4j.Logger;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -45,29 +45,32 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
-import static ch.threema.app.push.PushRegistrationWorker.APP_ID_CONFIG_FIELD;
-import static ch.threema.app.push.PushRegistrationWorker.TOKEN_SCOPE;
-
 public class PushService extends HmsMessageService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("PushService");
 
-	@Override
-	public void onNewToken(@NonNull String token) {
-		logger.info("New HMS token received");
+	public static void deleteToken(Context context) {
+		logger.info("Delete HMS push token");
 		try {
-			PushUtil.sendTokenToServer(this, token, ProtocolDefines.PUSHTOKEN_TYPE_HMS);
-		} catch (ThreemaException e) {
-			logger.error("onNewToken, could not send token to server ", e);
+			String appId = Objects.requireNonNull(HmsTokenUtil.getHmsAppId(context));
+			HmsInstanceId.getInstance(ThreemaApplication.getAppContext()).deleteToken(appId, HmsTokenUtil.TOKEN_SCOPE);
+			PushUtil.sendTokenToServer("", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
+		} catch (ApiException | ThreemaException | NullPointerException e) {
+			logger.error("Could not delete hms token", e);
 		}
 	}
 
-	public static void deleteToken(Context context) {
-		String appId = new AGConnectOptionsBuilder().build(context).getString(APP_ID_CONFIG_FIELD);
+	@Override
+	public void onNewToken(@Nullable String token) {
+		logger.info("New HMS token received");
 		try {
-			HmsInstanceId.getInstance(ThreemaApplication.getAppContext()).deleteToken(appId, TOKEN_SCOPE);
-			PushUtil.sendTokenToServer(context,"", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
-		} catch (ApiException | ThreemaException e) {
-			logger.error("Could not delete hms token", e);
+			String formattedToken = HmsTokenUtil.obtainAndPrependHmsAppId(getApplicationContext(), token);
+			if (formattedToken != null) {
+				PushUtil.sendTokenToServer(formattedToken, ProtocolDefines.PUSHTOKEN_TYPE_HMS);
+			} else {
+				logger.warn("Could not send new token to server: app id could not be prepended or token is null");
+			}
+		} catch (ThreemaException e) {
+			logger.error("Could not send token to server ", e);
 		}
 	}
 
@@ -83,10 +86,10 @@ public class PushService extends HmsMessageService {
 		// Log message sent time
 		try {
 			Date sentDate = new Date(remoteMessage.getSentTime());
-			logger.info("*** Message sent     : " + sentDate.toString(), true);
-			logger.info("*** Message received : " + new Date().toString(), true);
-			logger.info("*** Original priority: " + remoteMessage.getOriginalUrgency());
-			logger.info("*** Current priority: " + remoteMessage.getUrgency());
+			logger.info("*** Message sent     :  {}", sentDate);
+			logger.info("*** Message received : {}", new Date());
+			logger.info("*** Original priority: {}", remoteMessage.getOriginalUrgency());
+			logger.info("*** Current priority: {}", remoteMessage.getUrgency());
 		} catch (Exception ignore) {
 		}
 
@@ -104,6 +107,7 @@ public class PushService extends HmsMessageService {
 
 	/**
 	 * check for specific google services
+	 * @noinspection unused
 	 */
 	public static boolean playServicesInstalled(Context context) {
 		return false;

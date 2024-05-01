@@ -222,6 +222,7 @@ class SendMediaPreviewAdapter(
      */
     private fun loadImage(item: MediaItem, holder: SendMediaItemHolder) {
         Glide.with(context).load(item.uri)
+            .skipMemoryCache(true)
             .addListener(object : RequestListener<Drawable?> {
                 override fun onLoadFailed(
                     e: GlideException?,

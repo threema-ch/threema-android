@@ -73,7 +73,7 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 	public static ThreemaSafeAdvancedDialog newInstance(ThreemaSafeServerInfo serverInfo, boolean plainStyle) {
 		ThreemaSafeAdvancedDialog dialog = new ThreemaSafeAdvancedDialog();
 		Bundle args = new Bundle();
-		args.putString(ARG_SERVER_URL, serverInfo.getServerName());
+		args.putString(ARG_SERVER_URL, serverInfo.getCustomServerName());
 		args.putString(ARG_SERVER_USERNAME, serverInfo.getServerUsername());
 		args.putString(ARG_SERVER_PASSWORD, serverInfo.getServerPassword());
 		args.putBoolean(ARG_PLAIN_STYLE, plainStyle);
@@ -116,7 +116,7 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 		serverInfo = new ThreemaSafeServerInfo();
-		serverInfo.setServerName(getArguments().getString(ARG_SERVER_URL));
+		serverInfo.setCustomServerName(getArguments().getString(ARG_SERVER_URL));
 		serverInfo.setServerUsername(getArguments().getString(ARG_SERVER_USERNAME));
 		serverInfo.setServerPassword(getArguments().getString(ARG_SERVER_PASSWORD));
 		boolean plainStyle = getArguments().getBoolean(ARG_PLAIN_STYLE);
@@ -142,11 +142,11 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 			updateUI();
 		});
 
-		if (TestUtil.empty(serverInfo.getServerName()) && serverInfo.isDefaultServer()) {
+		if (serverInfo.isDefaultServer()) {
 			serverContainer.setVisibility(View.GONE);
 		}
 
-		serverUrlEditText.setText(serverInfo.isDefaultServer() ? "" : serverInfo.getServerName());
+		serverUrlEditText.setText(serverInfo.isDefaultServer() ? "" : serverInfo.getCustomServerName());
 		usernameEditText.setText(serverInfo.getServerUsername());
 		passwordEditText.setText(serverInfo.getServerPassword());
 		defaultServerSwitch.setChecked(serverInfo.isDefaultServer());
@@ -269,7 +269,7 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 	public void onClick(View v) {
 		if (!defaultServerSwitch.isChecked()) {
 			EditTextUtil.hideSoftKeyboard(serverUrlEditText);
-			serverInfo.setServerName(serverUrlEditText.getText().toString());
+			serverInfo.setCustomServerName(serverUrlEditText.getText().toString());
 			serverInfo.setServerUsername(usernameEditText.getText().toString());
 			serverInfo.setServerPassword(passwordEditText.getText().toString());
 			testServer();

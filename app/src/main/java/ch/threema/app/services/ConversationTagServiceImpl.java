@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.app.R;
-import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ConversationModel;
@@ -87,7 +86,7 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 			if (!this.isTaggedWith(conversation, tagModel)) {
 				this.databaseService.getConversationTagFactory()
 					.create(new ConversationTagModel(conversation.getUid(), tagModel.getTag()));
-				this.triggerChange(conversation);
+				this.fireOnModifiedConversation(conversation);
 				return true;
 			}
 		}
@@ -101,7 +100,7 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 			if (this.isTaggedWith(conversation, tagModel)) {
 				this.databaseService.getConversationTagFactory()
 					.deleteByConversationUidAndTag(conversation.getUid(), tagModel.getTag());
-				this.triggerChange(conversation);
+				this.fireOnModifiedConversation(conversation);
 				return true;
 			}
 		}
@@ -116,14 +115,14 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 				this.databaseService.getConversationTagFactory()
 					.deleteByConversationUidAndTag(conversation.getUid(), tagModel.getTag());
 				if (!silent) {
-					this.triggerChange(conversation);
+					this.fireOnModifiedConversation(conversation);
 				}
 			} else {
 				// Add
 				this.databaseService.getConversationTagFactory()
 					.create(new ConversationTagModel(conversation.getUid(), tagModel.getTag()));
 				if (!silent) {
-					this.triggerChange(conversation);
+					this.fireOnModifiedConversation(conversation);
 				}
 			}
 		}
@@ -166,12 +165,9 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 		return this.databaseService.getConversationTagFactory().countByTag(tagModel.getTag());
 	}
 
-	private void triggerChange(final ConversationModel conversationModel) {
-		ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
-			@Override
-			public void handle(ConversationListener listener) {
-				listener.onModified(conversationModel, conversationModel.getPosition());
-			}
-		});
+	private void fireOnModifiedConversation(final ConversationModel conversationModel) {
+		ListenerManager.conversationListeners.handle(
+			listener -> listener.onModified(conversationModel, conversationModel.getPosition())
+		);
 	}
 }

@@ -35,11 +35,46 @@ public class GroupJoinResponseMessage extends AbstractProtobufMessage<GroupJoinR
 	@Override
 	@Nullable
 	public Version getMinimumRequiredForwardSecurityVersion() {
-		return null;
+		return Version.V1_2;
+	}
+
+	@Override
+	public boolean allowUserProfileDistribution() {
+		return true;
 	}
 
 	@Override
 	public boolean exemptFromBlocking() {
 		return true;
+	}
+
+	@Override
+	public boolean createImplicitlyDirectContact() {
+		return true;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return true;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return false;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
+		return false;
 	}
 }

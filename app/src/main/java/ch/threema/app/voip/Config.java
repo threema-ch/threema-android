@@ -38,6 +38,7 @@ public class Config {
 		"ZUK;ZUK Z1", // Ticket #286367
         "bq;Aquaris X", // Ticket #494934
 		"samsung;SM-G970F", // Roman
+		"SHIFT;SHIFT6m", // Ticket #328682
 	};
 
 	/**

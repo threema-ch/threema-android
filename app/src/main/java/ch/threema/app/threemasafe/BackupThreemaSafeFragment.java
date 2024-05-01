@@ -79,15 +79,10 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
 	private SilentSwitchCompat enableSwitch;
 	private View configLayout, explainLayout;
 
-	private ThreemaSafeListener threemaSafeListener = new ThreemaSafeListener() {
+	private final ThreemaSafeListener threemaSafeListener = new ThreemaSafeListener() {
 		@Override
 		public void onBackupStatusChanged() {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					updateUI();
-				}
-			});
+			RuntimeUtil.runOnUiThread(() -> updateUI());
 		}
 	};
 

@@ -96,7 +96,7 @@ public class SyncGroupHandler extends MessageReceiver {
 			return;
 		}
 
-		if (this.groupService.sendSync(group)) {
+		if (this.groupService.scheduleSync(group)) {
 			this.success(temporaryId);
 		} else {
 			this.failed(temporaryId, Protocol.ERROR_GROUP_SYNC_FAILED);

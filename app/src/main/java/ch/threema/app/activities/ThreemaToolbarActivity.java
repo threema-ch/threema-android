@@ -21,7 +21,6 @@
 
 package ch.threema.app.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -41,7 +40,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
 
-import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,9 +55,9 @@ import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.connection.ConnectionState;
-import ch.threema.domain.protocol.csp.connection.ConnectionStateListener;
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
+import ch.threema.domain.protocol.connection.ServerConnection;
+import ch.threema.domain.protocol.connection.ConnectionState;
+import ch.threema.domain.protocol.connection.ConnectionStateListener;
 import ch.threema.localcrypto.MasterKey;
 
 /**
@@ -73,13 +71,13 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	protected ServiceManager serviceManager;
 	protected LockAppService lockAppService;
 	protected PreferenceService preferenceService;
-	protected ThreemaConnection threemaConnection;
+	protected ServerConnection connection;
 
 	@Override
 	protected void onResume() {
-		if (threemaConnection != null) {
-			threemaConnection.addConnectionStateListener(this);
-			ConnectionState connectionState = threemaConnection.getConnectionState();
+		if (connection != null) {
+			connection.addConnectionStateListener(this);
+			ConnectionState connectionState = connection.getConnectionState();
 			ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState);
 		}
 		super.onResume();
@@ -87,8 +85,8 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
 	@Override
 	protected void onPause() {
-		if (threemaConnection != null) {
-			threemaConnection.removeConnectionStateListener(this);
+		if (connection != null) {
+			connection.removeConnectionStateListener(this);
 		}
 		super.onPause();
 	}
@@ -154,7 +152,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 		initServices();
 
 		try {
-			threemaConnection = serviceManager.getConnection();
+			connection = serviceManager.getConnection();
 		} catch (Exception e) {
 			logger.info("Unable to get Threema connection.");
 			finish();
@@ -171,7 +169,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 		if (layoutResource != 0) {
 			logger.debug("setContentView");
 
-			setContentView(getLayoutResource());
+			setContentView(layoutResource);
 
 			this.toolbar = findViewById(R.id.toolbar);
 			if (toolbar != null) {
@@ -211,17 +209,8 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 					new MaterialAlertDialogBuilder(this)
 							.setTitle(R.string.master_key_locked)
 							.setMessage(R.string.master_key_locked_want_exit)
-							.setPositiveButton(R.string.try_again, new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int whichButton) {
-									startActivityForResult(new Intent(ThreemaToolbarActivity.this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
-								}
-							})
-							.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									finish();
-								}
-							}).show();
+							.setPositiveButton(R.string.try_again, (dialog, whichButton) -> startActivityForResult(new Intent(ThreemaToolbarActivity.this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY))
+							.setNegativeButton(R.string.cancel, (dialog, which) -> finish()).show();
 				} else {
 					this.initActivity(null);
 				}
@@ -233,7 +222,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	}
 
 	@Override
-	public void updateConnectionState(final ConnectionState connectionState, InetSocketAddress socketAddress) {
+	public void updateConnectionState(final ConnectionState connectionState) {
 		RuntimeUtil.runOnUiThread(() -> ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState));
 	}
 

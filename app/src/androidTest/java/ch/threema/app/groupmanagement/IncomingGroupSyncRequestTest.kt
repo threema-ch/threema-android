@@ -28,10 +28,12 @@ import ch.threema.app.DangerousTest
 import ch.threema.app.activities.HomeActivity
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
-import ch.threema.domain.protocol.csp.messages.GroupCreateMessage
-import ch.threema.domain.protocol.csp.messages.GroupDeletePhotoMessage
-import ch.threema.domain.protocol.csp.messages.GroupRenameMessage
-import ch.threema.domain.protocol.csp.messages.GroupRequestSyncMessage
+import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
+import ch.threema.domain.protocol.csp.messages.GroupDeleteProfilePictureMessage
+import ch.threema.domain.protocol.csp.messages.GroupNameMessage
+import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -41,12 +43,13 @@ import org.junit.runner.RunWith
 /**
  * Tests that incoming group sync request messages are handled correctly.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
-class IncomingGroupSyncRequestTest : GroupControlTest<GroupRequestSyncMessage>() {
+class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>() {
 
-    override fun createMessageForGroup() = GroupRequestSyncMessage()
+    override fun createMessageForGroup() = GroupSyncRequestMessage()
 
     @Test
     fun testValidSyncRequest() {
@@ -54,22 +57,17 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupRequestSyncMessage>()
     }
 
     @Test
-    fun testSyncRequestToMember() {
+    fun testSyncRequestToMember() = runTest {
         assertIgnoredGroupSyncRequest(groupAB, contactB)
     }
 
     @Test
-    fun testSyncRequestFromNonMember() {
+    fun testSyncRequestFromNonMember() = runTest {
         assertLeftGroupSyncRequest(myGroup, contactB)
     }
 
     @Test
-    fun testSyncRequestFromMyself() {
-        assertIgnoredGroupSyncRequest(myGroup, myContact)
-    }
-
-    @Test
-    fun testSyncRequestToLeftGroup() {
+    fun testSyncRequestToLeftGroup() = runTest {
         assertLeftGroupSyncRequest(myLeftGroup, contactA)
     }
 
@@ -97,11 +95,12 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupRequestSyncMessage>()
         // Common group receive steps are not executed for group sync request messages
     }
 
-    private fun assertValidGroupSyncRequest(group: TestGroup, contact: TestContact) {
+    private fun assertValidGroupSyncRequest(group: TestGroup, contact: TestContact) = runTest {
         launchActivity<HomeActivity>()
 
         // Create group sync request message
-        val groupRequestSyncMessage = GroupRequestSyncMessage().apply {
+        val groupSyncRequestMessage = GroupSyncRequestMessage()
+            .apply {
             fromIdentity = contact.identity
             toIdentity = myContact.identity
             apiGroupId = group.apiGroupId
@@ -109,12 +108,10 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupRequestSyncMessage>()
         }
 
         // Process sync request message
-        processMessage(groupRequestSyncMessage, contact.identityStore)
-
-        assertEquals(3, sentMessages.size)
+        processMessage(groupSyncRequestMessage, contact.identityStore)
 
         // Check that the first sent message (setup) is correct
-        val setupMessage = sentMessages[0] as GroupCreateMessage
+        val setupMessage = sentMessagesInsideTask.poll() as GroupSetupMessage
         assertArrayEquals(group.members.map { it.identity }.toTypedArray(), setupMessage.members)
         assertEquals(myContact.contact.identity, setupMessage.fromIdentity)
         assertEquals(contact.identity, setupMessage.toIdentity)
@@ -122,7 +119,7 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupRequestSyncMessage>()
         assertEquals(group.apiGroupId, setupMessage.apiGroupId)
 
         // Check that the second sent message (rename) is correct
-        val renameMessage = sentMessages[1] as GroupRenameMessage
+        val renameMessage = sentMessagesInsideTask.poll() as GroupNameMessage
         assertEquals(group.groupName, renameMessage.groupName)
         assertEquals(myContact.identity, renameMessage.fromIdentity)
         assertEquals(contact.identity, renameMessage.toIdentity)
@@ -132,45 +129,49 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupRequestSyncMessage>()
         assertTrue("Groups with photo are not supported for testing", group.profilePicture == null)
 
         // Check that the third sent message (set/delete photo) is correct
-        val deletePhotoMessage = sentMessages[2] as GroupDeletePhotoMessage
+        val deletePhotoMessage = sentMessagesInsideTask.poll() as GroupDeleteProfilePictureMessage
         assertEquals(myContact.identity, deletePhotoMessage.fromIdentity)
         assertEquals(contact.identity, deletePhotoMessage.toIdentity)
         assertEquals(group.groupCreator.identity, deletePhotoMessage.groupCreator)
         assertEquals(group.apiGroupId, deletePhotoMessage.apiGroupId)
+
+        assertTrue(sentMessagesInsideTask.isEmpty())
     }
 
-    private fun assertIgnoredGroupSyncRequest(group: TestGroup, contact: TestContact) {
+    private suspend fun assertIgnoredGroupSyncRequest(group: TestGroup, contact: TestContact) {
         launchActivity<HomeActivity>()
 
         // Create group sync request message
-        val groupRequestSyncMessage = GroupRequestSyncMessage().apply {
+        val groupSyncRequestMessage = GroupSyncRequestMessage()
+            .apply {
             fromIdentity = contact.identity
             toIdentity = myContact.identity
             apiGroupId = group.apiGroupId
             groupCreator = group.groupCreator.identity
         }
 
-        processMessage(groupRequestSyncMessage, contact.identityStore)
+        processMessage(groupSyncRequestMessage, contact.identityStore)
 
-        assertEquals(0, sentMessages.size)
+        assertTrue(sentMessagesInsideTask.isEmpty())
     }
 
-    private fun assertLeftGroupSyncRequest(group: TestGroup, contact: TestContact) {
+    private suspend fun assertLeftGroupSyncRequest(group: TestGroup, contact: TestContact) {
         launchActivity<HomeActivity>()
 
         // Create group sync request message
-        val groupRequestSyncMessage = GroupRequestSyncMessage().apply {
+        val groupSyncRequestMessage = GroupSyncRequestMessage()
+            .apply {
             fromIdentity = contact.identity
             toIdentity = myContact.identity
             apiGroupId = group.apiGroupId
             groupCreator = group.groupCreator.identity
         }
 
-        processMessage(groupRequestSyncMessage, contact.identityStore)
+        processMessage(groupSyncRequestMessage, contact.identityStore)
 
         // Check that a setup message has been sent with empty members list
-        assertEquals(1, sentMessages.size)
-        val setupMessage = sentMessages.first() as GroupCreateMessage
+        assertEquals(1, sentMessagesInsideTask.size)
+        val setupMessage = sentMessagesInsideTask.first() as GroupSetupMessage
         assertArrayEquals(emptyArray(), setupMessage.members)
         assertEquals(myContact.contact.identity, setupMessage.fromIdentity)
         assertEquals(contact.identity, setupMessage.toIdentity)

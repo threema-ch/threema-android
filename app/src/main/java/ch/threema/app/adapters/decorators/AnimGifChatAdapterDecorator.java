@@ -85,7 +85,8 @@ public class AnimGifChatAdapterDecorator extends ChatAdapterDecorator {
 					case ControllerView.STATUS_PROGRESSING:
 						if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.TRANSCODING ||
 							getMessageModel().getState() == MessageState.PENDING ||
-							getMessageModel().getState() == MessageState.SENDING)) {
+							getMessageModel().getState() == MessageState.SENDING ||
+							getMessageModel().getState() == MessageState.UPLOADING)) {
 							getMessageService().remove(getMessageModel());
 						} else {
 							gifMessagePlayer.cancel();

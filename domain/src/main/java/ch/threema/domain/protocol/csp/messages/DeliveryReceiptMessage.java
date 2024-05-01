@@ -74,6 +74,36 @@ public class DeliveryReceiptMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean createImplicitlyDirectContact() {
+		return false;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return isReaction();
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return true;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return false;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
+		return false;
+	}
+
+	@Override
 	public byte[] getBody() {
 
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();

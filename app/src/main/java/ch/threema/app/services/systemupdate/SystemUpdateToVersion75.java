@@ -25,8 +25,10 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 import ch.threema.app.services.UpdateSystemService;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
-public class SystemUpdateToVersion75 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+
+public class SystemUpdateToVersion75 implements UpdateSystemService.SystemUpdate {
 	public static final int VERSION = 75;
 	public static final String VERSION_STRING = "version " + VERSION;
 
@@ -37,7 +39,7 @@ public class SystemUpdateToVersion75 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() { return true; }
+	public boolean runAsync() { return true; }
 
 	@Override
 	public boolean runDirectly() throws SQLException {
@@ -46,11 +48,11 @@ public class SystemUpdateToVersion75 extends UpdateToVersion implements UpdateSy
 		String groupDescColumn = "groupDesc";
 		String groupDescTimestampColumn = "changedGroupDescTimestamp";
 
-		if (!this.fieldExist(this.sqLiteDatabase, table, groupDescColumn)) {
+		if (!fieldExists(this.sqLiteDatabase, table, groupDescColumn)) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN " + groupDescColumn + " VARCHAR DEFAULT NULL");
 		}
 
-		if (!this.fieldExist(this.sqLiteDatabase, table, groupDescTimestampColumn)) {
+		if (!fieldExists(this.sqLiteDatabase, table, groupDescTimestampColumn)) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN " + groupDescTimestampColumn + " VARCHAR DEFAULT NULL");
 
 		}

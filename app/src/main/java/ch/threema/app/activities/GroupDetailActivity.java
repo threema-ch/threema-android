@@ -68,6 +68,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -746,7 +747,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 					model = groupService.createGroupFromLocal(
 							newGroupName,
-							groupService.getGroupIdentities(groupModel),
+							Set.of(groupService.getGroupIdentities(groupModel)),
 							avatar);
 					model.setGroupDesc(groupModel.getGroupDesc());
 					model.setGroupDescTimestamp(groupModel.getGroupDescTimestamp());
@@ -797,7 +798,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 				@Override
 				public void run() {
 					try {
-						groupService.sendSync(groupModel);
+						groupService.scheduleSync(groupModel);
 					 	RuntimeUtil.runOnUiThread(() -> Toast.makeText(GroupDetailActivity.this,
 								 getString(R.string.group_was_synchronized),
 								 Toast.LENGTH_SHORT).show());
@@ -957,7 +958,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	public void onCancel(String tag) {}
 
 	@Override
-	public void onYes(String tag, String text) {
+	public void onYes(@NonNull String tag, @NonNull String text) {
 		// text entry dialog
 		switch(tag) {
 			case DIALOG_TAG_CLONE_GROUP:
@@ -1066,7 +1067,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 	private void updateFloatingActionButtonAndMenu() {
 		if (this.groupService == null ||
 			this.groupDetailAdapter == null) {
-			logger.error("Required instances not available");
+			logger.debug("Required instances not available");
 			return;
 		}
 

@@ -38,6 +38,7 @@ import android.text.Selection;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.SpannedString;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
@@ -46,6 +47,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.slf4j.Logger;
+
+import java.net.IDN;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,14 +64,6 @@ import androidx.core.text.util.LinkifyCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import org.slf4j.Logger;
-
-import java.net.IDN;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -161,21 +161,21 @@ public class LinkifyUtil {
 		});
 	}
 
-	public void linkifyText(TextView bodyTextView, boolean includePhoneNumbers) {
+	private Spanned linkifyText(CharSequence text, boolean includePhoneNumbers) {
+		SpannableString spanString = SpannableString.valueOf(text);
+
 		// do not linkify phone numbers in longer texts because things can get messy on samsung devices
 		// which linkify every kind of number combination imaginable
 		if (includePhoneNumbers) {
-			LinkifyCompatUtil.addLinks(bodyTextView, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES | Linkify.PHONE_NUMBERS);
+			LinkifyCompatUtil.addLinks(spanString, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES | Linkify.PHONE_NUMBERS);
 		} else {
-			LinkifyCompatUtil.addLinks(bodyTextView, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
+			LinkifyCompatUtil.addLinks(spanString, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 		}
 
 		// Add geo uris based on regex. Remove spans later when they contain invalid coordinates
-		LinkifyCompat.addLinks(bodyTextView, this.geo, null);
+		LinkifyCompat.addLinks(spanString, this.geo, null);
 
 		// Check that geo uris contain valid values
-		CharSequence text = bodyTextView.getText();
-		SpannableString spanString = SpannableString.valueOf(text);
 		URLSpan[] allSpans = spanString.getSpans(0, text != null ? text.length() : 0, URLSpan.class);
 		for (URLSpan span : allSpans) {
 			String url = span.getURL();
@@ -184,9 +184,17 @@ public class LinkifyUtil {
 			}
 		}
 
-		LinkifyCompat.addLinks(bodyTextView, this.add, null);
-		LinkifyCompat.addLinks(bodyTextView, this.compose, null);
-		LinkifyCompat.addLinks(bodyTextView, this.license, null);
+		LinkifyCompat.addLinks(spanString, this.add, null);
+		LinkifyCompat.addLinks(spanString, this.compose, null);
+		LinkifyCompat.addLinks(spanString, this.license, null);
+
+		return spanString;
+	}
+
+	public void linkifyText(TextView bodyTextView, boolean includePhoneNumbers) {
+		bodyTextView.setText(
+			linkifyText(bodyTextView.getText(), includePhoneNumbers)
+		);
 	}
 
 	/**
@@ -254,7 +262,9 @@ public class LinkifyUtil {
 					return false;
 				}
 
-				Spanned buffer = (Spanned) text;
+				// linkify message caption or body instead of linkified text which may be truncated by view
+				String s = messageModel.getCaption() != null ? messageModel.getCaption() : messageModel.getBody();
+				Spanned buffer = linkifyText(new SpannedString(s), true);
 				int action = event.getAction();
 
 				int x = (int) event.getX() - widget.getTotalPaddingLeft() + widget.getScrollX();
@@ -291,7 +301,7 @@ public class LinkifyUtil {
 									return true;
 								}
 
-								if (UrlUtil.isLegalUri(uri)) {
+								if (UrlUtil.isSafeUri(uri)) {
 									LinkifyUtil.this.openLink(uri, fragment, activity);
 								} else {
 									String host = uri.getHost();

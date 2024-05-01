@@ -27,7 +27,7 @@
                 android:layout_marginRight="4dp"
                 android:baselineAlignBottom="true"
                 android:importantForAccessibility="no"
-                android:src="@drawable/ic_group_call"
+                android:src="@drawable/ic_phone_locked_outline"
                 app:tint="@color/bubble_text_status_colorstatelist" />
 
             <ch.threema.app.emojis.EmojiConversationTextView

@@ -37,6 +37,7 @@ import java.util.Date;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.Pair;
 import ch.threema.app.R;
@@ -129,8 +130,11 @@ public class ContactUtil {
 				&& !isEchoEchoOrChannelContact(contactModel);
 	}
 
-	public static boolean allowedChangeToState(ContactModel contactModel, ContactModel.State newState) {
-		if(contactModel != null && contactModel.getState() != newState) {
+	public static boolean allowedChangeToState(
+		@Nullable ContactModel contactModel,
+		@Nullable ContactModel.State newState
+	) {
+		if(contactModel != null && newState != null && contactModel.getState() != newState) {
 			ContactModel.State oldState = contactModel.getState();
 
 			switch (newState) {

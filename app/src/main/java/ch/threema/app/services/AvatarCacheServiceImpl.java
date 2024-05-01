@@ -51,6 +51,7 @@ import ch.threema.app.R;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.ColorUtil;
+import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -190,6 +191,9 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 		synchronized (this.groupAvatarStates) {
 			groupAvatarStates.clear();
 		}
+		RuntimeUtil.runOnUiThread(() -> {
+            Glide.get(context).clearMemory();
+        });
 	}
 
 	@WorkerThread
@@ -209,10 +213,19 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
 	@WorkerThread
 	private @Nullable <M extends ReceiverModel> Bitmap getBitmap(@NonNull AvatarConfig<M> config) {
+		logger.debug("loading avatar for config {} hires = {}", config.state, config.options.highRes);
 		try {
-			RequestBuilder<Bitmap> requestBuilder = Glide.with(context).asBitmap().load(config).diskCacheStrategy(DiskCacheStrategy.NONE).signature(new ObjectKey(config.state));
-			if (config.model == null || config.options.disableCache) {
+			RequestBuilder<Bitmap> requestBuilder = Glide.with(context)
+				.asBitmap()
+				.load(config)
+				.diskCacheStrategy(DiskCacheStrategy.NONE);
+			if (config.model == null || config.options.disableCache || config.options.highRes) {
 				requestBuilder = requestBuilder.skipMemoryCache(true);
+			}
+			if (!config.options.highRes) {
+				requestBuilder = requestBuilder
+					.signature(new ObjectKey(config.state))
+					.override(avatarSizeSmall);
 			}
 			return requestBuilder.submit().get();
 		} catch (ExecutionException | InterruptedException e) {
@@ -231,13 +244,21 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 		@NonNull ImageView view,
 		@NonNull RequestManager requestManager
 	) {
+		logger.debug("loading avatar for config {} hires = {}", config.state, config.options.highRes);
 		try {
-			RequestBuilder<Bitmap> requestBuilder = requestManager.asBitmap().load(config).placeholder(placeholder).transition(BitmapTransitionOptions.withCrossFade(factory)).diskCacheStrategy(DiskCacheStrategy.NONE).signature(new ObjectKey(config.state));
-			if (config.options.disableCache) {
+			RequestBuilder<Bitmap> requestBuilder = requestManager
+				.asBitmap()
+				.load(config)
+				.placeholder(placeholder)
+				.transition(BitmapTransitionOptions.withCrossFade(factory))
+				.diskCacheStrategy(DiskCacheStrategy.NONE);
+			if (config.model == null || config.options.disableCache || config.options.highRes) {
 				requestBuilder = requestBuilder.skipMemoryCache(true);
 			}
 			if (!config.options.highRes) {
-				requestBuilder = requestBuilder.override(avatarSizeSmall);
+				requestBuilder = requestBuilder
+					.signature(new ObjectKey(config.state))
+					.override(avatarSizeSmall);
 			}
 			requestBuilder.into(view);
 		} catch (Exception e) {

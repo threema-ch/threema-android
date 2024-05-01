@@ -26,10 +26,10 @@ public class BuildFlavor {
 	private final static String FLAVOR_STORE_GOOGLE = "store_google";
 	private final static String FLAVOR_STORE_THREEMA = "store_threema";
 	private final static String FLAVOR_STORE_GOOGLE_WORK = "store_google_work";
-	private final static String FLAVOR_SANDBOX = "sandbox";
+	private final static String FLAVOR_GREEN = "green";
 	private final static String FLAVOR_SANDBOX_WORK = "sandbox_work";
 	private final static String FLAVOR_ONPREM = "onprem";
-	private final static String FLAVOR_RED = "red";
+	private final static String FLAVOR_BLUE = "blue";
 	private final static String FLAVOR_HMS = "hms";
 	private final static String FLAVOR_HMS_WORK = "hms_work";
 	private final static String FLAVOR_LIBRE = "libre";
@@ -89,7 +89,7 @@ public class BuildFlavor {
 			// License Type
 			switch (BuildConfig.FLAVOR) {
 				case FLAVOR_NONE:
-				case FLAVOR_SANDBOX:
+				case FLAVOR_GREEN:
 					licenseType = LicenseType.NONE;
 					break;
 				case FLAVOR_STORE_GOOGLE:
@@ -97,7 +97,7 @@ public class BuildFlavor {
 					break;
 				case FLAVOR_STORE_GOOGLE_WORK:
 				case FLAVOR_SANDBOX_WORK:
-				case FLAVOR_RED:
+				case FLAVOR_BLUE:
 					licenseType = LicenseType.GOOGLE_WORK;
 					break;
 				case FLAVOR_ONPREM:
@@ -131,8 +131,8 @@ public class BuildFlavor {
 				case FLAVOR_STORE_GOOGLE_WORK:
 					name = "Work";
 					break;
-				case FLAVOR_SANDBOX:
-					name = "Sandbox";
+				case FLAVOR_GREEN:
+					name = "Green";
 					break;
 				case FLAVOR_SANDBOX_WORK:
 					name = "Sandbox Work";
@@ -140,8 +140,8 @@ public class BuildFlavor {
 				case FLAVOR_ONPREM:
 					name = "OnPrem";
 					break;
-				case FLAVOR_RED:
-					name = "Red";
+				case FLAVOR_BLUE:
+					name = "Blue";
 					break;
 				case FLAVOR_HMS:
 					name = "HMS";

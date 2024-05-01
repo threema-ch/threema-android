@@ -21,17 +21,25 @@
 
 package ch.threema.app.services;
 
+import org.slf4j.Logger;
+
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
+
 public class UpdateSystemServiceImpl implements UpdateSystemService {
-	private Queue<SystemUpdate> systemUpdates  = new LinkedList<SystemUpdate>();
+	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateSystemServiceImpl");
+	private final Queue<SystemUpdate> systemUpdates  = new LinkedList<>();
 
 	@Override
-	public void addUpdate(SystemUpdate systemUpdate) {
+	public void addUpdate(@NonNull SystemUpdate systemUpdate) {
 		//run directly
 		try {
+			logger.info("Run direct system update to {}", systemUpdate.getText());
 			systemUpdate.runDirectly();
 		} catch (SQLException e) {
 			throw new RuntimeException();
@@ -42,61 +50,25 @@ public class UpdateSystemServiceImpl implements UpdateSystemService {
 	}
 
 	@Override
-	public void update(OnSystemUpdateRun onSystemUpdateRun) {
-			while(this.systemUpdates.size() > 0) {
-				SystemUpdate update = this.systemUpdates.poll();
+	public void update(@Nullable OnSystemUpdateRun onSystemUpdateRun) {
+		while (!this.systemUpdates.isEmpty()) {
+			final SystemUpdate update = this.systemUpdates.remove();
 
-				if(onSystemUpdateRun != null) {
-					onSystemUpdateRun.onStart(update);
-				}
+			if (onSystemUpdateRun != null) {
+				onSystemUpdateRun.onStart(update);
+			}
 
-				boolean success = update.runASync();
+			boolean success = update.runAsync();
 
-				if(onSystemUpdateRun != null) {
-					onSystemUpdateRun.onFinished(update, success);
-				}
+			if (onSystemUpdateRun != null) {
+				onSystemUpdateRun.onFinished(update, success);
+			}
 		}
 
-	}
-
-
-	@Override
-	public void update() {
-		this.update(null);
 	}
 
 	@Override
 	public boolean hasUpdates() {
-		return this.systemUpdates.size() > 0;
-	}
-
-	@Override
-	public void prepareForTest() {
-		this.systemUpdates.clear();
-
-		for(int i = 0; i < 10; i++) {
-			final String name = "test script " + String.valueOf(i);
-			this.addUpdate(new SystemUpdate() {
-				@Override
-				public boolean runASync() {
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						//do nothing
-					}
-					return true;
-				}
-
-				@Override
-				public boolean runDirectly() {
-					return true;
-				}
-
-				@Override
-				public String getText() {
-					return name;
-				}
-			});
-		}
+		return !this.systemUpdates.isEmpty();
 	}
 }

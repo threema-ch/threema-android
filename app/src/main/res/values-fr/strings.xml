@@ -667,7 +667,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="select_all">Tout sélectionner</string>
     <string name="deleting_messages">Suppression des messages</string>
     <string name="media_gallery_files">Fichiers</string>
-    <string name="prefs_gif_autoplay">Lire automatiquement les GIF animés</string>
+    <string name="prefs_gif_autoplay">Lire automatiquement les images animées</string>
     <string name="media_gallery_audio">Messages vocaux</string>
     <string name="action_clone_group">Cloner le groupe</string>
     <string name="clone_group_message">Cela créera un clone de ce groupe avec vous comme administrateur. Continuer ?</string>
@@ -926,6 +926,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="empty_chat_title">Vider le chat</string>
     <string name="empty_chat_confirm">Tous les messages de ce chat seront supprimés. Continuer ?</string>
     <string name="emptying_chat">Vidange du chat en cours…</string>
+    <string name="emptying_chat_deleting_messages">Suppression des messages…</string>
+    <string name="delete_chat_title">Supprimer le chat</string>
+    <string name="delete_chat_confirm">Tous les messages de ce chat seront supprimés et ce dernier sera retiré. Continuer ?</string>
+    <string name="deleting_chat">Suppression du chat</string>
     <string name="set_private">Cacher le chat</string>
     <string name="unset_private">Afficher le chat</string>
     <string name="delete_group_message">Voulez-vous quitter ce groupe et le supprimer complètement ? Tous les messages seront supprimés.</string>
@@ -1086,7 +1090,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="tooltip_voip_turn_on_camera">Touchez ici pour activer la caméra</string>
     <string name="prefs_videocall_profile_explain">La qualité réelle de l\'image dépend du réseau et des paramètres de votre interlocuteur</string>
     <string name="permission_camera_videocall_required">Pour faire des appels vidéo, veuillez autoriser l\'accès à la caméra</string>
-    <string name="feedback">Commentaires</string>
     <string name="tooltip_voip_enable_speakerphone">Touchez ici pour activer le haut-parleur du téléphone</string>
     <string name="ballot_open">Sondages ouverts</string>
     <string name="translators">Traducteurs</string>
@@ -1358,16 +1361,21 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="synchronizing">Synchronisation…</string>
     <string name="forward_security">Envoyer des messages avec confidentialité persistante</string>
     <string name="forward_security_mode">Confidentialité persistante</string>
-    <string name="forward_security_mode_none">non</string>
+    <string name="forward_security_mode_none">Aucun</string>
     <string name="clear_forward_security">Réinitialiser la confidentialité persistante pour ce contact</string>
     <string name="clear_forward_security_warning">N\'effectuer cette action que lorsque l\'équipe d\'assistance de Threema vous y invite.</string>
     <string name="forward_security_cleared">Les sessions de confidentialité persistante avec ce contact ont été effacées</string>
     <string name="message_without_forward_security">Un message sans confidentialité persistante a été reçu. Vérifiez que l\'émetteur a délibérément désactivé la confidentialité persistante.</string>
-    <string name="forward_security_established">Les messages de ce chat sont maintenant protégés par la confidentialité persistante.</string>
+    <string name="forward_security_established">Les messages échangés avec ce partenaire de chat sont maintenant protégés par la confidentialité persistante.</string>
     <string name="forward_security_established_rx">Les messages reçus dans ce chat sont maintenant protégés par la confidentialité persistante.</string>
     <string name="forward_security_reset">La session de confidentialité persistante a été réinitialisée. Cela peut se produire lorsque le partenaire de discussion change d\'appareil ou réinstalle l\'application.</string>
     <string name="forward_security_reset_simple">La session de confidentialité persistante avec ce contact a été réinitialisée.</string>
     <string name="forward_security_message_out_of_order">Un message a été reçu en désordre et n\'a pas pu être déchiffré.</string>
+    <string name="forward_security_notification_channel_name">Avertissements de confidentialité persistante</string>
+    <string name="forward_security_notification_rejected_title">Échec de l\'envoi des messages</string>
+    <string name="forward_security_notification_rejected_text_contact">Impossible d\'envoyer un ou plusieurs messages à %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">Impossible d\'envoyer un ou plusieurs messages à « %1$s »</string>
+    <string name="forward_security_notification_rejected_text_generic">Impossible d\'envoyer un ou plusieurs messages.</string>
     <string name="self_updater_installation_failed">Le téléchargement de la mise à jour a échoué. Veuillez télécharger et installer manuellement la mise à jour à partir de <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a>.</string>
     <string name="spam_first_contact">Ce chat provient d\'un contact inconnu</string>
     <string name="spam_report">Signaler un spam</string>
@@ -1379,6 +1387,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="spam_report_short">Signaler</string>
     <string name="wizard_incompatible_contact_sync_params">Il y a des paramètres MDM incompatibles définis. Le paramètre Threema MDM th_contact_sync ne peut pas être activé si la restriction d\'utilisateur DISALLOW_MODIFY_ACCOUNTS est définie. Veuillez contacter l\'administrateur de votre appareil.</string>
     <string name="messages_cannot_be_recovered">Vous ne pourrez pas annuler cette action.</string>
+    <string name="groups_left_or_dissolved">Les groupes seront fermés ou dissolus puis supprimés.</string>
     <string name="contact_deleted">Contact supprimé</string>
     <string name="last_added_contact">Dernier ajout</string>
     <string name="directory_explain_text">Recherchez dans le répertoire de l\'entreprise tout employé ne faisant pas encore partie de votre liste de contacts.</string>
@@ -1426,8 +1435,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="group_calls_tooltip_text">Touchez ici pour inviter tous les membres d\'un groupe à rejoindre un appel. Tous les membres du groupe recevront une notification et pourront décider s\'ils veulent rejoindre l\'appel ou non.</string>
     <string name="prefs_title_calls">Appels sécurisés</string>
     <string name="prefs_sum_group_calls_vibration">Activer/désactiver la vibration lors du lancement des appels de groupe</string>
-    <string name="forward_security_mode_4dh">terminé</string>
-    <string name="forward_security_mode_2dh">unilatéral</string>
+    <string name="forward_security_mode_4dh">Complète</string>
+    <string name="forward_security_mode_2dh">Unilatéral</string>
     <string name="forward_security_explanation">La Perfect Forward Secrecy (PFS) protège les communications enregistrées contre tout déchiffrement rétroactif, même si la clé de chiffrement à long terme est découverte.\n\nL\'option peut être activée si l\'application des deux côtés prend en charge la PFS.</string>
     <string name="group_call_inactivity_left">Appel de groupe arrêté pour cause d\'inactivité</string>
     <string name="missing_permission_external_storage">Impossible de copier le fichier. Essayez les étapes suivantes :\n1. Ouvrez l\'application Paramètres.\n2. Sous « Applications », choisissez « Accès spécial aux applications ».\n3. Touchez « Accès tous fichiers ».\n4. Touchez les trois points dans le coin supérieur droit et sélectionnez « Afficher le système ».\n5. Touchez « Stockage externe » et assurez-vous que « Autoriser l\'accès pour gérer tous les fichiers » est activé.\n6. Essayez à nouveau de restaurer la sauvegarde.</string>
@@ -1517,6 +1526,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="edit_and_send">Modifier et envoyer</string>
     <string name="media_gallery_animated_webps">WebP animés</string>
     <string name="unsupported_image_type">Type d\'image non pris en charge : %s</string>
+    <string name="application_setup_steps_failed">Une connexion Internet active est nécessaire pour vérifier l\'état de vos contacts. Vérifiez que vous êtes bien connecté à Internet et réessayez.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

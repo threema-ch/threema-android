@@ -35,13 +35,15 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import androidx.annotation.WorkerThread;
+import ch.threema.app.ThreemaApplication;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.SendMode;
 import ch.threema.app.webclient.converter.MsgpackBuilder;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.DispatchException;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
+import ch.threema.domain.taskmanager.TaskManager;
 
 /**
  * Dispatch incoming messages to the receivers or send outgoing messages to the webclient.
@@ -53,7 +55,6 @@ import ch.threema.domain.protocol.csp.connection.MessageQueue;
 public class MessageDispatcher {
 	@NonNull protected final SessionInstanceService service;
 	@NonNull protected final Logger logger;
-	@NonNull protected final MessageQueue messageQueue;
 	@NonNull protected final LifetimeService lifetimeService;
 	@NonNull protected final String type;
 	@NonNull protected final Map<String, MessageReceiver> receivers = new ConcurrentHashMap<>();
@@ -64,14 +65,12 @@ public class MessageDispatcher {
 	public MessageDispatcher(
 		@NonNull final String type,
 		@NonNull final SessionInstanceServiceImpl service,
-		@NonNull final LifetimeService lifetimeService,
-		@NonNull final MessageQueue messageQueue
+		@NonNull final LifetimeService lifetimeService
 	) {
 		this.service = service;
 		this.logger = service.logger;
 		this.lifetimeService = lifetimeService;
 		this.type = type;
-		this.messageQueue = messageQueue;
 	}
 
 	/**
@@ -97,8 +96,11 @@ public class MessageDispatcher {
 		// check whether the queue is empty. If it isn't, acquire the connection
 		// for a short while to send those messages.
 		if (receiver.maybeNeedsConnection()) {
-			if (this.messageQueue.getQueueSize() > 0) {
-				int timeoutMs = Math.min(30000, 5000 + 100 * this.messageQueue.getQueueSize());
+			TaskManager taskManager = getTaskManager();
+			if (taskManager != null && taskManager.hasPendingTasks()) {
+				// We use 6000 as timeout. With respect to the previous (established) calculation
+				// this corresponds to 5000 as base timeout and 10 pending messages (100ms each).
+				int timeoutMs = 6000;
 				this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
 				this.lifetimeService.releaseConnectionLinger(LIFETIME_SERVICE_TAG, timeoutMs);
 			}
@@ -187,6 +189,15 @@ public class MessageDispatcher {
 		builder.put(Protocol.FIELD_SUB_TYPE, subType);
 		builder.maybePut(Protocol.FIELD_ARGUMENTS, args);
 		return builder;
+	}
+
+	@Nullable
+	private TaskManager getTaskManager() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			return serviceManager.getTaskManager();
+		}
+		return null;
 	}
 
 }

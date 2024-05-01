@@ -50,7 +50,7 @@ public class SystemUpdateToVersion21 implements UpdateSystemService.SystemUpdate
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

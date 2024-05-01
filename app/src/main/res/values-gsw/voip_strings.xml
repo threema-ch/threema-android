@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="voip_title">Threema-Aruef</string>
+    <string name="voip_hangup">Uflegge</string>
+    <string name="voip_toggle_mic">Mikrofon umschalte</string>
+    <string name="voip_toggle_speaker">Luutsprächer umschalte</string>
+    <string name="voip_switch_cam">Kamera umschalte</string>
+    <string name="voip_switch_cam_front">Zude Selfie-Kamera gwächslet</string>
+    <string name="voip_switch_cam_rear">Zude Hauptkamera gwächslet</string>
+    <string name="voip_toggle_video">Video-Modus umschalte</string>
+    <string name="voip_call_confirm">Wänd Sie %1$s alüte?</string>
+    <string name="voip_error_call">Fehler währedem Threema-Aruef</string>
+    <string name="voip_error_init_call">Fehler bim Ruefufbau</string>
+    <string name="voip_notification_title">Iigehende Threema-Aruef</string>
+    <string name="voip_notification_text">%1$s lüüted aa</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Ruefufbau</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Wird verbunde</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Verbindig wird trännt</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Es lüüted</string>
+    <string name="voip_mic_enable">Mikrofon iischalte</string>
+    <string name="voip_mic_disable">Stummschalte</string>
+    <string name="voip_checking_compatibility">Es wird prüeft, öb de Kontakt Threema-Arüef cha empfange</string>
+    <string name="voip_incompatible">De Kontakt cha no kei Threema-Arüef empfange.</string>
+    <string name="voip_call_status_unavailable">Aruefempfänger nöd verfüegbar</string>
+    <string name="voip_call_status_rejected">Aruef abglehnt</string>
+    <string name="voip_call_status_busy">Aruefempfänger isch bsetzt</string>
+    <string name="voip_call_status_busy_short">Bsetzt</string>
+    <string name="voip_call_status_disabled">Threema-Arüef sind ufem Zielgrät deaktiviert</string>
+    <string name="voip_call_status_missed">Verpasste Aruef</string>
+    <string name="voip_call_finished_outbox">Usgehende Aruef</string>
+    <string name="voip_call_finished_inbox">Iigehende Aruef</string>
+    <string name="voip_call_status_aborted">Aruef abbroche</string>
+    <string name="voip_return_call">Zruggalüte</string>
+    <string name="voip_accept">Aaneh</string>
+    <string name="voip_reject">Ablehne</string>
+    <string name="voip_speakerphone">Freispräche</string>
+    <string name="voip_wired_headset">Chopfhörer</string>
+    <string name="voip_earpiece">Telefon</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">Nöd verfüegbar</string>
+    <string name="voip_call_finished">Threema-Aruef isch beendet worde</string>
+    <string name="voip_another_call">Verbindig nöd möglich. En andere Aruef lauft scho.</string>
+    <string name="voip_prefs_title_aec">Echo-Underdrückig</string>
+    <string name="voip_prefs_aec_sw">Software-Echo-Underdrückig</string>
+    <string name="voip_prefs_aec_hw">Hardware-Echo-Underdrückig</string>
+    <string name="voip_prefs_title_video_codec">Video-Codecs</string>
+    <string name="voip_prefs_video_aec_hw">Hardwarebeschlüünigt</string>
+    <string name="voip_prefs_video_codec_no_vp8">VP8 deaktiviere</string>
+    <string name="voip_prefs_video_codec_no_h264hip">H264-HiP deaktiviere</string>
+    <string name="voip_prefs_video_codec_sw">Software-Codecs</string>
+    <string name="voip_connection_failed">Verbindig hät nöd chöne ufbaut werde</string>
+    <string name="voip_connection_lost">Verbindig isch unterbroche worde</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Mobiltelefon-Arüef zruggwiise</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Iigehendi Mobiltelefon-Arüef zruggwiise, während en Threema-Aruef lauft.</string>
+    <string name="voip_contact_not_found">Für die Nummere isch kein Threema-Kontakt gfunde worde.</string>
+    <string name="voip_another_pstn_call">Aruef nöd möglich. En gwöhnliche Telefonaruef lauft scho.</string>
+    <string name="voip_call_status_off_hours">Aruef usserhalb vode Arbetsziit</string>
+    <string name="voip_peer_video_disabled">Video-Arüef sind dur de Gspröchspartner deaktiviert worde.</string>
+    <string name="voip_reject_channel_name">Aruef-Statusänderig</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">WebRTC-Diagnose</string>
+    <string name="voip_prefs_webrtc_debug_summary">Started Sie das Tool, zum Problem mit em Aruef-Verbindigsufbau z’diagnostiziere</string>
+    <string name="voip_webrtc_debug">WebRTC-Diagnose</string>
+    <string name="voip_webrtc_debug_intro">Tipped Sie ufde «Start»-Button, zum de Test z’starte.</string>
+    <string name="voip_webrtc_debug_start">Start</string>
+    <string name="voip_webrtc_debug_done">Fertig. Wenn Sie Problem mitem Aruef-Verbindigsufbau händ, schicked Sie bitte de Output an Threema-Support.</string>
+    <string name="voip_webrtc_debug_copied">Text isch id Zwüscheablag kopiert worde.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Id Zwüscheablag kopiere</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">All Gruppemitglieder sind informiert worde</string>
+    <string name="voip_gc_notification_channel_description">Gruppearüef</string>
+    <string name="voip_gc_notification_title">Gruppearuef</string>
+    <string name="voip_gc_notification_call_started">%1$s hät en Gruppearuef in %2$s gstarted</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s hät en Gruppearuef gstarted</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">Sie händ en Gruppearuef gstarted</string>
+    <string name="voip_gc_dismiss_call">Ignoriere</string>
+    <string name="voip_gc_join_call">Teilneh</string>
+    <string name="voip_gc_ongoing_call">Gruppearuef lauft</string>
+    <string name="voip_gc_waiting_for_participants">Warte uf anderi Teilnehmer</string>
+    <string name="voip_gc_participant_avatar_description">Profilbild vom Teilnehmer</string>
+    <string name="voip_gc_participant_mute_status_description">Stummschalt-Status vom Teilnehmer</string>
+    <string name="voip_gc_notification_new_call_public">En neue Gruppearuef isch gstarted worde</string>
+    <string name="voip_gc_open_call">Ufmache</string>
+    <string name="voip_gc_call_started">Gruppearuef isch gstarted worde</string>
+    <string name="voip_gc_call_ended">Gruppearuef hät gändet</string>
+    <string name="voip_gc_in_call">Im Gruppearuef</string>
+    <string name="voip_gc_sfu_not_available">Server cha nöd erreicht werde, bitte versueched Sie’s spöter</string>
+    <string name="voip_gc_call_error">Gruppearuef isch wägeme Fehler beendet worde</string>
+    <string name="voip_gc_call_start_error">Gruppearuef hät nöd chöne gstarted werde</string>
+    <string name="voip_gc_call_already_ended">Gruppearuef isch scho beendet worde</string>
+    <string name="voip_gc_call_full_generic">Kei Teilnahm möglich: Die maximal Teilnehmerzahl isch erreicht.</string>
+    <string name="voip_gc_call_full_n">Kei Teilnahm möglich: Die maximal Teilnehmerzahl (%1$d) isch erreicht.</string>
+    <plurals name="n_participants_in_call">
+        <item quantity="other">%d Teilnehmer</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="other">Hiiwis: %d Mitglieder chönd nöd a Gruppearüef teilneh.</item>
+    </plurals>
+</resources>

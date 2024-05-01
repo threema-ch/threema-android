@@ -1083,7 +1083,6 @@
     <string name="tooltip_voip_turn_on_camera">Націсніце тут, каб уключыць камеру</string>
     <string name="prefs_videocall_profile_explain">Фактычная якасць відарысу залежыць ад сеткі і налад вашага суразмоўцы.</string>
     <string name="permission_camera_videocall_required">Для відэасувязі дайце доступ да камеры</string>
-    <string name="feedback">Водгук</string>
     <string name="tooltip_voip_enable_speakerphone">Націсніце тут, каб уключыць спікерфон</string>
     <string name="ballot_open">Адкр-я апытанні</string>
     <string name="translators">Перакладчыкі</string>

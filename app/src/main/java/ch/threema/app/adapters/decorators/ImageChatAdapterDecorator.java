@@ -41,6 +41,7 @@ import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -138,7 +139,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 							propagateControllerRetryClickToParent();
 							break;
 						case ControllerView.STATUS_PROGRESSING:
-							if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.PENDING || getMessageModel().getState() == MessageState.SENDING)) {
+							if (MessageUtil.isFileMessageBeingSent(getMessageModel())) {
 								getMessageService().cancelMessageUpload(getMessageModel());
 							} else {
 								imageMessagePlayer.cancel();

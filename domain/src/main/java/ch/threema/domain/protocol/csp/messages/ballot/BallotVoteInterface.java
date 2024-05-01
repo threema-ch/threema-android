@@ -21,8 +21,11 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface BallotVoteInterface extends BallotMessageInterface  {
 	List<BallotVote> getBallotVotes();
+
+	void addVotes(Collection<BallotVote> votes);
 }

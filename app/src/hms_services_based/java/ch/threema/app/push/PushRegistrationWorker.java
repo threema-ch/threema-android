@@ -23,10 +23,11 @@ package ch.threema.app.push;
 
 import android.content.Context;
 
-import com.huawei.agconnect.AGConnectOptionsBuilder;
 import com.huawei.hms.aaid.HmsInstanceId;
 
 import org.slf4j.Logger;
+
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -39,14 +40,9 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 public class PushRegistrationWorker extends Worker {
 	private final Logger logger = LoggingUtil.getThreemaLogger("PushRegistrationWorker");
 
-	public static String TOKEN_SCOPE = "HCM";
-	public static String APP_ID_CONFIG_FIELD = "client/app_id";
-
 	private final Context appContext;
 
 	/**
-	 * Constructor for the PushRegistrationWorker.
-	 *
 	 * Note: This constructor is called by the WorkManager, so don't add additional parameters!
 	 */
 	public PushRegistrationWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
@@ -63,33 +59,24 @@ public class PushRegistrationWorker extends Worker {
 		logger.debug("doWork HMS token registration clear {} withCallback {}", clearToken, withCallback);
 
 		String error = null;
-		if (clearToken) {
-			try {
 
-				String appId = getAppId(appContext);
-
-				// Delete the token.
-				HmsInstanceId.getInstance(appContext).deleteToken(appId, TOKEN_SCOPE);
-				PushUtil.sendTokenToServer(appContext,"", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
+		try {
+			String appId = Objects.requireNonNull(HmsTokenUtil.getHmsAppId(appContext));
+			if (clearToken) {
+				// Delete the token
+				HmsInstanceId.getInstance(appContext).deleteToken(appId, HmsTokenUtil.TOKEN_SCOPE);
+				PushUtil.sendTokenToServer("", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
 				logger.info("HMS token successfully deleted");
-			} catch (Exception e) {
-				logger.error("Exception", e);
-				error = e.getMessage();
-			}
-		}
-        else {
-			try {
-				String appId = getAppId(appContext);
-
+			} else {
 				// Note that this will only work in release builds as the app signature is tested by huawei
-				String token = HmsInstanceId.getInstance(appContext).getToken(appId, TOKEN_SCOPE);
+				String token = HmsInstanceId.getInstance(appContext).getToken(appId, HmsTokenUtil.TOKEN_SCOPE);
+				String formattedToken = Objects.requireNonNull(HmsTokenUtil.prependHmsAppId(appId, token));
 				logger.info("Received HMS registration token");
-				PushUtil.sendTokenToServer(appContext, appId + '|' +token, ProtocolDefines.PUSHTOKEN_TYPE_HMS);
-			} catch (Exception e) {
-				logger.error("Exception", e);
-				error = e.getMessage();
+				PushUtil.sendTokenToServer(formattedToken, ProtocolDefines.PUSHTOKEN_TYPE_HMS);
 			}
-
+		} catch (Exception e) {
+			logger.error("Exception", e);
+			error = e.getMessage();
 		}
 
 		if (withCallback) {
@@ -99,12 +86,4 @@ public class PushRegistrationWorker extends Worker {
 		// required by the Worker interface but is not used for any error handling in the push registration process
 		return Result.success();
 	}
-
-	/**
-	 * Obtain the app ID from the agconnect-service.json file.
-	 */
-	private String getAppId(Context context) {
-		return new AGConnectOptionsBuilder().build(context).getString(APP_ID_CONFIG_FIELD);
-	}
-
 }

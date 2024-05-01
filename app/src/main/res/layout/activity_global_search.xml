@@ -55,10 +55,7 @@
 				android:textColor="?attr/colorOnBackground"
 				app:defaultQueryHint="@string/global_search"
 				app:iconifiedByDefault="false"
-				app:queryHint="@string/global_search">
-
-				<requestFocus />
-			</ch.threema.app.ui.ThreemaSearchView>
+				app:queryHint="@string/global_search"/>
 
 			<com.google.android.material.progressindicator.CircularProgressIndicator
 				android:id="@+id/progress"

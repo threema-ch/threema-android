@@ -31,7 +31,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.NotificationService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
-import ch.threema.domain.protocol.csp.connection.DeviceCookieManager;
+import ch.threema.domain.protocol.connection.csp.DeviceCookieManager;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ServerMessageModel;
 

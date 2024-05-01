@@ -23,7 +23,6 @@ package ch.threema.app.backuprestore.csv;
 
 public abstract class Tags {
 	public static final String SETTINGS_FILE_NAME = "settings";
-	public static final String APP_SETTINGS_FILE_NAME = "app_settings";
 	public static final String IDENTITY_FILE_NAME = "identity";
 	public static final String CONTACTS_FILE_NAME = "contacts";
 	public static final String GROUPS_FILE_NAME = "groups";
@@ -58,10 +57,10 @@ public abstract class Tags {
 	public static final String TAG_CONTACT_LAST_NAME = "lastname";
 	public static final String TAG_CONTACT_PUBLIC_KEY = "publickey";
 	public static final String TAG_CONTACT_NICK_NAME = "nick_name";
-	public static final String TAG_CONTACT_COLOR = "color";
 	public static final String TAG_CONTACT_VERIFICATION_LEVEL = "verification";
 	public static final String TAG_CONTACT_ANDROID_CONTACT_ID = "acid";
 	public static final String TAG_CONTACT_THREEMA_ANDROID_CONTACT_ID = "tacid";
+	public static final String TAG_CONTACT_LAST_UPDATE = "last_update";
 	public static final String TAG_CONTACT_HIDDEN = "hidden";
 	public static final String TAG_CONTACT_ARCHIVED = "archived";
 	public static final String TAG_CONTACT_IDENTITY_ID = "identity_id"; // a unique ID representing the identity of a contact
@@ -70,6 +69,7 @@ public abstract class Tags {
 	public static final String TAG_GROUP_CREATOR = "creator";
 	public static final String TAG_GROUP_NAME = "groupname";
 	public static final String TAG_GROUP_CREATED_AT = "created_at";
+	public static final String TAG_GROUP_LAST_UPDATE = "last_update";
 	public static final String TAG_GROUP_MEMBERS = "members";
 	public static final String TAG_GROUP_DELETED = "deleted";
 	public static final String TAG_GROUP_ARCHIVED = "archived";
@@ -102,6 +102,7 @@ public abstract class Tags {
 	public static final String TAG_DISTRIBUTION_LIST_ID = "id";
 	public static final String TAG_DISTRIBUTION_LIST_NAME = "distribution_list_name";
 	public static final String TAG_DISTRIBUTION_CREATED_AT = "created_at";
+	public static final String TAG_DISTRIBUTION_LAST_UPDATE = "last_update";
 	public static final String TAG_DISTRIBUTION_MEMBERS = "distribution_members";
 	public static final String TAG_DISTRIBUTION_LIST_ARCHIVED = "archived";
 

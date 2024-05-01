@@ -21,8 +21,7 @@
 
 package ch.threema.app.utils
 
-import android.text.Spannable
-import android.text.SpannableString
+import android.text.Spanned
 import android.text.style.URLSpan
 import android.widget.TextView
 import androidx.test.platform.app.InstrumentationRegistry
@@ -35,14 +34,14 @@ class LinkifyUtilTest {
      * Get the spannable and a list of the URL spans as a pair. If there is no spannable, a pair
      * containing of null and an empty list is returned.
      */
-    private fun getSpanPair(text: String, includePhoneNumbers: Boolean = true): Pair<Spannable?, List<URLSpan>> {
+    private fun getSpanPair(text: String, includePhoneNumbers: Boolean = true): Pair<Spanned?, List<URLSpan>> {
         val textView = TextView(InstrumentationRegistry.getInstrumentation().context)
         textView.text = text
         InstrumentationRegistry.getInstrumentation().runOnMainSync{
             LinkifyUtil.getInstance().linkifyText(textView, includePhoneNumbers)
         }
         val spannableText = textView.text
-        if (spannableText !is SpannableString) {
+        if (spannableText !is Spanned) {
             return null to listOf()
         }
         val spans = spannableText.getSpans(0, text.length + 1, URLSpan::class.java).toList()

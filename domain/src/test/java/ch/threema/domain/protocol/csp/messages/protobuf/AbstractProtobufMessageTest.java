@@ -27,7 +27,7 @@ import org.mockito.Mockito;
 import androidx.annotation.Nullable;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 public class AbstractProtobufMessageTest {
 
@@ -37,11 +37,11 @@ public class AbstractProtobufMessageTest {
 		Mockito.when(protobufDataStub.toProtobufBytes()).thenReturn(new byte[]{0, 1, 2});
 
 		final AbstractProtobufMessage<ProtobufDataInterface<?>> message =
-			new AbstractProtobufMessage<ProtobufDataInterface<?>>(3, protobufDataStub) {
-			@Override
-			public int getType() {
-				return 0;
-			}
+			new AbstractProtobufMessage<>(3, protobufDataStub) {
+				@Override
+				public int getType() {
+					return 0;
+				}
 
 				@Nullable
 				@Override
@@ -50,7 +50,42 @@ public class AbstractProtobufMessageTest {
 				}
 
 				@Override
+				public boolean allowUserProfileDistribution() {
+					return false;
+				}
+
+				@Override
 				public boolean exemptFromBlocking() {
+					return false;
+				}
+
+				@Override
+				public boolean createImplicitlyDirectContact() {
+					return false;
+				}
+
+				@Override
+				public boolean protectAgainstReplay() {
+					return false;
+				}
+
+				@Override
+				public boolean reflectIncoming() {
+					return false;
+				}
+
+				@Override
+				public boolean reflectOutgoing() {
+					return false;
+				}
+
+				@Override
+				public boolean sendAutomaticDeliveryReceipt() {
+					return false;
+				}
+
+				@Override
+				public boolean bumpLastUpdate() {
 					return false;
 				}
 			};

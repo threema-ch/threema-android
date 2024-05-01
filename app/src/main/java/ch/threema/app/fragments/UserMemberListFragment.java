@@ -80,7 +80,7 @@ public class UserMemberListFragment extends MemberListFragment {
 						}
 
 						@Override
-						public Integer requiredFeature() {
+						public Long requiredFeature() {
 							//required!
 							return ThreemaFeature.GROUP_CHAT;
 						}

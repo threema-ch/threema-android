@@ -26,12 +26,11 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.storage.models.GroupMessagePendingMessageIdModel;
 
 /**
  * update constraint for GroupMessagePendingMessageIdModel
  */
-public class SystemUpdateToVersion58 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion58 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -42,20 +41,20 @@ public class SystemUpdateToVersion58 extends UpdateToVersion implements UpdateSy
 	@Override
 	public boolean runDirectly() throws SQLException {
 		sqLiteDatabase.rawExecSQL("DROP TABLE IF EXISTS `m_group_message_pending_message_id`");
-		sqLiteDatabase.rawExecSQL("DROP TABLE IF EXISTS `" + GroupMessagePendingMessageIdModel.TABLE + "`");
+		sqLiteDatabase.rawExecSQL("DROP TABLE IF EXISTS `m_group_message_pending_msg_id`");
 		sqLiteDatabase.rawExecSQL(
-			"CREATE TABLE " + GroupMessagePendingMessageIdModel.TABLE
+			"CREATE TABLE `m_group_message_pending_msg_id`"
 				+ "("
-				+ "`" + GroupMessagePendingMessageIdModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT,"
-				+ "`" + GroupMessagePendingMessageIdModel.COLUMN_GROUP_MESSAGE_ID + "` INTEGER,"
-				+ "`" + GroupMessagePendingMessageIdModel.COLUMN_API_MESSAGE_ID +  "` VARCHAR"
+				+ "`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
+				+ "`groupMessageId` INTEGER,"
+				+ "`apiMessageId` VARCHAR"
 				+ ")");
 
 		return true;
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

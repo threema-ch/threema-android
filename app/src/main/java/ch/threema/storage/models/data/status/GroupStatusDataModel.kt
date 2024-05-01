@@ -22,6 +22,7 @@
 package ch.threema.storage.models.data.status
 
 import android.util.JsonWriter
+import ch.threema.storage.models.data.status.StatusDataModel.StatusType
 
 class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
     private val statusKey = "status"
@@ -78,7 +79,7 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
     var newGroupName: String? = null
         private set
 
-    override fun getType(): Int = TYPE
+    @StatusType override fun getType(): Int = TYPE
 
     override fun readData(key: String, value: String) {
         when (key) {

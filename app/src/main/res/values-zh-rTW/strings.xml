@@ -229,8 +229,7 @@
     <string name="masterkey_is_unlocked">主密鑰已解鎖</string>
     <string name="file_too_large">檔案大於最大大小 %1$dMB</string>
     <string name="deleting_thread">正在刪除對話</string>
-    <string name="enter_serial_body"><![CDATA[請輸入您的商店授權金鑰，或點擊這裡取回您的金鑰：
-https://shop.threema.ch/retrieve_keys]]></string>
+    <string name="enter_serial_body"><![CDATA[請輸入您的商店授權金鑰。 如果您之前已經購買了授權，您可以<a href="https://shop.threema.ch/">購買</a>授權或<a href="https://shop.threema.ch/retrieve_keys">找回</a>您的金鑰。]]></string>
     <string name="enter_serial_title">解鎖 Threema</string>
     <string name="serial_required_want_exit">授權金鑰無效。您想再試一次還是退出 Threema？</string>
     <string name="checking_serial">正在檢查授權金鑰</string>
@@ -954,6 +953,10 @@ Threema 支援的所有表情符號。</string>
     <string name="empty_chat_title">清空對話記錄</string>
     <string name="empty_chat_confirm">此對話中的所有訊息將被刪除。是否繼續？</string>
     <string name="emptying_chat">正在清空對話記錄</string>
+    <string name="emptying_chat_deleting_messages">正在刪除訊息…</string>
+    <string name="delete_chat_title">刪除對話</string>
+    <string name="delete_chat_confirm">此對話中的所有訊息將被刪除，同時此對話也將被刪除。是否繼續？</string>
+    <string name="deleting_chat">正在刪除對話</string>
     <string name="set_private">標示為「私密對話」</string>
     <string name="unset_private">停用「私密對話」</string>
     <string name="delete_group_message">您確定要離開這個群組並完全刪除嗎？所有訊息將被刪除。</string>
@@ -1114,7 +1117,6 @@ Threema 支援的所有表情符號。</string>
     <string name="tooltip_voip_turn_on_camera">點擊這裡開啟攝影機</string>
     <string name="prefs_videocall_profile_explain">實際的圖片品質取決於網路以及對方的設定</string>
     <string name="permission_camera_videocall_required">請允許取用攝影機以進行視訊通話。</string>
-    <string name="feedback">意見回饋</string>
     <string name="tooltip_voip_enable_speakerphone">點擊這裡開啟電話揚聲器</string>
     <string name="ballot_open">開放投票</string>
     <string name="translators">翻譯人員</string>
@@ -1386,16 +1388,21 @@ Threema 支援的所有表情符號。</string>
     <string name="synchronizing">同步中…</string>
     <string name="forward_security">以完全正向保密傳送訊息</string>
     <string name="forward_security_mode">完全正向保密</string>
-    <string name="forward_security_mode_none">否</string>
+    <string name="forward_security_mode_none">沒有</string>
     <string name="clear_forward_security">重設對此聯絡人的「完全正向保密」狀態</string>
     <string name="clear_forward_security_warning">僅限在 Threema 支援團隊的指示下，才執行此作業。</string>
     <string name="forward_security_cleared">與此聯絡人的完全正向保密對話已被清除</string>
     <string name="message_without_forward_security">您收到一則沒有完全正向保密的訊息，您可以驗證寄件者是否主動停用完美前向保密。</string>
-    <string name="forward_security_established">此對話中的訊息現正受完全正向保密的保護。</string>
+    <string name="forward_security_established">與對方對話的訊息現正受完全正向保密的保護。</string>
     <string name="forward_security_established_rx">在此對話中的訊息現正受完全正向保密的保護。</string>
     <string name="forward_security_reset">這個之前已啟用「完全正向保密」的對話，現被重設保密狀態。如果聯絡人更換了裝置或重新安裝此應用程式，就會重設保密狀態。</string>
     <string name="forward_security_reset_simple">與此聯絡人的完全正向保密對話已重設。</string>
     <string name="forward_security_message_out_of_order">解密新收到的訊息發生錯誤，無法解密。</string>
+    <string name="forward_security_notification_channel_name">完全正向保密警告</string>
+    <string name="forward_security_notification_rejected_title">訊息傳送失敗</string>
+    <string name="forward_security_notification_rejected_text_contact">一則或多則訊息無法傳送至%1$s。</string>
+    <string name="forward_security_notification_rejected_text_group">一則或多則訊息無法傳送至「%1$s」。</string>
+    <string name="forward_security_notification_rejected_text_generic">一則或多則訊息無法傳送。</string>
     <string name="self_updater_installation_failed">下載更新失敗。請手動從 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下載並安裝更新。</string>
     <string name="spam_first_contact">此對話來自一位未知聯絡人</string>
     <string name="spam_report">檢舉垃圾訊息</string>
@@ -1407,6 +1414,7 @@ Threema 支援的所有表情符號。</string>
     <string name="spam_report_short">檢舉</string>
     <string name="wizard_incompatible_contact_sync_params">您可能設定了不相容的 MDM 參數。如果使用者限制設定為 DISALLOW_MODIFY_ACCOUNTS，Threema MDM 參數 th_contact_sync 則無法設定為 true。請聯絡您的裝置管理員以取得協助。</string>
     <string name="messages_cannot_be_recovered">您將無法還原訊息。</string>
+    <string name="groups_left_or_dissolved">群組將被保留或解散，然後被刪除。</string>
     <string name="contact_deleted">聯絡人已刪除</string>
     <string name="last_added_contact">最後新增</string>
     <string name="directory_explain_text">在公司目錄中搜尋任何尚未列在您的聯絡人清單中的員工。</string>
@@ -1545,6 +1553,7 @@ Threema 支援的所有表情符號。</string>
     <string name="edit_and_send">編輯並傳送</string>
     <string name="media_gallery_animated_webps">動畫 WebP 檔案</string>
     <string name="unsupported_image_type">不支援的圖像類型：%s</string>
+    <string name="application_setup_steps_failed">檢查聯絡人狀態需要有效的網路連線。 請確保您已連線至網際網路，然後再試一次。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

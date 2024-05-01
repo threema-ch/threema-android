@@ -88,6 +88,7 @@ import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.stores.IdentityStore;
+import ch.threema.app.stores.PreferenceStoreInterface;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -105,6 +106,7 @@ import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ProtocolStrings;
+import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.DatabaseServiceNew;
@@ -113,6 +115,7 @@ import ch.threema.storage.factories.DistributionListMemberModelFactory;
 import ch.threema.storage.factories.GroupMemberModelFactory;
 import ch.threema.storage.factories.GroupModelFactory;
 import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupMemberModel;
@@ -132,7 +135,7 @@ import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_RE
 public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServiceImpl");
 
-	// Scrypt parameters as recommended by OWASP:
+	// Scrypt parameters as recommended by OWASP (as of January 2023):
 	// https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#scrypt
 	//
 	// These values correspond to a minimum memory requirement
@@ -179,10 +182,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final String TAG_SAFE_CONTACT_CREATED_AT = "createdAt";
 	private static final String TAG_SAFE_CONTACT_VERIFICATION_LEVEL = "verification";
 	private static final String TAG_SAFE_CONTACT_WORK_VERIFIED = "workVerified";
+	private static final String TAG_SAFE_CONTACT_HIDDEN = "hidden";
 	private static final String TAG_SAFE_CONTACT_FIRST_NAME = "firstname";
 	private static final String TAG_SAFE_CONTACT_LAST_NAME = "lastname";
 	private static final String TAG_SAFE_CONTACT_NICKNAME = "nickname";
-	private static final String TAG_SAFE_CONTACT_HIDDEN = "hidden";
+	private static final String TAG_SAFE_CONTACT_LAST_UPDATE = "lastUpdate";
 	private static final String TAG_SAFE_CONTACT_PRIVATE = "private";
 	private static final String TAG_SAFE_CONTACT_READ_RECEIPTS = "readReceipts";
 	private static final String TAG_SAFE_CONTACT_TYPING_INDICATORS = "typingIndicators";
@@ -194,6 +198,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final String TAG_SAFE_GROUP_CREATED_AT = "createdAt";
 	private static final String TAG_SAFE_GROUP_MEMBERS = "members";
 	private static final String TAG_SAFE_GROUP_DELETED = "deleted";
+	private static final String TAG_SAFE_GROUP_LAST_UPDATE = "lastUpdate";
 	private static final String TAG_SAFE_GROUP_PRIVATE = "private";
 
 	private static final String TAG_SAFE_DISTRIBUTIONLISTS = "distributionlists";
@@ -201,6 +206,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final String TAG_SAFE_DISTRIBUTIONLIST_NAME = "name";
 	private static final String TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT = "createdAt";
 	private static final String TAG_SAFE_DISTRIBUTIONLIST_MEMBERS = "members";
+	private static final String TAG_SAFE_DISTRIBUTIONLIST_LAST_UPDATE = "lastUpdate";
 	private static final String TAG_SAFE_DISTRIBUTIONLIST_PRIVATE = "private";
 
 	private static final String TAG_SAFE_SETTINGS = "settings";
@@ -224,23 +230,55 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private final APIConnector apiConnector;
 	private final LocaleService localeService;
 	private final ContactService contactService;
+	private final GroupService groupService;
+	private final DistributionListService distributionListService;
 	private final FileService fileService;
+	private final IdListService blackListService;
+	private final IdListService excludedSyncIdentitiesService;
 	private final IdListService profilePicRecipientsService;
 	private final DatabaseServiceNew databaseServiceNew;
 	private final DeadlineListService hiddenChatsListService;
+	@NonNull
+	private final ServerAddressProvider serverAddressProvider;
+	@NonNull
+	private final PreferenceStoreInterface preferenceStore;
 
-	public ThreemaSafeServiceImpl(Context context, PreferenceService preferenceService, UserService userService, ContactService contactService, LocaleService localeService, FileService fileService, IdListService profilePicRecipientsService, DatabaseServiceNew databaseServiceNew, IdentityStore identityStore, APIConnector apiConnector, DeadlineListService hiddehChatsListService) {
+	public ThreemaSafeServiceImpl(
+		Context context,
+		PreferenceService preferenceService,
+		UserService userService,
+		ContactService contactService,
+		GroupService groupService,
+		DistributionListService distributionListService,
+		LocaleService localeService,
+		FileService fileService,
+		IdListService blackListService,
+		IdListService excludedSyncIdentitiesService,
+		IdListService profilePicRecipientsService,
+		DatabaseServiceNew databaseServiceNew,
+		IdentityStore identityStore,
+		APIConnector apiConnector,
+		DeadlineListService hiddenChatsListService,
+		@NonNull ServerAddressProvider serverAddressProvider,
+		@NonNull PreferenceStoreInterface preferenceStore
+		) {
 		this.context = context;
 		this.preferenceService = preferenceService;
 		this.userService = userService;
 		this.contactService = contactService;
+		this.groupService = groupService;
+		this.distributionListService = distributionListService;
 		this.identityStore = identityStore;
 		this.apiConnector = apiConnector;
 		this.localeService = localeService;
 		this.databaseServiceNew = databaseServiceNew;
 		this.fileService = fileService;
+		this.blackListService = blackListService;
+		this.excludedSyncIdentitiesService = excludedSyncIdentitiesService;
 		this.profilePicRecipientsService = profilePicRecipientsService;
-		this.hiddenChatsListService = hiddehChatsListService;
+		this.hiddenChatsListService = hiddenChatsListService;
+		this.serverAddressProvider = serverAddressProvider;
+		this.preferenceStore = preferenceStore;
 	}
 
 	@Override
@@ -437,9 +475,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 
 		ThreemaSafeServerInfo serverInfo = preferenceService.getThreemaSafeServerInfo();
-		if (serverInfo == null) {
-			throw new ThreemaSafeUploadException("No server info", true);
-		}
 
 		// test server to update configuration
 		final ThreemaSafeServerTestResponse serverTestResponse;
@@ -450,8 +485,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			throw new ThreemaSafeUploadException("Server test failed. " + e.getMessage(), true);
 		}
 
-		String json = getJson();
-		if (json == null) {
+		String safeJson = getSafeJson();
+		if (safeJson == null) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_JSON_FAIL);
 			throw new ThreemaSafeUploadException("Json failed", true);
 		}
@@ -460,7 +495,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		String hashString;
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-			messageDigest.update(json.getBytes(StandardCharsets.UTF_8));
+			messageDigest.update(safeJson.getBytes(StandardCharsets.UTF_8));
 			hashString = StringConversionUtil.byteArrayToString(messageDigest.digest());
 		} catch (NoSuchAlgorithmException e) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_HASH_FAIL);
@@ -486,7 +521,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			}
 		}
 
-		byte[] gzippedPlaintext = gZipCompress(json.getBytes());
+		byte[] gzippedPlaintext = gZipCompress(safeJson.getBytes());
 		if (gzippedPlaintext == null || gzippedPlaintext.length <= 0) {
 			preferenceService.setThreemaSafeErrorCode(ERROR_CODE_GZIP_FAIL);
 			throw new ThreemaSafeUploadException("Compression failed", true);
@@ -546,6 +581,12 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 				Toast.makeText(windowContext, R.string.threema_safe_upload_successful, Toast.LENGTH_LONG).show();
 			});
 		}
+
+		// This is only required as for some users the default server name has been stored in the
+		// preferences. Default server names should not be stored in preferences as they prevent us
+		// from changing the default server name easily.
+		// TODO(ANDR-2968): Remove this after the specified time period
+		removeStoredDefaultServerName();
 
 		logger.info("Threema Safe backup successfully created and uploaded");
 	}
@@ -921,12 +962,22 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 						contactModel.setIsWork(contact.optBoolean(TAG_SAFE_CONTACT_WORK_VERIFIED));
 						contactModel.setFirstName(contact.optString(TAG_SAFE_CONTACT_FIRST_NAME));
 						contactModel.setLastName(contact.optString(TAG_SAFE_CONTACT_LAST_NAME));
-						contactModel.setPublicNickName(contact.optString(TAG_SAFE_CONTACT_NICKNAME));
-						contactModel.setIsHidden(contact.optBoolean(TAG_SAFE_CONTACT_HIDDEN, false));
+						if (!contact.isNull(TAG_SAFE_CONTACT_NICKNAME)) {
+							contactModel.setPublicNickName(contact.getString(TAG_SAFE_CONTACT_NICKNAME));
+						}
+						contactModel.setAcquaintanceLevel(
+							contact.optBoolean(TAG_SAFE_CONTACT_HIDDEN, false)
+							? AcquaintanceLevel.GROUP
+							: AcquaintanceLevel.DIRECT
+						);
 						contactModel.setDateCreated(new Date(contact.optLong(TAG_SAFE_CONTACT_CREATED_AT, System.currentTimeMillis())));
 						contactModel.setIsRestored(true);
 						contactModel.setTypingIndicators(contact.optInt(TAG_SAFE_CONTACT_TYPING_INDICATORS, ContactModel.DEFAULT));
 						contactModel.setReadReceipts(contact.optInt(TAG_SAFE_CONTACT_READ_RECEIPTS, ContactModel.DEFAULT));
+						if (!contact.isNull(TAG_SAFE_CONTACT_LAST_UPDATE)) {
+							final long lastUpdate = contact.getLong("lastUpdate");
+							contactModel.setLastUpdate(new Date(lastUpdate));
+						}
 						contactModelFactory.createOrUpdate(contactModel);
 
 						if (contact.optBoolean(TAG_SAFE_CONTACT_PRIVATE, false)) {
@@ -943,13 +994,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private void restoreGroups(JSONArray groups) {
 		if (groups == null) return;
 		if (databaseServiceNew == null) return;
-		final GroupService groupService;
-		try {
-			groupService = ThreemaApplication.getServiceManager().getGroupService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			return;
-		}
 
 		GroupModelFactory groupModelFactory = databaseServiceNew.getGroupModelFactory();
 		GroupMemberModelFactory groupMemberModelFactory = databaseServiceNew.getGroupMemberModelFactory();
@@ -971,10 +1015,14 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 					groupModel.setCreatedAt(new Date(createdAt));
 					groupModel.setDeleted(group.getBoolean(TAG_SAFE_GROUP_DELETED));
 					groupModel.setSynchronizedAt(new Date(0));
+					if (!group.isNull(TAG_SAFE_GROUP_LAST_UPDATE)) {
+						final long lastUpdate = group.getLong("lastUpdate");
+						groupModel.setLastUpdate(new Date(lastUpdate));
+					}
 
 					if (groupModelFactory.create(groupModel)) {
 						if (group.optBoolean(TAG_SAFE_GROUP_PRIVATE, false)) {
-							hiddenChatsListService.add(groupService.getUniqueIdString(groupModel), DeadlineListService.DEADLINE_INDEFINITE);
+							hiddenChatsListService.add(this.groupService.getUniqueIdString(groupModel), DeadlineListService.DEADLINE_INDEFINITE);
 						}
 
 						JSONArray members = group.getJSONArray(TAG_SAFE_GROUP_MEMBERS);
@@ -984,7 +1032,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 								if (contactService.getByIdentity(identity) == null) {
 									// fetch group contact if not in contact list
 									try {
-										contactService.createContactByIdentity(identity, true, true);
+										contactService.createContactByIdentity(identity, true, AcquaintanceLevel.GROUP);
 									} catch (InvalidEntryException | EntryAlreadyExistsException | PolicyViolationException e) {
 										// do not add as group member if contact cannot be created
 										continue;
@@ -999,17 +1047,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 								groupMemberModelFactory.create(groupMemberModel);
 							}
 						}
-
-						if (!groupModel.isDeleted()) {
-							if (groupService.isGroupCreator(groupModel)) {
-								groupService.sendSync(groupModel);
-							} else {
-								groupService.requestSync(creatorIdentity, groupModel.getApiGroupId());
-							}
-						}
 					}
 				}
-			} catch (JSONException | NullPointerException | ThreemaException e){
+			} catch (JSONException | NullPointerException e){
 				// ignore and continue with next group
 			}
 		}
@@ -1018,13 +1058,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private void restoreDistributionlists(JSONArray distributionlists) {
 		if (distributionlists == null) return;
 		if (databaseServiceNew == null) return;
-		final DistributionListService distributionListService;
-		try {
-			distributionListService = ThreemaApplication.getServiceManager().getDistributionListService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			return;
-		}
 
 		DistributionListMemberModelFactory distributionListMemberModelFactory = databaseServiceNew.getDistributionListMemberModelFactory();
 
@@ -1036,16 +1069,24 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 				long createdAt = distributionlist.optLong(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, 0L);
 
 				String id = distributionlist.optString(TAG_SAFE_DISTRIBUTIONLIST_ID);
-				if (id.length() > 0) {
-					distributionListModel.setId(Long.valueOf(id, 16));
+				if (id.length() == 16) {
+					final byte[] distributionListIdBytes = Utils.hexStringToByteArray(id);
+					distributionListModel.setId(Utils.byteArrayToLongLittleEndian(distributionListIdBytes));
 				}
 				distributionListModel.setName(distributionlist.getString(TAG_SAFE_DISTRIBUTIONLIST_NAME));
 				distributionListModel.setCreatedAt(new Date(createdAt));
+				if (!distributionlist.isNull(TAG_SAFE_DISTRIBUTIONLIST_LAST_UPDATE)) {
+					final long lastUpdate = distributionlist.getLong("lastUpdate");
+					distributionListModel.setLastUpdate(new Date(lastUpdate));
+				}
 
 				databaseServiceNew.getDistributionListModelFactory().create(distributionListModel);
 
 				if (distributionlist.optBoolean(TAG_SAFE_DISTRIBUTIONLIST_PRIVATE, false)) {
-					hiddenChatsListService.add(distributionListService.getUniqueIdString(distributionListModel), DeadlineListService.DEADLINE_INDEFINITE);
+					hiddenChatsListService.add(
+						distributionListService.getUniqueIdString(distributionListModel),
+						DeadlineListService.DEADLINE_INDEFINITE
+					);
 				}
 
 				JSONArray members = distributionlist.getJSONArray(TAG_SAFE_DISTRIBUTIONLIST_MEMBERS);
@@ -1055,7 +1096,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 						if (contactService.getByIdentity(identity) == null) {
 							// fetch contact if not in contact list
 							try {
-								contactService.createContactByIdentity(identity, true, true);
+								contactService.createContactByIdentity(identity, true, AcquaintanceLevel.GROUP);
 							} catch (InvalidEntryException | EntryAlreadyExistsException | PolicyViolationException e) {
 								// do not add as distribution list member if contact cannot be created
 								continue;
@@ -1274,10 +1315,14 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		}
 		contact.put(TAG_SAFE_CONTACT_VERIFICATION_LEVEL, contactModel.getVerificationLevel().getCode());
 		contact.put(TAG_SAFE_CONTACT_WORK_VERIFIED, contactModel.isWork());
+		contact.put(TAG_SAFE_CONTACT_HIDDEN, contactModel.isHidden());
 		contact.put(TAG_SAFE_CONTACT_FIRST_NAME, contactModel.getFirstName());
 		contact.put(TAG_SAFE_CONTACT_LAST_NAME, contactModel.getLastName());
 		contact.put(TAG_SAFE_CONTACT_NICKNAME, contactModel.getPublicNickName());
-		contact.put(TAG_SAFE_CONTACT_HIDDEN, contactModel.isHidden());
+		if (contactModel.getLastUpdate() != null) {
+			contact.put(TAG_SAFE_CONTACT_LAST_UPDATE, contactModel.getLastUpdate().getTime());
+		}
+		contact.put(TAG_SAFE_CONTACT_HIDDEN, contactModel.getAcquaintanceLevel() == AcquaintanceLevel.GROUP);
 		contact.put(TAG_SAFE_CONTACT_TYPING_INDICATORS, contactModel.getTypingIndicators());
 		contact.put(TAG_SAFE_CONTACT_READ_RECEIPTS, contactModel.getReadReceipts());
 		contact.put(TAG_SAFE_CONTACT_PRIVATE, hiddenChatsListService.has(contactService.getUniqueIdString(contactModel)));
@@ -1307,7 +1352,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		return membersArray;
 	}
 
-	private JSONObject getGroup(GroupService groupService, GroupModel groupModel) throws JSONException {
+	private JSONObject getGroup(GroupModel groupModel) throws JSONException {
 		JSONObject group = new JSONObject();
 
 		group.put(TAG_SAFE_GROUP_ID, groupModel.getApiGroupId());
@@ -1320,25 +1365,20 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		} else {
 			group.put(TAG_SAFE_GROUP_CREATED_AT, 0);
 		}
-		group.put(TAG_SAFE_GROUP_MEMBERS, getGroupMembers(groupService.getGroupIdentities(groupModel)));
+		group.put(TAG_SAFE_GROUP_MEMBERS, getGroupMembers(this.groupService.getGroupIdentities(groupModel)));
 		group.put(TAG_SAFE_GROUP_DELETED, groupModel.isDeleted());
-		group.put(TAG_SAFE_GROUP_PRIVATE, hiddenChatsListService.has(groupService.getUniqueIdString(groupModel)));
+		if (groupModel.getLastUpdate() != null) {
+			group.put(TAG_SAFE_GROUP_LAST_UPDATE, groupModel.getLastUpdate().getTime());
+		}
+		group.put(TAG_SAFE_GROUP_PRIVATE, hiddenChatsListService.has(this.groupService.getUniqueIdString(groupModel)));
 
 		return group;
 	}
 
 	private JSONArray getGroups() throws JSONException {
-		final GroupService groupService;
-		try {
-			groupService = ThreemaApplication.getServiceManager().getGroupService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			return null;
-		}
-
 		JSONArray groupsArray = new JSONArray();
 
-		for (final GroupModel groupModel : groupService.getAll(new GroupService.GroupFilter() {
+		for (final GroupModel groupModel : this.groupService.getAll(new GroupService.GroupFilter() {
 			@Override
 			public boolean sortByDate() {
 				return false;
@@ -1364,7 +1404,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 				return true;
 			}
 		})) {
-			groupsArray.put(getGroup(groupService, groupModel));
+			groupsArray.put(getGroup(groupModel));
 		}
 
 		return groupsArray;
@@ -1380,31 +1420,32 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		return membersArray;
 	}
 
-	private JSONObject getDistributionlist(DistributionListService distributionListService, DistributionListModel distributionListModel) throws JSONException {
+	private JSONObject getDistributionlist(DistributionListModel distributionListModel) throws JSONException {
 		JSONObject distributionlist = new JSONObject();
 
-		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_ID, Utils.byteArrayToHexString(Utils.longToByteArrayBigEndian(distributionListModel.getId())));
+		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_ID, Utils.byteArrayToHexString(Utils.longToByteArrayLittleEndian(distributionListModel.getId())));
 		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_NAME, distributionListModel.getName());
 		if (distributionListModel.getCreatedAt() != null) {
 			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, Utils.getUnsignedTimestamp(distributionListModel.getCreatedAt()));
 		} else {
 			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, 0);
 		}
-		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_MEMBERS, getDistributionlistMembers(distributionListService.getDistributionListIdentities(distributionListModel)));
-		distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_PRIVATE, hiddenChatsListService.has(distributionListService.getUniqueIdString(distributionListModel)));
+		distributionlist.put(
+			TAG_SAFE_DISTRIBUTIONLIST_MEMBERS,
+			getDistributionlistMembers(distributionListService.getDistributionListIdentities(distributionListModel))
+		);
+		if (distributionListModel.getLastUpdate() != null) {
+			distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_LAST_UPDATE, distributionListModel.getLastUpdate().getTime());
+		}
+		distributionlist.put(
+			TAG_SAFE_DISTRIBUTIONLIST_PRIVATE,
+			hiddenChatsListService.has(distributionListService.getUniqueIdString(distributionListModel))
+		);
 
 		return distributionlist;
 	}
 
 	private JSONArray getDistributionlists() throws JSONException {
-		final DistributionListService distributionListService;
-		try {
-			distributionListService = ThreemaApplication.getServiceManager().getDistributionListService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			return null;
-		}
-
 		JSONArray distributionlistsArray = new JSONArray();
 
 		for (final DistributionListModel distributionListModel : distributionListService.getAll(new DistributionListService.DistributionListFilter() {
@@ -1423,7 +1464,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 				return false;
 			}
 		})) {
-			distributionlistsArray.put(getDistributionlist(distributionListService, distributionListModel));
+			distributionlistsArray.put(getDistributionlist(distributionListModel));
 		}
 
 		return distributionlistsArray;
@@ -1433,7 +1474,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		JSONObject info = new JSONObject();
 
 		info.put(TAG_SAFE_INFO_VERSION, PROTOCOL_VERSION);
-		info.put(TAG_SAFE_INFO_DEVICE, ConfigUtils.getAppVersion(context) + "A/" + Locale.getDefault());
+		info.put(TAG_SAFE_INFO_DEVICE, ConfigUtils.getAppVersion() + "A/" + Locale.getDefault());
 
 		return info;
 	}
@@ -1478,17 +1519,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	}
 
 	private JSONArray getSettingsBlockedContacts() {
-		final IdListService blacklistService;
-		try {
-			blacklistService = ThreemaApplication.getServiceManager().getBlackListService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			return null;
-		}
-
 		JSONArray blockedContactsArray = new JSONArray();
 
-		for (final String id : blacklistService.getAll()) {
+		for (final String id : blackListService.getAll()) {
 			blockedContactsArray.put(id);
 		}
 
@@ -1498,17 +1531,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private void setSettingsBlockedContacts(JSONArray blockedContacts) {
 		if (blockedContacts == null) return;
 
-		final IdListService blacklistService;
-		try {
-			blacklistService = ThreemaApplication.getServiceManager().getBlackListService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			return;
-		}
-
 		for (int i=0; i <blockedContacts.length(); i++) {
 			try {
-				blacklistService.add(blockedContacts.getString(i));
+				blackListService.add(blockedContacts.getString(i));
 			} catch (JSONException e) {
 				// ignore invalid entry
 			}
@@ -1516,14 +1541,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	}
 
 	private JSONArray getSettingsSyncExcludedContacts() {
-		final IdListService excludedSyncIdentitiesService;
-		try {
-			excludedSyncIdentitiesService = ThreemaApplication.getServiceManager().getExcludedSyncIdentitiesService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			return null;
-		}
-
 		JSONArray excludedSyncIds = new JSONArray();
 
 		for (final String id : excludedSyncIdentitiesService.getAll()) {
@@ -1535,14 +1552,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 	private void setSettingsSyncExcluded(JSONArray excludedIdentities) {
 		if (excludedIdentities == null) return;
-
-		final IdListService excludedSyncIdentitiesService;
-		try {
-			excludedSyncIdentitiesService = ThreemaApplication.getServiceManager().getExcludedSyncIdentitiesService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			return;
-		}
 
 		for (int i=0; i <excludedIdentities.length(); i++) {
 			try {
@@ -1599,8 +1608,13 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		return settings;
 	}
 
-	private String getJson() {
-		JSONObject jsonObject = new JSONObject();
+	/**
+	 * Generate and return the Threema Safe JSON string.
+	 *
+	 * If an error occurs, the error is logged and `null` is returned.
+	 */
+	@Nullable String getSafeJson() {
+		final JSONObject jsonObject = new JSONObject();
 		try {
 			jsonObject.put(TAG_SAFE_INFO, getInfo());
 			jsonObject.put(TAG_SAFE_USER, getUser());
@@ -1609,18 +1623,35 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			jsonObject.put(TAG_SAFE_DISTRIBUTIONLISTS, getDistributionlists());
 			jsonObject.put(TAG_SAFE_SETTINGS, getSettings());
 			// TODO(ANDR-2296): Store group invites in backup
-			return jsonObject.toString(BuildConfig.DEBUG ? 4 : 0);
-
+			final int indentSpaces = BuildConfig.DEBUG ? 4 : 0;
+			return jsonObject.toString(indentSpaces);
 		} catch (JSONException e) {
-			logger.error("Exception", e);
+			logger.error("Could not create Threema Safe JSON", e);
+			return null;
 		}
-
-		return null;
 	}
 
 	public static class UploadSizeExceedException extends Exception {
 		UploadSizeExceedException(String e) {
 			super(e);
+		}
+	}
+
+	private void removeStoredDefaultServerName() {
+		try {
+			String defaultServerName = serverAddressProvider.getSafeServerUrl(false);
+			String legacyDefaultServerName = "safe-%h.threema.ch";
+			String prefKey = context.getString(R.string.preferences__threema_safe_server_name);
+			String customServerName = preferenceStore.getString(prefKey, true);
+
+			if (defaultServerName.equals(customServerName) || legacyDefaultServerName.equals(customServerName)) {
+				// In case the custom server name is the same as the default server name, we should
+				// remove the server name from preferences.
+				this.preferenceStore.save(prefKey, (String) null, true);
+				logger.info("Removed 'custom' server name: {}", customServerName);
+			}
+		} catch (ThreemaException e) {
+			logger.warn("Could not remove default server name", e);
 		}
 	}
 }

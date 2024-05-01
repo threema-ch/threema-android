@@ -236,7 +236,7 @@ class GroupCallService : Service() {
             this, NotificationService.NOTIFICATION_CHANNEL_IN_CALL, null)
             .setContentTitle(getNotificationTitle(group))
             .setContentText(getString(R.string.group_call))
-            .setSmallIcon(R.drawable.ic_group_call)
+            .setSmallIcon(R.drawable.ic_phone_locked_outline)
             .setLargeIcon(getAvatar(group))
             .setColor(ResourcesCompat.getColor(resources, R.color.md_theme_light_primary, theme))
             .setLocalOnly(true)

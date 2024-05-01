@@ -31,8 +31,10 @@ import org.slf4j.Logger;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.StringDef;
@@ -90,10 +92,11 @@ public class CreateGroupHandler extends MessageReceiver {
 			this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
 			return;
 		}
+
 		final List<Value> members = data.get(Protocol.ARGUMENT_MEMBERS).asArrayValue().list();
-		final String[] identities = new String[members.size()];
-		for (int n = 0; n < members.size(); n++) {
-			identities[n] = members.get(n).asStringValue().toString();
+		final Set<String> identities = new HashSet<>();
+		for (Value member : members) {
+			identities.add(member.asStringValue().toString());
 		}
 
 		// Parse group name

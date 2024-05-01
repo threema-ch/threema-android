@@ -31,10 +31,12 @@ import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageModel;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * add caption field to normal, group and distribution list message models
  */
-public class SystemUpdateToVersion60 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion60 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -52,7 +54,7 @@ public class SystemUpdateToVersion60 extends  UpdateToVersion implements UpdateS
 				GroupMessageModel.TABLE,
 				DistributionListMessageModel.TABLE
 		}) {
-			if(!this.fieldExist(this.sqLiteDatabase, table, AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID)) {
+			if(!fieldExists(this.sqLiteDatabase, table, AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID)) {
 				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table
 						+ " ADD COLUMN " + AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + " VARCHAR NULL");
 			}
@@ -61,7 +63,7 @@ public class SystemUpdateToVersion60 extends  UpdateToVersion implements UpdateS
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

@@ -99,15 +99,15 @@ public class CleanReceiverConversationRequestHandler extends MessageReceiver {
 			switch(receiver.getType()) {
 				case ContactMessageReceiver.Type_CONTACT:
 					conversationModel = this.conversationService.refresh(((ContactMessageReceiver)receiver).getContact());
-					this.conversationService.clear(conversationModel, true);
+					this.conversationService.empty(conversationModel, true);
 					break;
 				case ContactMessageReceiver.Type_GROUP:
 					conversationModel = this.conversationService.refresh(((GroupMessageReceiver)receiver).getGroup());
-					this.conversationService.clear(conversationModel, false);
+					this.conversationService.empty(conversationModel, false);
 					break;
 				case ContactMessageReceiver.Type_DISTRIBUTION_LIST:
 					conversationModel = this.conversationService.refresh(((DistributionListMessageReceiver)receiver).getDistributionList());
-					this.conversationService.clear(conversationModel, false);
+					this.conversationService.empty(conversationModel, false);
 					break;
 			}
 

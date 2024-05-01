@@ -124,7 +124,7 @@
     <string name="message_delete_undo">撤消</string>
     <string name="mobile_already_linked">您的 Threema ID 已链接到此手机号码</string>
     <string name="email_already_linked">您的 Threema ID 已链接到此电子邮箱地址</string>
-    <string name="whoaaa">Threema 公告</string>
+    <string name="whoaaa">公告</string>
     <string name="really_delete_message_title">删除消息</string>
     <string name="really_delete_thread">删除会话</string>
     <string name="really_delete_multiple_threads">删除会话</string>
@@ -166,7 +166,7 @@
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">以下文本字符串可以与所选密码一起使用，以
 恢复您的 Threema ID。</string>
-    <string name="backup_share_subject">Threema ID导出为</string>
+    <string name="backup_share_subject">Threema ID 导出为</string>
     <string name="add_attachment">新附件</string>
     <string name="invalid_passphrase">密码无效</string>
     <string name="master_key_locked">主密钥被锁定</string>
@@ -229,8 +229,7 @@
     <string name="masterkey_is_unlocked">主钥匙已解锁</string>
     <string name="file_too_large">文件大于最大大小 %1$d MB</string>
     <string name="deleting_thread">正在删除会话</string>
-    <string name="enter_serial_body"><![CDATA[请输入您的商店许可证密钥，或点击这里取回您的密钥：
-https://shop.threema.ch/retrieve_keys]]></string>
+    <string name="enter_serial_body"><![CDATA[请输入您的商店许可证密钥。如果您之前已经购买了许可证，您可以<a href="https://shop.threema.ch/">购买</a>许可证或<a href="https://shop.threema.ch/retrieve_keys">找回</a>您的密钥。]]></string>
     <string name="enter_serial_title">解锁 Threema</string>
     <string name="serial_required_want_exit">许可证密钥无效。您想重试还是退出Threema？</string>
     <string name="checking_serial">正在检查许可证密钥</string>
@@ -960,6 +959,10 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="empty_chat_title">清空会话记录</string>
     <string name="empty_chat_confirm">此会话中的所有消息将被删除。是否继续？</string>
     <string name="emptying_chat">正在清空会话记录</string>
+    <string name="emptying_chat_deleting_messages">正在删除消息…</string>
+    <string name="delete_chat_title">删除会话</string>
+    <string name="delete_chat_confirm">此会话中的所有消息将被删除，同时此会话也将被删除。是否继续？</string>
+    <string name="deleting_chat">正在删除会话</string>
     <string name="set_private">标记为 “私密会话”</string>
     <string name="unset_private">停用 “私密会话”</string>
     <string name="delete_group_message">您确定要退出这个群组并将其完全删除吗？所有消息将被删除。</string>
@@ -1044,8 +1047,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="delete">删除</string>
     <string name="continue_recording">继续录音</string>
     <string name="whatsnew_title">%1$s 5.2 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p> 
-<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p> 
+    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p>
+<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p>
 <p>这次更新还有大量其他改进和优化。</p> ]]></string>
     <string name="whatsnew2_title">" "</string>
     <string name="whatsnew2_body">" "</string>
@@ -1120,7 +1123,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="tooltip_voip_turn_on_camera">点击这里打开摄像头</string>
     <string name="prefs_videocall_profile_explain">实际的图片质量取决于网络以及对方的设置</string>
     <string name="permission_camera_videocall_required">请允许使用摄像头以进行视频通话。</string>
-    <string name="feedback">反馈</string>
     <string name="tooltip_voip_enable_speakerphone">点击这里打开免提电话</string>
     <string name="ballot_open">开放投票</string>
     <string name="translators">翻译人员</string>
@@ -1392,16 +1394,21 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="synchronizing">同步中…</string>
     <string name="forward_security">以完全正向保密发送消息</string>
     <string name="forward_security_mode">完全正向保密</string>
-    <string name="forward_security_mode_none">否</string>
+    <string name="forward_security_mode_none">没有</string>
     <string name="clear_forward_security">重置对此联系人的 “完全正向保密” 状态</string>
     <string name="clear_forward_security_warning">仅在 Threema 支持团队的指示下，才执行此操作。</string>
     <string name="forward_security_cleared">与此联系人的完全正向保密会话已被清除</string>
     <string name="message_without_forward_security">您收到一条没有完全正向保密的消息，您可以验证发件人是否主动禁用完美前向保密。</string>
-    <string name="forward_security_established">此会话中的消息现正受完全正向保密的保护。</string>
+    <string name="forward_security_established">跟对方聊天的消息现正受完全正向保密的保护。</string>
     <string name="forward_security_established_rx">在此会话中的消息现正受完全正向保密的保护。</string>
     <string name="forward_security_reset">这个之前已启用 “完全正向保密” 的会话，现被重置保密状态。如果对方更换了设备或重新安装此应用程序，就会重置保密状态。</string>
     <string name="forward_security_reset_simple">与此联系人的完全正向保密会话已重置。</string>
     <string name="forward_security_message_out_of_order">解密新收到的消息发生错误，无法解密。</string>
+    <string name="forward_security_notification_channel_name">完全正向保密警告</string>
+    <string name="forward_security_notification_rejected_title">消息发送失败</string>
+    <string name="forward_security_notification_rejected_text_contact">一条或多条消息无法发送到%1$s。</string>
+    <string name="forward_security_notification_rejected_text_group">一条或多条消息无法发送到 “%1$s”。</string>
+    <string name="forward_security_notification_rejected_text_generic">一条或多条消息无法发送。</string>
     <string name="self_updater_installation_failed">下载更新失败。请手动从 <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> 下载并安装更新。</string>
     <string name="spam_first_contact">此会话来自一个未知联系人</string>
     <string name="spam_report">举报垃圾消息</string>
@@ -1413,6 +1420,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="spam_report_short">举报</string>
     <string name="wizard_incompatible_contact_sync_params">您可能设置了不兼容的 MDM 参数。如果用户限制设置为 DISALLOW_MODIFY_ACCOUNTS，Threema MDM 参数 th_contact_sync 则无法设置为 true。请联系您的设备管理员以获取帮助。</string>
     <string name="messages_cannot_be_recovered">您将无法恢复消息。</string>
+    <string name="groups_left_or_dissolved">群组将被保留或解散，然后被删除。</string>
     <string name="contact_deleted">联系人已删除</string>
     <string name="last_added_contact">最后添加</string>
     <string name="directory_explain_text">在公司目录中搜索任何尚未列在您的联系人列表中的员工。</string>
@@ -1551,6 +1559,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="edit_and_send">编辑并发送</string>
     <string name="media_gallery_animated_webps">动画 WebP 文件</string>
     <string name="unsupported_image_type">不支持的图像类型：%s</string>
+    <string name="application_setup_steps_failed">检查联系人状态需要有效的互联网连接。请确保您已连接到互联网，然后重试。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

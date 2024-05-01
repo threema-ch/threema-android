@@ -54,7 +54,7 @@ import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.FetchIdentityException;
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
+import ch.threema.domain.protocol.connection.ServerConnection;
 
 public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardIDRestoreActivity");
@@ -161,7 +161,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 			@Override
 			protected RestoreResult doInBackground(Void... params) {
 				try {
-					ThreemaConnection connection = serviceManager.getConnection();
+					ServerConnection connection = serviceManager.getConnection();
 					if (connection.isRunning()) {
 						connection.stop();
 					}

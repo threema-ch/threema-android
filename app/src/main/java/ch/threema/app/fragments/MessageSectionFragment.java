@@ -91,7 +91,7 @@ import ch.threema.app.archive.ArchiveActivity;
 import ch.threema.app.asynctasks.DeleteDistributionListAsyncTask;
 import ch.threema.app.asynctasks.DeleteGroupAsyncTask;
 import ch.threema.app.asynctasks.DeleteMyGroupAsyncTask;
-import ch.threema.app.asynctasks.EmptyChatAsyncTask;
+import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask;
 import ch.threema.app.asynctasks.LeaveGroupAsyncTask;
 import ch.threema.app.backuprestore.BackupChatService;
 import ch.threema.app.collections.Functional;
@@ -155,6 +155,9 @@ import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.TagModel;
 
+/**
+ * This is one of the tabs in the home screen. It shows the current conversations.
+ */
 public class MessageSectionFragment extends MainFragment
 		implements
 			PasswordEntryDialog.PasswordEntryDialogClickListener,
@@ -178,7 +181,8 @@ public class MessageSectionFragment extends MainFragment
 	private static final String DIALOG_TAG_REALLY_DELETE_MY_GROUP = "rdmg";
 	private static final String DIALOG_TAG_REALLY_DELETE_GROUP = "rdgcc";
 	private static final String DIALOG_TAG_REALLY_DELETE_DISTRIBUTION_LIST = "rddl";
-	private static final String DIALOG_TAG_REALLY_EMPTY_CHAT = "rdec";
+	private static final String DIALOG_TAG_REALLY_EMPTY_CHAT = "remc";
+	private static final String DIALOG_TAG_REALLY_DELETE_CHAT = "rdec";
 
 	private static final int ID_PRIVATE_TO_PUBLIC = 8111;
 
@@ -195,6 +199,7 @@ public class MessageSectionFragment extends MainFragment
 	private static final int TAG_EDIT_GROUP = 11;
 	private static final int TAG_MARK_READ = 12;
 	private static final int TAG_MARK_UNREAD = 13;
+	private static final int TAG_DELETE_CHAT = 14;
 
 	private static final String BUNDLE_FILTER_QUERY = "filterQuery";
 	private static String highlightUid;
@@ -285,22 +290,19 @@ public class MessageSectionFragment extends MainFragment
 		}
 
 		@Override
-		public void onModified(final ConversationModel modifiedConversationModel, final Integer oldPosition) {
+		public void onModified(final ConversationModel modifiedConversationModel, final @Nullable Integer oldPosition) {
 			logger.debug("on modified conversation. old position = {}", oldPosition);
-			if (messageListAdapter != null && recyclerView != null) {
-				synchronized (messageListAdapterItemCache) {
-					messageListAdapterItemCache.remove(modifiedConversationModel);
-				}
-
-				//scroll if position changed (to top)
-				List<ConversationModel> l = new ArrayList<>();
-				l.add(modifiedConversationModel);
-
-				updateList(
-						oldPosition,
-						l,
-						null);
+			if (messageListAdapter == null || recyclerView == null) {
+				return;
 			}
+			synchronized (messageListAdapterItemCache) {
+				messageListAdapterItemCache.remove(modifiedConversationModel);
+			}
+
+			// Scroll if position changed (to top)
+			List<ConversationModel> changedPositions = new ArrayList<>();
+			changedPositions.add(modifiedConversationModel);
+			updateList(oldPosition, changedPositions, null);
 		}
 
 		@Override
@@ -512,6 +514,7 @@ public class MessageSectionFragment extends MainFragment
 		if (savedInstanceState != null && TestUtil.empty(filterQuery)) {
 			filterQuery = savedInstanceState.getString(BUNDLE_FILTER_QUERY);
 		}
+		messageListAdapter.setFilterQuery(filterQuery);
 	}
 
 	@Override
@@ -601,6 +604,7 @@ public class MessageSectionFragment extends MainFragment
 		@Override
 		public boolean onQueryTextChange(String query) {
 			filterQuery = query;
+			messageListAdapter.setFilterQuery(query);
 			updateList(0, null, null);
 			return true;
 		}
@@ -918,12 +922,11 @@ public class MessageSectionFragment extends MainFragment
 						ArrayList<ConversationModel> conversationModels = new ArrayList<>();
 						conversationModels.add(conversationModel);
 
-						updateList(null, conversationModels, new Runnable() {
-							@Override
-							public void run() {
-								conversationListeners.handle((ConversationListener listener) -> listener.onModified(conversationModel, oldPosition));
-							}
-						});
+						updateList(
+							null,
+							conversationModels,
+							() -> conversationListeners.handle((ConversationListener listener) -> listener.onModified(conversationModel, oldPosition))
+						);
 					} else if (direction == ItemTouchHelper.LEFT) {
 						conversationService.archive(conversationModel);
 
@@ -1293,6 +1296,10 @@ public class MessageSectionFragment extends MainFragment
 			labels.add(new SelectorDialogItem(getString(R.string.empty_chat_title), R.drawable.ic_outline_delete_sweep));
 			tags.add(TAG_EMPTY_CHAT);
 		}
+		if (conversationModel.isContactConversation()) {
+			labels.add(new SelectorDialogItem(getString(R.string.delete_chat_title), R.drawable.ic_delete_outline));
+			tags.add(TAG_DELETE_CHAT);
+		}
 
 		if (conversationModel.isDistributionListConversation()) {
 			// distribution lists
@@ -1360,6 +1367,16 @@ public class MessageSectionFragment extends MainFragment
 				dialog.setData(conversationModel);
 				dialog.setTargetFragment(this, 0);
 				dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_EMPTY_CHAT);
+				break;
+			case TAG_DELETE_CHAT:
+				dialog = GenericAlertDialog.newInstance(
+					R.string.delete_chat_title,
+					R.string.delete_chat_confirm,
+					R.string.ok,
+					R.string.cancel);
+				dialog.setData(conversationModel);
+				dialog.setTargetFragment(this, 0);
+				dialog.show(getFragmentManager(), DIALOG_TAG_REALLY_DELETE_CHAT);
 				break;
 			case TAG_DELETE_DISTRIBUTION_LIST:
 				dialog = GenericAlertDialog.newInstance(
@@ -1492,23 +1509,22 @@ public class MessageSectionFragment extends MainFragment
 				new DeleteDistributionListAsyncTask((DistributionListModel) data, distributionListService, this, null).execute();
 				break;
 			case DIALOG_TAG_REALLY_EMPTY_CHAT:
+			case DIALOG_TAG_REALLY_DELETE_CHAT:
 				final ConversationModel conversationModel = (ConversationModel) data;
-				final int fromPosition = conversationModel.getPosition();
 
-				new EmptyChatAsyncTask(conversationModel.getReceiver(), messageService, conversationService, getFragmentManager(), false, new Runnable() {
-					@Override
-					public void run() {
-						conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
-							@Override
-							public void handle(ConversationListener listener) {
-								if (!conversationModel.isGroupConversation()) {
-									conversationService.clear(conversationModel);
-								}
-								listener.onModified(conversationModel, fromPosition);
-							}
-						});
-					}
-				}).execute();
+				final EmptyOrDeleteConversationsAsyncTask.Mode mode = tag.equals(DIALOG_TAG_REALLY_DELETE_CHAT)
+					? EmptyOrDeleteConversationsAsyncTask.Mode.DELETE
+					: EmptyOrDeleteConversationsAsyncTask.Mode.EMPTY;
+				new EmptyOrDeleteConversationsAsyncTask(
+					mode,
+					new MessageReceiver[]{ conversationModel.getReceiver() },
+					conversationService,
+					groupService,
+					distributionListService,
+					getFragmentManager(),
+					null,
+					null
+				).execute();
 				break;
 			default:
 				break;
@@ -1624,6 +1640,7 @@ public class MessageSectionFragment extends MainFragment
 									mentionOnlyChatsListService,
 									ringtoneService,
 									hiddenChatsListService,
+									preferenceService,
 									groupCallManager,
 									highlightUid,
 									MessageSectionFragment.this,

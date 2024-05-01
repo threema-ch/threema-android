@@ -27,10 +27,12 @@ import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * Add a messageFlags field
  */
-public class SystemUpdateToVersion67 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion67 implements UpdateSystemService.SystemUpdate {
 	public static final int VERSION = 67;
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -40,10 +42,10 @@ public class SystemUpdateToVersion67 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if(!this.fieldExist(this.sqLiteDatabase, "contacts", "readReceipts")) {
+		if(!fieldExists(this.sqLiteDatabase, "contacts", "readReceipts")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN readReceipts TINYINT DEFAULT 0");
 		}
-		if(!this.fieldExist(this.sqLiteDatabase, "contacts", "typingIndicators")) {
+		if(!fieldExists(this.sqLiteDatabase, "contacts", "typingIndicators")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN typingIndicators TINYINT DEFAULT 0");
 		}
 		return true;
@@ -51,7 +53,7 @@ public class SystemUpdateToVersion67 extends UpdateToVersion implements UpdateSy
 
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

@@ -93,7 +93,6 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
-import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.utils.ConfigUtils;
@@ -111,6 +110,7 @@ import ch.threema.app.voip.receivers.VoipMediaButtonReceiver;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData;
@@ -159,6 +159,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	private final CallState callState = new CallState();
 	private Long callStartTimestamp = null;
 	private boolean isPeerRinging = false;
+	private final List<Long> messageIds = new ArrayList<>();
 
 	// Map that stores incoming offers
 	private final HashMap<Long, VoipCallOfferData> offerMap = new HashMap<>();
@@ -334,6 +335,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 				audioManager.unregisterMediaButtonEventReceiver(mediaButtonPendingIntent);
 			} else {
 				audioManager.unregisterMediaButtonEventReceiver(new ComponentName(appContext, VoipMediaButtonReceiver.class));
+			}
+			synchronized (this) {
+				messageIds.clear();
 			}
 		}
 
@@ -591,29 +595,59 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	//region Handle call messages
 
 	/**
+	 * Handle a reject message that has been received. Check whether this message id belongs to a
+	 * message regarding the current call. If there is no running call or the message id is
+	 * unrelated to it, we do not need to do anything.
+	 *
+	 * @param messageId the message id of the rejected message
+	 */
+	public synchronized void handlePotentialCallMessageReject(@NonNull MessageId messageId) {
+		if (!(callState.isIdle() || callState.isDisconnecting()) && messageIds.contains(messageId.getMessageIdLong())) {
+			logCallWarning(callState.getCallId(), "Message involved in this call has been rejected. Aborting call.");
+			VoipUtil.sendVoipCommand(getAppContext(), VoipCallService.class, VoipCallService.ACTION_HANGUP);
+		}
+	}
+
+	/**
+	 * Store the message id of a required message of this call. This is needed in case the message
+	 * is rejected. Note that only message ids of messages that should lead to abortion of the call
+	 * should be added here. Message ids where the call id is not equal to the current call are
+	 * discarded.
+	 *
+	 * @param callId    the call id where the message with the given message id belongs to
+	 * @param messageId the message id that should lead
+	 */
+	public synchronized void addRequiredMessageId(long callId, @NonNull MessageId messageId) {
+		if (isCallIdValid(callId)) {
+			messageIds.add(messageId.getMessageIdLong());
+		}
+	}
+
+	/**
 	 * Handle an incoming VoipCallOfferMessage.
 	 * @return true if messages was successfully processed
 	 */
 	@WorkerThread
 	public synchronized boolean handleCallOffer(final VoipCallOfferMessage msg) {
 		// Unwrap data
+		final String callerIdentity = msg.getFromIdentity();
 		final VoipCallOfferData callOfferData = msg.getData();
 		if (callOfferData == null) {
-			logger.warn("Call offer received from {}. Data is null, ignoring.", msg.getFromIdentity());
+			logger.warn("Call offer received from {}. Data is null, ignoring.", callerIdentity);
 			return true;
 		}
 		final long callId = callOfferData.getCallIdOrDefault(0L);
 		logCallInfo(
 			callId,
 			"Call offer received from {} (Features: {})",
-			msg.getFromIdentity(), callOfferData.getFeatures()
+			callerIdentity, callOfferData.getFeatures()
 		);
 		logCallInfo(callId, "{}", callOfferData.getOfferData());
 
 		// Get contact and receiver
-		final ContactModel contact = this.contactService.getByIdentity(msg.getFromIdentity());
+		final ContactModel contact = this.contactService.getByIdentity(callerIdentity);
 		if (contact == null) {
-			logCallError(callId, "Could not fetch contact for identity {}", msg.getFromIdentity());
+			logCallError(callId, "Could not fetch contact for identity {}", callerIdentity);
 			return true;
 		}
 
@@ -668,7 +702,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
 		// If the call is accepted, let VoipCallService know
 		// and set flag to cancel on watch to true as this call flow is initiated and handled from the Phone
-		final Intent answerIntent = createAcceptIntent(callId, msg.getFromIdentity());
+		final Intent answerIntent = createAcceptIntent(callId, callerIdentity);
 		Bundle bundle = new Bundle();
 		bundle.putBoolean(EXTRA_CANCEL_WEAR, true);
 		answerIntent.putExtras(bundle);
@@ -683,7 +717,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// If the call is rejected, start the CallRejectService
 		final Intent rejectIntent = createRejectIntent(
 			callId,
-			msg.getFromIdentity()
+			callerIdentity
 		);
 
 		final PendingIntent reject = PendingIntent.getService(
@@ -705,6 +739,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		// Play ringtone
 		this.playRingtone(notification, messageReceiver, isMuted);
 
+		// Update conversation timestamp
+		contactService.bumpLastUpdate(callerIdentity);
+
 		// Send "ringing" message to caller
 		try {
 			this.sendCallRingingMessage(contact, callId);
@@ -713,19 +750,18 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		}
 
 		// Reject the call after a while
-		OneTimeWorkRequest rejectWork = createRejectWorkRequestBuilder(callId, msg.getFromIdentity(), VoipCallAnswerData.RejectReason.TIMEOUT)
+		OneTimeWorkRequest rejectWork = createRejectWorkRequestBuilder(callId, callerIdentity, VoipCallAnswerData.RejectReason.TIMEOUT)
 			.setInitialDelay(RINGING_TIMEOUT_SECONDS, TimeUnit.SECONDS)
 			.build();
 		WorkManager.getInstance(appContext).enqueue(rejectWork);
 
 		// Notify listeners
 		VoipListenerManager.messageListener.handle(listener -> {
-			final String identity = msg.getFromIdentity();
-			if (listener.handle(identity)) {
-				listener.onOffer(identity, msg.getData());
+			if (listener.handle(callerIdentity)) {
+				listener.onOffer(callerIdentity, msg.getData());
 			}
 		});
-		VoipListenerManager.callEventListener.handle(listener -> listener.onRinging(msg.getFromIdentity()));
+		VoipListenerManager.callEventListener.handle(listener -> listener.onRinging(callerIdentity));
 
 		return true;
 	}
@@ -924,7 +960,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			: msg.getData().getCallIdOrDefault(0L);
 		if (!this.isCallIdValid(callId)) {
 			if (isMissedCall(msg, callId)) {
-				handleMissedCall(msg, callId);
+				handleMissedCall(msg, callId, false);
 				return true;
 			}
 			logger.info(
@@ -960,12 +996,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			}
 		});
 		if (incoming && (prevState.isIdle() || prevState.isRinging() || prevState.isInitializing())) {
-			VoipListenerManager.callEventListener.handle(
-				listener -> {
-					final boolean accepted = prevState.isInitializing();
-					listener.onMissed(callId, identity, accepted, msg.getDate());
-				}
-			);
+			final boolean accepted = prevState.isInitializing();
+			handleMissedCall(msg, callId, accepted);
 		} else if (prevState.isCalling() && duration != null) {
 			VoipListenerManager.callEventListener.handle(listener -> {
 				listener.onFinished(callId, msg.getFromIdentity(), !incoming, duration);
@@ -980,12 +1012,20 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 	 *
 	 * @param msg the hangup message of the missed call
 	 * @param callId the call id of the missed call
+	 * @param accepted whether the call was already accepted (and initializing) or not
 	 */
-	private void handleMissedCall(@NonNull final VoipCallHangupMessage msg, final long callId) {
+	private void handleMissedCall(
+		@NonNull final VoipCallHangupMessage msg,
+		final long callId,
+		boolean accepted
+	) {
 		logger.info("Missed call received from {} with call id {}", msg.getFromIdentity(), callId);
 		VoipListenerManager.callEventListener.handle(
-			listener -> listener.onMissed(callId, msg.getFromIdentity(), false, msg.getDate())
+			listener -> listener.onMissed(callId, msg.getFromIdentity(), accepted, msg.getDate())
 		);
+
+		// Update conversation timestamp
+		contactService.bumpLastUpdate(msg.getFromIdentity());
 	}
 
 	//endregion
@@ -1068,6 +1108,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 			throw new IllegalStateException("Called sendCallOfferMessage in state " + state.getName());
 		}
 
+		// Send call offer message
 		final VoipCallOfferData callOfferData = new VoipCallOfferData()
 			.setCallId(callId)
 			.setOfferData(
@@ -1078,7 +1119,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 		if (videoCall) {
 			callOfferData.addFeature(new VideoFeature());
 		}
-
 		contactService.createReceiver(receiver).sendVoipCallOfferMessage(callOfferData);
 
 		logCallInfo(callId, "Call offer enqueued to {}", receiver.getIdentity());

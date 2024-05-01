@@ -47,13 +47,15 @@ public class DistributionListModel implements ReceiverModel {
 	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_CREATED_AT = "createdAt";
+	public static final String COLUMN_LAST_UPDATE = "lastUpdate"; /* date when the conversation was last updated */
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this distribution list has been archived by user */
-	public static final String COLUMN_IS_HIDDEN = "isHidden"; /* whether this distribution list is hidden from view */
+	public static final String COLUMN_IS_ADHOC_DISTRIBUTION_LIST = "isHidden"; /* whether this is an ad-hoc distribution list */
 
 	private long id;
 	private String name;
 	private Date createdAt;
-	private boolean isArchived, isHidden;
+	private @Nullable Date lastUpdate;
+	private boolean isArchived, isAdHocDistributionList;
 	private int colorIndex = -1;
 
 	// dummy class
@@ -84,6 +86,19 @@ public class DistributionListModel implements ReceiverModel {
 		return this;
 	}
 
+	@Override
+	public DistributionListModel setLastUpdate(@Nullable Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
+		return this;
+	}
+
+	@Override
+	public @Nullable Date getLastUpdate() {
+		// Note: Never return null for distribution lists, they should always be visible
+		return this.lastUpdate == null ? new Date(0) : this.lastUpdate;
+	}
+
+	@Override
 	public boolean isArchived() {
 		return isArchived;
 	}
@@ -93,13 +108,28 @@ public class DistributionListModel implements ReceiverModel {
 		return this;
 	}
 
-	public boolean isHidden() {
-		return isHidden;
+	/**
+	 * Set whether or not this is an ad-hoc distribution list.
+	 *
+	 * Setting this to true will result in the distribution list being hidden from the
+	 * conversation list.
+	 */
+	public DistributionListModel setAdHocDistributionList(boolean isAdHocDistributionList) {
+		this.isAdHocDistributionList = isAdHocDistributionList;
+		return this;
 	}
 
-	public DistributionListModel setHidden(boolean hidden) {
-		isHidden = hidden;
-		return this;
+	/**
+	 * Return whether or not this is an ad-hoc distribution list.
+	 */
+	public boolean isAdHocDistributionList() {
+		return this.isAdHocDistributionList;
+	}
+
+	@Override
+	public boolean isHidden() {
+		// Hide ad-hoc distribution lists from conversation list
+		return this.isAdHocDistributionList();
 	}
 
 	public int getThemedColor(@NonNull Context context) {

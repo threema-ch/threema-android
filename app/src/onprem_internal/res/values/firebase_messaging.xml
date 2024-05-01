@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019-2024 Threema GmbH
+  ~ All rights reserved.
+  -->
+<!-- TODO: move to build.gradle -->
+<resources>
+	<string name="google_app_id" translatable="false">1:139580762987:android:b1183962a58d6675887a2e</string>
+	<string name="gcm_defaultSenderId" translatable="false">139580762987</string>
+	<string name="default_web_client_id" translatable="false">139580762987-7t2nb118t37vafnj776br55rc1lpduks.apps.googleusercontent.com</string>
+	<string name="firebase_database_url" translatable="false">https://threema-internal.appspot.com</string>
+	<string name="google_api_key" translatable="false">AIzaSyDNlueSCOz6e6I1O0V8dt4SP0y_78FJ6Os</string>
+	<string name="google_crash_reporting_api_key" translatable="false">AIzaSyDNlueSCOz6e6I1O0V8dt4SP0y_78FJ6Os</string>
+	<string name="project_id" translatable="false">threema-internal</string>
+</resources>

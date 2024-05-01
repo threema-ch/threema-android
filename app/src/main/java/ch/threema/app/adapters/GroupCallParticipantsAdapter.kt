@@ -52,7 +52,7 @@ class GroupCallParticipantsAdapter(
 	private val participants: MutableList<Participant> = mutableListOf()
 
 	private var localParticipantViewHolder: GroupCallParticipantViewHolder? = null
-	private val activeViewHolders: MutableMap<ParticipantId, GroupCallParticipantViewHolder> = mutableMapOf()
+	private val activeViewHolders: MutableSet<GroupCallParticipantViewHolder> = mutableSetOf()
 	private val viewHolders: MutableSet<GroupCallParticipantViewHolder> = mutableSetOf()
 
 	lateinit var eglBase: EglBase
@@ -77,7 +77,7 @@ class GroupCallParticipantsAdapter(
 		while (true) {
 			// Don't update frozen state for local participants or participants without active camera
 			// as it may be confusing if changes happen without user interaction
-			activeViewHolders.values.filter {
+			activeViewHolders.filter {
 				it.participant !is LocalParticipant && it.participant?.cameraActive ?: false
 			}.forEach {
 				it.videoView.updateFrozenState()
@@ -255,7 +255,7 @@ class GroupCallParticipantsAdapter(
 		logger.trace("### updateViewHoldersDimensions")
 		if (hasHeightChanged(previousCount, newCount)) {
 			logger.trace("Layout changed; update view holder heights.")
-			activeViewHolders.values.forEach {
+			activeViewHolders.forEach {
 				it.itemView.layoutParams.height = getViewHeight(it.parent)
 				it.updateCameraSubscription()
 			}
@@ -270,7 +270,6 @@ class GroupCallParticipantsAdapter(
 	@UiThread
 	fun updateCaptureStates() {
 		activeViewHolders
-			.map { it.value }
 			.forEach { it.updateCaptureState() }
 	}
 
@@ -311,7 +310,7 @@ class GroupCallParticipantsAdapter(
 		if (participant is LocalParticipant) {
 			localParticipantViewHolder = holder
 		}
-		activeViewHolders[participant.id] = holder
+		activeViewHolders.add(holder)
 
 		holder.name.text = participant.name
 
@@ -333,7 +332,7 @@ class GroupCallParticipantsAdapter(
 		if (holder.participant is LocalParticipant) {
 			localParticipantViewHolder = null
 		}
-		holder.participant?.id?.let { activeViewHolders.remove(it) }
+		activeViewHolders.remove(holder)
 	}
 
 	@UiThread

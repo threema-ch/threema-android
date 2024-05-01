@@ -77,6 +77,7 @@ import ch.threema.app.exceptions.RestoreCanceledException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.NotificationBuilderWrapper;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
@@ -95,13 +96,14 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -136,9 +138,9 @@ public class RestoreService extends Service {
 
 	private ServiceManager serviceManager;
 	private ContactService contactService;
+	private ConversationService conversationService;
 	private FileService fileService;
 	private UserService userService;
-	private GroupService groupService;
 	private DatabaseServiceNew databaseServiceNew;
 	private PreferenceService preferenceService;
 	private PowerManager.WakeLock wakeLock;
@@ -287,8 +289,8 @@ public class RestoreService extends Service {
 			fileService = serviceManager.getFileService();
 			databaseServiceNew = serviceManager.getDatabaseServiceNew();
 			contactService = serviceManager.getContactService();
+			conversationService = serviceManager.getConversationService();
 			userService = serviceManager.getUserService();
-			groupService = serviceManager.getGroupService();
 			preferenceService = serviceManager.getPreferenceService();
 			databaseNonceStore = new DatabaseNonceStore(this, serviceManager.getIdentityStore());
 		} catch (Exception e) {
@@ -411,12 +413,13 @@ public class RestoreService extends Service {
 			// send those messages if the backup restore succeeded.
 			//
 			// The connection will be resumed in {@link onFinished}.
-			final ThreemaConnection connection = serviceManager.getConnection();
+			final ServerConnection connection = serviceManager.getConnection();
 			if (connection.isRunning()) {
 				connection.stop();
 			}
 
-			// We use two passes for a restore. The first pass only scans the files in the backup, but does not write to the database. In the second pass, the files are actually written.
+			// We use two passes for a restore. The first pass only scans the files in the backup,
+			// but does not write to the database. In the second pass, the files are actually written.
 			for (int nTry = 0; nTry < 2; nTry++) {
 				logger.info("Attempt {}", nTry + 1);
 				if (nTry > 0) {
@@ -447,7 +450,6 @@ public class RestoreService extends Service {
 					databaseServiceNew.getBallotModelFactory().deleteAll();
 					databaseServiceNew.getBallotVoteModelFactory().deleteAll();
 					databaseServiceNew.getBallotChoiceModelFactory().deleteAll();
-					databaseServiceNew.getGroupMessagePendingMessageIdModelFactory().deleteAll();
 					databaseServiceNew.getGroupRequestSyncLogModelFactory().deleteAll();
 
 					// Remove all media files (don't remove recursively, tmp folder contain the restoring files
@@ -547,6 +549,12 @@ public class RestoreService extends Service {
 				preferenceService.setProfilePicUploadDate(new Date(0));
 				preferenceService.setProfilePicUploadData(null);
 
+				// If we're restoring a backup that does not yet contain lastUpdate (version <22),
+				// calculate lastUpdate ourselves based on restored data.
+				if (restoreSettings.getVersion() < 22) {
+					this.conversationService.calculateLastUpdateForAllConversations();
+				}
+
 				if (!writeToDb) {
 					stepSizeTotal += (messageCount * STEP_SIZE_MESSAGES);
 					stepSizeTotal += ((long) mediaCount * STEP_SIZE_MEDIA);
@@ -609,30 +617,33 @@ public class RestoreService extends Service {
 			String fileName = fileHeader.getFileName();
 
 			if (fileName.endsWith(Tags.CSV_FILE_POSTFIX)) {
-				if (fileName.startsWith(Tags.CONTACTS_FILE_NAME)) {
-					if(!this.restoreContactFile(fileHeader)) {
-						logger.error("restore contact file failed");
-						return false;
-					}
-				}
-				else if (fileName.startsWith(Tags.GROUPS_FILE_NAME)) {
-					if(!this.restoreGroupFile(fileHeader)) {
-						logger.error("restore group file failed");
-					}
-				}
-				else if (fileName.startsWith(Tags.DISTRIBUTION_LISTS_FILE_NAME)) {
-					if(!this.restoreDistributionListFile(fileHeader)) {
-						logger.error("restore distribution list file failed");
-					}
-				}
-				else if (fileName.startsWith(Tags.BALLOT_FILE_NAME + Tags.CSV_FILE_POSTFIX)) {
-					ballotMain = fileHeader;
-				}
-				else if (fileName.startsWith(Tags.BALLOT_CHOICE_FILE_NAME + Tags.CSV_FILE_POSTFIX)) {
-					ballotChoice = fileHeader;
-				}
-				else if (fileName.startsWith(Tags.BALLOT_VOTE_FILE_NAME + Tags.CSV_FILE_POSTFIX)) {
-					ballotVote = fileHeader;
+				final String fileNameWithoutExtension = fileName.substring(0, fileName.length() - Tags.CSV_FILE_POSTFIX.length());
+				switch (fileNameWithoutExtension) {
+					case Tags.CONTACTS_FILE_NAME:
+						if (!this.restoreContactFile(fileHeader)) {
+							logger.error("restore contact file failed");
+							return false;
+						}
+						break;
+					case Tags.GROUPS_FILE_NAME:
+						if (!this.restoreGroupFile(fileHeader)) {
+							logger.error("restore group file failed");
+						}
+						break;
+					case Tags.DISTRIBUTION_LISTS_FILE_NAME:
+						if(!this.restoreDistributionListFile(fileHeader)) {
+							logger.error("restore distribution list file failed");
+						}
+						break;
+					case Tags.BALLOT_FILE_NAME:
+						ballotMain = fileHeader;
+						break;
+					case Tags.BALLOT_CHOICE_FILE_NAME:
+						ballotChoice = fileHeader;
+						break;
+					case Tags.BALLOT_VOTE_FILE_NAME:
+						ballotVote = fileHeader;
+						break;
 				}
 			}
 		}
@@ -810,6 +821,13 @@ public class RestoreService extends Service {
 			uid -> databaseServiceNew.getGroupMessageModelFactory().getByUid(uid)
 		);
 
+		count += this.restoreMessageMediaFiles(
+			fileHeaders,
+			Tags.DISTRIBUTION_LIST_MESSAGE_MEDIA_FILE_PREFIX,
+			Tags.DISTRIBUTION_LIST_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
+			uid -> databaseServiceNew.getDistributionListMessageModelFactory().getByUid(uid)
+		);
+
 		return count;
 	}
 
@@ -817,7 +835,12 @@ public class RestoreService extends Service {
 	/**
 	 * restore all message media
 	 */
-	private int restoreMessageMediaFiles(List<FileHeader> fileHeaders, String filePrefix, String thumbnailPrefix, GetMessageModel getMessageModel) throws RestoreCanceledException {
+	private int restoreMessageMediaFiles(
+		@NonNull List<FileHeader> fileHeaders,
+		@NonNull String filePrefix,
+		@NonNull String thumbnailPrefix,
+		@NonNull GetMessageModel getMessageModel
+	) throws RestoreCanceledException {
 		int count = 0;
 
 		//process all thumbnails
@@ -1007,14 +1030,6 @@ public class RestoreService extends Service {
 					for (GroupMemberModel groupMemberModel : groupMemberModels) {
 						databaseServiceNew.getGroupMemberModelFactory().create(groupMemberModel);
 					}
-
-					if (!groupModel.isDeleted()) {
-						if (groupService.isGroupCreator(groupModel)) {
-							groupService.sendSync(groupModel);
-						} else {
-							groupService.requestSync(groupModel.getCreatorIdentity(), new GroupId(Utils.hexStringToByteArray(groupModel.getApiGroupId().toString())));
-						}
-					}
 				}
 			} catch (Exception x) {
 				logger.error("Could not restore group", x);
@@ -1144,8 +1159,7 @@ public class RestoreService extends Service {
 
 		if(restoreSettings.getVersion() >= 4) {
 			groupModel.setDeleted(row.getBoolean(Tags.TAG_GROUP_DELETED));
-		}
-		else {
+		} else {
 			groupModel.setDeleted(false);
 		}
 		if(restoreSettings.getVersion() >= 14) {
@@ -1155,6 +1169,10 @@ public class RestoreService extends Service {
 		if (restoreSettings.getVersion() >= 17) {
 			groupModel.setGroupDesc(row.getString(Tags.TAG_GROUP_DESC));
 			groupModel.setGroupDescTimestamp(row.getDate(Tags.TAG_GROUP_DESC_TIMESTAMP));
+		}
+
+		if (restoreSettings.getVersion() >= 22) {
+			groupModel.setLastUpdate(row.getDate(Tags.TAG_GROUP_LAST_UPDATE));
 		}
 
 		return groupModel;
@@ -1393,9 +1411,9 @@ public class RestoreService extends Service {
 			throw new ThreemaException(null);
 		}
 
-		final String apiId = pieces[0];
+		final String distributionListBackupUid = pieces[0];
 
-		if (TestUtil.empty(apiId)) {
+		if (TestUtil.empty(distributionListBackupUid)) {
 			throw new ThreemaException(null);
 		}
 
@@ -1407,12 +1425,7 @@ public class RestoreService extends Service {
 				if (writeToDb) {
 					updateProgress(STEP_SIZE_MESSAGES);
 
-					Long distributionListId = null;
-
-					if (distributionListIdMap.containsKey(apiId)) {
-						distributionListId = distributionListIdMap.get(apiId);
-					}
-
+					final Long distributionListId = distributionListIdMap.get(distributionListBackupUid);
 					if (distributionListId != null) {
 						distributionListMessageModel.setDistributionListId(distributionListId);
 						databaseServiceNew.getDistributionListMessageModelFactory().createOrUpdate(
@@ -1436,10 +1449,14 @@ public class RestoreService extends Service {
 
 	private DistributionListModel createDistributionListModel(CSVRow row) throws ThreemaException {
 		DistributionListModel distributionListModel = new DistributionListModel();
+		distributionListModel.setId(row.getLong(Tags.TAG_DISTRIBUTION_LIST_ID));
 		distributionListModel.setName(row.getString(Tags.TAG_DISTRIBUTION_LIST_NAME));
 		distributionListModel.setCreatedAt(row.getDate(Tags.TAG_DISTRIBUTION_CREATED_AT));
 		if(restoreSettings.getVersion() >= 14) {
 			distributionListModel.setArchived(row.getBoolean(Tags.TAG_DISTRIBUTION_LIST_ARCHIVED));
+		}
+		if (restoreSettings.getVersion() >= 22) {
+			distributionListModel.setLastUpdate(row.getDate(Tags.TAG_DISTRIBUTION_LAST_UPDATE));
 		}
 		return distributionListModel;
 	}
@@ -1494,7 +1511,9 @@ public class RestoreService extends Service {
 			contactModel.setPublicNickName(row.getString(Tags.TAG_CONTACT_NICK_NAME));
 		}
 		if(restoreSettings.getVersion() >= 13) {
-			contactModel.setIsHidden(row.getBoolean(Tags.TAG_CONTACT_HIDDEN));
+			final boolean isHidden = row.getBoolean(Tags.TAG_CONTACT_HIDDEN);
+			// Contacts are marked as hidden if their acquaintance level is GROUP
+			contactModel.setAcquaintanceLevel(isHidden ? AcquaintanceLevel.GROUP : AcquaintanceLevel.DIRECT);
 		}
 		if(restoreSettings.getVersion() >= 14) {
 			contactModel.setArchived(row.getBoolean(Tags.TAG_CONTACT_ARCHIVED));
@@ -1503,6 +1522,9 @@ public class RestoreService extends Service {
 			identityIdMap.put(row.getString(Tags.TAG_CONTACT_IDENTITY_ID), contactModel.getIdentity());
 		} else {
 			identityIdMap.put(contactModel.getIdentity(), contactModel.getIdentity());
+		}
+		if (restoreSettings.getVersion() >= 22) {
+			contactModel.setLastUpdate(row.getDate(Tags.TAG_CONTACT_LAST_UPDATE));
 		}
 		contactModel.setIsRestored(true);
 
@@ -1629,12 +1651,6 @@ public class RestoreService extends Service {
 		}
 		messageModel.setUid(row.getString(Tags.TAG_MESSAGE_UID));
 
-		if(restoreSettings.getVersion() >= 9) {
-			messageModel.setIsQueued(row.getBoolean(Tags.TAG_MESSAGE_IS_QUEUED));
-		}
-		else {
-			messageModel.setIsQueued(true);
-		}
 		if (restoreSettings.getVersion() >= 16) {
 			messageModel.setDeliveredAt(row.getDate(Tags.TAG_MESSAGE_DELIVERED_AT));
 			messageModel.setReadAt(row.getDate(Tags.TAG_MESSAGE_READ_AT));
@@ -1651,12 +1667,6 @@ public class RestoreService extends Service {
 		messageModel.setCreatedAt(row.getDate(Tags.TAG_MESSAGE_CREATED_AT));
 		if(restoreSettings.getVersion() >= 5) {
 			messageModel.setModifiedAt(row.getDate(Tags.TAG_MESSAGE_MODIFIED_AT));
-		}
-		if(restoreSettings.getVersion() >= 9) {
-			messageModel.setIsQueued(row.getBoolean(Tags.TAG_MESSAGE_IS_QUEUED));
-		}
-		else {
-			messageModel.setIsQueued(true);
 		}
 		messageModel.setUid(row.getString(Tags.TAG_MESSAGE_UID));
 		if (restoreSettings.getVersion() >= 16) {
@@ -1686,12 +1696,6 @@ public class RestoreService extends Service {
 		messageModel.setCreatedAt(row.getDate(Tags.TAG_MESSAGE_CREATED_AT));
 		if(restoreSettings.getVersion() >= 5) {
 			messageModel.setModifiedAt(row.getDate(Tags.TAG_MESSAGE_MODIFIED_AT));
-		}
-		if(restoreSettings.getVersion() >= 9) {
-			messageModel.setIsQueued(row.getBoolean(Tags.TAG_MESSAGE_IS_QUEUED));
-		}
-		else {
-			messageModel.setIsQueued(true);
 		}
 		messageModel.setUid(row.getString(Tags.TAG_MESSAGE_UID));
 		if (restoreSettings.getVersion() >= 16) {

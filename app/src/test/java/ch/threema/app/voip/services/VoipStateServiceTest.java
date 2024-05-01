@@ -43,7 +43,6 @@ import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
-import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.utils.LogUtil;
@@ -52,7 +51,6 @@ import ch.threema.app.voip.listeners.VoipMessageListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData;
@@ -90,10 +88,8 @@ public class VoipStateServiceTest {
 	private AudioManager mockAudioManager;
 	private ContactService mockContactService;
 	private ContactMessageReceiver contactMessageReceiver;
-	private MessageService mockMessageService;
 	private RingtoneService mockRingtoneService;
 	private PreferenceService mockPreferenceService;
-	private MessageQueue mockMessageQueue;
 	private LifetimeService mockLifetimeService;
 
 	// Service

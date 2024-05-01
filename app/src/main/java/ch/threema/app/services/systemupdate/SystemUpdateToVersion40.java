@@ -31,8 +31,10 @@ import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.WebClientSessionModel;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
-public class SystemUpdateToVersion40 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+
+public class SystemUpdateToVersion40 implements UpdateSystemService.SystemUpdate {
 	private final SQLiteDatabase sqLiteDatabase;
 
 	public SystemUpdateToVersion40(SQLiteDatabase sqLiteDatabase) {
@@ -41,7 +43,7 @@ public class SystemUpdateToVersion40 extends  UpdateToVersion implements UpdateS
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if(!this.fieldExist(this.sqLiteDatabase,
+		if(!fieldExists(this.sqLiteDatabase,
 				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_PUSH_TOKEN)) {
 			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
 					" ADD COLUMN " +  WebClientSessionModel.COLUMN_PUSH_TOKEN + " VARCHAR(255) DEFAULT NULL");
@@ -51,7 +53,7 @@ public class SystemUpdateToVersion40 extends  UpdateToVersion implements UpdateS
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		// Master Key is unlocked
 		PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
 		if (preferenceService != null) {

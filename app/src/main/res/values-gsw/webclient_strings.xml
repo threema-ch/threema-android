@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webclient_qr_scan_error">QR-Code ungültig</string>
+    <string name="webclient_init_session">Neui Sitzig starte</string>
+    <string name="webclient_sessions_really_delete">Wänd Sie die Sitzig würklich lösche?</string>
+    <string name="webclient_last_usage">Zletscht gnutzt: %s</string>
+    <string name="webclient_created_at">Erstellt am: %1$s (%2$s)</string>
+    <string name="webclient_active_since">Aktiv sit: %s</string>
+    <string name="webclient_enable">Desktop-App/Web-Client aktiviere</string>
+    <string name="webclient_no_sessions_found">Ladet Sie am Kompi d’Desktop-App abe (https://threema.ch/download), oder mached Sie de Web-Client (%s) uf. Tipped Sie nachher ufde folgend Button, zum de aazeigt QR-Code z’scanne.</string>
+    <string name="webclient_session_rename">Sitzig umbenänne</string>
+    <string name="webclient_session_label">Neue Name</string>
+    <string name="webclient_session_start">Sitzig starte</string>
+    <string name="webclient_session_stop">Sitzig stoppe</string>
+    <string name="webclient_persistent">gspeicheret</string>
+    <string name="webclient_disposable">nöd gspeicheret</string>
+    <string name="webclient_unnamed_session">Unbenännti Sitzig</string>
+    <string name="webclient_session_remove">Sitzig entferne</string>
+    <string name="webclient_welcome_title">Vom PC uus chatte!</string>
+    <string name="webclient_welcome_explain">Mit de Desktop-App undem Web-Client chönd Sie bequem vo Ihrem PC oder Notebook uus chatte. Sie händ so volle Zuegriff uf all Kontäkt, Medie und Chats, au uf früehneri Unterhaltige.\n\n<b>Die gsamti Kommunikation zwüsched Handy und PC isch vollständig Endi-zu-Endi-verschlüsslet</b> und setzt e direkti Verbindig ii, wenn sich beid Grät im gliiche Netzwerch befindet.\n\nHiiwis: Wenn d’Desktop-App oder de Web-Client aktiv isch, cha de Batterieverbruuch höcher sii. Sie chönd d’Funktion jederziit ii- und usschalte.</string>
+    <string name="webclient_launch">Desktop-App/Web-Client starte</string>
+    <string name="webclient_qr_scan_message">Scanned Sie de QR-Code, wo ufem PC aazeigt wird.</string>
+    <string name="webclient_invalid_qr_code">Ungültige QR-Code</string>
+    <string name="webclient_new_connection_toast">Desktop-/Web-Sitzig gstartet</string>
+    <string name="webclient_protocol_error">Protokoll-Fehler</string>
+    <string name="webclient_protocol_version_to_old">D’Desktop-App / de Web-Client isch nöd kompatibel mit dere Android-App. Bitte aktualisiered Sie Threema für Android uf die neuscht Version.</string>
+    <string name="webclient_protocol_version_too_new_selfhosted">Ihri App unterstützt die Version vode Desktop-App / vom Web-Client nöd. Laded Sie die neust Version vode Desktop-App abe, oder bitted Sie de Administrator vo Ihrere Threema-Web-Instanz, uf die neuscht Version vo Threema Web z’aktualisiere.</string>
+    <string name="webclient_protocol_version_too_new_threema">Ihri App unterstützt die Version vode Desktop-App / vom Web-Client nöd. Bitte nutzed Sie e neueri Version vode Desktop-App / vom Web-Client.</string>
+    <string name="webclient_session_already_exists">Es existiert scho e Sitzig für de QR-Code. Bitte started Sie Ihri Desktop-App / de Web-Client neu.</string>
+    <string name="webclient_really_start_webclient_by_payload_body">Wänd Sie d’Sitzig jetzt starte?</string>
+    <string name="webclient_cannot_restore">Cha d’Sitzig nüme uufneh</string>
+    <string name="webclient_disabled">Desktop/Web isch deaktiviert</string>
+    <string name="webclient_cannot_start">D’Sitzig cha nöd gstartet werde</string>
+    <string name="webclient_constrained_by_mdm">Server isch nöd dur de Administrator freigeh worde.</string>
+    <string name="webclient_clear_all_sessions">All Sitzige lösche</string>
+    <string name="webclient_clear_all_sessions_confirm">Wänd Sie würklich all Sitzige stoppe und lösche?</string>
+    <string name="webclient_prefs_debug_tool_summary">Started Sie das Tool, zum Problem bim Ufbau vode Desktop-/Web-Verbindig z’analysiere</string>
+    <string name="webclient_diagnostics">Desktop-/Web-Diagnose</string>
+    <string name="webclient_diagnostics_start">Start</string>
+    <string name="webclient_diagnostics_intro">Tipped Sie ufde «Start»-Button, zum de Test z’starte.</string>
+    <string name="webclient_diagnostics_done">Beendet. Falls Problem bim Ufbau vode Desktop-/Web-Verbindig ufträtted, schicked Sie das Log bitte an Threema-Support.</string>
+</resources>

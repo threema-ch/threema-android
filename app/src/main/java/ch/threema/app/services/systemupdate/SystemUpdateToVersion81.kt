@@ -26,12 +26,12 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class SystemUpdateToVersion81(
     private val sqLiteDatabase: SQLiteDatabase
-) : UpdateToVersion(), UpdateSystemService.SystemUpdate {
+) : UpdateSystemService.SystemUpdate {
     companion object {
         const val VERSION = 81
     }
 
-    override fun runASync() = true
+    override fun runAsync() = true
 
     override fun runDirectly(): Boolean {
         sqLiteDatabase.execSQL(

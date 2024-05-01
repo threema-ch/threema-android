@@ -22,7 +22,6 @@
 package ch.threema.app.activities;
 
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
+import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.localcrypto.MasterKey;
 
 /**
@@ -50,19 +49,19 @@ public class StopPassphraseServiceActivity extends Activity {
 
 		MasterKey masterKey = ThreemaApplication.getMasterKey();
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		ThreemaConnection threemaConnection = null;
+		ServerConnection connection = null;
 		NotificationService notificationService = null;
 
 		if (serviceManager != null) {
-			threemaConnection = serviceManager.getConnection();
+			connection = serviceManager.getConnection();
 			notificationService = serviceManager.getNotificationService();
 		}
 
 		if (masterKey.isProtected()) {
 			if (!masterKey.isLocked()) {
-				if (threemaConnection != null && threemaConnection.isRunning()) {
+				if (connection != null && connection.isRunning()) {
 					try {
-						threemaConnection.stop();
+						connection.stop();
 					} catch (InterruptedException e) {
 						logger.error("Interrupted in onCreate while stopping threema connection", e);
 						Thread.currentThread().interrupt();

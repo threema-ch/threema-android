@@ -211,6 +211,7 @@ class BigMediaFragment : Fragment() {
             bigImageView.rotationY = if (flipHorizontal) 180f else 0f
 
             Glide.with(context ?: return).load(item.uri)
+                .skipMemoryCache(true)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .optionalFitCenter()
                 .optionalTransform(Rotate(item.rotation))

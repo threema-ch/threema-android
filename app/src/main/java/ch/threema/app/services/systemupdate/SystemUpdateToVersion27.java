@@ -25,9 +25,9 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import ch.threema.app.services.UpdateSystemService;
 
-public class SystemUpdateToVersion27
-		extends UpdateToVersion
-		implements UpdateSystemService.SystemUpdate {
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
+public class SystemUpdateToVersion27 implements UpdateSystemService.SystemUpdate {
 	private final SQLiteDatabase sqLiteDatabase;
 
 	public SystemUpdateToVersion27(SQLiteDatabase sqLiteDatabase) {
@@ -37,7 +37,7 @@ public class SystemUpdateToVersion27
 
 	@Override
 	public boolean runDirectly() {
-		if(!this.fieldExist(this.sqLiteDatabase, "contacts", "featureLevel")) {
+		if(!fieldExists(this.sqLiteDatabase, "contacts", "featureLevel")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN featureLevel TINYINT(1) DEFAULT 1");
 		}
 
@@ -48,7 +48,7 @@ public class SystemUpdateToVersion27
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

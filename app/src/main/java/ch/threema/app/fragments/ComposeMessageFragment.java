@@ -26,6 +26,7 @@ import static androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_M
 import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.activities.HomeActivity.THREEMA_CHANNEL_IDENTITY;
 import static ch.threema.app.adapters.ComposeMessageAdapter.MIN_CONSTRAINT_LENGTH;
+import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_AUDIORECORDER;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_LIFECYCLE;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_VOIP;
@@ -50,7 +51,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.media.AudioManager;
@@ -142,11 +142,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -171,12 +174,13 @@ import ch.threema.app.activities.WorkExplainActivity;
 import ch.threema.app.activities.ballot.BallotOverviewActivity;
 import ch.threema.app.adapters.ComposeMessageAdapter;
 import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
-import ch.threema.app.asynctasks.EmptyChatAsyncTask;
+import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.MessageDetailDialog;
+import ch.threema.app.dialogs.ResendGroupMessageDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.emojis.EmojiButton;
 import ch.threema.app.emojis.EmojiMarkupUtil;
@@ -233,6 +237,7 @@ import ch.threema.app.ui.OngoingCallNoticeMode;
 import ch.threema.app.ui.OngoingCallNoticeView;
 import ch.threema.app.ui.OpenBallotNoticeView;
 import ch.threema.app.ui.QRCodePopup;
+import ch.threema.app.ui.QuotePopup;
 import ch.threema.app.ui.ReportSpamView;
 import ch.threema.app.ui.RootViewDeferringInsetsCallback;
 import ch.threema.app.ui.ScrollButtonManager;
@@ -259,8 +264,6 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.LogUtil;
-import ch.threema.app.utils.MessageUtil;
-import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -278,11 +281,14 @@ import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.IdentityType;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.factories.RejectedGroupMessageFactory;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -321,6 +327,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private static final String DIALOG_TAG_LOADING_MESSAGES = "loadm";
 	private static final String DIALOG_TAG_MESSAGE_DETAIL = "messageLog";
 	private static final String DIALOG_TAG_CONFIRM_MESSAGE_DELETE = "msgdel";
+	private static final String DIALOG_TAG_CONFIRM_RESEND = "confirm_resend";
 
 	public static final String EXTRA_API_MESSAGE_ID = "apimsgid";
 	public static final String EXTRA_SEARCH_QUERY = "searchQuery";
@@ -350,22 +357,24 @@ public class ComposeMessageFragment extends Fragment implements
 	private SendButton sendButton;
 	private ImageButton attachButton, cameraButton;
 	private ContactModel contactModel;
-	private MessageReceiver messageReceiver;
+	private @Nullable MessageReceiver messageReceiver;
 
 	private AudioManager audioManager;
 	private ConversationListView convListView;
-	private ComposeMessageAdapter composeMessageAdapter;
+	private @Nullable ComposeMessageAdapter composeMessageAdapter;
 	private View isTypingView;
 
-	private MenuItem mutedMenuItem = null;
-	private MenuItem blockMenuItem = null;
-	private MenuItem deleteDistributionListItem = null;
-	private MenuItem callItem = null;
-	private MenuItem showOpenBallotWindowMenuItem = null;
-	private MenuItem showBallotsMenuItem = null;
-	private MenuItem showAllGroupRequestsMenuItem = null;
-	private MenuItem showOpenGroupRequestsMenuItem = null;
+	private MenuItem mutedMenuItem;
+	private MenuItem blockMenuItem;
+	private MenuItem deleteDistributionListItem;
+	private MenuItem callItem;
+	private MenuItem showOpenBallotWindowMenuItem;
+	private MenuItem showBallotsMenuItem;
+	private MenuItem showAllGroupRequestsMenuItem;
+	private MenuItem showOpenGroupRequestsMenuItem;
+	private MenuItem showEmptyChatMenuItem;
 	private TextView dateTextView;
+	private TextInputLayout textInputLayout;
 
 	private ActionMode actionMode = null;
 	private ActionMode searchActionMode = null;
@@ -450,6 +459,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private ActionBar actionBar;
 	private TooltipPopup workTooltipPopup;
 	private AckjiPopup ackjiPopup;
+	private QuotePopup quotePopup;
 	private OpenBallotNoticeView openBallotNoticeView;
 	private OpenGroupRequestNoticeView openGroupRequestNoticeView;
 	private ReportSpamView reportSpamView;
@@ -475,7 +485,6 @@ public class ComposeMessageFragment extends Fragment implements
 	private String listInstanceReceiverId = null;
 	private String conversationUid = null;
 	private int unreadCount = 0, recentlyAddedCount = 0;
-	private final QuoteInfo quoteInfo = new QuoteInfo();
 	private TextView searchCounter;
 	private CircularProgressIndicator searchProgress;
 	private ImageView searchNextButton, searchPreviousButton;
@@ -488,15 +497,6 @@ public class ComposeMessageFragment extends Fragment implements
 	private final SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyyMMdd");
 	private ThumbnailCache<?> thumbnailCache = null;
 
-	private static class QuoteInfo {
-		private FrameLayout quotePanel;
-		private TextView quoteTextView, quoteIdentityView;
-		private String quoteText, quoteIdentity;
-		private View quoteBar;
-		private ImageView quoteThumbnail;
-		private ImageView quoteTypeImage;
-		private AbstractMessageModel messageModel;
-	}
 
 	@Override
 	public boolean getActionModeEnabled() {
@@ -1038,6 +1038,8 @@ public class ComposeMessageFragment extends Fragment implements
 			sv.setOnTouchListener(null);
 			sv.setOnClickListener(null);
 
+			this.coordinatorLayout = fragmentView.findViewById(R.id.compose_root);
+
 			this.convListView = fragmentView.findViewById(R.id.history);
 			ViewCompat.setNestedScrollingEnabled(this.convListView, true);
 			this.convListView.setDivider(null);
@@ -1052,8 +1054,26 @@ public class ComposeMessageFragment extends Fragment implements
 			this.swipeRefreshLayout.setOnRefreshListener(this);
 			this.swipeRefreshLayout.setColorSchemeResources(R.color.md_theme_light_primary);
 			this.swipeRefreshLayout.setSize(SwipeRefreshLayout.LARGE);
-			this.coordinatorLayout = fragmentView.findViewById(R.id.coordinator);
 			this.messageText = fragmentView.findViewById(R.id.embedded_text_editor);
+
+			this.messageText.post(() -> {
+				messageText.addTextChangedListener(new TextWatcher() {
+					@Override
+					public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+					@Override
+					public void onTextChanged(CharSequence s, int start, int before, int count) {
+						ThreemaApplication.activityUserInteract(activity);
+						updateSendButton(s);
+					}
+
+					@Override
+
+					public void afterTextChanged(Editable s) {
+						updateCameraButton();
+					}
+				});
+			});
 
 			this.sendButton = this.fragmentView.findViewById(R.id.send_button);
 			this.attachButton = this.fragmentView.findViewById(R.id.attach_button);
@@ -1062,7 +1082,7 @@ public class ComposeMessageFragment extends Fragment implements
 				if (actionMode != null) {
 					actionMode.finish();
 				}
-				closeQuoteMode();
+				dismissQuotePopup();
 				if (!validateSendingPermission()) {
 					return;
 				}
@@ -1082,16 +1102,6 @@ public class ComposeMessageFragment extends Fragment implements
 			final FrameLayout quickscrollDownContainer = this.fragmentView.findViewById(R.id.quickscroll_bottom_container);
 			this.dateView = this.fragmentView.findViewById(R.id.date_separator_container);
 			this.dateTextView = this.fragmentView.findViewById(R.id.text_view);
-
-			quoteInfo.quotePanel = this.fragmentView.findViewById(R.id.quote_panel);
-			quoteInfo.quoteTextView = this.fragmentView.findViewById(R.id.quote_text_view);
-			quoteInfo.quoteIdentityView = this.fragmentView.findViewById(R.id.quote_id_view);
-			quoteInfo.quoteBar = this.fragmentView.findViewById(R.id.quote_bar);
-			quoteInfo.quoteThumbnail = this.fragmentView.findViewById(R.id.quote_thumbnail);
-			quoteInfo.quoteTypeImage = this.fragmentView.findViewById(R.id.quote_type_image);
-
-			ImageView quoteCloseButton = this.fragmentView.findViewById(R.id.quote_panel_close_button);
-			quoteCloseButton.setOnClickListener(v -> closeQuoteMode());
 
 			this.bottomPanel = this.fragmentView.findViewById(R.id.bottom_panel);
 			this.openBallotNoticeView = this.fragmentView.findViewById(R.id.open_ballots_layout);
@@ -1135,7 +1145,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 			// tint the edittext manually as TextInputLayout does not currently support elevation
 			ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(activity);
-			TextInputLayout textInputLayout = fragmentView.findViewById(R.id.textinputlayout_compose);
+			textInputLayout = fragmentView.findViewById(R.id.textinputlayout_compose);
 			textInputLayout.setBoxBackgroundColor(elevationOverlayProvider.compositeOverlayIfNeeded(
 				ConfigUtils.getColorFromAttribute(activity, R.attr.colorSurface),
 				getResources().getDimension(R.dimen.compose_edittext_elevation)));
@@ -1505,6 +1515,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		hideEmojiPickerIfShown();
 		dismissMentionPopup();
+		dismissQuotePopup();
 
 		this.activity = null;
 
@@ -1540,6 +1551,7 @@ public class ComposeMessageFragment extends Fragment implements
 			workTooltipPopup = null;
 
 			dismissMentionPopup();
+			dismissQuotePopup();
 
 			if (this.emojiButton != null) {
 				this.emojiButton.detach(this.emojiPicker);
@@ -1556,10 +1568,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 			if (this.messagePlayerService != null) {
 				this.messagePlayerService.release();
-			}
-
-			if (this.messageService != null) {
-				this.messageService.saveMessageQueueAsync();
 			}
 
 			if (this.thumbnailCache != null) {
@@ -1747,17 +1755,13 @@ public class ComposeMessageFragment extends Fragment implements
 						}
 					}
 					if (abstractMessageModel != null) {
-						if (isQuotePanelShown() && abstractMessageModel.equals(quoteInfo.messageModel)) {
-							closeQuoteMode();
+						if (isQuotePopupShown() && abstractMessageModel.equals(quotePopup.getQuoteInfo().getMessageModel())) {
+							dismissQuotePopup();
 						} else {
 							if (searchActionMode != null) {
 								searchActionMode.finish();
 							}
-							if (activity.isSoftKeyboardOpen() || isEmojiPickerShown()) {
-								startQuoteMode(abstractMessageModel, () -> RuntimeUtil.runOnUiThread(() -> messageText.requestFocus()), 0);
-							} else {
-								startQuoteMode(abstractMessageModel, () -> RuntimeUtil.runOnUiThread(() -> EditTextUtil.focusWindowAndShowSoftKeyboard(messageText)), 500);
-							}
+							showQuotePopup(abstractMessageModel);
 						}
 					}
 				}
@@ -1786,7 +1790,7 @@ public class ComposeMessageFragment extends Fragment implements
 							actionMode.finish();
 						}
 
-						closeQuoteMode();
+						dismissQuotePopup();
 
 						Intent intent = new Intent(activity, MediaAttachActivity.class);
 						IntentDataUtil.addMessageReceiverToIntent(intent, messageReceiver);
@@ -1898,7 +1902,7 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void updateSendButton(CharSequence s) {
-		if (isQuotePanelShown()) {
+		if (isQuotePopupShown()) {
 			if (TestUtil.empty(s)) {
 				sendButton.setEnabled(false);
 			} else {
@@ -1940,7 +1944,7 @@ public class ComposeMessageFragment extends Fragment implements
 		this.listInstanceReceiverId = null;
 
 		if (ConfigUtils.isTabletLayout()) {
-			closeQuoteMode();
+			dismissQuotePopup();
 		}
 
 		// remove message detail dialog if still open
@@ -1988,7 +1992,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		resetDefaultValues();
 
-		this.closeQuoteMode();
+		this.dismissQuotePopup();
 
 		handleIntent(intent);
 
@@ -2022,7 +2026,7 @@ public class ComposeMessageFragment extends Fragment implements
 					intent = new Intent(activity, ContactDetailActivity.class);
 					intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT_READONLY, true);
 				}
-				if (intent != null) {
+				if (intent != null && messageReceiver != null) {
 					addExtrasToIntent(intent, messageReceiver);
 					activity.startActivity(intent);
 				}
@@ -2163,7 +2167,8 @@ public class ComposeMessageFragment extends Fragment implements
 				this.contactService,
 				this.userService,
 				this.preferenceService,
-				groupModel
+				groupModel,
+				textInputLayout
 			);
 		} else if (intent.hasExtra(ThreemaApplication.INTENT_DATA_DISTRIBUTION_LIST) || this.distributionListId != 0) {
 			this.isDistributionListChat = true;
@@ -2378,37 +2383,42 @@ public class ComposeMessageFragment extends Fragment implements
 	 * @param contactModel Contact model of possible spammer
 	 * @return true if the contact could be a spammer, false otherwise
 	 */
-	private boolean isPossibleSpamContact(ContactModel contactModel) {
+	private boolean isPossibleSpamContact(@Nullable ContactModel contactModel) {
+		if (contactModel == null || composeMessageAdapter == null) {
+			return false;
+		}
+
+		// No spam reporting in on-prem build
 		if (ConfigUtils.isOnPremBuild()) {
 			return false;
 		}
 
-		if (contactModel == null || contactModel.getVerificationLevel() != VerificationLevel.UNVERIFIED) {
+		// Exclude verified contacts
+		if (contactModel.getVerificationLevel() != VerificationLevel.UNVERIFIED) {
 			return false;
 		}
 
+		// Exclude contacts where the name is set
 		if (!TestUtil.empty(contactModel.getFirstName()) || !TestUtil.empty(contactModel.getLastName())) {
 			return false;
 		}
 
+		// Exclude blocked contacts
 		if (blackListIdentityService.has(contactModel.getIdentity())) {
 			return false;
 		}
 
-		if (contactModel.isHidden()) {
+		// Exclude group contacts
+		if (contactModel.getAcquaintanceLevel() == ContactModel.AcquaintanceLevel.GROUP) {
 			return false;
 		}
 
-		if (THREEMA_CHANNEL_IDENTITY.equals(contactModel.getIdentity())) {
-			return false;
-		}
-
-		if (composeMessageAdapter == null) {
+		// Exclude official Threema Gateway contacts
+		if (THREEMA_CHANNEL_IDENTITY.equals(contactModel.getIdentity()) || THREEMA_SUPPORT_IDENTITY.equals(contactModel.getIdentity())) {
 			return false;
 		}
 
 		int numMessages = composeMessageAdapter.getCount();
-
 		if (numMessages >= MESSAGE_PAGE_SIZE || numMessages < 2) {
 			return false;
 		}
@@ -2468,7 +2478,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 				if (messageReceiver != null) {
 					if (messageReceiver.getMessagesCount() <= 0 && messageReceiver instanceof ContactMessageReceiver) {
-						conversationService.clear(messageReceiver);
+						conversationService.empty(messageReceiver);
 					} else {
 						conversationService.refresh(messageReceiver);
 					}
@@ -2852,9 +2862,11 @@ public class ComposeMessageFragment extends Fragment implements
 				@Override
 				public void click(View view, int position, AbstractMessageModel messageModel) {
 					if (actionMode == null && messageModel.isOutbox() && (messageModel.getState() == MessageState.SENDFAILED || messageModel.getState() == MessageState.FS_KEY_MISMATCH) && messageReceiver.isMessageBelongsToMe(messageModel)) {
-						ThreemaApplication.sendMessageExecutorService.execute(() -> {
+						final Set<String> finalRecipientIdentities = new HashSet<>();
+
+						Runnable resendMessage = () -> ThreemaApplication.sendMessageExecutorService.execute(() -> {
 							try {
-								messageService.resendMessage(messageModel, messageReceiver, null);
+								messageService.resendMessage(messageModel, messageReceiver, null, finalRecipientIdentities);
 							} catch (Exception e) {
 								RuntimeUtil.runOnUiThread(() -> {
 									if (isAdded()) {
@@ -2863,6 +2875,46 @@ public class ComposeMessageFragment extends Fragment implements
 								});
 							}
 						});
+
+						if (messageModel instanceof GroupMessageModel) {
+							// Check whether sending failed or a fs reject was received
+							if (messageModel.getState() == MessageState.SENDFAILED) {
+								// If sending failed, we try to resend it to every group member
+								finalRecipientIdentities.addAll(Arrays.asList(groupService.getGroupIdentities(groupModel)));
+								resendMessage.run();
+								return;
+							}
+
+							// For group messages we first show a dialog to indicate the affected
+							// recipients
+							MessageId messageId;
+							try {
+								messageId = MessageId.fromString(messageModel.getApiMessageId());
+							} catch (ThreemaException e) {
+								logger.error("Could not get message id from message model", e);
+								return;
+							}
+
+							RejectedGroupMessageFactory rejectedGroupMessageFactory = databaseServiceNew.getRejectedGroupMessageFactory();
+							finalRecipientIdentities.addAll(rejectedGroupMessageFactory.getMessageRejects(messageId, groupModel));
+
+							if (finalRecipientIdentities.isEmpty()) {
+								// If there is no rejected recipient, we can just update the message
+								// state as the rejected recipient is not longer a group member.
+								// Note that this should never happen.
+								messageService.updateMessageState(messageModel, MessageState.SENT, null);
+								logger.warn("Resend for group members requested, although no member rejected it");
+								return;
+							}
+							ResendGroupMessageDialog.Companion.getInstance(
+								finalRecipientIdentities,
+								contactService,
+								resendMessage::run
+							).show(getParentFragmentManager(), DIALOG_TAG_CONFIRM_RESEND);
+						} else {
+							finalRecipientIdentities.add(messageModel.getIdentity());
+							resendMessage.run();
+						}
 					} else {
 						onListItemClick(view, position, messageModel);
 					}
@@ -3357,18 +3409,19 @@ public class ComposeMessageFragment extends Fragment implements
 	private void sendTextMessage() {
 		final CharSequence message;
 
-		if (isQuotePanelShown()) {
+		if (isQuotePopupShown()) {
+			QuotePopup.QuoteInfo quoteInfo = quotePopup.getQuoteInfo();
 			message = QuoteUtil.quote(
 				this.messageText.getText().toString(),
-				quoteInfo.quoteIdentity,
-				quoteInfo.quoteText,
-				quoteInfo.messageModel
+				quoteInfo.getQuoteIdentity(),
+				quoteInfo.getQuoteText(),
+				quoteInfo.getMessageModel()
 			);
 			// Close quote mode and then scroll to bottom. Note that the scrolling is needed because
 			// scrolling down will be interrupted when the quote panel's visibility is set to gone.
 			// Therefore we may need to initiate a scroll down again after the panel has been set to
 			// gone.
-			closeQuoteMode(() -> scrollList(Integer.MAX_VALUE));
+			dismissQuotePopup(() -> scrollList(Integer.MAX_VALUE));
 		} else {
 			message = this.messageText.getText();
 		}
@@ -3426,7 +3479,7 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void attachVoiceMessage() {
-		closeQuoteMode();
+		dismissQuotePopup();
 
 		// stop all message players
 		if (this.messagePlayerService != null) {
@@ -3558,29 +3611,32 @@ public class ComposeMessageFragment extends Fragment implements
 			new ArrayList<>(uris), text);
 	}
 
-	private void startQuoteMode(@Nullable AbstractMessageModel messageModel, Runnable onFinishRunnable, int delay) {
-		if (messageModel == null) {
-			messageModel = selectedMessages.get(0);
-		}
+	@UiThread
+	private void showQuotePopup(@Nullable AbstractMessageModel messageModel) {
+		final AbstractMessageModel quotedMessageModel;
 
 		if (messageModel == null) {
+			quotedMessageModel = selectedMessages.get(0);
+		} else {
+			quotedMessageModel = messageModel;
+		}
+
+		if (quotedMessageModel == null) {
 			return;
 		}
 
-		String body = QuoteUtil.getMessageBody(messageModel, true);
-
 		sendButton.setEnabled(messageText != null && !TestUtil.empty(messageText.getText()));
 
-		quoteInfo.quoteIdentity = messageModel.isOutbox() ? userService.getIdentity() : messageModel.getIdentity();
-		quoteInfo.quoteIdentityView.setText(
-			NameUtil.getQuoteName(quoteInfo.quoteIdentity, this.contactService, this.userService)
-		);
+		dismissMentionPopup();
+		dismissQuotePopup();
 
 		int color = ConfigUtils.getAccentColor(activity);
-		if (!messageModel.isOutbox()) {
+		String identity = quotedMessageModel.isOutbox() ? userService.getIdentity() : quotedMessageModel.getIdentity();
+
+		if (!quotedMessageModel.isOutbox()) {
 			if (isGroupChat) {
-				if (identityColors != null && identityColors.containsKey(quoteInfo.quoteIdentity)) {
-					color = identityColors.get(quoteInfo.quoteIdentity);
+				if (identityColors != null && identityColors.containsKey(identity)) {
+					color = identityColors.get(identity);
 				}
 			} else {
 				if (contactModel != null) {
@@ -3588,53 +3644,47 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 			}
 		}
-		quoteInfo.quoteBar.setBackgroundColor(color);
 
-		quoteInfo.quoteTextView.setText(emojiMarkupUtil.addTextSpans(activity, body, quoteInfo.quoteTextView, false, false));
-		quoteInfo.quoteText = body;
-		quoteInfo.messageModel = messageModel;
-		quoteInfo.quoteThumbnail.setVisibility(View.GONE);
-		quoteInfo.quoteTypeImage.setVisibility(View.GONE);
-		try {
-			Bitmap thumbnail = fileService.getMessageThumbnailBitmap(messageModel, thumbnailCache);
-			if (thumbnail != null) {
-				quoteInfo.quoteThumbnail.setImageBitmap(thumbnail);
-				quoteInfo.quoteThumbnail.setVisibility(View.VISIBLE);
+		quotePopup = new QuotePopup(
+			activity,
+			contactService,
+			userService,
+			fileService,
+			thumbnailCache
+		);
+
+		@ColorInt final int sidebarColor = color;
+
+		if (activity.isSoftKeyboardOpen() || isEmojiPickerShown()) {
+			messageText.requestFocus();
+			quotePopup.show(activity, messageText, textInputLayout, quotedMessageModel, identity, sidebarColor);
+		} else {
+			EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
+			messageText.postDelayed(() -> quotePopup.show(activity, messageText, textInputLayout, quotedMessageModel, identity, sidebarColor), 550);
+		}
+	}
+
+	private void dismissQuotePopup() {
+		dismissQuotePopup(null);
+	}
+
+	private void dismissQuotePopup(@Nullable Runnable runAfterQuotePopupClosed) {
+		if (isQuotePopupShown()) {
+			try {
+				quotePopup.dismiss();
+				quotePopup = null;
+			} catch (Exception e) {
+				logger.error("Error dismissing quote popup", e);
 			}
-		} catch (Exception ignore) {
-		}
-
-		MessageUtil.MessageViewElement messageViewElement = MessageUtil.getViewElement(getContext(), messageModel);
-		if (messageViewElement.icon != null) {
-			quoteInfo.quoteTypeImage.setImageResource(messageViewElement.icon);
-			quoteInfo.quoteTypeImage.setVisibility(View.VISIBLE);
-		}
-
-		quoteInfo.quotePanel.postDelayed(() -> quoteInfo.quotePanel.setVisibility(View.VISIBLE), delay);
-
-		if (onFinishRunnable != null) {
-			onFinishRunnable.run();
-		}
-	}
-
-	private void closeQuoteMode() {
-		closeQuoteMode(null);
-	}
-
-	private void closeQuoteMode(@Nullable Runnable runAfterQuotePanelClosed) {
-		quoteInfo.quoteIdentityView.setText("");
-		quoteInfo.quoteTextView.setText("");
-		if (isQuotePanelShown()) {
-			quoteInfo.quotePanel.setVisibility(View.GONE);
 			updateSendButton(messageText.getText());
-			if (runAfterQuotePanelClosed != null) {
-				runAfterQuotePanelClosed.run();
+			if (runAfterQuotePopupClosed != null) {
+				runAfterQuotePopupClosed.run();
 			}
 		}
 	}
 
-	private boolean isQuotePanelShown() {
-		return quoteInfo.quotePanel != null && quoteInfo.quotePanel.getVisibility() == View.VISIBLE;
+	private boolean isQuotePopupShown() {
+		return quotePopup != null && quotePopup.isShowing();
 	}
 
 	private void startForwardMessage() {
@@ -3705,12 +3755,14 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 			actionBarSubtitleTextView.setText(groupService.getMembersString(groupModel));
 			actionBarSubtitleTextView.setVisibility(View.VISIBLE);
-			groupService.loadAvatarIntoImage(
-				groupModel,
-				actionBarAvatarView.getAvatarView(),
-				AvatarOptions.PRESET_DEFAULT_FALLBACK,
-				Glide.with(getActivity())
-			);
+			if (actionBarAvatarView.getAvatarView().isAttachedToWindow()) {
+				groupService.loadAvatarIntoImage(
+					groupModel,
+					actionBarAvatarView.getAvatarView(),
+					AvatarOptions.PRESET_DEFAULT_FALLBACK,
+					Glide.with(requireActivity())
+				);
+			}
 			actionBarAvatarView.setBadgeVisible(false);
 			setAvatarContentDescription(R.string.prefs_group_notifications);
 		} else if (this.isDistributionListChat) {
@@ -3720,12 +3772,14 @@ public class ComposeMessageFragment extends Fragment implements
 				actionBarAvatarView.setVisibility(View.GONE);
 				actionBarTitleTextView.setText(getString(R.string.threema_message_to, ""));
 			} else {
-				distributionListService.loadAvatarIntoImage(
-					distributionListModel,
-					actionBarAvatarView.getAvatarView(),
-					AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE,
-					Glide.with(getActivity())
-				);
+				if (actionBarAvatarView.getAvatarView().isAttachedToWindow()) {
+					distributionListService.loadAvatarIntoImage(
+						distributionListModel,
+						actionBarAvatarView.getAvatarView(),
+						AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE,
+						Glide.with(requireActivity())
+					);
+				}
 			}
 			actionBarAvatarView.setBadgeVisible(false);
 			setAvatarContentDescription(R.string.distribution_list);
@@ -3733,12 +3787,14 @@ public class ComposeMessageFragment extends Fragment implements
 			if (contactModel != null) {
 				this.actionBarSubtitleImageView.setContactModel(contactModel);
 				this.actionBarSubtitleImageView.setVisibility(View.VISIBLE);
-				contactService.loadAvatarIntoImage(
-					contactModel,
-					this.actionBarAvatarView.getAvatarView(),
-					AvatarOptions.PRESET_RESPECT_SETTINGS,
-					Glide.with(getActivity())
-				);
+				if (actionBarAvatarView.getAvatarView().isAttachedToWindow()) {
+					contactService.loadAvatarIntoImage(
+						contactModel,
+						this.actionBarAvatarView.getAvatarView(),
+						AvatarOptions.PRESET_RESPECT_SETTINGS,
+						Glide.with(requireActivity())
+					);
+				}
 				this.actionBarAvatarView.setBadgeVisible(contactService.showBadge(contactModel));
 			}
 			setAvatarContentDescription(R.string.prefs_header_chat);
@@ -3777,6 +3833,7 @@ public class ComposeMessageFragment extends Fragment implements
 		this.showBallotsMenuItem = menu.findItem(R.id.menu_ballot_show_all);
 		this.showOpenGroupRequestsMenuItem = menu.findItem(R.id.menu_group_requests_show);
 		this.showAllGroupRequestsMenuItem = menu.findItem(R.id.menu_group_request_show_all);
+		this.showEmptyChatMenuItem = menu.findItem(R.id.menu_empty_chat);
 
 		// initialize menus
 		updateMenus();
@@ -3797,6 +3854,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.showOpenBallotWindowMenuItem,
 				this.showAllGroupRequestsMenuItem,
 				this.showOpenGroupRequestsMenuItem,
+				this.showEmptyChatMenuItem,
 				isAdded()
 		)) {
 			return;
@@ -3897,6 +3955,9 @@ public class ComposeMessageFragment extends Fragment implements
 			.getAllRequestsForGroup(groupModel.getApiGroupId()).isEmpty()
 		);
 
+		// Show "empty chat" only if chat is not empty
+		this.showEmptyChatMenuItem.setVisible(composeMessageAdapter != null && !composeMessageAdapter.isEmpty());
+
 		updateVoipCallMenuItem(null);
 	}
 
@@ -3971,7 +4032,7 @@ public class ComposeMessageFragment extends Fragment implements
 		if (isGroupChat && callItem != null) {
 			if (GroupCallUtilKt.qualifiesForGroupCalls(groupService, groupModel)) {
 				GroupCallDescription call = groupCallManager.getCurrentChosenCall(groupModel);
-				callItem.setIcon(R.drawable.ic_group_call);
+				callItem.setIcon(R.drawable.ic_phone_locked_outline);
 				callItem.setTitle(R.string.group_call);
 				callItem.setVisible(call == null);
 			} else {
@@ -3980,7 +4041,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
-	private Intent addExtrasToIntent(Intent intent, MessageReceiver receiver) {
+	private Intent addExtrasToIntent(Intent intent, @NonNull MessageReceiver receiver) {
 		switch (receiver.getType()) {
 			case MessageReceiver.Type_GROUP:
 				intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupId);
@@ -4017,7 +4078,9 @@ public class ComposeMessageFragment extends Fragment implements
 			searchActionMode = activity.startSupportActionMode(new SearchActionMode());
 		} else if (id == R.id.menu_gallery) {
 			Intent mediaGalleryIntent = new Intent(activity, MediaGalleryActivity.class);
-			activity.startActivity(addExtrasToIntent(mediaGalleryIntent, this.messageReceiver));
+			if (this.messageReceiver != null) {
+				activity.startActivity(addExtrasToIntent(mediaGalleryIntent, this.messageReceiver));
+			}
 		} else if (id == R.id.menu_threema_call) {
 			initiateCall();
 		} else if (id == R.id.menu_wallpaper) {
@@ -4104,27 +4167,35 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void emptyChat() {
-		new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, getParentFragmentManager(), false, () -> {
+		new EmptyOrDeleteConversationsAsyncTask(
+			EmptyOrDeleteConversationsAsyncTask.Mode.EMPTY,
+			new MessageReceiver[]{ messageReceiver },
+			conversationService,
+			groupService,
+			distributionListService,
+			getParentFragmentManager(),
+			null,
+		() -> {
 			if (isAdded()) {
-					synchronized (messageValues) {
-						messageValues.clear();
-						composeMessageAdapter.notifyDataSetChanged();
-					}
-
-					// empty draft
-					ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
-					messageText.setText(null);
-
-					currentPageReferenceId = 0;
-					onRefresh();
-
-					ListenerManager.conversationListeners.handle(listener -> {
-						if (!isGroupChat) {
-							conversationService.reset();
-						}
-						listener.onModifiedAll();
-					});
+				synchronized (messageValues) {
+					messageValues.clear();
+					composeMessageAdapter.notifyDataSetChanged();
 				}
+
+				// empty draft
+				ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
+				messageText.setText(null);
+
+				currentPageReferenceId = 0;
+				onRefresh();
+
+				ListenerManager.conversationListeners.handle(listener -> {
+					if (!isGroupChat) {
+						conversationService.reset();
+					}
+					listener.onModifiedAll();
+				});
+			}
 		}).execute();
 	}
 
@@ -4377,12 +4448,14 @@ public class ComposeMessageFragment extends Fragment implements
 				shareMessages();
 				mode.finish();
 			} else if (id == R.id.menu_message_quote) {
-				if (activity.isSoftKeyboardOpen() || isEmojiPickerShown()) {
-					startQuoteMode(null, () -> RuntimeUtil.runOnUiThread(() -> messageText.requestFocus()), 0);
+				showQuotePopup(null);
+
+/*				if (activity.isSoftKeyboardOpen() || isEmojiPickerShown()) {
+					showQuotePopup(null, () -> RuntimeUtil.runOnUiThread(() -> messageText.requestFocus()), 0);
 				} else {
-					startQuoteMode(null, () -> RuntimeUtil.runOnUiThread(() -> EditTextUtil.focusWindowAndShowSoftKeyboard(messageText)), 500);
+					showQuotePopup(null, () -> RuntimeUtil.runOnUiThread(() -> EditTextUtil.focusWindowAndShowSoftKeyboard(messageText)), 500);
 				}
-				mode.finish();
+*/				mode.finish();
 			} else if (id == R.id.menu_show_text) {
 				showTextChatBubble(selectedMessages.get(0));
 				mode.finish();
@@ -4513,6 +4586,7 @@ public class ComposeMessageFragment extends Fragment implements
 				dismissMentionPopup();
 				return true;
 			}
+			dismissQuotePopup();
 			if (searchActionMode != null) {
 				searchActionMode.finish();
 				return true;
@@ -4626,8 +4700,8 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 
 			hideEmojiPickerIfShown();
-
 			dismissMentionPopup();
+			dismissQuotePopup();
 
 			// load all records
 			new AsyncTask<Void, Void, Void>() {
@@ -4682,7 +4756,7 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void updateToolBarTitleInUIThread() {
-			RuntimeUtil.runOnUiThread(this::updateToolbarTitle);
+		RuntimeUtil.runOnUiThread(this::updateToolbarTitle);
 	}
 
 	@UiThread
@@ -4888,6 +4962,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		hideEmojiPickerIfShown();
 		EditTextUtil.hideSoftKeyboard(this.messageText);
+		dismissQuotePopup();
 		dismissMentionPopup();
 		dismissTooltipPopup(workTooltipPopup, true);
 		workTooltipPopup = null;
@@ -4917,7 +4992,7 @@ public class ComposeMessageFragment extends Fragment implements
 				if (apiMessageId != null) {
 					AbstractMessageModel quotedMessageModel = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, messageReceiver);
 					if (quotedMessageModel != null && QuoteUtil.isQuoteable(quotedMessageModel)) {
-						startQuoteMode(quotedMessageModel, null, 0);
+						showQuotePopup(quotedMessageModel);
 					}
 				}
 				// If the draft is just "@", then dismiss the mention popup when restoring the draft
@@ -4936,7 +5011,7 @@ public class ComposeMessageFragment extends Fragment implements
 			if (this.messageText.getText() != null) {
 				ThreemaApplication.putMessageDraft(this.messageReceiver.getUniqueIdString(),
 					this.messageText.getText().toString(),
-					isQuotePanelShown() ? quoteInfo.messageModel : null);
+					isQuotePopupShown() ? quotePopup.getQuoteInfo().getMessageModel() : null);
 			}
 			if (!TestUtil.empty(this.messageText.getText()) || !TestUtil.empty(draft)) {
 				ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
@@ -4990,13 +5065,23 @@ public class ComposeMessageFragment extends Fragment implements
 					blackListIdentityService.add(spammerContactModel.getIdentity());
 					ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerContactModel.getIdentity());
 
-					new EmptyChatAsyncTask(messageReceiver, messageService, conversationService, null, true, () -> {
-						ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
-						ListenerManager.contactListeners.handle(listener -> listener.onModified(spammerContactModel));
-						if (isAdded()) {
-							finishActivity();
-						}
-					}).execute();
+					if (messageReceiver != null) {
+						new EmptyOrDeleteConversationsAsyncTask(
+							EmptyOrDeleteConversationsAsyncTask.Mode.DELETE,
+							new MessageReceiver[]{messageReceiver},
+							conversationService,
+							groupService,
+							distributionListService,
+							null,
+							null,
+							() -> {
+								ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
+								ListenerManager.contactListeners.handle(listener -> listener.onModified(spammerContactModel));
+								if (isAdded()) {
+									finishActivity();
+								}
+							}).execute();
+					}
 				} else {
 					reportSpamView.hide();
 					ListenerManager.contactListeners.handle(listener -> listener.onModified(spammerContactModel));

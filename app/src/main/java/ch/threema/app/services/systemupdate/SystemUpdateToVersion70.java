@@ -41,7 +41,7 @@ public class SystemUpdateToVersion70 implements UpdateSystemService.SystemUpdate
 	}
 
 	@Override
-	public boolean runASync() { return true; }
+	public boolean runAsync() { return true; }
 
 	@Override
 	public boolean runDirectly() throws SQLException {

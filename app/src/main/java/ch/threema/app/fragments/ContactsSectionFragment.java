@@ -79,6 +79,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.work.WorkRequest;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
@@ -87,7 +88,7 @@ import ch.threema.app.activities.ContactDetailActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.adapters.ContactListAdapter;
 import ch.threema.app.asynctasks.DeleteContactAsyncTask;
-import ch.threema.app.asynctasks.EmptyChatAsyncTask;
+import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask;
 import ch.threema.app.dialogs.BottomSheetAbstractDialog;
 import ch.threema.app.dialogs.BottomSheetGridDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -126,7 +127,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.workers.IdentityStatesWorker;
+import ch.threema.app.workers.ContactUpdateWorker;
 import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
@@ -134,6 +135,9 @@ import ch.threema.domain.models.VerificationLevel;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
+/**
+ * This is one of the tabs in the home screen. It shows the contact list.
+ */
 public class ContactsSectionFragment
 		extends MainFragment
 		implements
@@ -417,9 +421,12 @@ public class ContactsSectionFragment
 	private final PreferenceListener preferenceListener = new PreferenceListener() {
 		@Override
 		public void onChanged(String key, Object value) {
-			if (TestUtil.compare(key, getString(R.string.preferences__sync_contacts))) {
-				if (resumePauseHandler != null) {
-					resumePauseHandler.runOnActive(RUN_ON_ACTIVE_REFRESH_PULL_TO_REFRESH, runIfActiveUpdatePullToRefresh);
+			if (isAdded() && !isDetached()) {
+				// getString() will fail if the fragment is no longer attached to an activity
+				if (TestUtil.compare(key, getString(R.string.preferences__sync_contacts))) {
+					if (resumePauseHandler != null) {
+						resumePauseHandler.runOnActive(RUN_ON_ACTIVE_REFRESH_PULL_TO_REFRESH, runIfActiveUpdatePullToRefresh);
+					}
 				}
 			}
 		}
@@ -428,6 +435,7 @@ public class ContactsSectionFragment
 	/**
 	 * An AsyncTask that fetches contacts and add counts in the background.
 	 *
+	 * (and maybe other code) to separate files, to simplify this 1500+-LOC class.
 	 */
 	private static class FetchContactsTask extends AsyncTask<Void, Void, Pair<List<ContactModel>, FetchResults>> {
 		ContactService contactService;
@@ -1068,7 +1076,8 @@ public class ContactsSectionFragment
 		new Handler(Looper.getMainLooper()).postDelayed(this::stopSwipeRefresh, 2000);
 
 		try {
-			WorkManager.getInstance(requireContext()).enqueue(new OneTimeWorkRequest.Builder(IdentityStatesWorker.class).build());
+			WorkRequest request = new OneTimeWorkRequest.Builder(ContactUpdateWorker.class).build();
+			WorkManager.getInstance(requireContext()).enqueue(request);
 		} catch (IllegalStateException ignored) {}
 
 		if (this.preferenceService.isSyncContacts() && ConfigUtils.requestContactPermissions(getActivity(), this, PERMISSION_REQUEST_REFRESH_CONTACTS)) {
@@ -1465,12 +1474,14 @@ public class ContactsSectionFragment
 							ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(contactModel.getIdentity());
 
 							try {
-								new EmptyChatAsyncTask(
-									contactService.createReceiver(contactModel),
-									ThreemaApplication.requireServiceManager().getMessageService(),
+								new EmptyOrDeleteConversationsAsyncTask(
+									EmptyOrDeleteConversationsAsyncTask.Mode.DELETE,
+									new MessageReceiver[] { contactService.createReceiver(contactModel) },
 									ThreemaApplication.requireServiceManager().getConversationService(),
+									ThreemaApplication.requireServiceManager().getGroupService(),
+									ThreemaApplication.requireServiceManager().getDistributionListService(),
 									null,
-									true,
+									null,
 									() -> {
 										ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
 										ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));

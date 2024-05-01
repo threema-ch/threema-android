@@ -45,12 +45,11 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConnectionIndicatorUtil
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.domain.protocol.csp.connection.ConnectionState
-import ch.threema.domain.protocol.csp.connection.ConnectionStateListener
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection
+import ch.threema.domain.protocol.connection.ConnectionState
+import ch.threema.domain.protocol.connection.ConnectionStateListener
+import ch.threema.domain.protocol.connection.ServerConnection
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
-import java.net.InetSocketAddress
 
 private val logger = LoggingUtil.getThreemaLogger("ThreemaPreferenceFragment")
 
@@ -68,7 +67,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
     var toolbarTitle: TextView? = null
     var title: TextView? = null
     var connectionIndicator: View? = null
-    var threemaConnection: ThreemaConnection? = null
+    var serverConnection: ServerConnection? = null
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         initialized = true
@@ -79,11 +78,9 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
     }
 
     override fun onResume() {
-        threemaConnection?.let {
+        serverConnection?.let {
             it.addConnectionStateListener(this)
-            val connectionState: ConnectionState = it.getConnectionState()
-            ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState)
-
+            ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, it.connectionState)
         }
 
         super.onResume()
@@ -95,9 +92,8 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
         }
     }
 
-   @SuppressLint("WrongThread")
    override fun onPause() {
-       threemaConnection?.removeConnectionStateListener(this)
+       serverConnection?.removeConnectionStateListener(this)
 
        super.onPause()
     }
@@ -225,7 +221,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
         super.onCreate(savedInstanceState)
 
         try {
-            threemaConnection = ThreemaApplication.getServiceManager()?.getConnection()
+            serverConnection = ThreemaApplication.getServiceManager()?.getConnection()
         } catch (e: java.lang.Exception) {
             // ignore
         }
@@ -338,7 +334,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
         }
     }
 
-    override fun updateConnectionState(connectionState: ConnectionState?, socketAddress: InetSocketAddress?) {
+    override fun updateConnectionState(connectionState: ConnectionState?) {
         RuntimeUtil.runOnUiThread { ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState) }
     }
 }

@@ -61,9 +61,9 @@
 	<string name="voip_prefs_webrtc_debug">WebRTC Diagnose</string>
 	<string name="voip_prefs_webrtc_debug_summary">Starten Sie dieses Tool, um Probleme mit dem Anruf-Verbindungsaufbau zu diagnostizieren</string>
 	<string name="voip_webrtc_debug">WebRTC Diagnose</string>
-	<string name="voip_webrtc_debug_intro">Drücken Sie den «Start» Button um den Test zu starten.</string>
+	<string name="voip_webrtc_debug_intro">Drücken Sie den «Start»-Button um den Test zu starten.</string>
 	<string name="voip_webrtc_debug_start">Start</string>
-	<string name="voip_webrtc_debug_done">Fertig. Wenn Sie von Problemen mit dem Anruf-Verbindungsaufbau betroffen sind, senden Sie bitte diesen Ouput an den Threema-Support.</string>
+	<string name="voip_webrtc_debug_done">Fertig. Wenn Sie von Problemen mit dem Anruf-Verbindungsaufbau betroffen sind, senden Sie bitte diesen Text an den Threema-Support.</string>
 	<string name="voip_webrtc_debug_copied">Text wurde in Zwischenablage kopiert.</string>
 	<string name="voip_webrtc_debug_copy_clipboard">In Zwischenablage kopieren</string>
 

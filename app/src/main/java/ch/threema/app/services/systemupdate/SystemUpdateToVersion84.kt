@@ -26,15 +26,15 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class SystemUpdateToVersion84(
     private val sqLiteDatabase: SQLiteDatabase
-) : UpdateToVersion(), UpdateSystemService.SystemUpdate {
+) : UpdateSystemService.SystemUpdate {
     companion object {
         const val VERSION = 84
     }
 
-    override fun runASync() = true
+    override fun runAsync() = true
 
     override fun runDirectly(): Boolean {
-        if (this.fieldExist(sqLiteDatabase, "contacts", "forwardSecurityEnabled")) {
+        if (fieldExists(sqLiteDatabase, "contacts", "forwardSecurityEnabled")) {
             sqLiteDatabase.rawExecSQL("ALTER TABLE `contacts` DROP COLUMN `forwardSecurityEnabled`")
         }
         return true

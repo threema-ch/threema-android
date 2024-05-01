@@ -253,7 +253,7 @@ public class GroupInviteServiceTest {
 			}
 
 			@Override
-			public boolean sendFlags() {
+			public boolean sendFeatureMask() {
 				return false;
 			}
 
@@ -269,6 +269,11 @@ public class GroupInviteServiceTest {
 
 			@Override
 			public void checkRevocationKey(boolean force) {
+
+			}
+
+			@Override
+			public void setForwardSecurityEnabled(boolean isFsEnabled) {
 
 			}
 		};

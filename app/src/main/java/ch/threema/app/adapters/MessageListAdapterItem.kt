@@ -49,7 +49,6 @@ class MessageListAdapterItem(
     private val ringtoneService: RingtoneService,
     private val hiddenChatsListService: DeadlineListService
 ) {
-
     val group: GroupModel? = conversationModel.group
 
     val isContactConversation = conversationModel.isContactConversation

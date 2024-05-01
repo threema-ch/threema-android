@@ -1,3 +1,5 @@
-* Textmarker-Funktion in der Bildbearbeitung
-* Unterstützung von animierten WebP-Bildern
+* Neuer Kommunikationslayer
+* Verbesserungen in Zusammenhang mit Perfect Forward Secrecy
+* WebRTC-Update
+* Übersetzung ins Schweizerdeutsche
 * Zahlreiche Optimierungen und Fehlerbehebung

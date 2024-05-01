@@ -40,7 +40,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
-public class SystemUpdateToVersion66 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion66 implements UpdateSystemService.SystemUpdate {
 	public static final int VERSION = 66;
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion66");
 	private Context context;
@@ -55,7 +55,7 @@ public class SystemUpdateToVersion66 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		if (!ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.WRITE_CONTACTS)) {
 			return true; // best effort
 		}

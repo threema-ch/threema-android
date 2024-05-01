@@ -52,7 +52,10 @@ public class MimeUtil {
 	public static final String MIME_TYPE_VIDEO = "video/*";
 	public static final String MIME_TYPE_AUDIO = "audio/*";
 	public static final String MIME_TYPE_IMAGE = "image/*";
-	public static final String MIME_TYPE_IMAGE_JPG = "image/jpeg";
+	public static final String MIME_TYPE_IMAGE_JPEG = "image/jpeg";
+	// Due to a bug in android, some jpeg images may use 'image/jpg' as mime type. Note that we
+	// should always use 'jpeg' instead of jpg.
+	public static final String MIME_TYPE_IMAGE_JPG = "image/jpg";
 	public static final String MIME_TYPE_IMAGE_PNG = "image/png";
 	public static final String MIME_TYPE_IMAGE_GIF = "image/gif";
 	public static final String MIME_TYPE_IMAGE_WEBP = "image/webp";
@@ -263,6 +266,7 @@ public class MimeUtil {
 	 * List of bitmap image mime types natively supported by android
 	 */
 	private static final String[] supportedImageMimeTypes = {
+		MIME_TYPE_IMAGE_JPEG,
 		MIME_TYPE_IMAGE_JPG,
 		MIME_TYPE_IMAGE_PNG,
 		MIME_TYPE_IMAGE_GIF,
@@ -463,7 +467,7 @@ public class MimeUtil {
 
 		switch (messageModel.getType()) {
 			case IMAGE:
-				mimeType = MimeUtil.MIME_TYPE_IMAGE_JPG;
+				mimeType = MimeUtil.MIME_TYPE_IMAGE_JPEG;
 				break;
 			case VIDEO:
 				mimeType = MimeUtil.MIME_TYPE_VIDEO_AVC;

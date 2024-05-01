@@ -22,7 +22,7 @@
 package ch.threema.app.voip.groupcall.sfu
 
 import ch.threema.app.voip.groupcall.GroupCallException
-import ch.threema.app.voip.groupcall.sfu.messages.createRandomPadding
+import ch.threema.base.utils.SecureRandomUtil.generateRandomProtobufPadding
 import ch.threema.protobuf.groupcall.CallState
 
 data class GroupCallState(
@@ -69,7 +69,7 @@ data class GroupCallState(
 
     fun toProtobuf(): CallState {
         val builder = CallState.newBuilder()
-            .setPadding(createRandomPadding())
+            .setPadding(generateRandomProtobufPadding())
             .setStateCreatedAt(createdAt.toLong())
             .setStateCreatedBy(createdBy.id.toInt())
 

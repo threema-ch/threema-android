@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Wiiler</string>
+    <string name="village">Dorf</string>
+    <string name="town">Stadt</string>
+    <string name="isolated_dwelling">Einzelsidlig</string>
+    <string name="island">Insle</string>
+    <string name="islet">Inseli</string>
+    <string name="suburb">Stadtteil</string>
+    <string name="city">Grossstadt</string>
+    <string name="city_block">Stadtblock</string>
+    <string name="neighbourhood">Quartier</string>
+    <string name="locality">Örtlichkeit</string>
+    <string name="state">Bundesland/Kanton</string>
+    <string name="farm">Buurehof</string>
+    <string name="street">Strass</string>
+    <string name="country">Land</string>
+</resources>

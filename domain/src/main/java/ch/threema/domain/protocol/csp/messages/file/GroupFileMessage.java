@@ -32,8 +32,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
-public class GroupFileMessage extends AbstractGroupMessage
-	implements FileMessageInterface {
+public class GroupFileMessage extends AbstractGroupMessage implements FileMessageInterface {
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupFileMessage");
 
@@ -51,7 +50,7 @@ public class GroupFileMessage extends AbstractGroupMessage
 	@Override
 	@Nullable
 	public Version getMinimumRequiredForwardSecurityVersion() {
-		return null;
+		return Version.V1_2;
 	}
 
 	@Override
@@ -62,6 +61,36 @@ public class GroupFileMessage extends AbstractGroupMessage
 	@Override
 	public boolean exemptFromBlocking() {
 		return false;
+	}
+
+	@Override
+	public boolean createImplicitlyDirectContact() {
+		return false;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return true;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return false;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
+		return true;
 	}
 
 	@Override

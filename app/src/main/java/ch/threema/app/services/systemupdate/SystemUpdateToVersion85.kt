@@ -26,12 +26,12 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class SystemUpdateToVersion85(
     private val sqLiteDatabase: SQLiteDatabase
-) : UpdateToVersion(), UpdateSystemService.SystemUpdate {
+) : UpdateSystemService.SystemUpdate {
     companion object {
         const val VERSION = 85
     }
 
-    override fun runASync() = true
+    override fun runAsync() = true
 
     override fun runDirectly(): Boolean {
         for (table in arrayOf(
@@ -39,7 +39,7 @@ internal class SystemUpdateToVersion85(
                 "m_group_message",
                 "distribution_list_message"
         )) {
-            if (!fieldExist(sqLiteDatabase, table, "displayTags")) {
+            if (!fieldExists(sqLiteDatabase, table, "displayTags")) {
                 sqLiteDatabase.rawExecSQL("ALTER TABLE `$table` ADD COLUMN `displayTags` TINYINT DEFAULT 0")
             }
         }

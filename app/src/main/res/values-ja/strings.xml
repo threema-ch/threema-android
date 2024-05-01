@@ -675,7 +675,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="select_all">すべて選択</string>
     <string name="deleting_messages">メッセージを削除</string>
     <string name="media_gallery_files">ファイル</string>
-    <string name="prefs_gif_autoplay">アニメーション GIF を自動再生</string>
+    <string name="prefs_gif_autoplay">アニメーション画像を自動再生</string>
     <string name="media_gallery_audio">ボイスメッセージ</string>
     <string name="action_clone_group">グループを複製</string>
     <string name="clone_group_message">これにより、あなたが管理者のこのグループが複製されます。続けますか？</string>
@@ -1070,7 +1070,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_working_days_enable_title">営業時間外ポリシー</string>
     <string name="prefs_working_days_enable_sum">業務時間外の通知や着信を拒否することができます。</string>
     <string name="work_life_dnd_active">時間外活動</string>
-    <string name="pencil">ペンシル</string>
     <string name="warning">警告</string>
     <string name="password_remember_warning">この操作は慎重に行ってください！%s はサーバーにいかなるパスワードも保存しないため、もし PIN またはパスワードを忘れたとしても、私たちは助けになれません。</string>
     <string name="safe_backup_tap_to_restart">「再起動する」と表示されている通知をタップしてアプリを再起動してください。通知がない場合は、通知バーを下までスワイプしてみてください。</string>
@@ -1093,7 +1092,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="tooltip_voip_turn_on_camera">ここをタップしてカメラをオンにする</string>
     <string name="prefs_videocall_profile_explain">実際の画質はネットワークと会話相手の設定により異なります</string>
     <string name="permission_camera_videocall_required">ビデオ通話のために、カメラへのアクセスを許可してください</string>
-    <string name="feedback">フィードバック</string>
     <string name="tooltip_voip_enable_speakerphone">ここをタップしてスピーカーをオンにする</string>
     <string name="ballot_open">受付中の投票</string>
     <string name="translators">翻訳者</string>
@@ -1159,6 +1157,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="notes">備考</string>
     <string name="blur_faces">顔をぼかす</string>
     <string name="brush">ブラシ</string>
+    <string name="pencil">ペンシル</string>
     <string name="error_detecting_faces">顔の検出エラー</string>
     <string name="no_faces_detected">顔が検出されません</string>
     <string name="smiley">絵文字</string>

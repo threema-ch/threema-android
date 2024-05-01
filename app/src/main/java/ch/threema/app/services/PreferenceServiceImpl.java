@@ -532,13 +532,38 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public int getTransmittedFeatureLevel() {
-		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__transmitted_feature_level));
+	public long getTransmittedFeatureMask() {
+		// TODO(ANDR-2703): Remove this migration code
+		// Delete old feature level (int) and move it to the feature mask value (long)
+		String featureLevelKey = getKeyName(R.string.preferences__transmitted_feature_level);
+		if (preferenceStore.containsKey(featureLevelKey)) {
+			// Store feature mask as long
+			setTransmittedFeatureMask(preferenceStore.getInt(featureLevelKey));
+
+			// Remove transmitted feature level
+			preferenceStore.remove(featureLevelKey);
+		}
+
+		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__transmitted_feature_mask));
 	}
 
 	@Override
-	public void setTransmittedFeatureLevel(int transmittedFeatureLevel) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__transmitted_feature_level), transmittedFeatureLevel);
+	public void setTransmittedFeatureMask(long transmittedFeatureMask) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__transmitted_feature_mask), transmittedFeatureMask);
+	}
+
+	@Override
+	public long getLastFeatureMaskTransmission() {
+		Long lastTransmission = this.preferenceStore.getLong(this.getKeyName(R.string.preferences__last_feature_mask_transmission));
+		if (lastTransmission == null) {
+			return 0;
+		}
+		return lastTransmission;
+	}
+
+	@Override
+	public void setLastFeatureMaskTransmission(long timestamp) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__last_feature_mask_transmission), timestamp);
 	}
 
 	@Override
@@ -553,7 +578,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 		String[] res = this.preferenceStore.getStringArray(listName, encrypted);
 		if (res == null && encrypted) {
 			// check if we have an old unencrypted identity list - migrate if necessary and return its values
-			if (this.preferenceStore.has(listName)) {
+			if (this.preferenceStore.containsKey(listName)) {
 				res = this.preferenceStore.getStringArray(listName, false);
 				this.preferenceStore.remove(listName, false);
 				if (res != null) {
@@ -567,6 +592,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setList(String listName, String[] elements) {
 		this.preferenceStore.save(
+			listName,
+			elements,
+			true
+		);
+	}
+
+	@Override
+	public void setListQuietly(String listName, String[] elements) {
+		this.preferenceStore.saveQuietly(
 			listName,
 			elements,
 			true
@@ -714,6 +748,32 @@ public class PreferenceServiceImpl implements PreferenceService {
 		if (buildNumber != 0) {
 			this.preferenceStore.save(this.getKeyName(R.string.preferences__latest_version), buildNumber);
 		}
+	}
+
+	@Override
+	public boolean checkForAppUpdate(@NonNull Context context) {
+		// Get the current build number
+		int buildNumber = ConfigUtils.getBuildNumber(context);
+		if (buildNumber == 0) {
+			logger.error("Could not check for app update because build number is 0");
+			return false;
+		}
+
+		// Get the last stored build number
+		Integer latestStoredBuildNumber = this.preferenceStore.getInt(this.getKeyName(R.string.preferences__build_version));
+		int lastCheckedBuildNumber = 0;
+		if (latestStoredBuildNumber != null) {
+			lastCheckedBuildNumber = latestStoredBuildNumber;
+		}
+
+		// Update the stored build number if a newer version is installed and return true
+		if (lastCheckedBuildNumber < buildNumber) {
+			this.preferenceStore.save(this.getKeyName(R.string.preferences__build_version), buildNumber);
+			return true;
+		}
+
+		// The app has not been updated since the last check
+		return false;
 	}
 
 	@Override
@@ -960,10 +1020,10 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setPushToken(String gcmToken) {
+	public void setPushToken(String fcmToken) {
 		this.preferenceStore.save(
 			this.getKeyName(R.string.preferences__push_token),
-			gcmToken,
+			fcmToken,
 			true);
 	}
 
@@ -1088,6 +1148,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	public boolean isIpv6Preferred() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__ipv6_preferred));
+	}
+
+	@Override
 	public boolean allowWebrtcIpv6() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__ipv6_webrtc_allowed));
 	}
@@ -1136,7 +1201,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public void setPrivacyPolicyAccepted(Date date, int source) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__privacy_policy_accept_date), date);
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__privacy_policy_accept_source), source);
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__privacy_policy_accept_version), ConfigUtils.getAppVersionFloat(context));
 	}
 
 	@Override
@@ -1151,17 +1215,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public void clearPrivacyPolicyAccepted() {
 		this.preferenceStore.remove(this.getKeyName(R.string.preferences__privacy_policy_accept_date));
 		this.preferenceStore.remove(this.getKeyName(R.string.preferences__privacy_policy_accept_source));
-		this.preferenceStore.remove(this.getKeyName(R.string.preferences__privacy_policy_accept_version));
-	}
-
-	@Override
-	public float getPrivacyPolicyAcceptedVersion() {
-		return this.preferenceStore.getFloat(this.getKeyName(R.string.preferences__privacy_policy_accept_version), 1.0f);
-	}
-
-	@Override
-	public void setPrivacyPolicyAcceptedVersion(float version) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__privacy_policy_accept_version), version);
 	}
 
 	@Override
@@ -1216,13 +1269,14 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setThreemaSafeServerInfo(ThreemaSafeServerInfo serverInfo) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_server_name), serverInfo != null ? serverInfo.getServerName() : null, true);
+	public void setThreemaSafeServerInfo(@Nullable ThreemaSafeServerInfo serverInfo) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_server_name), serverInfo != null ? serverInfo.getCustomServerName() : null, true);
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_server_username), serverInfo != null ? serverInfo.getServerUsername() : null, true);
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_server_password), serverInfo != null ? serverInfo.getServerPassword() : null, true);
 	}
 
 	@Override
+	@NonNull
 	public ThreemaSafeServerInfo getThreemaSafeServerInfo() {
 		return new ThreemaSafeServerInfo(
 			this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_name), true),
@@ -1655,7 +1709,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void removeLastNotificationRationaleShown() {
 		String key = this.getKeyName(R.string.preferences__last_notification_rationale_shown);
-		if (this.preferenceStore.has(key)) {
+		if (this.preferenceStore.containsKey(key)) {
 			this.preferenceStore.remove(key);
 		}
 	}
@@ -1715,5 +1769,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public long getTimeOfLastContactSync() {
 		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__contact_sync_time));
+	}
+
+	@Override
+	public boolean isMdUnlocked() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__md_unlocked), false);
+	}
+
+	@Override
+	public boolean showConversationLastUpdate() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__show_last_update_prefix), false);
 	}
 }

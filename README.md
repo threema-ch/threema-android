@@ -142,12 +142,12 @@ Threema OnPrem customers:
 
 The following variants are only used for development and testing within Threema:
 
-| Flavor               | Description                                    | License Checks |
-| -------------------- | ---------------------------------------------- | -------------- |
-| `none`               | Used for development                           | Allowlist      |
-| `sandbox`            | Uses sandbox test environment¹                 | Allowlist      |
-| `sandbox_work`       | Uses sandbox test environment¹                 | Threema Work   |
-| `red`                | Uses sandbox test environment¹                 | Threema Work   |
+| Flavor         | Description                                    | License Checks |
+|----------------| ---------------------------------------------- | -------------- |
+| `none`         | Used for development                           | Allowlist      |
+| `green`        | Uses sandbox test environment¹                 | Allowlist      |
+| `sandbox_work` | Uses sandbox test environment¹                 | Threema Work   |
+| `blue`         | Uses sandbox test environment¹                 | Threema Work   |
 
 ¹ *The “sandbox” is a backend test environment that is used for internal testing
   at Threema. The sandbox backend can currently not be accessed from the public
@@ -251,7 +251,7 @@ language, please sign up at <https://threema.oneskyapp.com/collaboration/>.
 
 Threema for Android is licensed under the GNU Affero General Public License v3.
 
-    Copyright (c) 2013-2023 Threema GmbH
+    Copyright (c) 2013-2024 Threema GmbH
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License, version 3,

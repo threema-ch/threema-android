@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
+import ch.threema.protobuf.Common;
 import ch.threema.protobuf.csp.e2e.fs.Encapsulated;
 import ch.threema.protobuf.csp.e2e.fs.Envelope;
 import ch.threema.protobuf.csp.e2e.fs.Version;
@@ -60,7 +61,7 @@ public class ForwardSecurityDataMessageTest {
 
 	public ForwardSecurityDataMessage makeForwardSecurityDataMessage() {
 		return new ForwardSecurityDataMessage(
-			TEST_SESSION_ID, Encapsulated.DHType.FOURDH, TEST_COUNTER, Version.V1_1_VALUE, Version.V1_0_VALUE, TEST_MESSAGE);
+			TEST_SESSION_ID, Encapsulated.DHType.FOURDH, TEST_COUNTER, Version.V1_1_VALUE, Version.V1_0_VALUE, null, TEST_MESSAGE);
 	}
 
 	@Test

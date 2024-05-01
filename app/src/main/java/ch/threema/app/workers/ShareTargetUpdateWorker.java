@@ -21,13 +21,17 @@
 
 package ch.threema.app.workers;
 
+import android.app.usage.UsageStatsManager;
 import android.content.Context;
+import android.os.Build;
 
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
+import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.managers.ServiceManager;
@@ -56,6 +60,14 @@ public class ShareTargetUpdateWorker extends Worker {
 				}
 			}
 		}
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			UsageStatsManager usageStatsManager = (UsageStatsManager) getApplicationContext().getSystemService(Context.USAGE_STATS_SERVICE);
+			if (usageStatsManager != null) {
+				logger.info("Is inactive = {}; Standby bucket = {} (should be <= 10)", usageStatsManager.isAppInactive(BuildConfig.APPLICATION_ID), usageStatsManager.getAppStandbyBucket());
+			}
+		}
+
 		return Result.success();
 	}
 }

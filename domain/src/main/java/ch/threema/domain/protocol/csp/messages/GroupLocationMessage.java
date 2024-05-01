@@ -64,7 +64,7 @@ public class GroupLocationMessage extends AbstractGroupMessage {
 	@Override
 	@Nullable
 	public Version getMinimumRequiredForwardSecurityVersion() {
-		return null;
+		return Version.V1_2;
 	}
 
 	@Override
@@ -75,6 +75,36 @@ public class GroupLocationMessage extends AbstractGroupMessage {
 	@Override
 	public boolean exemptFromBlocking() {
 		return false;
+	}
+
+	@Override
+	public boolean createImplicitlyDirectContact() {
+		return false;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return true;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return false;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
+		return true;
 	}
 
 	@Override

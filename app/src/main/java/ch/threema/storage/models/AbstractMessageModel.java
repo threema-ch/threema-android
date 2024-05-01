@@ -78,7 +78,11 @@ public abstract class AbstractMessageModel {
 	public static final String COLUMN_MODIFIED_AT = "modifiedAtUtc";
 	/** Whether this message is a status message. */
 	public static final String COLUMN_IS_STATUS_MESSAGE = "isStatusMessage";
-	/** Whether this message was saved to the message queue. */
+	/**
+	 * This was used to indicate whether the message was saved to the message queue. Note that this
+	 * column is not used anymore. We just keep it in the database to prevent performing a risky
+	 * database migration since the message tables potentially contain many rows.
+	 */
 	public static final String COLUMN_IS_QUEUED = "isQueued";
 	/** API message id of quoted message, if any. */
 	public static final String COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID = "quotedMessageId";
@@ -112,7 +116,6 @@ public abstract class AbstractMessageModel {
 	private Date readAt;
 	private Date modifiedAt;
 	private boolean isStatusMessage;
-	private boolean isQueued;
 	private String caption;
 	private String quotedMessageId;
 	private @MessageContentsType int messageContentsType;
@@ -208,6 +211,18 @@ public abstract class AbstractMessageModel {
 			setQuotedMessageId(null);
 		}
 		return this;
+	}
+
+	@Nullable
+	public String getBodyAndQuotedMessageId() {
+		if (body != null && quotedMessageId != null) {
+			return QuoteUtil.quote(
+				body,
+				quotedMessageId
+			);
+		} else {
+			return body;
+		}
 	}
 
 	public AbstractMessageModel setBody(String body) {
@@ -488,16 +503,6 @@ public abstract class AbstractMessageModel {
 		return true;
 	}
 
-
-	public boolean isQueued() {
-		return isQueued;
-	}
-
-	public AbstractMessageModel setIsQueued(boolean isQueued) {
-		this.isQueued = isQueued;
-		return this;
-	}
-
 	public String getCaption() {
 		switch (this.getType()) {
 			case FILE:
@@ -561,7 +566,6 @@ public abstract class AbstractMessageModel {
 		this
 				.setCorrelationId(sourceModel.getCorrelationId())
 				.setSaved(sourceModel.isSaved())
-				.setIsQueued(sourceModel.isQueued())
 				.setState(sourceModel.getState())
 				.setModifiedAt(sourceModel.getModifiedAt())
 				.setDeliveredAt(sourceModel.getDeliveredAt())
@@ -571,6 +575,7 @@ public abstract class AbstractMessageModel {
 				.setQuotedMessageId(sourceModel.getQuotedMessageId())
 				.setForwardSecurityMode(sourceModel.getForwardSecurityMode())
 				.setDisplayTags(sourceModel.getDisplayTags())
+				.setApiMessageId(sourceModel.getApiMessageId())
 				;
 	}
 }

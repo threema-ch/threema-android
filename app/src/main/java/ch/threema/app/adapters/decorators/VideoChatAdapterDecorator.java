@@ -40,6 +40,7 @@ import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ImageViewUtil;
+import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
@@ -252,7 +253,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 						videoMessagePlayer.open();
 						break;
 					case ControllerView.STATUS_PROGRESSING:
-						if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.PENDING || getMessageModel().getState() == MessageState.SENDING)) {
+						if (MessageUtil.isFileMessageBeingSent(getMessageModel())) {
 							getMessageService().cancelMessageUpload(getMessageModel());
 						} else {
 							videoMessagePlayer.cancel();

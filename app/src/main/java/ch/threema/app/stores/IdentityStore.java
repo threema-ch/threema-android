@@ -47,7 +47,7 @@ public class IdentityStore implements IdentityStoreInterface {
 	private String publicNickname;
 	private final PreferenceStoreInterface preferenceStore;
 
-	private Map<KeyPair,NaCl> naClCache;
+	private final Map<KeyPair,NaCl> naClCache;
 
 	public IdentityStore(PreferenceStoreInterface preferenceStore) throws ThreemaException {
 
@@ -80,7 +80,8 @@ public class IdentityStore implements IdentityStoreInterface {
 		throw new ThreemaException("Bad identity file format");
 	}
 
-	public byte[] encryptData(byte[] boxData, byte[] nonce, byte[] receiverPublicKey) {
+	@Override
+	public byte[] encryptData(@NonNull byte[] boxData, @NonNull byte[] nonce, @NonNull byte[] receiverPublicKey) {
 		if (privateKey != null) {
 			NaCl nacl = getCachedNaCl(privateKey, receiverPublicKey);
 			return nacl.encrypt(boxData, nonce);
@@ -88,7 +89,8 @@ public class IdentityStore implements IdentityStoreInterface {
 		return null;
 	}
 
-	public byte[] decryptData(byte[] boxData, byte[] nonce, byte[] senderPublicKey) {
+	@Override
+	public byte[] decryptData(@NonNull byte[] boxData, @NonNull byte[] nonce, @NonNull byte[] senderPublicKey) {
 		if (privateKey != null) {
 			NaCl nacl = getCachedNaCl(privateKey, senderPublicKey);
 			return nacl.decrypt(boxData, nonce);
@@ -101,23 +103,32 @@ public class IdentityStore implements IdentityStoreInterface {
 		return getCachedNaCl(privateKey, publicKey).getPrecomputed();
 	}
 
+	@Override
 	public String getIdentity() {
 		return this.identity;
 	}
 
+	@Override
 	public String getServerGroup() {
 		return this.serverGroup;
 	}
 
+	@Override
 	public byte[] getPublicKey() {
 		return this.publicKey;
 	}
 
+	@Override
 	public byte[] getPrivateKey() {
 		return this.privateKey;
 	}
 
+	@Override
+	@NonNull
 	public String getPublicNickname() {
+		if (this.publicNickname == null) {
+			return "";
+		}
 		return this.publicNickname;
 	}
 
@@ -127,8 +138,13 @@ public class IdentityStore implements IdentityStoreInterface {
 		ListenerManager.profileListeners.handle(listener -> listener.onNicknameChanged(publicNickname));
 	}
 
-	public void storeIdentity(String identity, String serverGroup, byte[] publicKey, byte[] privateKey) {
-
+	@Override
+	public void storeIdentity(
+		@NonNull String identity,
+		@NonNull String serverGroup,
+		@NonNull byte[] publicKey,
+		@NonNull byte[] privateKey
+	) {
 		this.identity = identity;
 		this.serverGroup = serverGroup;
 		this.publicKey = publicKey;
@@ -170,7 +186,7 @@ public class IdentityStore implements IdentityStoreInterface {
 		return nacl;
 	}
 
-	private class KeyPair {
+	private static class KeyPair {
 		private final byte[] privateKey;
 		private final byte[] publicKey;
 

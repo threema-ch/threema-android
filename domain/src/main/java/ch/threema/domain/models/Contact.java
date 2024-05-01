@@ -24,6 +24,7 @@ package ch.threema.domain.models;
 import java.util.Arrays;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import ch.threema.base.utils.Utils;
 
 /**
@@ -38,6 +39,7 @@ public class Contact {
 	private String firstName;
 	private String lastName;
 
+	@NonNull
 	private VerificationLevel verificationLevel;
 
 	public Contact(String identity, byte[] publicKey) {
@@ -70,11 +72,12 @@ public class Contact {
 		this.lastName = Utils.truncateUTF8String(lastName, CONTACT_NAME_MAX_LENGTH_BYTES);
 	}
 
+	@NonNull
 	public VerificationLevel getVerificationLevel() {
 		return verificationLevel;
 	}
 
-	public void setVerificationLevel(VerificationLevel verificationLevel) {
+	public void setVerificationLevel(@NonNull VerificationLevel verificationLevel) {
 		this.verificationLevel = verificationLevel;
 	}
 

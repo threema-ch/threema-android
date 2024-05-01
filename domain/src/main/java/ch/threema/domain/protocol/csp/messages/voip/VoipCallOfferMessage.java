@@ -73,4 +73,34 @@ public class VoipCallOfferMessage extends VoipMessage {
 	public boolean exemptFromBlocking() {
 		return false;
 	}
+
+	@Override
+	public boolean createImplicitlyDirectContact() {
+		return true;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return true;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return false;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
+		return true;
+	}
 }

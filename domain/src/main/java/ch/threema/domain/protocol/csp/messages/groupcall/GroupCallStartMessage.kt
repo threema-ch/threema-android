@@ -31,11 +31,21 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) : AbstractProtobufG
 ), GroupCallControlMessage {
     override fun flagSendPush() = true
 
-    override fun flagNoDeliveryReceipts() = true
-
-    override fun getMinimumRequiredForwardSecurityVersion(): Version? = null
+    override fun getMinimumRequiredForwardSecurityVersion(): Version = Version.V1_2
 
     override fun allowUserProfileDistribution() = true
 
     override fun exemptFromBlocking() = true
+
+    override fun createImplicitlyDirectContact() = false
+
+    override fun protectAgainstReplay() = true
+
+    override fun reflectIncoming() = true
+
+    override fun reflectOutgoing() = true
+
+    override fun sendAutomaticDeliveryReceipt() = false
+
+    override fun bumpLastUpdate(): Boolean = true
 }

@@ -38,7 +38,7 @@ import ch.threema.base.utils.LoggingUtil;
 
 /* clean up image labeler */
 
-public class SystemUpdateToVersion64 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion64 implements UpdateSystemService.SystemUpdate {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion64");
 	private Context context;
 
@@ -52,7 +52,7 @@ public class SystemUpdateToVersion64 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		deleteMediaLabelsDatabase();
 
 		return true;

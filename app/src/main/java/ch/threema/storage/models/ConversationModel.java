@@ -38,20 +38,21 @@ public class ConversationModel {
 
 	public static final int NO_RESOURCE = -1;
 
-	@NonNull
-	private final Context context;
+	private final @NonNull Context context;
 
 	private final MessageReceiver receiver;
 
 	private long messageCount;
 
-	private AbstractMessageModel latestMessage;
+	private @Nullable AbstractMessageModel latestMessage;
 
 	private long unreadCount;
 	private boolean isUnreadTagged;
 
 	private String uid = null;
 	private int position = -1;
+
+	private @Nullable Date lastUpdate;
 
 	private boolean isTyping = false;
 	private boolean isPinTagged = false;
@@ -61,8 +62,7 @@ public class ConversationModel {
 		this.receiver = receiver;
 	}
 
-	@NonNull
-	public Context getContext() {
+	public @NonNull Context getContext() {
 		return context;
 	}
 
@@ -74,28 +74,24 @@ public class ConversationModel {
 		return messageCount;
 	}
 
-	public Date getSortDate() {
-		if (this.getLatestMessage() != null) {
-			return this.getLatestMessage().getCreatedAt();
-		}
+	public void setLastUpdate(@Nullable Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
 
-		if (this.isGroupConversation()) {
-			GroupModel group = getGroup();
-			if (getMessageCount() > 0 && group != null) {
-				return group.getCreatedAt();
-			}
-			return new Date(0);
-		}
+	public @Nullable Date getLastUpdate() {
+		return lastUpdate;
+	}
 
-		if (this.isDistributionListConversation()) {
-			DistributionListModel distributionList = getDistributionList();
-			if (getMessageCount() > 0 && distributionList != null) {
-				return distributionList.getCreatedAt();
-			}
-			return new Date(0);
+	/**
+	 * Return the date used for sorting.
+	 *
+	 * Corresponds to {@link #getLastUpdate()} if set.
+	 */
+	public @NonNull Date getSortDate() {
+		if (this.lastUpdate != null) {
+			return this.lastUpdate;
 		}
-
-		return null;
+		return new Date(0);
 	}
 
 	public void setLatestMessage(@Nullable AbstractMessageModel latestMessage) {
@@ -218,10 +214,8 @@ public class ConversationModel {
 		return this.unreadCount;
 	}
 
-
-	@NonNull
 	@Override
-	public String toString() {
+	public @NonNull String toString() {
 		return getReceiver().getDisplayName();
 	}
 }

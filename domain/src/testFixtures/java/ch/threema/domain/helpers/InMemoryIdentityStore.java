@@ -33,7 +33,7 @@ public class InMemoryIdentityStore implements IdentityStoreInterface {
 	private String serverGroup;
 	private byte[] publicKey;
 	private byte[] privateKey;
-	private String publicNickname;
+	private final String publicNickname;
 
 	public InMemoryIdentityStore(String identity, String serverGroup, byte[] privateKey, String publicNickname) {
 		this.identity = identity;
@@ -77,12 +77,17 @@ public class InMemoryIdentityStore implements IdentityStoreInterface {
 	}
 
 	@Override
-	public String getPublicNickname() {
-		return publicNickname;
+	public byte[] getPrivateKey() {
+		return privateKey;
 	}
 
-	public void setPublicNickname(String publicNickname) {
-		this.publicNickname = publicNickname;
+	@Override
+	@NonNull
+	public String getPublicNickname() {
+		if (publicNickname == null) {
+			return "";
+		}
+		return publicNickname;
 	}
 
 	@Override

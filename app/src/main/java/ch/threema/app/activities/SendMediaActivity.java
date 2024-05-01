@@ -39,6 +39,7 @@ import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_BOTH_ADAPTERS;
 import static ch.threema.app.utils.MediaAdapterManagerKt.NOTIFY_PREVIEW_ADAPTER;
 
 import android.Manifest;
+import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -64,6 +65,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -176,6 +178,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	private MenuItem settingsItem, editFilenameItem;
 	private MediaFilterQuery lastMediaFilter;
 	private TextView itemCountText;
+	private FrameLayout bottomPanel;
 
 	final ItemTouchHelper.SimpleCallback dragCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT, 0) {
 		@Override
@@ -319,6 +322,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		}
 
 		itemCountText = findViewById(R.id.item_count);
+		bottomPanel = findViewById(R.id.bottom_panel);
+		bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGING);
+		bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.APPEARING);
+		bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.DISAPPEARING);
+		bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+		bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGE_APPEARING);
 
 		this.captionEditText = findViewById(R.id.caption_edittext);
 		this.captionEditText.addTextChangedListener(new TextWatcher() {
@@ -342,6 +351,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 				}
 			}
 		});
+		this.captionEditText.setOnFocusChangeListener((v, hasFocus) -> {
+			if (hasFocus) {
+				bottomPanel.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
+			} else {
+				bottomPanel.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGING);
+			}
+		});
 
 		if (messageReceivers != null && messageReceivers.size() == 1 && messageReceivers.get(0) instanceof GroupMessageReceiver) {
 			try {
@@ -351,7 +367,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 					serviceManager.getContactService(),
 					serviceManager.getUserService(),
 					preferenceService,
-					((GroupMessageReceiver) messageReceivers.get(0)).getGroup()
+					((GroupMessageReceiver) messageReceivers.get(0)).getGroup(),
+					null
 				);
 				ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.activity_parent), (v, insets) -> {
 					if (insets.getSystemWindowInsetBottom() <= insets.getStableInsetBottom()) {
@@ -998,7 +1015,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		if (type == TYPE_VIDEO_CAM) {
 			item.setMimeType(MimeUtil.MIME_TYPE_VIDEO_MP4);
 		} else {
-			item.setMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
+			item.setMimeType(MimeUtil.MIME_TYPE_IMAGE_JPEG);
 		}
 
 		if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(imageUri.getScheme())) {

@@ -65,7 +65,42 @@ public class VoipICECandidatesMessage extends VoipMessage {
 	}
 
 	@Override
+	public boolean allowUserProfileDistribution() {
+		return false;
+	}
+
+	@Override
 	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return false;
+	}
+
+	@Override
+	public boolean createImplicitlyDirectContact() {
+		return false;
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return false;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return false;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
 		return false;
 	}
 }

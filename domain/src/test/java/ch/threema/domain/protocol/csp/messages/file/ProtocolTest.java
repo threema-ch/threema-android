@@ -27,11 +27,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
-import ch.threema.base.crypto.NonceStoreInterface;
+import ch.threema.base.crypto.NonceStore;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -81,19 +83,25 @@ public class ProtocolTest {
 		IdentityStoreInterface identityStore = createFakeIdentityStore(myIdentity);
 		MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
-		NonceFactory nonceFactory = new NonceFactory(new NonceStoreInterface() {
+		NonceFactory nonceFactory = new NonceFactory(new NonceStore() {
 			@Override
-			public boolean exists(byte[] nonce) {
+			public boolean exists(@NonNull byte[] nonce) {
 				return false;
 			}
 
 			@Override
-			public boolean store(byte[] nonce) {
+			public boolean store(@NonNull byte[] nonce) {
 				return true;
+			}
+
+			@NonNull
+			@Override
+			public List<byte[]> getAllHashedNonces() {
+				return Collections.emptyList();
 			}
 		});
 
-		MessageBox boxmsg = messageCoder.encode(groupFileMessage, nonceFactory);
+		MessageBox boxmsg = messageCoder.encode(groupFileMessage, nonceFactory.next(false), nonceFactory);
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
@@ -142,19 +150,25 @@ public class ProtocolTest {
 		IdentityStoreInterface identityStore = createFakeIdentityStore(myIdentity);
 		MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
-		NonceFactory nonceFactory = new NonceFactory(new NonceStoreInterface() {
+		NonceFactory nonceFactory = new NonceFactory(new NonceStore() {
 			@Override
-			public boolean exists(byte[] nonce) {
+			public boolean exists(@NonNull byte[] nonce) {
 				return false;
 			}
 
 			@Override
-			public boolean store(byte[] nonce) {
+			public boolean store(@NonNull byte[] nonce) {
 				return true;
+			}
+
+			@NonNull
+			@Override
+			public List<byte[]> getAllHashedNonces() {
+				return Collections.emptyList();
 			}
 		});
 
-		MessageBox boxmsg = messageCoder.encode(fileMessage, nonceFactory);
+		MessageBox boxmsg = messageCoder.encode(fileMessage, nonceFactory.next(false), nonceFactory);
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
@@ -235,8 +249,14 @@ public class ProtocolTest {
 			}
 
 			@Override
+			public byte[] getPrivateKey() {
+				return new byte[32];
+			}
+
+			@Override
+			@NonNull
 			public String getPublicNickname() {
-				return null;
+				return "";
 			}
 
 			@Override

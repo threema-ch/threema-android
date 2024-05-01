@@ -23,6 +23,7 @@ package ch.threema.storage.models.data.status
 
 import android.util.JsonWriter
 import ch.threema.storage.models.data.status.StatusDataModel.StatusDataModelInterface
+import ch.threema.storage.models.data.status.StatusDataModel.StatusType
 import java.io.IOException
 
 open class GroupCallStatusDataModel protected constructor() : StatusDataModelInterface {
@@ -35,7 +36,7 @@ open class GroupCallStatusDataModel protected constructor() : StatusDataModelInt
     var status = 0
         private set
 
-    override fun getType(): Int {
+    @StatusType override fun getType(): Int {
         return TYPE
     }
 

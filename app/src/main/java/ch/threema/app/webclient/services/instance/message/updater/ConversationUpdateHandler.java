@@ -143,6 +143,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
 		@Override
 		@AnyThread
 		public void onNew(ConversationModel conversationModel) {
+			logger.info("Conversation created, sending update to Threema Web (conversation={})", conversationModel.getUid());
 			// Notify webclient in background thread
 			handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_NEW));
 		}
@@ -150,7 +151,8 @@ public class ConversationUpdateHandler extends MessageUpdater {
 		@Override
 		@AnyThread
 		public void onModified(ConversationModel modifiedConversationModel, Integer oldPosition) {
-			logger.debug("Move item from: {} to {}", oldPosition, modifiedConversationModel.getPosition());
+			logger.info("Conversation modified, sending update to Threema Web (conversation={})", modifiedConversationModel.getUid());
+			logger.info("Move item from: {} to {}", oldPosition, modifiedConversationModel.getPosition());
 			// Notify webclient in background thread
 			handler.post(() -> ConversationUpdateHandler.this.respond(modifiedConversationModel, ARGUMENT_MODE_MODIFIED));
 		}
@@ -158,6 +160,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
 		@Override
 		@AnyThread
 		public void onRemoved(ConversationModel conversationModel) {
+			logger.info("Conversation removed, sending update to Threema Web (conversation={})", conversationModel.getUid());
 			// Notify webclient in background thread
 			handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_REMOVED));
 		}
@@ -166,7 +169,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
 		@AnyThread
 		public void onModifiedAll() {
 			// TODO: Do we need to implement this?
-			logger.debug("onModifiedAll");
+			logger.info("onModifiedAll");
 		}
 	}
 }

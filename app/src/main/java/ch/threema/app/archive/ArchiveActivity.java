@@ -21,9 +21,6 @@
 
 package ch.threema.app.archive;
 
-import static ch.threema.app.managers.ListenerManager.conversationListeners;
-import static ch.threema.app.managers.ListenerManager.messageListeners;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -33,14 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.view.ActionMode;
-import androidx.appcompat.widget.SearchView;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
 
@@ -48,15 +37,24 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.view.ActionMode;
+import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
-import ch.threema.app.asynctasks.DeleteConversationsAsyncTask;
+import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.listeners.MessageListener;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ConversationService;
+import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
@@ -69,16 +67,24 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
+
+import static ch.threema.app.managers.ListenerManager.conversationListeners;
+import static ch.threema.app.managers.ListenerManager.messageListeners;
 
 public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, SearchView.OnQueryTextListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ArchiveActivity");
 	private static final String DIALOG_TAG_REALLY_DELETE_CHATS = "delc";
 
+	// Services
+	private ConversationService conversationService;
+	private GroupService groupService;
+	private DistributionListService distributionListService;
+
 	private ArchiveAdapter archiveAdapter;
 	private ArchiveViewModel viewModel;
 	private ActionMode actionMode = null;
-	private ConversationService conversationService;
-	private GroupService groupService;
 	private EmptyRecyclerView recyclerView;
 
 	public int getLayoutResource() {
@@ -110,6 +116,7 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 		try {
 			conversationService = serviceManager.getConversationService();
 			groupService = serviceManager.getGroupService();
+			distributionListService = serviceManager.getDistributionListService();
 		} catch (ThreemaException e) {
 			logger.error("Exception", e);
 			return false;
@@ -294,25 +301,32 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 	@SuppressLint("StringFormatInvalid")
 	private void delete(List<ConversationModel> checkedItems) {
 		int num = checkedItems.size();
-		String confirmText = ConfigUtils.getSafeQuantityString(this, R.plurals.really_delete_thread_message, num, num) + " " + getString(R.string.messages_cannot_be_recovered);
-		String reallyDeleteThreadText = getResources().getString(num > 1 ? R.string.really_delete_multiple_threads : R.string.really_delete_thread);
+
+		String title = getResources().getString(num > 1 ? R.string.really_delete_multiple_threads : R.string.really_delete_thread);
+		String message = ConfigUtils.getSafeQuantityString(this, R.plurals.really_delete_thread_message, num, num) + " "
+			+ getString(R.string.messages_cannot_be_recovered);
 
 		ConversationModel conversationModel = checkedItems.get(0);
 		if (num == 1 && conversationModel.isGroupConversation()) {
+			// If only one conversation is deleted, and it's a group, show a more specific message.
 			GroupModel groupModel = conversationModel.getGroup();
 			if (groupModel != null && groupService.isGroupMember(groupModel)) {
+				title = getResources().getString((R.string.action_delete_group));
 				if (groupService.isGroupCreator(groupModel)) {
-					confirmText = getString(R.string.delete_my_group_message);
+					message = getString(R.string.delete_my_group_message);
 				} else {
-					confirmText = getString(R.string.delete_group_message);
+					message = getString(R.string.delete_group_message);
 				}
-				reallyDeleteThreadText = getResources().getString((R.string.action_delete_group));
 			}
+		} else if (num > 1 && StreamSupport.stream(checkedItems).anyMatch(ConversationModel::isGroupConversation)) {
+			// If multiple conversations are deleted and at least one of them is a group,
+			// show a hint about the leave/dissolve behavior.
+			message += " " + getString(R.string.groups_left_or_dissolved);
 		}
 
 		GenericAlertDialog dialog = GenericAlertDialog.newInstance(
-			reallyDeleteThreadText,
-			confirmText,
+			title,
+			message,
 			R.string.ok,
 			R.string.cancel);
 		dialog.setData(checkedItems);
@@ -320,20 +334,28 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 	}
 
 	private void reallyDelete(final List<ConversationModel> checkedItems) {
-		synchronized (checkedItems) {
-			new DeleteConversationsAsyncTask(getSupportFragmentManager(), checkedItems, findViewById(R.id.parent_layout), new Runnable() {
-				@Override
-				public void run() {
-					synchronized (checkedItems) {
-						checkedItems.clear();
-						if (actionMode != null) {
-							actionMode.finish();
-						}
-						viewModel.onDataChanged();
-					}
+		final MessageReceiver[] receivers = StreamSupport
+			.stream(checkedItems)
+			.map(ConversationModel::getReceiver)
+			.collect(Collectors.toList())
+			.toArray(new MessageReceiver[0]);
+
+		new EmptyOrDeleteConversationsAsyncTask(
+			EmptyOrDeleteConversationsAsyncTask.Mode.DELETE,
+			receivers,
+			conversationService,
+			groupService,
+			distributionListService,
+			getSupportFragmentManager(),
+			findViewById(R.id.parent_layout),
+			() -> {
+				checkedItems.clear();
+				if (actionMode != null) {
+					actionMode.finish();
 				}
-			}).execute();
-		}
+				viewModel.onDataChanged();
+			}
+		).execute();
 	}
 
 	@Override

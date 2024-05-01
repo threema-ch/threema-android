@@ -33,12 +33,10 @@ import net.zetetic.database.sqlcipher.SQLiteStatement;
 
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import ch.threema.app.services.MessageService;
-import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
@@ -86,7 +84,6 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 						.setCreatedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_CREATED_AT))
 						.setModifiedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_MODIFIED_AT))
 						.setIsStatusMessage(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_IS_STATUS_MESSAGE))
-						.setIsQueued(cursorFactory.getBoolean(AbstractMessageModel.COLUMN_IS_QUEUED))
 						.setCaption(cursorFactory.getString(AbstractMessageModel.COLUMN_CAPTION))
 						.setQuotedMessageId(cursorFactory.getString(AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID))
 						.setMessageContentsType(cursorFactory.getInt(AbstractMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE))
@@ -132,7 +129,6 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		contentValues.put(AbstractMessageModel.COLUMN_CREATED_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getCreatedAt()));
 		contentValues.put(AbstractMessageModel.COLUMN_MODIFIED_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getModifiedAt()));
 		contentValues.put(AbstractMessageModel.COLUMN_IS_STATUS_MESSAGE, messageModel.isStatusMessage());
-		contentValues.put(AbstractMessageModel.COLUMN_IS_QUEUED, messageModel.isQueued());
 		contentValues.put(AbstractMessageModel.COLUMN_CAPTION, messageModel.getCaption());
 		contentValues.put(AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID, messageModel.getQuotedMessageId());
 		contentValues.put(AbstractMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE, messageModel.getMessageContentsType());
@@ -218,16 +214,14 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		return null;
 	}
 
-	public void markUnqueuedMessagesAsFailed() {
-		List<String> params = new ArrayList<>();
-		int messageTypeSize = 0;
-		for(MessageType t: MessageUtil.getFileTypes()) {
-			messageTypeSize++;
-			params.add(String.valueOf(t.ordinal()));
-		}
-		params.add(MessageState.SENDFAILED.toString());
-
-		//select all unqueued!
+	/**
+	 * Mark file messages that have not been uploaded completely yet as failed so that users can
+	 * retry sending them. This affects file messages with state pending (upload did not start yet)
+	 * and uploading (upload may have been started already). File messages with state sending do not
+	 * need to be set to failed as they have been uploaded completely and a persistent task has been
+	 * scheduled. Therefore, these files will get sent as soon as there is a chat server connection.
+	 */
+	public void markUnscheduledFileMessagesAsFailed() {
 		ContentValues values = new ContentValues();
 		values.put(AbstractMessageModel.COLUMN_STATE, MessageState.SENDFAILED.toString());
 
@@ -235,11 +229,14 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 			int updated = this.databaseService.getWritableDatabase().update(
 				this.getTableName(),
 				values,
-				AbstractMessageModel.COLUMN_TYPE + " IN (" + DatabaseUtil.makePlaceholders(messageTypeSize) + ") "
-					+ "AND " + AbstractMessageModel.COLUMN_IS_QUEUED + " = 0 "
-					+ "AND " + AbstractMessageModel.COLUMN_STATE + " != ? "
-					+ "AND " + AbstractMessageModel.COLUMN_OUTBOX + " = 1",
-				DatabaseUtil.convertArguments(params)
+				AbstractMessageModel.COLUMN_TYPE + " =?"
+					+ " AND " + AbstractMessageModel.COLUMN_STATE + " IN (?, ?)"
+					+ " AND " + AbstractMessageModel.COLUMN_OUTBOX + " = 1",
+				new String[]{
+					String.valueOf(MessageType.FILE.ordinal()),
+					MessageState.PENDING.toString(),
+					MessageState.UPLOADING.toString(),
+				}
 			);
 
 			if (updated > 0) {

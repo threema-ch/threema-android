@@ -57,6 +57,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -97,11 +98,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.MenuCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.media3.ui.PlayerView;
 import androidx.preference.PreferenceManager;
+import androidx.window.layout.WindowMetrics;
+import androidx.window.layout.WindowMetricsCalculator;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
@@ -253,9 +258,9 @@ public class ConfigUtils {
 	public static boolean isCallsEnabled() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if (serviceManager != null && serviceManager.getPreferenceService() != null) {
-			return serviceManager.getPreferenceService().isVoipEnabled() &&
-				!AppRestrictionUtil.isCallsDisabled();
+		if (serviceManager != null) {
+			return serviceManager.getPreferenceService().isVoipEnabled()
+				&& !AppRestrictionUtil.isCallsDisabled();
 		}
 		return true;
 	}
@@ -263,10 +268,10 @@ public class ConfigUtils {
 	public static boolean isVideoCallsEnabled() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if (serviceManager != null && serviceManager.getPreferenceService() != null) {
-			return (BuildConfig.VIDEO_CALLS_ENABLED &&
-				serviceManager.getPreferenceService().isVideoCallsEnabled() &&
-				!AppRestrictionUtil.isVideoCallsDisabled());
+		if (serviceManager != null) {
+			return BuildConfig.VIDEO_CALLS_ENABLED
+				&& serviceManager.getPreferenceService().isVideoCallsEnabled()
+				&& !AppRestrictionUtil.isVideoCallsDisabled();
 		}
 		return BuildConfig.VIDEO_CALLS_ENABLED;
 	}
@@ -274,11 +279,11 @@ public class ConfigUtils {
 	public static boolean isGroupCallsEnabled() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if (serviceManager != null && serviceManager.getPreferenceService() != null) {
-			return (BuildConfig.GROUP_CALLS_ENABLED &&
-				serviceManager.getPreferenceService().isGroupCallsEnabled() &&
-				!AppRestrictionUtil.isGroupCallsDisabled() &&
-				!AppRestrictionUtil.isCallsDisabled());
+		if (serviceManager != null) {
+			return BuildConfig.GROUP_CALLS_ENABLED
+				&& serviceManager.getPreferenceService().isGroupCallsEnabled()
+				&& !AppRestrictionUtil.isGroupCallsDisabled()
+				&& !AppRestrictionUtil.isCallsDisabled();
 		}
 		return BuildConfig.GROUP_CALLS_ENABLED;
 	}
@@ -286,11 +291,22 @@ public class ConfigUtils {
 	public static boolean isWorkDirectoryEnabled() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if (serviceManager != null && serviceManager.getPreferenceService() != null) {
-			return (serviceManager.getPreferenceService().getWorkDirectoryEnabled() &&
-				!AppRestrictionUtil.isWorkDirectoryDisabled());
+		if (serviceManager != null) {
+			return serviceManager.getPreferenceService().getWorkDirectoryEnabled()
+				&& !AppRestrictionUtil.isWorkDirectoryDisabled();
 		}
 		return false;
+	}
+
+	public static boolean isMultiDeviceEnabled() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+
+		return ConfigUtils.isDevBuild()
+			&& BuildConfig.MD_ENABLED
+			&& serviceManager != null
+			&& serviceManager.getPreferenceService().isMdUnlocked()
+			// If web is disabled by restriction, multi device is also not allowed
+			&& !AppRestrictionUtil.isWebDisabled(ThreemaApplication.getAppContext());
 	}
 
 	/**
@@ -488,40 +504,23 @@ public class ConfigUtils {
 
 	/**
 	 * Get user-facing application version string including alpha/beta version suffix
+	 */
+	public static String getAppVersion() {
+		return BuildConfig.VERSION_NAME;
+	}
+
+	@NonNull
+	public static String getRatingAppVersion() {
+		return BuildConfig.VERSION_NAME + "/" + BuildFlavor.getName();
+	}
+
+	/**
+	 * Get build number of this app build, including architecture-specific multipliers.
 	 *
-	 * @return application version string
-	 */
-	public static String getAppVersion(@NonNull Context context) {
-		try {
-			PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-			if (packageInfo != null) {
-				return packageInfo.versionName;
-			}
-		} catch (PackageManager.NameNotFoundException e) {
-			logger.error("Exception", e);
-		}
-		return "";
-	}
-
-	/**
-	 * Get user-facing application version represented as a float value stripping any non-numeric characters such as suffixes for build type (e.g. 4.0f)
-	 * @param context
-	 * @return version number
-	 */
-	public static float getAppVersionFloat(@NonNull Context context) {
-		try {
-			String versionString = ConfigUtils.getAppVersion(context).replaceAll("[^\\d.]", "");
-			return Float.parseFloat(versionString);
-		} catch (NumberFormatException e) {
-			logger.error("Exception", e);
-		}
-		return 1.0f;
-	}
-
-	/**
-	 * Get build number of this app build
-	 * @param context
-	 * @return build number
+	 * NOTE: This is almost the same as `BuildConfig.VERSION_CODE`. However, the value returned
+	 * from this function may contain a multiplier depending on the target architecture,
+	 * while `BuildConfig.VERSION_CODE` always returns just the plain version code. For example:
+	 * If this function returns `9000936`, then `BuildConfig.VERSION_CODE` would contain just `936`.
 	 */
 	public static int getBuildNumber(Context context) {
 		try {
@@ -537,13 +536,11 @@ public class ConfigUtils {
 
 	/**
 	 * Return information about the device, including the manufacturer and the model.
-	 *
-	 * @param context The Android context.
 	 */
-	public static @NonNull String getDeviceInfo(Context context, boolean includeAppVersion) {
+	public static @NonNull String getDeviceInfo(boolean includeAppVersion) {
 		final StringBuilder info = new StringBuilder();
 		if (includeAppVersion) {
-			info.append(getAppVersion(context)).append("/");
+			info.append(getAppVersion()).append("/");
 		}
 		info.append(Build.MANUFACTURER).append(";")
 			.append(Build.MODEL).append("/")
@@ -559,8 +556,8 @@ public class ConfigUtils {
 	 *
 	 * @return The device info meant to be sent with support requests
 	 */
-	public static @NonNull String getSupportDeviceInfo(Context context) {
-		final StringBuilder info = new StringBuilder(getDeviceInfo(context, false));
+	public static @NonNull String getSupportDeviceInfo() {
+		final StringBuilder info = new StringBuilder(getDeviceInfo(false));
 		if (isWorkRestricted()) {
 			String mdmSource = AppRestrictionService.getInstance().getMdmSource();
 			if (mdmSource != null) {
@@ -584,7 +581,7 @@ public class ConfigUtils {
 
 	private static String getLicenceURL(Context context, @StringRes int url) {
 		String lang = LocaleUtil.getAppLanguage().startsWith("de") ? "de" : "en";
-		String version = ConfigUtils.getAppVersion(context);
+		String version = ConfigUtils.getAppVersion();
 		boolean darkModeOverride = false;
 		if (context instanceof AppCompatActivity) {
 			darkModeOverride = ((AppCompatActivity) context).getDelegate().getLocalNightMode() == MODE_NIGHT_YES;
@@ -692,8 +689,8 @@ public class ConfigUtils {
 
 	public static boolean isDevBuild() {
 		return BuildFlavor.getName().contains("DEBUG") ||
-			BuildFlavor.getName().equals("Red") || BuildFlavor.getName().equals("DEV") ||
-			BuildFlavor.getName().equals("Sandbox");
+			BuildFlavor.getName().equals("Blue") || BuildFlavor.getName().equals("DEV") ||
+			BuildFlavor.getName().equals("Green");
 	}
 
 	public static boolean supportsGroupLinks() {
@@ -732,9 +729,7 @@ public class ConfigUtils {
 
 			try {
 				LicenseService<?> licenseService = serviceManager.getLicenseService();
-				if (licenseService != null) {
-					return isSerialLicensed() && licenseService.hasCredentials() && licenseService.isLicensed();
-				}
+				return isSerialLicensed() && licenseService.hasCredentials() && licenseService.isLicensed();
 			} catch (FileSystemNotPresentException e) {
 				logger.error("Exception", e);
 			}
@@ -755,8 +750,6 @@ public class ConfigUtils {
 
 	/**
 	 * Returns true if privacy settings imply that screenshots and app switcher thumbnails should be disabled
-	 * @param preferenceService
-	 * @param lockAppService
 	 * @return true if disabled, false otherwise or in case of failure
 	 */
 	public static boolean getScreenshotsDisabled(@Nullable PreferenceService preferenceService, @Nullable LockAppService lockAppService) {
@@ -790,11 +783,16 @@ public class ConfigUtils {
 
 	/*
 	 * Returns the height of the status bar (showing battery or network status) on top of the screen
-	 * DEPRECATED: use ViewCompat.setOnApplyWindowInsetsListener() on Lollipop+
 	 */
-	@Deprecated
 	public static int getStatusBarHeight(Context context) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			WindowMetrics windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(context);
+			Insets insets = windowMetrics.getWindowInsets().getInsets(WindowInsetsCompat.Type.statusBars());
+			return insets.top - insets.bottom;
+		}
+
 		int result = 0;
+		@SuppressLint({"InternalInsetResource", "DiscouragedApi"})
 		int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
 		if (resourceId > 0) {
 			result = context.getResources().getDimensionPixelSize(resourceId);
@@ -803,24 +801,27 @@ public class ConfigUtils {
 	}
 
 	/*
-	 * Returns the height of the navigation softkey bar at the bottom of some devices
-	 * DEPRECATED: use ViewCompat.setOnApplyWindowInsetsListener() on Lollipop+
+	 * Returns the height of the navigation bar at the bottom of some devices
 	 */
-	@Deprecated
 	public static int getNavigationBarHeight(Activity activity) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			WindowMetrics windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
+			androidx.core.graphics.Insets insets = windowMetrics.getWindowInsets().getInsets(WindowInsetsCompat.Type.navigationBars());
+			return insets.bottom - insets.top;
+		}
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity.isInMultiWindowMode()) {
 			return 0;
 		}
 
 		NavigationBarDimensions dimensions = new NavigationBarDimensions();
-
-		dimensions = getNavigationBarDimensions(activity.getWindowManager(), dimensions);
+		getNavigationBarDimensions(activity.getWindowManager(), dimensions);
 
 		return dimensions.height;
 	}
 
 	@Deprecated
-	public static NavigationBarDimensions getNavigationBarDimensions(WindowManager windowManager, NavigationBarDimensions dimensions) {
+	public static void getNavigationBarDimensions(WindowManager windowManager, NavigationBarDimensions dimensions) {
 		dimensions.width = dimensions.height = 0;
 
 		DisplayMetrics metrics = new DisplayMetrics();
@@ -837,7 +838,6 @@ public class ConfigUtils {
 
 		if (realWidth > usableWidth)
 			dimensions.width = realWidth - usableWidth;
-		return dimensions;
 	}
 
 	public static int getUsableWidth(WindowManager windowManager) {
@@ -1242,13 +1242,10 @@ public class ConfigUtils {
 			Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 		} else {
 			Snackbar snackbar = SnackbarUtil.make(parentLayout, message, BaseTransientBottomBar.LENGTH_LONG, 5);
-			snackbar.setAction(R.string.menu_settings, new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-					intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
-					context.startActivity(intent);
-				}
+			snackbar.setAction(R.string.menu_settings, v -> {
+				Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+				intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+				context.startActivity(intent);
 			});
 			if (callback != null) {
 				snackbar.addCallback(callback);
@@ -1260,7 +1257,6 @@ public class ConfigUtils {
 	/**
 	 * Configure navigation and status bar color and style of provided activity to look nice on all kinds of older android version.
 	 * Must be called before super.onCreate(). Thanks for the mess, Google.
-	 * @param activity
 	 */
 	public static void configureSystemBars(Activity activity) {
 		@ColorInt int statusBarColor = getColorFromAttribute(activity, android.R.attr.colorBackground);
@@ -1374,7 +1370,6 @@ public class ConfigUtils {
 
 	/**
 	 * Check if a particular app with packageName is installed on the system
-	 * @param packageName
 	 * @return true if app is installed, false otherwise or an error occured
 	 */
 	public static boolean isAppInstalled(String packageName) {
@@ -1436,8 +1431,6 @@ public class ConfigUtils {
 	 * Apply operations to content provider in small batches preventing TransactionTooLargeException
 	 * @param authority Authority
 	 * @param contentProviderOperations Operations to apply in smaller batches
-	 * @throws OperationApplicationException
-	 * @throws RemoteException
 	 */
 	public static void applyToContentResolverInBatches(@NonNull String authority, ArrayList<ContentProviderOperation> contentProviderOperations) throws OperationApplicationException, RemoteException {
 		ContentResolver contentResolver = ThreemaApplication.getAppContext().getContentResolver();
@@ -1446,13 +1439,6 @@ public class ConfigUtils {
 			List<ContentProviderOperation> contentProviderOperationsBatch = contentProviderOperations.subList(i, Math.min(contentProviderOperations.size(), i + CONTENT_PROVIDER_BATCH_SIZE));
 			contentResolver.applyBatch(authority, new ArrayList<>(contentProviderOperationsBatch));
 		}
-	}
-
-	/**
-	 * Return whether forward security features should be enabled.
-	 */
-	public static boolean isForwardSecurityEnabled() {
-		return BuildConfig.FORWARD_SECURITY;
 	}
 
 	public static boolean isGroupAckEnabled() {
@@ -1616,5 +1602,26 @@ public class ConfigUtils {
 	public static boolean isSupportedAnimatedImageFormat(@Nullable String mimeType) {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
 			MimeUtil.isWebPFile(mimeType);
+	}
+
+	/**
+	 * Get position of a PopupWindow that has Gravity.LEFT|Gravity.BOTTOM set and is supposed to be located above the supplied anchor view
+	 * @param activity Activity that hosts the PopupWindow
+	 * @param anchorView Anchor view
+	 * @return int array of x/y coordinates to be supplied to showAtLocation() as well as the viewable height
+	 */
+	public static int[] getPopupWindowPositionAboveAnchor(@NonNull Activity activity, @NonNull View anchorView) {
+		int[] windowLocation = {0, 0};
+		anchorView.getLocationInWindow(windowLocation);
+
+		WindowMetrics windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
+		Rect bounds = windowMetrics.getBounds();
+
+		int x = windowLocation[0] + anchorView.getPaddingLeft();
+		int y = bounds.height() - windowLocation[1];
+
+		int viewableHeight = windowLocation[1] - (ConfigUtils.getStatusBarHeight(activity) + ConfigUtils.getActionBarSize(activity));
+
+		return new int[]{x, y, viewableHeight};
 	}
 }

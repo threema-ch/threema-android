@@ -40,6 +40,7 @@ import ch.threema.app.ui.AudioProgressBarView;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
@@ -123,7 +124,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 					}
 					break;
 				case ControllerView.STATUS_PROGRESSING:
-					if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.PENDING || getMessageModel().getState() == MessageState.SENDING)) {
+					if (MessageUtil.isFileMessageBeingSent(getMessageModel())) {
 						getMessageService().cancelMessageUpload(getMessageModel());
 					} else {
 						audioMessagePlayer.cancel();
@@ -334,6 +335,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 						holder.controller.setTranscoding();
 						break;
 					case PENDING:
+					case UPLOADING:
 					case SENDING:
 						holder.controller.setProgressing();
 						break;

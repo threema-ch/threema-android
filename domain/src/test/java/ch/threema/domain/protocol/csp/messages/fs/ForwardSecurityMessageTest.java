@@ -41,7 +41,7 @@ public class ForwardSecurityMessageTest {
 	}
 
 	private static ForwardSecurityEnvelopeMessage getEnvelopeMessageTestInstance() {
-		final ForwardSecurityEnvelopeMessage msg = new ForwardSecurityEnvelopeMessage(getDataTestInstance());
+		final ForwardSecurityEnvelopeMessage msg = new ForwardSecurityEnvelopeMessage(getDataTestInstance(), true);
 		setMessageDefaults(msg);
 		return msg;
 	}

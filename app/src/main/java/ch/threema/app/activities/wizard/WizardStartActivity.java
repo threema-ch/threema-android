@@ -24,12 +24,11 @@ package ch.threema.app.activities.wizard;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 
 import org.slf4j.Logger;
 
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.util.Pair;
@@ -43,7 +42,6 @@ import static ch.threema.app.backuprestore.csv.RestoreService.RESTORE_COMPLETION
 
 public class WizardStartActivity extends WizardBackgroundActivity {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardStartActivity");
-
 	boolean doFinish = false;
 
 	@Override
@@ -54,6 +52,28 @@ public class WizardStartActivity extends WizardBackgroundActivity {
 		NotificationManagerCompat.from(this).cancel(RESTORE_COMPLETION_NOTIFICATION_ID);
 
 		final ImageView imageView = findViewById(R.id.wizard_animation);
+		final AnimationDrawable frameAnimation = getAnimationDrawable(imageView);
+
+		if (!RuntimeUtil.isInTest() && !ConfigUtils.isWorkRestricted()) {
+			imageView.setOnClickListener(v -> {
+				((AnimationDrawable) v.getBackground()).stop();
+				launchNextActivity(null);
+			});
+			imageView.getRootView().getViewTreeObserver().addOnGlobalLayoutListener(frameAnimation::start);
+			imageView.postDelayed(() -> {
+				if (frameAnimation.isRunning()) {
+					// stop animation if it's still running after 5 seconds
+					frameAnimation.stop();
+					launchNextActivity(null);
+				}
+			}, 5000);
+		} else {
+			launchNextActivity(null);
+		}
+	}
+
+	@NonNull
+	private AnimationDrawable getAnimationDrawable(ImageView imageView) {
 		final AnimationDrawable frameAnimation = (AnimationDrawable) imageView.getBackground();
 		frameAnimation.setOneShot(true);
 		frameAnimation.setCallback(new AnimationDrawableCallback(frameAnimation, imageView) {
@@ -75,29 +95,7 @@ public class WizardStartActivity extends WizardBackgroundActivity {
 				launchNextActivity(options);
 			}
 		});
-
-		if (!RuntimeUtil.isInTest() && !ConfigUtils.isWorkRestricted()) {
-			imageView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					((AnimationDrawable) v.getBackground()).stop();
-					launchNextActivity(null);
-				}
-			});
-			imageView.getRootView().getViewTreeObserver().addOnGlobalLayoutListener(frameAnimation::start);
-			imageView.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					if (frameAnimation.isRunning()) {
-						// stop animation if it's still running after 5 seconds
-						frameAnimation.stop();
-						launchNextActivity(null);
-					}
-				}
-			}, 5000);
-		} else {
-			launchNextActivity(null);
-		}
+		return frameAnimation;
 	}
 
 	private void launchNextActivity(ActivityOptionsCompat options) {
@@ -112,7 +110,9 @@ public class WizardStartActivity extends WizardBackgroundActivity {
 
 		if (options != null) {
 			try {
-				ActivityCompat.startActivity(this, intent, options.toBundle());
+				// can potentially cause a memory leak. still not fixed in the Android framework to this date
+				// https://issuetracker.google.com/issues/37042900
+				startActivity(intent, options.toBundle());
 			} catch (Exception e) {
 				// http://stackoverflow.com/questions/31026745/rjava-lang-illegalargumentexception-on-startactivityintent-bundle-animantion
 				logger.error("Exception", e);

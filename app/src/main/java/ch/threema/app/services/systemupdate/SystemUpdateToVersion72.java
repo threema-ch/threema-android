@@ -65,7 +65,7 @@ public class SystemUpdateToVersion72 implements UpdateSystemService.SystemUpdate
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		ServiceManager s = ThreemaApplication.getServiceManager();
 		if (s != null) {
 			try {

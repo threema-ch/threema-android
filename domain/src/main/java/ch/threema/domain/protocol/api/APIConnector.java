@@ -66,7 +66,6 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ProtocolStrings;
 import ch.threema.domain.protocol.SSLSocketFactoryFactory;
 import ch.threema.domain.protocol.ServerAddressProvider;
-import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.Version;
 import ch.threema.domain.protocol.api.work.WorkContact;
 import ch.threema.domain.protocol.api.work.WorkData;
@@ -862,18 +861,18 @@ public class APIConnector {
 	/**
 	 * Set the group chat flag for the identity in the given store.
 	 *
-	 * @param featureBuilder feature mask builder of the current identity
+	 * @param featureMask feature mask of the current identity
 	 * @param identityStore  identity store for authentication of request
 	 * @throws LinkMobileNoException if the server reports an error (should be displayed to the user verbatim)
 	 * @throws Exception             if a network error occurs
 	 */
-	public void setFeatureMask(ThreemaFeature.Builder featureBuilder, IdentityStoreInterface identityStore) throws Exception {
+	public void setFeatureMask(long featureMask, IdentityStoreInterface identityStore) throws Exception {
 		String url = getServerUrl() + "identity/set_featuremask";
 
 		// Phase 1: send identity
 		JSONObject request = new JSONObject();
 		request.put("identity", identityStore.getIdentity());
-		request.put("featureMask", featureBuilder.build());
+		request.put("featureMask", featureMask);
 
 		logger.debug("Set feature mask phase 1: sending to server: {}", request);
 		JSONObject p1Result = new JSONObject(this.postJson(url, request));
@@ -898,7 +897,7 @@ public class APIConnector {
 	 * @return list of feature masks (null if a invalid identity was set)
 	 * @throws Exception on network error
 	 */
-	public Integer[] checkFeatureMask(String[] identities) throws Exception {
+	public Long[] checkFeatureMask(String[] identities) throws Exception {
 		String url = getServerUrl() + "identity/check_featuremask";
 
 		JSONObject request = new JSONObject();
@@ -912,13 +911,13 @@ public class APIConnector {
 
 		JSONArray jsonArrayFeatureMasks = result.getJSONArray("featureMasks");
 
-		Integer[] featureMasks = new Integer[jsonArrayFeatureMasks.length()];
+		Long[] featureMasks = new Long[jsonArrayFeatureMasks.length()];
 
 		for (int i = 0; i < jsonArrayFeatureMasks.length(); i++) {
 			if (jsonArrayFeatureMasks.isNull(i)) {
 				featureMasks[i] = null;
 			} else {
-				featureMasks[i] = jsonArrayFeatureMasks.getInt(i);
+				featureMasks[i] = jsonArrayFeatureMasks.getLong(i);
 			}
 		}
 
@@ -1022,13 +1021,13 @@ public class APIConnector {
 		}
 
 		JSONArray jsonFeatureMasks = result.getJSONArray("featureMasks");
-		Integer[] featureMasks = new Integer[jsonFeatureMasks.length()];
+		Long[] featureMasks = new Long[jsonFeatureMasks.length()];
 
 		for (int i = 0; i < jsonFeatureMasks.length(); i++) {
 			if (jsonFeatureMasks.isNull(i)) {
 				featureMasks[i] = null;
 			} else {
-				featureMasks[i] = jsonFeatureMasks.getInt(i);
+				featureMasks[i] = jsonFeatureMasks.getLong(i);
 			}
 		}
 
@@ -1752,7 +1751,7 @@ public class APIConnector {
 		 */
 		@Deprecated
 		public int featureLevel;
-		public int featureMask;
+		public long featureMask;
 		public int state;
 		public int type;
 	}
@@ -1783,13 +1782,13 @@ public class APIConnector {
 		public final int[] types;
 		public final String[] identities;
 		public final int checkInterval;
-		public final Integer[] featureMasks;
+		public final Long[] featureMasks;
 
 		public CheckIdentityStatesResult(int[] states,
 										 int [] types,
 										 String[] identities,
 										 int checkInterval,
-										 Integer[] featureMasks) {
+										 Long[] featureMasks) {
 			this.states = states;
 			this.identities = identities;
 			this.types = types;

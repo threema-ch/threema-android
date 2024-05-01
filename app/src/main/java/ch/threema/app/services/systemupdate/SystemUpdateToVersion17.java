@@ -58,7 +58,7 @@ public class SystemUpdateToVersion17 implements UpdateSystemService.SystemUpdate
 		return this;
 	}
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

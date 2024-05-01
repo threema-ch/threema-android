@@ -23,9 +23,9 @@ package ch.threema.app.utils;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.csp.messages.BoxAudioMessage;
-import ch.threema.domain.protocol.csp.messages.BoxImageMessage;
-import ch.threema.domain.protocol.csp.messages.BoxVideoMessage;
+import ch.threema.domain.protocol.csp.messages.AudioMessage;
+import ch.threema.domain.protocol.csp.messages.ImageMessage;
+import ch.threema.domain.protocol.csp.messages.VideoMessage;
 import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
 import ch.threema.domain.protocol.csp.messages.GroupImageMessage;
 import ch.threema.domain.protocol.csp.messages.GroupVideoMessage;
@@ -38,13 +38,13 @@ public class MessageDiskSizeUtil {
 	public static long getSize(AbstractMessage boxedMessage) {
 		double mbSize = 0.01;
 
-		if(boxedMessage instanceof BoxVideoMessage) {
-			mbSize = ((BoxVideoMessage) boxedMessage).getDuration() * 0.15;
+		if(boxedMessage instanceof VideoMessage) {
+			mbSize = ((VideoMessage) boxedMessage).getDuration() * 0.15;
 		}
-		else if(boxedMessage instanceof BoxAudioMessage) {
-			mbSize = ((BoxAudioMessage) boxedMessage).getDuration() * 0.05;
+		else if(boxedMessage instanceof AudioMessage) {
+			mbSize = ((AudioMessage) boxedMessage).getDuration() * 0.05;
 		}
-		else if(boxedMessage instanceof BoxImageMessage) {
+		else if(boxedMessage instanceof ImageMessage) {
 			mbSize = 2;
 		}
 		else if (boxedMessage instanceof FileMessage) {

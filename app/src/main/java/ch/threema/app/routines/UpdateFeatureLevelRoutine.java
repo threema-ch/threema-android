@@ -64,7 +64,7 @@ public class UpdateFeatureLevelRoutine implements Runnable {
 	}
 
 	public interface Request {
-		boolean requestToServer(int featureLevel);
+		boolean requestToServer(long featureLevel);
 	}
 
 	private final ContactService contactService;
@@ -165,9 +165,9 @@ public class UpdateFeatureLevelRoutine implements Runnable {
 					}
 
 					try {
-						Integer[] featureMasks = this.apiConnector.checkFeatureMask(identities);
+						Long[] featureMasks = this.apiConnector.checkFeatureMask(identities);
 						for (int n = 0; n < featureMasks.length; n++) {
-							final Integer featureMask = featureMasks[n];
+							final Long featureMask = featureMasks[n];
 							if (featureMask == null) {
 								// Skip NULL values
 								logger.warn("Feature mask is null!");

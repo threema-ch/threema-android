@@ -60,7 +60,7 @@ public class GroupDeliveryReceiptMessage extends AbstractGroupMessage {
 	@Override
 	@Nullable
 	public Version getMinimumRequiredForwardSecurityVersion() {
-		return null;
+		return Version.V1_2;
 	}
 
 	@Override
@@ -70,6 +70,36 @@ public class GroupDeliveryReceiptMessage extends AbstractGroupMessage {
 
 	@Override
 	public boolean exemptFromBlocking() {
+		return false;
+	}
+
+	@Override
+	public boolean createImplicitlyDirectContact() {
+		return false;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return isReaction();
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return true;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return false;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
 		return false;
 	}
 

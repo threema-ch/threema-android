@@ -59,6 +59,8 @@ public interface PreferenceStoreInterface {
 
 	void save(String key, @NonNull String[] things, boolean crypt);
 
+	void saveQuietly(String key, @NonNull String[] things, boolean crypt);
+
 	void save(String key, long thing);
 
 	void save(String key, long thing, boolean crypt);
@@ -154,5 +156,14 @@ public interface PreferenceStoreInterface {
 
 	Set<String> getStringSet(String key, int defaultRes);
 
-	boolean has(String listName);
+	/**
+	 * @return `true` if the unencrypted settings contain a mapping with the provided key
+	 */
+	boolean containsKey(String key);
+
+	/**
+	 * @param crypt Set to `true` if the key should be searched in encrypted settings
+	 * @return `true` if there is a setting with the provided key
+	 */
+	boolean containsKey(String key, boolean crypt);
 }

@@ -21,41 +21,26 @@
 
 package ch.threema.app.utils;
 
-import android.content.Context;
-
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
 
 public class LoggingUEH implements Thread.UncaughtExceptionHandler {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("LoggingUEH");
 
 	private final Thread.UncaughtExceptionHandler defaultUEH;
-	private Context context;
-	private Runnable runOnUncaughtException;
 
-	public LoggingUEH(Context context) {
+	public LoggingUEH() {
 		this.defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-		this.context = context;
-	}
-
-	public void setRunOnUncaughtException(Runnable runOnUncaughtException) {
-		this.runOnUncaughtException = runOnUncaughtException;
 	}
 
 	@Override
-	public void uncaughtException(Thread thread, Throwable ex) {
+	public void uncaughtException(@NonNull Thread thread, @NonNull Throwable ex) {
 		logger.error("Uncaught exception", ex);
-
-		if (runOnUncaughtException != null)
-			runOnUncaughtException.run();
-
-//		restart();
 
 		if (defaultUEH != null) {
 			defaultUEH.uncaughtException(thread, ex);
 		}
-
-//		System.exit(2);
 	}
 }

@@ -24,21 +24,29 @@ package ch.threema.storage.models.data.status;
 import android.util.JsonWriter;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import ch.threema.storage.models.data.status.StatusDataModel.StatusType;
 
 public class VoipStatusDataModel implements StatusDataModel.StatusDataModelInterface {
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({MISSED, FINISHED, REJECTED, ABORTED})
+	public @interface VoipStatusType {}
 	public static final int MISSED = 1;
 	public static final int FINISHED = 2;
 	public static final int REJECTED = 3;
 	public static final int ABORTED = 4;
+
 	public static final int TYPE = 1;
 
 	public static final long NO_CALL_ID = 0L;
 
 	private long callId;
-	private int status;
+	private @VoipStatusType int status;
 	private Byte reason;
 	private Integer duration;
 	private Date date;
@@ -47,9 +55,8 @@ public class VoipStatusDataModel implements StatusDataModel.StatusDataModelInter
 		//called by the parser
 	}
 
-
 	@Override
-	public int getType() {
+	public @StatusType int getType() {
 		return TYPE;
 	}
 
@@ -79,7 +86,6 @@ public class VoipStatusDataModel implements StatusDataModel.StatusDataModelInter
 
 	@Override
 	public void readData(String key, String value) {
-
 	}
 
 	@Override
@@ -105,7 +111,7 @@ public class VoipStatusDataModel implements StatusDataModel.StatusDataModelInter
 		return this.callId;
 	}
 
-	public int getStatus() {
+	public @VoipStatusType int getStatus() {
 		return this.status;
 	}
 

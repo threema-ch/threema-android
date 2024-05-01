@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -53,21 +54,25 @@ public interface ConversationService {
 	}
 
 	/**
-	 * return all conversation model
+	 * Return all conversation models.
+	 *
 	 * @param forceReloadFromDatabase force a reload from database
 	 */
-	List<ConversationModel> getAll(boolean forceReloadFromDatabase);
+	@NonNull List<ConversationModel> getAll(boolean forceReloadFromDatabase);
 
 	/**
-	 * return a list of all conversation models
+	 * Return a filtered list of all conversation models.
+	 *
 	 * @param forceReloadFromDatabase force a reload from database
+	 * @param filter an optional conversation filter
 	 */
-	List<ConversationModel> getAll(boolean forceReloadFromDatabase, Filter filter);
+	@NonNull List<ConversationModel> getAll(boolean forceReloadFromDatabase, @Nullable Filter filter);
 
 	/**
-	 * return a list of all conversation models that have been archived and match the constraint (case-insensitive match)
+	 * Return a list of all conversation models that have been archived and match the
+	 * search query (case-insensitive match).
 	 */
-	List<ConversationModel> getArchived(String constraint);
+	@NonNull List<ConversationModel> getArchived(@Nullable String searchQuery);
 
 	/**
 	 * return the number of conversations that have been archived
@@ -127,9 +132,8 @@ public interface ConversationService {
 
 	/**
 	 * mark conversation as archived
-	 * @param conversationModel
 	 */
-	void archive(ConversationModel conversationModel);
+	void archive(@NonNull ConversationModel conversationModel);
 
 	/**
 	 * clear archived flag in archived conversations
@@ -138,41 +142,73 @@ public interface ConversationService {
 	void unarchive(List<ConversationModel> conversations);
 
 	/**
-	 * clear a conversation (remove all messages)
+	 * Empty associated conversation (remove all messages).
+	 *
+	 * @param silentMessageUpdate do not fire MessageListener updates for removed messages if true
+	 * @return the number of removed messages.
 	 */
-	boolean clear(ConversationModel conversation);
+	int empty(ConversationModel conversation, boolean silentMessageUpdate);
 
 	/**
-	 * clear a conversation (remove all messages)
-	 * @param silentMessageUpdate do not fire MessageListener updates if true
+	 * Empty associated conversation (remove all messages).
+	 *
+	 * The message listener onRemoved method will *not* be called for removed messages.
+	 *
+	 * @return the number of removed messages.
 	 */
-	boolean clear(ConversationModel conversation, boolean silentMessageUpdate);
+	int empty(@NonNull MessageReceiver messageReceiver);
 
 	/**
-	 * clear multiple conversations and fire appropriate listeners. this does not delete the messages itself!
-	 * @param conversations
+	 * Empty associated conversation (remove all messages).
+	 *
+	 * The message listener onRemoved method will *not* be called for removed messages.
+	 *
+	 * @return the number of removed messages.
 	 */
-	void clear(ConversationModel[] conversations);
+	int empty(@NonNull ContactModel contactModel);
 
 	/**
-	 * clear a conversation (remove all messages)
+	 * Empty associated conversation (remove all messages).
+	 *
+	 * The message listener onRemoved method will *not* be called for removed messages.
+	 *
+	 * @return the number of removed messages.
 	 */
-	void clear(@NonNull MessageReceiver messageReceiver);
+	int empty(@NonNull GroupModel groupModel);
 
 	/**
-	 * clear conversation mapped with a distribution list
+	 * Empty associated conversation (remove all messages).
+	 *
+	 * The message listener onRemoved method will *not* be called for removed messages.
+	 *
+	 * @return the number of removed messages.
 	 */
-	boolean removed(DistributionListModel distributionListModel);
+	int empty(@NonNull DistributionListModel distributionListModel);
 
 	/**
-	 * clear a conversation model mapped with a group
+	 * Delete the contact conversation by removing all messages, setting `lastUpdate` to null
+	 * and removing it from the cache.
+	 *
+	 * @return the number of removed messages.
 	 */
-	boolean removed(GroupModel groupModel);
+	int delete(@NonNull ContactModel contactModel);
 
 	/**
-	 * clear a conversation model mapped with a contact
+	 * Remove the group conversation from the cache, and thus hide it from the conversation list.
+	 *
+	 * Note: The group model itself will not be removed, nor will lastUpdate be modified!
+	 * To delete a group and its messages, use the GroupService.
 	 */
-	boolean removed(ContactModel contactModel);
+	void removeFromCache(@NonNull GroupModel groupModel);
+
+	/**
+	 * Remove the distribution list conversation from the cache, and thus hide it from the
+	 * conversation list.
+	 *
+	 * Note: The distribution list model itself will not be removed, nor will lastUpdate be modified!
+	 * To delete a distribution list and its messages, use the DistributionListService.
+	 */
+	void removeFromCache(@NonNull DistributionListModel distributionListModel);
 
 	/**
 	 * reset all cached data
@@ -180,7 +216,12 @@ public interface ConversationService {
 	boolean reset();
 
 	/**
-	 *
+	 * Return whether or not there are any visible conversations.
 	 */
 	boolean hasConversations();
+
+	/**
+	 * Recalculate the `lastUpdate` field for all contacts, groups and distribution lists.
+	 */
+	void calculateLastUpdateForAllConversations();
 }

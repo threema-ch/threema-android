@@ -60,8 +60,6 @@ public class MessageSendingServiceExponentialBackOff implements MessageSendingSe
 					backoffFutures.remove(process.getMessageModel().getUid());
 				}
 				logger.debug("{} Exponential backoff finished successfully", process.getMessageModel().getUid());
-
-				messageSendingServiceState.processingFinished(process.getMessageModel(), process.getReceiver());
 			}
 
 			@Override

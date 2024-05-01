@@ -42,13 +42,13 @@ import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.receivers.FetchMessagesBroadcastReceiver;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.connection.ConnectionState;
-import ch.threema.domain.protocol.csp.connection.QueueSendCompleteListener;
+import ch.threema.domain.protocol.connection.ConnectionState;
+import ch.threema.domain.taskmanager.QueueSendCompleteListener;
 
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
+import ch.threema.app.utils.IntentDataUtil;
 
 /**
- * Helper class to simplify polling (both time-based and GCM based) by handling all the gory details
+ * Helper class to simplify polling (both time-based and FCM based) by handling all the gory details
  * of connecting for new messages and ensuring that the connection is released once the server
  * has sent all new messages.
  */
@@ -115,7 +115,7 @@ public class PollingHelper implements QueueSendCompleteListener {
 				}
 
 				// We want to be notified when the server signals that the message queue was flushed completely
-				serviceManager.getConnection().addQueueSendCompleteListener(this);
+				serviceManager.getTaskManager().addQueueSendCompleteListener(this);
 
 				// Determine timeout duration. If we're already connected it can be shorter.
 				long timeout = CONNECTION_TIMEOUT;
@@ -131,7 +131,7 @@ public class PollingHelper implements QueueSendCompleteListener {
 				if(!lifetimeService.isActive()) {
 					AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 					PendingIntent pendingIntent = PendingIntent.getBroadcast(this.context, 0,
-							new Intent(this.context, FetchMessagesBroadcastReceiver.class), PENDING_INTENT_FLAG_MUTABLE);
+							new Intent(this.context, FetchMessagesBroadcastReceiver.class), IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
 
 					// cancel pending alarms
 					alarmManager.cancel(pendingIntent);
@@ -203,7 +203,7 @@ public class PollingHelper implements QueueSendCompleteListener {
 			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
 			if (serviceManager != null) {
-				serviceManager.getConnection().removeQueueSendCompleteListener(this);
+				serviceManager.getTaskManager().removeQueueSendCompleteListener(this);
 
 				final LifetimeService lifetimeService = serviceManager.getLifetimeService();
 				lifetimeService.releaseConnectionLinger(this.lifetimeServiceTag, CONNECTION_LINGER);

@@ -1037,7 +1037,11 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="empty_chat_title">Chat leeren</string>
 	<string name="empty_chat_confirm">Alle Nachrichten in diesem Chat werden gelöscht. Fortfahren?</string>
 	<string name="emptying_chat">Chat wird geleert</string>
-	<string name="set_private">Als «privater Chat» markieren</string>
+    <string name="emptying_chat_deleting_messages">Nachrichten werden gelöscht…</string>
+    <string name="delete_chat_title">Chat löschen</string>
+    <string name="delete_chat_confirm">Alle Nachrichten in diesem Chat werden entfernt und der Chat wird gelöscht. Fortfahren?</string>
+    <string name="deleting_chat">Chat wird gelöscht</string>
+    <string name="set_private">Als «privater Chat» markieren</string>
 	<string name="unset_private">«Privater Chat» deaktivieren</string>
 	<string name="delete_group_message">Möchten Sie diese Gruppe verlassen und vollständig löschen? Alle Nachrichten werden entfernt.</string>
 	<string name="delete_left_group_message">Möchten Sie diese Gruppe vollständig löschen? Alle Nachrichten werden entfernt.</string>
@@ -1198,7 +1202,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="unable_to_play_video">Video kann nicht abgespielt werden</string>
 	<string name="tooltip_voip_turn_on_camera">Hier tippen, um die Kamera einzuschalten</string>
 	<string name="prefs_videocall_profile_explain">Die tatsächliche Bildqualität ist abhängig vom Netz sowie den Einstellungen des Gesprächspartners</string>
-	<string name="feedback">Feedback</string>
 	<string name="tooltip_voip_enable_speakerphone">Hier tippen, um Freisprechen zu aktivieren</string>
 	<string name="ballot_open">Offene Umfragen</string>
 	<string name="translators">Übersetzer</string>
@@ -1453,16 +1456,22 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="synchronizing">Synchronisation läuft…</string>
 	<string name="forward_security">Nachrichten mit Perfect Forward Secrecy senden</string>
 	<string name="forward_security_mode">Perfect Forward Secrecy</string>
-	<string name="forward_security_mode_none">nein</string>
+	<string name="forward_security_mode_none">keine</string>
 	<string name="clear_forward_security">Perfect Forward Secrecy-Sitzungen löschen</string>
 	<string name="clear_forward_security_warning">Führen Sie diese Aktion nur aus, wenn Sie vom Threema-Support explizit dazu aufgefordert wurden.</string>
 	<string name="forward_security_cleared">Perfect Forward Secrecy-Sitzungen mit diesem Kontakt wurden gelöscht</string>
 	<string name="message_without_forward_security">Eine Nachricht ohne Perfect Forward Secrecy wurde empfangen. Stellen Sie sicher, dass der Absender absichtlich Perfect Forward Secrecy deaktiviert hat.</string>
-	<string name="forward_security_established">Nachrichten in diesem Chat sind nun durch Perfect Forward Secrecy geschützt.</string>
+	<string name="forward_security_disabled">Perfect Forward Secrecy ist für diesen Chat deaktiviert.</string>
+	<string name="forward_security_established">Nachrichten mit diesem Kontakt sind nun durch Perfect Forward Secrecy geschützt.</string>
 	<string name="forward_security_established_rx">Nachrichten, die in diesem Chat empfangen werden, sind nun durch Perfect Forward Secrecy geschützt.</string>
 	<string name="forward_security_reset">Die Perfect Forward Secrecy-Sitzung wurde zurückgesetzt. Dies kann geschehen, wenn der Chat-Partner ein neues Gerät verwendet oder die App neu installiert.</string>
 	<string name="forward_security_reset_simple">Die Perfect Forward Secrecy-Sitzung mit diesem Kontakt wurde zurückgesetzt.</string>
 	<string name="forward_security_message_out_of_order">Eine Nachricht wurde in falscher Reihenfolge empfangen und konnte nicht entschlüsselt werden.</string>
+    <string name="forward_security_notification_channel_name">Perfect Forward Secrecy Warnungen</string>
+    <string name="forward_security_notification_rejected_title">Nachrichtenversand fehlgeschlagen</string>
+    <string name="forward_security_notification_rejected_text_contact">Es konnten nicht alle Nachrichten an %1$s versendet werden.</string>
+    <string name="forward_security_notification_rejected_text_group">Es konnten nicht alle Nachrichten an «%1$s» versendet werden.</string>
+    <string name="forward_security_notification_rejected_text_generic">Es konnten nicht alle Nachrichten versendet werden.</string>
 	<string name="self_updater_installation_failed">Der Download des Updates ist fehlgeschlagen. Bitte laden Sie das Update von der Webseite <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> herunter und installieren Sie es manuell.</string>
 	<string name="spam_first_contact">Dieser Chat stammt von einem unbekannten Kontakt</string>
 	<string name="spam_report">Spam melden</string>
@@ -1480,7 +1489,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="read_more">mehr lesen</string>
 	<string name="read_less">weniger lesen</string>
 	<string name="messages_cannot_be_recovered">Die Nachrichten können nicht wiederhergestellt werden.</string>
-	<string name="contact_deleted">Kontakt wurde gelöscht</string>
+    <string name="groups_left_or_dissolved">Gruppen werden verlassen oder aufgelöst und anschliessend gelöscht.</string>
+    <string name="contact_deleted">Kontakt wurde gelöscht</string>
 	<string name="last_added_contact">Zuletzt hinzugefügt</string>
 	<string name="directory_explain_text">Suchen Sie im Unternehmensverzeichnis nach beliebigen Mitarbeitern, die sich noch nicht in Ihrer Kontaktliste befinden.</string>
 	<string name="cannot_display_location">Dieser Ort kann nicht angezeigt werden.</string>
@@ -1530,6 +1540,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="prefs_sum_group_calls_vibration">Vibrieren, wenn ein Gruppenanruf gestartet wurde</string>
 	<string name="forward_security_mode_4dh">vollständig</string>
 	<string name="forward_security_mode_2dh">einseitig</string>
+	<string name="forward_security_mode_all">alle</string>
+	<string name="forward_security_mode_partial">teilweise</string>
 	<string name="forward_security_explanation">Perfect Forward Secrecy (PFS) schützt eine aufgezeichnete Kommunikation auch bei Kenntnis des Langzeitschlüssels vor nachträglicher Entschlüsselung.\n\nDie Option kann aktiviert werden, wenn die App auf beiden Seiten PFS unterstützt.</string>
 	<string name="group_call_inactivity_left">Gruppenanruf wegen Inaktivität verlassen</string>
 	<string name="delete_multiple_contact_action">Kontakte löschen</string>
@@ -1605,6 +1617,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="group_dissolved_notice">Diese Gruppe wurde aufgelöst und kann nicht mehr verwendet werden.</string>
 	<string name="directory_request_failed">Verzeichnis-Abfrage fehlgeschlagen. Versuchen Sie es nochmals.</string>
 	<string name="add_shortcut_exists">Eine Verknüpfung für dieses Ziel existiert bereits.</string>
+	<string name="resend_message_dialog_title">Gruppennachricht erneut senden?</string>
+	<string name="resend_message_dialog_message">Diese Nachricht konnte nicht an alle Mitglieder versendet werden. Wollen Sie die Nachricht erneut an %1$s senden?</string>
 	<string name="work_lost_credentials_help">Zugangsdaten vergessen? – Melden Sie sich bei Ihrem %1$s-Administrator.</string>
     <string name="problemsolver_intro">Konfigurationsprobleme in den System-Einstellungen verhindern möglicherweise, dass %s korrekt funktioniert. Bitte beheben Sie diese Probleme, indem Sie den untenstehenden Anleitungen folgen.</string>
 	<string name="problemsolver_title">Konfigurationsprobleme beheben</string>
@@ -1627,6 +1641,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="edit_and_send">Bearbeiten &amp; senden</string>
 	<string name="media_gallery_animated_webps">Animierte WebPs</string>
 	<string name="unsupported_image_type">Nicht unterstütztes Bildformat: %s</string>
+    <string name="application_setup_steps_failed">Um den Status Ihrer Kontakte zu überprüfen, wird eine aktive Internetverbindung benötigt. Bitte stellen Sie sicher, dass Sie mit dem Internet verbunden sind und versuchen Sie es erneut.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>

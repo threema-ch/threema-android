@@ -27,10 +27,12 @@ import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * Create column for user-specific message states in group models.
  */
-public class SystemUpdateToVersion76 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion76 implements UpdateSystemService.SystemUpdate {
 	public static final int VERSION = 76;
 
 	private final SQLiteDatabase sqLiteDatabase;
@@ -41,7 +43,7 @@ public class SystemUpdateToVersion76 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, "m_group_message", "groupMessageStates")) {
+		if (!fieldExists(this.sqLiteDatabase, "m_group_message", "groupMessageStates")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE m_group_message ADD COLUMN groupMessageStates VARCHAR DEFAULT NULL");
 		}
 
@@ -49,7 +51,7 @@ public class SystemUpdateToVersion76 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

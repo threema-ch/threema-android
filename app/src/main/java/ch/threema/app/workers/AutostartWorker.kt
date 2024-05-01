@@ -90,7 +90,7 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
         // fixes https://issuetracker.google.com/issues/36951052
         val preferenceService = serviceManager.preferenceService
         // reset feature level
-        preferenceService.transmittedFeatureLevel = 0
+        preferenceService.transmittedFeatureMask = 0
 
         //auto fix failed sync account
         if (preferenceService.isSyncContacts) {

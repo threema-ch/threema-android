@@ -23,12 +23,14 @@ package ch.threema.app.services;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
+import ch.threema.storage.models.GroupModel;
 
 public interface DistributionListService extends AvatarService<DistributionListModel> {
 	interface DistributionListFilter {
@@ -63,4 +65,11 @@ public interface DistributionListService extends AvatarService<DistributionListM
 	String getUniqueIdString(DistributionListModel distributionListModel);
 
 	void setIsArchived(DistributionListModel distributionListModel, boolean archived);
+
+	/**
+	 * Set the `lastUpdate` field of the specified distribution list to the current date.
+	 *
+	 * Save the model and notify listeners.
+	 */
+	void bumpLastUpdate(@NonNull DistributionListModel distributionListModel);
 }

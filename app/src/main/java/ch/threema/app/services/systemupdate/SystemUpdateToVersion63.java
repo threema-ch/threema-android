@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.base.utils.LoggingUtil;
 
-public class SystemUpdateToVersion63 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion63 implements UpdateSystemService.SystemUpdate {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion63");
 	private Context context;
 
@@ -46,7 +46,7 @@ public class SystemUpdateToVersion63 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		// delete obsolete temporary dirs
 		deleteDir(new File(context.getFilesDir(), "tmp"));
 		deleteDir(new File(context.getExternalFilesDir(null), "data.blob"));

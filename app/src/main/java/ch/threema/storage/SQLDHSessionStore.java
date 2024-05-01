@@ -36,9 +36,13 @@ import net.zetetic.database.sqlcipher.SQLiteOpenHelper;
 
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.services.systemupdate.FSDatabaseUpgradeToVersion2;
 import ch.threema.app.services.systemupdate.FSDatabaseUpgradeToVersion3;
+import ch.threema.app.services.systemupdate.FSDatabaseUpgradeToVersion4;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.fs.DHSession;
@@ -46,13 +50,14 @@ import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.fs.KDFRatchet;
 import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
+import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
 public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStoreInterface {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SQLDHSessionStore");
 
 	public static final String DATABASE_NAME = "threema-fs.db";
-	private static final int DATABASE_VERSION = FSDatabaseUpgradeToVersion3.VERSION;
+	private static final int DATABASE_VERSION = FSDatabaseUpgradeToVersion4.VERSION;
 	private static final String SESSION_TABLE = "session";
 
 	public static final String COLUMN_MY_IDENTITY = "myIdentity";
@@ -60,6 +65,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 	public static final String COLUMN_SESSION_ID = "sessionId";
 	// Note: Should be named `myCurrentVersion_4dh` but it's too late now
 	public static final String COLUMN_MY_CURRENT_VERSION_4_DH = "negotiatedVersion";
+	public static final String COLUMN_LAST_OUTGOING_MESSAGE_TIMESTAMP = "lastOutgoingMessageTimestamp";
 	public static final String COLUMN_MY_CURRENT_CHAIN_KEY_2_DH = "myCurrentChainKey_2dh";
 	public static final String COLUMN_MY_COUNTER_2_DH = "myCounter_2dh";
 	public static final String COLUMN_MY_CURRENT_CHAIN_KEY_4_DH = "myCurrentChainKey_4dh";
@@ -125,6 +131,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 			"`" + COLUMN_PEER_IDENTITY + "` TEXT, " +
 			"`" + COLUMN_SESSION_ID + "` BLOB, " +
 			"`" + COLUMN_MY_CURRENT_VERSION_4_DH + "` INTEGER, " +
+			"`" + COLUMN_LAST_OUTGOING_MESSAGE_TIMESTAMP + "` INTEGER DEFAULT 0, " +
 			"`" + COLUMN_MY_CURRENT_CHAIN_KEY_2_DH + "` BLOB, " +
 			"`" + COLUMN_MY_COUNTER_2_DH + "` INTEGER, " +
 			"`" + COLUMN_MY_CURRENT_CHAIN_KEY_4_DH + "` BLOB, " +
@@ -150,6 +157,9 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 		if (oldVersion < FSDatabaseUpgradeToVersion3.VERSION) {
 			updateSystemService.addUpdate(new FSDatabaseUpgradeToVersion3(db));
 		}
+		if (oldVersion < FSDatabaseUpgradeToVersion4.VERSION) {
+			updateSystemService.addUpdate(new FSDatabaseUpgradeToVersion4(db));
+		}
 	}
 
 	@Override
@@ -159,7 +169,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 
 	@Nullable
 	@Override
-	public DHSession getDHSession(String myIdentity, String peerIdentity, @Nullable DHSessionId sessionId) throws DHSessionStoreException {
+	public DHSession getDHSession(String myIdentity, String peerIdentity, @Nullable DHSessionId sessionId, @NonNull ActiveTaskCodec handle) throws DHSessionStoreException {
 		String selection = COLUMN_MY_IDENTITY + "=? and " + COLUMN_PEER_IDENTITY + "=?";
 
 		if (sessionId != null) {
@@ -173,6 +183,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 				COLUMN_MY_IDENTITY,
 				COLUMN_PEER_IDENTITY,
 				COLUMN_MY_CURRENT_VERSION_4_DH,
+				COLUMN_LAST_OUTGOING_MESSAGE_TIMESTAMP,
 				COLUMN_MY_EPHEMERAL_PRIVATE_KEY,
 				COLUMN_MY_EPHEMERAL_PUBLIC_KEY,
 				COLUMN_MY_CURRENT_CHAIN_KEY_2_DH,
@@ -194,7 +205,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
-					return dhSessionFromCursor(cursor);
+					return dhSessionFromCursor(cursor, handle);
 				}
 			}
 
@@ -206,7 +217,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 
 	@Nullable
 	@Override
-	public DHSession getBestDHSession(String myIdentity, String peerIdentity) throws DHSessionStoreException {
+	public DHSession getBestDHSession(String myIdentity, String peerIdentity, @NonNull ActiveTaskCodec handle) throws DHSessionStoreException {
 		String selection = COLUMN_MY_IDENTITY + "=? and " + COLUMN_PEER_IDENTITY + "=?";
 
 		try (Cursor cursor = this.getReadableDatabase().query(
@@ -216,6 +227,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 				COLUMN_MY_IDENTITY,
 				COLUMN_PEER_IDENTITY,
 				COLUMN_MY_CURRENT_VERSION_4_DH,
+				COLUMN_LAST_OUTGOING_MESSAGE_TIMESTAMP,
 				COLUMN_MY_EPHEMERAL_PRIVATE_KEY,
 				COLUMN_MY_EPHEMERAL_PUBLIC_KEY,
 				COLUMN_MY_CURRENT_CHAIN_KEY_2_DH,
@@ -237,11 +249,62 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
-					return dhSessionFromCursor(cursor);
+					return dhSessionFromCursor(cursor, handle);
 				}
 			}
 
 			return null;
+		} catch (SQLException e) {
+			throw new DHSessionStoreException("Cannot load session", e);
+		}
+	}
+
+	@NonNull
+	@Override
+	public List<DHSession> getAllDHSessions(
+		@NonNull String myIdentity,
+		@NonNull String peerIdentity,
+		@NonNull ActiveTaskCodec handle
+	) throws DHSessionStoreException {
+		String selection = COLUMN_MY_IDENTITY + "=? and " + COLUMN_PEER_IDENTITY + "=?";
+		try (Cursor cursor = this.getReadableDatabase().query(
+			SESSION_TABLE,
+			new String[]{
+				COLUMN_SESSION_ID,
+				COLUMN_MY_IDENTITY,
+				COLUMN_PEER_IDENTITY,
+				COLUMN_MY_CURRENT_VERSION_4_DH,
+				COLUMN_LAST_OUTGOING_MESSAGE_TIMESTAMP,
+				COLUMN_MY_EPHEMERAL_PRIVATE_KEY,
+				COLUMN_MY_EPHEMERAL_PUBLIC_KEY,
+				COLUMN_MY_CURRENT_CHAIN_KEY_2_DH,
+				COLUMN_MY_COUNTER_2_DH,
+				COLUMN_MY_CURRENT_CHAIN_KEY_4_DH,
+				COLUMN_MY_COUNTER_4_DH,
+				COLUMN_PEER_CURRENT_VERSION_4_DH,
+				COLUMN_PEER_CURRENT_CHAIN_KEY_2_DH,
+				COLUMN_PEER_COUNTER_2_DH,
+				COLUMN_PEER_CURRENT_CHAIN_KEY_4_DH,
+				COLUMN_PEER_COUNTER_4_DH
+			},
+			selection,
+			new String[] { myIdentity, peerIdentity },
+			null,
+			null,
+			null
+		)) {
+
+			if (cursor != null) {
+				List<DHSession> sessions = new ArrayList<>(cursor.getCount());
+
+				while (cursor.moveToNext()) {
+					sessions.add(dhSessionFromCursor(cursor, handle));
+				}
+
+				return sessions;
+			}
+
+			return new ArrayList<>(0);
 		} catch (SQLException e) {
 			throw new DHSessionStoreException("Cannot load session", e);
 		}
@@ -257,6 +320,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 		cv.put(COLUMN_SESSION_ID, session.getId().get());
 		cv.put(COLUMN_MY_CURRENT_VERSION_4_DH, current4DHVersions == null ? null : current4DHVersions.local.getNumber());
 		cv.put(COLUMN_PEER_CURRENT_VERSION_4_DH, current4DHVersions == null ? null : current4DHVersions.remote.getNumber());
+		cv.put(COLUMN_LAST_OUTGOING_MESSAGE_TIMESTAMP, session.getLastOutgoingMessageTimestamp());
 
 		addMy2DHRatchet(cv, session.getMyRatchet2DH());
 		addMy4DHRatchet(cv, session.getMyRatchet4DH());
@@ -324,7 +388,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 		}
 	}
 
-	private DHSession dhSessionFromCursor(Cursor cursor) throws DHSessionStoreException {
+	private DHSession dhSessionFromCursor(Cursor cursor, @NonNull ActiveTaskCodec handle) throws DHSessionStoreException {
 		DHSessionId sessionId = null;
 		String peerIdentity = null;
 		try {
@@ -341,6 +405,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 				cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_MY_EPHEMERAL_PRIVATE_KEY)),
 				cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_MY_EPHEMERAL_PUBLIC_KEY)),
 				current4DHVersions,
+				cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_LAST_OUTGOING_MESSAGE_TIMESTAMP)),
 				getMy2DHRatchetFromCursor(cursor),
 				getMy4DHRatchetFromCursor(cursor),
 				getPeer2DHRatchetFromCursor(cursor),
@@ -354,7 +419,7 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 		} catch (DHSession.IllegalDHSessionStateException e) {
 			logger.error("Could not load DH session", e);
 			if (errorHandler != null && sessionId != null && peerIdentity != null) {
-				errorHandler.onInvalidDHSessionState(peerIdentity, sessionId);
+				errorHandler.onInvalidDHSessionState(peerIdentity, sessionId, handle);
 			}
 			return null;
 		}

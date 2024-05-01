@@ -111,6 +111,15 @@
 		app:showAsAction="never"/>
 
 	<item
+		android:id="@+id/multi_device"
+		android:icon="@drawable/ic_multi_device"
+		android:orderInCategory="66"
+		android:title="@string/md_linked_devices"
+		android:visible="false"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="never" />
+
+	<item
 		android:id="@+id/scanner"
 		android:icon="@drawable/ic_qr_code"
 		android:orderInCategory="70"

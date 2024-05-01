@@ -33,8 +33,10 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.WebClientSessionModel;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
-public class SystemUpdateToVersion38 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+
+public class SystemUpdateToVersion38 implements UpdateSystemService.SystemUpdate {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion38");
 
 	private final DatabaseServiceNew databaseService;
@@ -51,21 +53,21 @@ public class SystemUpdateToVersion38 extends  UpdateToVersion implements UpdateS
 
 		//only for beta testers!
 		//append new fields
-		if(!this.fieldExist(this.sqLiteDatabase,
+		if(!fieldExists(this.sqLiteDatabase,
 				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_SELF_HOSTED)) {
 			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
 					" ADD COLUMN " +  WebClientSessionModel.COLUMN_SELF_HOSTED + " TINYINT NOT NULL DEFAULT 0");
 		}
 
 
-		if(!this.fieldExist(this.sqLiteDatabase,
+		if(!fieldExists(this.sqLiteDatabase,
 				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_PROTOCOL_VERSION)) {
 			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
 					" ADD COLUMN " +  WebClientSessionModel.COLUMN_PROTOCOL_VERSION + " INT NOT NULL DEFAULT 1");
 		}
 
 
-		if(!this.fieldExist(this.sqLiteDatabase,
+		if(!fieldExists(this.sqLiteDatabase,
 				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_SALTY_RTC_HOST)) {
 			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
 					" ADD COLUMN " +  WebClientSessionModel.COLUMN_SALTY_RTC_HOST + " VARCHAR DEFAULT NULL");
@@ -98,14 +100,14 @@ public class SystemUpdateToVersion38 extends  UpdateToVersion implements UpdateS
 			}
 		}
 
-		if(!this.fieldExist(this.sqLiteDatabase,
+		if(!fieldExists(this.sqLiteDatabase,
 				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_SALTY_RTC_PORT)) {
 			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
 					" ADD COLUMN " +  WebClientSessionModel.COLUMN_SALTY_RTC_PORT + " TINYINT NOT NULL DEFAULT 443");
 		}
 
 
-		if(!this.fieldExist(this.sqLiteDatabase,
+		if(!fieldExists(this.sqLiteDatabase,
 				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_SERVER_KEY)) {
 			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
 					" ADD COLUMN " +  WebClientSessionModel.COLUMN_SERVER_KEY + " BLOB");
@@ -121,7 +123,7 @@ public class SystemUpdateToVersion38 extends  UpdateToVersion implements UpdateS
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

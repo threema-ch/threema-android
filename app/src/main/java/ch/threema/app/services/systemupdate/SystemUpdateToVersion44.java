@@ -28,8 +28,10 @@ import java.sql.SQLException;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.storage.models.ContactModel;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
-public class SystemUpdateToVersion44 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+
+public class SystemUpdateToVersion44 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -40,7 +42,7 @@ public class SystemUpdateToVersion44 extends  UpdateToVersion implements UpdateS
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_TYPE)) {
+		if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_TYPE)) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
 					+ " ADD COLUMN " + ContactModel.COLUMN_TYPE + " INT DEFAULT 0");
 		}
@@ -48,7 +50,7 @@ public class SystemUpdateToVersion44 extends  UpdateToVersion implements UpdateS
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

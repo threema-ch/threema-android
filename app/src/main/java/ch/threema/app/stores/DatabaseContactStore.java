@@ -38,7 +38,9 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.ThreemaFeature;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
@@ -47,6 +49,7 @@ import ch.threema.protobuf.csp.e2e.fs.Terminate;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 
 /**
@@ -61,6 +64,11 @@ public class DatabaseContactStore implements ContactStore {
 	private final @NonNull DatabaseServiceNew databaseServiceNew;
 
 	/**
+	 * This map contains the special contacts.
+	 */
+	private final @NonNull Map<String, Contact> specialContacts = new HashMap<>();
+
+	/**
 	 * The cache of fetched contacts. Note that this cache only contains the cached contacts from a
 	 * server fetch. Contacts from the database are not cached here.
 	 */
@@ -69,11 +77,22 @@ public class DatabaseContactStore implements ContactStore {
 	public DatabaseContactStore(
 		@NonNull IdentityStoreInterface identityStore,
 		@NonNull DHSessionStoreInterface fsSessions,
-		@NonNull DatabaseServiceNew databaseServiceNew
+		@NonNull DatabaseServiceNew databaseServiceNew,
+		@NonNull ServerAddressProvider serverAddressProvider
 	) {
 		this.identityStore = identityStore;
 		this.fsSessions = fsSessions;
 		this.databaseServiceNew = databaseServiceNew;
+
+		try {
+			// Add special contact '*3MAPUSH'
+			specialContacts.put(
+				ProtocolDefines.SPECIAL_CONTACT_PUSH,
+				new Contact(ProtocolDefines.SPECIAL_CONTACT_PUSH, serverAddressProvider.getThreemaPushPublicKey())
+			);
+		} catch (ThreemaException e) {
+			logger.error("Could not add special contact {} due to missing public key", ProtocolDefines.SPECIAL_CONTACT_PUSH, e);
+		}
 	}
 
 	@Override
@@ -97,6 +116,11 @@ public class DatabaseContactStore implements ContactStore {
 	@Nullable
 	@Override
 	public Contact getContactForIdentityIncludingCache(@NonNull String identity) {
+		Contact special = specialContacts.get(identity);
+		if (special != null) {
+			return special;
+		}
+
 		Contact cached = contactCache.get(identity);
 		if (cached != null) {
 			return cached;
@@ -115,9 +139,7 @@ public class DatabaseContactStore implements ContactStore {
 		ContactModel contactModel = (ContactModel)contact;
 		boolean isUpdate = false;
 
-		if (hide) {
-			contactModel.setIsHidden(true);
-		}
+		contactModel.setAcquaintanceLevel(hide ? AcquaintanceLevel.GROUP : AcquaintanceLevel.DIRECT);
 
 		ContactModelFactory contactModelFactory = this.databaseServiceNew.getContactModelFactory();
 		//get db record
@@ -134,8 +156,8 @@ public class DatabaseContactStore implements ContactStore {
 			// Only warn about an FS feature mask downgrade if an FS session existed.
 			DHSession fsSession = null;
 			try {
-				fsSession = fsSessions.getBestDHSession(identityStore.getIdentity(), contact.getIdentity());
-			} catch (DHSessionStoreException exception) {
+				fsSession = fsSessions.getBestDHSession(identityStore.getIdentity(), contact.getIdentity(), ThreemaApplication.requireServiceManager().getMigrationTaskHandle());
+			} catch (DHSessionStoreException | NullPointerException exception) {
 				logger.error("Unable to determine best DH session", exception);
 			}
 			if (fsSession != null && !ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask())) {
@@ -147,9 +169,8 @@ public class DatabaseContactStore implements ContactStore {
 				// Clear and terminate all sessions with that contact
 				ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 				if (serviceManager != null) {
-					serviceManager.getForwardSecurityMessageProcessor().clearAndTerminateAllSessions(
-						contact,
-						Terminate.Cause.DISABLED_BY_REMOTE
+					serviceManager.getTaskCreator().scheduleDeleteAndTerminateFSSessionsTaskAsync(
+						contact, Terminate.Cause.DISABLED_BY_REMOTE
 					);
 				}
 			}
@@ -190,7 +211,7 @@ public class DatabaseContactStore implements ContactStore {
 	 */
 	public void hideContact(@NonNull ContactModel contactModel, boolean hide) {
 		// Mark as hidden / unhidden
-		contactModel.setIsHidden(hide);
+		contactModel.setAcquaintanceLevel(hide ? AcquaintanceLevel.GROUP : AcquaintanceLevel.DIRECT);
 
 		// Update database
 		ContactModelFactory contactModelFactory = this.databaseServiceNew.getContactModelFactory();

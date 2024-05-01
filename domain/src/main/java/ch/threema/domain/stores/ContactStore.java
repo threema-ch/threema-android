@@ -47,9 +47,10 @@ public interface ContactStore {
 	void addCachedContact(@NonNull Contact contact);
 
 	/**
-	 * Get the cached or stored contact for the given identity. This method checks for stored
-	 * contacts in this contact store as well as for temporarily cached contacts. Note that this
-	 * method therefore also may return unknown contacts. To check if a contact is known, use
+	 * Get the cached or stored contact for the given identity. This method first checks if the
+	 * identity belongs to a special contact. Then it checks the cache and if not successful the
+	 * database. Note that this method therefore also may return unknown contacts (if the contact is
+	 * cached). To check if a contact is known (except special contacts), use
 	 * {@link #getContactForIdentity(String)}.
 	 *
 	 * @param identity the identity of the contact

@@ -114,6 +114,7 @@ import ch.threema.app.listeners.VoipCallListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.multidevice.LinkedDevicesActivity;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.push.PushService;
 import ch.threema.app.qrscanner.activity.BaseQrScannerActivity;
@@ -132,6 +133,7 @@ import ch.threema.app.services.ThreemaPushService;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.license.LicenseService;
+import ch.threema.app.tasks.ApplicationUpdateStepsTask;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.ui.IdentityPopup;
@@ -156,14 +158,15 @@ import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.webclient.activities.SessionsActivity;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
-import ch.threema.domain.protocol.csp.connection.ConnectionState;
-import ch.threema.domain.protocol.csp.connection.ConnectionStateListener;
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
+import ch.threema.domain.protocol.connection.ServerConnection;
+import ch.threema.domain.protocol.connection.ConnectionState;
+import ch.threema.domain.protocol.connection.ConnectionStateListener;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.MessageState;
 
 public class HomeActivity extends ThreemaAppCompatActivity implements
 	SMSVerificationDialog.SMSVerificationDialogCallback,
@@ -351,11 +354,15 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					messageService = serviceManager.getMessageService();
 					return messageService.countStarredMessages();
 				} else {
-					logger.warn("Could not count starred messages because service manager is null");
+					if (logger != null) {
+						logger.warn("Could not count starred messages because service manager is null");
+					}
 					return 0L;
 				}
 			} catch (Exception e) {
-				logger.error("Unable to count starred messages", e);
+				if (logger != null) {
+					logger.error("Unable to count starred messages", e);
+				}
 				return 0L;
 			}
 		}
@@ -366,7 +373,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 	}
 
-	private final ConnectionStateListener connectionStateListener = (connectionState, address) -> updateConnectionIndicator(connectionState);
+	private final ConnectionStateListener connectionStateListener = this::updateConnectionIndicator;
 
 	private void updateUnsentMessagesList(AbstractMessageModel modifiedMessageModel, UnsentMessageAction action) {
 		int numCurrentUnsent = unsentMessages.size();
@@ -477,14 +484,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				if (!modifiedMessageModel.isStatusMessage()
 					&& modifiedMessageModel.isOutbox()) {
 
-					switch (modifiedMessageModel.getState()) {
-						case SENDFAILED:
-						case FS_KEY_MISMATCH:
-							updateUnsentMessagesList(modifiedMessageModel, UnsentMessageAction.ADD);
-							break;
-						default:
-							updateUnsentMessagesList(modifiedMessageModel, UnsentMessageAction.REMOVE);
-							break;
+					if (modifiedMessageModel.getState() == MessageState.SENDFAILED) {
+						updateUnsentMessagesList(modifiedMessageModel, UnsentMessageAction.ADD);
+					} else {
+						updateUnsentMessagesList(modifiedMessageModel, UnsentMessageAction.REMOVE);
 					}
 				}
 			}
@@ -724,7 +727,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	private void showWhatsNew() {
-		final boolean skipWhatsNew = false; // set this to false if you want to show a What's New screen
+		final boolean skipWhatsNew = true; // set this to false if you want to show a What's New screen
 
 		if (preferenceService != null) {
 			if (!preferenceService.isLatestVersion(this)) {
@@ -912,10 +915,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		ListenerManager.contactCountListener.remove(this.contactCountListener);
 
 		if (serviceManager != null) {
-			ThreemaConnection threemaConnection = serviceManager.getConnection();
-			if (threemaConnection != null) {
-				threemaConnection.removeConnectionStateListener(connectionStateListener);
-			}
+			serviceManager.getConnection().removeConnectionStateListener(connectionStateListener);
 		}
 
 		super.onDestroy();
@@ -927,7 +927,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	@SuppressLint("StaticFieldLeak")
-	private void runUpdates(final UpdateSystemService updateSystemService) {
+	private void runUpdatesAndInitMainActivity(final UpdateSystemService updateSystemService) {
 		if (isUpdating) {
 			return;
 		}
@@ -1031,10 +1031,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 			UpdateSystemService updateSystemService = serviceManager.getUpdateSystemService();
 			if (updateSystemService.hasUpdates()) {
-				//runASync updates FIRST!!
-				this.runUpdates(updateSystemService);
+				this.runUpdatesAndInitMainActivity(updateSystemService);
 			} else {
 				this.initMainActivity(savedInstanceState);
+			}
+			if (isAppStart) {
+				if (preferenceService.checkForAppUpdate(this)) {
+					serviceManager.getTaskManager().schedule(new ApplicationUpdateStepsTask(serviceManager));
+				}
 			}
 		} else {
 			RuntimeUtil.runOnUiThread(() -> showErrorTextAndExit(getString(R.string.service_manager_not_available)));
@@ -1089,11 +1093,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		// add connection state listener for displaying colored connection status line above toolbar
 		new Thread(() -> {
 			if (serviceManager != null) {
-				ThreemaConnection threemaConnection = serviceManager.getConnection();
-				if (threemaConnection != null) {
-					threemaConnection.addConnectionStateListener(connectionStateListener);
-					updateConnectionIndicator(threemaConnection.getConnectionState());
-				}
+				ServerConnection connection = serviceManager.getConnection();
+				connection.addConnectionStateListener(connectionStateListener);
+				updateConnectionIndicator(connection.getConnectionState());
 			}
 		}).start();
 
@@ -1430,6 +1432,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			intent = new Intent(this, BackupAdminActivity.class);
 		} else if (id == R.id.webclient) {
 			intent = new Intent(this, SessionsActivity.class);
+		} else if (id == R.id.multi_device) {
+			intent = new Intent(this, LinkedDevicesActivity.class);
 		} else if (id == R.id.scanner) {
 			intent = new Intent(this, BaseQrScannerActivity.class);
 		} else if (id == R.id.help) {
@@ -1560,7 +1564,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 			MenuItem webclientMenuItem = menu.findItem(R.id.webclient);
 			if (webclientMenuItem != null) {
-				webclientMenuItem.setVisible(!(webDisabled));
+				webclientMenuItem.setVisible(!webDisabled);
+			}
+
+			boolean mdMenuItemVisible = serviceManager.getMultiDeviceManager().isMultiDeviceActive()
+				|| ConfigUtils.isMultiDeviceEnabled();
+			MenuItem mdMenuItem = menu.findItem(R.id.multi_device);
+			if (mdMenuItem != null) {
+				mdMenuItem.setVisible(mdMenuItemVisible);
 			}
 
 			MenuItem starredMessagesItem = menu.findItem(R.id.starred_messages);

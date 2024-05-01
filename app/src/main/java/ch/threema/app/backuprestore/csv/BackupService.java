@@ -560,9 +560,10 @@ public class BackupService extends Service {
 			Tags.TAG_CONTACT_FIRST_NAME,
 			Tags.TAG_CONTACT_LAST_NAME,
 			Tags.TAG_CONTACT_NICK_NAME,
+			Tags.TAG_CONTACT_LAST_UPDATE,
 			Tags.TAG_CONTACT_HIDDEN,
 			Tags.TAG_CONTACT_ARCHIVED,
-			Tags.TAG_CONTACT_IDENTITY_ID
+			Tags.TAG_CONTACT_IDENTITY_ID,
 		};
 		final String[] messageCsvHeader = {
 			Tags.TAG_MESSAGE_API_MESSAGE_ID,
@@ -577,13 +578,12 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_TYPE,
 			Tags.TAG_MESSAGE_BODY,
 			Tags.TAG_MESSAGE_IS_STATUS_MESSAGE,
-			Tags.TAG_MESSAGE_IS_QUEUED,
 			Tags.TAG_MESSAGE_CAPTION,
 			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID,
 			Tags.TAG_MESSAGE_DELIVERED_AT,
 			Tags.TAG_MESSAGE_READ_AT,
 			Tags.TAG_GROUP_MESSAGE_STATES,
-			Tags.TAG_MESSAGE_DISPLAY_TAGS
+			Tags.TAG_MESSAGE_DISPLAY_TAGS,
 		};
 
 		// Iterate over all contacts. Then backup every contact with the corresponding messages.
@@ -606,7 +606,8 @@ public class BackupService extends Service {
 						.write(Tags.TAG_CONTACT_FIRST_NAME, contactModel.getFirstName())
 						.write(Tags.TAG_CONTACT_LAST_NAME, contactModel.getLastName())
 						.write(Tags.TAG_CONTACT_NICK_NAME, contactModel.getPublicNickName())
-						.write(Tags.TAG_CONTACT_HIDDEN, contactModel.isHidden())
+						.write(Tags.TAG_CONTACT_LAST_UPDATE, contactModel.getLastUpdate())
+						.write(Tags.TAG_CONTACT_HIDDEN, contactModel.getAcquaintanceLevel() == ContactModel.AcquaintanceLevel.GROUP)
 						.write(Tags.TAG_CONTACT_ARCHIVED, contactModel.isArchived())
 						.write(Tags.TAG_CONTACT_IDENTITY_ID, identityId)
 						.write();
@@ -669,7 +670,6 @@ public class BackupService extends Service {
 										.write(Tags.TAG_MESSAGE_TYPE, messageModel.getType().toString())
 										.write(Tags.TAG_MESSAGE_BODY, messageModel.getBody())
 										.write(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE, messageModel.isStatusMessage())
-										.write(Tags.TAG_MESSAGE_IS_QUEUED, messageModel.isQueued())
 										.write(Tags.TAG_MESSAGE_CAPTION, messageModel.getCaption())
 										.write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, messageModel.getQuotedMessageId())
 										.write(Tags.TAG_MESSAGE_DELIVERED_AT, messageModel.getDeliveredAt())
@@ -678,14 +678,12 @@ public class BackupService extends Service {
 										.write();
 								}
 
-								if (MessageUtil.hasDataFile(messageModel)) {
-									this.backupMediaFile(
-										config,
-										zipOutputStream,
-										Tags.MESSAGE_MEDIA_FILE_PREFIX,
-										Tags.MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
-										messageModel);
-								}
+								this.backupMediaFile(
+									config,
+									zipOutputStream,
+									Tags.MESSAGE_MEDIA_FILE_PREFIX,
+									Tags.MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
+									messageModel);
 							}
 						}
 
@@ -722,6 +720,7 @@ public class BackupService extends Service {
 			Tags.TAG_GROUP_CREATOR,
 			Tags.TAG_GROUP_NAME,
 			Tags.TAG_GROUP_CREATED_AT,
+			Tags.TAG_GROUP_LAST_UPDATE,
 			Tags.TAG_GROUP_MEMBERS,
 			Tags.TAG_GROUP_DELETED,
 			Tags.TAG_GROUP_ARCHIVED,
@@ -743,13 +742,12 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_TYPE,
 			Tags.TAG_MESSAGE_BODY,
 			Tags.TAG_MESSAGE_IS_STATUS_MESSAGE,
-			Tags.TAG_MESSAGE_IS_QUEUED,
 			Tags.TAG_MESSAGE_CAPTION,
 			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID,
 			Tags.TAG_MESSAGE_DELIVERED_AT,
 			Tags.TAG_MESSAGE_READ_AT,
 			Tags.TAG_GROUP_MESSAGE_STATES,
-			Tags.TAG_MESSAGE_DISPLAY_TAGS
+			Tags.TAG_MESSAGE_DISPLAY_TAGS,
 		};
 
 		final GroupService.GroupFilter groupFilter = new GroupService.GroupFilter() {
@@ -795,6 +793,7 @@ public class BackupService extends Service {
 						.write(Tags.TAG_GROUP_CREATOR, groupModel.getCreatorIdentity())
 						.write(Tags.TAG_GROUP_NAME, groupModel.getName())
 						.write(Tags.TAG_GROUP_CREATED_AT, groupModel.getCreatedAt())
+						.write(Tags.TAG_GROUP_LAST_UPDATE, groupModel.getLastUpdate())
 						.write(Tags.TAG_GROUP_MEMBERS, this.groupService.getGroupIdentities(groupModel))
 						.write(Tags.TAG_GROUP_DELETED, groupModel.isDeleted())
 						.write(Tags.TAG_GROUP_ARCHIVED, groupModel.isArchived())
@@ -843,7 +842,6 @@ public class BackupService extends Service {
 									.write(Tags.TAG_MESSAGE_TYPE, groupMessageModel.getType())
 									.write(Tags.TAG_MESSAGE_BODY, groupMessageModel.getBody())
 									.write(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE, groupMessageModel.isStatusMessage())
-									.write(Tags.TAG_MESSAGE_IS_QUEUED, groupMessageModel.isQueued())
 									.write(Tags.TAG_MESSAGE_CAPTION, groupMessageModel.getCaption())
 									.write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, groupMessageModel.getQuotedMessageId())
 									.write(Tags.TAG_MESSAGE_DELIVERED_AT, groupMessageModel.getDeliveredAt())
@@ -852,15 +850,13 @@ public class BackupService extends Service {
 									.write(Tags.TAG_MESSAGE_DISPLAY_TAGS, groupMessageModel.getDisplayTags())
 									.write();
 
-								if (MessageUtil.hasDataFile(groupMessageModel)) {
-									this.backupMediaFile(
-										config,
-										zipOutputStream,
-										Tags.GROUP_MESSAGE_MEDIA_FILE_PREFIX,
-										Tags.GROUP_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
-										groupMessageModel
-									);
-								}
+								this.backupMediaFile(
+									config,
+									zipOutputStream,
+									Tags.GROUP_MESSAGE_MEDIA_FILE_PREFIX,
+									Tags.GROUP_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
+									groupMessageModel
+								);
 							}
 						}
 
@@ -905,7 +901,7 @@ public class BackupService extends Service {
 			Tags.TAG_BALLOT_C_TYPE,
 			Tags.TAG_BALLOT_LAST_VIEWED_AT,
 			Tags.TAG_BALLOT_CREATED_AT,
-			Tags.TAG_BALLOT_MODIFIED_AT
+			Tags.TAG_BALLOT_MODIFIED_AT,
 		};
 		final String[] ballotChoiceCsvHeader = {
 			Tags.TAG_BALLOT_CHOICE_ID,
@@ -1115,10 +1111,11 @@ public class BackupService extends Service {
 			long start = System.currentTimeMillis();
 			long nonceCount = databaseNonceStore.getCount();
 			long numChunks = (long) Math.ceil((double) nonceCount / NONCES_PER_STEP);
-			List<String> nonces = new ArrayList<>(NONCES_PER_STEP);
+			List<byte[]> nonces = new ArrayList<>(NONCES_PER_STEP);
 			for (int i = 0; i < numChunks; i++) {
 				databaseNonceStore.addHashedNonceChunk(NONCES_PER_STEP, NONCES_PER_STEP * i, nonces);
-				for (String nonce : nonces) {
+				for (byte[] nonceBytes : nonces) {
+					String nonce = Utils.byteArrayToHexString(nonceBytes);
 					csvWriter.createRow().write(Tags.TAG_NONCES, nonce).write();
 				}
 				nonces.clear();
@@ -1146,8 +1143,9 @@ public class BackupService extends Service {
 			Tags.TAG_DISTRIBUTION_LIST_ID,
 			Tags.TAG_DISTRIBUTION_LIST_NAME,
 			Tags.TAG_DISTRIBUTION_CREATED_AT,
+			Tags.TAG_DISTRIBUTION_LAST_UPDATE,
 			Tags.TAG_DISTRIBUTION_MEMBERS,
-			Tags.TAG_DISTRIBUTION_LIST_ARCHIVED
+			Tags.TAG_DISTRIBUTION_LIST_ARCHIVED,
 		};
 		final String[] distributionListMessageCsvHeader = {
 			Tags.TAG_MESSAGE_API_MESSAGE_ID,
@@ -1163,11 +1161,10 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_TYPE,
 			Tags.TAG_MESSAGE_BODY,
 			Tags.TAG_MESSAGE_IS_STATUS_MESSAGE,
-			Tags.TAG_MESSAGE_IS_QUEUED,
 			Tags.TAG_MESSAGE_CAPTION,
 			Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID,
 			Tags.TAG_MESSAGE_DELIVERED_AT,
-			Tags.TAG_MESSAGE_READ_AT
+			Tags.TAG_MESSAGE_READ_AT,
 		};
 
 		try (final ByteArrayOutputStream distributionListBuffer = new ByteArrayOutputStream()) {
@@ -1181,6 +1178,7 @@ public class BackupService extends Service {
 						.write(Tags.TAG_DISTRIBUTION_LIST_ID, distributionListModel.getId())
 						.write(Tags.TAG_DISTRIBUTION_LIST_NAME, distributionListModel.getName())
 						.write(Tags.TAG_DISTRIBUTION_CREATED_AT, distributionListModel.getCreatedAt())
+						.write(Tags.TAG_DISTRIBUTION_LAST_UPDATE, distributionListModel.getLastUpdate())
 						.write(Tags.TAG_DISTRIBUTION_MEMBERS, distributionListService.getDistributionListIdentities(distributionListModel))
 						.write(Tags.TAG_DISTRIBUTION_LIST_ARCHIVED, distributionListModel.isArchived())
 						.write();
@@ -1192,46 +1190,37 @@ public class BackupService extends Service {
 								.getDistributionListMessageModelFactory()
 								.getByDistributionListIdUnsorted(distributionListModel.getId());
 							for (DistributionListMessageModel distributionListMessageModel : distributionListMessageModels) {
-								String apiMessageId = distributionListMessageModel.getApiMessageId();
 								if (!this.next("distribution list message " + distributionListMessageModel.getId())) {
 									return false;
 								}
+								distributionListMessageCsv.createRow()
+									.write(Tags.TAG_MESSAGE_API_MESSAGE_ID, distributionListMessageModel.getApiMessageId())
+									.write(Tags.TAG_MESSAGE_UID, distributionListMessageModel.getUid())
+									.write(Tags.TAG_MESSAGE_IDENTITY, distributionListMessageModel.getIdentity())
+									.write(Tags.TAG_MESSAGE_IS_OUTBOX, distributionListMessageModel.isOutbox())
+									.write(Tags.TAG_MESSAGE_IS_READ, distributionListMessageModel.isRead())
+									.write(Tags.TAG_MESSAGE_IS_SAVED, distributionListMessageModel.isSaved())
+									.write(Tags.TAG_MESSAGE_MESSAGE_STATE, distributionListMessageModel.getState())
+									.write(Tags.TAG_MESSAGE_POSTED_AT, distributionListMessageModel.getPostedAt())
+									.write(Tags.TAG_MESSAGE_CREATED_AT, distributionListMessageModel.getCreatedAt())
+									.write(Tags.TAG_MESSAGE_MODIFIED_AT, distributionListMessageModel.getModifiedAt())
+									.write(Tags.TAG_MESSAGE_TYPE, distributionListMessageModel.getType())
+									.write(Tags.TAG_MESSAGE_BODY, distributionListMessageModel.getBody())
+									.write(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE, distributionListMessageModel.isStatusMessage())
+									.write(Tags.TAG_MESSAGE_CAPTION, distributionListMessageModel.getCaption())
+									.write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, distributionListMessageModel.getQuotedMessageId())
+									.write(Tags.TAG_MESSAGE_DELIVERED_AT, distributionListMessageModel.getDeliveredAt())
+									.write(Tags.TAG_MESSAGE_READ_AT, distributionListMessageModel.getReadAt())
+									.write();
 
-								if (apiMessageId != null && apiMessageId.length() > 0) {
-									distributionListMessageCsv.createRow()
-										.write(Tags.TAG_MESSAGE_API_MESSAGE_ID, distributionListMessageModel.getApiMessageId())
-										.write(Tags.TAG_MESSAGE_UID, distributionListMessageModel.getUid())
-										.write(Tags.TAG_MESSAGE_IDENTITY, distributionListMessageModel.getIdentity())
-										.write(Tags.TAG_MESSAGE_IS_OUTBOX, distributionListMessageModel.isOutbox())
-										.write(Tags.TAG_MESSAGE_IS_READ, distributionListMessageModel.isRead())
-										.write(Tags.TAG_MESSAGE_IS_SAVED, distributionListMessageModel.isSaved())
-										.write(Tags.TAG_MESSAGE_MESSAGE_STATE, distributionListMessageModel.getState())
-										.write(Tags.TAG_MESSAGE_POSTED_AT, distributionListMessageModel.getPostedAt())
-										.write(Tags.TAG_MESSAGE_CREATED_AT, distributionListMessageModel.getCreatedAt())
-										.write(Tags.TAG_MESSAGE_MODIFIED_AT, distributionListMessageModel.getModifiedAt())
-										.write(Tags.TAG_MESSAGE_TYPE, distributionListMessageModel.getType())
-										.write(Tags.TAG_MESSAGE_BODY, distributionListMessageModel.getBody())
-										.write(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE, distributionListMessageModel.isStatusMessage())
-										.write(Tags.TAG_MESSAGE_IS_QUEUED, distributionListMessageModel.isQueued())
-										.write(Tags.TAG_MESSAGE_CAPTION, distributionListMessageModel.getCaption())
-										.write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, distributionListMessageModel.getQuotedMessageId())
-										.write(Tags.TAG_MESSAGE_DELIVERED_AT, distributionListMessageModel.getDeliveredAt())
-										.write(Tags.TAG_MESSAGE_READ_AT, distributionListMessageModel.getReadAt())
-										.write();
-								}
 
-								switch (distributionListMessageModel.getType()) {
-									case VIDEO:
-									case VOICEMESSAGE:
-									case IMAGE:
-										this.backupMediaFile(
-											config,
-											zipOutputStream,
-											Tags.DISTRIBUTION_LIST_MESSAGE_MEDIA_FILE_PREFIX,
-											Tags.DISTRIBUTION_LIST_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
-											distributionListMessageModel
-										);
-								}
+								this.backupMediaFile(
+									config,
+									zipOutputStream,
+									Tags.DISTRIBUTION_LIST_MESSAGE_MEDIA_FILE_PREFIX,
+									Tags.DISTRIBUTION_LIST_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
+									distributionListMessageModel
+								);
 							}
 						}
 
@@ -1258,22 +1247,23 @@ public class BackupService extends Service {
 
 
 	/**
-	 * Backup all media files of the given AbstractMessageModel
+	 * Backup all media files of the given AbstractMessageModel, if {@link MessageUtil#hasDataFile}
+	 * returns true for the specified {@param messageModel}.
 	 */
-	private boolean backupMediaFile(
+	private void backupMediaFile(
 		@NonNull BackupRestoreDataConfig config,
-	    ZipOutputStream zipOutputStream,
-	    String filePrefix,
-	    String thumbnailFilePrefix,
-	    AbstractMessageModel messageModel
+	    @NonNull ZipOutputStream zipOutputStream,
+	    @NonNull String filePrefix,
+	    @NonNull String thumbnailFilePrefix,
+	    @NonNull AbstractMessageModel messageModel
 	) {
-		if (messageModel == null || !MessageUtil.hasDataFile(messageModel)) {
+		if (!MessageUtil.hasDataFile(messageModel)) {
 			//its not a message model or a media message model
-			return false;
+			return;
 		}
 
 		if (!this.next("media " + messageModel.getId(), getStepFactor())) {
-			return false;
+			return;
 		}
 
 		try {
@@ -1289,23 +1279,23 @@ public class BackupService extends Service {
 				case VIDEO:
 					if (config.backupVideoAndFiles()) {
 						VideoDataModel videoDataModel = messageModel.getVideoData();
-						saveMedia = videoDataModel != null && videoDataModel.isDownloaded();
+						saveMedia = videoDataModel.isDownloaded();
 					}
 					break;
 				case VOICEMESSAGE:
 					if (config.backupMedia()) {
 						AudioDataModel audioDataModel = messageModel.getAudioData();
-						saveMedia = audioDataModel != null && audioDataModel.isDownloaded();
+						saveMedia = audioDataModel.isDownloaded();
 					}
 					break;
 				case FILE:
 					if (config.backupVideoAndFiles()) {
 						FileDataModel fileDataModel = messageModel.getFileData();
-						saveMedia = fileDataModel != null && fileDataModel.isDownloaded();
+						saveMedia = fileDataModel.isDownloaded();
 					}
 					break;
 				default:
-					return false;
+					return;
 			}
 
 			if (saveMedia) {
@@ -1326,12 +1316,9 @@ public class BackupService extends Service {
 					ZipUtil.addZipStream(zipOutputStream, is, thumbnailFilePrefix + messageModel.getUid(), false);
 				}
 			}
-
-			return true;
 		} catch (Exception x) {
-			//do not abort, its only a media :-)
-			logger.debug( "Can't add media for message {} ({}): {}", messageModel.getUid(), messageModel.getPostedAt(), x.getMessage());
-			return false;
+			// Don't abort the whole process, errors for media should not prevent the backup from succeeding
+			logger.debug("Can't add media for message {} ({}): {}", messageModel.getUid(), messageModel.getPostedAt(), x.getMessage());
 		}
 	}
 

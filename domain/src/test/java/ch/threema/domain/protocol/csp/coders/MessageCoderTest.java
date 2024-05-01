@@ -22,6 +22,7 @@
 package ch.threema.domain.protocol.csp.coders;
 
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.NonceFactory;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.testhelpers.TestHelpers;
 import ch.threema.domain.protocol.csp.messages.voip.*;
@@ -35,7 +36,9 @@ public class MessageCoderTest {
 			TestHelpers.getNoopContactStore(),
 			TestHelpers.getNoopIdentityStore()
 		);
-		return messageCoder.encode(msg, TestHelpers.getNoopNonceFactory());
+		NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
+		byte[] nonce = nonceFactory.next(false);
+		return messageCoder.encode(msg, nonce, nonceFactory);
 	}
 
 	@Test

@@ -25,12 +25,12 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import ch.threema.app.services.UpdateSystemService;
 
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
 /**
  * creates the state column
  */
-public class SystemUpdateToVersion28
-		extends UpdateToVersion
-		implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion28 implements UpdateSystemService.SystemUpdate {
 	private final SQLiteDatabase sqLiteDatabase;
 
 	public SystemUpdateToVersion28(SQLiteDatabase sqLiteDatabase) {
@@ -40,7 +40,7 @@ public class SystemUpdateToVersion28
 	@Override
 	public boolean runDirectly() {
 
-		if(!this.fieldExist(this.sqLiteDatabase, "contacts", "state")) {
+		if(!fieldExists(this.sqLiteDatabase, "contacts", "state")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN state VARCHAR(50) NOT NULL DEFAULT 'ACTIVE'");
 			return true;
 		}
@@ -49,7 +49,7 @@ public class SystemUpdateToVersion28
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

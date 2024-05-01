@@ -84,7 +84,8 @@
 			android:paddingBottom="4dp"
 			android:paddingLeft="8dp"
 			android:paddingRight="8dp"
-			android:background="#77000000">
+			android:background="#77000000"
+            android:animateLayoutChanges="true">
 
 			<ch.threema.app.ui.ComposeEditText
 				android:id="@+id/caption_edittext"

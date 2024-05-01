@@ -85,6 +85,8 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	public static final String PREFS_LAST_REVOCATION_KEY_SET = "last_revocation_key_set";
 	public static final String PREFS_REVOCATION_KEY_CHECKED = "revocation_key_checked";
 
+	public static final String PREFS_MD_PROPERTIES = "md_properties";
+
 	public static final String CRYPTED_FILE_PREFIX = ".crs-";
 
 	private final Context context;
@@ -196,6 +198,15 @@ public class PreferenceStore implements PreferenceStoreInterface {
 
 	@Override
 	public void save(String key, @NonNull String[] things, boolean crypt) {
+		saveQuietly(key, things, crypt);
+		this.fireOnChanged(key, things);
+	}
+
+	/**
+	 * Save list preference quietly without fireing a UI listener event (for use in workers or other background processing)
+	 */
+	@Override
+	public void saveQuietly(String key, @NonNull String[] things, boolean crypt) {
 		StringBuilder sb = new StringBuilder();
 		for(String s: things) {
 			if(sb.length() > 0) {
@@ -212,7 +223,6 @@ public class PreferenceStore implements PreferenceStoreInterface {
 			e.putString(key, sb.toString());
 			e.apply();
 		}
-		this.fireOnChanged(key, things);
 	}
 
 	@Override
@@ -720,8 +730,18 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	}
 
 	@Override
-	public boolean has(String listName) {
-		return this.sharedPreferences.contains(listName);
+	public boolean containsKey(String key) {
+		return containsKey(key, false);
+	}
+
+	@Override
+	public boolean containsKey(String key, boolean crypt) {
+		if (crypt) {
+			File f = new File(this.context.getFilesDir(), CRYPTED_FILE_PREFIX + key);
+			return f.exists();
+		} else {
+			return this.sharedPreferences.contains(key);
+		}
 	}
 
 	private void fireOnChanged(final String key, final  Object value) {

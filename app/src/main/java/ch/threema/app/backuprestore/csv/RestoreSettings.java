@@ -41,8 +41,9 @@ public class RestoreSettings {
 	 * 19: add random contact id
 	 * 20: add message display type (starred etc.)
 	 * 21: refactored group status messages
+	 * 22: add lastUpdate and remove isQueued flag
 	 */
-	public static final int CURRENT_VERSION = 21;
+	public static final int CURRENT_VERSION = 22;
 	private int version;
 
 	public RestoreSettings(int version) {

@@ -22,11 +22,12 @@
 package ch.threema.app.listeners;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.Nullable;
 import ch.threema.storage.models.ConversationModel;
 
 public interface ConversationListener {
 	@AnyThread void onNew(ConversationModel conversationModel);
-	@AnyThread void onModified(ConversationModel modifiedConversationModel, Integer oldPosition);
+	@AnyThread void onModified(ConversationModel modifiedConversationModel, @Nullable Integer oldPosition);
 	@AnyThread void onRemoved(ConversationModel conversationModel);
 	@AnyThread void onModifiedAll();
 }

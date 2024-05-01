@@ -26,17 +26,15 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.app.webclient.converter.DistributionList;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.MessageModel;
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 /**
  * Create forwardSecurityMode field in group and distribution list message model.
  */
-public class SystemUpdateToVersion74 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion74 implements UpdateSystemService.SystemUpdate {
 	public static final int VERSION = 74;
 
 	private final SQLiteDatabase sqLiteDatabase;
@@ -47,11 +45,11 @@ public class SystemUpdateToVersion74 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, GroupMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
+		if (!fieldExists(this.sqLiteDatabase, GroupMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE " + GroupMessageModel.TABLE + " ADD COLUMN " +
 				AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE + " TINYINT DEFAULT 0");
 		}
-		if (!this.fieldExist(this.sqLiteDatabase, DistributionListMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
+		if (!fieldExists(this.sqLiteDatabase, DistributionListMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE " + DistributionListMessageModel.TABLE + " ADD COLUMN " +
 				AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE + " TINYINT DEFAULT 0");
 		}
@@ -60,7 +58,7 @@ public class SystemUpdateToVersion74 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

@@ -27,11 +27,9 @@ import org.slf4j.Logger;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.processors.MessageProcessor;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.GroupId;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseData;
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage;
@@ -46,14 +44,11 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupJoinResponseServiceImpl");
 
 	private final @NonNull OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
-	private final @NonNull MessageQueue messageQueue;
 
 	public GroupJoinResponseServiceImpl(
-		@NonNull DatabaseServiceNew databaseService,
-		@NonNull MessageQueue messageQueue
+		@NonNull DatabaseServiceNew databaseService
 	) {
 		this.outgoingGroupJoinRequestModelFactory = databaseService.getOutgoingGroupJoinRequestModelFactory();
-		this.messageQueue = messageQueue;
 	}
 
 	/**
@@ -62,7 +57,7 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
 	 * @return MessageProcessor.ProcessingResult whether the processing was successful, failed or ignored
 	 */
 	@Override
-	public @NonNull MessageProcessor.ProcessingResult process(@NonNull GroupJoinResponseMessage message) {
+	public @NonNull boolean process(@NonNull GroupJoinResponseMessage message) {
 
 		final @NonNull GroupJoinResponseData responseData = message.getData();
 		final @NonNull GroupInviteToken token = responseData.getToken();
@@ -72,7 +67,7 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
 
 		if (joinRequest.isEmpty()) {
 			logger.info("Group Join Response: Ignore with unknown request");
-			return MessageProcessor.ProcessingResult.IGNORED;
+			return false;
 		}
 
 		OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel = joinRequest.get();
@@ -80,7 +75,7 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
 		final @NonNull String sender = message.getFromIdentity();
 		if (!outgoingGroupJoinRequestModel.getAdminIdentity().equals(sender)) {
 			logger.info("Group Join Response: Ignore with invalid sender {}", sender);
-			return MessageProcessor.ProcessingResult.IGNORED;
+			return false;
 		}
 
 		final GroupJoinResponseData.Response response = responseData.getResponse();
@@ -111,7 +106,7 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
 
 		ListenerManager.groupJoinResponseListener.handle(listener -> listener.onReceived(updateModel, status));
 
-		return MessageProcessor.ProcessingResult.SUCCESS;
+		return false;
 	}
 
 	/**
@@ -128,6 +123,6 @@ public class GroupJoinResponseServiceImpl implements GroupJoinResponseService {
 	) throws ThreemaException {
 		final GroupJoinResponseMessage message = new GroupJoinResponseMessage(new GroupJoinResponseData(token, response));
 		message.setToIdentity(identity);
-		this.messageQueue.enqueue(message);
+		// TODO(ANDR-2607): message was enqueued here in the message queue. Create a task for this.
 	}
 }

@@ -79,7 +79,6 @@ public class GroupMessageModel extends AbstractMessageModel {
 			.setGroupMessageStates(sourceModel.getGroupMessageStates())
 			.setCorrelationId(sourceModel.getCorrelationId())
 			.setSaved(sourceModel.isSaved())
-			.setIsQueued(sourceModel.isQueued())
 			.setState(sourceModel.getState())
 			.setModifiedAt(sourceModel.getModifiedAt())
 			.setDeliveredAt(sourceModel.getDeliveredAt())

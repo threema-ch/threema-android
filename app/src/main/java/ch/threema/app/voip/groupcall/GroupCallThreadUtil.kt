@@ -22,31 +22,10 @@
 package ch.threema.app.voip.groupcall
 
 import ch.threema.app.BuildConfig
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.concurrent.TrulySingleThreadExecutorThreadFactory
 import kotlinx.coroutines.*
-import java.lang.Runnable
 import java.util.concurrent.Executors
-import java.util.concurrent.ThreadFactory
 import kotlin.coroutines.CoroutineContext
-
-private val logger = LoggingUtil.getThreemaLogger("GroupCallThreadUtil")
-
-class TrulySingleThreadExecutorThreadFactory(
-    val name: String,
-    val created: ((thread: Thread) -> Unit),
-) : ThreadFactory {
-    var thread: Thread? = null
-
-    override fun newThread(runnable: Runnable?): Thread {
-        thread?.also {
-            logger.error("Thread '{}' was already created", it.name)
-        }
-        return Thread(runnable, name).also {
-            thread = it
-            created(it)
-        }
-    }
-}
 
 class GroupCallThreadUtil {
     interface ExceptionHandler {

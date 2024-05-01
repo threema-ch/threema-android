@@ -59,6 +59,13 @@ public interface IdentityStoreInterface {
 	String getIdentity();
 	String getServerGroup();
 	byte[] getPublicKey();
+	byte[] getPrivateKey();
+
+	/**
+	 * Get the currently set nickname. Note that the nickname can never be null. If no nickname is
+	 * set, an empty string is returned.
+	 */
+	@NonNull
 	String getPublicNickname();
 
 	/**

@@ -90,6 +90,11 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
 	}
 
 	@Override
+	public void saveQuietly(String key, @NonNull String[] things, boolean crypt) {
+
+	}
+
+	@Override
 	public void save(String key, long thing) {
 
 	}
@@ -300,7 +305,12 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
 	}
 
 	@Override
-	public boolean has(String listName) {
+	public boolean containsKey(String key) {
+		return false;
+	}
+
+	@Override
+	public boolean containsKey(String key, boolean crypt) {
 		return false;
 	}
 }

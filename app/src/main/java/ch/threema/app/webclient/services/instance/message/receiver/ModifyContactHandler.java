@@ -47,6 +47,7 @@ import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -106,7 +107,7 @@ public class ModifyContactHandler extends MessageReceiver {
 			return;
 		}
 
-		contactModel.setIsHidden(false);
+		contactModel.setAcquaintanceLevel(AcquaintanceLevel.DIRECT);
 
 		// Process data
 		final Map<String, Value> data = this.getData(message, false);

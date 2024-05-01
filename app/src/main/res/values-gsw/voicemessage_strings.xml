@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recording">Sprachnachricht wird ufgnoh</string>
+    <string name="recording_stopped_title">Ufnahm aghalte</string>
+    <string name="recording_stopped_message">Wänd Sie die ufgnohni Sprachnachricht jetzt schicke?</string>
+    <string name="recording_canceled">Ufnahm wägeme unbekannte Fehler abbroche.</string>
+    <string name="cancel_recording">Ufnahm lösche</string>
+    <string name="cancel_recording_message">Wänd Sie d’Ufnahm würklich abbräche und lösche?</string>
+    <string name="stop">Stopp</string>
+</resources>

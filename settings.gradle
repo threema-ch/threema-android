@@ -1,1 +1,1 @@
-include ':app', ':domain', ':task-manager'
+include ':app', ':domain'

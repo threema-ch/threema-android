@@ -669,7 +669,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="select_all">Alles selecteren</string>
     <string name="deleting_messages">Berichten verwijderen</string>
     <string name="media_gallery_files">Bestanden</string>
-    <string name="prefs_gif_autoplay">Geanimeerde gifs automatisch afspelen</string>
+    <string name="prefs_gif_autoplay">Geanimeerde beelden automatisch afspelen</string>
     <string name="media_gallery_audio">Gesproken berichten</string>
     <string name="action_clone_group">Groep klonen</string>
     <string name="clone_group_message">Dit kloont deze groep met u als administrator. Doorgaan?</string>
@@ -928,6 +928,10 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="empty_chat_title">Berichten wissen</string>
     <string name="empty_chat_confirm">Alle berichten in deze chat worden verwijderd. Doorgaan?</string>
     <string name="emptying_chat">Berichten wissen…</string>
+    <string name="emptying_chat_deleting_messages">Berichten verwijderen...</string>
+    <string name="delete_chat_title">Chat verwijderen</string>
+    <string name="delete_chat_confirm">Alle berichten in deze chat worden verwijderd en de chat wordt opgeheven. Doorgaan?</string>
+    <string name="deleting_chat">Chat wordt verwijderd</string>
     <string name="set_private">Chat verbergen</string>
     <string name="unset_private">Chat weergeven</string>
     <string name="delete_group_message">Weet u zeker dat u deze groep wilt verlaten en volledig wilt verwijderen. Alle berichten worden verwijderd.</string>
@@ -1088,7 +1092,6 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="tooltip_voip_turn_on_camera">Tik hier om de camera in te schakelen</string>
     <string name="prefs_videocall_profile_explain">De beeldkwaliteit is afhankelijk van het netwerk en van de instellingen van de persoon met wie u spreekt</string>
     <string name="permission_camera_videocall_required">Geef toegang tot de camera om video-oproepen te kunnen doen</string>
-    <string name="feedback">Feedback</string>
     <string name="tooltip_voip_enable_speakerphone">Tik hier om de luidspreker in te schakelen</string>
     <string name="ballot_open">Open polls</string>
     <string name="translators">Vertalers</string>
@@ -1360,16 +1363,21 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="synchronizing">Synchroniseren…</string>
     <string name="forward_security">Berichten met Perfect Forward Secrecy verzenden</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
-    <string name="forward_security_mode_none">nee</string>
+    <string name="forward_security_mode_none">Geen</string>
     <string name="clear_forward_security">Perfect Forward Secrecy voor deze contactpersoon resetten</string>
     <string name="clear_forward_security_warning">Deze actie alleen uitvoeren wanneer je hiertoe door de Klantenservice van Threema wordt geïnstrueerd.</string>
     <string name="forward_security_cleared">De Perfect Forward Secrecy-sessies met deze contactpersoon zijn gewist</string>
     <string name="message_without_forward_security">Er is een bericht zonder Perfect Forward Secrecy ontvangen. Controleer of de afzender Perfect Forward Secrecy opzettelijk heeft uitgeschakeld.</string>
-    <string name="forward_security_established">De berichten in deze chat zijn nu beschermd met Perfect Forward Secrecy.</string>
+    <string name="forward_security_established">De berichten met deze chatpartner zijn nu beschermd met Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">De ontvangen berichten in deze chat zijn nu beschermd met Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">De Perfect Forward Secrecy-sessie is gereset. Dit kan gebeuren wanneer de gesprekspartner een ander apparaat gebruikt of de app opnieuw installeert.</string>
     <string name="forward_security_reset_simple">De Perfect Forward Secrecy-sessie met deze contactpersoon is gereset.</string>
     <string name="forward_security_message_out_of_order">Er is een bericht buiten de volgorde ontvangen dat niet is versleuteld.</string>
+    <string name="forward_security_notification_channel_name">Perfect Forward Secrecy-waarschuwingen</string>
+    <string name="forward_security_notification_rejected_title">Het verzenden van berichten is mislukt</string>
+    <string name="forward_security_notification_rejected_text_contact">Eén of meer berichten zijn niet verzonden naar %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">Eén of meer berichten zijn niet verzonden naar \'%1$s\'.</string>
+    <string name="forward_security_notification_rejected_text_generic">Eén of meer berichten zijn niet verzonden.</string>
     <string name="self_updater_installation_failed">De update is niet gedownload. Download en installeer de update handmatig <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a>.</string>
     <string name="spam_first_contact">Deze chat is van een onbekend contactpersoon</string>
     <string name="spam_report">Spam melden</string>
@@ -1381,6 +1389,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="spam_report_short">Melden</string>
     <string name="wizard_incompatible_contact_sync_params">Er zijn incompatibele MDM-parameters ingesteld. De Threema MDM-parameter th_contact_sync kan niet zijn ingesteld op \'True\' als gebruikersbeperking DISALLOW_MODIFY_ACCOUNTS is ingesteld. Neem contact op met de beheerder van het apparaat.</string>
     <string name="messages_cannot_be_recovered">De berichten gaan dan verloren.</string>
+    <string name="groups_left_or_dissolved">Groepen worden verlaten of opgeheven en vervolgens verwijderd.</string>
     <string name="contact_deleted">Contact verwijderd</string>
     <string name="last_added_contact">Laatst toegevoegd</string>
     <string name="directory_explain_text">Zoek in de bedrijfsgids naar werknemers die nog niet aan je contact lijst zijn toegevoegd.</string>
@@ -1428,8 +1437,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="group_calls_tooltip_text">Tik hier om alle groepsleden uit te nodigen voor deelname aan een gesprek. Alle leden zullen een melding ontvangen en kunnen beslissen of ze aan het gesprek willen deelnemen.</string>
     <string name="prefs_title_calls">Veilige gesprekken</string>
     <string name="prefs_sum_group_calls_vibration">Selecteer of u een trilling wilt wanneer een groepsgesprek is gestart</string>
-    <string name="forward_security_mode_4dh">voltooid</string>
-    <string name="forward_security_mode_2dh">eenzijdig</string>
+    <string name="forward_security_mode_4dh">Voltooid</string>
+    <string name="forward_security_mode_2dh">Eenzijdig</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beschermt opgenomen communicatie tegen ontsleuteling met terugwerkende kracht, zelfs wanneer de lange termijn-coderingssleutel gecomprimeerd is.\n\nDe optie kan worden ingeschakeld als de app aan beide zijden PFS ondersteunt.</string>
     <string name="group_call_inactivity_left">Groepsgesprek verlaten vanwege inactiviteit</string>
     <string name="missing_permission_external_storage">Het bestand kon niet worden gekopieerd. Probeer de volgende stappen:\n1. Open de Instellingen-app.\n2. Ga naar \'Apps\' en kies \'Speciale apptoegang\'.\n3. Tik op \'Toegang tot alle bestanden\'.\n4. Tik op de drie stippen rechts bovenaan en kies \'Systeem tonen\'.\n5. Tik op \'Externe opslag\' en zorg dat \'Toegang voor het beheren van alle bestanden toestaan\' verleend is.\n6. Probeer de back-up opnieuw te herstellen.</string>
@@ -1519,6 +1528,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="edit_and_send">Bewerken en verzenden</string>
     <string name="media_gallery_animated_webps">Geanimeerde WebP\'s</string>
     <string name="unsupported_image_type">Niet-ondersteund afbeeldingstype: %s</string>
+    <string name="application_setup_steps_failed">Er is een actieve internetverbinding nodig om de status van uw contacten te zien. Zorg ervoor dat u internetverbinding hebt en probeer het opnieuw.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>

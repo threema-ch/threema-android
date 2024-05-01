@@ -1,0 +1,79 @@
+# Meta information
+meta:
+  # Document name and ID
+  id: extra
+  name: Extra Structs
+
+  # References used by the structs
+  references:
+    # A random nonce
+    nonce: &nonce b24
+
+# Virtual namespace, just containing the below docstring
+index: &index
+  _doc: |-
+    # Extra Structures
+
+    Structs defined here are not a mandatory part of any protocol but can be
+    used with any of them.
+
+# General crypto-related structs
+crypto: &crypto
+  encrypted-data-with-nonce-ahead:
+    _doc: |-
+      ## Crypto
+
+      Contains encrypted data, prefixed with a 24 byte nonce.
+
+      Note: This can be used for all ciphers using a 24 byte nonce, e.g.
+      XSalsa20-Poly1305 and ChaCha20-Poly1305.
+    fields:
+      - _doc: |-
+          Nonce used for encrypting the data.
+        name: nonce
+        type: *nonce
+      - _doc: |-
+          The encrypted data.
+        name: data
+        type: b*
+
+# Monitoring structs
+monitoring: &monitoring
+  _doc: |-
+    ## Monitoring
+
+    These structs can be used to monitor a network connection.
+  rtt-measurement:
+    _doc: |-
+      Contains a timestamp for RTT measurement by reflection.
+    fields:
+      - _doc: |-
+          A Unix-ish timestamp in milliseconds (for start reference).
+        name: timestamp
+        type: u64-le
+
+# Transport structs
+transport: &transport
+  _doc: |-
+    ## Transport
+
+    These structs are helpful for network transports.
+  frame:
+    _doc: |-
+      A fixed-length frame for stream-like transports.
+    fields:
+      - _doc: |-
+          Length of the `data` field.
+        name: length
+        type: u32-le
+      - _doc: |-
+          The data.
+        name: data
+        type: b{length}
+
+# Parsed struct namespaces (mapped into separate files)
+namespaces:
+  index: *index
+  crypto: *crypto
+  monitoring: *monitoring
+  transport: *transport

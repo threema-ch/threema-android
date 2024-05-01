@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#ffffff</color>
+    <color name="ic_launcher_dune">#004A7F</color>
+    <color name="ic_launcher_dots">#004A7F</color>
+    <color name="ic_launcher_shadow">#333333</color>
+    <color name="ic_launcher_sky">#A0D8FF</color>
+</resources>

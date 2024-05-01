@@ -29,6 +29,7 @@ import org.junit.Test;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
+import ch.threema.protobuf.Common;
 import ch.threema.protobuf.csp.e2e.fs.Envelope;
 import ch.threema.protobuf.csp.e2e.fs.Reject;
 
@@ -40,7 +41,8 @@ public class ForwardSecurityDataRejectTest {
 	private static final Envelope TEST_PROTOBUF_MESSAGE = Envelope.newBuilder()
 		.setSessionId(ByteString.copyFrom(TEST_SESSION_ID.get()))
 		.setReject(Reject.newBuilder()
-			.setRejectedEncapsulatedMessageId(TEST_REJECTED_MESSAGE_ID.getMessageIdLong())
+			.setMessageId(TEST_REJECTED_MESSAGE_ID.getMessageIdLong())
+			.setGroupIdentity(Common.GroupIdentity.newBuilder().build())
 			.setCause(TEST_CAUSE)
 			.build())
 		.build();
@@ -53,7 +55,7 @@ public class ForwardSecurityDataRejectTest {
 
 	@Test
 	public void testValidData() {
-		final ForwardSecurityDataReject data = new ForwardSecurityDataReject(TEST_SESSION_ID, TEST_REJECTED_MESSAGE_ID, TEST_CAUSE);
+		final ForwardSecurityDataReject data = new ForwardSecurityDataReject(TEST_SESSION_ID, TEST_REJECTED_MESSAGE_ID, null, null, TEST_CAUSE);
 		assertEqualsTestProperties(data);
 	}
 
@@ -66,7 +68,7 @@ public class ForwardSecurityDataRejectTest {
 
 	@Test
 	public void testToProtobufMessage() {
-		final ForwardSecurityDataReject data = new ForwardSecurityDataReject(TEST_SESSION_ID, TEST_REJECTED_MESSAGE_ID, TEST_CAUSE);
+		final ForwardSecurityDataReject data = new ForwardSecurityDataReject(TEST_SESSION_ID, TEST_REJECTED_MESSAGE_ID, null, null, TEST_CAUSE);
 		final Envelope generatedProtobufMessage = data.toProtobufMessage();
 
 		Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);

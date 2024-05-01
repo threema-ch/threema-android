@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.ThreemaException;
@@ -42,6 +43,8 @@ public class ServerAddressProviderServiceImpl implements ServerAddressProviderSe
 		this.preferenceService = preferenceService;
 	}
 
+	@Override
+	@NonNull
 	public ServerAddressProvider getServerAddressProvider() {
 		if (ConfigUtils.isOnPremBuild()) {
 			return getServerAddressProviderOnPrem();
@@ -51,12 +54,7 @@ public class ServerAddressProviderServiceImpl implements ServerAddressProviderSe
 	}
 
 	private ServerAddressProvider getServerAddressProviderOnPrem() {
-		return new ServerAddressProviderOnPrem(new ServerAddressProviderOnPrem.FetcherProvider() {
-			@Override
-			public OnPremConfigFetcher getFetcher() throws ThreemaException {
-				return getOnPremConfigFetcher();
-			}
-		});
+		return new ServerAddressProviderOnPrem(this::getOnPremConfigFetcher);
 	}
 
 	private ServerAddressProvider getServerAddressProviderBuildConfig() {
@@ -117,33 +115,45 @@ public class ServerAddressProviderServiceImpl implements ServerAddressProviderSe
 			}
 
 			@Override
-			public String getAvatarServerUrl(boolean ipv6) throws ThreemaException {
+			public String getAvatarServerUrl(boolean ipv6) {
 				return BuildConfig.AVATAR_FETCH_URL;
 			}
 
 			@Override
-			public String getSafeServerUrl(boolean ipv6) throws ThreemaException {
+			public String getSafeServerUrl(boolean ipv6) {
 				return BuildConfig.SAFE_SERVER_URL;
 			}
 
 			@Override
-			public String getWebServerUrl() throws ThreemaException {
+			public String getWebServerUrl() {
 				return BuildConfig.WEB_SERVER_URL;
 			}
 
 			@Override
-			public String getWebOverrideSaltyRtcHost() throws ThreemaException {
+			public String getWebOverrideSaltyRtcHost() {
 				return null;
 			}
 
 			@Override
-			public int getWebOverrideSaltyRtcPort() throws ThreemaException {
+			public int getWebOverrideSaltyRtcPort() {
 				return 0;
 			}
 
 			@Override
-			public byte[] getThreemaPushPublicKey() throws ThreemaException {
+			public byte[] getThreemaPushPublicKey() {
 				return BuildConfig.THREEMA_PUSH_PUBLIC_KEY;
+			}
+
+			@NonNull
+			@Override
+			public String getMediatorUrl() {
+				return BuildConfig.MEDIATOR_SERVER_URL;
+			}
+
+			@NonNull
+			@Override
+			public String getAppRatingUrl() {
+				return BuildConfig.APP_RATING_URL;
 			}
 		};
 	}

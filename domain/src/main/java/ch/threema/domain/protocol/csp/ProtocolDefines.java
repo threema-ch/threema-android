@@ -21,6 +21,8 @@
 
 package ch.threema.domain.protocol.csp;
 
+import com.neilalexander.jnacl.NaCl;
+
 public class ProtocolDefines {
 
 	/* Timers and timeouts (in seconds) */
@@ -29,13 +31,17 @@ public class ProtocolDefines {
 
 	public static final int READ_TIMEOUT = 20;
 	public static final int WRITE_TIMEOUT = 20;
-	public static final int KEEPALIVE_INTERVAL = 180;
 	public static final int BLOB_CONNECT_TIMEOUT = 30;
 	public static final int BLOB_LOAD_TIMEOUT = 100;
 	public static final int API_REQUEST_TIMEOUT = 20;
 
 	public static final int RECONNECT_BASE_INTERVAL = 2;
 	public static final int RECONNECT_MAX_INTERVAL = 10;
+
+	// Echo request timeouts (in seconds)
+	public static final short ECHO_REQUEST_INTERVAL = 60;
+	public static final short CONNECTION_IDLE_TIMEOUT = 120;
+	public static final short ECHO_RESPONSE_TIMEOUT = 10;
 
 	/* object lengths */
 	public static final int COOKIE_LEN = 16;
@@ -52,6 +58,16 @@ public class ProtocolDefines {
 	public static final int BALLOT_STATE_LEN = 1;
 	public static final int BALLOT_ASSESSMENT_TYPE_LEN = 1;
 	public static final int BALLOT_VISIBILITY_LEN = 1;
+
+	/* server handshake */
+	public static final int SERVER_HELLO_BOXLEN = NaCl.PUBLICKEYBYTES + COOKIE_LEN + NaCl.BOXOVERHEAD;
+	public static final int SERVER_HELLO_LEN = COOKIE_LEN + SERVER_HELLO_BOXLEN;
+	public static final int SERVER_LOGIN_ACK_LEN = 32;
+	public static final int EXTENSION_INDICATOR_LEN = 32;
+	public static final int VOUCH_LEN = 32;
+	public static final int RESERVED1_LEN = 24;
+	public static final int RESERVED2_LEN = 16;
+	public static final int LOGIN_LEN = IDENTITY_LEN + EXTENSION_INDICATOR_LEN + COOKIE_LEN + RESERVED1_LEN + VOUCH_LEN + RESERVED2_LEN;
 
 	/* max message size */
 	public static final int MAX_PKT_LEN = 8192;
@@ -107,6 +123,7 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_GROUP_DELIVERY_RECEIPT = 0x81;
 	public static final int MSGTYPE_TYPING_INDICATOR = 0x90;
 	public static final int MSGTYPE_FS_ENVELOPE = 0xa0;
+	public static final int MSGTYPE_EMPTY = 0xfc;
 	public static final int MSGTYPE_WEB_SESSION_RESUME = 0xfe;
 	public static final int MSGTYPE_AUTH_TOKEN = 0xff;
 
@@ -134,17 +151,19 @@ public class ProtocolDefines {
 	public static final int PLTYPE_INCOMING_MESSAGE = 0x02;
 	public static final int PLTYPE_INCOMING_MESSAGE_ACK = 0x82;
 	public static final int PLTYPE_PUSH_NOTIFICATION_TOKEN = 0x20;
-	public static final int PLTYPE_PUSH_ALLOWED_IDENTITIES = 0x21;
 	public static final int PLTYPE_VOIP_PUSH_NOTIFICATION_TOKEN = 0x24;
+	public static final int PLTYPE_DELETE_PUSH_NOTIFICATION_TOKEN = 0x25;
+	public static final int PLTYPE_SET_CONNECTION_IDLE_TIMEOUT = 0x30;
 	public static final int PLTYPE_QUEUE_SEND_COMPLETE = 0xd0;
 	public static final int PLTYPE_DEVICE_COOKIE_CHANGE_INDICATION = 0xd2;
 	public static final int PLTYPE_CLEAR_DEVICE_COOKIE_CHANGE_INDICATION = 0xd3;
 	public static final int PLTYPE_ERROR = 0xe0;
 	public static final int PLTYPE_ALERT = 0xe1;
+	public static final int PLTYPE_UNBLOCK_INCOMING_MESSAGES = 0x03;
 
 	/* push token types */
 	public static final int PUSHTOKEN_TYPE_NONE = 0x00;
-	public static final int PUSHTOKEN_TYPE_GCM = 0x11;
+	public static final int PUSHTOKEN_TYPE_FCM = 0x11;
 	public static final int PUSHTOKEN_TYPE_HMS = 0x13;
 
 	/* nonces */
@@ -177,4 +196,7 @@ public class ProtocolDefines {
 	public static final int AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE = 0;
 	public static final int AUTO_DELETE_KEEP_MESSAGES_DAYS_MIN = 7;
 	public static final int AUTO_DELETE_KEEP_MESSAGES_DAYS_MAX = 3650;
+
+	/* Special Contacts */
+	public static final String SPECIAL_CONTACT_PUSH = "*3MAPUSH";
 }

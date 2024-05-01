@@ -29,12 +29,15 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
+import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageType;
 
@@ -55,12 +58,18 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 				null));
 	}
 
-	public DistributionListMessageModel getById(int id) {
+	public @Nullable DistributionListMessageModel getById(long id) {
 		return getFirst(
-				DistributionListMessageModel.COLUMN_ID + "=?",
-				new String[]{
-						String.valueOf(id)
-				});
+			DistributionListMessageModel.COLUMN_ID + "=?",
+			new String[]{String.valueOf(id)}
+		);
+	}
+
+	public @Nullable DistributionListMessageModel getByUid(@NonNull String uid) {
+		return getFirst(
+			DistributionListMessageModel.COLUMN_UID + "=?",
+			new String[]{uid}
+		);
 	}
 
 	private List<DistributionListMessageModel> convertList(Cursor c) {
@@ -230,7 +239,7 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 				});
 	}
 
-	private DistributionListMessageModel getFirst(String selection, String[] selectionArgs) {
+	private @Nullable DistributionListMessageModel getFirst(String selection, String[] selectionArgs) {
 		Cursor cursor = this.databaseService.getReadableDatabase().query (
 				this.getTableName(),
 				null,
@@ -297,7 +306,12 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
 				"CREATE INDEX `distributionListMessageIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" +  DistributionListMessageModel.COLUMN_API_MESSAGE_ID + "` )",
 				"CREATE INDEX `distributionListMessageUidIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `"+ DistributionListMessageModel.COLUMN_UID +"` )",
 				"CREATE INDEX `distribution_list_message_identity_idx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_IDENTITY + "` )",
-				"CREATE INDEX `distributionListCorrelationIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_CORRELATION_ID + "` )"
+				"CREATE INDEX `distributionListCorrelationIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_CORRELATION_ID + "` )",
+				"CREATE INDEX `distribution_list_message_state_idx` ON `" + DistributionListMessageModel.TABLE
+					+ "`(`"  + AbstractMessageModel.COLUMN_TYPE
+					+ "`, `" + AbstractMessageModel.COLUMN_STATE
+					+ "`, `" + AbstractMessageModel.COLUMN_OUTBOX
+					+ "`)",
 		};
 	}
 }

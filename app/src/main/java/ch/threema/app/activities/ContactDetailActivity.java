@@ -81,6 +81,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.QRCodeService;
 import ch.threema.app.services.QRCodeServiceImpl;
+import ch.threema.app.tasks.ForwardSecurityStateLogTask;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.TooltipPopup;
@@ -362,7 +363,12 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
 		if (this.contact.isHidden()) {
 			this.reload();
-			GenericAlertDialog.newInstance(R.string.menu_add_contact, String.format(getString(R.string.contact_add_confirm), NameUtil.getDisplayNameOrNickname(contact, true)), R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_ADD_CONTACT);
+			GenericAlertDialog.newInstance(
+				R.string.menu_add_contact,
+				String.format(getString(R.string.contact_add_confirm), NameUtil.getDisplayNameOrNickname(contact, true)),
+				R.string.yes,
+				R.string.no
+			).show(getSupportFragmentManager(), DIALOG_TAG_ADD_CONTACT);
 		} else {
 			onCreateLocal();
 			this.reload();
@@ -376,11 +382,9 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			}
 		}
 
-		logger.info(
-			"DH session state with contact {}: {}",
-			contact.getIdentity(),
-			contactService.getForwardSecurityState(contact)
-		);
+		serviceManager.getTaskManager().schedule(new ForwardSecurityStateLogTask(
+			contactService, contact
+		));
 	}
 
 	private void onCreateLocal() {
@@ -681,19 +685,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	}
 
 	private void sendProfilePic() {
-		new AsyncTask<Void, Void, Boolean>() {
-			@Override
-			protected Boolean doInBackground(Void... params) {
-				return messageService.sendProfilePicture(contact);
-			}
-
-			@Override
-			protected void onPostExecute(Boolean aBoolean) {
-				if (aBoolean) {
-					Toast.makeText(ThreemaApplication.getAppContext(), R.string.profile_picture_sent, Toast.LENGTH_LONG).show();
-				}
-			}
-		}.execute();
+		serviceManager.getTaskCreator().scheduleProfilePictureSendTaskAsync(contact.getIdentity());
 	}
 
 	private void blockContact() {

@@ -32,7 +32,7 @@ import ch.threema.app.services.UpdateSystemService;
 /**
  * migrate locking prefs
  */
-public class SystemUpdateToVersion54 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion54 implements UpdateSystemService.SystemUpdate {
 
 	private Context context;
 
@@ -69,7 +69,7 @@ public class SystemUpdateToVersion54 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

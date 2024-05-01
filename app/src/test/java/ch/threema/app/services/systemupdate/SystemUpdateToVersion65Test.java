@@ -56,7 +56,7 @@ public class SystemUpdateToVersion65Test {
 	public void runAsyncTest() {
 		SystemUpdateToVersion65 update = new SystemUpdateToVersion65(this.databaseServiceMock, this.sqLiteDatabaseMock);
 
-		Assert.assertTrue(update.runASync());
+		Assert.assertTrue(update.runAsync());
 	}
 
 	@Test

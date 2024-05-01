@@ -200,7 +200,7 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 	}
 
 	public interface TextEntryDialogClickListener {
-		void onYes(String tag, String text);
+		void onYes(@NonNull String tag, @NonNull String text);
 		void onNo(String tag);
 		default void onNeutral(String tag) {
 			// optional interface
@@ -335,7 +335,14 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 
 		builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int whichButton) {
-								callback.onYes(tag, editText.getText().toString());
+								String text = null;
+								Editable editable = editText.getText();
+								if (editable != null) {
+									text = editable.toString();
+								}
+								if (tag != null && text != null) {
+									callback.onYes(tag, text);
+								}
 							}
 				}
 		);

@@ -195,7 +195,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
 		pushServicesInstalled = PushService.servicesInstalled(getContext());
 
 		pushTokenResetBroadcastReceiver = new BroadcastReceiver() {
-			// register listener for gcm registration result
+			// register listener for fcm registration result
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_PUSH_REGISTER, true);
@@ -744,7 +744,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
 
 					messageService.sendText(caption +
 						"\n-- \n" +
-						ConfigUtils.getSupportDeviceInfo(getActivity()) + "\n" +
+						ConfigUtils.getSupportDeviceInfo() + "\n" +
 						getVersionString() + "\n" +
 						userService.getIdentity(), receiver);
 
@@ -811,7 +811,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
 	@NonNull
 	private String getVersionString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(ConfigUtils.getAppVersion(requireActivity()));
+		builder.append(ConfigUtils.getAppVersion());
 		if (BuildConfig.DEBUG) {
 			builder.append(" (Commit ");
 			builder.append(BuildConfig.GIT_HASH);
@@ -852,7 +852,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
 	}
 
 	@Override
-	public void onYes(String tag, String text) {
+	public void onYes(@NonNull String tag, @NonNull String text) {
 		sendLogFileToSupport(text);
 	}
 

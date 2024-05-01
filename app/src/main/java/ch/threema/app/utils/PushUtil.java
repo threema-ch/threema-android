@@ -30,6 +30,11 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.text.format.DateUtils;
 
+import org.slf4j.Logger;
+
+import java.util.Map;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
@@ -39,10 +44,6 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
-
-import org.slf4j.Logger;
-
-import java.util.Map;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -62,7 +63,6 @@ import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 
 public class PushUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("PushUtil");
@@ -94,7 +94,7 @@ public class PushUtil {
 			.setRequiredNetworkType(NetworkType.CONNECTED)
 			.build();
 
-		// worker differs between hms and regular builds, see gcm and hms directory for for overwriting push worker versions
+		// worker differs between hms and regular builds, see fcm and hms directory for for overwriting push worker versions
 		WorkRequest pushTokenRegistrationRequest = new OneTimeWorkRequest.Builder(PushRegistrationWorker.class)
 			.setInputData(workerFlags)
 			.setConstraints(workerConstraints)
@@ -105,38 +105,16 @@ public class PushUtil {
 
 	/**
 	 * Send a push token to the server
-	 * @param context Context to access shared preferences and key strings for the the last token sent date update
 	 * @param token String representing the token
-	 * @param type int representing the token type (gcm, hms or none in case of a reset)
+	 * @param type int representing the token type (fcm, hms or none in case of a reset)
 	 */
-	public static void sendTokenToServer(Context context, String token, int type) throws ThreemaException {
+	public static void sendTokenToServer(@NonNull String token, int type) throws ThreemaException {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
 		if (serviceManager != null) {
-			ThreemaConnection connection = serviceManager.getConnection();
-
-			if (connection != null) {
-				connection.setPushToken(type, token);
-				logger.info("push token of type {} successfully sent to server", type);
-
-				// reset token update timestamp if it was reset, set current update time otherwise
-				if (token.isEmpty()) {
-					PreferenceManager.getDefaultSharedPreferences(context)
-						.edit()
-						.putLong(ThreemaApplication.getAppContext().getString(R.string.preferences__token_sent_date), 0L)
-						.apply();
-				}
-				else {
-					PreferenceManager.getDefaultSharedPreferences(context)
-						.edit()
-						.putLong(context.getString(R.string.preferences__token_sent_date), System.currentTimeMillis())
-						.apply();
-				}
-				// Used in the Webclient Sessions
-				serviceManager.getPreferenceService().setPushToken(token);
-			} else {
-				throw new ThreemaException("Unable to send / clear push token. ThreemaConnection not available");
-			}
+			serviceManager.getTaskCreator().scheduleSendPushTokenTask(token, type);
+			logger.info("Sending push token of type 0x{} successfully scheduled", Integer.toHexString(type));
+			// Note that the last sent date of the push token is set in the task
 		} else {
 			throw new ThreemaException("Unable to send / clear push token. ServiceManager not available");
 		}

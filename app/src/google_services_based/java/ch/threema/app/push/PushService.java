@@ -56,7 +56,7 @@ public class PushService extends FirebaseMessagingService {
 	public void onNewToken(@NonNull String token) {
 		logger.info("New FCM token received");
 		try {
-			PushUtil.sendTokenToServer(this, token, ProtocolDefines.PUSHTOKEN_TYPE_GCM);
+			PushUtil.sendTokenToServer(token, ProtocolDefines.PUSHTOKEN_TYPE_FCM);
 		} catch (ThreemaException e) {
 			logger.error("onNewToken, could not send token to server ", e);
 		}
@@ -66,7 +66,7 @@ public class PushService extends FirebaseMessagingService {
 		try {
 			FirebaseMessaging.getInstance().deleteToken();
 			Tasks.await(FirebaseInstallations.getInstance().delete());
-			PushUtil.sendTokenToServer(context,"", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
+			PushUtil.sendTokenToServer("", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
 		} catch (ThreemaException | ExecutionException | InterruptedException e) {
 			logger.warn("Could not delete FCM token", e);
 			return e.getMessage();

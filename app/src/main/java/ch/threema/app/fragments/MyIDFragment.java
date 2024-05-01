@@ -95,6 +95,9 @@ import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
+/**
+ * This is one of the tabs in the home screen. It shows the user's profile.
+ */
 public class MyIDFragment extends MainFragment
 		implements
 		View.OnClickListener,
@@ -718,7 +721,7 @@ public class MyIDFragment extends MainFragment
 	public void onNo(String tag, Object data) { }
 
 	@Override
-	public void onYes(String tag, String text) {
+	public void onYes(@NonNull String tag, @NonNull String text) {
 		switch (tag) {
 			case DIALOG_TAG_LINKED_MOBILE:
 				final String normalizedPhoneNumber = localeService.getNormalizedPhoneNumber(text);
@@ -732,11 +735,9 @@ public class MyIDFragment extends MainFragment
 				break;
 			case DIALOG_TAG_EDIT_NICKNAME:
 				// Update public nickname
-				if (text != null && !text.equals(userService.getPublicNickname())) {
-					if ("".equals(text.trim())) {
-						text = userService.getIdentity();
-					}
-					userService.setPublicNickname(text);
+				String newNickname = text.trim();
+				if (!newNickname.equals(userService.getPublicNickname())) {
+					userService.setPublicNickname(newNickname);
 				}
 				reloadNickname();
 				break;

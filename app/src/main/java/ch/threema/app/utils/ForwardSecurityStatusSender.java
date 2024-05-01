@@ -42,6 +42,7 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityStatusListener;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataReject;
+import ch.threema.protobuf.csp.e2e.fs.Terminate;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.ForwardSecurityStatusType;
@@ -228,7 +229,7 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 		ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
 		if (contactModel == null) {
 			try {
-				Integer[] fm = apiConnector.checkFeatureMask(new String[]{contact.getIdentity()});
+				Long[] fm = apiConnector.checkFeatureMask(new String[]{contact.getIdentity()});
 				return fm.length > 0 && fm[0] != null && ThreemaFeature.canForwardSecurity(fm[0]);
 			} catch (Exception e) {
 				logger.error("Could not get feature mask for contact");
@@ -262,6 +263,14 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 		}
 
 		postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE);
+	}
+
+	// TODO(ANDR-2519): Remove when md allows fs
+	@Override
+	public void allSessionsTerminated(@NonNull Contact contact, @NonNull Terminate.Cause cause) {
+		if (cause == Terminate.Cause.DISABLED_BY_LOCAL) {
+			postStatusMessage(contact, ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED);
+		}
 	}
 
 	private void postStatusMessageDebug(@NonNull String message, @NonNull Contact contact) {

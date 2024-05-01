@@ -21,18 +21,17 @@
 
 package ch.threema.domain.protocol.csp.messages.file;
 
-import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.protobuf.csp.e2e.fs.Version;
-
 import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 
-public class FileMessage extends AbstractMessage
-	implements FileMessageInterface {
+import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
+import ch.threema.protobuf.csp.e2e.fs.Version;
+
+public class FileMessage extends AbstractMessage implements FileMessageInterface {
 
 	private static final Logger logger = LoggingUtil.getThreemaLogger("FileMessage");
 
@@ -61,6 +60,36 @@ public class FileMessage extends AbstractMessage
 	@Override
 	public boolean exemptFromBlocking() {
 		return false;
+	}
+
+	@Override
+	public boolean createImplicitlyDirectContact() {
+		return true;
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		return true;
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		return true;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		return true;
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
+		return true;
 	}
 
 	@Override

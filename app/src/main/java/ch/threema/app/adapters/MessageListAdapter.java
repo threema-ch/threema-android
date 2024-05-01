@@ -26,20 +26,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.RequestManager;
 import com.google.android.material.button.MaterialButton;
 
 import org.slf4j.Logger;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiMarkupUtil;
@@ -48,6 +50,7 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.utils.ConfigUtils;
@@ -65,6 +68,10 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 	public static final int TYPE_ITEM = 0;
 	public static final int TYPE_FOOTER = 1;
+
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({TYPE_ITEM, TYPE_FOOTER})
+	public @interface ViewItemType {}
 
 	private final @NonNull Context context;
 	private final @NonNull GroupCallManager groupCallManager;
@@ -103,6 +110,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 	private final List<ConversationModel> selectedChats = new ArrayList<>();
 	private RecyclerView recyclerView;
 	private final Map<ConversationModel, MessageListAdapterItem> messageListAdapterItemsCache;
+	private String filterQuery;
 
 	private final @NonNull RequestManager requestManager;
 
@@ -135,12 +143,13 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		@NonNull DeadlineListService mentionOnlyChatsListService,
 		@NonNull RingtoneService ringtoneService,
 		@NonNull DeadlineListService hiddenChatsListService,
+		@NonNull PreferenceService preferenceService,
 		@NonNull GroupCallManager groupCallManager,
 		@Nullable String highlightUid,
 		@NonNull ItemClickListener clickListener,
 		@NonNull Map<ConversationModel, MessageListAdapterItem> messageListAdapterItemCache,
 		@NonNull RequestManager requestManager
-		) {
+	) {
 		this.context = context;
 		this.inflater = LayoutInflater.from(context);
 		this.conversationService = conversationService;
@@ -165,7 +174,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 			groupService,
 			distributionListService,
 			highlightUid,
-			stateBitmapUtil
+			stateBitmapUtil,
+			preferenceService.showConversationLastUpdate()
 		);
 
 		messageListItemStrings = new MessageListViewHolder.MessageListItemStrings(
@@ -183,7 +193,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 	}
 
 	@Override
-	public int getItemViewType(int position) {
+	public @ViewItemType int getItemViewType(int position) {
 		return position >= super.getItemCount() ? TYPE_FOOTER : TYPE_ITEM;
 	}
 
@@ -226,7 +236,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 	@NonNull
 	@Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, @ViewItemType int viewType) {
 		if (viewType == TYPE_ITEM) {
 			View itemView = inflater.inflate(R.layout.item_message_list, viewGroup, false);
 			itemView.setClickable(true);
@@ -268,12 +278,12 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 		} else {
 			// footer
 			MaterialButton archivedButton = h.itemView.findViewById(R.id.archived_text);
+			List<ConversationModel> archived = conversationService.getArchived(filterQuery);
 
-			int archivedCount = conversationService.getArchivedCount();
-			if (archivedCount > 0) {
+			if (!archived.isEmpty()) {
 				archivedButton.setVisibility(View.VISIBLE);
 				archivedButton.setOnClickListener(clickListener::onFooterClick);
-				archivedButton.setText(ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.num_archived_chats, archivedCount, archivedCount));
+				archivedButton.setText(ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.num_archived_chats, archived.size(), archived.size()));
 				if (recyclerView != null) {
 					((EmptyRecyclerView) recyclerView).setNumHeadersAndFooters(0);
 				}
@@ -328,5 +338,9 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 	public void setHighlightItem(String uid) {
 		messageListItemParams.setHighlightUid(uid);
+	}
+
+	public void setFilterQuery(String filterQuery) {
+		this.filterQuery = filterQuery;
 	}
 }

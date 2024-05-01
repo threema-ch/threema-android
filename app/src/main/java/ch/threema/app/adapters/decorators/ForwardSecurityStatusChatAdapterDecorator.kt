@@ -43,6 +43,9 @@ class ForwardSecurityStatusChatAdapterDecorator(context: Context, messageModel: 
             ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED -> body = ConfigUtils.getSafeQuantityString(context, R.plurals.forward_security_messages_skipped, statusDataModel.quantity, statusDataModel.quantity)
             ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE -> body = context.getString(R.string.forward_security_downgraded_status_message)
             ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE -> body = context.getString(R.string.forward_security_illegal_session_status_message)
+
+            // TODO(ANDR-2519): Can this be removed when md supports fs? Maybe not, because theses statuses won't be rendered correctly if they have already been created
+            ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED -> body = context.getString(R.string.forward_security_disabled)
         }
         if (showHide(holder.bodyTextView, !TestUtil.empty(body))) {
             holder.bodyTextView.text = body

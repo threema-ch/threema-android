@@ -21,13 +21,11 @@
 
 package ch.threema.domain.protocol.csp.messages;
 
-
 import java.util.Date;
 
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.MessageId;
-import ch.threema.domain.models.QueueMessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
@@ -37,12 +35,11 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
  * Abstract base class for messages that can be sent via the Threema server interface,
  * in unencrypted form. For the encrypted version, see {@link MessageBox}.
  */
-public abstract class AbstractMessage {
-
+public abstract class AbstractMessage implements MessageTypeProperties, MessageFlags {
 	private String fromIdentity;
 	private String toIdentity;
 	private MessageId messageId;
-	private String pushFromName;
+	private String nickname;
 	private Date date;
 	private int messageFlags;
 	private ForwardSecurityMode forwardSecurityMode;
@@ -51,72 +48,13 @@ public abstract class AbstractMessage {
 		this.date = new Date();
 		this.messageId = new MessageId();
 		this.forwardSecurityMode = ForwardSecurityMode.NONE;
+		this.messageFlags = getMessageTypeDefaultFlags();
 	}
 
-	/* Methods to be overridden by subclasses */
+	/**
+	 * Return the numeric message type (CspE2eMessageType in the protocol).
+	 */
 	public abstract int getType();
-
-	/**
-	 * Flag 0x01: Send push notification
-	 *
-	 * The server will send a push message to the receiver of the message.
-	 * Only use this for messages that require a notification. For example, do not
-	 * set this for delivery receipts.
-	 */
-	public boolean flagSendPush() {
-		return false;
-	}
-
-	/**
-	 * Flag 0x02: No server queuing
-	 *
-	 * Use this for messages that can be discarded by the chat server in case the receiver
-	 * is not connected to the chat server, e.g. the typing indicator.
-	 */
-	public boolean flagNoServerQueuing() {
-		return false;
-	}
-
-	/**
-	 * Flag 0x04: No server acknowledgement
-	 *
-	 * Use this for messages where reliable delivery and acknowledgement is not essential,
-	 * e.g. the typing indicator. Will not be acknowledged by the chat server when sending.
-	 * No acknowledgement should be sent by the receiver to the chat server.
-	 */
-	public boolean flagNoServerAck() {
-		return false;
-	}
-
-	/**
-	 * Flag 0x10: Group message marker (DEPRECATED)
-	 *
-	 * Use this for all group messages. In iOS clients, this will be used for notifications
-	 * to reflect that a group message has been received in case no connection to the server
-	 * could be established.
-	 */
-	public boolean flagGroupMessage() {
-		return false;
-	}
-
-	/**
-	 * Flag 0x20: Short-lived server queuing
-	 *
-	 * Messages with this flag will only be queued for 60 seconds.
-	 */
-	public boolean flagShortLivedServerQueuing() {
-		return false;
-	}
-
-	/**
-	 * Flag 0x80: Don't send delivery receipts
-	 *
-	 * This may not be used by the apps but can be used by Threema Gateway IDs
-	 * which do not necessarily want a delivery receipt for a message.
-	 */
-	public boolean flagNoDeliveryReceipts() {
-		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) == ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS;
-	}
 
 	/**
 	 * Get the minimum version of forward security that is needed to send this message type with
@@ -128,19 +66,6 @@ public abstract class AbstractMessage {
 	 */
 	@Nullable
 	public abstract Version getMinimumRequiredForwardSecurityVersion();
-
-	/**
-	 * Return whether the user's profile information (nickname, picture etc.) is allowed to
-	 * be sent along with this message. This should be set to true for user-initiated messages only.
-	 */
-	public boolean allowUserProfileDistribution() {
-		return false;
-	}
-
-	/**
-	 * Return whether this message should be exempted from blocking.
-	 */
-	public abstract boolean exemptFromBlocking();
 
 	/**
 	 * Return the body of this message in network format (i.e. formatted as a byte array).
@@ -174,24 +99,12 @@ public abstract class AbstractMessage {
 		this.messageId = messageId;
 	}
 
-	/**
-	 * Return the {@link QueueMessageId} for this message.
-	 *
-	 * If the `toIdentity` or `messageId` fields are not set, return null.
-	 */
-	public @Nullable QueueMessageId getQueueMessageId() {
-		if (this.toIdentity != null && this.messageId != null) {
-			return new QueueMessageId(this.getMessageId(), this.toIdentity);
-		}
-		return null;
+	public String getNickname() {
+		return nickname;
 	}
 
-	public String getPushFromName() {
-		return pushFromName;
-	}
-
-	public void setPushFromName(String pushFromName) {
-		this.pushFromName = pushFromName;
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 	public Date getDate() {
@@ -202,12 +115,31 @@ public abstract class AbstractMessage {
 		this.date = date;
 	}
 
+	/**
+	 * Get the flags associated by this message. Note that the flags initially are set to the
+	 * default message flags of its type. For incoming messages, these flags are set to the actual
+	 * flags of the received message.
+	 */
 	public int getMessageFlags() {
 		return messageFlags;
 	}
 
+	/**
+	 * Set the message flags. Note that for outgoing messages this is not necessary, as the flags
+	 * are set to the default flags initially.
+	 */
 	public void setMessageFlags(int messageFlags) {
 		this.messageFlags = messageFlags;
+	}
+
+	/**
+	 * Check whether the message has the given flags.
+	 *
+	 * @param messageFlags the flags that are checked
+	 * @return true if all the flags are set, false if at least one is missing
+	 */
+	public boolean hasFlags(int messageFlags) {
+		return (this.messageFlags & messageFlags) != 0;
 	}
 
 	/**
@@ -217,7 +149,7 @@ public abstract class AbstractMessage {
 	 *
 	 * @return the message flags that are set by default for the specific message type
 	 */
-	public int getMessageTypeDefaultFlags() {
+	private int getMessageTypeDefaultFlags() {
 		return (flagSendPush() ? ProtocolDefines.MESSAGE_FLAG_SEND_PUSH : 0)
 			| (flagNoServerQueuing() ? ProtocolDefines.MESSAGE_FLAG_NO_SERVER_QUEUING : 0)
 			| (flagNoServerAck() ? ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK : 0)

@@ -169,7 +169,6 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
         if (ConfigUtils.isWorkBuild()) {
             workLicensePreference.summary = preferenceService.licenseUsername
-            preferenceScreen.removePreference(getPref("pref_key_feedback_header"))
             if (ConfigUtils.isWorkRestricted()) {
                 val readonly = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__readonly_profile))
                 if (readonly != null && readonly) {

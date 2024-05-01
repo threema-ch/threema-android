@@ -377,7 +377,7 @@ public class MarkupParser {
 	public void markify(SpannableStringBuilder builder) {
 		try {
 			parse(tokenize(builder), builder, null, 0);
-		} catch (MarkupParserException e) {
+		} catch (Exception e) {
 			//
 		}
 	}
@@ -390,7 +390,7 @@ public class MarkupParser {
 	public void markify(Editable editable, @ColorInt int markerColor) {
 		try {
 			parse(tokenize(editable), null, editable, markerColor);
-		} catch (MarkupParserException e) {
+		} catch (Exception e) {
 			//
 		}
 	}

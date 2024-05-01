@@ -43,7 +43,6 @@ public class AvatarGlideModule extends AppGlideModule {
 
 	@Override
 	public void applyOptions(@NonNull Context context, @NonNull GlideBuilder builder) {
-		builder.setSourceExecutor(GlideExecutor.newSourceBuilder().setThreadCount(4).build());
 		builder.setDefaultRequestOptions(new RequestOptions().format(DecodeFormat.PREFER_RGB_565));
 	}
 
@@ -52,6 +51,6 @@ public class AvatarGlideModule extends AppGlideModule {
 		registry.prepend(AvatarCacheServiceImpl.ContactAvatarConfig.class, Bitmap.class, new ContactAvatarModelLoaderFactory(context));
 		registry.prepend(AvatarCacheServiceImpl.GroupAvatarConfig.class, Bitmap.class, new GroupAvatarModelLoaderFactory(context));
 		registry.prepend(AvatarCacheServiceImpl.DistributionListAvatarConfig.class, Bitmap.class, new DistributionListAvatarModelLoaderFactory(context));
-		registry.prepend(AbstractMessageModel.class, Bitmap.class, new ThumbnailLoaderFactory(context));
+		registry.prepend(AbstractMessageModel.class, Bitmap.class, new ThumbnailLoaderFactory());
 	}
 }

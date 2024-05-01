@@ -43,7 +43,7 @@ import ch.threema.base.utils.LoggingUtil;
 /**
  * add profile pic field to normal, group and distribution list message models
  */
-public class SystemUpdateToVersion43 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion43 implements UpdateSystemService.SystemUpdate {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion43");
 
 	private final SQLiteDatabase sqLiteDatabase;
@@ -58,7 +58,7 @@ public class SystemUpdateToVersion43 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager == null) {
 			logger.error("update script 43 failed, no service manager available");

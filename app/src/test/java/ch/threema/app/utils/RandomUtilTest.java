@@ -24,20 +24,10 @@ package ch.threema.app.utils;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import androidx.annotation.NonNull;
-import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
-import java8.util.stream.Collectors;
-import java8.util.stream.StreamSupport;
-
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 public class RandomUtilTest {
@@ -82,25 +72,6 @@ public class RandomUtilTest {
 		for (int i = 0; i < 10000; i++) {
 			assertTrue(RandomUtil.generateRandomU32() >= 0);
 			assertTrue(RandomUtil.generateRandomU32() < (1L<<32));
-		}
-	}
-
-	@Test
-	public void generateRandomString() {
-		for (int i = 1; i < 20; i++) {
-			final String s = RandomUtil.generateInsecureRandomAsciiString(i);
-
-			// Ensure correct length
-			assertEquals(i, s.length());
-
-			// Ensure that not all characters are identical
-			if (i >= 3) {
-				Set<Character> chars = new HashSet<>();
-				for (char c : s.toCharArray()) {
-					chars.add(c);
-				}
-				assertTrue(chars.size() > 1);
-			}
 		}
 	}
 }

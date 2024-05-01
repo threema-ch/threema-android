@@ -66,7 +66,6 @@ quan arribi el primer missatge.</string>
     <string name="prefs_inapp_vibrate">Vibració des de l\'aplicació</string>
     <string name="prefs_inapp_vibrate_on">Vibrar quan es rebin missatges</string>
     <string name="prefs_inapp_vibrate_off">No vibrar quan es rebin missatges</string>
-    <string name="workarounds">Solucions</string>
     <string name="prefs_logging">Registre</string>
     <string name="prefs_title_message_log_switch">Registra a fitxer</string>
     <string name="prefs_title_sum_message_log_on">Esdeveniments i informació de xarxa es registraran al fitxer debug_log.txt</string>
@@ -1052,7 +1051,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_working_days_enable_title">Política fora d\'horari</string>
     <string name="prefs_working_days_enable_sum">Desactivar notificacions i rebutjar trucades fora de les hores de treball</string>
     <string name="work_life_dnd_active">Fora d\'horari actiu</string>
-    <string name="pencil">Llapis</string>
     <string name="warning">Avís</string>
     <string name="password_remember_warning">Recordeu el que entreu aquí! Com que %s no desa cap contrasenya als servidors no podrem ajudar-vos si oblideu el vostre PIN o contrasenya.</string>
     <string name="safe_backup_tap_to_restart">Toqueu a la notificació del sistema mostrada per reiniciar l\'aplicació. Si no veieu la notificació arrossegueu avall la barra de notificacions del vostre telèfon.</string>
@@ -1075,7 +1073,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="tooltip_voip_turn_on_camera">Toqueu aquí per activar la càmera</string>
     <string name="prefs_videocall_profile_explain">La qualitat de la imatge actual depèn de la xarxa i de la configuració de la persona amb qui esteu parlant</string>
     <string name="permission_camera_videocall_required">Per videotrucades, permeteu l\'accés a la càmera</string>
-    <string name="feedback">Comentaris</string>
     <string name="tooltip_voip_enable_speakerphone">Toqueu aquí per activar l\'altaveu</string>
     <string name="ballot_open">Enquestes obertes</string>
     <string name="translators">Traductors</string>
@@ -1139,6 +1136,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="notes">Notes</string>
     <string name="blur_faces">Difuminar cares</string>
     <string name="brush">Raspall</string>
+    <string name="pencil">Llapis</string>
     <string name="error_detecting_faces">Error detectant les cares</string>
     <string name="no_faces_detected">No s\'han detectat cares</string>
     <string name="smiley">Emoticona</string>
@@ -1212,7 +1210,11 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="group_link_rename">Renombrar</string>
     <string name="group_link_rename_tag">Nom nou</string>
     <string name="tap_here_for_more">Toqueu aquí per a més informació</string>
-    <string name="another_connection_instructions"><![CDATA[El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de Threema.<br><br>No es pot utilitzar la mateixa ID de Threema simultàniament en diversos dispositius. Els missatges nous només es transmetran a l\'últim dispositiu que ha iniciat sessió al servidor.<br><br>Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al dispositiu antic i llavors reinicieu el nou.]]></string>
+    <string name="another_connection_instructions"><![CDATA[El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de Threema.
+
+No es pot utilitzar la mateixa ID de Threema simultàniament en diversos dispositius. Els missatges nous només es transmetran a l\'últim dispositiu que ha iniciat sessió al servidor.
+
+Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al dispositiu antic i llavors reinicieu el nou.]]></string>
     <string name="app_store_error_code">Codi d\'error de la botiga d\'Apps: %d</string>
     <string name="backup_restore_type"><![CDATA[Quin tipus de còpia de seguretat voleu restaurar?<br/><br/><a href=%s>Apreneu-ne més sobre còpies de seguretat a Threema</a>]]></string>
     <string name="data_backup_info">Restaurar-ho tot incloent xats</string>

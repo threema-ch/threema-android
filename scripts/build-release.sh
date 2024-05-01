@@ -204,7 +204,7 @@ for variant in "${variant_array[@]}"; do
         run_command+=" -v \"$keystore_realpath:/keystore\""
     fi
     run_command+=" \"$DOCKERIMAGE:$app_version_code\""
-    run_command+=" /bin/bash -c \"cd /code && ./gradlew clean $target\""
+    run_command+=" /bin/bash -c \"cd /code && ./gradlew clean -PbuildUniversalApk $target\""
     eval "$run_command"
 
     # Copy files
@@ -212,7 +212,7 @@ for variant in "${variant_array[@]}"; do
     mkdir -p "$targetdir/$variant/"{logs,mapping}/
     for f in "$DIR"/../app/build/outputs/apk/"$variant_dir"/release/*; do
         log_minor "$(basename "$f")"
-        cp "$f" "$targetdir/$variant/"
+        cp -r "$f" "$targetdir/$variant/"
     done
     for f in "$DIR"/../app/build/outputs/logs/*"$variant_dir"*; do
         log_minor "$(basename "$f")"

@@ -99,9 +99,9 @@ public class BackgroundErrorNotification {
 				supportChannelText.append(exception).append(separator);
 			}
 			supportChannelText.append("My phone model: ")
-				.append(ConfigUtils.getSupportDeviceInfo(appContext));
+				.append(ConfigUtils.getSupportDeviceInfo());
 			supportChannelText.append("\nMy app version: ")
-				.append(ConfigUtils.getAppVersion(appContext));
+				.append(ConfigUtils.getAppVersion());
 			supportChannelText.append("\nMy app language: ")
 				.append(LocaleUtil.getAppLanguage());
 

@@ -22,19 +22,28 @@
 package ch.threema.app.preference;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+
+import androidx.annotation.NonNull;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.RateDialog;
+import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.ThreemaApplication.getAppContext;
 
 public class SettingsRateFragment extends ThreemaPreferenceFragment implements RateDialog.RateDialogClickListener, GenericAlertDialog.DialogClickListener {
+
+	private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsRateFragment");
 
 	private static final String DIALOG_TAG_RATE = "rate";
 	private static final String DIALOG_TAG_RATE_ON_GOOGLE_PLAY = "ratep";
@@ -59,7 +68,7 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 
 	@Override
 	public void onYes(String tag, final int rating, final String text) {
-		if (rating >= 4 && (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE || BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.NONE)) {
+		if (rating >= 4 && shouldRedirectToGooglePlay(BuildFlavor.getLicenseType())) {
 			GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.rate_title,
 					getString(R.string.rate_thank_you) + " " +
 							getString(R.string.rate_forward_to_play_store) ,
@@ -106,6 +115,41 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 	private void onBackPressed() {
 		if (getActivity() != null) {
 			getActivity().onBackPressed();
+		}
+	}
+
+	private boolean shouldRedirectToGooglePlay(@NonNull BuildFlavor.LicenseType licenseType) {
+		switch (licenseType) {
+			case GOOGLE:
+			case NONE:
+				return true;
+			case GOOGLE_WORK:
+				return isInstalledFromPlayStore();
+			default:
+				return false;
+		}
+	}
+
+	private boolean isInstalledFromPlayStore() {
+		Context context = getAppContext();
+		if (context == null) {
+			logger.warn("Could not get app context.");
+			return false;
+		}
+
+		try {
+			String installerPackageName;
+			PackageManager packageManager = context.getPackageManager();
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+				installerPackageName = packageManager.getInstallSourceInfo(context.getPackageName()).getInstallingPackageName();
+			} else {
+				installerPackageName = packageManager.getInstallerPackageName(context.getPackageName());
+			}
+
+			return "com.android.vending".equals(installerPackageName);
+		} catch (Exception e) {
+			logger.error("Could not determine package source", e);
+			return false;
 		}
 	}
 }

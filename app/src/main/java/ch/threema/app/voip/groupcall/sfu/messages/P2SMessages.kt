@@ -22,6 +22,7 @@
 package ch.threema.app.voip.groupcall.sfu.messages
 
 import ch.threema.app.voip.groupcall.sfu.ParticipantId
+import ch.threema.base.utils.SecureRandomUtil.generateRandomProtobufPadding
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.groupcall.ParticipantToSfu
 import com.google.protobuf.ByteString
@@ -34,7 +35,7 @@ sealed class P2SMessage {
 
         // Omit padding for p2p messages as these are already padded
         if (this !is P2POuterEnvelope) {
-            builder.padding = createRandomPadding()
+            builder.padding = generateRandomProtobufPadding()
         }
 
         return builder.build()

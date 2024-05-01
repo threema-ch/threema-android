@@ -27,7 +27,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.UiThread;
 import ch.threema.app.R;
-import ch.threema.domain.protocol.csp.connection.ConnectionState;
+import ch.threema.domain.protocol.connection.ConnectionState;
 
 public class ConnectionIndicatorUtil {
 	private static ConnectionIndicatorUtil ourInstance;

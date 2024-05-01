@@ -21,9 +21,13 @@
 
 package ch.threema.app.messagereceiver;
 
+import java.util.Collection;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
+import ch.threema.domain.models.MessageId;
 import ch.threema.storage.models.MessageModel;
 
 public class DistributionListContactMessageReceiver extends ContactMessageReceiver {
@@ -41,16 +45,18 @@ public class DistributionListContactMessageReceiver extends ContactMessageReceiv
 	}
 
 	@Override
-	public boolean createBoxedFileMessage(
-		byte[] thumbnailBlobIdIgnored,
-		byte[] fileBlobIdIgnored,
-		SymmetricEncryptionResult encryptionResultIgnored,
-		MessageModel messageModel
-	) throws ThreemaException {
+	public void createAndSendFileMessage(
+		@Nullable byte[] thumbnailBlobIdIgnored,
+		@Nullable byte[] fileBlobIdIgnored,
+		@Nullable SymmetricEncryptionResult encryptionResultIgnored,
+		@NonNull MessageModel messageModel,
+		@Nullable MessageId messageId,
+		@Nullable Collection<String> recipientIdentities
+		) throws ThreemaException {
 		if (fileBlobId == null || fileEncryptionResult == null) {
 			throw new ThreemaException("Required values have not been set by responsible DistributionListMessageReceiver");
 		}
-		return super.createBoxedFileMessage(thumbnailBlobId, fileBlobId, fileEncryptionResult, messageModel);
+		super.createAndSendFileMessage(thumbnailBlobId, fileBlobId, fileEncryptionResult, messageModel, messageId, recipientIdentities);
 	}
 
 	public void setFileMessageParameters(

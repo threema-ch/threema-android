@@ -11,9 +11,9 @@ buildscript {
         flatDir { dirs 'app/libs' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.2' // TODO(ANDR-2795): Upgrade to current gradle version
-        classpath 'org.owasp:dependency-check-gradle:6.5.3'
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.18' // TODO(ANDR-2781): update to newer version
+        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath 'org.owasp:dependency-check-gradle:9.0.2'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
 
         // Huawei agconnect plugin
         classpath 'com.huawei.agconnect:agcp-1.9.1.301'
@@ -59,8 +59,15 @@ allprojects {
     dependencyCheck {
         skipConfigurations += 'lintClassPath'
         suppressionFile 'dependencyCheckSuppressions.xml'
+
         // Fail dependency check if any dependency has a CVE with a score of 3+
         failBuildOnCVSS 3
+
+        // NVD API config. The key is not very secret, but please don't mis-use it.
+        nvd {
+            apiKey = "b3be22b7-f7e3-47ca-9b9f-3725c75a1aa4"
+            validForHours = 6
+        }
     }
 
     group = 'ch.threema'

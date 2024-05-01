@@ -332,11 +332,6 @@ internal class GroupCallSessionDescription(
             lines.add("a=rtcp-rsize")
         }
 
-        // Add msid if remote participant
-        if (type == DirectionType.REMOTE) {
-            lines.add("a=msid:- ${mid.mid}")
-        }
-
         // Add codec-specific lines
         for ((name, codec) in codecs) {
             lines.add("a=rtpmap:${codec.payloadType} ${name}/${codec.parameters.joinToString("/")}")
@@ -380,6 +375,7 @@ internal class GroupCallSessionDescription(
             "s=-",
             "t=0 0",
             "a=group:BUNDLE ${bundle.joinToString(" ") { it.mid }}",
+            "a=msid-semantic: WMS *",
             "a=ice-ufrag:${init.parameters.iceParameters.usernameFragment}",
             "a=ice-pwd:${init.parameters.iceParameters.password}",
             "a=ice-options:trickle",

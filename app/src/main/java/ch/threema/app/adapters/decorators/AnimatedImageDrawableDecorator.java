@@ -92,7 +92,8 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
 					case ControllerView.STATUS_PROGRESSING:
 						if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.TRANSCODING ||
 							getMessageModel().getState() == MessageState.PENDING ||
-							getMessageModel().getState() == MessageState.SENDING)) {
+							getMessageModel().getState() == MessageState.SENDING ||
+							getMessageModel().getState() == MessageState.UPLOADING)) {
 							getMessageService().remove(getMessageModel());
 						} else {
 							animatedImageDrawableMessagePlayer.cancel();
@@ -226,6 +227,7 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
 					holder.controller.setTranscoding();
 					break;
 				case PENDING:
+				case UPLOADING:
 				case SENDING:
 					holder.controller.setProgressing();
 					break;

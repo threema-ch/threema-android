@@ -69,6 +69,7 @@ public class StateBitmapUtil {
 		this.messageStateBitmapResourceIds.put(MessageState.USERDEC, R.drawable.ic_thumb_down_filled);
 		this.messageStateBitmapResourceIds.put(MessageState.SENDING, R.drawable.ic_upload_filled);
 		this.messageStateBitmapResourceIds.put(MessageState.PENDING, R.drawable.ic_upload_filled);
+		this.messageStateBitmapResourceIds.put(MessageState.UPLOADING, R.drawable.ic_upload_filled);
 		this.messageStateBitmapResourceIds.put(MessageState.TRANSCODING, R.drawable.ic_outline_hourglass_top_24);
 		this.messageStateBitmapResourceIds.put(MessageState.CONSUMED, R.drawable.ic_baseline_hearing_24);
 		this.messageStateBitmapResourceIds.put(MessageState.FS_KEY_MISMATCH, R.drawable.ic_baseline_key_off_24);
@@ -81,6 +82,7 @@ public class StateBitmapUtil {
 		this.messageStateDescriptionMap.put(MessageState.USERDEC, R.string.state_dec);
 		this.messageStateDescriptionMap.put(MessageState.SENDING, R.string.state_sending);
 		this.messageStateDescriptionMap.put(MessageState.PENDING, R.string.state_pending);
+		this.messageStateDescriptionMap.put(MessageState.UPLOADING, R.string.state_sending);
 		this.messageStateDescriptionMap.put(MessageState.TRANSCODING, R.string.state_processing);
 		this.messageStateDescriptionMap.put(MessageState.CONSUMED, R.string.listened_to);
 		this.messageStateDescriptionMap.put(MessageState.FS_KEY_MISMATCH, R.string.fs_key_mismatch);
@@ -103,7 +105,11 @@ public class StateBitmapUtil {
 			Integer resId = this.messageStateBitmapResourceIds.get(state);
 
 			if (resId != null && ViewUtil.showAndSet(imageView, resId)) {
-				imageView.setContentDescription(context.getString(this.messageStateDescriptionMap.get(state)));
+
+				Integer stateDescription = this.messageStateDescriptionMap.get(state);
+				if (stateDescription != null) {
+					imageView.setContentDescription(context.getString(stateDescription));
+				}
 
 				if (state == MessageState.SENDFAILED || state == MessageState.FS_KEY_MISMATCH) {
 					imageView.setImageTintList(null);

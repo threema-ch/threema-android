@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -41,6 +42,7 @@ import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class WizardFragment2 extends WizardFragment {
 	private EditText nicknameText;
@@ -82,6 +84,7 @@ public class WizardFragment2 extends WizardFragment {
 					}
 				}
 			});
+			nicknameText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(ProtocolDefines.PUSH_FROM_LEN)});
 		}
 		this.nicknameText.setOnKeyListener((v, keyCode, event) -> {
 			if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {

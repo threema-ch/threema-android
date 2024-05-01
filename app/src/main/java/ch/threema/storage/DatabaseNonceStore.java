@@ -40,19 +40,18 @@ import org.slf4j.Logger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import ch.threema.base.crypto.NonceStoreInterface;
+import ch.threema.base.crypto.NonceStore;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.stores.IdentityStoreInterface;
 
 public class DatabaseNonceStore extends SQLiteOpenHelper
-	implements NonceStoreInterface  {
+	implements NonceStore {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("NonceDatabaseBlobService");
 
 	public static final String DATABASE_NAME_V4 = "threema-nonce-blob4.db";
@@ -150,25 +149,32 @@ public class DatabaseNonceStore extends SQLiteOpenHelper
 		return size;
 	}
 
+	@NonNull
+	@Override
+	public List<byte[]> getAllHashedNonces() {
+		int nonceCount = (int) getCount();
+		List<byte[]> nonces = new ArrayList<>(nonceCount);
+		addHashedNonceChunk(nonceCount, 0, nonces);
+		return nonces;
+	}
+
 	/**
-	 * Get the hashed nonces of the provided chunk in their hex string representation.
-	 * See {@link Utils#byteArrayToHexString(byte[])} for more information about their
-	 * representation.
+	 * Get the hashed nonces of the provided chunk in their byte array representation.
 	 *
 	 * @param chunkSize the number of nonces that is returned
 	 * @param offset    the offset where reading the nonces starts
-	 * @return a list of the hashed nonces in their hex string representation.
+	 * @return a list of the hashed nonces in their byte array representation.
 	 */
-	public void addHashedNonceChunk(int chunkSize, int offset, List<String> nonces) {
+	public void addHashedNonceChunk(int chunkSize, int offset, List<byte[]> nonces) {
 		Cursor c = this.getReadableDatabase().rawQuery(
 			"SELECT `nonce` FROM `threema_nonce` LIMIT ? OFFSET ?",
 			new String[]{String.valueOf(chunkSize), String.valueOf(offset)}
-		);
+	);
 		if (c != null) {
 			if (c.moveToFirst()) {
 				int columnIndex = c.getColumnIndex("nonce");
 				do {
-					nonces.add(Utils.byteArrayToHexString(c.getBlob(columnIndex)));
+					nonces.add(c.getBlob(columnIndex));
 				} while (c.moveToNext());
 			}
 			c.close();

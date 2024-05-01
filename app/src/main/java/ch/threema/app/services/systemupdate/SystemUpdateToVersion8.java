@@ -41,7 +41,7 @@ public class SystemUpdateToVersion8 implements UpdateSystemService.SystemUpdate 
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

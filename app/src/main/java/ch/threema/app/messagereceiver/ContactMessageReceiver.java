@@ -24,107 +24,94 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import org.slf4j.Logger;
-
-import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.stores.IdentityStore;
-import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.tasks.OutgoingPollSetupMessageTask;
+import ch.threema.app.tasks.OutgoingPollVoteContactMessageTask;
+import ch.threema.app.tasks.OutgoingContactDeliveryReceiptMessageTask;
+import ch.threema.app.tasks.OutgoingFileMessageTask;
+import ch.threema.app.tasks.OutgoingLocationMessageTask;
+import ch.threema.app.tasks.OutgoingTextMessageTask;
+import ch.threema.app.tasks.OutgoingTypingIndicatorMessageTask;
+import ch.threema.app.tasks.OutgoingVoipCallAnswerMessageTask;
+import ch.threema.app.tasks.OutgoingVoipCallHangupMessageTask;
+import ch.threema.app.tasks.OutgoingVoipCallOfferMessageTask;
+import ch.threema.app.tasks.OutgoingVoipCallRingingMessageTask;
+import ch.threema.app.tasks.OutgoingVoipICECandidateMessageTask;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
-import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
-import ch.threema.domain.protocol.ThreemaFeature;
-import ch.threema.domain.protocol.csp.coders.MessageBox;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
-import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
-import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
-import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
-import ch.threema.domain.protocol.csp.messages.ContactDeleteProfilePictureMessage;
-import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
-import ch.threema.domain.protocol.csp.messages.ContactSetProfilePictureMessage;
-import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
-import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
-import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
-import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteMessage;
-import ch.threema.domain.protocol.csp.messages.file.FileData;
-import ch.threema.domain.protocol.csp.messages.file.FileMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
-import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData;
-import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
-import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
-import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
-import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
+import ch.threema.domain.taskmanager.ActiveTaskCodec;
+import ch.threema.domain.taskmanager.Task;
+import ch.threema.domain.taskmanager.TaskManager;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
-import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactMessageReceiver");
-
 	private final ContactModel contactModel;
 	private final ContactService contactService;
 	private Bitmap avatar = null;
+	@NonNull
+	private final ServiceManager serviceManager;
 	private final DatabaseServiceNew databaseServiceNew;
-	private final MessageQueue messageQueue;
 	private final IdentityStore identityStore;
 	private final IdListService blackListIdentityService;
-	private final ForwardSecurityMessageProcessor fsmp;
+	private final @NonNull TaskManager taskManager;
 
 	public ContactMessageReceiver(ContactModel contactModel,
-								  ContactService contactService,
-								  DatabaseServiceNew databaseServiceNew,
-								  MessageQueue messageQueue,
-								  IdentityStore identityStore,
-								  IdListService blackListIdentityService,
-	                              ForwardSecurityMessageProcessor fsmp) {
+	                              ContactService contactService,
+	                              @NonNull ServiceManager serviceManager,
+	                              DatabaseServiceNew databaseServiceNew,
+	                              IdentityStore identityStore,
+	                              IdListService blackListIdentityService) {
 		this.contactModel = contactModel;
 		this.contactService = contactService;
+		this.serviceManager = serviceManager;
 		this.databaseServiceNew = databaseServiceNew;
-		this.messageQueue = messageQueue;
 		this.identityStore = identityStore;
 		this.blackListIdentityService = blackListIdentityService;
-		this.fsmp = fsmp;
+		this.taskManager = serviceManager.getTaskManager();
 	}
 
 	protected ContactMessageReceiver(ContactMessageReceiver contactMessageReceiver) {
 		this(
 			contactMessageReceiver.contactModel,
 			contactMessageReceiver.contactService,
+			contactMessageReceiver.serviceManager,
 			contactMessageReceiver.databaseServiceNew,
-			contactMessageReceiver.messageQueue,
 			contactMessageReceiver.identityStore,
-			contactMessageReceiver.blackListIdentityService,
-			contactMessageReceiver.fsmp
+			contactMessageReceiver.blackListIdentityService
 		);
 		avatar = contactMessageReceiver.avatar;
 	}
@@ -168,112 +155,145 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	}
 
 	@Override
-	public boolean createBoxedTextMessage(String text, MessageModel messageModel) throws ThreemaException {
-		BoxTextMessage innerMsg = new BoxTextMessage();
-		innerMsg.setText(text);
-		innerMsg.setToIdentity(this.contactModel.getIdentity());
+	public void createAndSendTextMessage(@NonNull MessageModel messageModel) {
+		// Create and assign a new message id
+		messageModel.setApiMessageId(new MessageId().toString());
+		saveLocalModel(messageModel);
 
-		MessageBox boxmsg = wrapAndEnqueueMessage(innerMsg, messageModel);
-		messageModel.setIsQueued(true);
-		MessageId id = boxmsg.getMessageId();
+		// Mark the contact as non-hidden and unarchived
+		contactService.setIsHidden(contactModel.getIdentity(), false);
+		contactService.setIsArchived(contactModel.getIdentity(), false);
 
-		if (id != null) {
-			messageModel.setApiMessageId(id.toString());
-			contactService.setIsHidden(innerMsg.getToIdentity(), false);
-			contactService.setIsArchived(innerMsg.getToIdentity(), false);
-			return true;
-		}
-		logger.error("createBoxedTextMessage failed");
-		return false;
+		bumpLastUpdate();
+
+		// Schedule outgoing text message task
+		scheduleTask(new OutgoingTextMessageTask(
+			messageModel.getId(),
+			Type_CONTACT,
+			Set.of(messageModel.getIdentity()),
+			serviceManager
+		));
+	}
+
+	public void resendTextMessage(@NonNull MessageModel messageModel) {
+		contactService.setIsHidden(contactModel.getIdentity(), false);
+		contactService.setIsArchived(contactModel.getIdentity(), false);
+
+		scheduleTask(new OutgoingTextMessageTask(
+			messageModel.getId(),
+			Type_CONTACT,
+			Set.of(messageModel.getIdentity()),
+			serviceManager
+		));
 	}
 
 	@Override
-	public boolean createBoxedLocationMessage(@NonNull MessageModel messageModel) throws ThreemaException {
+	public void createAndSendLocationMessage(@NonNull MessageModel messageModel) {
+		// Create and assign a new message id
+		messageModel.setApiMessageId(new MessageId().toString());
+		saveLocalModel(messageModel);
 
-		LocationDataModel locationDataModel = messageModel.getLocationData();
+		// Mark the contact as non-hidden and unarchived
+		contactService.setIsHidden(contactModel.getIdentity(), false);
+		contactService.setIsArchived(contactModel.getIdentity(), false);
 
-		BoxLocationMessage innerMsg = new BoxLocationMessage();
-		innerMsg.setLatitude(locationDataModel.getLatitude());
-		innerMsg.setLongitude(locationDataModel.getLongitude());
-		innerMsg.setAccuracy(locationDataModel.getAccuracy());
-		innerMsg.setToIdentity(contactModel.getIdentity());
-		innerMsg.setPoiName(locationDataModel.getPoi());
-		innerMsg.setPoiAddress(locationDataModel.getAddress());
+		bumpLastUpdate();
 
-		MessageBox boxmsg = wrapAndEnqueueMessage(innerMsg, messageModel);
-		messageModel.setIsQueued(true);
-		MessageId id = boxmsg.getMessageId();
-		if (id != null) {
-			messageModel.setApiMessageId(id.toString());
-			contactService.setIsHidden(innerMsg.getToIdentity(), false);
-			contactService.setIsArchived(innerMsg.getToIdentity(), false);
-			return true;
-		}
-		return false;
+		// Schedule outgoing text message task
+		scheduleTask(new OutgoingLocationMessageTask(
+			messageModel.getId(),
+			Type_CONTACT,
+			Set.of(messageModel.getIdentity()),
+			serviceManager
+		));
+	}
+
+	public void resendLocationMessage(@NonNull MessageModel messageModel) {
+		// Mark the contact as non-hidden and unarchived
+		contactService.setIsHidden(contactModel.getIdentity(), false);
+		contactService.setIsArchived(contactModel.getIdentity(), false);
+
+		// Schedule outgoing text message task
+		scheduleTask(new OutgoingLocationMessageTask(
+			messageModel.getId(),
+			Type_CONTACT,
+			Set.of(messageModel.getIdentity()),
+			serviceManager
+		));
 	}
 
 	@Override
-	public boolean createBoxedFileMessage(
-		byte[] thumbnailBlobId,
-		byte[] fileBlobId,
-		SymmetricEncryptionResult encryptionResult,
-		MessageModel messageModel
+	public void createAndSendFileMessage(
+		@Nullable byte[] thumbnailBlobId,
+		@Nullable byte[] fileBlobId,
+		@Nullable SymmetricEncryptionResult encryptionResult,
+		@NonNull MessageModel messageModel,
+		@Nullable MessageId messageId,
+		@Nullable Collection<String> recipientIdentities
 	) throws ThreemaException {
+		// Enrich file data model with blob id and encryption key
 		FileDataModel modelFileData = messageModel.getFileData();
-		FileMessage fileMessage = new FileMessage();
-		FileData fileData = new FileData();
-		fileData
-				.setFileBlobId(fileBlobId)
-				.setThumbnailBlobId(thumbnailBlobId)
-				.setEncryptionKey(encryptionResult.getKey())
-				.setMimeType(modelFileData.getMimeType())
-				.setThumbnailMimeType(modelFileData.getThumbnailMimeType())
-				.setFileSize(modelFileData.getFileSize())
-				.setFileName(modelFileData.getFileName())
-				.setRenderingType(modelFileData.getRenderingType())
-				.setCaption(modelFileData.getCaption())
-				.setCorrelationId(messageModel.getCorrelationId())
-				.setMetaData(modelFileData.getMetaData());
-
-		fileMessage.setData(fileData);
-		fileMessage.setToIdentity(contactModel.getIdentity());
-
-		MessageBox messageBox = wrapAndEnqueueMessage(fileMessage, messageModel);
-		messageModel.setIsQueued(true);
-		MessageId id = messageBox.getMessageId();
-		if (id != null) {
-			messageModel.setApiMessageId(id.toString());
-			contactService.setIsHidden(fileMessage.getToIdentity(), false);
-			contactService.setIsArchived(fileMessage.getToIdentity(), false);
-			return true;
+		modelFileData.setBlobId(fileBlobId);
+		if (encryptionResult != null) {
+			modelFileData.setEncryptionKey(encryptionResult.getKey());
 		}
-		return false;
+
+		// Create a new message id if the given message id is null
+		messageModel.setApiMessageId(messageId != null ? messageId.toString() : new MessageId().toString());
+		saveLocalModel(messageModel);
+
+		// Mark the contact as non-hidden and unarchived
+		contactService.setIsHidden(contactModel.getIdentity(), false);
+		contactService.setIsArchived(contactModel.getIdentity(), false);
+
+		// Note that lastUpdate lastUpdate was bumped when the file message was created
+
+		// Schedule outgoing text message task
+		scheduleTask(new OutgoingFileMessageTask(
+			messageModel.getId(),
+			Type_CONTACT,
+			Set.of(messageModel.getIdentity()),
+			thumbnailBlobId,
+			serviceManager
+		));
 	}
 
 	@Override
-	public void createBoxedBallotMessage(
-											BallotData ballotData,
-											BallotModel ballotModel,
-											final String[] filteredIdentities,
-											MessageModel messageModel) throws ThreemaException {
+	public void createAndSendBallotSetupMessage(
+		BallotData ballotData,
+		BallotModel ballotModel,
+		MessageModel messageModel,
+		@Nullable MessageId messageId,
+		@Nullable Collection<String> recipientIdentities
+	) throws ThreemaException {
+		// Create a new message id if the given message id is null
+		messageModel.setApiMessageId(messageId != null ? messageId.toString() : new MessageId().toString());
+		saveLocalModel(messageModel);
 
 		final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
-		BallotCreateMessage innerMsg = new BallotCreateMessage();
-		innerMsg.setToIdentity(contactModel.getIdentity());
-		innerMsg.setBallotCreator(identityStore.getIdentity());
-		innerMsg.setBallotId(ballotId);
-		innerMsg.setData(ballotData);
+		// Mark the contact as non-hidden and unarchived
+		contactService.setIsHidden(contactModel.getIdentity(), false);
+		contactService.setIsArchived(contactModel.getIdentity(), false);
 
-		MessageBox messageBox = wrapAndEnqueueMessage(innerMsg, messageModel);
-		messageModel.setIsQueued(true);
-		messageModel.setApiMessageId(messageBox.getMessageId().toString());
-		contactService.setIsHidden(innerMsg.getToIdentity(), false);
-		contactService.setIsArchived(innerMsg.getToIdentity(), false);
+		bumpLastUpdate();
+
+		// Schedule outgoing text message task
+		scheduleTask(new OutgoingPollSetupMessageTask(
+			messageModel.getId(),
+			Type_CONTACT,
+			Set.of(messageModel.getIdentity()),
+			ballotId,
+			ballotData,
+			serviceManager
+		));
 	}
 
 	@Override
-	public void createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException {
+	public void createAndSendBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException {
+		// Create message id
+		MessageId messageId = new MessageId();
+
 		final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
 		if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE) {
@@ -283,18 +303,19 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 			}
 		}
 
-		BallotVoteMessage innerMsg = new BallotVoteMessage();
+		// Mark the contact as non-hidden and unarchived
+		contactService.setIsHidden(contactModel.getIdentity(), false);
+		contactService.setIsArchived(contactModel.getIdentity(), false);
 
-		innerMsg.setBallotCreator(ballotModel.getCreatorIdentity());
-		innerMsg.setBallotId(ballotId);
-		innerMsg.setToIdentity(getContact().getIdentity());
-		for(BallotVote v: votes) {
-			innerMsg.getBallotVotes().add(v);
-		}
-
-		wrapAndEnqueueMessage(innerMsg, null);
-		contactService.setIsHidden(innerMsg.getToIdentity(), false);
-		contactService.setIsArchived(innerMsg.getToIdentity(), false);
+		// Schedule outgoing text message task
+		scheduleTask(new OutgoingPollVoteContactMessageTask(
+			messageId,
+			ballotId,
+			ballotModel.getCreatorIdentity(),
+			votes,
+			contactModel.getIdentity(),
+			serviceManager
+		));
 	}
 
 	/**
@@ -304,49 +325,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	 * @throws ThreemaException if enqueuing the message fails
 	 */
 	public void sendTypingIndicatorMessage(boolean isTyping) throws ThreemaException {
-		TypingIndicatorMessage typingIndicatorMessage = new TypingIndicatorMessage();
-		typingIndicatorMessage.setTyping(isTyping);
-		typingIndicatorMessage.setToIdentity(contactModel.getIdentity());
-		wrapAndEnqueueMessage(typingIndicatorMessage, null);
-	}
-
-	/**
-	 * Send request profile picture message to the receiver.
-	 *
-	 * @throws ThreemaException if enqueuing the message fails
-	 */
-	public void sendRequestProfilePictureMessage() throws ThreemaException {
-		ContactRequestProfilePictureMessage msg = new ContactRequestProfilePictureMessage();
-		msg.setToIdentity(contactModel.getIdentity());
-		wrapAndEnqueueMessage(msg, null);
-	}
-
-	/**
-	 * Send a set profile picture message to the receiver.
-	 *
-	 * @param data the profile picture upload data
-	 * @throws ThreemaException if enqueuing the message fails
-	 */
-	public void sendSetProfilePictureMessage(@NonNull ContactService.ProfilePictureUploadData data) throws ThreemaException {
-		ContactSetProfilePictureMessage msg = new ContactSetProfilePictureMessage();
-		msg.setBlobId(data.blobId);
-		msg.setEncryptionKey(data.encryptionKey);
-		msg.setSize(data.size);
-		msg.setToIdentity(contactModel.getIdentity());
-
-		wrapAndEnqueueMessage(msg, null);
-	}
-
-	/**
-	 * Send a delete profile picture message to the receiver.
-	 *
-	 * @throws ThreemaException if enqueuing the message fails
-	 */
-	public void sendDeleteProfilePictureMessage() throws ThreemaException {
-		ContactDeleteProfilePictureMessage msg = new ContactDeleteProfilePictureMessage();
-		msg.setToIdentity(contactModel.getIdentity());
-
-		wrapAndEnqueueMessage(msg, null);
+		scheduleTask(new OutgoingTypingIndicatorMessageTask(isTyping, contactModel.getIdentity(), serviceManager));
 	}
 
 	/**
@@ -354,99 +333,92 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	 *
 	 * @param receiptType the type of the delivery receipt
 	 * @param messageIds  the message ids
-	 * @throws ThreemaException if enqueuing the message fails
 	 */
-	public void sendDeliveryReceipt(int receiptType, @NonNull MessageId[] messageIds) throws ThreemaException {
-		DeliveryReceiptMessage receipt = new DeliveryReceiptMessage();
-		receipt.setReceiptType(receiptType);
-		receipt.setReceiptMessageIds(messageIds);
-		receipt.setToIdentity(contactModel.getIdentity());
-
-		wrapAndEnqueueMessage(receipt, null);
+	public void sendDeliveryReceipt(int receiptType, @NonNull MessageId[] messageIds) {
+		scheduleTask(
+			new OutgoingContactDeliveryReceiptMessageTask(
+				receiptType, messageIds, new Date().getTime(), contactModel.getIdentity(), serviceManager
+			)
+		);
 	}
 
 	/**
 	 * Send a voip call offer message to the receiver.
 	 *
 	 * @param callOfferData the call offer data
-	 * @throws ThreemaException if enqueuing the message fails
 	 */
-	public void sendVoipCallOfferMessage(@NonNull VoipCallOfferData callOfferData) throws ThreemaException {
-		VoipCallOfferMessage voipCallOfferMessage = new VoipCallOfferMessage();
-		voipCallOfferMessage.setData(callOfferData);
-		voipCallOfferMessage.setToIdentity(contactModel.getIdentity());
-
-		wrapAndEnqueueMessage(voipCallOfferMessage, null);
+	public void sendVoipCallOfferMessage(@NonNull VoipCallOfferData callOfferData) {
+		scheduleTask(
+			new OutgoingVoipCallOfferMessageTask(
+				callOfferData, contactModel.getIdentity(), serviceManager
+			)
+		);
 	}
 
 	/**
 	 * Send a voip call answer message to the receiver.
 	 *
 	 * @param callAnswerData the call answer data
-	 * @throws ThreemaException if enqueuing the message fails
 	 */
-	public void sendVoipCallAnswerMessage(@NonNull VoipCallAnswerData callAnswerData) throws ThreemaException {
-		VoipCallAnswerMessage voipCallAnswerMessage = new VoipCallAnswerMessage();
-		voipCallAnswerMessage.setData(callAnswerData);
-		voipCallAnswerMessage.setToIdentity(contactModel.getIdentity());
-
-		wrapAndEnqueueMessage(voipCallAnswerMessage, null);
+	public void sendVoipCallAnswerMessage(@NonNull VoipCallAnswerData callAnswerData) {
+		scheduleTask(
+			new OutgoingVoipCallAnswerMessageTask(
+				callAnswerData, contactModel.getIdentity(), serviceManager
+			)
+		);
 	}
 
 	/**
 	 * Send a voip ICE candidates message to the receiver.
 	 *
 	 * @param voipICECandidatesData the voip ICE candidate data
-	 * @throws ThreemaException if enqueuing the message fails
 	 */
-	public void sendVoipICECandidateMessage(@NonNull VoipICECandidatesData voipICECandidatesData) throws ThreemaException {
-		VoipICECandidatesMessage voipICECandidatesMessage = new VoipICECandidatesMessage();
-		voipICECandidatesMessage.setData(voipICECandidatesData);
-		voipICECandidatesMessage.setToIdentity(contactModel.getIdentity());
-
-		wrapAndEnqueueMessage(voipICECandidatesMessage, null);
+	public void sendVoipICECandidateMessage(@NonNull VoipICECandidatesData voipICECandidatesData) {
+		scheduleTask(
+			new OutgoingVoipICECandidateMessageTask(
+				voipICECandidatesData, contactModel.getIdentity(), serviceManager
+			)
+		);
 	}
 
 	/**
 	 * Send a voip call hangup message to the receiver.
 	 *
 	 * @param callHangupData the call hangup data
-	 * @throws ThreemaException if enqueuing the message fails
 	 */
-	public void sendVoipCallHangupMessage(@NonNull VoipCallHangupData callHangupData) throws ThreemaException {
-		VoipCallHangupMessage voipCallHangupMessage = new VoipCallHangupMessage();
-		voipCallHangupMessage.setData(callHangupData);
-		voipCallHangupMessage.setToIdentity(contactModel.getIdentity());
-
-		wrapAndEnqueueMessage(voipCallHangupMessage, null);
+	public void sendVoipCallHangupMessage(@NonNull VoipCallHangupData callHangupData) {
+		scheduleTask(
+			new OutgoingVoipCallHangupMessageTask(
+				callHangupData, contactModel.getIdentity(), serviceManager
+			)
+		);
 	}
 
 	/**
 	 * Send a voip call ringing message to the receiver.
 	 *
 	 * @param callRingingData the call ringing data
-	 * @throws ThreemaException if enqueuing the message fails
 	 */
-	public void sendVoipCallRingingMessage(@NonNull VoipCallRingingData callRingingData) throws ThreemaException {
-		VoipCallRingingMessage voipCallRingingMessage = new VoipCallRingingMessage();
-		voipCallRingingMessage.setToIdentity(contactModel.getIdentity());
-		voipCallRingingMessage.setData(callRingingData);
-
-		wrapAndEnqueueMessage(voipCallRingingMessage, null);
+	public void sendVoipCallRingingMessage(@NonNull VoipCallRingingData callRingingData) {
+		scheduleTask(
+			new OutgoingVoipCallRingingMessageTask(
+				callRingingData, contactModel.getIdentity(), serviceManager
+			)
+		);
 	}
 
 	@Override
 	public List<MessageModel> loadMessages(MessageService.MessageFilter filter) {
 		return databaseServiceNew.getMessageModelFactory().find(
 			contactModel.getIdentity(),
-				filter);
+			filter);
 	}
 
 	/**
 	 * Check if there is a call among the latest calls with the given call id.
 	 *
 	 * @param callId the call id
-	 * @param limit the maximum number of latest calls
+	 * @param limit  the maximum number of latest calls
 	 * @return {@code true} if there is a call with the given id within the latest calls, {@code false} otherwise
 	 */
 	public boolean hasVoipCallStatus(long callId, int limit) {
@@ -503,7 +475,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	@Override
 	@Nullable
 	public Bitmap getNotificationAvatar() {
-		if(avatar == null && contactService != null) {
+		if (avatar == null && contactService != null) {
 			avatar = contactService.getAvatar(contactModel, false);
 		}
 		return avatar;
@@ -512,7 +484,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	@Override
 	@Nullable
 	public Bitmap getAvatar() {
-		if(avatar == null && contactService != null) {
+		if (avatar == null && contactService != null) {
 			avatar = contactService.getAvatar(contactModel, true, true);
 		}
 		return avatar;
@@ -548,10 +520,9 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	@Override
 	public boolean validateSendingPermission(OnSendingPermissionDenied onSendingPermissionDenied) {
 		int cannotSendResId = 0;
-		if(blackListIdentityService.has(contactModel.getIdentity())) {
+		if (blackListIdentityService.has(contactModel.getIdentity())) {
 			cannotSendResId = R.string.blocked_cannot_send;
-		}
-		else {
+		} else {
 			if (contactModel.getState() != null) {
 				switch (contactModel.getState()) {
 					case INVALID:
@@ -566,8 +537,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 			}
 		}
 
-		if(cannotSendResId > 0) {
-			if(onSendingPermissionDenied != null) {
+		if (cannotSendResId > 0) {
+			if (onSendingPermissionDenied != null) {
 				onSendingPermissionDenied.denied(cannotSendResId);
 			}
 			return false;
@@ -584,6 +555,14 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	@Override
 	public String[] getIdentities() {
 		return new String[]{contactModel.getIdentity()};
+	}
+
+	@Override
+	public void bumpLastUpdate() {
+		String identity = contactModel.getIdentity();
+		if (identity != null) {
+			contactService.bumpLastUpdate(identity);
+		}
 	}
 
 	@Override
@@ -604,69 +583,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		return Objects.hash(contactModel);
 	}
 
-	private void initNewAbstractMessage(MessageModel messageModel, AbstractMessage abstractMessage) {
-		if(messageModel != null
-				&& abstractMessage != null
-				&& abstractMessage.getMessageId() != null
-				&& (TestUtil.empty(messageModel.getApiMessageId()) || messageModel.getForwardSecurityMode() != abstractMessage.getForwardSecurityMode())) {
-			messageModel.setApiMessageId(abstractMessage.getMessageId().toString());
-			messageModel.setForwardSecurityMode(abstractMessage.getForwardSecurityMode());
-			saveLocalModel(messageModel);
-		}
-	}
-
-	@NonNull
-	private MessageBox wrapAndEnqueueMessage(@NonNull AbstractMessage innerMsg, @Nullable MessageModel messageModel) throws ThreemaException {
-		// Check whether peer contact supports forward security
-		if (ConfigUtils.isForwardSecurityEnabled() &&
-			ThreemaFeature.canForwardSecurity(this.getContact().getFeatureMask())) {
-
-			// Synchronize FS wrapping and enqueuing to ensure the order stays correct
-			synchronized (fsmp) {
-				AbstractMessage message;
-				try {
-					message = fsmp.makeMessage(this.getContact(), innerMsg);
-					logger.info(
-						"Enqueue FS wrapped message {} of type {} to {}",
-						message.getMessageId(),
-						Utils.byteToHex((byte) innerMsg.getType(), true, true),
-						message.getToIdentity()
-					);
-				} catch (ForwardSecurityMessageProcessor.MessageTypeNotSupportedInSession e) {
-					logger.info(
-						"Message {} for {} of type {} is not supported in FS session with negotiated version {}",
-						innerMsg.getMessageId(),
-						innerMsg.getToIdentity(),
-						Utils.byteToHex((byte) innerMsg.getType(), true, true),
-						e.getNegotiatedVersion()
-					);
-					// If the message is not supported to be sent in the session, then send it
-					// without forward security.
-					message = innerMsg;
-				}
-
-				if (messageModel != null) {
-					// Save model before enqueuing new message (fixes ANDR-512)
-					initNewAbstractMessage(messageModel, message);
-				}
-
-				return messageQueue.enqueue(message);
-			}
-		} else {
-			// No forward security support or not enabled
-			logger.debug("Recipient {} does not support forward security or it is not enabled", innerMsg.getToIdentity());
-
-			if (messageModel != null) {
-				// Save model before enqueuing new message (fixes ANDR-512)
-				initNewAbstractMessage(messageModel, innerMsg);
-			}
-
-			logger.info("Enqueue message {} of type {} to {}",
-				innerMsg.getMessageId(),
-				Utils.byteToHex((byte) innerMsg.getType(), true, true),
-				innerMsg.getToIdentity()
-			);
-			return messageQueue.enqueue(innerMsg);
-		}
+	private void scheduleTask(@NonNull Task<?, ActiveTaskCodec> task) {
+		taskManager.schedule(task);
 	}
 }

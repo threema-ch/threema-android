@@ -44,6 +44,7 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.ImageViewUtil;
+import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -231,7 +232,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 							prepareDownload(fileData, fileMessagePlayer);
 							break;
 						case ControllerView.STATUS_PROGRESSING:
-							if (getMessageModel().isOutbox() && (getMessageModel().getState() == MessageState.PENDING || getMessageModel().getState() == MessageState.SENDING)) {
+							if (MessageUtil.isFileMessageBeingSent(getMessageModel())) {
 								getMessageService().cancelMessageUpload(getMessageModel());
 							} else {
 								fileMessagePlayer.cancel();
@@ -340,6 +341,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 				setThumbnail(holder, true);
 				// fallthrough
 			case SENDING:
+			case UPLOADING:
 				holder.controller.setProgressing();
 				break;
 			case SENDFAILED:

@@ -55,7 +55,7 @@ public class DHSession {
 	public static final String KDF_PERSONAL = "3ma-e2e";
 
 	public static final Version SUPPORTED_VERSION_MIN = Version.V1_0;
-	public static final Version SUPPORTED_VERSION_MAX = Version.V1_1;
+	public static final Version SUPPORTED_VERSION_MAX = Version.V1_2;
 	public static final VersionRange SUPPORTED_VERSION_RANGE = VersionRange.newBuilder()
 		.setMin(SUPPORTED_VERSION_MIN.getNumber())
 		.setMax(SUPPORTED_VERSION_MAX.getNumber())
@@ -215,6 +215,12 @@ public class DHSession {
 	 */
 	@Nullable private DHVersions current4DHVersions;
 
+	/**
+	 * Timestamp of the last sent message in this session. This is used for the periodic empty
+	 * message to ensure session freshness.
+	 */
+	private long lastOutgoingMessageTimestamp;
+
 	@Nullable protected KDFRatchet myRatchet2DH;
 	@Nullable protected KDFRatchet myRatchet4DH;
 	@Nullable protected KDFRatchet peerRatchet2DH;
@@ -272,6 +278,7 @@ public class DHSession {
                      @Nullable byte[] myEphemeralPrivateKey,
                      @NonNull byte[] myEphemeralPublicKey,
 					 @Nullable DHVersions current4DHVersions,
+					 long lastOutgoingMessageTimestamp,
                      @Nullable KDFRatchet myRatchet2DH,
                      @Nullable KDFRatchet myRatchet4DH,
                      @Nullable KDFRatchet peerRatchet2DH,
@@ -282,6 +289,7 @@ public class DHSession {
 		this.myEphemeralPrivateKey = myEphemeralPrivateKey;
 		this.myEphemeralPublicKey = myEphemeralPublicKey;
 		this.current4DHVersions = current4DHVersions;
+		this.lastOutgoingMessageTimestamp = lastOutgoingMessageTimestamp;
 		setMyRatchet2DH(myRatchet2DH);
 		setMyRatchet4DH(myRatchet4DH);
 		setPeerRatchet2DH(peerRatchet2DH);
@@ -326,6 +334,14 @@ public class DHSession {
 	@Nullable
 	public DHVersions getCurrent4DHVersions() {
 		return current4DHVersions;
+	}
+
+	public long getLastOutgoingMessageTimestamp() {
+		return lastOutgoingMessageTimestamp;
+	}
+
+	public void setLastOutgoingMessageTimestamp(long timestamp) {
+		lastOutgoingMessageTimestamp = timestamp;
 	}
 
 	@Nullable
@@ -734,7 +750,7 @@ public class DHSession {
 	private static Version getSupportedVersionWithin(int majorVersion) {
 		switch ((majorVersion & 0xff00)) {
 			case Version.V1_0_VALUE:
-				return Version.V1_1;
+				return Version.V1_2;
 			default:
 				throw new IllegalStateException("Unknown major version: " + majorVersion);
 		}

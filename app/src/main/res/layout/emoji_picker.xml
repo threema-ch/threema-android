@@ -34,6 +34,7 @@
 				android:layout_height="39dp"
 				android:layout_alignParentLeft="true"
 				android:layout_toLeftOf="@+id/additions_layout"
+                app:tabGravity="start"
 				app:tabMode="scrollable"
 				app:tabMaxWidth="@dimen/emoji_picker_tab_width"
 				app:tabPaddingStart="0dp"

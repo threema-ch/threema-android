@@ -29,10 +29,11 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.domain.models.GroupId
-import ch.threema.domain.protocol.csp.messages.GroupRenameMessage
+import ch.threema.domain.protocol.csp.messages.GroupNameMessage
 import ch.threema.storage.models.GroupModel
 import junit.framework.TestCase.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
@@ -42,20 +43,22 @@ import java.util.*
 /**
  * Tests that incoming group name messages are handled correctly.
  */
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
-class IncomingGroupNameTest : GroupConversationListTest<GroupRenameMessage>() {
+class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
 
-    override fun createMessageForGroup(): GroupRenameMessage {
-        return GroupRenameMessage().apply { groupName = "New Group Name" }
+    override fun createMessageForGroup(): GroupNameMessage {
+        return GroupNameMessage()
+            .apply { groupName = "New Group Name" }
     }
 
     /**
      * Tests that a (valid) group rename message really changes the group name.
      */
     @Test
-    fun testValidGroupRename() {
+    fun testValidGroupRename() = runTest {
         // Start home activity and navigate to chat section
         val activityScenario = startScenario()
 
@@ -91,7 +94,7 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupRenameMessage>() {
      * does not lead to a group name change.
      */
     @Test
-    fun testInvalidGroupRenameSender() {
+    fun testInvalidGroupRenameSender() = runTest {
         // Start home activity and navigate to chat section
         val activityScenario = startScenario()
 
@@ -121,7 +124,8 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupRenameMessage>() {
     }
 
     override fun testCommonGroupReceiveStep2_1() {
-        runWithoutGroupRename { super.testCommonGroupReceiveStep2_1() }
+        // Don't test this as a group name message always comes from the group creator which would
+        // be this user in this test
     }
 
     override fun testCommonGroupReceiveStep2_2() {
@@ -162,7 +166,7 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupRenameMessage>() {
         groupCreatorIdentity: String,
         apiGroupId: GroupId,
         fromContact: TestContact,
-    ) = GroupRenameMessage().apply {
+    ) = GroupNameMessage().apply {
         groupName = newGroupName
         groupCreator = groupCreatorIdentity
         fromIdentity = fromContact.identity

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title">Threema OnPrem pro Android</string>
+    <string name="enter_serial_body">Zadejte pověření poskytnutá vaší společností nebo organizací</string>
+    <string name="serial_required_want_exit">Licence je neplatná. Chcete to zkusit znovu nebo aplikaci Threema OnPrem ukončit?</string>
+    <string name="checking_serial">Kontrola pověření</string>
+    <string name="username_hint">Uživatelské jméno</string>
+    <string name="new_wizard_works_like_phone_number">Threema ID lze připodobnit k telefonnímu číslu.\nVaše kontakty vám mohou prostřednictvím tohoto ID kontaktovat.</string>
+    <string name="new_wizard_nickname_explain">Vaše kontakty uvidí vaši přezdívku ve svých oznámeních</string>
+    <string name="new_wizard_help_your_friends_find_you">Pomozte kontaktům Vás vyhledat!</string>
+    <string name="new_wizard_find_friends">Najděte své kontakty na Threema OnPrem</string>
+    <string name="new_wizard_sync_contacts_explain">Zapněte, abyste zjistili, který z vašich kontaktů již používá aplikaci Threema.</string>
+    <string name="new_wizard_anonymous_confirm">Nezadali jste ani mobilní telefon ani e-mailovou adresu, které mohou být propojené s Threema ID. Nezobrazíte se automaticky v seznamu kontaktů Vašich přátel. Opravdu chcete používat Threemu OnPrem anonymně?</string>
+    <string name="new_wizard_setup_threema">Nastavení Threema OnPrem</string>
+    <string name="new_wizard_welcome">Vítejte v Threema OnPrem!</string>
+    <string name="new_wizard_info_fingerprint">Šoupáním prstu vytvoříte náhodná data (entropie), která se používají ke generování páru šifrovacích klíčů. Klíče jsou svázány k Vašemu Threema ID. Klíčová dvojice se skládá z <b>veřejného klíče</b>, který je distribuován k vašim kontaktům a <b>soukromého klíče</b>, který je bezpečně uložen pouze ve Vašem telefonu. Vaše kontakty Vám zašifrují zprávy Vašim veřejným klíčem (to zařídí Threema automaticky). Pouze ten, kdo má soukromý klíč, může zprávy dešifrovat!</string>
+    <string name="new_wizard_info_link">Poskytnutím svého čísla a e-mailové adresy může Threema Vašim kontaktům zajistit automatické přidání Vašeho ID do jejich adresářů. Vaše číslo i adresa bude uložena jednosměrně šifrovaná (hashovaná) na Threema serveru. Tento krok můžete přeskočit, pokud chcete používat Threemu anonymně. Lze změnit i později.</string>
+    <string name="new_wizard_info_sync_contacts">Pokud tuto možnost povolíte, Threema OnPrem jednosměrně zašifruje (zahashuje) e‑mailové adresy a telefonní čísla, načež je odešle na server za účelem vyhledání odpovídajících kontaktů. Data jsou uchována pouze v paměti a nikdy se na server neukládají.</string>
+    <string name="threema_contact">Threema OnPrem kontakt</string>
+    <string name="menu_about">O aplikaci Threema OnPrem</string>
+    <string name="private_threema_download"><![CDATA[Pro osobní používání <a href="https://play.google.com/store/apps/details?id=ch.threema.app">klepněte sem</a> a stáhněte si aplikaci Threema.]]></string>
+    <string name="directory_search">Hledat v adresáři</string>
+    <string name="directory_title">Adresář společnosti</string>
+    <string name="directory_empty_view_text">Chcete-li zahájit vyhledávání v adresáři uživatelů Threema OnPrem ve vaší společnosti, zadejte alespoň 3 znaky</string>
+    <string name="safe_configure_server_explain">Uložte si zálohu Threema Safe na server své organizace nebo určete jiný zálohovací server.</string>
+    <string name="share_with_app">Sdílet s Threema OnPrem</string>
+</resources>

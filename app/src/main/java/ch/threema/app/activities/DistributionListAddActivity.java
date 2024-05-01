@@ -29,6 +29,7 @@ import androidx.annotation.MainThread;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.TextEntryDialog;
@@ -134,7 +135,7 @@ public class DistributionListAddActivity extends MemberChooseActivity implements
 	}
 
 	@Override
-	public void onYes(String tag, String text) {
+	public void onYes(@NonNull String tag, @NonNull String text) {
 		try {
 			String[] identities = new String[selectedContacts.size()];
 			int pos = 0;

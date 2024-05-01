@@ -40,7 +40,7 @@ public class SystemUpdateToVersion65 implements UpdateSystemService.SystemUpdate
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

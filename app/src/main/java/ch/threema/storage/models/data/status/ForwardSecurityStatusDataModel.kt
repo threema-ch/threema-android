@@ -24,6 +24,7 @@ package ch.threema.storage.models.data.status
 import android.util.JsonWriter
 import androidx.annotation.IntDef
 import ch.threema.storage.models.data.status.StatusDataModel.StatusDataModelInterface
+import ch.threema.storage.models.data.status.StatusDataModel.StatusType
 import java.io.IOException
 
 class ForwardSecurityStatusDataModel : StatusDataModelInterface {
@@ -37,6 +38,9 @@ class ForwardSecurityStatusDataModel : StatusDataModelInterface {
         ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER,
         ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE,
         ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE,
+        // TODO(ANDR-2519): Can this be removed when md supports fs?
+        //  Maybe not, because theses statuses might already be saved to the database...
+        ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class ForwardSecurityStatusType {
@@ -50,6 +54,9 @@ class ForwardSecurityStatusDataModel : StatusDataModelInterface {
             const val FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER = 6
             const val FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE = 7
             const val FORWARD_SECURITY_ILLEGAL_SESSION_STATE = 8
+            // TODO(ANDR-2519): Can this be removed when md supports fs?
+            //  Maybe not, because theses statuses might already be saved to the database...
+            const val FORWARD_SECURITY_DISABLED = 9
         }
     }
 
@@ -60,7 +67,7 @@ class ForwardSecurityStatusDataModel : StatusDataModelInterface {
     var staticText: String? = null
         private set
 
-    override fun getType(): Int {
+    @StatusType override fun getType(): Int {
         return TYPE
     }
 

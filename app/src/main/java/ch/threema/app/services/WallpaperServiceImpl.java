@@ -190,14 +190,17 @@ public class WallpaperServiceImpl implements WallpaperService {
 				if (bitmap == null && preferenceService.isCustomWallpaperEnabled()) {
 					path = fileService.getGlobalWallpaperFilePath();
 					if (!TestUtil.empty(path)) {
-						try (FileInputStream fis = new FileInputStream(path); CipherInputStream cis = masterKey.getCipherInputStream(fis)) {
-							bitmap = BitmapFactory.decodeStream(cis, null, options);
-						} catch (Exception e) {
-							//
-						}
-						if (bitmap == null) {
-							// fallback to unencrypted bitmap
-							bitmap = BitmapFactory.decodeFile(path, options);
+						File wallpaperFile = new File(path);
+						if (wallpaperFile.exists()) {
+							try (FileInputStream fis = new FileInputStream(wallpaperFile); CipherInputStream cis = masterKey.getCipherInputStream(fis)) {
+								bitmap = BitmapFactory.decodeStream(cis, null, options);
+							} catch (Exception e) {
+								//
+							}
+							if (bitmap == null) {
+								// fallback to unencrypted bitmap
+								bitmap = BitmapFactory.decodeFile(path, options);
+							}
 						}
 					}
 				}

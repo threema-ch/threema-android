@@ -21,8 +21,11 @@
 
 package ch.threema.base.utils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import androidx.annotation.NonNull;
 
 /**
  * Helpers for sane JSON parsing.
@@ -95,4 +98,21 @@ public class JSONUtil {
 		}
 	}
 
+	/**
+	 * Convert a JSONArray containing strings to a string array.
+	 *
+	 * @throws JSONException if one of the contained values is not a string.
+	 */
+	public static String[] getStringArray(@NonNull JSONArray jsonArray) throws JSONException {
+		final String[] stringArray = new String[jsonArray.length()];
+		for (int i = 0; i < stringArray.length; i++) {
+			Object value = jsonArray.get(i);
+			if (value instanceof String) {
+				stringArray[i] = (String) value;
+			} else {
+				throw new JSONException("Value at " + i + " is not a string.");
+			}
+		}
+		return stringArray;
+	}
 }

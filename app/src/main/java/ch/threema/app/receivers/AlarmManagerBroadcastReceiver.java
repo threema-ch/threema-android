@@ -39,8 +39,8 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.PollingHelper;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.connection.ConnectionState;
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
+import ch.threema.domain.protocol.connection.ServerConnection;
+import ch.threema.domain.protocol.connection.ConnectionState;
 
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
@@ -113,34 +113,31 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		if(serviceManager != null) {
 			final Date now = new Date();
-			ThreemaConnection connection = serviceManager.getConnection();
+			ServerConnection connection = serviceManager.getConnection();
 			LifetimeService lifetimeService = serviceManager.getLifetimeService();
 
 			if (connection != null && connection.getConnectionState() != ConnectionState.LOGGEDIN) {
 				if (lifetimeService != null) {
-					lifetimeService.addListener(new LifetimeService.LifetimeServiceListener() {
-						@Override
-						public boolean connectionStopped() {
-							if (ThreemaApplication.getLastLoggedIn() == null ||
-									ThreemaApplication.getLastLoggedIn().before(now)) {
-								//schedule a alarm!
-								logger.info("could not login to threema server, try again in {} milliseconds", milliseconds*2);
+					lifetimeService.addListener(() -> {
+						if (ThreemaApplication.getLastLoggedIn() == null ||
+								ThreemaApplication.getLastLoggedIn().before(now)) {
+							//schedule a alarm!
+							logger.info("could not login to threema server, try again in {} milliseconds", milliseconds*2);
 
-								//cancel all other pending intents
-								cancelLoggedInConnection(context);
+							//cancel all other pending intents
+							cancelLoggedInConnection(context);
 
-								//set alarm
-								AlarmManager alarmManager = getAlarmManager(context);
-								Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
-								intent.putExtra(EXTRA_REQUIRE_LOGGED_IN_CONNECTION, true);
-								intent.putExtra(EXTRA_NEXT_CHECK, milliseconds*2);
+							//set alarm
+							AlarmManager alarmManager = getAlarmManager(context);
+							Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
+							intent.putExtra(EXTRA_REQUIRE_LOGGED_IN_CONNECTION, true);
+							intent.putExtra(EXTRA_NEXT_CHECK, milliseconds*2);
 
-								requireLoggedInConnectionIntent = PendingIntent.getBroadcast(context, 0, intent, PENDING_INTENT_FLAG_MUTABLE);
-								alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + milliseconds, requireLoggedInConnectionIntent);
-							}
-
-							return true;
+							requireLoggedInConnectionIntent = PendingIntent.getBroadcast(context, 0, intent, PENDING_INTENT_FLAG_MUTABLE);
+							alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + milliseconds, requireLoggedInConnectionIntent);
 						}
+
+						return true;
 					});
 				}
 			}

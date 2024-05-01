@@ -26,12 +26,11 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.storage.models.MessageModel;
 
 /**
  * add index for unread message count
  */
-public class SystemUpdateToVersion50 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion50 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -45,19 +44,19 @@ public class SystemUpdateToVersion50 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
-		sqLiteDatabase.rawExecSQL("CREATE INDEX IF NOT EXISTS `message_count_idx` ON `" + MessageModel.TABLE
-				+ "`(`"  + MessageModel.COLUMN_IDENTITY
-				+ "`, `" + MessageModel.COLUMN_OUTBOX
-				+ "`, `" + MessageModel.COLUMN_IS_SAVED
-				+ "`, `" + MessageModel.COLUMN_IS_READ
-				+ "`, `" + MessageModel.COLUMN_IS_STATUS_MESSAGE
+	public boolean runAsync() {
+		sqLiteDatabase.rawExecSQL("CREATE INDEX IF NOT EXISTS `message_count_idx` ON `message"
+				+ "`(`identity"
+				+ "`, `outbox"
+				+ "`, `isSaved"
+				+ "`, `isRead"
+				+ "`, `isStatusMessage"
 				+ "`)");
 
-		sqLiteDatabase.rawExecSQL("CREATE INDEX IF NOT EXISTS `message_queue_idx` ON `" + MessageModel.TABLE
-				+ "`(`"  + MessageModel.COLUMN_TYPE
-				+ "`, `" + MessageModel.COLUMN_IS_QUEUED
-				+ "`, `" + MessageModel.COLUMN_OUTBOX
+		sqLiteDatabase.rawExecSQL("CREATE INDEX IF NOT EXISTS `message_queue_idx` ON `message"
+				+ "`(`type"
+				+ "`, `isQueued"
+				+ "`, `outbox"
 				+ "`)");
 
 		return true;

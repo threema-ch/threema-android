@@ -25,17 +25,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import ch.threema.app.services.MessageService;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -60,7 +63,7 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	/**
 	 * Return all affected contact message receivers.
 	 *
-	 * Note: Only useds in a distribution list, other subtypes should return null.
+	 * Note: Only used in a distribution list, other subtypes should return null.
 	 *
 	 * TODO: refactor
 	 */
@@ -88,35 +91,40 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	/**
 	 * send a text message
 	 */
-	boolean createBoxedTextMessage(String text, M messageModel) throws ThreemaException;
+	void createAndSendTextMessage(@NonNull M messageModel);
 
 	/**
 	 * send a location message
 	 */
-	boolean createBoxedLocationMessage(M messageModel) throws ThreemaException;
+	void createAndSendLocationMessage(@NonNull M messageModel);
 
 	/**
 	 * send a file message
 	 */
-	boolean createBoxedFileMessage(
-		byte[] thumbnailBlobId,
-		byte[] fileBlobId,
-		SymmetricEncryptionResult encryptionResult,
-		M messageModel) throws ThreemaException;
+	void createAndSendFileMessage(
+		@Nullable byte[] thumbnailBlobId,
+		@Nullable byte[] fileBlobId,
+		@Nullable SymmetricEncryptionResult encryptionResult,
+		@NonNull M messageModel,
+		@Nullable MessageId messageId,
+		@Nullable Collection<String> recipientIdentities
+	) throws ThreemaException;
 
 	/**
 	 * send a ballot (create) message
 	 */
-	void createBoxedBallotMessage(
+	void createAndSendBallotSetupMessage(
 			final BallotData ballotData,
 			final BallotModel ballotModel,
-			final String[] filteredIdentities,
-			M abstractMessageModel) throws ThreemaException;
+			M abstractMessageModel,
+			@Nullable MessageId messageId,
+			@Nullable Collection<String> recipientIdentities
+	) throws ThreemaException;
 
 	/**
 	 * send a ballot vote message
 	 */
-	void createBoxedBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException;
+	void createAndSendBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) throws ThreemaException;
 
 	/**
 	 * select and filter (if filter is set) all message models
@@ -156,7 +164,6 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 
 	/**
 	 * TODO: move to IntentUtil
-	 * @param intent
 	 */
 	void prepareIntent(Intent intent);
 
@@ -209,4 +216,12 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	 * @return list of identities
 	 */
 	String[] getIdentities();
+
+	/**
+	 * Set the `lastUpdate` field of the specified contact to the current date.
+	 * This will also save the model and notify listeners.
+	 *
+	 * Not that this method only has an effect if it is supported by the implementing receiver.
+	 */
+	void bumpLastUpdate();
 }

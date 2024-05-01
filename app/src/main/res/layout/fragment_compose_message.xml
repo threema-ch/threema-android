@@ -1,403 +1,279 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/compose_root"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:background="?android:attr/colorBackground">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/compose_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
 
-	<!-- http://stackoverflow.com/questions/21201569/android-resize-only-parts-of-view-with-soft-keyboard-on-screen -->
-	<ch.threema.app.ui.LockableScrollView
-		android:id="@+id/wallpaper_scroll"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:background="@android:color/transparent"
-		android:importantForAccessibility="no"
-		android:fillViewport="true"
-		android:scrollbars="none">
+    <!-- http://stackoverflow.com/questions/21201569/android-resize-only-parts-of-view-with-soft-keyboard-on-screen -->
+    <ch.threema.app.ui.LockableScrollView
+        android:id="@+id/wallpaper_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:fillViewport="true"
+        android:importantForAccessibility="no"
+        android:scrollbars="none">
 
-		<ImageView
-			android:id="@+id/wallpaper_view"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:scaleType="centerCrop"
-			android:visibility="gone"
-			android:importantForAccessibility="no"/>
+        <ImageView
+            android:id="@+id/wallpaper_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
 
-	</ch.threema.app.ui.LockableScrollView>
+    </ch.threema.app.ui.LockableScrollView>
 
-	<androidx.coordinatorlayout.widget.CoordinatorLayout
-		android:id="@+id/coordinator"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:gravity="bottom">
+    <LinearLayout
+        android:id="@+id/conversation_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="ch.threema.app.ui.LinearLayoutBehavior">
 
-		<LinearLayout
-			android:id="@+id/conversation_parent"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:orientation="vertical"
-			app:layout_behavior="ch.threema.app.ui.LinearLayoutBehavior">
+        <ch.threema.app.ui.OngoingCallNoticeView
+            android:id="@+id/ongoing_call_notice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="?android:attr/colorBackground"
+            android:visibility="gone" />
 
-			<ch.threema.app.ui.OngoingCallNoticeView
-				android:id="@+id/ongoing_call_notice"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:animateLayoutChanges="true"
-				android:background="?android:attr/colorBackground"
-				android:visibility="gone" />
+        <ch.threema.app.ui.OpenBallotNoticeView
+            android:id="@+id/open_ballots_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="?android:attr/colorBackground"
+            android:paddingTop="@dimen/notice_views_vertical_margin"
+            android:paddingBottom="@dimen/notice_views_vertical_margin"
+            android:visibility="gone" />
 
-			<ch.threema.app.ui.OpenBallotNoticeView
-				android:id="@+id/open_ballots_layout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:background="?android:attr/colorBackground"
-				android:paddingTop="@dimen/notice_views_vertical_margin"
-				android:paddingBottom="@dimen/notice_views_vertical_margin"
-				android:animateLayoutChanges="true"
-				android:visibility="gone" />
+        <ch.threema.app.grouplinks.OpenGroupRequestNoticeView
+            android:id="@+id/open_group_requests_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="?android:attr/colorBackground"
+            android:paddingTop="@dimen/notice_views_vertical_margin"
+            android:paddingBottom="@dimen/notice_views_vertical_margin"
+            android:visibility="gone" />
 
-			<ch.threema.app.grouplinks.OpenGroupRequestNoticeView
-				android:id="@+id/open_group_requests_layout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:animateLayoutChanges="true"
-				android:background="?android:attr/colorBackground"
-				android:paddingTop="@dimen/notice_views_vertical_margin"
-				android:paddingBottom="@dimen/notice_views_vertical_margin"
-				android:visibility="gone" />
+        <ch.threema.app.ui.ReportSpamView
+            android:id="@+id/report_spam_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="?android:attr/colorBackground"
+            android:paddingTop="@dimen/notice_views_vertical_margin"
+            android:paddingBottom="@dimen/notice_views_vertical_margin"
+            android:visibility="gone" />
 
-			<ch.threema.app.ui.ReportSpamView
-				android:id="@+id/report_spam_layout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:animateLayoutChanges="true"
-				android:background="?android:attr/colorBackground"
-				android:paddingTop="@dimen/notice_views_vertical_margin"
-				android:paddingBottom="@dimen/notice_views_vertical_margin"
-				android:visibility="gone" />
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/ptr_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.0">
 
-			<RelativeLayout
-				android:layout_width="match_parent"
-				android:layout_height="0dp"
-				android:layout_weight="1.0">
+            <FrameLayout
+                android:id="@+id/history_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-				<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-					android:id="@+id/ptr_layout"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:layout_alignWithParentIfMissing="true"
-					android:layout_above="@+id/quote_panel">
+                <ch.threema.app.ui.ConversationListView
+                    android:id="@+id/history"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:cacheColorHint="@android:color/white"
+                    android:choiceMode="singleChoice"
+                    android:fadeScrollbars="true"
+                    android:fadingEdge="none"
+                    android:listSelector="@android:color/transparent"
+                    android:paddingTop="5dp"
+                    android:scrollbarAlwaysDrawVerticalTrack="false"
+                    android:scrollbarSize="@dimen/scrollbar_size"
+                    android:scrollbarStyle="insideOverlay"
+                    android:smoothScrollbar="true"
+                    android:stackFromBottom="true"
+                    android:transcriptMode="normal"
+                    android:visibility="visible" />
 
-					<FrameLayout
-						android:id="@+id/history_parent"
-						android:layout_width="match_parent"
-						android:layout_height="match_parent">
+                <FrameLayout
+                    android:id="@+id/date_separator_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:gravity="top|center_horizontal"
+                    android:paddingLeft="3dp"
+                    android:paddingTop="5dp"
+                    android:paddingRight="3dp"
+                    android:paddingBottom="3dp"
+                    android:visibility="gone">
 
-						<ch.threema.app.ui.ConversationListView
-							android:id="@+id/history"
-							android:layout_width="match_parent"
-							android:layout_height="match_parent"
-							android:cacheColorHint="@android:color/white"
-							android:choiceMode="singleChoice"
-							android:fadeScrollbars="true"
-							android:fadingEdge="none"
-							android:listSelector="@android:color/transparent"
-							android:paddingTop="5dp"
-							android:scrollbarAlwaysDrawVerticalTrack="false"
-							android:scrollbarSize="@dimen/scrollbar_size"
-							android:scrollbarStyle="insideOverlay"
-							android:smoothScrollbar="true"
-							android:stackFromBottom="true"
-							android:transcriptMode="normal"
-							android:visibility="visible" />
+                    <include layout="@layout/date_separator_elevated" />
+                </FrameLayout>
 
-						<FrameLayout
-							android:id="@+id/date_separator_container"
-							android:layout_width="match_parent"
-							android:layout_height="wrap_content"
-							android:gravity="top|center_horizontal"
-							android:paddingTop="5dp"
-							android:paddingBottom="3dp"
-							android:paddingLeft="3dp"
-							android:paddingRight="3dp"
-							android:clipToPadding="false"
-							android:visibility="gone">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/quickscroll_top"
+                    style="@style/Threema.MaterialButton.Icon.Circle.Filled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|top"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="8dp"
+                    android:contentDescription="@string/scroll_to_top"
+                    android:visibility="gone"
+                    app:backgroundTint="?attr/colorPrimaryContainer"
+                    app:elevation="8dp"
+                    app:icon="@drawable/ic_arrow_upward"
+                    app:iconTint="?attr/colorOnPrimaryContainer" />
 
-							<include layout="@layout/date_separator_elevated" />
-						</FrameLayout>
+                <FrameLayout
+                    android:id="@+id/quickscroll_bottom_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|bottom"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:visibility="gone">
 
-						<com.google.android.material.button.MaterialButton
-							style="@style/Threema.MaterialButton.Icon.Circle.Filled"
-							android:id="@+id/quickscroll_top"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_gravity="right|top"
-							android:layout_marginTop="8dp"
-							android:layout_marginRight="8dp"
-							android:visibility="gone"
-							app:elevation="8dp"
-							android:contentDescription="@string/scroll_to_top"
-							app:icon="@drawable/ic_arrow_upward"
-							app:backgroundTint="?attr/colorPrimaryContainer"
-							app:iconTint="?attr/colorOnPrimaryContainer"/>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/quickscroll_bottom"
+                        style="@style/Threema.MaterialButton.Icon.Circle.Filled"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="24dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:contentDescription="@string/scroll_to_bottom"
+                        app:backgroundTint="?attr/colorPrimaryContainer"
+                        app:elevation="8dp"
+                        app:icon="@drawable/ic_arrow_downward"
+                        app:iconTint="?attr/colorOnPrimaryContainer" />
 
-						<FrameLayout
-							android:id="@+id/quickscroll_bottom_container"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_gravity="right|bottom"
-							android:clickable="false"
-							android:focusable="false"
-							android:visibility="gone">
+                </FrameLayout>
 
-							<com.google.android.material.button.MaterialButton
-								android:id="@+id/quickscroll_bottom"
-								style="@style/Threema.MaterialButton.Icon.Circle.Filled"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:layout_marginRight="8dp"
-								android:layout_marginBottom="8dp"
-								android:layout_marginTop="4dp"
-								android:layout_marginLeft="24dp"
-								android:contentDescription="@string/scroll_to_bottom"
-								app:elevation="8dp"
-								app:backgroundTint="?attr/colorPrimaryContainer"
-								app:icon="@drawable/ic_arrow_downward"
-								app:iconTint="?attr/colorOnPrimaryContainer" />
+            </FrameLayout>
 
-						</FrameLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-					</FrameLayout>
+            <FrameLayout
+                android:id="@+id/bottom_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="0dp"
+                android:paddingLeft="@dimen/compose_bottom_panel_padding_horizontal"
+                android:paddingTop="@dimen/compose_bottom_panel_padding_vertical"
+                android:paddingRight="@dimen/compose_bottom_panel_padding_horizontal"
+                android:paddingBottom="@dimen/compose_bottom_panel_padding_vertical">
 
-				</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textinputlayout_compose"
+                    style="@style/Threema.TextInputLayout.Compose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginRight="56dp">
 
-				<androidx.core.widget.NestedScrollView
-					android:id="@+id/quote_panel"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_alignParentBottom="true"
-					android:visibility="gone">
+                    <ch.threema.app.ui.ContentCommitComposeEditText
+                        android:id="@+id/embedded_text_editor"
+                        style="@style/Threema.EditText.Compose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:hint="@string/compose_message_and_enter"
+                        android:maxLength="99000"
+                        android:maxLines="@integer/message_edittext_max_lines"
+                        android:minHeight="@dimen/input_text_height"
+                        android:nextFocusLeft="@+id/emoji_button"
+                        android:nextFocusRight="@+id/camera_button"
+                        android:paddingLeft="@dimen/emoji_button_width"
+                        android:paddingTop="3dp"
+                        android:paddingRight="@dimen/emoji_and_photo_button_width"
+                        android:paddingBottom="4dp"
+                        android:scrollbars="none"
+                        android:scrollHorizontally="false"
+                        android:textSize="?attr/font_textentry">
 
-					<com.google.android.material.card.MaterialCardView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						app:cardBackgroundColor="?attr/colorSurface"
-						app:cardCornerRadius="0dp"
-						app:strokeWidth="0dp"
-						app:cardElevation="2dp">
+                        <requestFocus />
+                    </ch.threema.app.ui.ContentCommitComposeEditText>
 
-						<LinearLayout
-							android:id="@+id/quote_inner_panel"
-							android:layout_width="match_parent"
-							android:layout_height="wrap_content"
-							android:layout_gravity="top"
-							android:orientation="horizontal"
-							android:paddingTop="8dp"
-							android:paddingBottom="8dp">
+                </com.google.android.material.textfield.TextInputLayout>
 
-							<View
-								android:id="@+id/quote_bar"
-								android:layout_width="4dp"
-								android:layout_height="match_parent"
-								android:layout_marginLeft="8dp"
-								android:layout_marginRight="8dp"
-								android:background="?attr/colorPrimary" />
+                <ch.threema.app.emojis.EmojiButton
+                    android:id="@+id/emoji_button"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="@dimen/emoji_button_width"
+                    android:layout_height="@dimen/emoji_button_width"
+                    android:layout_gravity="left|bottom"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/selector_compose_button"
+                    android:contentDescription="@string/select_emoji"
+                    android:drawablePadding="0dip"
+                    android:nextFocusRight="@+id/embedded_text_editor"
+                    android:padding="8dp"
+                    android:tint="?attr/colorOnSurface" />
 
-							<LinearLayout
-								android:layout_width="0dp"
-								android:layout_height="wrap_content"
-								android:layout_gravity="center_vertical"
-								android:layout_weight="2"
-								android:orientation="vertical">
+                <FrameLayout
+                    android:layout_width="@dimen/emoji_button_width"
+                    android:layout_height="@dimen/emoji_button_width"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginRight="94dp"
+                    android:layout_marginBottom="5dp">
 
-								<TextView
-									android:id="@+id/quote_id_view"
-									android:layout_width="wrap_content"
-									android:layout_height="wrap_content"
-									android:textColor="?attr/colorOnSurfaceVariant"
-									android:textSize="?attr/font_medium"
-									android:textStyle="bold" />
+                    <ImageButton
+                        android:id="@+id/camera_button"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="@dimen/emoji_button_width"
+                        android:layout_height="@dimen/emoji_button_width"
+                        android:background="@drawable/selector_compose_button"
+                        android:contentDescription="@string/take_photo"
+                        android:drawablePadding="0dip"
+                        android:focusable="true"
+                        android:nextFocusLeft="@+id/embedded_text_editor"
+                        android:nextFocusRight="@+id/attach_button"
+                        app:srcCompat="@drawable/ic_camera_outline"
+                        app:tint="?attr/colorOnSurface" />
 
-								<LinearLayout
-									android:layout_width="wrap_content"
-									android:layout_height="wrap_content"
-									android:orientation="horizontal">
+                </FrameLayout>
 
-									<ImageView
-										android:id="@+id/quote_type_image"
-										android:layout_width="14dp"
-										android:layout_height="14dp"
-										android:layout_gravity="left|top"
-										android:layout_marginLeft="-2dp"
-										android:layout_marginTop="3dp"
-										android:layout_marginRight="4dp"
-										android:visibility="gone"
-										app:tint="?attr/colorOnSurface" />
+                <ImageButton
+                    android:id="@+id/attach_button"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="@dimen/emoji_button_width"
+                    android:layout_height="@dimen/emoji_button_width"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginRight="58dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/selector_compose_button"
+                    android:contentDescription="@string/add_attachment"
+                    android:drawablePadding="0dip"
+                    android:focusable="true"
+                    android:nextFocusLeft="@+id/embedded_text_editor"
+                    android:nextFocusRight="@+id/send_button"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_attachment"
+                    app:tint="?attr/colorOnSurface" />
 
-									<ch.threema.app.emojis.EmojiTextView
-										android:id="@+id/quote_text_view"
-										android:layout_width="wrap_content"
-										android:layout_height="wrap_content"
-										android:ellipsize="end"
-										android:linksClickable="false"
-										android:maxLines="3"
-										android:text=""
-										android:textColor="?attr/colorOnSurface"
-										android:textSize="?attr/font_status" />
+                <ch.threema.app.ui.SendButton
+                    android:id="@+id/send_button"
+                    android:layout_width="@dimen/input_text_height"
+                    android:layout_height="@dimen/input_text_height"
+                    android:layout_gravity="bottom|right"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="@drawable/selector_avatar"
+                    android:nextFocusLeft="@+id/attach_button" />
 
-								</LinearLayout>
+            </FrameLayout>
 
-							</LinearLayout>
+    </LinearLayout>
 
-							<ImageView
-								android:id="@+id/quote_thumbnail"
-								android:layout_width="@dimen/avatar_size_small"
-								android:layout_height="@dimen/avatar_size_small"
-								android:layout_gravity="right|center_vertical"
-								android:layout_marginLeft="8dp"
-								android:layout_marginRight="8dp"
-								android:importantForAccessibility="no"
-								android:scaleType="centerCrop"
-								android:visibility="gone" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-							<ImageView
-								android:id="@+id/quote_panel_close_button"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:layout_gravity="right|center_vertical"
-								android:layout_marginLeft="8dp"
-								android:layout_marginRight="8dp"
-								android:background="?android:selectableItemBackground"
-								android:contentDescription="@string/close"
-								app:srcCompat="@drawable/ic_close"
-								app:tint="?attr/colorOnSurface" />
-
-						</LinearLayout>
-
-					</com.google.android.material.card.MaterialCardView>
-
-				</androidx.core.widget.NestedScrollView>
-
-			</RelativeLayout>
-
-			<com.google.android.material.card.MaterialCardView
-				android:id="@+id/bottom_panel"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				app:cardCornerRadius="0dp"
-				app:contentPaddingLeft="8dp"
-				app:contentPaddingTop="@dimen/compose_bottom_panel_padding_vertical"
-				app:contentPaddingRight="8dp"
-				app:contentPaddingBottom="@dimen/compose_bottom_panel_padding_vertical"
-				app:strokeWidth="0dp"
-				app:cardElevation="0dp">
-
-				<com.google.android.material.textfield.TextInputLayout
-					style="@style/Threema.TextInputLayout.Compose"
-					android:id="@+id/textinputlayout_compose"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_gravity="bottom"
-					android:layout_marginRight="56dp">
-
-				<ch.threema.app.ui.ContentCommitComposeEditText
-					style="@style/Threema.EditText.Compose"
-					android:id="@+id/embedded_text_editor"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:ellipsize="end"
-					android:hint="@string/compose_message_and_enter"
-					android:maxLength="99000"
-					android:maxLines="@integer/message_edittext_max_lines"
-					android:minHeight="@dimen/input_text_height"
-					android:nextFocusLeft="@+id/emoji_button"
-					android:nextFocusRight="@+id/camera_button"
-					android:paddingLeft="@dimen/emoji_button_width"
-					android:paddingTop="3dp"
-					android:paddingRight="@dimen/emoji_and_photo_button_width"
-					android:paddingBottom="4dp"
-					android:scrollbars="vertical"
-					android:scrollHorizontally="false"
-					android:textSize="?attr/font_textentry">
-
-					<requestFocus />
-				</ch.threema.app.ui.ContentCommitComposeEditText>
-
-				</com.google.android.material.textfield.TextInputLayout>
-
-				<ch.threema.app.emojis.EmojiButton
-					android:id="@+id/emoji_button"
-					style="?android:attr/borderlessButtonStyle"
-					android:layout_width="@dimen/emoji_button_width"
-					android:layout_height="@dimen/emoji_button_width"
-					android:layout_gravity="left|bottom"
-					android:layout_marginLeft="2dp"
-					android:layout_marginBottom="5dp"
-					android:background="@drawable/selector_compose_button"
-					android:contentDescription="@string/select_emoji"
-					android:drawablePadding="0dip"
-					android:nextFocusRight="@+id/embedded_text_editor"
-					android:padding="8dp"
-					android:tint="?attr/colorOnSurface" />
-
-				<FrameLayout
-					android:layout_width="@dimen/emoji_button_width"
-					android:layout_height="@dimen/emoji_button_width"
-					android:layout_gravity="bottom|right"
-					android:layout_marginRight="94dp"
-					android:layout_marginBottom="5dp">
-
-					<ImageButton
-						android:id="@+id/camera_button"
-						style="?android:attr/borderlessButtonStyle"
-						android:layout_width="@dimen/emoji_button_width"
-						android:layout_height="@dimen/emoji_button_width"
-						android:background="@drawable/selector_compose_button"
-						android:contentDescription="@string/take_photo"
-						android:drawablePadding="0dip"
-						android:focusable="true"
-						android:nextFocusLeft="@+id/embedded_text_editor"
-						android:nextFocusRight="@+id/attach_button"
-						app:srcCompat="@drawable/ic_camera_outline"
-						app:tint="?attr/colorOnSurface" />
-
-				</FrameLayout>
-
-				<ImageButton
-					android:id="@+id/attach_button"
-					style="?android:attr/borderlessButtonStyle"
-					android:layout_width="@dimen/emoji_button_width"
-					android:layout_height="@dimen/emoji_button_width"
-					android:layout_gravity="bottom|right"
-					android:layout_marginRight="58dp"
-					android:layout_marginBottom="5dp"
-					android:background="@drawable/selector_compose_button"
-					android:contentDescription="@string/add_attachment"
-					android:drawablePadding="0dip"
-					android:focusable="true"
-					android:nextFocusLeft="@+id/embedded_text_editor"
-					android:nextFocusRight="@+id/send_button"
-					android:padding="8dp"
-					app:srcCompat="@drawable/ic_attachment"
-					app:tint="?attr/colorOnSurface" />
-
-				<ch.threema.app.ui.SendButton
-					android:id="@+id/send_button"
-					android:layout_width="@dimen/input_text_height"
-					android:layout_height="@dimen/input_text_height"
-					android:layout_gravity="bottom|right"
-					android:clickable="true"
-					android:focusable="true"
-					android:foreground="@drawable/selector_avatar"
-					android:nextFocusLeft="@+id/attach_button" />
-
-			</com.google.android.material.card.MaterialCardView>
-
-		</LinearLayout>
-
-	</androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-</FrameLayout>

@@ -96,24 +96,7 @@ public class CropImageActivity extends ThreemaToolbarActivity {
 
 		imageView = findViewById(R.id.crop_image);
 		imageView.setOnSetImageUriCompleteListener((view, uri, error) -> {
-			if (error == null && uri != null) {
-				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(CropImageActivity.this, uri);
-				int exifFlip = exifOrientation.getFlip();
-				int exifRotation = 0;
-
-				// Bug Workaround: CropImageView accounts for exif rotation but NOT if there's also a flip
-				if ((exifFlip & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
-					view.flipImageHorizontally();
-					exifRotation = (int) exifOrientation.getRotation();
-				}
-				if ((exifFlip & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
-					view.flipImageVertically();
-					exifRotation = (int) exifOrientation.getRotation();
-				}
-				if (exifRotation != 0) {
-					view.rotateImage(exifRotation);
-				}
-
+			if (error == null) {
 				// non-exif
 				if ((flip & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
 					view.flipImageHorizontally();

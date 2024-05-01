@@ -28,10 +28,7 @@ import java.sql.SQLException;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.storage.models.DistributionListMemberModel;
 
-/**
- *
- */
-public class SystemUpdateToVersion34 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion34 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -50,7 +47,7 @@ public class SystemUpdateToVersion34 extends  UpdateToVersion implements UpdateS
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

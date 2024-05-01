@@ -109,7 +109,7 @@ public class ClientInfo extends Converter {
 		data.put(DEVICE, Build.MODEL);
 		data.put(OS, "android");
 		data.put(OS_VERSION, Build.VERSION.RELEASE);
-		data.put(APP_VERSION, ConfigUtils.getAppVersion(appContext));
+		data.put(APP_VERSION, ConfigUtils.getAppVersion());
 		if (pushToken != null) {
 			// To be able to differentiate between FCM and other push tokens without any
 			// protocol changes, we'll prefix non-FCM push tokens.

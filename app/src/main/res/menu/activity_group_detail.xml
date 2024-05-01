@@ -13,7 +13,7 @@
 
 	<item
 		android:id="@+id/menu_group_call"
-		android:icon="@drawable/ic_group_call"
+		android:icon="@drawable/ic_phone_locked_outline"
 		app:iconTint="@android:color/white"
 		android:orderInCategory="30"
 		android:title="@string/group_call"

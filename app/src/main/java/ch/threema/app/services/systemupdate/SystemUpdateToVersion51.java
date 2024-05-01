@@ -26,13 +26,14 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.WebClientSessionModel;
+
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 /**
  * add "created" column to webclient sessions table
  */
-public class SystemUpdateToVersion51 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion51 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -42,7 +43,7 @@ public class SystemUpdateToVersion51 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_CREATED)) {
+		if (!fieldExists(this.sqLiteDatabase, WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_CREATED)) {
 			this.sqLiteDatabase.rawExecSQL(
 				"ALTER TABLE " + WebClientSessionModel.TABLE
 				+ " ADD COLUMN " + WebClientSessionModel.COLUMN_CREATED + " BIGINT NULL"
@@ -52,7 +53,7 @@ public class SystemUpdateToVersion51 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

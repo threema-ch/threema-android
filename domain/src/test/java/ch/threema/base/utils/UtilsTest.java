@@ -116,6 +116,78 @@ public class UtilsTest {
 				(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF
 			})
 		);
+
+		Assert.assertThrows("Cannot call byteArrayToLongBigEndian with 3-byte array", IllegalArgumentException.class, () -> {
+			Utils.byteArrayToLongBigEndian(new byte[] { 1, 2, 3 });
+		});
+	}
+
+	@Test
+	public void longToByteArrayLittleEndian() {
+		Assert.assertArrayEquals(
+			new byte[] { (byte)0x0A, 0, 0, 0, 0, 0, 0, 0 },
+			Utils.longToByteArrayLittleEndian(0x0AL)
+		);
+
+		Assert.assertArrayEquals(
+			new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 },
+			Utils.longToByteArrayLittleEndian(0L)
+		);
+
+		Assert.assertArrayEquals(
+			new byte[] { 0, 0, 0, 0, 0, 0, 0, (byte)0x80 },
+			Utils.longToByteArrayLittleEndian(Long.MIN_VALUE)
+		);
+
+		Assert.assertArrayEquals(
+			new byte[] {
+				(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0x7F,
+			},
+			Utils.longToByteArrayLittleEndian(Long.MAX_VALUE)
+		);
+
+		Assert.assertArrayEquals(
+			new byte[] {
+				(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF
+			},
+			Utils.longToByteArrayLittleEndian(-1L)
+		);
+	}
+
+	@Test
+	public void bytesArrayToLongLittleEndian() {
+		Assert.assertEquals(
+			0x0AL,
+			Utils.byteArrayToLongLittleEndian(new byte[] { (byte)0x0A, 0, 0, 0, 0, 0, 0, 0 })
+		);
+
+		Assert.assertEquals(
+			0L,
+			Utils.byteArrayToLongLittleEndian(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 })
+		);
+
+		Assert.assertEquals(
+			Long.MIN_VALUE,
+			Utils.byteArrayToLongLittleEndian(new byte[] { 0, 0, 0, 0, 0, 0, 0, (byte)0x80 })
+		);
+
+		Assert.assertEquals(
+			Long.MAX_VALUE,
+			Utils.byteArrayToLongLittleEndian(new byte[] {
+				(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0x7F,
+			})
+		);
+
+		Assert.assertEquals(
+			-1L,
+			Utils.byteArrayToLongLittleEndian(new byte[] {
+				(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF,
+			})
+		);
+
+		Assert.assertThrows("Cannot call byteArrayToLongLittleEndian with 7-byte array", IllegalArgumentException.class, () -> {
+			Utils.byteArrayToLongLittleEndian(new byte[] { 1, 2, 3, 4, 5, 6, 7 });
+		});
 	}
 
 	@Test

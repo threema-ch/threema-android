@@ -32,7 +32,7 @@ import ch.threema.app.services.UpdateSystemService;
 /**
  * Remove old message log
  */
-public class SystemUpdateToVersion55 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion55 implements UpdateSystemService.SystemUpdate {
 	private final static String TAG = "SystemUpdateToVersion55";
 
 	public SystemUpdateToVersion55() { }
@@ -69,7 +69,7 @@ public class SystemUpdateToVersion55 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

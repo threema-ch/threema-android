@@ -35,7 +35,7 @@ import ch.threema.base.utils.LoggingUtil;
 /**
  * remove old pre-API26 notification channels
  */
-public class SystemUpdateToVersion53 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion53 implements UpdateSystemService.SystemUpdate {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion53");
 
 	public SystemUpdateToVersion53() { }
@@ -59,7 +59,7 @@ public class SystemUpdateToVersion53 extends UpdateToVersion implements UpdateSy
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

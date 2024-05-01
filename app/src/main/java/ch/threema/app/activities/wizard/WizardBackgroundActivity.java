@@ -89,9 +89,9 @@ public abstract class WizardBackgroundActivity extends ThreemaAppCompatActivity 
 
 	private boolean checkInstances() {
 		return TestUtil.required(
-				this.preferenceService,
-				this.userService,
-				this.fileService
+			this.preferenceService,
+			this.userService,
+			this.fileService
 		);
 	}
 

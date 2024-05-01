@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_default_status">Erfassed Sie de Barcode mitem Suecherfenster, zum ihn z’scanne.</string>
+    <string name="msg_camera_framework_bug">Android-Kamera blockiert. Stelled Sie sicher, dass de Zuegriff gwährleistet isch, oder started Sie s’Handy neu.</string>
+</resources>

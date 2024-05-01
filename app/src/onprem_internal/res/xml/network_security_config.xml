@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019-2024 Threema GmbH
+  ~ All rights reserved.
+  -->
+<network-security-config>
+	<!-- Official Android N API -->
+	<base-config cleartextTrafficPermitted="false">
+		<trust-anchors>
+			<certificates src="system" />
+			<certificates src="user" />
+		</trust-anchors>
+	</base-config>
+	<domain-config cleartextTrafficPermitted="false">
+		<domain includeSubdomains="true">threema.ch</domain>
+		<pin-set>
+			<pin digest="SHA-256">8kTK9HP1KHIP0sn6T2AFH3Bq+qq3wn2i/OJSMjewpFw=</pin>
+			<pin digest="SHA-256">KKBJHJn1PQSdNTmoAfhxqWTO61r8O8bPi/JeGtP/6gg=</pin>
+			<pin digest="SHA-256">h2gHawxPZyMCiZSkJN0dQ4RsDxowVuTmuiNQyjeU+Sk=</pin>
+			<pin digest="SHA-256">HXqz8rMr6nBDdUX3CdyIwln8ym3qFUBwv4QGyMN2uEg=</pin>
+			<pin digest="SHA-256">2Vpy8qUQCqc2+Lg6BgRO8G6e6vh7NmvVHTljfwP/Pfk=</pin>
+			<pin digest="SHA-256">vGQZ8hm2h+km+q7rnJ7kF9S17BwSY0rbhwjz6nIupf0=</pin>
+			<pin digest="SHA-256">jsQHAHKQ2oOf3rvMn9GJVIKslkhLpODGOMPSxgLeIyo=</pin>
+		</pin-set>
+		<!-- TrustKit Android API -->
+		<!-- Enforce pinning validation -->
+		<trustkit-config enforcePinning="true" disableDefaultReportUri="true">
+			<!-- Reporting URL for pin validation reports -->
+		</trustkit-config>
+	</domain-config>
+	<domain-config cleartextTrafficPermitted="false">
+		<domain includeSubdomains="true">test.threema.ch</domain>
+		<pin-set>
+			<pin digest="SHA-256">/mH2CVdSxVBMuKiRHplBP2GTFWs/l+KXHriAxRFNsaw=</pin>
+			<pin digest="SHA-256">bmsGGaIGEs1HWAUIE082NSPYTURvChScDmE7PjL+5RQ=</pin>
+			<pin digest="SHA-256">Dvvb0s1E8Y2tG67GoyzIkmJNAebvOqQjz4TnPMq3yhI=</pin>
+		</pin-set>
+		<!-- TrustKit Android API -->
+		<!-- Enforce pinning validation -->
+		<trustkit-config enforcePinning="true" disableDefaultReportUri="true">
+			<!-- Reporting URL for pin validation reports -->
+		</trustkit-config>
+	</domain-config>
+</network-security-config>

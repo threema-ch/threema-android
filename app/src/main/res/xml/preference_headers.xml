@@ -42,6 +42,11 @@
 		app:key="pref_key_calls"
 		app:persistent="true"
 		app:title="@string/prefs_title_calls" />
+    <Preference
+        app:key="@string/preferences__rate"
+        app:icon="@drawable/ic_star_outline_24dp"
+        app:fragment="ch.threema.app.preference.SettingsRateFragment"
+        app:title="@string/rate_title" />
 	<Preference
 		app:fragment="ch.threema.app.preference.SettingsAboutFragment"
 		app:icon="@drawable/ic_about_outline"

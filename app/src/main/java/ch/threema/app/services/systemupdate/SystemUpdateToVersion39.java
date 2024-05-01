@@ -35,7 +35,7 @@ import ch.threema.storage.models.ContactModel;
 /**
  * Update all Contacts with Feature Level < current Feature Level
  */
-public class SystemUpdateToVersion39 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion39 implements UpdateSystemService.SystemUpdate {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion39");
 
 	public SystemUpdateToVersion39() {
@@ -47,7 +47,7 @@ public class SystemUpdateToVersion39 extends  UpdateToVersion implements UpdateS
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		// lazy get services
 		if(ThreemaApplication.getServiceManager() == null) {
 			logger.error("update script 39 failed, no service manager available");
@@ -65,7 +65,7 @@ public class SystemUpdateToVersion39 extends  UpdateToVersion implements UpdateS
 				}
 
 				@Override
-				public Integer requiredFeature() {
+				public Long requiredFeature() {
 					return ThreemaFeature.VOIP;
 				}
 

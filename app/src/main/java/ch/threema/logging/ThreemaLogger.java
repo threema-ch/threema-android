@@ -73,11 +73,13 @@ public class ThreemaLogger extends MarkerIgnoringBase {
 		}
 	}
 	public void print(@LogLevel int level, @Nullable Throwable throwable, @NonNull String messageFormat, Object... args) {
+		Throwable extractedThrowable = throwable != null ? throwable : getThrowableCandidate(args);
+
 		if (this.prefix != null) {
 			messageFormat = this.prefix + ": " + messageFormat;
 		}
 		for (LogBackend backend : this.backends) {
-			backend.print(level, this.tag, throwable, messageFormat, args);
+			backend.print(level, this.tag, extractedThrowable, messageFormat, args);
 		}
 	}
 
@@ -218,6 +220,26 @@ public class ThreemaLogger extends MarkerIgnoringBase {
 	@Override
 	public void error(String msg, @Nullable Throwable t) {
 		this.print(Log.ERROR, t, msg);
+	}
+
+	/**
+	 * Get the throwable if the last element is a throwable.
+	 *
+	 * @param argArray the arguments
+	 * @return the throwable if the last element is a throwable
+	 */
+	@Nullable
+	private Throwable getThrowableCandidate(@Nullable final Object[] argArray) {
+		if (argArray == null || argArray.length == 0) {
+			return null;
+		}
+
+		final Object lastEntry = argArray[argArray.length - 1];
+		if (lastEntry instanceof Throwable) {
+			return (Throwable) lastEntry;
+		}
+
+		return null;
 	}
 
 }

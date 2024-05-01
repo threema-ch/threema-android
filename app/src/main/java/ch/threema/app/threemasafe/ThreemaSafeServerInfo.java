@@ -28,7 +28,10 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
@@ -44,27 +47,38 @@ public class ThreemaSafeServerInfo {
 	private static final String SAFE_URL_PREFIX = "https://";
 	private static final String BACKUP_DIRECTORY_NAME = "backups/";
 
-	private String serverName;
+	// TODO(ANDR-2968): Remove the check for the legacy default server name
+	private static final String LEGACY_DEFAULT_SERVER_NAME = "safe-%h.threema.ch";
+
+	@Nullable
+	private String customServerName;
+	@NonNull
+	private final String defaultServerName = getDefaultServerNameFromServerAddressProvider();
 	private String serverUsername;
 	private String serverPassword;
 
-	public ThreemaSafeServerInfo() {}
+	public ThreemaSafeServerInfo() { }
 
-	public ThreemaSafeServerInfo(String serverName, String serverUsername, String serverPassword) {
+	public ThreemaSafeServerInfo(String customServerName, String serverUsername, String serverPassword) {
 		this.serverUsername = serverUsername;
 		this.serverPassword = serverPassword;
-		this.setServerName(serverName);
+		this.setCustomServerName(customServerName);
 	}
 
-	public String getServerName() {
-		return serverName;
+	@Nullable
+	public String getCustomServerName() {
+		return customServerName;
 	}
 
-	public void setServerName(String serverName) {
-		if (!TestUtil.empty(serverName)) {
-			this.serverName = serverName.trim().replace(SAFE_URL_PREFIX, "");
+	public void setCustomServerName(@Nullable String customServerName) {
+		if (!TestUtil.empty(customServerName)) {
+			this.customServerName = customServerName.trim().replace(SAFE_URL_PREFIX, "");
+			if (defaultServerName.equals(this.customServerName) || LEGACY_DEFAULT_SERVER_NAME.equals(this.customServerName)) {
+				this.customServerName = null;
+				logger.warn("Tried to set default server as custom server: {}", customServerName);
+			}
 		} else {
-			this.serverName = null;
+			this.customServerName = null;
 		}
 	}
 
@@ -85,7 +99,7 @@ public class ThreemaSafeServerInfo {
 	}
 
 	public boolean isDefaultServer() {
-		return TestUtil.empty(serverName);
+		return TestUtil.empty(customServerName);
 	}
 
 	URL getBackupUrl(byte[] backupId) throws ThreemaException {
@@ -113,10 +127,10 @@ public class ThreemaSafeServerInfo {
 	void addAuthorization(HttpsURLConnection urlConnection) throws ThreemaException {
 		String username = serverUsername, password = serverPassword;
 
-		if ((TestUtil.empty(serverUsername) || TestUtil.empty(serverPassword)) && !TestUtil.empty(serverName)) {
-			int atPos = serverName.indexOf("@");
+		if ((TestUtil.empty(serverUsername) || TestUtil.empty(serverPassword)) && !TestUtil.empty(customServerName)) {
+			int atPos = customServerName.indexOf("@");
 			if (atPos > 0) {
-				String userInfo = serverName.substring(0, atPos);
+				String userInfo = customServerName.substring(0, atPos);
 
 				int colonPos = userInfo.indexOf(":");
 				if (colonPos > 0 && colonPos < userInfo.length() - 1) {
@@ -134,23 +148,25 @@ public class ThreemaSafeServerInfo {
 		}
 	}
 
-	private String getServerNameOrDefault() throws ThreemaException {
-		if (!TestUtil.empty(serverName)) {
-			return serverName;
+	private String getCustomServerNameOrDefault() {
+		if (!TestUtil.empty(customServerName)) {
+			return customServerName;
 		} else {
-			return ThreemaApplication.getServiceManager().getServerAddressProviderService().getServerAddressProvider().getSafeServerUrl(false).replace(SAFE_URL_PREFIX, "");
+			return defaultServerName;
 		}
 	}
 
 	private URL getServerUrl(byte[] backupId, String filePart) {
 		try {
-			String serverUrl = SAFE_URL_PREFIX + getServerNameOrDefault().replace("%h", getShardHash(backupId));
+			String shardHash = getShardHash(backupId);
+			String serverUrl = SAFE_URL_PREFIX + getCustomServerNameOrDefault().replace("{backupIdPrefix8}", shardHash);
+
 			if (!serverUrl.endsWith("/")) {
 				serverUrl += "/";
 			}
 			serverUrl += filePart;
 			return new URL(serverUrl);
-		} catch (MalformedURLException | ThreemaException e) {
+		} catch (MalformedURLException e) {
 			return null;
 		}
 	}
@@ -164,10 +180,29 @@ public class ThreemaSafeServerInfo {
 
 	public String getHostName() {
 		try {
-			return new URL(SAFE_URL_PREFIX + getServerNameOrDefault()).getHost();
-		} catch (MalformedURLException | ThreemaException e) {
+			return new URL(SAFE_URL_PREFIX + getCustomServerNameOrDefault()).getHost();
+		} catch (MalformedURLException e) {
 			logger.error("Exception", e);
 		}
 		return "";
+	}
+
+	@NonNull
+	private String getDefaultServerNameFromServerAddressProvider() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager == null) {
+			logger.error("Cannot retrieve default safe server name as the service manager is null");
+			return "";
+		}
+		try {
+			return serviceManager
+				.getServerAddressProviderService()
+				.getServerAddressProvider()
+				.getSafeServerUrl(false)
+				.replace(SAFE_URL_PREFIX, "");
+		} catch (ThreemaException e) {
+			logger.error("Could not get default safe server name", e);
+			return "";
+		}
 	}
 }

@@ -38,6 +38,8 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import org.slf4j.Logger;
 
 import java.util.regex.Pattern;
@@ -66,7 +68,7 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
 	private boolean isLocked = false;
 	private MentionTextWatcher mentionTextWatcher = null;
 	private MentionPopupData mentionPopupData;
-	private View mentionPopupBoundary;
+	private TextInputLayout mentionPopupBoundary;
 	private MentionSelectorPopup mentionPopup;
 
 	private final android.view.ActionMode.Callback textSelectionCallback = new android.view.ActionMode.Callback() {
@@ -209,7 +211,6 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
 
 		// fix reverse selections
 		getText().replace(Math.min(start, end), Math.max(start, end), "@[" + identity + "]");
-//		setSelection(start + identity.length() + 1);
 	}
 
 	/**
@@ -221,7 +222,8 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
 		@NonNull ContactService contactService,
 		@NonNull UserService userService,
 		@NonNull PreferenceService preferenceService,
-		@NonNull GroupModel groupModel
+		@NonNull GroupModel groupModel,
+		@Nullable TextInputLayout mentionPopupBoundary
 	) {
 		mentionPopupData = new MentionPopupData(
 			activity,
@@ -231,12 +233,14 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
 			preferenceService,
 			groupModel
 		);
+
+		this.mentionPopupBoundary = mentionPopupBoundary;
 	}
 
 	/**
 	 * Enable the mention popup for this edit text.
 	 */
-	public void enableMentionPopup(@NonNull MentionPopupData data, @Nullable View boundary) {
+	public void enableMentionPopup(@NonNull MentionPopupData data, @Nullable TextInputLayout boundary) {
 		this.mentionPopupData = data;
 		this.mentionPopupBoundary = boundary;
 	}

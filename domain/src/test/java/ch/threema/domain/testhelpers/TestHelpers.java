@@ -21,24 +21,21 @@
 
 package ch.threema.domain.testhelpers;
 
+import java.util.Collections;
+import java.util.List;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
-import ch.threema.base.crypto.NonceStoreInterface;
+import ch.threema.base.crypto.NonceStore;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
-import ch.threema.domain.protocol.csp.connection.ThreemaConnection;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.IdentityStoreInterface;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class TestHelpers {
 
@@ -56,7 +53,6 @@ public class TestHelpers {
 
 			}
 
-			@Nullable
 			@Override
 			public Contact getContactForIdentityIncludingCache(@NonNull String identity) {
 				return getContactForIdentity(identity);
@@ -76,12 +72,12 @@ public class TestHelpers {
 	public static IdentityStoreInterface getNoopIdentityStore() {
 		return new IdentityStoreInterface() {
 			@Override
-			public byte[] encryptData(byte[] plaintext, byte[] nonce, byte[] receiverPublicKey) {
+			public byte[] encryptData(@NonNull byte[] plaintext, @NonNull byte[] nonce, @NonNull byte[] receiverPublicKey) {
 				return plaintext;
 			}
 
 			@Override
-			public byte[] decryptData(byte[] ciphertext, byte[] nonce, byte[] senderPublicKey) {
+			public byte[] decryptData(@NonNull byte[] ciphertext, @NonNull byte[] nonce, @NonNull byte[] senderPublicKey) {
 				return ciphertext;
 			}
 
@@ -106,33 +102,39 @@ public class TestHelpers {
 			}
 
 			@Override
-			public String getPublicNickname() {
-				return null;
+			public byte[] getPrivateKey() {
+				return new byte[32];
 			}
 
 			@Override
-			public void storeIdentity(String identity, String serverGroup, byte[] publicKey, byte[] privateKey) { }
+			@NonNull
+			public String getPublicNickname() {
+				return "";
+			}
+
+			@Override
+			public void storeIdentity(@NonNull String identity, @NonNull String serverGroup, @NonNull byte[] publicKey, @NonNull byte[] privateKey) { }
 		};
 	}
 
 	public static NonceFactory getNoopNonceFactory() {
-		return new NonceFactory(new NonceStoreInterface() {
+		return new NonceFactory(new NonceStore() {
 			@Override
-			public boolean exists(byte[] nonce) {
+			public boolean exists(@NonNull byte[] nonce) {
 				return false;
 			}
 
 			@Override
-			public boolean store(byte[] nonce) {
+			public boolean store(@NonNull byte[] nonce) {
 				return true;
 			}
-		});
-	}
 
-	public static MessageQueue getNoopMessageQueue(ContactStore contactStore, IdentityStoreInterface identityStore) {
-		ThreemaConnection con = mock(ThreemaConnection.class);
-		when(con.getNonceFactory()).thenReturn(TestHelpers.getNoopNonceFactory());
-		return new MessageQueue(contactStore, identityStore, con);
+			@NonNull
+			@Override
+			public List<byte[]> getAllHashedNonces() {
+				return Collections.emptyList();
+			}
+		});
 	}
 
 	/**
@@ -149,7 +151,9 @@ public class TestHelpers {
 
 	public static MessageBox boxMessage(AbstractMessage msg) throws ThreemaException {
 		MessageCoder messageCoder = new MessageCoder(getNoopContactStore(), getNoopIdentityStore());
-		return messageCoder.encode(msg, getNoopNonceFactory());
+		NonceFactory nonceFactory = getNoopNonceFactory();
+		byte[] nonce = nonceFactory.next(false);
+		return messageCoder.encode(msg, nonce, nonceFactory);
 	}
 
 	public static AbstractMessage decodeMessageFromBox(@NonNull MessageBox boxedMessage) throws MissingPublicKeyException, BadMessageException {

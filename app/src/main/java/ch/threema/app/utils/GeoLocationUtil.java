@@ -78,6 +78,10 @@ public class GeoLocationUtil {
 		this.targetView = targetView;
 	}
 
+	public static void deleteAddressCache() {
+		addressCache.clear();
+	}
+
 	@WorkerThread
 	public static String getAddressFromLocation(Context context, double latitude, double longitude) throws IOException {
 		String addressString = context.getString(R.string.unknown_address);

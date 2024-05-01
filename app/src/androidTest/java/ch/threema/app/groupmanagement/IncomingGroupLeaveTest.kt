@@ -25,18 +25,20 @@ import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
+import kotlinx.coroutines.test.runTest
 import ch.threema.app.activities.HomeActivity
 import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
-import ch.threema.domain.protocol.csp.messages.GroupRequestSyncMessage
+import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.storage.models.GroupModel
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import junit.framework.TestCase.fail
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Ignore
@@ -46,6 +48,7 @@ import org.junit.runner.RunWith
 /**
  * Tests that incoming group leave messages are handled correctly.
  */
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
@@ -55,7 +58,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      * Test that contact A leaving my group works as expected.
      */
     @Test
-    fun testValidLeaveInMyGroup() {
+    fun testValidLeaveInMyGroup() = runTest {
         assertSuccessfulLeave(myGroup, contactA, true)
     }
 
@@ -63,7 +66,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      * Test that contact B leaving groupAB works as expected.
      */
     @Test
-    fun testValidLeave() {
+    fun testValidLeave() = runTest {
         assertSuccessfulLeave(groupAB, contactB)
     }
 
@@ -72,7 +75,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      */
     @Test
     @Ignore("TODO(ANDR-2385): ignore group leave messages from group creators")
-    fun testLeaveFromSender() {
+    fun testLeaveFromSender() = runTest {
         assertUnsuccessfulLeave(groupA, contactA)
         assertUnsuccessfulLeave(groupB, contactB)
     }
@@ -82,7 +85,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      * not change anything).
      */
     @Test
-    fun testLeaveOfMyNonExistingGroup() {
+    fun testLeaveOfMyNonExistingGroup() = runTest {
         assertUnsuccessfulLeave(myUnknownGroup, contactA, emptyList())
     }
 
@@ -91,7 +94,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      * no effect.
      */
     @Test
-    fun testLeaveOfNonExistingGroup() {
+    fun testLeaveOfNonExistingGroup() = runTest {
         assertUnsuccessfulLeave(groupAUnknown, contactB, emptyList(), true)
     }
 
@@ -100,7 +103,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      * does not change anything).
      */
     @Test
-    fun testLeaveOfLeftGroup() {
+    fun testLeaveOfLeftGroup() = runTest {
         assertUnsuccessfulLeave(groupALeft, contactB, null, true)
     }
 
@@ -109,7 +112,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      * changed).
      */
     @Test
-    fun testLeaveOfMyLeftGroup() {
+    fun testLeaveOfMyLeftGroup() = runTest {
         assertUnsuccessfulLeave(myLeftGroup, contactA)
     }
 
@@ -118,7 +121,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      * effect.
      */
     @Test
-    fun testLeaveOfNonMember() {
+    fun testLeaveOfNonMember() = runTest {
         assertUnsuccessfulLeave(groupA, contactB)
     }
 
@@ -153,7 +156,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
         // The common group receive steps are not executed for group leave messages
     }
 
-    private fun assertSuccessfulLeave(group: TestGroup, contact: TestContact, expectStateChange: Boolean = false) {
+    private suspend fun assertSuccessfulLeave(group: TestGroup, contact: TestContact, expectStateChange: Boolean = false) {
         launchActivity<HomeActivity>()
 
         serviceManager.groupService.resetCache(group.groupModel.id)
@@ -183,10 +186,10 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
             serviceManager.groupService.getGroupMemberModels(group.groupModel).map { it.identity })
 
         // Assert that no message has been sent as a response to a group leave
-        assertEquals(0, sentMessages.size)
+        assertEquals(0, sentMessagesInsideTask.size)
     }
 
-    private fun assertUnsuccessfulLeave(
+    private suspend fun assertUnsuccessfulLeave(
         group: TestGroup,
         contact: TestContact,
         expectedMembers: List<String>? = null,
@@ -223,15 +226,15 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
 
         if (shouldSendSyncRequest) {
             // Should send sync request to the group creator
-            assertEquals(1, sentMessages.size)
-            val sentMessage = sentMessages.first() as GroupRequestSyncMessage
+            assertEquals(1, sentMessagesInsideTask.size)
+            val sentMessage = sentMessagesInsideTask.first() as GroupSyncRequestMessage
             assertEquals(myContact.identity, sentMessage.fromIdentity)
             assertEquals(group.groupCreator.identity, sentMessage.toIdentity)
             assertEquals(group.apiGroupId, sentMessage.apiGroupId)
             assertEquals(group.groupCreator.identity, sentMessage.groupCreator)
         } else {
             // Assert that no message has been sent as a response to the leave message
-            assertEquals(0, sentMessages.size)
+            assertEquals(0, sentMessagesInsideTask.size)
         }
     }
 

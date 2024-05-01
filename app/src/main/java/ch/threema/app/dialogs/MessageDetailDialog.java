@@ -174,6 +174,12 @@ public class MessageDetailDialog extends ThreemaDialogFragment implements View.O
 					case FOURDH:
 						forwardSecurityModeStr = getString(R.string.forward_security_mode_4dh);
 						break;
+					case ALL:
+						forwardSecurityModeStr = getString(R.string.forward_security_mode_all);
+						break;
+					case PARTIAL:
+						forwardSecurityModeStr = getString(R.string.forward_security_mode_partial);
+						break;
 					default:
 						break;
 				}
@@ -336,15 +342,13 @@ public class MessageDetailDialog extends ThreemaDialogFragment implements View.O
 					messageIdText.setVisibility(View.VISIBLE);
 				}
 
-				if (ConfigUtils.isForwardSecurityEnabled()) {
-					if (messageModel instanceof GroupMessageModel || messageModel instanceof DistributionListMessageModel) {
-						forwardSecurityModeData.setVisibility(View.GONE);
-						forwardSecurityModeText.setVisibility(View.GONE);
-					} else {
-						forwardSecurityModeData.setText(forwardSecurityModeStr);
-						forwardSecurityModeData.setVisibility(View.VISIBLE);
-						forwardSecurityModeText.setVisibility(View.VISIBLE);
-					}
+				if (messageModel instanceof DistributionListMessageModel) {
+					forwardSecurityModeData.setVisibility(View.GONE);
+					forwardSecurityModeText.setVisibility(View.GONE);
+				} else {
+					forwardSecurityModeData.setText(forwardSecurityModeStr);
+					forwardSecurityModeData.setVisibility(View.VISIBLE);
+					forwardSecurityModeText.setVisibility(View.VISIBLE);
 				}
 
 				updateAckDisplay(messageModel);
@@ -492,6 +496,7 @@ public class MessageDetailDialog extends ThreemaDialogFragment implements View.O
 					stateResource = R.string.state_sent;
 					break;
 				case SENDING:
+				case UPLOADING:
 					stateResource = R.string.state_sending;
 					break;
 				case SENDFAILED:

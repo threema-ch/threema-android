@@ -29,6 +29,7 @@ import android.accounts.AccountManagerCallback;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.ContactsContract;
+import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,7 +70,6 @@ import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.CreateIdentityRequestDataInterface;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
 import ch.threema.domain.stores.IdentityStoreInterface;
 
 /**
@@ -89,6 +89,9 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 	private int policyErrorCode;
     private LicenseService.Credentials credentials;
 	private Account account;
+
+	// TODO(ANDR-2519): Remove when md allows fs
+	private boolean isFsEnabled = true;
 
 	public UserServiceImpl(
 		Context context,
@@ -126,8 +129,6 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 				this
 			);
 		}
-
-		this.sendFlags();
 
 		// identity has been successfully created. set push token
 		PushUtil.enqueuePushTokenUpdate(context, false, false);
@@ -516,8 +517,6 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 				privateKey
 		);
 
-		this.sendFlags();
-
 		if(result.email != null && result.email.length() > 0) {
 			this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL, result.email);
 		}
@@ -544,38 +543,61 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         this.credentials = credentials;
     }
 
-
 	@Override
-	public boolean sendFlags() {
+	public boolean sendFeatureMask() {
 		boolean success = false;
 		try {
-			ThreemaFeature.Builder builder = (new ThreemaFeature.Builder())
-					.audio(true)
-					.group(true)
-					.ballot(true)
-					.file(true)
-					.voip(true)
-					.videocalls(true);
-
-			if (ConfigUtils.isForwardSecurityEnabled()) {
-				builder.forwardSecurity(true);
+			long featureMask = getMyFeatureMask();
+			if (!shouldUpdateFeatureMask(featureMask)) {
+				logger.info("No feature mask update necessary ({})", featureMask);
+				return true;
 			}
 
-			if (BuildConfig.GROUP_CALLS_ENABLED) {
-				builder.groupCalls(true);
-			}
-
-			if(this.preferenceService.getTransmittedFeatureLevel() != builder.build()) {
-				this.apiConnector.setFeatureMask(builder, this.identityStore);
-				this.preferenceService.setTransmittedFeatureLevel(builder.build());
-			}
+			logger.info("Sending feature mask {}", featureMask);
+			this.apiConnector.setFeatureMask(featureMask, this.identityStore);
+			this.preferenceService.setTransmittedFeatureMask(featureMask);
+			this.preferenceService.setLastFeatureMaskTransmission(new Date().getTime());
+			logger.info("Successfully sent feature mask");
 			success = true;
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Could not send feature mask", e);
 		}
 
-
 		return success;
+	}
+
+	private long getMyFeatureMask() {
+		ThreemaFeature.Builder builder = (new ThreemaFeature.Builder())
+			.audio(true)
+			.group(true)
+			.ballot(true)
+			.file(true)
+			.voip(true)
+			.videocalls(true)
+			.forwardSecurity(isFsEnabled);
+
+		if (BuildConfig.GROUP_CALLS_ENABLED) {
+			builder.groupCalls(true);
+		}
+
+		return builder.build();
+	}
+
+	private boolean shouldUpdateFeatureMask(long actualFeatureMask) {
+		long transmittedFeatureMask = preferenceService.getTransmittedFeatureMask();
+		if (transmittedFeatureMask != actualFeatureMask) {
+			logger.info("Feature mask update necessary: {} -> {}", transmittedFeatureMask, actualFeatureMask);
+			return true;
+		}
+
+		long lastFeatureMaskTransmission = preferenceService.getLastFeatureMaskTransmission();
+		long timeThreshold = new Date().getTime() - DateUtils.DAY_IN_MILLIS;
+		return lastFeatureMaskTransmission < timeThreshold;
+	}
+
+	@Override
+	public void setForwardSecurityEnabled(boolean isFsEnabled) {
+		this.isFsEnabled = isFsEnabled;
 	}
 
 	@Override

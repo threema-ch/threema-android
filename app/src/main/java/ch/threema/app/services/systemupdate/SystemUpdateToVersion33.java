@@ -31,10 +31,9 @@ import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageModel;
 
-/**
- *
- */
-public class SystemUpdateToVersion33 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
+public class SystemUpdateToVersion33 implements UpdateSystemService.SystemUpdate {
 
 	private final DatabaseServiceNew databaseService;
 	private final SQLiteDatabase sqLiteDatabase;
@@ -47,9 +46,13 @@ public class SystemUpdateToVersion33 extends  UpdateToVersion implements UpdateS
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		for(String s: this.databaseService.getGroupMessagePendingMessageIdModelFactory().getStatements()) {
-			this.sqLiteDatabase.execSQL(s);
-		}
+		this.sqLiteDatabase.execSQL(
+			"CREATE TABLE `m_group_message_pending_message_id`"
+			+ "("
+			+ "`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
+			+ "`groupMessageId` INTEGER,"
+			+ "`apiMessageId` VARCHAR"
+			+ ")");
 
 		//add new isQueued field to message model fields
 		for(String table: new String[]{
@@ -57,7 +60,7 @@ public class SystemUpdateToVersion33 extends  UpdateToVersion implements UpdateS
 				GroupMessageModel.TABLE,
 				DistributionListMessageModel.TABLE
 		}) {
-			if(!this.fieldExist(this.sqLiteDatabase, table, "isQueued")) {
+			if(!fieldExists(this.sqLiteDatabase, table, "isQueued")) {
 				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN isQueued TINYINT NOT NULL DEFAULT 0");
 
 				//update the existing records
@@ -68,7 +71,7 @@ public class SystemUpdateToVersion33 extends  UpdateToVersion implements UpdateS
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

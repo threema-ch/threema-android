@@ -24,14 +24,13 @@ package ch.threema.app.backuprestore.csv;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.services.FileService;
 import ch.threema.base.ThreemaException;
@@ -40,10 +39,9 @@ import ch.threema.base.utils.LoggingUtil;
 public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupRestoreDataServiceImpl");
 
-	private final FileService fileService;
+	private final @NonNull FileService fileService;
 
-	public BackupRestoreDataServiceImpl(
-			FileService fileService) {
+	public BackupRestoreDataServiceImpl(@NonNull FileService fileService) {
 		this.fileService = fileService;
 	}
 
@@ -60,7 +58,7 @@ public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 			.getBackupPath()
 			.listFiles((dir, filename) -> filename.endsWith(".zip"));
 
-		List<BackupData> result = new ArrayList<BackupData>();
+		List<BackupData> result = new ArrayList<>();
 
 		if (files != null) {
 			for (final File f : files) {
@@ -90,7 +88,7 @@ public class BackupRestoreDataServiceImpl implements BackupRestoreDataService {
 
 				try {
 					datePart = new Date();
-					datePart.setTime(Long.valueOf(pieces[2]));
+					datePart.setTime(Long.parseLong(pieces[2]));
 				} catch (NumberFormatException e) {
 					idPart = null;
 					datePart = null;

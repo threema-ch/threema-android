@@ -27,6 +27,8 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
 
+import org.slf4j.Logger;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -36,21 +38,25 @@ import java.util.List;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.DistributionListListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
 
 public class DistributionListServiceImpl implements DistributionListService {
-
+	private static final Logger logger = LoggingUtil.getThreemaLogger("DistributionListServiceImpl");
 	private static final String DISTRIBUTION_LIST_UID_PREFIX = "d-";
 
 	private final Context context;
@@ -79,33 +85,38 @@ public class DistributionListServiceImpl implements DistributionListService {
 	}
 
 	@Override
-	public DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities) {
+	public DistributionListModel createDistributionList(
+		@Nullable String name,
+		@NonNull String[] memberIdentities
+	) {
 		return createDistributionList(name, memberIdentities, false);
 	}
 
 	@Override
-	public DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities, boolean isHidden) {
-		final DistributionListModel distributionListModel = new DistributionListModel();
-		distributionListModel.setName(name);
-		distributionListModel.setCreatedAt(new Date());
-		distributionListModel.setHidden(isHidden);
-
-		//create
+	public DistributionListModel createDistributionList(
+		@Nullable String name,
+		@NonNull String[] memberIdentities,
+		boolean isAdHocDistributionList
+	) {
+		// Create group model in database
+		final Date now = new Date();
+		final DistributionListModel distributionListModel = new DistributionListModel()
+			.setName(name)
+			.setCreatedAt(now)
+			.setLastUpdate(now)
+			.setAdHocDistributionList(isAdHocDistributionList);
 		this.databaseServiceNew.getDistributionListModelFactory().create(
 			distributionListModel
 		);
 
-
-		for(String identity: memberIdentities) {
+		// Add members to distribution list
+		for (String identity : memberIdentities) {
 			this.addMemberToDistributionList(distributionListModel, identity);
 		}
 
-		ListenerManager.distributionListListeners.handle(new ListenerManager.HandleListener<DistributionListListener>() {
-			@Override
-			public void handle(DistributionListListener listener) {
-				listener.onCreate(distributionListModel);
-			}
-		});
+		// Notify listeners
+		ListenerManager.distributionListListeners.handle(listener -> listener.onCreate(distributionListModel));
+
 		return distributionListModel;
 	}
 
@@ -191,24 +202,39 @@ public class DistributionListServiceImpl implements DistributionListService {
 
 	@Override
 	public boolean remove(final DistributionListModel distributionListModel) {
+		// Obtain some services through service manager
+		//
+		// Note: We cannot put these services in the constructor due to circular dependencies.
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager == null) {
+			logger.error("Missing serviceManager, cannot remove distribution list");
+			return false;
+		}
+		final ConversationService conversationService;
+		try {
+			conversationService = serviceManager.getConversationService();
+		} catch (ThreemaException e) {
+			logger.error("Could not obtain services when removing distribution list", e);
+			return false;
+		}
+
+		// Remove distribution list members
 		if(!this.removeMembers(distributionListModel)) {
 			return false;
 		}
 
+		// Delete shortcuts
 		ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(distributionListModel));
 		ShortcutUtil.deletePinnedShortcut(getUniqueIdString(distributionListModel));
 
-		//remove list
-		this.databaseServiceNew.getDistributionListModelFactory().delete(
-				distributionListModel
-		);
+		// Remove conversation
+		conversationService.removeFromCache(distributionListModel);
 
-		ListenerManager.distributionListListeners.handle(new ListenerManager.HandleListener<DistributionListListener>() {
-			@Override
-			public void handle(DistributionListListener listener) {
-				listener.onRemove(distributionListModel);
-			}
-		});
+		// Delete distribution list fully from database
+		this.databaseServiceNew.getDistributionListModelFactory().delete(distributionListModel);
+
+		// Notify listeners
+		ListenerManager.distributionListListeners.handle(listener -> listener.onRemove(distributionListModel));
 
 		return true;
 	}
@@ -312,7 +338,7 @@ public class DistributionListServiceImpl implements DistributionListService {
 				messageDigest.update((DISTRIBUTION_LIST_UID_PREFIX + distributionListModel.getId()).getBytes());
 				return Base32.encode(messageDigest.digest());
 			} catch (NoSuchAlgorithmException e) {
-				//
+				logger.error("getUniqueIdString failed", e);
 			}
 		}
 		return "";
@@ -331,6 +357,13 @@ public class DistributionListServiceImpl implements DistributionListService {
 				}
 			});
 		}
+	}
+
+	@Override
+	public void bumpLastUpdate(@NonNull DistributionListModel distributionListModel) {
+		distributionListModel.setLastUpdate(new Date());
+		save(distributionListModel);
+		ListenerManager.distributionListListeners.handle(listener -> listener.onModify(distributionListModel));
 	}
 
 	private void save(DistributionListModel distributionListModel) {

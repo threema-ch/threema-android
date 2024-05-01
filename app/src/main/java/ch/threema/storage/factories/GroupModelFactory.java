@@ -110,6 +110,7 @@ public class GroupModelFactory extends ModelFactory {
 							.setCreatorIdentity(cursorHelper.getString(GroupModel.COLUMN_CREATOR_IDENTITY))
 							.setSynchronizedAt(cursorHelper.getDate(GroupModel.COLUMN_SYNCHRONIZED_AT))
 							.setCreatedAt(cursorHelper.getDateByString(GroupModel.COLUMN_CREATED_AT))
+							.setLastUpdate(cursorHelper.getDate(GroupModel.COLUMN_LAST_UPDATE))
 							.setDeleted(cursorHelper.getBoolean(GroupModel.COLUMN_DELETED))
 							.setArchived(cursorHelper.getBoolean(GroupModel.COLUMN_IS_ARCHIVED))
 							.setGroupDesc(cursorHelper.getString(GroupModel.COLUMN_GROUP_DESC))
@@ -164,6 +165,7 @@ public class GroupModelFactory extends ModelFactory {
 		contentValues.put(GroupModel.COLUMN_CREATOR_IDENTITY, groupModel.getCreatorIdentity());
 		contentValues.put(GroupModel.COLUMN_NAME, groupModel.getName());
 		contentValues.put(GroupModel.COLUMN_CREATED_AT, groupModel.getCreatedAt() != null ? CursorHelper.dateAsStringFormat.get().format(groupModel.getCreatedAt()) : null);
+		contentValues.put(GroupModel.COLUMN_LAST_UPDATE, groupModel.getLastUpdate() != null ? groupModel.getLastUpdate().getTime() : null);
 		contentValues.put(GroupModel.COLUMN_SYNCHRONIZED_AT, groupModel.getSynchronizedAt() != null ? groupModel.getSynchronizedAt().getTime() : null);
 		contentValues.put(GroupModel.COLUMN_DELETED, groupModel.isDeleted());
 		contentValues.put(GroupModel.COLUMN_IS_ARCHIVED, groupModel.isArchived());
@@ -289,7 +291,7 @@ public class GroupModelFactory extends ModelFactory {
 	@Override
 	public String[] getStatements() {
 		return new String[]{
-				"CREATE TABLE `m_group` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `name` VARCHAR , `creatorIdentity` VARCHAR , `createdAt` VARCHAR , `synchronizedAt` BIGINT , `deleted` SMALLINT , `isArchived` TINYINT DEFAULT 0, `groupKind` INT DEFAULT 0, `groupDesc` VARCHAR DEFAULT NULL, `changedGroupDescTimestamp` VARCHAR DEFAULT NULL);",
+				"CREATE TABLE `m_group` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `name` VARCHAR , `creatorIdentity` VARCHAR , `createdAt` VARCHAR , `lastUpdate` INTEGER, `synchronizedAt` BIGINT , `deleted` SMALLINT , `isArchived` TINYINT DEFAULT 0, `groupKind` INT DEFAULT 0, `groupDesc` VARCHAR DEFAULT NULL, `changedGroupDescTimestamp` VARCHAR DEFAULT NULL);",
 				"CREATE UNIQUE INDEX `apiGroupIdAndCreator` ON `m_group` ( `apiGroupId`, `creatorIdentity` );"
 		};
 	}

@@ -188,7 +188,7 @@ public class BlobRequestHandler extends MessageReceiver {
 							name = filename + ".mp4";
 							break;
 						case IMAGE:
-							mime = MimeUtil.MIME_TYPE_IMAGE_JPG;
+							mime = MimeUtil.MIME_TYPE_IMAGE_JPEG;
 							name = filename + ".jpg";
 							break;
 						default:

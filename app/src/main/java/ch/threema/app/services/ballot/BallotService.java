@@ -24,6 +24,7 @@ package ch.threema.app.services.ballot;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.base.ThreemaException;
-import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
+import ch.threema.domain.protocol.csp.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateInterface;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
@@ -100,10 +101,12 @@ public interface BallotService {
 	BallotPublishResult publish(MessageReceiver<?> messageReceiver, BallotModel ballotModel,
 								AbstractMessageModel abstractMessageModel) throws NotAllowedException, MessageTooLongException;
 
-	BallotPublishResult publish(MessageReceiver<?> messageReceiver,
-	                            BallotModel ballotModel,
-	                            AbstractMessageModel abstractMessageModel,
-	                            String receivingIdentity) throws NotAllowedException, MessageTooLongException;
+	BallotPublishResult publish(
+		MessageReceiver messageReceiver,
+        BallotModel ballotModel,
+        AbstractMessageModel abstractMessageModel,
+        @Nullable Collection<String> receivingIdentities
+	) throws NotAllowedException, MessageTooLongException;
 
 	LinkBallotModel getLinkedBallotModel(BallotModel ballotModel) throws NotAllowedException;
 	boolean remove(BallotModel ballotModel) throws NotAllowedException;

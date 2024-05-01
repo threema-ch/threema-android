@@ -29,6 +29,7 @@ import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataReject;
+import ch.threema.protobuf.csp.e2e.fs.Terminate;
 
 /**
  * Interface for classes that receive updates when a forward security session changes status.
@@ -47,6 +48,16 @@ public interface ForwardSecurityStatusListener {
 	void versionsUpdated(@NonNull DHSession session, @NonNull DHSession.UpdatedVersionsSnapshot versionsSnapshot, @NonNull Contact contact);
 	void messageWithoutFSReceived(@NonNull Contact contact, @NonNull DHSession session, @NonNull AbstractMessage message);
 	void postIllegalSessionState(@NonNull DHSessionId sessionId, @NonNull Contact contact);
+
+	/**
+	 * TODO(ANDR-2519): Remove when md supports fs by default
+	 *
+	 * Called when all sessions with a contact have been terminated.
+	 * This will only be called when there was at least one session that has been terminated and
+	 * termination was carried out by the delete and terminate fs sessions task or when an init has
+	 * been received by a contact that does not support forward security.
+	 */
+	void allSessionsTerminated(@NonNull Contact contact, @NonNull Terminate.Cause cause);
 
 	/**
 	 * Check whether the contact has forward security support based on the feature mask. Note that

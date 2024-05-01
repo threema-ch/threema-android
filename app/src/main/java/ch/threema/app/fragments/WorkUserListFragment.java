@@ -134,7 +134,7 @@ public class WorkUserListFragment extends RecipientListFragment {
 					}
 
 					@Override
-					public Integer requiredFeature() {
+					public Long requiredFeature() {
 						return null;
 					}
 

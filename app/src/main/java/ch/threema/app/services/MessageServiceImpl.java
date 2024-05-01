@@ -58,13 +58,6 @@ import android.text.format.DateUtils;
 import android.util.SparseIntArray;
 import android.widget.Toast;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.collection.ArrayMap;
-import androidx.core.app.NotificationManagerCompat;
-
 import com.neilalexander.jnacl.NaCl;
 
 import org.apache.commons.io.IOUtils;
@@ -75,7 +68,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -91,11 +83,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.collection.ArrayMap;
+import androidx.core.app.NotificationManagerCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -104,21 +100,21 @@ import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.exceptions.TranscodeCanceledException;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.processors.MessageAckProcessor;
 import ch.threema.app.routines.ReadMessagesRoutine;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotUpdateResult;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.stores.IdentityStore;
+import ch.threema.app.tasks.OutgoingGroupDeliveryReceiptMessageTask;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.ExifInterface;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.GeoLocationUtil;
@@ -146,16 +142,15 @@ import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
-import ch.threema.domain.protocol.csp.connection.MessageTooLongException;
+import ch.threema.domain.protocol.csp.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.domain.protocol.csp.messages.BoxAudioMessage;
-import ch.threema.domain.protocol.csp.messages.BoxImageMessage;
-import ch.threema.domain.protocol.csp.messages.BoxLocationMessage;
-import ch.threema.domain.protocol.csp.messages.BoxTextMessage;
-import ch.threema.domain.protocol.csp.messages.BoxVideoMessage;
+import ch.threema.domain.protocol.csp.messages.AudioMessage;
+import ch.threema.domain.protocol.csp.messages.ImageMessage;
+import ch.threema.domain.protocol.csp.messages.LocationMessage;
+import ch.threema.domain.protocol.csp.messages.TextMessage;
+import ch.threema.domain.protocol.csp.messages.VideoMessage;
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
 import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage;
@@ -164,14 +159,13 @@ import ch.threema.domain.protocol.csp.messages.GroupLocationMessage;
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage;
 import ch.threema.domain.protocol.csp.messages.GroupVideoMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateInterface;
-import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateMessage;
-import ch.threema.domain.protocol.csp.messages.ballot.GroupBallotCreateMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.file.FileMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileMessageInterface;
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
-import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.MessageModelFactory;
@@ -180,7 +174,6 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupMessagePendingMessageIdModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
@@ -204,30 +197,21 @@ import ch.threema.storage.models.data.status.VoipStatusDataModel;
 public class MessageServiceImpl implements MessageService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageServiceImpl");
 
-	private final MessageQueue messageQueue;
-	public static final String MESSAGE_QUEUE_SAVE_FILE = "msgqueue.ser";
 	public static final long FILE_AUTO_DOWNLOAD_MAX_SIZE_M = 5; // MB
 	public static final long FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO = FILE_AUTO_DOWNLOAD_MAX_SIZE_M * 1024 * 1024; // used for calculations
 	public static final long FILE_AUTO_DOWNLOAD_MAX_SIZE_SI = FILE_AUTO_DOWNLOAD_MAX_SIZE_M * 1000 * 1000; // used for presentation only
 	public static final int THUMBNAIL_SIZE_PX = 512;
 
+	private final Context context;
+
+	// Services
 	private final MessageSendingService messageSendingService;
 	private final DatabaseServiceNew databaseServiceNew;
 	private final ContactService contactService;
 	private final FileService fileService;
 	private final IdentityStore identityStore;
-	private final Context context;
-	private final MessageAckProcessor messageAckProcessor;
 	private final BallotService ballotService;
-
 	private final PreferenceService preferenceService;
-
-	private final Collection<MessageModel> contactMessageCache;
-	private final Collection<GroupMessageModel> groupMessageCache;
-	private final Collection<DistributionListMessageModel> distributionListMessageCache;
-
-	private final SparseIntArray loadingProgress = new SparseIntArray();
-
 	private final LockAppService appLockService;
 	private final GroupService groupService;
 	private final ApiService apiService;
@@ -236,17 +220,22 @@ public class MessageServiceImpl implements MessageService {
 	private final IdListService blackListService;
 	private final SymmetricEncryptionService symmetricEncryptionService;
 
+	// Caches
+	private final Collection<MessageModel> contactMessageCache;
+	private final Collection<GroupMessageModel> groupMessageCache;
+	private final Collection<DistributionListMessageModel> distributionListMessageCache;
+
+	private final SparseIntArray loadingProgress = new SparseIntArray();
+
 	public MessageServiceImpl(
 		Context context,
 	    CacheService cacheService,
-	    MessageQueue messageQueue,
 	    DatabaseServiceNew databaseServiceNew,
 	    ContactService contactService,
 	    FileService fileService,
 	    IdentityStore identityStore,
 	    SymmetricEncryptionService symmetricEncryptionService,
 	    PreferenceService preferenceService,
-	    MessageAckProcessor messageAckProcessor,
 	    LockAppService appLockService,
 	    BallotService ballotService,
 	    GroupService groupService,
@@ -256,14 +245,12 @@ public class MessageServiceImpl implements MessageService {
 	    IdListService blackListService
 	) {
 		this.context = context;
-		this.messageQueue = messageQueue;
 		this.databaseServiceNew = databaseServiceNew;
 		this.contactService = contactService;
 		this.fileService = fileService;
 		this.identityStore = identityStore;
 		this.symmetricEncryptionService = symmetricEncryptionService;
 		this.preferenceService = preferenceService;
-		this.messageAckProcessor = messageAckProcessor;
 		this.appLockService = appLockService;
 		this.ballotService = ballotService;
 		this.groupService = groupService;
@@ -279,39 +266,6 @@ public class MessageServiceImpl implements MessageService {
 		//init queue
 		messageSendingService = new MessageSendingServiceExponentialBackOff(new MessageSendingService.MessageSendingServiceState() {
 			@Override
-			public void processingFinished(
-				@NonNull AbstractMessageModel messageModel,
-				@NonNull MessageReceiver<AbstractMessageModel> receiver
-			) {
-				boolean setSent = false;
-
-				// Save message model in database
-				messageModel.setSaved(true);
-				receiver.saveLocalModel(messageModel);
-
-				if (messageModel.getApiMessageId() != null && messageModel.getApiMessageId().length() > 0) {
-					try {
-						/* at this point, it is possible that the ACK from the server has already arrived before we had
-						   a chance to update the message ID in the model. Therefore we ask the message ACK processor
-						   whether the ACK has already been received before we update the state.
-						 */
-						MessageId messageId = new MessageId(Utils.hexStringToByteArray(messageModel.getApiMessageId()));
-						setSent = MessageServiceImpl.this.messageAckProcessor.wasRecentlyAcked(messageId);
-					} catch (ThreemaException e) {
-						//do nothing an dont set as sent
-						logger.error("Exception", e);
-					}
-				} else {
-					setSent = true;
-				}
-				if (setSent) {
-					updateMessageState(messageModel, MessageState.SENT, null);
-				} else {
-					updateMessageState(messageModel, MessageState.SENDING, null);
-				}
-			}
-
-			@Override
 			public void processingFailed(AbstractMessageModel messageModel, MessageReceiver<AbstractMessageModel> receiver) {
 				//remove send machine
 				removeSendMachine(messageModel);
@@ -325,9 +279,6 @@ public class MessageServiceImpl implements MessageService {
 				}
 			}
 		});
-
-		/* read message queue from save file, if it exists */
-		readMessageQueue();
 	}
 
 	private void cache(AbstractMessageModel m) {
@@ -351,10 +302,11 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public AbstractMessageModel createVoipStatus(
-			VoipStatusDataModel data,
-			MessageReceiver receiver,
-			boolean isOutbox,
-			boolean isRead) {
+		@NonNull VoipStatusDataModel data,
+		@NonNull MessageReceiver receiver,
+		boolean isOutbox,
+		boolean isRead
+	) {
 		logger.info("Storing voip status message (outbox={}, status={}, reason={})",
 			isOutbox, data.getStatus(), data.getReason());
 		final AbstractMessageModel model = receiver.createLocalModel(
@@ -491,7 +443,7 @@ public class MessageServiceImpl implements MessageService {
 	) throws ThreemaException {
 		final String tag = "sendTextMessage";
 
-		logger.info(tag + ": start");
+		logger.info("{}: start", tag);
 
 		// Strip leading/trailing whitespace and throw if nothing is left
 		String trimmedMessage = message.trim();
@@ -504,37 +456,25 @@ public class MessageServiceImpl implements MessageService {
 			throw new MessageTooLongException();
 		}
 
-		logger.debug(tag + ": create model instance");
+		logger.debug("{}: create model instance", tag);
 		final AbstractMessageModel messageModel = messageReceiver.createLocalModel(MessageType.TEXT, MessageContentsType.TEXT, new Date());
-		logger.debug(tag + ": cache");
+		logger.debug("{}: cache", tag);
 		cache(messageModel);
 
 		messageModel.setOutbox(true);
 		messageModel.setBodyAndQuotedMessageId(trimmedMessage);
-		// TODO(db): PENDING statt SENDING?
-		messageModel.setState(messageReceiver.sendMediaData() ? MessageState.SENDING : MessageState.SENT);
+		messageModel.setState(MessageState.SENDING);
 		messageModel.setSaved(true);
 
-		logger.debug(tag + ": save db");
+		logger.debug("{}: save db", tag);
 		messageReceiver.saveLocalModel(messageModel);
-		logger.debug(tag + ": fire create message");
+		logger.debug("{}: fire create message", tag);
 		fireOnCreatedMessage(messageModel);
 
-		try {
-			if (messageReceiver.createBoxedTextMessage(trimmedMessage, messageModel)) {
-				String messageId = messageModel.getApiMessageId();
-				logger.info(tag + ": message " + (messageId != null ? messageId : messageModel.getId()) + " successfully queued");
-			} else {
-				logger.info(tag + ": unable to send message. no recipients");
-				messageModel.setState(MessageState.SENDFAILED);
-			}
-			messageReceiver.saveLocalModel(messageModel);
-		} catch (ThreemaException e) {
-			messageModel.setState(MessageState.SENDFAILED);
-			messageReceiver.saveLocalModel(messageModel);
-
-			throw e;
-		}
+		messageReceiver.createAndSendTextMessage(messageModel);
+		String messageId = messageModel.getApiMessageId();
+		logger.info("{}: message {} successfully queued", tag, (messageId != null ? messageId : messageModel.getId()));
+		messageReceiver.saveLocalModel(messageModel);
 
 		fireOnModifiedMessage(messageModel);
 
@@ -542,9 +482,9 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public AbstractMessageModel sendLocation(@NonNull Location location, String poiName, MessageReceiver receiver, final CompletionHandler completionHandler) throws ThreemaException, IOException {
+	public AbstractMessageModel sendLocation(@NonNull Location location, String poiName, MessageReceiver receiver, final CompletionHandler completionHandler) throws ThreemaException {
 		final String tag = "sendLocationMessage";
-		logger.info(tag + ": start");
+		logger.info("{}: start", tag);
 
 		AbstractMessageModel messageModel = receiver.createLocalModel(MessageType.LOCATION, MessageContentsType.LOCATION, new Date());
 		cache(messageModel);
@@ -572,10 +512,7 @@ public class MessageServiceImpl implements MessageService {
 
 		fireOnCreatedMessage(messageModel);
 
-		receiver.createBoxedLocationMessage(messageModel);
-
-		messageModel.setState(receiver.sendMediaData() ? MessageState.SENDING : MessageState.SENT);
-		receiver.saveLocalModel(messageModel);
+		receiver.createAndSendLocationMessage(messageModel);
 
 		fireOnModifiedMessage(messageModel);
 
@@ -585,164 +522,29 @@ public class MessageServiceImpl implements MessageService {
 		return messageModel;
 	}
 
-	@WorkerThread
-	@Override
-	public void executeProfilePictureDistribution(@NonNull AbstractMessage message) {
-		final String prefix = "Profile picture distribution";
-
-		// Step 1: Abort if message does not allow user profile distribution
-		if (!message.allowUserProfileDistribution()) {
-			return;
-		}
-
-		String toIdentity = message.getToIdentity();
-
-		ContactModel contactModel = contactService.getByIdentity(toIdentity);
-		if (contactModel == null) {
-			logger.warn("{}: Contact model not found", prefix);
-			return;
-		}
-
-		// Step 2: Abort if the contact's id is ECHOECHO or a Gateway ID
-		if (ContactUtil.isEchoEchoOrChannelContact(contactModel)) {
-			logger.info("{}: Contact {} should not receive the profile picture", prefix, toIdentity);
-			return;
-		}
-
-		// If the contact has been restored, send a photo request message and mark contact as not
-		// restored if successful. Don't do this for ECHOECHO or channel IDs.
-		if (contactModel.isRestored()) {
-			if (sendContactRequestPhotoMessage(contactModel)) {
-				contactModel.setIsRestored(false);
-				contactService.save(contactModel);
-			}
-		}
-
-		// Step 3: Abort if the contact should not receive the profile picture according to settings
-		if (!contactService.isContactAllowedToReceiveProfilePicture(contactModel)) {
-			logger.info("{}: Contact {} is not allowed to receive the profile picture", prefix, toIdentity);
-			return;
-		}
-
-		// Step 4: Upload profile picture to blob server if no valid cached blob id exists
-		ContactService.ProfilePictureUploadData data = contactService.getUpdatedProfilePictureUploadData();
-		if (data.blobId == null) {
-			logger.warn("{}: Blob ID is null; abort", prefix);
-			return;
-		}
-
-		// Step 5: If the currently cached blob ID equals the blob ID that was most recently
-		// distributed to the contact, abort these steps
-		if (Arrays.equals(data.blobId, contactModel.getProfilePicBlobID())) {
-			logger.debug("{}: Contact {} already has the latest profile picture", prefix, toIdentity);
-			return;
-		}
-
-		// Step 6 and 7: Send a set-profile-picture message to the contact using the cached blob ID
-		// and store the blob ID as the most recently used blob ID for this contact
-		if (data.blobId != ContactModel.NO_PROFILE_PICTURE_BLOB_ID) {
-			if (sendContactSetProfilePictureMessage(data, contactModel)) {
-				logger.info("{}: Profile picture successfully enqueued for {}", prefix, toIdentity);
-			} else {
-				logger.warn("{}: Could not enqueue set profile picture message", prefix);
-			}
-		} else {
-			if (sendContactDeleteProfilePictureMessage(contactModel)) {
-				logger.info("{}: Profile picture deletion successfully enqueued for {}", prefix, toIdentity);
-			} else {
-				logger.warn("{}: Could not enqueue delete profile picture message", prefix);
-			}
-		}
-	}
-
-	/**
-	 * Send a set-profile-picture or delete-profile-picture message to the specified contact.
-	 */
-	@WorkerThread
-	@Override
-	public boolean sendProfilePicture(@NonNull ContactModel contactModel) {
-		ContactService.ProfilePictureUploadData data = contactService.getUpdatedProfilePictureUploadData();
-		if (data.blobId == null) {
-			logger.warn("Blob ID is null; cannot send profile picture");
-			return false;
-		}
-
-		if (Arrays.equals(data.blobId, ContactModel.NO_PROFILE_PICTURE_BLOB_ID)) {
-			return sendContactDeleteProfilePictureMessage(contactModel);
-		} else {
-			return sendContactSetProfilePictureMessage(data, contactModel);
-		}
-	}
-
-	/**
-	 * Send a set-profile-picture message to the given contact using the given upload data. This
-	 * method also updates the most recently used blob ID for the contact.
-	 *
-	 * @return true if the set-profile-picture message has been sent successfully, false otherwise
-	 */
-	private boolean sendContactSetProfilePictureMessage(@NonNull ContactService.ProfilePictureUploadData data, @NonNull ContactModel contactModel) {
-		try {
-			contactService.createReceiver(contactModel).sendSetProfilePictureMessage(data);
-			// Store blob ID to contact
-			contactModel.setProfilePicBlobID(data.blobId);
-			contactService.save(contactModel);
-			return true;
-		} catch (ThreemaException e) {
-			logger.error("Could not enqueue profile picture message", e);
-		}
-		return false;
-	}
-
-	/**
-	 * Send a delete-profile-picture message to the given contact using the given upload data. This
-	 * method also updates the most recently used blob ID for the contact.
-	 *
-	 * @return true if the delete-profile-picture message has been sent successfully, false otherwise
-	 */
-	private boolean sendContactDeleteProfilePictureMessage(@NonNull ContactModel contactModel) {
-		logger.info("Send delete profile picture message to {}", contactModel.getIdentity());
-		try {
-			contactService.createReceiver(contactModel).sendDeleteProfilePictureMessage();
-			// If the delete photo message was sent successfully, store empty byte array as the
-			// most recently sent blob ID.
-			contactModel.setProfilePicBlobID(ContactModel.NO_PROFILE_PICTURE_BLOB_ID);
-			contactService.save(contactModel);
-			return true;
-		} catch (ThreemaException e) {
-			logger.error("Exception", e);
-		}
-		return false;
-	}
-
-	private boolean sendContactRequestPhotoMessage(@NonNull ContactModel contactModel) {
-		logger.info("Send request profile picture message to {}", contactModel.getIdentity());
-		try {
-			contactService.createReceiver(contactModel).sendRequestProfilePictureMessage();
-			return true;
-		} catch (ThreemaException e) {
-			logger.error("Failed to enqueue profile picture request message", e);
-			return false;
-		}
-	}
-
 	@Override
 	@WorkerThread
-	public void resendMessage(@NonNull AbstractMessageModel messageModel, @NonNull MessageReceiver receiver, CompletionHandler completionHandler) throws Exception {
+	public void resendMessage(
+		@NonNull AbstractMessageModel messageModel,
+		@NonNull MessageReceiver<AbstractMessageModel> receiver,
+		@Nullable CompletionHandler completionHandler,
+		@NonNull Collection<String> recipientIdentities
+	) throws Exception {
 		NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 		notificationManager.cancel(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID);
 
 		if (messageModel.getState() == MessageState.SENDFAILED || messageModel.getState() == MessageState.FS_KEY_MISMATCH) {
 			if (messageModel.getType() == MessageType.FILE) {
-				resendFileMessage(messageModel, receiver, completionHandler);
+				resendFileMessage(messageModel, receiver, completionHandler, recipientIdentities);
 			} else if (messageModel.getType() == MessageType.BALLOT) {
 				BallotModel ballotModel = ballotService.get(messageModel.getBallotData().getBallotId());
 				if (ballotModel != null) {
 					resendBallotMessage(messageModel, ballotModel, receiver);
 				}
 			} else if (messageModel.getType() == MessageType.TEXT) {
-				resendTextMessage(messageModel, receiver);
+				resendTextMessage(messageModel, receiver, recipientIdentities);
 			} else if (messageModel.getType() == MessageType.LOCATION) {
-				resendLocationMessage(messageModel, receiver, completionHandler);
+				resendLocationMessage(messageModel, receiver, completionHandler, recipientIdentities);
 			}
 		}
 	}
@@ -750,19 +552,51 @@ public class MessageServiceImpl implements MessageService {
 	@WorkerThread
 	private void resendTextMessage(
 		final @NonNull AbstractMessageModel messageModel,
-		final MessageReceiver<AbstractMessageModel> receiver
-	) throws Exception {
-		messageModel.setState(MessageState.SENDING);
-		save(messageModel);
-		receiver.createBoxedTextMessage(messageModel.getBody(), messageModel);
+		final MessageReceiver receiver,
+		final Collection<String> recipientIdentities
+	) {
+		if (receiver instanceof ContactMessageReceiver && messageModel instanceof MessageModel) {
+			((ContactMessageReceiver) receiver).resendTextMessage((MessageModel) messageModel);
+		} else if (receiver instanceof GroupMessageReceiver && messageModel instanceof GroupMessageModel) {
+			((GroupMessageReceiver) receiver).resendTextMessage(
+				(GroupMessageModel) messageModel,
+				recipientIdentities
+			);
+		} else if (receiver instanceof DistributionListMessageReceiver) {
+			logger.warn("Cannot resend messages in a distribution list");
+			return;
+		} else {
+			logger.warn("Incompatible message receiver and message model type");
+			return;
+		}
+
+		updateMessageState(messageModel, MessageState.SENDING, null);
 		fireOnModifiedMessage(messageModel);
 	}
 
 	@WorkerThread
-	private void resendLocationMessage(@NonNull AbstractMessageModel messageModel, @NonNull MessageReceiver receiver, final CompletionHandler completionHandler) throws ThreemaException, IOException {
-		messageModel.setState(receiver.sendMediaData() ? MessageState.SENDING : MessageState.SENT);
-		save(messageModel);
-		receiver.createBoxedLocationMessage(messageModel);
+	private void resendLocationMessage(
+		@NonNull AbstractMessageModel messageModel,
+		@NonNull MessageReceiver receiver,
+		final @Nullable CompletionHandler completionHandler,
+		@NonNull Collection<String> recipientIdentities
+	) {
+		if (receiver instanceof ContactMessageReceiver && messageModel instanceof MessageModel) {
+			((ContactMessageReceiver) receiver).resendLocationMessage((MessageModel) messageModel);
+		} else if (receiver instanceof GroupMessageReceiver && messageModel instanceof GroupMessageModel) {
+			((GroupMessageReceiver) receiver).resendLocationMessage(
+				(GroupMessageModel) messageModel,
+				recipientIdentities
+			);
+		} else if (receiver instanceof DistributionListMessageReceiver) {
+			logger.warn("Cannot resend messages in a distribution list");
+			return;
+		} else {
+			logger.error("Incompatible message receiver and message model type");
+			return;
+		}
+
+		updateMessageState(messageModel, MessageState.SENDING, null);
 		fireOnModifiedMessage(messageModel);
 		if (completionHandler != null) {
 			completionHandler.sendQueued(messageModel);
@@ -772,8 +606,9 @@ public class MessageServiceImpl implements MessageService {
 	@WorkerThread
 	private void resendFileMessage(
 		final @NonNull AbstractMessageModel messageModel,
-	    final MessageReceiver<AbstractMessageModel> receiver,
-	    final CompletionHandler completionHandler
+	    final @NonNull MessageReceiver<AbstractMessageModel> receiver,
+	    final @Nullable CompletionHandler completionHandler,
+		final @NonNull Collection<String> recipientIdentities
 	) throws Exception {
 
 		// check if a message file exists that could be resent or abort immediately
@@ -889,11 +724,14 @@ public class MessageServiceImpl implements MessageService {
 						}
 					})
 					.next(() -> {
-						getReceiver().createBoxedFileMessage(
+						String messageId = messageModel.getApiMessageId();
+						getReceiver().createAndSendFileMessage(
 							blobIdThumbnail,
 							blobId,
 							contentEncryptResult,
-							messageModel
+							messageModel,
+							messageId != null ? MessageId.fromString(messageId) : null,
+							recipientIdentities
 						);
 						save(messageModel);
 					})
@@ -1010,35 +848,29 @@ public class MessageServiceImpl implements MessageService {
 	 * Send a delivery receipt to all members of a group
 	 * @param messageModel GroupMessageModel for which a receipt should be sent
 	 * @param receiptType Type of receipt (currently only ACK and DEC are supported for groups)
-	 * @throws ThreemaException
 	 */
-	private boolean sendGroupDeliveryReceipt(@NonNull GroupMessageModel messageModel, int receiptType) throws ThreemaException {
-		GroupModel groupModel = groupService.getById(messageModel.getGroupId());
-		if (groupModel == null) {
-			logger.info("Unable to find group for message ID {}", messageModel.getApiMessageId());
+	private boolean sendGroupDeliveryReceipt(@NonNull GroupMessageModel messageModel, int receiptType) {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager == null) {
+			logger.warn("Service manager is null: cannot send group delivery receipt");
 			return false;
 		}
 
-		String[] memberIdentities = groupService.getGroupIdentities(groupModel);
-		for (String memberIdentity: memberIdentities) {
-			if (!identityStore.getIdentity().equals(memberIdentity)) {
-				try {
-					GroupDeliveryReceiptMessage receipt = new GroupDeliveryReceiptMessage();
-					receipt.setApiGroupId(groupModel.getApiGroupId());
-					receipt.setGroupCreator(groupModel.getCreatorIdentity());
-					receipt.setReceiptType(receiptType);
-					receipt.setReceiptMessageIds(new MessageId[]{MessageId.fromString(messageModel.getApiMessageId())});
-					receipt.setFromIdentity(identityStore.getIdentity());
-					receipt.setToIdentity(memberIdentity);
-					messageQueue.enqueue(receipt);
-					logger.info("Enqueue group delivery receipt ({}) message ID {} to {} for message ID {}",
-						receiptType, receipt.getMessageId(), receipt.getToIdentity(), receipt.getReceiptMessageIds()[0]);
-				} catch (ThreemaException e) {
-					logger.error("Could not enqueue delivery receipt ({}) to {} for message ID {}",
-						receiptType, memberIdentity, messageModel.getApiMessageId());
-				}
-			}
+		GroupModel group = groupService.getById(messageModel.getGroupId());
+		if (group == null) {
+			logger.warn("Cannot send group delivery receipt for unknown group");
+			return false;
 		}
+
+		serviceManager.getTaskManager().schedule(
+			new OutgoingGroupDeliveryReceiptMessageTask(
+				messageModel.getId(),
+				receiptType,
+				Set.of(groupService.getGroupIdentities(group)),
+				serviceManager
+			)
+		);
+
 		return true;
 	}
 
@@ -1129,51 +961,6 @@ public class MessageServiceImpl implements MessageService {
 		return null;
 	}
 
-	private AbstractMessageModel getAbstractMessageModelByApiIdAndOutbox(final MessageId apiMessageId, @NonNull String recipientIdentity) {
-		//contact message cache
-		synchronized (contactMessageCache) {
-			AbstractMessageModel messageModel = Functional.select(contactMessageCache, m -> m.getApiMessageId() != null
-				&& m.getApiMessageId().equals(apiMessageId.toString())
-				&& recipientIdentity.equals(m.getIdentity())
-				&& m.isOutbox());
-			if (messageModel != null) {
-				return messageModel;
-			}
-		}
-
-		//group message cache
-		synchronized (groupMessageCache) {
-			AbstractMessageModel messageModel = Functional.select(groupMessageCache, m -> m.getApiMessageId() != null
-				&& m.getApiMessageId().equals(apiMessageId.toString())
-				&& recipientIdentity.equals(m.getIdentity())
-				&& m.isOutbox());
-
-			if (messageModel != null) {
-				return messageModel;
-			}
-		}
-
-		MessageModel contactMessageModel = databaseServiceNew.getMessageModelFactory().getByApiMessageIdAndIdentityAndIsOutbox(
-				apiMessageId,
-				recipientIdentity,
-				true);
-		if(contactMessageModel != null) {
-			cache(contactMessageModel);
-			return contactMessageModel;
-		}
-
-		GroupMessageModel groupMessageModel = databaseServiceNew.getGroupMessageModelFactory().getByApiMessageIdAndIdentityAndIsOutbox(
-				apiMessageId,
-				recipientIdentity,
-				true);
-		if(groupMessageModel != null) {
-			cache(groupMessageModel);
-			return groupMessageModel;
-		}
-
-		return null;
-	}
-
 	@Override
 	public void updateMessageState(@NonNull final MessageId apiMessageId,
 	                               MessageState state,
@@ -1202,66 +989,43 @@ public class MessageServiceImpl implements MessageService {
 		GroupMessageModel messageModel = getGroupMessageModel(apiMessageId, stateMessage.getApiGroupId(), stateMessage.getGroupCreator());
 		if (messageModel != null) {
 			updateGroupMessageState(messageModel, stateMessage, state);
-			return;
 		}
-
-		GroupMessagePendingMessageIdModel groupMessagePendingMessageIdModel = databaseServiceNew
-			.getGroupMessagePendingMessageIdModelFactory().get(apiMessageId.toString());
-
-		if (groupMessagePendingMessageIdModel != null) {
-			updatePendingGroupMessageState(groupMessagePendingMessageIdModel, state, stateMessage.getDate(), stateMessage);
-			return;
-		}
-		logger.warn("Discarding message state ({}) for unknown message with id {}", state, apiMessageId);
 	}
 
-	/**
-	 * Update message state of outgoing message. Currently only used for server acks
-	 * @param apiMessageId API Message ID of message to update
-	 * @param state New state
-	 * @param stateDate Date of state change
-	 * @param recipientIdentity the identity of the message's recipient
-	 * @return the message that was updated, if any
-	 */
 	@Override
-	public @Nullable AbstractMessageModel updateMessageStateForOutgoingMessage(
-		@NonNull MessageId apiMessageId,
+	public boolean updateContactMessageState(
+		@NonNull MessageId messageId,
+		@NonNull String recipientIdentity,
 		@NonNull MessageState state,
-		@Nullable Date stateDate,
-		@NonNull String recipientIdentity
+		@Nullable Date date
 	) {
-		final AbstractMessageModel messageModel = getAbstractMessageModelByApiIdAndOutbox(apiMessageId, recipientIdentity);
-		if (messageModel == null) {
-			//try to select a group message
-			GroupMessagePendingMessageIdModel groupMessagePendingMessageIdModel = databaseServiceNew
-					.getGroupMessagePendingMessageIdModelFactory().get(apiMessageId.toString());
-
-			if(groupMessagePendingMessageIdModel != null) {
-				updatePendingGroupMessageState(groupMessagePendingMessageIdModel, state, stateDate, null);
-			}
-		} else {
-			updateMessageState(messageModel, state, stateDate);
+		AbstractMessageModel messageModel = getAbstractMessageModelByApiIdAndIdentity(messageId, recipientIdentity);
+		if (messageModel != null) {
+			return updateMessageState(messageModel, state, date);
 		}
-		return messageModel;
+		return false;
 	}
 
-	private void updateMessageState(
+	@Override
+	public boolean updateMessageState(
 		@NonNull AbstractMessageModel messageModel,
-		@NonNull MessageState newState,
+		@NonNull MessageState state,
 		@Nullable Date stateDate
 	) {
 		synchronized (this) {
-			logger.debug("Updating message state from {} to {} (outbox={})", messageModel.getState(), newState, messageModel.isOutbox());
-			if(MessageUtil.canChangeToState(messageModel.getState(), newState, messageModel.isOutbox())) {
-				messageModel.setState(newState);
+			logger.debug("Updating message state from {} to {} (outbox={})", messageModel.getState(), state, messageModel.isOutbox());
+			if (MessageUtil.canChangeToState(messageModel.getState(), state, messageModel.isOutbox())) {
+				messageModel.setState(state);
 				if (stateDate != null) {
 					messageModel.setModifiedAt(stateDate);
 				}
 				save(messageModel);
 				fireOnModifiedMessage(messageModel);
+				return true;
 			} else {
-				// duplicate message state transitions (for example from SENT to SENT) are normal for group messages as we will get an ack for each message
-				logger.warn("State transition from {} to {} (outbox={}), ignoring", messageModel.getState(), newState, messageModel.isOutbox());
+				logger.warn("State transition from {} to {} (outbox={}), ignoring",
+					messageModel.getState(), state, messageModel.isOutbox());
+				return false;
 			}
 		}
 	}
@@ -1288,42 +1052,6 @@ public class MessageServiceImpl implements MessageService {
 			messageModel.setModifiedAt(stateMessage.getDate());
 			save(messageModel);
 			fireOnModifiedMessage(messageModel);
-		}
-	}
-
-	private void updatePendingGroupMessageState(
-		@NonNull GroupMessagePendingMessageIdModel groupMessagePendingMessageIdModel,
-		@NonNull MessageState newState,
-		@Nullable Date stateDate,
-		@Nullable AbstractMessage stateMessage
-	) {
-		logger.debug("Update pending group message id to {}", newState);
-		GroupMessageModel groupMessageModel = getGroupMessageModel(groupMessagePendingMessageIdModel.getGroupMessageId(), true);
-		if (groupMessageModel != null) {
-			if (newState == MessageState.SENT) {
-				//remove from pending group
-				databaseServiceNew.getGroupMessagePendingMessageIdModelFactory()
-						.delete(groupMessagePendingMessageIdModel);
-
-				logger.debug("removed...");
-				//check if the pending list is empty
-				long pendingCount = databaseServiceNew.getGroupMessagePendingMessageIdModelFactory()
-						.countByGroupMessage(groupMessageModel.getId());
-
-				logger.debug("new count = " + pendingCount);
-				if(pendingCount == 0) {
-					//set the group message as sent
-					updateMessageState(groupMessageModel, MessageState.SENT, stateDate);
-				}
-			} else if (MessageUtil.isAllowedGroupMessageState(newState))  {
-				if (stateMessage != null) {
-					updateGroupMessageState(groupMessageModel, stateMessage, newState);
-				} else {
-					logger.debug("state without state message");
-				}
-			}
-		} else {
-			logger.debug("No group message found! groupMessagePendingMessageIdModel.id = {}", groupMessagePendingMessageIdModel.getGroupMessageId());
 		}
 	}
 
@@ -1437,15 +1165,7 @@ public class MessageServiceImpl implements MessageService {
 		fileService.removeMessageFiles(messageModel, true);
 
 		// Remove all matching messages from message queue
-		if (messageModel.isOutbox() && messageModel.getApiMessageId() != null) {
-			try {
-				final MessageId messageId = new MessageId(Utils.hexStringToByteArray(messageModel.getApiMessageId()));
-				int dequeuedCount = messageQueue.dequeueAll(messageId);
-				logger.debug("Dequeued {} messages from queue", dequeuedCount);
-			} catch (ThreemaException e) {
-				logger.error("Exception", e);
-			}
-		}
+		// TODO(ANDR-2482): cancel sending message that has not yet been sent
 
 		//remove from dao
 		if(messageModel instanceof GroupMessageModel) {
@@ -1462,10 +1182,6 @@ public class MessageServiceImpl implements MessageService {
 					}
 				}
 			}
-
-			databaseServiceNew.getGroupMessagePendingMessageIdModelFactory().delete(
-					messageModel.getId()
-			);
 		}
 		else if (messageModel instanceof DistributionListMessageModel) {
 			databaseServiceNew.getDistributionListMessageModelFactory().delete(
@@ -1506,6 +1222,12 @@ public class MessageServiceImpl implements MessageService {
 	public boolean processIncomingContactMessage(final AbstractMessage message) throws Exception {
 		logger.info("processIncomingContactMessage: {}", message.getMessageId());
 
+		final String senderIdentity = message.getFromIdentity();
+		if (senderIdentity == null) {
+			logger.error("Could not process a message of type {} without a sender identity", message.getType());
+			return false;
+		}
+
 		MessageModel messageModel = null;
 
 		MessageModel existingModel = databaseServiceNew.getMessageModelFactory()
@@ -1518,8 +1240,7 @@ public class MessageServiceImpl implements MessageService {
 			synchronized (contactMessageCache) {
 				savedMessageModel = Functional.select(contactMessageCache, messageModel1 -> messageModel1.getApiMessageId() != null &&
 						messageModel1.getApiMessageId().equals(message.getMessageId().toString())
-						&& message.getFromIdentity() != null
-						&& message.getFromIdentity().equals(messageModel1.getIdentity()));
+						&& senderIdentity.equals(messageModel1.getIdentity()));
 			}
 			logger.info("processIncomingContactMessage: {} check contact message cache end", message.getMessageId());
 
@@ -1538,13 +1259,28 @@ public class MessageServiceImpl implements MessageService {
 			}
 		}
 
+		// Look up contact model
+		//
+		// Note: At this point, the contact should have been created by the IncomingMessageProcessor.
+		final ContactModel contactModel = contactService.getByIdentity(senderIdentity);
+		if (contactModel == null) {
+			logger.error("Could not process a message of type {} from an unknown contact", message.getType());
+			logger.info("processIncomingContactMessage: {} FAILED", message.getMessageId());
+			return false;
+		}
+
+		// Bump "lastUpdate" if necessary, depending on the message type
+		if (message.bumpLastUpdate()) {
+			contactService.bumpLastUpdate(senderIdentity);
+		}
+
 		// Handle message depending on subtype
 		final Class<? extends AbstractMessage> messageClass = message.getClass();
-		if (messageClass.equals(BoxTextMessage.class)) {
-			messageModel = saveBoxMessage((BoxTextMessage) message, messageModel);
+		if (messageClass.equals(TextMessage.class)) {
+			messageModel = saveBoxMessage((TextMessage) message, messageModel, contactModel);
 		}
-		else if (messageClass.equals(BoxImageMessage.class)) {
-			messageModel = saveBoxMessage((BoxImageMessage) message, messageModel);
+		else if (messageClass.equals(ImageMessage.class)) {
+			messageModel = saveBoxMessage((ImageMessage) message, messageModel, contactModel);
 			// silently save to gallery if enabled
 			if (
 				preferenceService != null
@@ -1555,45 +1291,33 @@ public class MessageServiceImpl implements MessageService {
 				fileService.saveMedia(null, null, new CopyOnWriteArrayList<>(Collections.singletonList(messageModel)), true);
 			}
 		}
-		else if (messageClass.equals(BoxVideoMessage.class)) {
-			messageModel = saveBoxMessage((BoxVideoMessage) message, messageModel);
+		else if (messageClass.equals(VideoMessage.class)) {
+			messageModel = saveBoxMessage((VideoMessage) message, messageModel, contactModel);
 		}
-		else if (messageClass.equals(BoxLocationMessage.class)) {
-			messageModel = saveBoxMessage((BoxLocationMessage) message, messageModel);
+		else if (messageClass.equals(LocationMessage.class)) {
+			messageModel = saveBoxMessage((LocationMessage) message, messageModel, contactModel);
 		}
-		else if (messageClass.equals(BoxAudioMessage.class)) {
-			messageModel = saveBoxMessage((BoxAudioMessage) message, messageModel);
+		else if (messageClass.equals(AudioMessage.class)) {
+			messageModel = saveBoxMessage((AudioMessage) message, messageModel, contactModel);
 		}
-		else if (messageClass.equals(BallotCreateMessage.class)) {
-			messageModel = saveBoxMessage((BallotCreateMessage) message, messageModel);
+		else if (messageClass.equals(PollSetupMessage.class)) {
+			messageModel = saveBoxMessage((PollSetupMessage) message, messageModel, contactModel);
 		}
 		else if (messageClass.equals(FileMessage.class)) {
-			messageModel = saveBoxMessage((FileMessage) message, messageModel);
+			messageModel = saveBoxMessage((FileMessage) message, messageModel, contactModel);
 		}
 
-		if (null != messageModel) {
-			/* as soon as we get a direct message, unhide the contact */
-			contactService.setIsHidden(message.getFromIdentity(), false);
-			contactService.setIsArchived(message.getFromIdentity(), false);
-
-			//send msgreceived
-			if (!message.flagNoDeliveryReceipts()) {
-				ContactModel contactModel = contactService.getByIdentity(message.getFromIdentity());
-				if (contactModel != null) {
-					contactService.createReceiver(contactModel).sendDeliveryReceipt(
-						ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED,
-						new MessageId[]{message.getMessageId()}
-					);
-					logger.info("Enqueue delivery receipt (delivered) message for message ID {} from {}",
-						message.getMessageId(), contactModel.getIdentity());
-				}
-			}
-
-			logger.info("processIncomingContactMessage: {} SUCCESS - Message ID = {}", message.getMessageId(), messageModel.getId());
-			return true;
+		if (messageModel == null) {
+			logger.info("processIncomingContactMessage: {} FAILED", message.getMessageId());
+			return false;
 		}
-		logger.info("processIncomingContactMessage: {} FAILED", message.getMessageId());
-		return false;
+
+		// As soon as we get a direct message, unhide and unarchive the contact
+		contactService.setIsHidden(senderIdentity, false);
+		contactService.setIsArchived(senderIdentity, false);
+
+		logger.info("processIncomingContactMessage: {} SUCCESS - Message ID = {}", message.getMessageId(), messageModel.getId());
+		return true;
 	}
 
 	@Override
@@ -1601,7 +1325,8 @@ public class MessageServiceImpl implements MessageService {
 		logger.info("processIncomingGroupMessage: {}", message.getMessageId());
 		GroupMessageModel messageModel = null;
 
-		//first of all, check if i can receive messages
+		// First of all, check if i can receive messages. Note that the common group receive steps
+		// must have been executed at this point.
 		GroupModel groupModel = groupService.getByGroupMessage(message);
 		if(groupModel == null) {
 			logger.error("GroupMessage {}: error: no groupModel", message.getMessageId());
@@ -1627,6 +1352,15 @@ public class MessageServiceImpl implements MessageService {
 
 		// reset archived status
 		groupService.setIsArchived(groupModel, false);
+
+		// Bump "lastUpdate" if necessary, depending on the message type
+		//
+		// Note: Do this before the message is saved! Saving the message will trigger listeners
+		// that will re-sort the conversation list. At that point in time, lastUpdate should already
+		// be correct.
+		if (message.bumpLastUpdate()) {
+			groupService.bumpLastUpdate(groupModel);
+		}
 
 		GroupMessageModel existingModel = databaseServiceNew.getGroupMessageModelFactory().getByApiMessageIdAndIdentity(
 				message.getMessageId(),
@@ -1668,11 +1402,11 @@ public class MessageServiceImpl implements MessageService {
 		else if (message.getClass().equals(GroupAudioMessage.class)) {
 			messageModel = saveGroupMessage((GroupAudioMessage) message, messageModel);
 		}
-		else if (message.getClass().equals(GroupBallotCreateMessage.class)) {
-			messageModel = saveGroupMessage((GroupBallotCreateMessage) message, messageModel);
+		else if (message.getClass().equals(GroupPollSetupMessage.class)) {
+			messageModel = saveGroupMessage((GroupPollSetupMessage) message, messageModel);
 			// This is only used for debugging
 			if (ConfigUtils.isDevBuild()) {
-				logger.info("Processed GroupBallotCreateMessage {}", ((GroupBallotCreateMessage) message).getRawBallotData());
+				logger.info("Processed GroupBallotCreateMessage {}", ((GroupPollSetupMessage) message).getRawBallotData());
 			}
 		}
 		else if(message.getClass().equals(GroupFileMessage.class)) {
@@ -1681,17 +1415,21 @@ public class MessageServiceImpl implements MessageService {
 
 		if (messageModel != null) {
 			logger.info("processIncomingGroupMessage: {} SUCCESS - Message ID = {}", message.getMessageId(), messageModel.getId());
+			return true;
 		} else {
 			logger.info("processIncomingGroupMessage: {} FAILED", message.getMessageId());
+			return false;
 		}
-
-		return messageModel != null;
 	}
 
-
-	private MessageModel saveBoxMessage(BoxTextMessage message, MessageModel messageModel) {
-		ContactModel contactModel = contactService.getByIdentity(message.getFromIdentity());
-
+	/**
+	 * Process a 1:1 text message (0x01).
+	 */
+	private MessageModel saveBoxMessage(
+		@NonNull TextMessage message,
+		MessageModel messageModel,
+		@NonNull ContactModel contactModel
+	) {
 		if (messageModel == null) {
 			ContactMessageReceiver r = contactService.createReceiver(contactModel);
 			messageModel = r.createLocalModel(MessageType.TEXT, MessageContentsType.TEXT, message.getDate());
@@ -1716,13 +1454,14 @@ public class MessageServiceImpl implements MessageService {
 		return messageModel;
 	}
 
-
-	private MessageModel saveBoxMessage(BallotCreateMessage message, MessageModel messageModel) throws Exception {
-		ContactModel contactModel = contactService.getByIdentity(message.getBallotCreator());
-		if(contactModel == null) {
-			return null;
-		}
-
+	/**
+	 * Process a 1:1 poll setup message (0x15).
+	 */
+	private MessageModel saveBoxMessage(
+		@NonNull PollSetupMessage message,
+		MessageModel messageModel,
+		@NonNull ContactModel contactModel
+	) throws Exception {
 		MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
 		return (MessageModel) saveBallotCreateMessage(
 				messageReceiver,
@@ -1733,7 +1472,7 @@ public class MessageServiceImpl implements MessageService {
 				message.getForwardSecurityMode());
 	}
 
-	private GroupMessageModel saveGroupMessage(GroupBallotCreateMessage message, GroupMessageModel messageModel) throws Exception {
+	private GroupMessageModel saveGroupMessage(GroupPollSetupMessage message, GroupMessageModel messageModel) throws Exception {
 		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
@@ -1782,16 +1521,15 @@ public class MessageServiceImpl implements MessageService {
 		return messageModel;
 	}
 
-	private MessageModel saveBoxMessage(FileMessage message, MessageModel messageModel) throws Exception {
-		ContactModel contactModel = contactService.getByIdentity(message.getFromIdentity());
-
-		if(contactModel == null) {
-			logger.error("could not save a file message from an unknown contact");
-			return null;
-		}
-
+	/**
+	 * Process a 1:1 file message (0x17).
+	 */
+	private MessageModel saveBoxMessage(
+		@NonNull FileMessage message,
+		MessageModel messageModel,
+		@NonNull ContactModel contactModel
+	) throws Exception {
 		MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
-
 		return (MessageModel) saveFileMessage(
 				messageReceiver,
 				message,
@@ -1816,7 +1554,7 @@ public class MessageServiceImpl implements MessageService {
 	@Deprecated
 	private AbstractMessageModel saveAudioMessage(@NonNull MessageReceiver receiver,
 	                                              AbstractMessage message,
-	                                              AbstractMessageModel messageModel) throws Exception {
+	                                              AbstractMessageModel messageModel) {
 		boolean newModel = false;
 		int duration;
 		byte[] encryptionKey, audioBlobId;
@@ -1825,10 +1563,10 @@ public class MessageServiceImpl implements MessageService {
 			duration = ((GroupAudioMessage) message).getDuration();
 			encryptionKey = ((GroupAudioMessage) message).getEncryptionKey();
 			audioBlobId = ((GroupAudioMessage) message).getAudioBlobId();
-		} else if (message instanceof BoxAudioMessage) {
-			duration = ((BoxAudioMessage) message).getDuration();
-			encryptionKey = ((BoxAudioMessage) message).getEncryptionKey();
-			audioBlobId = ((BoxAudioMessage) message).getAudioBlobId();
+		} else if (message instanceof AudioMessage) {
+			duration = ((AudioMessage) message).getDuration();
+			encryptionKey = ((AudioMessage) message).getEncryptionKey();
+			audioBlobId = ((AudioMessage) message).getAudioBlobId();
 		} else {
 			return null;
 		}
@@ -1884,12 +1622,12 @@ public class MessageServiceImpl implements MessageService {
 			encryptionKey = ((GroupVideoMessage) message).getEncryptionKey();
 			videoBlobId = ((GroupVideoMessage) message).getVideoBlobId();
 			thumbnailBlobId = ((GroupVideoMessage) message).getThumbnailBlobId();
-		} else if (message instanceof BoxVideoMessage) {
-			duration = ((BoxVideoMessage) message).getDuration();
-			videoSize = ((BoxVideoMessage) message).getVideoSize();
-			encryptionKey = ((BoxVideoMessage) message).getEncryptionKey();
-			videoBlobId = ((BoxVideoMessage) message).getVideoBlobId();
-			thumbnailBlobId = ((BoxVideoMessage) message).getThumbnailBlobId();
+		} else if (message instanceof VideoMessage) {
+			duration = ((VideoMessage) message).getDuration();
+			videoSize = ((VideoMessage) message).getVideoSize();
+			encryptionKey = ((VideoMessage) message).getEncryptionKey();
+			videoBlobId = ((VideoMessage) message).getVideoBlobId();
+			thumbnailBlobId = ((VideoMessage) message).getThumbnailBlobId();
 		} else {
 			return null;
 		}
@@ -2076,7 +1814,7 @@ public class MessageServiceImpl implements MessageService {
 
 			if (thumbnailBlob == null) {
 				downloadService.error(messageModel.getId());
-				logger.info("Error downloading thumbnail for message " + messageModel.getApiMessageId());
+				logger.info("Error downloading thumbnail for message {}", messageModel.getApiMessageId());
 				throw new ThreemaException("Error downloading thumbnail");
 			}
 
@@ -2087,7 +1825,7 @@ public class MessageServiceImpl implements MessageService {
 					fileService.writeConversationMediaThumbnail(messageModel, thumbnail);
 				} catch (Exception e) {
 					downloadService.error(messageModel.getId());
-					logger.info("Error writing thumbnail for message " + messageModel.getApiMessageId());
+					logger.info("Error writing thumbnail for message {}", messageModel.getApiMessageId());
 					throw e;
 				}
 			}
@@ -2096,7 +1834,7 @@ public class MessageServiceImpl implements MessageService {
 		}
 	}
 
-	private GroupMessageModel saveGroupMessage(GroupTextMessage message, GroupMessageModel messageModel) throws Exception {
+	private GroupMessageModel saveGroupMessage(GroupTextMessage message, GroupMessageModel messageModel) {
 		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
@@ -2117,6 +1855,7 @@ public class MessageServiceImpl implements MessageService {
 			messageModel.setBodyAndQuotedMessageId(body);
 			messageModel.setSaved(true);
 			messageModel.setIdentity(message.getFromIdentity());
+			messageModel.setForwardSecurityMode(message.getForwardSecurityMode());
 
 			r.saveLocalModel(messageModel);
 
@@ -2199,7 +1938,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Deprecated
-	private GroupMessageModel saveGroupMessage(GroupImageMessage message, GroupMessageModel messageModel) throws Exception {
+	private GroupMessageModel saveGroupMessage(GroupImageMessage message, GroupMessageModel messageModel) {
 		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
@@ -2314,7 +2053,7 @@ public class MessageServiceImpl implements MessageService {
 				messageModel);
 	}
 
-	private GroupMessageModel saveGroupMessage(GroupAudioMessage message, GroupMessageModel messageModel) throws Exception {
+	private GroupMessageModel saveGroupMessage(GroupAudioMessage message, GroupMessageModel messageModel) {
 		GroupModel groupModel = groupService.getByGroupMessage(message);
 
 		if(groupModel == null) {
@@ -2330,7 +2069,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@WorkerThread
-	private GroupMessageModel saveGroupMessage(GroupLocationMessage message, GroupMessageModel messageModel) throws SQLException {
+	private GroupMessageModel saveGroupMessage(GroupLocationMessage message, GroupMessageModel messageModel) {
 		GroupModel groupModel = groupService.getByGroupMessage(message);
 		boolean isNewMessage = false;
 		if(groupModel == null) {
@@ -2383,11 +2122,16 @@ public class MessageServiceImpl implements MessageService {
 		return messageModel;
 	}
 
+	/**
+	 * Process a 1:1 image message (0x02).
+	 */
 	@Deprecated
-	private MessageModel saveBoxMessage(BoxImageMessage message, MessageModel messageModel) {
+	private MessageModel saveBoxMessage(
+		@NonNull ImageMessage message,
+		MessageModel messageModel,
+		@NonNull ContactModel contactModel
+	) {
 		logger.info("saveBoxMessage: {}", message.getMessageId());
-
-		ContactModel contactModel = contactService.getByIdentity(message.getFromIdentity());
 
 		logger.info("saveBoxMessage: {} - A", message.getMessageId());
 
@@ -2471,34 +2215,32 @@ public class MessageServiceImpl implements MessageService {
 		return messageModel;
 	}
 
+	/**
+	 * Process a 1:1 video message (0x13).
+	 */
 	@Deprecated
-	private MessageModel saveBoxMessage(BoxVideoMessage message, MessageModel messageModel) throws Exception {
-		ContactModel contactModel = contactService.getByIdentity(message.getFromIdentity());
-
-		if (contactModel == null) {
-			logger.error("could not save a video message from a unknown contact");
-			return null;
-		}
-
+	private MessageModel saveBoxMessage(
+		@NonNull VideoMessage message,
+		MessageModel messageModel,
+		@NonNull ContactModel contactModel
+	) throws Exception {
 		MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
-
 		return (MessageModel) saveVideoMessage(
 				messageReceiver,
 				message,
 				messageModel);
 	}
 
+	/**
+	 * Process a 1:1 audio message (0x14).
+	 */
 	@Deprecated
-	private MessageModel saveBoxMessage(BoxAudioMessage message, MessageModel messageModel) throws Exception {
-		ContactModel contactModel = contactService.getByIdentity(message.getFromIdentity());
-
-		if (contactModel == null) {
-			logger.error("could not save an audio message from a unknown contact");
-			return null;
-		}
-
+	private MessageModel saveBoxMessage(
+		@NonNull AudioMessage message,
+		MessageModel messageModel,
+		@NonNull ContactModel contactModel
+	) {
 		MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
-
 		return (MessageModel) saveAudioMessage(
 				messageReceiver,
 				message,
@@ -2557,15 +2299,15 @@ public class MessageServiceImpl implements MessageService {
 		return success;
 	}
 
+	/**
+	 * Process a 1:1 location message (0x10).
+	 */
 	@WorkerThread
-	private MessageModel saveBoxMessage(BoxLocationMessage message, MessageModel messageModel) {
-		ContactModel contactModel = contactService.getByIdentity(message.getFromIdentity());
-
-		if (contactModel == null) {
-			logger.error("Could not save a location message from an unknown contact");
-			return null;
-		}
-
+	private MessageModel saveBoxMessage(
+		@NonNull LocationMessage message,
+		MessageModel messageModel,
+		@NonNull ContactModel contactModel
+	) {
 		ContactMessageReceiver r = contactService.createReceiver(contactModel);
 		if (messageModel == null) {
 			messageModel = r.createLocalModel(MessageType.LOCATION, MessageContentsType.LOCATION, message.getDate());
@@ -2790,52 +2532,8 @@ public class MessageServiceImpl implements MessageService {
 			databaseServiceNew.getGroupMessageModelFactory().countStarredMessages();
 	}
 
-	private void readMessageQueue() {
-		try {
-			File f = getMessageQueueFile();
-
-			if (f.exists()) {
-				MasterKey masterKey = ThreemaApplication.getMasterKey();
-				if (masterKey == null || masterKey.isLocked())
-					return;
-
-				try (CipherInputStream cis = masterKey.getCipherInputStream(new FileInputStream(f))) {
-					messageQueue.unserializeFromStream(cis);
-				}
-				logger.info("Queue restored. Size = {}", messageQueue.getQueueSize());
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-	}
-
 	@Override
-	public void saveMessageQueueAsync() {
-		MasterKey masterKey = ThreemaApplication.getMasterKey();
-		if (masterKey == null || masterKey.isLocked()) {
-			return;
-		}
-
-		new Thread(() -> saveMessageQueue(masterKey)).start();
-	}
-
-	@Override
-	public void saveMessageQueue(@NonNull MasterKey masterKey) {
-		synchronized (messageQueue) {
-			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(getMessageQueueFile());
-				CipherOutputStream cos = masterKey.getCipherOutputStream(fileOutputStream);
-				if (cos != null) {
-					messageQueue.serializeToStream(cos);
-					logger.info("Queue saved. Size = {}", messageQueue.getQueueSize());
-				}
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
-
-	@Override
+	@Nullable
 	public MessageModel getContactMessageModel(final Integer id, boolean lazy) {
 		MessageModel model;
 		synchronized (contactMessageCache) {
@@ -2882,6 +2580,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
+	@Nullable
 	public GroupMessageModel getGroupMessageModel(final Integer id, boolean lazy) {
 		synchronized (groupMessageCache) {
 			GroupMessageModel model = Functional.select(groupMessageCache, type -> type.getId() == id);
@@ -2922,10 +2621,9 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public DistributionListMessageModel getDistributionListMessageModel(Integer id, boolean lazy) {
-		return databaseServiceNew.getDistributionListMessageModelFactory().getById(
-				id
-		);
+	@Nullable
+	public DistributionListMessageModel getDistributionListMessageModel(long id, boolean lazy) {
+		return databaseServiceNew.getDistributionListMessageModelFactory().getById(id);
 	}
 
 	private void fireOnNewMessage(final AbstractMessageModel messageModel) {
@@ -3256,7 +2954,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	private void fireOnCreatedMessage(final AbstractMessageModel messageModel) {
-		logger.debug("fireOnCreatedMessage for message " + messageModel.getApiMessageId());
+		logger.debug("fireOnCreatedMessage for message {}", messageModel.getApiMessageId());
 		ListenerManager.messageListeners.handle(listener -> listener.onNew(messageModel));
 	}
 
@@ -3309,12 +3007,6 @@ public class MessageServiceImpl implements MessageService {
 
 		//clear all files in app Path
 		fileService.clearDirectory(fileService.getAppDataPath(), false);
-
-		/* remove saved message queue too */
-		File f = new File(context.getFilesDir(), MESSAGE_QUEUE_SAVE_FILE);
-		if (f.exists()) {
-			FileUtil.deleteFileOrWarn(f, "message queue save file", logger);
-		}
 	}
 
 	@Override
@@ -3387,7 +3079,7 @@ public class MessageServiceImpl implements MessageService {
 			case VOICEMESSAGE:
 				return MimeUtil.MIME_TYPE_AUDIO;
 			case IMAGE:
-				return MimeUtil.MIME_TYPE_IMAGE_JPG;
+				return MimeUtil.MIME_TYPE_IMAGE_JPEG;
 			default:
 				return MimeUtil.MIME_TYPE_ANY;
 		}
@@ -3518,10 +3210,6 @@ public class MessageServiceImpl implements MessageService {
 			}
 		}
 		return false;
-	}
-
-	private File getMessageQueueFile() {
-		return new File(context.getFilesDir(), MESSAGE_QUEUE_SAVE_FILE);
 	}
 
 	@Override
@@ -3656,7 +3344,7 @@ public class MessageServiceImpl implements MessageService {
 
 			BlobUploader blobUploader = uploaders.get(key);
 			if (blobUploader != null) {
-				logger.debug("cancel upload of message " + key);
+				logger.debug("cancel upload of message {}", key);
 				blobUploader.cancel();
 				uploaders.remove(key);
 			}
@@ -3673,7 +3361,7 @@ public class MessageServiceImpl implements MessageService {
 			String key = getLoaderKey(messageModel);
 
 			if (videoTranscoders.containsKey(key)) {
-				logger.debug("cancel transcoding of message " + key);
+				logger.debug("cancel transcoding of message {}", key);
 				WeakReference<VideoTranscoder> videoTranscoderRef = videoTranscoders.get(key);
 				if (videoTranscoderRef != null) {
 					if (videoTranscoderRef.get() != null) {
@@ -3955,7 +3643,7 @@ public class MessageServiceImpl implements MessageService {
 				continue;
 			}
 
-			if (!createMessagesAndSetPending(correlationId, mediaItem, resolvedReceivers, messageModels, fileDataModel)) {
+			if (!createFileMessagesAndSetPending(correlationId, mediaItem, resolvedReceivers, messageModels, fileDataModel)) {
 				logger.info("Unable to create messages");
 				failedCounter++;
 				continue;
@@ -4064,7 +3752,7 @@ public class MessageServiceImpl implements MessageService {
 
 				Bitmap bitmap = null;
 				try {
-					boolean hasNoTransparency = MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mediaItem.getMimeType());
+					boolean hasNoTransparency = MimeUtil.MIME_TYPE_IMAGE_JPEG.equals(mediaItem.getMimeType());
 					bitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), maxSize, false, false, false);
 					if (bitmap != null) {
 						bitmap = adjustBitmapOrientation(bitmap, mediaItem, metaData);
@@ -4209,15 +3897,15 @@ public class MessageServiceImpl implements MessageService {
 				}
 				metaData.put(FileDataModel.METADATA_KEY_DURATION, (float) trimmedDuration / (float) DateUtils.SECOND_IN_MILLIS);
 				thumbnailBitmap = IconUtil.getVideoThumbnailFromUri(context, mediaItem);
-				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
+				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPEG);
 				break;
 			case MediaItem.TYPE_IMAGE:
 				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(context, mediaItem.getUri());
 				mediaItem.setExifRotation((int) exifOrientation.getRotation());
 				mediaItem.setExifFlip(exifOrientation.getFlip());
-				boolean hasNoTransparency = MimeUtil.MIME_TYPE_IMAGE_JPG.equals(mediaItem.getMimeType());
+				boolean hasNoTransparency = MimeUtil.MIME_TYPE_IMAGE_JPEG.equals(mediaItem.getMimeType());
 				if (hasNoTransparency && mediaItem.getRenderingType() != RENDERING_STICKER) {
-					fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
+					fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPEG);
 				} else {
 					fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_PNG);
 				}
@@ -4231,7 +3919,7 @@ public class MessageServiceImpl implements MessageService {
 				break;
 			case MediaItem.TYPE_IMAGE_CAM:
 				// camera images are always sent as JPGs
-				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
+				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPEG);
 				thumbnailBitmap = BitmapUtil.safeGetBitmapFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, false, true, false);
 				if (thumbnailBitmap != null) {
 					thumbnailBitmap = BitmapUtil.rotateBitmap(BitmapUtil.rotateBitmap(
@@ -4260,9 +3948,9 @@ public class MessageServiceImpl implements MessageService {
 		final byte[] thumbnailData;
 		if (thumbnailBitmap != null) {
 			// convert bitmap to byte array
-			if (MimeUtil.MIME_TYPE_IMAGE_JPG.equals(fileDataModel.getThumbnailMimeType())) {
+			if (MimeUtil.MIME_TYPE_IMAGE_JPEG.equals(fileDataModel.getThumbnailMimeType())) {
 				thumbnailData = BitmapUtil.bitmapToJpegByteArray(thumbnailBitmap);
-				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPG);
+				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_JPEG);
 			} else {
 				thumbnailData = BitmapUtil.bitmapToPngByteArray(thumbnailBitmap);
 				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_PNG);
@@ -4304,8 +3992,15 @@ public class MessageServiceImpl implements MessageService {
 				continue;
 			}
 
-			// now set to pending
-			messageModel.setState(MessageState.PENDING); // shows a progress bar
+			if (messageReceiver instanceof GroupMessageReceiver
+				&& groupService.isNotesGroup(((GroupMessageReceiver) messageReceiver).getGroup())
+			) {
+				// In case of a notes group, we set the message state directly to read
+				messageModel.setState(MessageState.READ);
+			} else {
+				// Otherwise we initialize the message model with pending to show a progress bar
+				messageModel.setState(MessageState.PENDING); // shows a progress bar
+			}
 			save(messageModel);
 
 			try {
@@ -4355,6 +4050,8 @@ public class MessageServiceImpl implements MessageService {
 										throw new ThreemaException("File data encrypt failed");
 									}
 								}
+								messageModel.setState(MessageState.UPLOADING);
+								save(messageModel);
 							}
 							fileDataModel.setFileSize(contentData.length - NaCl.BOXOVERHEAD);
 							messageModel.setFileData(fileDataModel);
@@ -4376,7 +4073,7 @@ public class MessageServiceImpl implements MessageService {
 									}
 								});
 								contentBlobId = blobUploader.upload();
-								logger.debug("blobId = " + Utils.byteArrayToHexString(contentBlobId));
+								logger.debug("blobId = {}", Utils.byteArrayToHexString(contentBlobId));
 							}
 						})
 						.next(() -> {
@@ -4402,7 +4099,7 @@ public class MessageServiceImpl implements MessageService {
 											}
 										});
 										thumbnailBlobId = blobUploader.upload();
-										logger.debug("blobIdThumbnail = " + Utils.byteArrayToHexString(thumbnailBlobId));
+										logger.debug("blobIdThumbnail = {}", Utils.byteArrayToHexString(thumbnailBlobId));
 
 										fireOnModifiedMessage(messageModel);
 									}
@@ -4410,23 +4107,22 @@ public class MessageServiceImpl implements MessageService {
 							}
 						})
 						.next(() -> {
-							if (getReceiver().createBoxedFileMessage(
+							getReceiver().createAndSendFileMessage(
 								thumbnailBlobId,
 								contentBlobId,
 								contentEncryptResult[0],
-								messageModel
-							)) {
-								updateMessageState(messageModel,
-									getReceiver().sendMediaData() && getReceiver().offerRetry() ?
-										MessageState.SENDING :
-										MessageState.SENT, null);
+								messageModel,
+								null,
+								null
+							);
+							updateMessageState(messageModel,
+								getReceiver().sendMediaData() && getReceiver().offerRetry() ?
+									MessageState.SENDING :
+									MessageState.SENT, null);
 
-								messageModel.setFileData(fileDataModel);
-								// save updated model
-								save(messageModel);
-							} else {
-								throw new ThreemaException("Failed to create box");
-							}
+							messageModel.setFileData(fileDataModel);
+							// save updated model
+							save(messageModel);
 						})
 						.next(() -> {
 							messageModel.setSaved(true);
@@ -4458,7 +4154,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @return true if all was hunky dory, false if an error occurred
 	 */
 	@WorkerThread
-	private boolean createMessagesAndSetPending(
+	private boolean createFileMessagesAndSetPending(
 		String correlationId,
 		MediaItem mediaItem,
 		MessageReceiver[] resolvedReceivers,
@@ -4481,6 +4177,8 @@ public class MessageServiceImpl implements MessageService {
 			messageModel.setSaved(true);
 
 			messageReceiver.saveLocalModel(messageModel);
+
+			messageReceiver.bumpLastUpdate();
 
 			messageModels.put(messageReceiver, messageModel);
 

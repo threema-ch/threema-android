@@ -25,7 +25,9 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import ch.threema.app.services.UpdateSystemService;
 
-public class SystemUpdateToVersion32 extends  UpdateToVersion implements UpdateSystemService.SystemUpdate {
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
+
+public class SystemUpdateToVersion32 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -36,7 +38,7 @@ public class SystemUpdateToVersion32 extends  UpdateToVersion implements UpdateS
 	@Override
 	public boolean runDirectly() {
 
-		if(!this.fieldExist(this.sqLiteDatabase, "contacts", "avatarExpires")) {
+		if(!fieldExists(this.sqLiteDatabase, "contacts", "avatarExpires")) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN avatarExpires LONG DEFAULT NULL");
 			return true;
 		}
@@ -45,7 +47,7 @@ public class SystemUpdateToVersion32 extends  UpdateToVersion implements UpdateS
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

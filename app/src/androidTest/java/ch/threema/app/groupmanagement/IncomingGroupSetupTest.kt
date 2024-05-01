@@ -28,10 +28,12 @@ import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
-import ch.threema.domain.protocol.csp.messages.GroupCreateMessage
+import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.storage.models.GroupModel
 import junit.framework.TestCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -45,18 +47,19 @@ import org.junit.runner.RunWith
  * Runs different tests that verify that incoming group setup messages are handled according to the
  * protocol.
  */
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
-class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
+class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
 
-    override fun createMessageForGroup() = GroupCreateMessage()
+    override fun createMessageForGroup() = GroupSetupMessage()
 
     /**
      * Test a group setup message of an unknown group where the user is not not a member.
      */
     @Test
-    fun testUnknownGroupNotMember() {
+    fun testUnknownGroupNotMember() = runTest {
         val scenario = startScenario()
 
         // Assert initial group conversations
@@ -83,7 +86,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
         assertGroupConversations(scenario, initialGroups)
 
         // Assert that no message is sent
-        assertEquals(0, sentMessages.size)
+        assertEquals(0, sentMessagesInsideTask.size)
 
         // Assert that no action has been triggered
         setupTracker.assertAllNewMembersAdded()
@@ -96,7 +99,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
      * Test a group setup message of an unknown group that has no members.
      */
     @Test
-    fun testUnknownEmptyGroup() {
+    fun testUnknownEmptyGroup() = runTest {
         val scenario = startScenario()
 
         // Assert initial group conversations
@@ -123,7 +126,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
         assertGroupConversations(scenario, initialGroups)
 
         // Assert that no message is sent
-        assertEquals(0, sentMessages.size)
+        assertEquals(0, sentMessagesInsideTask.size)
 
         // Assert that no action has been triggered
         setupTracker.assertAllNewMembersAdded()
@@ -136,7 +139,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
      * Test a group setup message of a blocked contact.
      */
     @Test
-    fun testBlocked() {
+    fun testBlocked() = runTest {
         val scenario = startScenario()
 
         // Assert initial group conversations
@@ -165,12 +168,12 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
 
         // Assert that a group leave message is sent to the created and all provided members
         // including those that are blocked
-        assertEquals(2, sentMessages.size)
-        val first = sentMessages.first() as GroupLeaveMessage
+        assertEquals(2, sentMessagesInsideTask.size)
+        val first = sentMessagesInsideTask.first() as GroupLeaveMessage
         assertEquals(myContact.identity, first.fromIdentity)
         assertEquals(newAGroup.apiGroupId, first.apiGroupId)
         assertEquals(newAGroup.groupCreator.identity, first.groupCreator)
-        val second = sentMessages.last() as GroupLeaveMessage
+        val second = sentMessagesInsideTask.last() as GroupLeaveMessage
         assertEquals(myContact.identity, second.fromIdentity)
         assertEquals(newAGroup.apiGroupId, second.apiGroupId)
         assertEquals(newAGroup.groupCreator.identity, second.groupCreator)
@@ -191,7 +194,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
      * Test a group setup message of a group where the user is not a member anymore.
      */
     @Test
-    fun testKicked() {
+    fun testKicked() = runTest {
         val scenario = startScenario()
 
         // Assert initial group conversations
@@ -218,7 +221,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
         assertGroupConversations(scenario, initialGroups)
 
         // Assert that no message is sent
-        assertEquals(0, sentMessages.size)
+        assertEquals(0, sentMessagesInsideTask.size)
 
         // Assert that the user has been kicked and the members are updated
         setupTracker.assertAllNewMembersAdded()
@@ -231,7 +234,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
      * Test a group setup message of a group where the members changed.
      */
     @Test
-    fun testMembersChanged() {
+    fun testMembersChanged() = runTest {
         val scenario = startScenario()
 
         // Assert initial group conversations
@@ -259,7 +262,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
         assertGroupConversations(scenario, initialGroups)
 
         // Assert that no message is sent
-        assertEquals(0, sentMessages.size)
+        assertEquals(0, sentMessagesInsideTask.size)
 
         // Assert that the members have changed
         setupTracker.assertAllNewMembersAdded()
@@ -272,7 +275,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
      * Test a group setup message of a newly created group.
      */
     @Test
-    fun testNewGroup() {
+    fun testNewGroup() = runTest {
         val scenario = startScenario()
 
         // Assert initial group conversations
@@ -306,7 +309,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
         assertGroupConversations(scenario, initialGroups + newGroup)
 
         // Assert that no message is sent
-        assertEquals(0, sentMessages.size)
+        assertEquals(0, sentMessagesInsideTask.size)
 
         // Assert that the group has been created and the new members are set correctly
         setupTracker.assertAllNewMembersAdded()
@@ -319,7 +322,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
      * Test two group setup messages that remove and then add the user.
      */
     @Test
-    fun testRemoveJoin() {
+    fun testRemoveJoin() = runTest {
         val scenario = startScenario()
 
         // Assert initial group conversations
@@ -343,7 +346,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
         processMessage(removeMessage, groupAB.groupCreator.identityStore)
 
         // Assert that no message is sent
-        assertEquals(0, sentMessages.size)
+        assertEquals(0, sentMessagesInsideTask.size)
 
         // Create the group setup message (now again with this user)
         val addMessage = createGroupSetupMessage(groupAB)
@@ -353,7 +356,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
         processMessage(addMessage, groupAB.groupCreator.identityStore)
 
         // Assert that no message is sent
-        assertEquals(0, sentMessages.size)
+        assertEquals(0, sentMessagesInsideTask.size)
 
         // Assert that the user has been kicked and added again
         setupTracker.assertAllNewMembersAdded()
@@ -363,7 +366,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
     }
 
     @Test
-    fun testGroupContainingInvalidIDs() {
+    fun testGroupContainingInvalidIDs() = runTest {
         val scenario = startScenario()
 
         // Assert initial group conversations
@@ -400,7 +403,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
         assertGroupConversations(scenario, initialGroups + newGroup)
 
         // Assert that no message is sent
-        assertEquals(0, sentMessages.size)
+        assertEquals(0, sentMessagesInsideTask.size)
 
         // Assert that the group has been created and the new members are set correctly
         setupTracker.assertAllNewMembersAdded()
@@ -409,7 +412,8 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupCreateMessage>() {
         setupTracker.stop()
     }
 
-    private fun createGroupSetupMessage(testGroup: TestGroup) = GroupCreateMessage().apply {
+    private fun createGroupSetupMessage(testGroup: TestGroup) = GroupSetupMessage()
+        .apply {
         apiGroupId = testGroup.apiGroupId
         groupCreator = testGroup.groupCreator.identity
         fromIdentity = testGroup.groupCreator.identity

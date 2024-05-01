@@ -925,6 +925,10 @@
     <string name="empty_chat_title">Очистить чат</string>
     <string name="empty_chat_confirm">Все сообщения в этом чате будут удалены. Продолжить?</string>
     <string name="emptying_chat">Очистка чата…</string>
+    <string name="emptying_chat_deleting_messages">Удаление сообщений...</string>
+    <string name="delete_chat_title">Удалить чат</string>
+    <string name="delete_chat_confirm">Все сообщения в этом чате будут удалены, как и сам чат. Продолжить?</string>
+    <string name="deleting_chat">Удаление чата</string>
     <string name="set_private">Скрыть чат</string>
     <string name="unset_private">Показать чат</string>
     <string name="delete_group_message">Выйти из группы и полностью удалить ее? Все сообщения в ней будут удалены.</string>
@@ -1085,7 +1089,6 @@
     <string name="tooltip_voip_turn_on_camera">Нажмите здесь, чтобы включить камеру</string>
     <string name="prefs_videocall_profile_explain">Фактическое качество изображения зависит от сети и настроек вашего собеседника</string>
     <string name="permission_camera_videocall_required">Для видеосвязи предоставьте доступ к камере</string>
-    <string name="feedback">Отзыв</string>
     <string name="tooltip_voip_enable_speakerphone">Нажмите здесь, чтобы включить громкую связь</string>
     <string name="ballot_open">Открытые опросы</string>
     <string name="translators">Переводчики</string>
@@ -1357,16 +1360,21 @@
     <string name="synchronizing">Синхронизация…</string>
     <string name="forward_security">Использовать Perfect Forward Secrecy при отправке сообщений</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
-    <string name="forward_security_mode_none">нет</string>
+    <string name="forward_security_mode_none">Нет</string>
     <string name="clear_forward_security">Сбросить сессию Perfect Forward Secrecy для этого контакта</string>
     <string name="clear_forward_security_warning">Выполняйте это действие только в случае, если это вас просит сделать представитель службы поддержки Threema.</string>
     <string name="forward_security_cleared">Сессии Perfect Forward Secrecy с этим контактом очищены</string>
     <string name="message_without_forward_security">Получено сообщение, в котором не использовался протокол Perfect Forward Secrecy. Убедитесь, что отправитель намеренно отключил Perfect Forward Secrecy.</string>
-    <string name="forward_security_established">Сообщения в этом чате теперь защищены протоколом Perfect Forward Secrecy.</string>
+    <string name="forward_security_established">Обмен сообщениями с этим партнером по чату теперь защищен протоколом Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Сообщения, полученные в этом чате, теперь защищены Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Сессия Perfect Forward Secrecy сброшена. Это может произойти, если собеседник в чате переходит на другое устройство или переустанавливает приложение.</string>
     <string name="forward_security_reset_simple">Сессия Perfect Forward Secrecy с этим контактом сброшена.</string>
     <string name="forward_security_message_out_of_order">Получено сообщение, которое невозможно расшифровать.</string>
+    <string name="forward_security_notification_channel_name">Предупреждения Perfect Forward Secrecy</string>
+    <string name="forward_security_notification_rejected_title">Сообщения не отправлены</string>
+    <string name="forward_security_notification_rejected_text_contact">Одно или несколько сообщений не удалось отправить пользователю %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">Одно или несколько сообщений не удалось отправить группе «%1$s».</string>
+    <string name="forward_security_notification_rejected_text_generic">Одно или несколько сообщений не удалось отправить.</string>
     <string name="self_updater_installation_failed">Невозможно загрузить обновление. Загрузите и установите обновление с сайта <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> вручную.</string>
     <string name="spam_first_contact">Этот чат инициирован неизвестным контактом</string>
     <string name="spam_report">Сообщить о спаме</string>
@@ -1378,6 +1386,7 @@
     <string name="spam_report_short">Жалоба</string>
     <string name="wizard_incompatible_contact_sync_params">Установлены несовместимые параметры MDM. Для параметра Threema MDM th_contact_sync не может быть установлено значение «истина», если задано ограничение пользователя DISALLOW_MODIFY_ACCOUNTS. Обратитесь к администратору.</string>
     <string name="messages_cannot_be_recovered">Вы не сможете восстановить сообщения.</string>
+    <string name="groups_left_or_dissolved">Будет выполнен выход из групп или они будут распущены, а затем удалены.</string>
     <string name="contact_deleted">Контакт удален</string>
     <string name="last_added_contact">Добавлен последним</string>
     <string name="directory_explain_text">Поиск в каталоге компании сотрудников, которых еще нет в вашем списке контактов.</string>
@@ -1502,10 +1511,10 @@
     <string name="problemsolver_title_background_data">Фоновая передача данных ограничена</string>
     <string name="problemsolver_title_notifications">Уведомления отключены</string>
     <string name="problemsolver_title_fullscreen_notifications">Полноэкранные уведомления запрещены</string>
-    <string name="problemsolver_explain_fullscreen_notifications">Приложению запрещено отображать полноэкранные уведомления, поэтому вы можете пропустить входящие вызовы, когда телефон заблокирован. Исправьте это, включив переключатель рядом с «Разрешить полноэкранные уведомления для этого приложения».</string>
+    <string name="problemsolver_explain_fullscreen_notifications">Приложению запрещено отображать полноэкранные уведомления. Вы можете пропустить входящие вызовы, когда устройство заблокировано. Чтобы это исправить, активируйте параметр «Разрешить полноэкранные уведомления».</string>
     <string name="problemsolver_explain_notifications">Уведомления для этого приложения полностью отключены. Вы не будете получать информацию о входящих сообщениях или звонках, приложение может работать не так, как ожидалось. Чтобы это исправить, включите переключатель рядом с «Все уведомления».</string>
-    <string name="problemsolver_explain_background_data">Приложение не может использовать мобильные данные в фоновом режиме. Вы не будете получать уведомления о входящих сообщениях, если приложение не активно. Чтобы это исправить, включите переключатель «Фоновая передача данных».</string>
-    <string name="problemsolver_explain_background">Приложению запрещено работать в фоновом режиме. Вы не будете получать никаких уведомлений и многие функции не будут работать должным образом. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
+    <string name="problemsolver_explain_background_data">Приложение не может использовать мобильные данные в фоновом режиме. Вы не будете получать уведомления о входящих сообщениях, если приложение не активно. Чтобы это исправить, активируйте параметр «Фоновая передача данных».</string>
+    <string name="problemsolver_explain_background">Работа приложения в фоновом режиме не разрешена. Вы не будете получать никаких уведомлений, а многие функции не будут работать должным образом. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
     <string name="problemsolver_info_text">Названия некоторых из упомянутых выше параметров настройки системы могут различаться в зависимости от версии Android и производителя устройства.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Использование батареи приложением установлено на «оптимальное»</string>
     <string name="problemsolver_explain_app_battery_usgae_optimized">Приложению не разрешено поддерживать постоянное подключение к серверам, которое требуется для работы Threema Push. Вы не будете получать уведомления о новых сообщениях, когда приложение работает в фоновом режиме. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
@@ -1517,6 +1526,7 @@
     <string name="edit_and_send">Изменить и отправить</string>
     <string name="media_gallery_animated_webps">Анимированные WebPs</string>
     <string name="unsupported_image_type">Неподдерживаемый тип изображения: %s</string>
+    <string name="application_setup_steps_failed">Для проверки состояния ваших контактов требуется активное соединение с Интернетом. Убедитесь, что вы подключены к Интернету, и повторите попытку.</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>

@@ -62,7 +62,7 @@ class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParamet
 
                 /* if there are pending messages in the queue, go online for a moment to send them */
                 try {
-                    if (serviceManager.messageQueue.queueSize > 0) {
+                    if (serviceManager.taskManager.hasPendingTasks()) {
                         logger.info("Messages in queue; acquiring connection")
                         serviceManager.lifetimeService.acquireConnection("connectivityChange")
                         serviceManager.lifetimeService.releaseConnectionLinger("connectivityChange", MESSAGE_SEND_TIME)

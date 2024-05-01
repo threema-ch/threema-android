@@ -21,14 +21,17 @@
 
 package ch.threema.domain.stores;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
+import ch.threema.domain.taskmanager.ActiveTaskCodec;
 
 public interface DHSessionStoreInterface {
 	interface DHSessionStoreErrorHandler {
-		void onInvalidDHSessionState(@NonNull String peerIdentity, @NonNull DHSessionId sessionId);
+		void onInvalidDHSessionState(@NonNull String peerIdentity, @NonNull DHSessionId sessionId, @NonNull ActiveTaskCodec handle);
 	}
 
 	/**
@@ -37,10 +40,11 @@ public interface DHSessionStoreInterface {
 	 * @param myIdentity   my Threema identity
 	 * @param peerIdentity peer Threema identity
 	 * @param sessionId    the desired session ID
+	 * @param handle       the task handle used to send messages
 	 * @return the DH session, or null if not found
 	 */
 	@Nullable
-	DHSession getDHSession(String myIdentity, String peerIdentity, DHSessionId sessionId) throws DHSessionStoreException;
+	DHSession getDHSession(String myIdentity, String peerIdentity, DHSessionId sessionId, @NonNull ActiveTaskCodec handle) throws DHSessionStoreException;
 
 	/**
 	 * Get the "best" DH session with the specified contact, which is the session that has the
@@ -48,10 +52,26 @@ public interface DHSessionStoreInterface {
 	 *
 	 * @param myIdentity   my Threema identity
 	 * @param peerIdentity peer Threema identity
+	 * @param handle       the task handle used to send messages
 	 * @return the DH session, or null if none found
 	 */
 	@Nullable
-	DHSession getBestDHSession(String myIdentity, String peerIdentity) throws DHSessionStoreException;
+	DHSession getBestDHSession(String myIdentity, String peerIdentity, @NonNull ActiveTaskCodec handle) throws DHSessionStoreException;
+
+	/**
+	 * Get all DH sessions with the specified contact.
+	 *
+	 * @param myIdentity   my Threema identity
+	 * @param peerIdentity peer Threema identity
+	 * @param handle       the task handle used to send messages
+	 * @return all available DH sessions, or null if none found
+	 */
+	@NonNull
+	List<DHSession> getAllDHSessions(
+		@NonNull String myIdentity,
+		@NonNull String peerIdentity,
+		@NonNull ActiveTaskCodec handle
+	) throws DHSessionStoreException;
 
 	/**
 	 * Store a DH session.

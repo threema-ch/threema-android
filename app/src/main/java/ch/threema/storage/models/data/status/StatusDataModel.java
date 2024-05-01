@@ -25,6 +25,7 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
@@ -32,6 +33,8 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.data.MessageDataInterface;
@@ -39,8 +42,22 @@ import ch.threema.storage.models.data.MessageDataInterface;
 public abstract class StatusDataModel {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("StatusDataModel");
 
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({
+		VoipStatusDataModel.TYPE, // 1
+		GroupCallStatusDataModel.TYPE, // 2
+		ForwardSecurityStatusDataModel.TYPE, // 3
+		GroupStatusDataModel.TYPE, // 4
+	})
+	public @interface StatusType {}
+
 	public interface StatusDataModelInterface extends MessageDataInterface {
-		int getType();
+		/**
+		 * The status message type (e.g. "VoIP status", "Group Call Status" or
+		 * "Forward Security Status").
+		 */
+		@StatusType int getType();
+
 		void readData(String key, String value);
 		void readData(String key, long value);
 		void readData(String key, boolean value);

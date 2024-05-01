@@ -918,7 +918,7 @@
 	<style name="Threema.CardView.MentionSelector" parent="@style/Widget.Material3.CardView.Filled">
 		<item name="cardBackgroundColor">?attr/colorSurface</item>
 		<item name="cardElevation">@dimen/compose_edittext_elevation</item>
-		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.TopRounded</item>
+		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.TopRounded.Small</item>
 	</style>
 
 	<style name="Threema.CardView.Bubble.Status" parent="@style/Widget.Material3.CardView.Filled">
@@ -988,6 +988,11 @@
 		<item name="cornerSizeBottomRight">0dp</item>
 		<item name="cornerSizeBottomLeft">0dp</item>
 	</style>
+
+    <style name="Threema.ShapeAppearance.CardView.TopRounded.Small" parent="Threema.ShapeAppearance.CardView.TopRounded">
+        <item name="cornerSizeTopRight">12dp</item>
+        <item name="cornerSizeTopLeft">12dp</item>
+    </style>
 
 	<style name="Threema.ShapeAppearance.CardView.Bubble.Status" parent="">
 		<item name="cornerFamily">rounded</item>
@@ -1084,10 +1089,10 @@
 		<item name="hintEnabled">false</item>
 		<item name="boxStrokeWidth">0dp</item>
 		<item name="boxStrokeWidthFocused">0dp</item>
-		<item name="boxCornerRadiusBottomStart">24dp</item>
-		<item name="boxCornerRadiusBottomEnd">24dp</item>
-		<item name="boxCornerRadiusTopStart">24dp</item>
-		<item name="boxCornerRadiusTopEnd">24dp</item>
+		<item name="boxCornerRadiusBottomStart">@dimen/compose_textinputlayout_radius</item>
+		<item name="boxCornerRadiusBottomEnd">@dimen/compose_textinputlayout_radius</item>
+		<item name="boxCornerRadiusTopStart">@dimen/compose_textinputlayout_radius</item>
+		<item name="boxCornerRadiusTopEnd">@dimen/compose_textinputlayout_radius</item>
 		<item name="boxBackgroundColor">?attr/colorSecondaryContainer</item>
 	</style>
 
@@ -1162,4 +1167,5 @@
 		<item name="android:textStyle">bold</item>
 		<item name="android:fontFamily">sans-serif-condensed</item>
 	</style>
+
 </resources>

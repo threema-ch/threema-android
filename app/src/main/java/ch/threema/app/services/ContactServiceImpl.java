@@ -46,7 +46,6 @@ import com.neilalexander.jnacl.NaCl;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.security.MessageDigest;
@@ -92,6 +91,7 @@ import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.fs.DHSession;
@@ -102,23 +102,19 @@ import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkContact;
-import ch.threema.domain.protocol.blob.BlobLoader;
 import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.csp.connection.MessageQueue;
-import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.csp.messages.ContactDeleteProfilePictureMessage;
-import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
-import ch.threema.domain.protocol.csp.messages.ContactSetProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
+import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
@@ -139,7 +135,7 @@ public class ContactServiceImpl implements ContactService {
 	private final DatabaseServiceNew databaseServiceNew;
 	private final DeviceService deviceService;
 	private final UserService userService;
-	private final MessageQueue messageQueue;
+	private final NonceFactory nonceFactory;
 	private final IdentityStore identityStore;
 	private final PreferenceService preferenceService;
 	private final Map<String, ContactModel> contactModelCache;
@@ -152,7 +148,6 @@ public class ContactServiceImpl implements ContactService {
 	private final WallpaperService wallpaperService;
 	private final LicenseService licenseService;
 	private final APIConnector apiConnector;
-	private final ForwardSecurityMessageProcessor fsmp;
 	private final Timer typingTimer;
 	private final Map<String,TimerTask> typingTimerTasks;
 
@@ -183,7 +178,7 @@ public class ContactServiceImpl implements ContactService {
 		DatabaseServiceNew databaseServiceNew,
 		DeviceService deviceService,
 		UserService userService,
-		MessageQueue messageQueue,
+		NonceFactory nonceFactory,
 		IdentityStore identityStore,
 		PreferenceService preferenceService,
 		IdListService blackListIdentityService,
@@ -196,8 +191,8 @@ public class ContactServiceImpl implements ContactService {
 		ApiService apiService,
 		WallpaperService wallpaperService,
 		LicenseService licenseService,
-		APIConnector apiConnector,
-		ForwardSecurityMessageProcessor fsmp) {
+		APIConnector apiConnector
+	) {
 
 		this.context = context;
 		this.avatarCacheService = avatarCacheService;
@@ -205,7 +200,7 @@ public class ContactServiceImpl implements ContactService {
 		this.databaseServiceNew = databaseServiceNew;
 		this.deviceService = deviceService;
 		this.userService = userService;
-		this.messageQueue = messageQueue;
+		this.nonceFactory = nonceFactory;
 		this.identityStore = identityStore;
 		this.preferenceService = preferenceService;
 		this.blackListIdentityService = blackListIdentityService;
@@ -218,7 +213,6 @@ public class ContactServiceImpl implements ContactService {
 		this.wallpaperService = wallpaperService;
 		this.licenseService = licenseService;
 		this.apiConnector = apiConnector;
-		this.fsmp = fsmp;
 		this.typingTimer = new Timer();
 		this.typingTimerTasks = new HashMap<>();
 		this.contactModelCache = cacheService.getContactModelCache();
@@ -264,7 +258,7 @@ public class ContactServiceImpl implements ContactService {
 			}
 
 			@Override
-			public Integer requiredFeature() {
+			public Long requiredFeature() {
 				return null;
 			}
 
@@ -317,7 +311,7 @@ public class ContactServiceImpl implements ContactService {
 			}
 
 			if (!filter.includeHidden()) {
-				queryBuilder.appendWhere(ContactModel.COLUMN_IS_HIDDEN + "=0");
+				queryBuilder.appendWhere(ContactModel.COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP + "=0");
 			}
 
 			if (!filter.includeMyself() && getMe() != null) {
@@ -352,7 +346,7 @@ public class ContactServiceImpl implements ContactService {
 
 		if(filter != null) {
 
-			final Integer feature = filter.requiredFeature();
+			final Long feature = filter.requiredFeature();
 
 			//update feature level routine call
 			if(feature != null) {
@@ -489,7 +483,7 @@ public class ContactServiceImpl implements ContactService {
 		Cursor c = this.databaseServiceNew.getReadableDatabase().rawQuery(
 			"SELECT COUNT(*) FROM contacts " +
 			"WHERE " + ContactModel.COLUMN_IS_WORK + " = 1 " +
-			"AND " + ContactModel.COLUMN_IS_HIDDEN + " = 0", null);
+			"AND " + ContactModel.COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP + " = 0", null);
 
 		if (c != null) {
 			if(c.moveToFirst()) {
@@ -512,7 +506,7 @@ public class ContactServiceImpl implements ContactService {
 			}
 
 			@Override
-			public Integer requiredFeature() {
+			public Long requiredFeature() {
 				return null;
 			}
 
@@ -734,17 +728,33 @@ public class ContactServiceImpl implements ContactService {
 	@Override
 	public void setIsArchived(String identity, boolean archived) {
 		final ContactModel contact = this.getByIdentity(identity);
-
 		if (contact != null && contact.isArchived() != archived) {
 			contact.setArchived(archived);
-			save(contact);
-			// listeners will be fired by save()
+			save(contact); // listeners will be fired by save()
+		}
+	}
+
+	@Override
+	public void bumpLastUpdate(@NonNull String identity) {
+		final ContactModel contact = this.getByIdentity(identity);
+		if (contact != null) {
+			contact.setLastUpdate(new Date());
+			save(contact); // listeners will be fired by save()
+		}
+	}
+
+	@Override
+	public void clearLastUpdate(@NonNull String identity) {
+		final ContactModel contact = this.getByIdentity(identity);
+		if (contact != null) {
+			contact.setLastUpdate(null);
+			save(contact); // listeners will be fired by save()
 		}
 	}
 
 	@Override
 	public void save(@NonNull ContactModel contactModel) {
-		this.contactStore.addContact(contactModel);
+		this.contactStore.addContact(contactModel, contactModel.isHidden());
 	}
 
 	@Override
@@ -795,37 +805,44 @@ public class ContactServiceImpl implements ContactService {
 			ShortcutUtil.deleteShareTargetShortcut(uniqueIdString);
 			ShortcutUtil.deletePinnedShortcut(uniqueIdString);
 
+			removeDHSessions(model.getIdentity());
 		} else {
-			// hide contact
+			// Hide contact
 			setIsHidden(model.getIdentity(),true);
-			// also remove conversation of this contact
-			try {
-				ConversationService conversationService = ThreemaApplication.getServiceManager().getConversationService();
-				conversationService.removed(model);
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-
 		}
+
+		deleteConversation(model);
 
 		if (removeLink) {
 			AndroidContactUtil.getInstance().deleteThreemaRawContact(model);
 		}
 
+		return true;
+	}
+
+	private void deleteConversation(@NonNull ContactModel contactModel) {
+		// Delete the conversation with the contact
+		try {
+			ConversationService conversationService = ThreemaApplication.getServiceManager().getConversationService();
+			conversationService.delete(contactModel);
+		} catch (Exception e) {
+			logger.error("Exception", e);
+		}
+	}
+
+	private void removeDHSessions(@Nullable String peerIdentity) {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 		String identity = userService.getIdentity();
-		if (serviceManager != null && identity != null && model.getIdentity() != null) {
+		if (serviceManager != null && identity != null && peerIdentity != null) {
 			try {
 				DHSessionStoreInterface dhSessionStore = serviceManager.getDHSessionStore();
-				dhSessionStore.deleteAllDHSessions(identity, model.getIdentity());
+				dhSessionStore.deleteAllDHSessions(identity, peerIdentity);
 			} catch (DHSessionStoreException e) {
 				logger.error("Could not delete all DH sessions");
 			}
 		} else {
 			logger.warn("Could not delete DH sessions because the service manager or identity is null");
 		}
-
-		return true;
 	}
 
 	@NonNull
@@ -975,12 +992,19 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public @NonNull ContactModel createContactByIdentity(String identity, boolean force) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException {
-		return createContactByIdentity(identity, force, false);
+	public @NonNull ContactModel createContactByIdentity(
+		@NonNull String identity,
+		boolean force
+	) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException {
+		return createContactByIdentity(identity, force, AcquaintanceLevel.DIRECT);
 	}
 
 	@Override
-	public @NonNull ContactModel createContactByIdentity(String identity, boolean force, boolean hideContactByDefault) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException {
+	public @NonNull ContactModel createContactByIdentity(
+		@NonNull String identity,
+		boolean force,
+		@NonNull AcquaintanceLevel acquaintanceLevel
+	) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException {
 		if (!force && AppRestrictionUtil.isAddContactDisabled(ThreemaApplication.getAppContext())) {
 			throw new PolicyViolationException();
 		}
@@ -993,14 +1017,11 @@ public class ContactServiceImpl implements ContactService {
 		if (newContact == null) {
 			// create a new contact
 			newContact = this.createContactModelByIdentity(identity);
-		} else if (!newContact.isHidden() || hideContactByDefault) {
+		} else if (newContact.getAcquaintanceLevel() == AcquaintanceLevel.DIRECT || acquaintanceLevel == AcquaintanceLevel.GROUP) {
 			throw new EntryAlreadyExistsException(R.string.identity_already_exists);
 		}
 
-		// set default hidden status
-		newContact.setIsHidden(hideContactByDefault);
-
-		// Set initial verification level
+		newContact.setAcquaintanceLevel(acquaintanceLevel);
 		newContact.setVerificationLevel(getInitialVerificationLevel(newContact));
 
 		this.save(newContact);
@@ -1009,7 +1030,7 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public void createContactsByIdentities(@NonNull List<String> identities, boolean hideContactByDefault) {
+	public void createGroupContactsByIdentities(@NonNull List<String> identities) {
 		List<String> newIdentities = StreamSupport.stream(identities)
 				.filter(identity -> {
 					if (identity == null) {
@@ -1034,7 +1055,7 @@ public class ContactServiceImpl implements ContactService {
 			for (APIConnector.FetchIdentityResult result : apiConnector.fetchIdentities(newIdentities)) {
 				ContactModel contactModel = createContactByFetchIdentityResult(result);
 				if (contactModel != null) {
-					contactStore.addContact(contactModel, hideContactByDefault);
+					contactStore.addContact(contactModel, true);
 				}
 			}
 		} catch (Exception e) {
@@ -1043,6 +1064,7 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
+	@NonNull
 	public VerificationLevel getInitialVerificationLevel(ContactModel contactModel) {
 		// Determine whether this is a trusted public key (e.g. for *SUPPORT)
 		final byte[] pubKey = contactModel.getPublicKey();
@@ -1081,15 +1103,19 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
+	@NonNull
 	public ContactMessageReceiver createReceiver(ContactModel contact) {
+		// Note that at this point we can assume that the service manager exists, as the contact
+		// service is obviously created.
+		ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
+
 		return new ContactMessageReceiver(
 			contact,
 			this,
+			serviceManager,
 			this.databaseServiceNew,
-			this.messageQueue,
 			this.identityStore,
-			this.blackListIdentityService,
-			this.fsmp
+			this.blackListIdentityService
 		);
 	}
 
@@ -1098,20 +1124,22 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public void updatePublicNickName(AbstractMessage msg) {
-		if(msg == null) {
+	public void updatePublicNickName(@NonNull AbstractMessage msg) {
+		ContactModel contact = getContact(msg);
+		if (contact == null) {
 			return;
 		}
 
-		ContactModel contact = getContact(msg);
+		String nickname = msg.getNickname();
+		// If nickname is present (not null), trim whitespaces
+		if (nickname != null) {
+			nickname = nickname.trim();
+		}
 
-		if (contact == null) return;
-
-		if(msg.getPushFromName() != null && msg.getPushFromName().length() > 0 &&
-			!msg.getPushFromName().equals(contact.getIdentity()) &&
-			!msg.getPushFromName().equals(contact.getPublicNickName())) {
-			contact.setPublicNickName(msg.getPushFromName());
-			this.save(contact);
+		// Update nickname if it is not null (and different from the current nickname)
+		if (nickname != null && !nickname.equals(contact.getPublicNickName())) {
+			contact.setPublicNickName(nickname);
+			save(contact);
 		}
 	}
 
@@ -1257,7 +1285,8 @@ public class ContactServiceImpl implements ContactService {
 		}
 
 		/* only upload blob every 7 days */
-		Date uploadDeadline = new Date(preferenceService.getProfilePicUploadDate() + ContactUtil.PROFILE_PICTURE_BLOB_CACHE_DURATION);
+		long uploadedAt = preferenceService.getProfilePicUploadDate();
+		Date uploadDeadline = new Date(uploadedAt + ContactUtil.PROFILE_PICTURE_BLOB_CACHE_DURATION);
 		Date now = new Date();
 
 		if (now.after(uploadDeadline)) {
@@ -1272,10 +1301,12 @@ public class ContactServiceImpl implements ContactService {
 			preferenceService.setProfilePicUploadDate(now);
 			preferenceService.setProfilePicUploadData(data);
 
+			data.uploadedAt = now.getTime();
 			return data;
 		} else {
 			ProfilePictureUploadData data = preferenceService.getProfilePicUploadData();
 			if (data != null) {
+				data.uploadedAt = uploadedAt;
 				return data;
 			} else {
 				return new ProfilePictureUploadData();
@@ -1315,71 +1346,36 @@ public class ContactServiceImpl implements ContactService {
 		return data;
 	}
 
-
 	@Override
-	public boolean updateProfilePicture(ContactSetProfilePictureMessage msg) {
-		final ContactModel contactModel = this.getContact(msg);
-
-		if (contactModel != null) {
-			BlobLoader blobLoader = this.apiService.createLoader(msg.getBlobId());
-			try {
-				byte[] encryptedBlob = blobLoader.load(false);
-
-				if (encryptedBlob != null) {
-					NaCl.symmetricDecryptDataInplace(encryptedBlob, msg.getEncryptionKey(), ProtocolDefines.CONTACT_PHOTO_NONCE);
-
-					this.fileService.writeContactPhoto(contactModel, encryptedBlob);
-
-					this.avatarCacheService.reset(contactModel);
-
-					ListenerManager.contactListeners.handle(listener -> listener.onAvatarChanged(contactModel));
-
-					return true;
-				}
-			} catch (Exception e) {
-				logger.error("Exception", e);
-
-				if (e instanceof FileNotFoundException) {
-					// do not bother trying download again
-					return true;
-				}
-			}
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean deleteProfilePicture(ContactDeleteProfilePictureMessage msg) {
-		final ContactModel contactModel = this.getContact(msg);
-
-		if (contactModel != null) {
-			fileService.removeContactPhoto(contactModel);
-
-			this.avatarCacheService.reset(contactModel);
-
-			ListenerManager.contactListeners.handle(listener -> listener.onAvatarChanged(contactModel));
-		}
-		return true;
-	}
-
-	@Override
-	public boolean requestProfilePicture(ContactRequestProfilePictureMessage msg) {
-		final ContactModel contactModel = this.getContact(msg);
-
-		if (contactModel != null) {
-			logger.info("Received request to re-send profile pic by {}", msg.getFromIdentity());
-
-			resetContactPhotoSentState(contactModel);
-		}
-		return true;
-	}
-
-	private void resetContactPhotoSentState(@NonNull ContactModel contactModel) {
+	public void resetContactPhotoSentState(@NonNull ContactModel contactModel) {
 		// Note that setting the blob id to null also triggers a delete-profile-picture message to
 		// be sent again in case there is no profile picture set.
 		contactModel.setProfilePicBlobID(null);
 		save(contactModel);
+	}
+
+	@Override
+	@NonNull
+	public ProfilePictureSharePolicy getProfilePictureSharePolicy() {
+		ProfilePictureSharePolicy.Policy policy;
+
+		switch(preferenceService.getProfilePicRelease()) {
+			case PreferenceService.PROFILEPIC_RELEASE_EVERYONE:
+				policy = ProfilePictureSharePolicy.Policy.EVERYONE;
+				break;
+			case PreferenceService.PROFILEPIC_RELEASE_SOME:
+				policy = ProfilePictureSharePolicy.Policy.SOME;
+				break;
+			default:
+				policy = ProfilePictureSharePolicy.Policy.NOBODY;
+				break;
+		}
+
+		List<String> allowedIdentities = policy == ProfilePictureSharePolicy.Policy.SOME
+			? Arrays.asList(profilePicRecipientsService.getAll())
+			: Collections.emptyList();
+
+		return new ProfilePictureSharePolicy(policy, allowedIdentities);
 	}
 
 	@Override
@@ -1534,7 +1530,7 @@ public class ContactServiceImpl implements ContactService {
 			contactModel.setLastName(workContact.lastName);
 		}
 		contactModel.setIsWork(true);
-		contactModel.setIsHidden(false);
+		contactModel.setAcquaintanceLevel(AcquaintanceLevel.DIRECT);
 		if (contactModel.getVerificationLevel() != VerificationLevel.FULLY_VERIFIED) {
 			contactModel.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
 		}
@@ -1546,12 +1542,7 @@ public class ContactServiceImpl implements ContactService {
 	@Override
 	@WorkerThread
 	public void fetchAndCacheContact(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException, MissingPublicKeyException {
-		// Check if the contact is available locally
-		if (contactStore.getContactForIdentity(identity) != null) {
-			return;
-		}
-
-		// Check if the contact is cached locally
+		// Check if the contact is cached or stored locally (or a special contact)
 		if (contactStore.getContactForIdentityIncludingCache(identity) != null) {
 			return;
 		}
@@ -1658,7 +1649,7 @@ public class ContactServiceImpl implements ContactService {
 			}
 
 			@Override
-			public Integer requiredFeature() {
+			public Long requiredFeature() {
 				return null;
 			}
 
@@ -1701,7 +1692,9 @@ public class ContactServiceImpl implements ContactService {
 			try {
 				apiConnector.reportJunk(identityStore, spammerContactModel.getIdentity(), spammerContactModel.getPublicNickName());
 
-				spammerContactModel.setIsHidden(true);
+				// Note: This is semantically wrong. Once we support multi-device, we probably
+				//       need to adapt the logic. Protocol discussions are ongoing.
+				spammerContactModel.setAcquaintanceLevel(AcquaintanceLevel.GROUP);
 				save(spammerContactModel);
 
 				if (onSuccess != null) {
@@ -1718,13 +1711,20 @@ public class ContactServiceImpl implements ContactService {
 
 	@Nullable
 	@Override
-	public ForwardSecuritySessionState getForwardSecurityState(@NonNull ContactModel contactModel) {
+	public ForwardSecuritySessionState getForwardSecurityState(
+		@NonNull ContactModel contactModel,
+		@NonNull ActiveTaskCodec handle
+	) {
 		if (!ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask())) {
 			return ForwardSecuritySessionState.unsupportedByRemote();
 		}
 		try {
 			DHSession session = ThreemaApplication.requireServiceManager().getDHSessionStore()
-				.getBestDHSession(userService.getIdentity(), contactModel.getIdentity());
+				.getBestDHSession(
+					userService.getIdentity(),
+					contactModel.getIdentity(),
+					handle
+				);
 			if (session == null) {
 				return ForwardSecuritySessionState.noSession();
 			}

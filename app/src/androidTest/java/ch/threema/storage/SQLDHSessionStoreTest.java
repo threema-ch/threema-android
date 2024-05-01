@@ -21,20 +21,26 @@
 
 package ch.threema.storage;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.test.core.app.ApplicationProvider;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.helpers.DummyUsers;
+import ch.threema.domain.helpers.UnusedTaskCodec;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.stores.DHSessionStoreException;
+import ch.threema.domain.taskmanager.TaskCodec;
 
 public class SQLDHSessionStoreTest {
 
@@ -45,6 +51,7 @@ public class SQLDHSessionStoreTest {
 	private SQLDHSessionStore store;
 	private DHSession initiatorDHSession;
 	private DHSession responderDHSession;
+	private final TaskCodec taskCodec = new UnusedTaskCodec();
 
 	@Before
 	public void setup() {
@@ -88,7 +95,7 @@ public class SQLDHSessionStoreTest {
 
 		// Delete any stored initiator session to start with a clean slate
 		store.deleteAllDHSessions(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity());
-		Assert.assertNull(this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity()));
+		Assert.assertNull(this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity(), taskCodec));
 
 		// Insert an initiator DH session in 2DH mode
 		Assert.assertNotNull(this.initiatorDHSession.getMyRatchet2DH());
@@ -96,12 +103,12 @@ public class SQLDHSessionStoreTest {
 		store.storeDHSession(this.initiatorDHSession);
 
 		// Retrieve the session again and ensure that the details match
-		Assert.assertEquals(this.initiatorDHSession, this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity()));
+		Assert.assertEquals(this.initiatorDHSession, this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity(), taskCodec));
 
 		// Turn 2DH ratchets once (need to do this here, as responder sessions are always 4DH)
 		this.initiatorDHSession.getMyRatchet2DH().turn();
 		store.storeDHSession(this.initiatorDHSession);
-		Assert.assertEquals(this.initiatorDHSession, this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity()));
+		Assert.assertEquals(this.initiatorDHSession, this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity(), taskCodec));
 
 		// Now Bob sends his ephemeral public key back to Alice
 		this.initiatorDHSession.processAccept(
@@ -114,7 +121,7 @@ public class SQLDHSessionStoreTest {
 		// initiatorDHSession has now been upgraded to 4DH - store and retrieve it again
 		Assert.assertNotNull(this.initiatorDHSession.getMyRatchet4DH());
 		store.storeDHSession(this.initiatorDHSession);
-		DHSession bestSession = this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity());
+		DHSession bestSession = this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity(), taskCodec);
 		Assert.assertNotNull(bestSession);
 		Assert.assertEquals(this.initiatorDHSession, bestSession);
 
@@ -123,7 +130,7 @@ public class SQLDHSessionStoreTest {
 
 		// Delete initiator DH session
 		store.deleteDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity(), this.initiatorDHSession.getId());
-		Assert.assertNull(this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity()));
+		Assert.assertNull(this.store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity(), taskCodec));
 	}
 
 	@Test
@@ -133,7 +140,7 @@ public class SQLDHSessionStoreTest {
 
 		// Store and retrieve the responder session
 		store.storeDHSession(this.responderDHSession);
-		Assert.assertEquals(this.responderDHSession, this.store.getBestDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity()));
+		Assert.assertEquals(this.responderDHSession, this.store.getBestDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), taskCodec));
 
 		// Turn the 4DH ratchets once, store, retrieve and compare again
 		Assert.assertNotNull(this.responderDHSession.getMyRatchet4DH());
@@ -141,14 +148,14 @@ public class SQLDHSessionStoreTest {
 		this.responderDHSession.getMyRatchet4DH().turn();
 		this.responderDHSession.getPeerRatchet4DH().turn();
 		store.storeDHSession(this.responderDHSession);
-		Assert.assertEquals(this.responderDHSession, this.store.getBestDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity()));
+		Assert.assertEquals(this.responderDHSession, this.store.getBestDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), taskCodec));
 
 		// Try to retrieve a responder session with a random session ID
-		Assert.assertNull(this.store.getDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), new DHSessionId()));
+		Assert.assertNull(this.store.getDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), new DHSessionId(), taskCodec));
 
 		// Delete DH session
 		store.deleteDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), this.responderDHSession.getId());
-		Assert.assertNull(this.store.getBestDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity()));
+		Assert.assertNull(this.store.getBestDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), taskCodec));
 	}
 
 	@Test
@@ -163,7 +170,7 @@ public class SQLDHSessionStoreTest {
 		store.storeDHSession(this.responderDHSession);
 
 		// There should still be a 2DH ratchet at this point
-		DHSession retrievedSession = store.getDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), this.responderDHSession.getId());
+		DHSession retrievedSession = store.getDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), this.responderDHSession.getId(), taskCodec);
 		Assert.assertNotNull(retrievedSession);
 		Assert.assertNotNull(retrievedSession.getPeerRatchet2DH());
 
@@ -175,7 +182,7 @@ public class SQLDHSessionStoreTest {
 		store.storeDHSession(this.responderDHSession);
 
 		// Ensure that the 2DH ratchet is really gone
-		retrievedSession = store.getDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), this.responderDHSession.getId());
+		retrievedSession = store.getDHSession(DummyUsers.BOB.getIdentity(), DummyUsers.ALICE.getIdentity(), this.responderDHSession.getId(), taskCodec);
 		Assert.assertNotNull(retrievedSession);
 		Assert.assertNull(retrievedSession.getPeerRatchet2DH());
 	}
@@ -190,6 +197,39 @@ public class SQLDHSessionStoreTest {
 			}
 			testRaceConditionOnce();
 		}
+	}
+
+	@Test
+	public void testGetAllSessions() throws DHSessionStoreException {
+		// Create sessions and its id's hashes
+		List<DHSession> dhSessions = new ArrayList<>();
+		for (int i = 0; i < 5; i++) {
+			dhSessions.add(new DHSession(
+				DummyUsers.getContactForUser(DummyUsers.BOB),
+				DummyUsers.getIdentityStoreForUser(DummyUsers.ALICE)
+			));
+		}
+		List<Integer> dhSessionIdHashes = new ArrayList<>(dhSessions.size());
+		for (DHSession session : dhSessions) {
+			dhSessionIdHashes.add(session.getId().hashCode());
+		}
+
+		// Store the sessions
+		for (DHSession session : dhSessions) {
+			store.storeDHSession(session);
+		}
+
+		// Load the sessions again and calculate the hashes
+		List<DHSession> storedDHSessions = store.getAllDHSessions(
+			DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity(), taskCodec
+		);
+		List<Integer> storedDHSessionIdHashes = new ArrayList<>(storedDHSessions.size());
+		for (DHSession session : storedDHSessions) {
+			storedDHSessionIdHashes.add(session.getId().hashCode());
+		}
+
+		// Assert that the hashes match (note that the ordering does not matter)
+		MatcherAssert.assertThat(storedDHSessionIdHashes, Matchers.containsInAnyOrder(dhSessionIdHashes.toArray()));
 	}
 
 	private void testRaceConditionOnce() throws DHSession.MissingEphemeralPrivateKeyException, DHSessionStoreException, BadMessageException {
@@ -233,7 +273,7 @@ public class SQLDHSessionStoreTest {
 		} else {
 			lowestSessionId = this.initiatorDHSession.getId();
 		}
-		DHSession bestSession = store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity());
+		DHSession bestSession = store.getBestDHSession(DummyUsers.ALICE.getIdentity(), DummyUsers.BOB.getIdentity(), taskCodec);
 		Assert.assertNotNull(bestSession);
 		Assert.assertEquals(lowestSessionId, bestSession.getId());
 	}

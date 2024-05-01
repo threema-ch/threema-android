@@ -292,7 +292,7 @@ public class GroupLinkOverviewActivity extends ThreemaToolbarActivity implements
 
 	// start TextEntryDialog callbacks
 	@Override
-	public void onYes(String tag, String text) {
+	public void onYes(@NonNull String tag, @NonNull String text) {
 		if (tag.startsWith(DIALOG_TAG_EDIT_LABEL)) {
 			// The model id is appended to the tag. To get it, strip the prefix.
 			int modelId = Integer.parseInt(tag.substring(DIALOG_TAG_EDIT_LABEL.length()));

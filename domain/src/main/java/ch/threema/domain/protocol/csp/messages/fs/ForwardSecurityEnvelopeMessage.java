@@ -21,17 +21,59 @@
 
 package ch.threema.domain.protocol.csp.messages.fs;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufMessage;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
 public class ForwardSecurityEnvelopeMessage extends AbstractProtobufMessage<ForwardSecurityData> {
 
-	private boolean allowSendingProfile;
+	@Nullable
+	private final AbstractMessage innerMessage;
 
-	public ForwardSecurityEnvelopeMessage(ForwardSecurityData payloadData) {
+	private final boolean isForwardSecurityControlMessage;
+
+	/**
+	 * Use this constructor for incoming forward security envelope messages.
+	 *
+	 * @param payloadData the forward security payload
+	 */
+	public ForwardSecurityEnvelopeMessage(@NonNull ForwardSecurityData payloadData) {
+		this(payloadData, false);
+	}
+
+	public ForwardSecurityEnvelopeMessage(@NonNull ForwardSecurityData payloadData, boolean isForwardSecurityControlMessage) {
 		super(ProtocolDefines.MSGTYPE_FS_ENVELOPE, payloadData);
+		this.innerMessage = null;
+		this.isForwardSecurityControlMessage = isForwardSecurityControlMessage;
+	}
+
+	/**
+	 * Use this for outgoing forward security envelope messages. The inner message is used to set
+	 * message flags and type specific properties.
+	 *
+	 * @param payloadData         the forward security payload
+	 * @param innerMessage        the inner message
+	 * @param forwardSecurityMode the forward security mode
+	 */
+	public ForwardSecurityEnvelopeMessage(
+		@NonNull ForwardSecurityData payloadData,
+		@NonNull AbstractMessage innerMessage,
+		@NonNull ForwardSecurityMode forwardSecurityMode
+	) {
+		super(ProtocolDefines.MSGTYPE_FS_ENVELOPE, payloadData);
+		this.innerMessage = innerMessage;
+		this.isForwardSecurityControlMessage = false;
+
+		setFromIdentity(innerMessage.getFromIdentity());
+		setToIdentity(innerMessage.getToIdentity());
+		setMessageId(innerMessage.getMessageId());
+		setDate(innerMessage.getDate());
+		setMessageFlags(innerMessage.getMessageFlags());
+		setNickname(innerMessage.getNickname());
+		setForwardSecurityMode(forwardSecurityMode);
 	}
 
 	@Nullable
@@ -43,11 +85,13 @@ public class ForwardSecurityEnvelopeMessage extends AbstractProtobufMessage<Forw
 
 	@Override
 	public boolean allowUserProfileDistribution() {
-		return allowSendingProfile;
-	}
-
-	public void setAllowSendingProfile(boolean allowSendingProfile) {
-		this.allowSendingProfile = allowSendingProfile;
+		if (isForwardSecurityControlMessage) {
+			return false;
+		}
+		if (innerMessage == null) {
+			throw new IllegalStateException("Cannot check for user profile distribution on incoming fs envelopes");
+		}
+		return innerMessage.allowUserProfileDistribution();
 	}
 
 	@Override
@@ -58,32 +102,74 @@ public class ForwardSecurityEnvelopeMessage extends AbstractProtobufMessage<Forw
 	}
 
 	@Override
+	public boolean createImplicitlyDirectContact() {
+		// Note that checking for implicit direct contact creation must never happen on forward
+		// security envelope messages.
+		throw new IllegalStateException("Cannot check for implicit direct contact creation on fs envelopes");
+	}
+
+	@Override
+	public boolean protectAgainstReplay() {
+		if (isForwardSecurityControlMessage) {
+			return true;
+		}
+		if (innerMessage == null) {
+			throw new IllegalStateException("Cannot check for replay protection on incoming fs envelopes");
+		}
+		return innerMessage.protectAgainstReplay();
+	}
+
+	@Override
+	public boolean reflectIncoming() {
+		throw new IllegalStateException("Cannot check incoming reflection of incoming fs envelopes before decryption");
+	}
+
+	@Override
+	public boolean reflectOutgoing() {
+		if (innerMessage == null) {
+			throw new IllegalStateException("Cannot check outgoing reflection of incoming fs envelopes");
+		}
+		return false;
+	}
+
+	@Override
+	public boolean sendAutomaticDeliveryReceipt() {
+		throw new IllegalStateException("Cannot check for sending automatic delivery receipt on fs envelopes");
+	}
+
+	@Override
+	public boolean bumpLastUpdate() {
+		throw new IllegalStateException("Cannot check bumpLastUpdate on fs envelopes");
+	}
+
+	@Override
 	public boolean flagSendPush() {
-		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_SEND_PUSH) != 0;
+		// Note that a forward security envelope message initially has no flags set
+		return false;
 	}
 
 	@Override
 	public boolean flagNoServerQueuing() {
-		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_SERVER_QUEUING) != 0;
+		// Note that a forward security envelope message initially has no flags set
+		return false;
 	}
 
 	@Override
 	public boolean flagNoServerAck() {
-		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK) != 0;
+		// Note that a forward security envelope message initially has no flags set
+		return false;
 	}
 
 	@Override
 	public boolean flagGroupMessage() {
-		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_GROUP) != 0;
+		// Note that a forward security envelope message initially has no flags set
+		return false;
 	}
 
 	@Override
 	public boolean flagShortLivedServerQueuing() {
-		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_SHORT_LIVED) != 0;
+		// Note that a forward security envelope message initially has no flags set
+		return false;
 	}
 
-	@Override
-	public boolean flagNoDeliveryReceipts() {
-		return (getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) != 0;
-	}
 }

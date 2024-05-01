@@ -21,34 +21,31 @@
 
 package ch.threema.domain.protocol;
 
-import androidx.annotation.IntDef;
+import androidx.annotation.LongDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 public class ThreemaFeature {
 	// Feature flags. When adding new flags, also update LATEST_FEATURE!
-	public final static int AUDIO = 0x01;
-	public final static int GROUP_CHAT = 0x02;
-	public final static int BALLOT = 0x04;
-	public final static int FILE = 0x08;
-	public final static int VOIP = 0x10;
-	public final static int VIDEOCALLS = 0x20;
-	public final static int FORWARD_SECURITY = 0x40;
-	public final static int GROUP_CALLS = 0x80;
-
-	// Should always point to latest feature
-	public final static int LATEST_FEATURE = GROUP_CALLS;
+	public final static long AUDIO = 0x01;
+	public final static long GROUP_CHAT = 0x02;
+	public final static long BALLOT = 0x04;
+	public final static long FILE = 0x08;
+	public final static long VOIP = 0x10;
+	public final static long VIDEOCALLS = 0x20;
+	public final static long FORWARD_SECURITY = 0x40;
+	public final static long GROUP_CALLS = 0x80;
 
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({ AUDIO, GROUP_CHAT, BALLOT, FILE, VOIP, VIDEOCALLS, FORWARD_SECURITY, GROUP_CALLS })
+	@LongDef({ AUDIO, GROUP_CHAT, BALLOT, FILE, VOIP, VIDEOCALLS, FORWARD_SECURITY, GROUP_CALLS })
 	private @interface Feature {}
 
 	/**
 	 * Feature mask builder
 	 */
 	public static class Builder {
-		private int mask = 0;
+		private long mask = 0;
 
 		public Builder audio(boolean enable) {
 			return this.set(ThreemaFeature.AUDIO, enable);
@@ -82,11 +79,11 @@ public class ThreemaFeature {
 			return this.set(ThreemaFeature.GROUP_CALLS, enable);
 		}
 
-		public int build() {
+		public long build() {
 			return this.mask;
 		}
 
-		private Builder set(@Feature int feature, boolean enable) {
+		private Builder set(@Feature long feature, boolean enable) {
 			if (enable) {
 				this.mask |= feature;
 			} else {
@@ -96,52 +93,49 @@ public class ThreemaFeature {
 		}
 	}
 
-	public static boolean canText(int featureMask) {
+	public static boolean canText(long featureMask) {
 		return true;
 	}
-	public static boolean canImage(int featureMask) {
+	public static boolean canImage(long featureMask) {
 		return true;
 	}
-	public static boolean canVideo(int featureMask) {
+	public static boolean canVideo(long featureMask) {
 		return true;
 	}
-	public static boolean canAudio(int featureMask) {
+	public static boolean canAudio(long featureMask) {
 		return hasFeature(featureMask, AUDIO);
 	}
-	public static boolean canGroupChat(int featureMask) {
+	public static boolean canGroupChat(long featureMask) {
 		return hasFeature(featureMask, GROUP_CHAT);
 	}
-	public static boolean canBallot(int featureMask) {
+	public static boolean canBallot(long featureMask) {
 		return hasFeature(featureMask, BALLOT);
 	}
-	public static boolean canFile(int featureMask) {
+	public static boolean canFile(long featureMask) {
 		return hasFeature(featureMask, FILE);
 	}
-	public static boolean canVoip(int featureMask) {
+	public static boolean canVoip(long featureMask) {
 		return hasFeature(featureMask, VOIP);
 	}
-	public static boolean canVideocall(int featureMask) {
+	public static boolean canVideocall(long featureMask) {
 		return hasFeature(featureMask, VIDEOCALLS);
 	}
-	public static boolean canForwardSecurity(int featureMask) {
+	public static boolean canForwardSecurity(long featureMask) {
 		return hasFeature(featureMask, FORWARD_SECURITY);
 	}
-	public static boolean canGroupCalls(int featureMask) {
+	public static boolean canGroupCalls(long featureMask) {
 		return hasFeature(featureMask, GROUP_CALLS);
 	}
 
-	public static boolean hasFeature(int featureMask, @Feature int feature) {
+	public static boolean hasFeature(long featureMask, @Feature long feature) {
 		return (featureMask & feature) != 0;
-	}
-
-	public static boolean hasLatestFeature(int featureMask) {
-		return hasFeature(featureMask, ThreemaFeature.LATEST_FEATURE);
 	}
 
 	/**
 	 * Convert a feature mask to a classic feature level.
 	 */
-	public static int featureMaskToLevel(int featureMask) {
+	// TODO(ANDR-2708): Remove
+	public static long featureMaskToLevel(long featureMask) {
 		if ((featureMask & FILE) > 0) {
 			return 3;
 		}

@@ -21,6 +21,7 @@
 
 package ch.threema.app.services.license;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -49,6 +50,7 @@ public class LicenseServiceUser extends LicenseServiceThreema<UserCredentials> {
 	}
 
 	@Override
+	@Nullable
 	public UserCredentials loadCredentials() {
 		String username = this.preferenceService.getLicenseUsername();
 		String password = this.preferenceService.getLicensePassword();

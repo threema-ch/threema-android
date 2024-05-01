@@ -26,12 +26,13 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.sql.SQLException;
 
 import ch.threema.app.services.UpdateSystemService;
-import ch.threema.storage.models.ContactModel;
+
+import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 /**
  * add contact visibility field to contact models
  */
-public class SystemUpdateToVersion49 extends UpdateToVersion implements UpdateSystemService.SystemUpdate {
+public class SystemUpdateToVersion49 implements UpdateSystemService.SystemUpdate {
 
 	private final SQLiteDatabase sqLiteDatabase;
 
@@ -41,15 +42,16 @@ public class SystemUpdateToVersion49 extends UpdateToVersion implements UpdateSy
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!this.fieldExist(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_IS_HIDDEN)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
-					+ " ADD COLUMN " + ContactModel.COLUMN_IS_HIDDEN + " TINYINT DEFAULT 0");
+		final String tableName = "contacts";
+		final String columnName = "isHidden";
+		if (!fieldExists(this.sqLiteDatabase, tableName, columnName)) {
+			sqLiteDatabase.rawExecSQL("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " TINYINT DEFAULT 0");
 		}
 		return true;
 	}
 
 	@Override
-	public boolean runASync() {
+	public boolean runAsync() {
 		return true;
 	}
 

@@ -315,7 +315,7 @@ public class SessionServiceImpl implements SessionService {
 						return;
 					}
 
-					// Save the NEW gcm token
+					// Save the NEW fcm token
 					SessionServiceImpl.this.update(model.setPushToken(newPushToken));
 				}
 			}

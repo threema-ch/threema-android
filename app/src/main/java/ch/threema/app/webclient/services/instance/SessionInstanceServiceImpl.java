@@ -169,11 +169,11 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 
 		// Create dispatchers
 		final MessageDispatcher responseDispatcher = new MessageDispatcher(Protocol.TYPE_RESPONSE,
-			this, services.lifetime, services.messageQueue);
+			this, services.lifetime);
 		final MessageDispatcher updateDispatcher = new MessageDispatcher(Protocol.TYPE_UPDATE,
-			this, services.lifetime, services.messageQueue);
+			this, services.lifetime);
 		final MessageDispatcher deleteDispatcher = new MessageDispatcher(Protocol.TYPE_DELETE,
-			this, services.lifetime, services.messageQueue);
+			this, services.lifetime);
 
 		// Create update handlers
 		final ReceiverUpdateHandler receiverUpdateHandler = new ReceiverUpdateHandler(
@@ -235,7 +235,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 		// Create request dispatcher and the handlers
 		// Dispatchers
 		final MessageDispatcher requestDispatcher = new MessageDispatcher(Protocol.TYPE_REQUEST,
-			this, services.lifetime, services.messageQueue);
+			this, services.lifetime);
 
 		// Client info requester
 		requestDispatcher.addReceiver(new ClientInfoRequestHandler(
@@ -258,7 +258,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 				@Override
 				@WorkerThread
 				public void onAnswered(@Nullable final String pushToken) {
-					// Save the gcm token in the model
+					// Save the fcm token in the model
 					if (!TestUtil.compare(model.getPushToken(), pushToken)) {
 						WebClientListenerManager.serviceListener.handle(new HandleListener<WebClientServiceListener>() {
 							@Override
@@ -422,7 +422,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 
 		// Create 'create' dispatcher and the handlers
 		final MessageDispatcher createDispatcher = new MessageDispatcher(Protocol.TYPE_CREATE,
-			this, services.lifetime, services.messageQueue);
+			this, services.lifetime);
 		createDispatcher.addReceiver(new TextMessageCreateHandler(
 			createDispatcher,
 			services.message,

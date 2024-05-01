@@ -66,7 +66,7 @@
 	<string name="prefs_inapp_vibrate">In-app vibration</string>
 	<string name="prefs_inapp_vibrate_on">Vibrate when receiving messages</string>
 	<string name="prefs_inapp_vibrate_off">Do not vibrate when receiving messages</string>
-	<string name="prefs_developers" translatable="false">Developers Developers Developers</string>
+	<string name="prefs_developers" translatable="false">Developers settings</string>
 	<string name="workarounds">Workarounds</string>
 	<string name="prefs_title_threema_push_switch">Use Threema Push</string>
 	<string name="prefs_sum_threema_push_on">Use Threema Push to be notified about new messages</string>
@@ -970,6 +970,10 @@
 	<string name="empty_chat_title">Empty chat</string>
 	<string name="empty_chat_confirm">All messages in this chat will be deleted. Continue?</string>
 	<string name="emptying_chat">Emptying chat</string>
+    <string name="emptying_chat_deleting_messages">Deleting messages…</string>
+    <string name="delete_chat_title">Delete chat</string>
+    <string name="delete_chat_confirm">All messages in this chat will be deleted and the chat will be removed. Continue?</string>
+    <string name="deleting_chat">Deleting chat</string>
 	<string name="set_private">Mark as “private chat”</string>
 	<string name="unset_private">Deactivate “private chat”</string>
 	<string name="delete_group_message">Do you want to leave this group and delete it completely? All messages will be removed.</string>
@@ -1134,7 +1138,6 @@
 	<string name="tooltip_voip_turn_on_camera">Tap here to turn on the camera</string>
 	<string name="prefs_videocall_profile_explain">The actual image quality depends on the network and the settings of the person you are talking to</string>
 	<string name="permission_camera_videocall_required">For video calling, please allow access to the camera</string>
-	<string name="feedback">Feedback</string>
 	<string name="tooltip_voip_enable_speakerphone">Tap here to turn on speakerphone</string>
 	<string name="ballot_open">Open polls</string>
 	<string name="translators">Translators</string>
@@ -1406,16 +1409,22 @@
 	<string name="synchronizing">Synchronizing…</string>
 	<string name="forward_security">Send messages with Perfect Forward Secrecy</string>
 	<string name="forward_security_mode">Perfect Forward Secrecy</string>
-	<string name="forward_security_mode_none">no</string>
+	<string name="forward_security_mode_none">None</string>
 	<string name="clear_forward_security">Reset Perfect Forward Secrecy for this contact</string>
 	<string name="clear_forward_security_warning">Only perform this action when instructed to do so by Threema’s support team.</string>
 	<string name="forward_security_cleared">Perfect Forward Secrecy sessions with this contact have been cleared</string>
 	<string name="message_without_forward_security">A message without Perfect Forward Secrecy has been received. Verify that the sender has intentionally disabled Perfect Forward Secrecy.</string>
-	<string name="forward_security_established">Messages in this chat are now protected by Perfect Forward Secrecy.</string>
+	<string name="forward_security_disabled">Perfect Forward Secrecy is disabled for this chat.</string>
+	<string name="forward_security_established">Messages with this chat partner are now protected by Perfect Forward Secrecy.</string>
 	<string name="forward_security_established_rx">Messages received in this chat are now protected by Perfect Forward Secrecy.</string>
 	<string name="forward_security_reset">The Perfect Forward Secrecy session was reset. This can happen when the chat partner changes devices or reinstalls the app.</string>
 	<string name="forward_security_reset_simple">The Perfect Forward Secrecy session with this contact has been reset.</string>
 	<string name="forward_security_message_out_of_order">A message was received out of order and could not be decrypted.</string>
+    <string name="forward_security_notification_channel_name">Perfect Forward Secrecy Warnings</string>
+    <string name="forward_security_notification_rejected_title">Sending of messages failed</string>
+    <string name="forward_security_notification_rejected_text_contact">One or more messages could not be sent to %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">One or more messages could not be sent to “%1$s.”</string>
+    <string name="forward_security_notification_rejected_text_generic">One or more messages could not be sent.</string>
 	<string name="self_updater_installation_failed">The download of the update failed. Please download and install the update from <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manually.</string>
 	<string name="spam_first_contact">This chat is from an unknown contact</string>
 	<string name="spam_report">Report Spam</string>
@@ -1427,7 +1436,8 @@
 	<string name="spam_report_short">Report</string>
 	<string name="wizard_incompatible_contact_sync_params">There are incompatible MDM parameters set. Threema MDM parameter th_contact_sync cannot be set to true if user restriction DISALLOW_MODIFY_ACCOUNTS is set. Please contact your device administrator.</string>
 	<string name="messages_cannot_be_recovered">You will not be able to recover the messages.</string>
-	<string name="contact_deleted">Contact deleted</string>
+    <string name="groups_left_or_dissolved">Groups will be left or dissolved and then deleted.</string>
+    <string name="contact_deleted">Contact deleted</string>
 	<string name="last_added_contact">Last added</string>
 	<string name="directory_explain_text">Search the company directory for any employees who are not yet in your contact list.</string>
 	<string name="cannot_display_location">This location cannot be shown.</string>
@@ -1474,8 +1484,10 @@
 	<string name="group_calls_tooltip_text">Tap here to invite all group members to join a call. All group members will receive a notification and can decide whether they want to join the call or not.</string>
 	<string name="prefs_title_calls">Secure Calls</string>
 	<string name="prefs_sum_group_calls_vibration">Select whether to vibrate when a group call has been started</string>
-    <string name="forward_security_mode_4dh">complete</string>
-	<string name="forward_security_mode_2dh">unilateral</string>
+    <string name="forward_security_mode_4dh">Complete</string>
+	<string name="forward_security_mode_2dh">Unilateral</string>
+	<string name="forward_security_mode_all">Full</string>
+	<string name="forward_security_mode_partial">Partial</string>
 	<string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protects a recorded communication from retroactive decryption even if the long-term encryption key is compromised.\n\nThe option can be enabled if the app on both sides supports PFS.</string>
 	<string name="group_call_inactivity_left">Group call left due to inactivity</string>
 	<string name="missing_permission_external_storage">Unable to copy the file. Try the following steps:\n1. Open the settings app.\n2. Go to “Apps” and choose “Special app access”.\n3. Tap on “All files access“.\n4. Tap on the three dots in the top right corner and choose “Show system“.\n5. Tap on “External Storage“ and ensure “Allow access to manage all files“ is granted.\n6. Try again restoring the backup.</string>
@@ -1541,8 +1553,15 @@
 	<string name="group_orphaned_notice">This group is orphaned as the group creator has left the group. Please clone this group to become the new admin.</string>
 	<string name="group_not_a_member_notice">You are no longer part of this group and cannot use it anymore.</string>
 	<string name="group_dissolved_notice">This group has been dissolved and cannot be used anymore.</string>
+	<string name="md_linked_devices">Linked devices</string>
+	<string name="md_link_device">Link new device</string>
+	<string name="md_enable">Enable linked devices</string>
+	<string name="md_linked_devices_empty">Download the fancy desktop client from somewhere and take off 🚀</string>
+	<string name="md_link_device_qr_scan_message">Please scan the qr code</string>
 	<string name="directory_request_failed">Directory request failed. Try again.</string>
 	<string name="add_shortcut_exists">A shortcut for this target already exists.</string>
+	<string name="resend_message_dialog_title">Resend group message?</string>
+	<string name="resend_message_dialog_message">This message could not be sent to all members. Resend message to %1$s?</string>
 	<string name="work_lost_credentials_help">Forgot your credentials? Please contact your %1$s administrator.</string>
 	<string name="problemsolver_intro">Some system configuration issues possibly prevent %s from working correctly. Please fix these problems by following the instructions below.</string>
 	<string name="problemsolver_title">Fix configuration issues</string>
@@ -1565,6 +1584,7 @@
 	<string name="edit_and_send">Edit and send</string>
 	<string name="media_gallery_animated_webps">Animated WebPs</string>
 	<string name="unsupported_image_type">Unsupported image type: %s</string>
+    <string name="application_setup_steps_failed">An active Internet connection is required to check the state of your contacts. Please make sure that you are connected to the Internet and try again.</string>
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>

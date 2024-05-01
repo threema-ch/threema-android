@@ -113,7 +113,26 @@ public interface UserService {
 
 	void setCredentials(LicenseService.Credentials credentials);
 
-	boolean sendFlags();
+	/**
+	 * Sends the feature mask to the server if it has changed or the last time the feature mask has
+	 * been sent is more than 24h ago.
+	 *
+	 * @return true if the feature mask has been updated (or no update is necessary) and false if
+	 * an exception has occurred and the feature mask wasn't updated.
+	 */
+	boolean sendFeatureMask();
+
+	/**
+	 * Set whether the forward security flag should be set in the feature
+	 * mask. Note that if `ConfigUtils.isForwardSecurityEnabled() == false`,
+	 * the flag will never be set and the value set via this method is ignored.
+	 * <br>
+	 * This will not send the flags to the server. Use {@link #sendFeatureMask()} to
+	 * update the mask on the server
+	 *
+	 * TODO(ANDR-2519): Remove method when fs is allowed with md enabled
+	 */
+	void setForwardSecurityEnabled(boolean isFsEnabled);
 
 	boolean setRevocationKey(String revocationKey);
 

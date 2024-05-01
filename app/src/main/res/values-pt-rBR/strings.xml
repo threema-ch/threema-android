@@ -667,7 +667,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="select_all">Selecionar tudo</string>
     <string name="deleting_messages">Excluindo mensagens</string>
     <string name="media_gallery_files">Arquivos</string>
-    <string name="prefs_gif_autoplay">Reproduzir GIFs animados automaticamente</string>
+    <string name="prefs_gif_autoplay">Reproduzir imagens animadas automaticamente</string>
     <string name="media_gallery_audio">Mensagens de voz</string>
     <string name="action_clone_group">Clonar grupo</string>
     <string name="clone_group_message">Isto irá criar um clone deste grupo com você como administrador. Continuar?</string>
@@ -927,6 +927,10 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="empty_chat_title">Limpar conversa</string>
     <string name="empty_chat_confirm">Todas as mensagens nesta conversa serão excluídas. Continuar?</string>
     <string name="emptying_chat">Limpando conversa</string>
+    <string name="emptying_chat_deleting_messages">Excluindo mensagens...</string>
+    <string name="delete_chat_title">Excluir conversa</string>
+    <string name="delete_chat_confirm">Todas as mensagens nesta conversa serão excluídas e a conversa será removida. Continuar?</string>
+    <string name="deleting_chat">Excluindo conversa</string>
     <string name="set_private">Marcar como \"conversa privada\"</string>
     <string name="unset_private">Desativar \"conversa privada\"</string>
     <string name="delete_group_message">Deseja sair deste grupo e excluí-lo completamente? Todas as mensagens serão removidas.</string>
@@ -1087,7 +1091,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="tooltip_voip_turn_on_camera">Toque aqui para ligar a câmera</string>
     <string name="prefs_videocall_profile_explain">A qualidade real da imagem depende da rede e das configurações da pessoa com que você está conversando</string>
     <string name="permission_camera_videocall_required">Para ligações em vídeo, conceda acesso à câmera</string>
-    <string name="feedback">Comentários</string>
     <string name="tooltip_voip_enable_speakerphone">Toque aqui para ligar o viva-voz</string>
     <string name="ballot_open">Enquetes abertas</string>
     <string name="translators">Tradutores</string>
@@ -1359,16 +1362,21 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="synchronizing">Sincronizando...</string>
     <string name="forward_security">Enviar mensagens com Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
-    <string name="forward_security_mode_none">não</string>
+    <string name="forward_security_mode_none">Nenhum</string>
     <string name="clear_forward_security">Redefinir o Perfect Forward Secrecy para este contato</string>
     <string name="clear_forward_security_warning">Apenas realize esta ação quando a equipe de suporte do Threema instruir.</string>
     <string name="forward_security_cleared">As sessões com Perfect Forward Secrecy deste contato foram apagadas</string>
     <string name="message_without_forward_security">Uma mensagem sem Perfect Forward Secrecy foi recebida. Verifique se o remetente desativou o FPS intencionalmente.</string>
-    <string name="forward_security_established">As mensagens nesta conversa estão protegidas pelo Perfect Forward Secrecy.</string>
+    <string name="forward_security_established">As mensagens com este contato estão protegidas pelo Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">As mensagens recebidas nesta conversa estão protegidas pelo Perfect Forward Secrecy (PFS).</string>
     <string name="forward_security_reset">A sessão com Perfect Forward Secrecy foi redefinida. Isso pode acontecer quando o contato do chat muda de dispositivo ou reinstala o app.</string>
     <string name="forward_security_reset_simple">A sessão com Perfect Forward Secrecy deste contato foi redefinida.</string>
     <string name="forward_security_message_out_of_order">Uma mensagem foi recebida incorretamente e não pôde ser descodificada.</string>
+    <string name="forward_security_notification_channel_name">Alertas do Perfect Forward Secrecy</string>
+    <string name="forward_security_notification_rejected_title">Falha no envio das mensagens</string>
+    <string name="forward_security_notification_rejected_text_contact">Uma ou mais mensagens não puderam ser enviadas para %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">Uma ou mais mensagens não puderam ser enviadas para \"%1$s\".</string>
+    <string name="forward_security_notification_rejected_text_generic">Uma ou mais mensagens não puderam ser enviadas.</string>
     <string name="self_updater_installation_failed">O download da atualização falhou. Faça o download e instale a atualização em <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manualmente.</string>
     <string name="spam_first_contact">Esta conversa é de um contato desconhecido</string>
     <string name="spam_report">Denunciar SPAM</string>
@@ -1380,6 +1388,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="spam_report_short">Denunciar</string>
     <string name="wizard_incompatible_contact_sync_params">Há parâmetros MDM incompatíveis definidos. O parâmetro MDM do Threema th_contact_sync não pode ser definido como verdadeiro se a restrição de usuário DISALLOW_MODIFY_ACCOUNTS estiver definida. Entre em contato com o administrador do seu dispositivo.</string>
     <string name="messages_cannot_be_recovered">Você não poderá desfazer esta ação.</string>
+    <string name="groups_left_or_dissolved">Os grupos serão abandonados ou dissolvidos e depois excluídos.</string>
     <string name="contact_deleted">Contato excluído</string>
     <string name="last_added_contact">Mais recentes</string>
     <string name="directory_explain_text">Encontre o diretório da empresa para qualquer funcionário que ainda não estiver na sua lista de contatos.</string>
@@ -1427,8 +1436,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="group_calls_tooltip_text">Toque aqui para convidar todos os membros do grupo para participar de uma chamada. Todos os membros receberão uma notificação e podem decidir se desejam ingressar na chamada ou não.</string>
     <string name="prefs_title_calls">Chamadas seguras</string>
     <string name="prefs_sum_group_calls_vibration">Selecione se deseja ativar a vibração quando uma chamada de grupo começar</string>
-    <string name="forward_security_mode_4dh">concluída</string>
-    <string name="forward_security_mode_2dh">unilateral</string>
+    <string name="forward_security_mode_4dh">Concluída</string>
+    <string name="forward_security_mode_2dh">Unilateral</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS), ou \"sigilo encaminhado perfeito\", protege uma comunicação gravada de uma decodificação retroativa, mesmo se a chave criptográfica de longo prazo for comprometida.\n\nA opção pode ser ativada se o app em ambas as pontas for compatível com PFS.</string>
     <string name="group_call_inactivity_left">Chamada de grupo abandonada devido à inatividade</string>
     <string name="missing_permission_external_storage">Não foi possível copiar o arquivo. Tente os passos a seguir:\n1. Abra o aplicativo de ajustes.\n2. Vá até “Aplicativos” e escolha “Acesso especial ao aplicativo”.\n3. Toque em \"Acesso a todos os arquivos\".\n4. Toque nos três pontos no canto superior direito e escolha “Mostrar sistema“.\n5. Toque em “Armazenamento externo” e conceda autorização para “Permitir acesso para gerenciar todos os arquivos”.\n6. Tente restaurar o backup novamente.</string>
@@ -1518,6 +1527,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="edit_and_send">Editar e enviar</string>
     <string name="media_gallery_animated_webps">WebPs animados</string>
     <string name="unsupported_image_type">Tipo de imagem não suportado: %s</string>
+    <string name="application_setup_steps_failed">É necessário ter uma conexão de internet ativa para verificar o estado dos seus contatos. Confirme que você está conectado(a) com a internet e tente novamente.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>

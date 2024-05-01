@@ -21,6 +21,7 @@
 
 package ch.threema.app.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.View.GONE
@@ -57,6 +58,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.ConversationModel.NO_RESOURCE
 import com.bumptech.glide.RequestManager
 import com.google.android.material.button.MaterialButton
+import java.text.SimpleDateFormat
 import java.util.Objects
 
 private val logger = LoggingUtil.getThreemaLogger("MessageListViewHolder")
@@ -93,6 +95,7 @@ class MessageListViewHolder(
             val distributionListService: DistributionListService,
             var highlightUid: String?,
             val stateBitmapUtil: StateBitmapUtil?,
+            val showLastUpdate: Boolean,
     )
 
     class MessageListItemStrings(
@@ -230,6 +233,7 @@ class MessageListViewHolder(
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun initializeMessageListView(messageListAdapterItem: MessageListAdapterItem) {
         // Show or hide pin tag
         val isPinTagged = messageListAdapterItem.isPinTagged
@@ -238,7 +242,15 @@ class MessageListViewHolder(
 
         val latestMessage = messageListAdapterItem.latestMessage
 
-        fromView.text = messageListAdapterItem.conversationModel.receiver.displayName
+        var text = messageListAdapterItem.conversationModel.receiver.displayName
+        if (params.showLastUpdate) {
+            // For debugging purposes, developers can enable the "show lastUpdate" option in the developer settings.
+            val formattedLastUpdate = messageListAdapterItem.conversationModel.lastUpdate?.let {
+                SimpleDateFormat("yyMMdd-HHmmss").format(it)
+            } ?: "[null]"
+            text = "$formattedLastUpdate | $text"
+        }
+        fromView.text = text
 
         val draft = messageListAdapterItem.getDraft()
 
@@ -368,6 +380,14 @@ class MessageListViewHolder(
                     messageListAdapterItem.isGroupConversation -> strings.groups
                     else -> strings.distributionLists
                 }
+                deliveryView.setColorFilter(
+                    when {
+                        messageListAdapterItem.isGroupConversation -> params.regularColor
+                        messageListAdapterItem.latestMessageIsAck -> params.ackColor
+                        messageListAdapterItem.latestMessageIsDec -> params.decColor
+                        else -> params.regularColor
+                    }
+                )
             } else {
                 if (messageListAdapterItem.latestMessage != null) {
                     // In case there is a latest message but no icon is set, we need to get the
@@ -377,15 +397,6 @@ class MessageListViewHolder(
                     deliveryView.visibility = GONE
                 }
             }
-
-            deliveryView.setColorFilter(
-                when {
-                    messageListAdapterItem.isGroupConversation -> params.regularColor
-                    messageListAdapterItem.latestMessageIsAck -> params.ackColor
-                    messageListAdapterItem.latestMessageIsDec -> params.decColor
-                    else -> params.regularColor
-                }
-            )
         }
     }
 

@@ -1,0 +1,98 @@
+/*  _____ _
+ * |_   _| |_  _ _ ___ ___ _ __  __ _
+ *   | | | ' \| '_/ -_) -_) '  \/ _` |_
+ *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
+ *
+ * Threema for Android
+ * Copyright (c) 2023-2024 Threema GmbH
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License, version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package ch.threema.app.processors.groupcontrol
+
+import ch.threema.app.managers.ServiceManager
+import ch.threema.app.processors.IncomingCspMessageSubTask
+import ch.threema.app.processors.ReceiveStepsResult
+import ch.threema.app.services.GroupService
+import ch.threema.app.tasks.OutgoingGroupSyncTask
+import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
+import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.storage.models.GroupModel
+
+private val logger = LoggingUtil.getThreemaLogger("IncomingGroupSyncRequestTask")
+
+class IncomingGroupSyncRequestTask(
+    private val groupSyncRequestMessage: GroupSyncRequestMessage,
+    serviceManager: ServiceManager,
+) : IncomingCspMessageSubTask(serviceManager) {
+    private val groupService = serviceManager.groupService
+
+    override suspend fun run(handle: ActiveTaskCodec): ReceiveStepsResult {
+        // 1. Look up the group. If the group could not be found, abort these steps
+        val group = groupService.getByGroupMessage(groupSyncRequestMessage)
+        if (group == null) {
+            logger.warn("Discarding group sync request message because group could")
+            return ReceiveStepsResult.DISCARD
+        }
+
+        if (!groupService.isGroupCreator(group)) {
+            logger.warn("Discarding group sync request message to non-owner")
+            return ReceiveStepsResult.DISCARD
+        }
+
+        return handleIncomingGroupSyncRequest(
+            group,
+            groupSyncRequestMessage.fromIdentity,
+            handle,
+            serviceManager
+        )
+    }
+}
+
+suspend fun handleIncomingGroupSyncRequest(
+    group: GroupModel,
+    sender: String,
+    handle: ActiveTaskCodec,
+    serviceManager: ServiceManager,
+): ReceiveStepsResult {
+    val groupService = serviceManager.groupService
+
+    // 2. If the group is marked as left or the sender is not a member of the group, send a
+    // group-setup with an empty members list back to the sender and abort these steps.
+    if (groupService.isLeftGroup(group) || !groupService.isSenderGroupMember(group, sender)) {
+        sendEmptyGroupSetup(group, sender, handle, serviceManager)
+        return ReceiveStepsResult.DISCARD
+    }
+
+    // 3. Send a group-setup message followed by a group-name message, 4. send a
+    // set-profile-picture (if set), and 5. send a delete-profile-picture (if not set)
+    OutgoingGroupSyncTask(
+        group.apiGroupId,
+        group.creatorIdentity,
+        setOf(sender),
+        serviceManager
+    ).invoke(handle)
+
+    // 6. If a group call is currently considered running within this group, send a group call
+    // start message
+    serviceManager.groupCallManager.sendGroupCallStartToNewMembers(group, setOf(sender), handle)
+
+    return ReceiveStepsResult.SUCCESS
+}
+
+private fun GroupService.isLeftGroup(group: GroupModel): Boolean = !isGroupMember(group)
+
+private fun GroupService.isSenderGroupMember(group: GroupModel, sender: String) =
+    getMembers(group).map { it.identity }.contains(sender)
