@@ -359,8 +359,6 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 			MenuBuilder menuBuilder = new MenuBuilder(getContext());
 			new MenuInflater(getContext()).inflate(R.menu.chip_open_ballots, menuBuilder);
 
-			ConfigUtils.tintMenu(menuBuilder, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface));
-
 			if (BallotUtil.canViewMatrix(ballotModel, identity)) {
 				menuBuilder.findItem(R.id.menu_ballot_results).setTitle(ballotModel.getState() == BallotModel.State.CLOSED ? R.string.ballot_result_final : R.string.ballot_result_intermediate);
 			}
@@ -414,8 +412,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 				menuBuilder.removeItem(R.id.menu_ballot_close);
 			}
 
-			Context wrapper = new ContextThemeWrapper(getContext(), R.style.AppBaseTheme);
-			MenuPopupHelper optionsMenu = new MenuPopupHelper(wrapper, menuBuilder, v);
+			MenuPopupHelper optionsMenu = new MenuPopupHelper(getContext(), menuBuilder, v);
 			optionsMenu.setForceShowIcon(true);
 			optionsMenu.show();
 		}

@@ -24,6 +24,7 @@ package ch.threema.domain.protocol.connection
 import ch.threema.domain.protocol.connection.csp.CspConnectionConfiguration
 import ch.threema.domain.protocol.connection.csp.CspConnectionImpl
 import ch.threema.domain.protocol.connection.csp.CspControllers
+import ch.threema.domain.protocol.connection.csp.socket.ChatServerAddressProvider
 import ch.threema.domain.protocol.connection.csp.socket.ChatServerAddressProviderImpl
 import ch.threema.domain.protocol.connection.csp.socket.CspSocket
 import ch.threema.domain.protocol.connection.d2m.D2mConnectionConfiguration
@@ -110,8 +111,10 @@ object BaseServerConnectionProvider {
     private fun createCspConnection(
         configuration: CspConnectionConfiguration
     ): ServerConnection {
+        val chatServerAddressProvider = ChatServerAddressProviderImpl(configuration)
+
         val dependencyProvider = ServerConnectionDependencyProvider {
-            createCspDependencies(it, configuration)
+            createCspDependencies(it, configuration, chatServerAddressProvider)
         }
 
         return CspConnectionImpl(dependencyProvider)
@@ -120,10 +123,9 @@ object BaseServerConnectionProvider {
     private fun createCspDependencies(
         connection: ServerConnection,
         configuration: CspConnectionConfiguration,
+        chatServerAddressProvider: ChatServerAddressProvider
     ): ServerConnectionDependencies {
         val controllers = CspControllers(configuration)
-
-        val chatServerAddressProvider = ChatServerAddressProviderImpl(configuration)
 
         val socket = CspSocket(
             configuration.socketFactory,

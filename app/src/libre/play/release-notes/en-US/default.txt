@@ -1,5 +1,1 @@
-* New and improved communications layer
-* Perfect Forward Secrecy enhancements
-* WebRTC update
-* Swiss German translation
-* Numerous optimizations and bug fixes
+* Restored connection fallback functionality in case of blocked ports or IPv6 issues

@@ -514,7 +514,10 @@ public class MessageSectionFragment extends MainFragment
 		if (savedInstanceState != null && TestUtil.empty(filterQuery)) {
 			filterQuery = savedInstanceState.getString(BUNDLE_FILTER_QUERY);
 		}
-		messageListAdapter.setFilterQuery(filterQuery);
+
+		if (messageListAdapter != null) {
+			messageListAdapter.setFilterQuery(filterQuery);
+		}
 	}
 
 	@Override
