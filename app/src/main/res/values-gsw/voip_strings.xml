@@ -86,7 +86,7 @@
     <string name="voip_gc_notification_new_call_public">En neue Gruppearuef isch gstarted worde</string>
     <string name="voip_gc_open_call">Ufmache</string>
     <string name="voip_gc_call_started">Gruppearuef isch gstarted worde</string>
-    <string name="voip_gc_call_ended">Gruppearuef hät gändet</string>
+    <string name="voip_gc_call_ended">De Gruppearuef hät gändet</string>
     <string name="voip_gc_in_call">Im Gruppearuef</string>
     <string name="voip_gc_sfu_not_available">Server cha nöd erreicht werde, bitte versueched Sie’s spöter</string>
     <string name="voip_gc_call_error">Gruppearuef isch wägeme Fehler beendet worde</string>

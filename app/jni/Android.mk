@@ -11,24 +11,6 @@ LOCAL_PATH       := $(call my-dir)
 
 TARGET_PLATFORM  := android-33
 
-# libscrypt
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE     := scrypt
-
-LOCAL_SRC_FILES  := $(LOCAL_PATH)/scrypt/c/scrypt_jni.c
-LOCAL_SRC_FILES  += $(LOCAL_PATH)/scrypt/c/crypto_scrypt-nosse.c
-LOCAL_SRC_FILES  += $(LOCAL_PATH)/scrypt/c/sha256.c
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/scrypt/include
-
-LOCAL_CFLAGS     += -DANDROID -DHAVE_CONFIG_H -DANDROID_TARGET_ARCH="$(TARGET_ARCH)"
-LOCAL_LDFLAGS    += -lc -llog
-
-LOCAL_LDFLAGS    += -Wl,--build-id=none  # Reproducible builds
-
-include $(BUILD_SHARED_LIBRARY)
-
 # libnacl
 
 include $(CLEAR_VARS)

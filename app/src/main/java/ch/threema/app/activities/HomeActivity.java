@@ -77,11 +77,14 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.stream.Collectors;
 
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -167,6 +170,7 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.MessageState;
+import ch.threema.storage.models.TagModel;
 
 public class HomeActivity extends ThreemaAppCompatActivity implements
 	SMSVerificationDialog.SMSVerificationDialogCallback,
@@ -322,7 +326,33 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			}
 
 			if (conversationTagService != null) {
-				unread += conversationTagService.getCount(conversationTagService.getTagModel(FIXED_TAG_UNREAD));
+				TagModel unreadTagModel = conversationTagService.getTagModel(FIXED_TAG_UNREAD);
+				if (unreadTagModel == null) {
+					logger.error("Unread tag model is null");
+					return unread;
+				}
+
+				// First check whether there are some conversations that are marked as unread. This
+				// check is expected to be fast, as usually there are not many chats that are marked
+				// as unread.
+				if (conversationTagService.getCount(unreadTagModel) > 0) {
+					// In case there is at least one unread tag, we create a set of all possible
+					// conversation uids to efficiently check that the unread tags are valid.
+					Set<String> shownConversationUids = conversationService.getAll(false)
+						.stream()
+						.map(ConversationModel::getUid)
+						.collect(Collectors.toSet());
+
+					List<String> unreadUids = conversationTagService.getConversationUidsByTag(unreadTagModel);
+					for (String unreadUid : unreadUids) {
+						if (shownConversationUids.contains(unreadUid)) {
+							unread++;
+						} else {
+							logger.warn("Conversation '{}' is marked as unread but not shown. Deleting the unread flag.", unreadUid);
+							conversationTagService.removeTag(unreadUid, unreadTagModel);
+						}
+					}
+				}
 			}
 
 			return unread;
@@ -1912,7 +1942,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						new Thread(() -> {
 							try {
 								MessageReceiver receiver = contactService.createReceiver(newContactModel);
-								if (!getResources().getConfiguration().locale.getLanguage().startsWith("de")) {
+								if (!getResources().getConfiguration().locale.getLanguage().startsWith("de") && !getResources().getConfiguration().locale.getLanguage().startsWith("gsw")) {
 									Thread.sleep(1000);
 									messageService.sendText("en", receiver);
 									Thread.sleep(500);

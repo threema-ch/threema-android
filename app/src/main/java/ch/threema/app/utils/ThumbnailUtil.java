@@ -82,7 +82,7 @@ public class ThumbnailUtil {
 		switch (MimeUtil.getMediaTypeFromMimeType(mimeType, uri)) {
 			case MediaItem.TYPE_IMAGE:
 				return BitmapUtil.safeGetBitmapFromUri(context, uri, MessageServiceImpl.THUMBNAIL_SIZE_PX, false, true, true);
-			case MediaItem.TYPE_GIF:
+			case MediaItem.TYPE_IMAGE_ANIMATED:
 				return IconUtil.getThumbnailFromUri(context, uri, MessageServiceImpl.THUMBNAIL_SIZE_PX, mimeType, true);
 			case MediaItem.TYPE_VIDEO:
 				return IconUtil.getVideoThumbnailFromUri(context, uri);

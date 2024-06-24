@@ -25,6 +25,7 @@ import android.content.Context;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -52,11 +53,13 @@ public class UpdateWorkInfoRoutine implements Runnable {
 	private final LicenseService licenseService;
 	private final Context context;
 
-	public UpdateWorkInfoRoutine(Context context,
-	                      APIConnector apiConnector,
-	                      IdentityStoreInterface identityStore,
-	                      DeviceService deviceService,
-	                      LicenseService licenseService) {
+	public UpdateWorkInfoRoutine(
+		Context context,
+		APIConnector apiConnector,
+		IdentityStoreInterface identityStore,
+		DeviceService deviceService,
+		LicenseService licenseService
+	) {
 		this.context = context;
 		this.apiConnector = apiConnector;
 		this.identityStore = identityStore;
@@ -72,8 +75,7 @@ public class UpdateWorkInfoRoutine implements Runnable {
 		}
 
 		if (this.deviceService == null || this.deviceService.isOnline()) {
-
-			logger.debug("update work info");
+			logger.info("Update work info");
 
 			UserCredentials userCredentials = ((LicenseServiceUser) this.licenseService).loadCredentials();
 
@@ -125,29 +127,38 @@ public class UpdateWorkInfoRoutine implements Runnable {
 
 	/**
 	 * start a update in a new thread
-	 * return the new created thread
+	 * @return the new created thread or null if the thread could not be created
 	 */
+	@Nullable
 	public static Thread start() {
-		//try to get all instances
+		UpdateWorkInfoRoutine updateWorkInfoRoutine = create();
+		if (updateWorkInfoRoutine != null) {
+			Thread t = new Thread(updateWorkInfoRoutine);
+			t.start();
+			return t;
+		} else {
+			return null;
+		}
+	}
+
+	@Nullable
+	public static UpdateWorkInfoRoutine create() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
 		if(serviceManager == null) {
 			return null;
 		}
 		try {
-			Thread t = new Thread(new UpdateWorkInfoRoutine(
-					serviceManager.getContext(),
-					serviceManager.getAPIConnector(),
-					serviceManager.getIdentityStore(),
-					serviceManager.getDeviceService(),
-					serviceManager.getLicenseService()
-			));
-			t.start();
-			return t;
-		} catch (FileSystemNotPresentException x) {
-			logger.error("File system not present", x);
+			return new UpdateWorkInfoRoutine(
+				serviceManager.getContext(),
+				serviceManager.getAPIConnector(),
+				serviceManager.getIdentityStore(),
+				serviceManager.getDeviceService(),
+				serviceManager.getLicenseService()
+			);
+		} catch (FileSystemNotPresentException e) {
+			logger.error("File system not present", e);
+			return null;
 		}
-
-		return null;
 	}
 }

@@ -63,6 +63,16 @@ internal abstract class BaseSocket(
     protected var ioProcessingStopped = true
 
     final override suspend fun processIo() {
+        synchronized(this) {
+            if (closedSignal.isCompleted) {
+                throw ServerSocketException("The socket is already closed")
+            }
+            launchIoJob()
+        }
+        ioProcessingStoppedSignal.await()
+    }
+
+    private fun launchIoJob() {
         val errorHandler = CoroutineExceptionHandler { _, e ->
             if (e is CancellationException || e is InterruptedIOException) {
                 logger.info("IO Processing cancelled")
@@ -86,7 +96,6 @@ internal abstract class BaseSocket(
             )
             closeSocketAndCompleteClosedSignal(ServerSocketCloseReason("IO processing has stopped (exceptionally=$exceptionally)"))
         } }
-        ioProcessingStoppedSignal.await()
     }
 
     final override fun close(reason: ServerSocketCloseReason) {

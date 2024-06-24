@@ -26,7 +26,6 @@ import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE_MB;
 import static ch.threema.app.services.PreferenceService.ImageScale_DEFAULT;
 import static ch.threema.app.ui.MediaItem.TIME_UNDEFINED;
 import static ch.threema.app.ui.MediaItem.TYPE_FILE;
-import static ch.threema.app.ui.MediaItem.TYPE_GIF;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_ANIMATED;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
@@ -3817,8 +3816,6 @@ public class MessageServiceImpl implements MessageService {
 			case TYPE_IMAGE_ANIMATED:
 				metaData.put(FileDataModel.METADATA_KEY_ANIMATED, true);
 				// fallthrough
-			case TYPE_GIF:
-				// fallthrough
 			case TYPE_VOICEMESSAGE:
 				// fallthrough
 			case TYPE_FILE:
@@ -3928,7 +3925,7 @@ public class MessageServiceImpl implements MessageService {
 						mediaItem.getExifFlip()), mediaItem.getRotation(), mediaItem.getFlip());
 				}
 				break;
-			case TYPE_GIF:
+			case TYPE_IMAGE_ANIMATED:
 				fileDataModel.setThumbnailMimeType(MimeUtil.MIME_TYPE_IMAGE_PNG);
 				thumbnailBitmap = IconUtil.getThumbnailFromUri(context, mediaItem.getUri(), THUMBNAIL_SIZE_PX, fileDataModel.getMimeType(), true);
 				break;
@@ -4234,7 +4231,7 @@ public class MessageServiceImpl implements MessageService {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 			// non-animated images are being sent as png files
 			// we should fix the mime type before creating a local message model in order not to confuse the chat adapter
-			if (ConfigUtils.isSupportedAnimatedImageFormat(mimeType)
+			if (MimeUtil.isAnimatedImageFormat(mimeType)
 				&& mediaItem.getType() != TYPE_IMAGE_ANIMATED
 				&& mediaItem.getType() != TYPE_FILE
 				&& mediaItem.getImageScale() != PreferenceService.ImageScale_SEND_AS_FILE) {
@@ -4250,7 +4247,6 @@ public class MessageServiceImpl implements MessageService {
 				filename = FileUtil.getDefaultFilename(mimeType); // the internal temporary file name is of no use to the recipient
 				renderingType = FileData.RENDERING_MEDIA;
 				break;
-			case TYPE_GIF:
 			case TYPE_IMAGE_ANIMATED:
 				if (renderingType == FileData.RENDERING_DEFAULT) {
 					// do not override stickers

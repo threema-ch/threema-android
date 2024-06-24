@@ -43,6 +43,7 @@ import ch.threema.app.services.FileService
 import ch.threema.app.ui.CheckableFrameLayout
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IconUtil
+import ch.threema.app.utils.MimeUtil
 import ch.threema.app.utils.StringConversionUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
@@ -166,7 +167,7 @@ class MediaGalleryAdapter(
                                 holder.animatedFormatLabelContainer?.visibility = View.VISIBLE
                                 holder.animatedFormatLabelIconView?.setImageResource(R.drawable.ic_gif_24dp)
                                 holder.animatedFormatLabelIconView?.contentDescription = context.getString(R.string.attach_gif)
-                            } else if (messageModel.messageContentsType == MessageContentsType.IMAGE && ConfigUtils.isSupportedAnimatedImageFormat(messageModel.fileData.mimeType)) {
+                            } else if (messageModel.messageContentsType == MessageContentsType.IMAGE && MimeUtil.isAnimatedImageFormat(messageModel.fileData.mimeType)) {
                                 holder.animatedFormatLabelContainer?.visibility = View.VISIBLE
                                 holder.animatedFormatLabelIconView?.setImageResource(R.drawable.ic_webp)
                                 holder.animatedFormatLabelIconView?.contentDescription = "WebP"

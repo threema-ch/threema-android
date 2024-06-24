@@ -40,7 +40,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -107,7 +106,7 @@ public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 					if (finalPreviousQuery != null) {
 						switch (finalPreviousQueryType) {
 							case FILTER_MEDIA_TYPE:
-								MediaSelectionActivity.this.filterMediaByMimeType(finalPreviousQuery);
+								MediaSelectionActivity.this.filterMediaByMediaAttachType(finalPreviousQuery);
 								break;
 							case FILTER_MEDIA_BUCKET:
 								MediaSelectionActivity.this.filterMediaByBucket(finalPreviousQuery);

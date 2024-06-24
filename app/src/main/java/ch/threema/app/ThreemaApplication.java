@@ -649,52 +649,37 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 
 	@Override
 	public void onLowMemory() {
-		super.onLowMemory();
-
 		logger.info("*** App is low on memory");
+
+		super.onLowMemory();
+		try {
+			if (serviceManager != null) {
+				serviceManager.getAvatarCacheService().clear();
+			}
+		} catch (Exception e) {
+			logger.error("Exception", e);
+		}
 	}
 
 	@SuppressLint("SwitchIntDef")
 	@Override
 	public void onTrimMemory(int level) {
+		logger.info("onTrimMemory (level={})", level);
 
 		super.onTrimMemory(level);
 
-		switch (level) {
-			case TRIM_MEMORY_RUNNING_MODERATE:
-				logger.trace("onTrimMemory (level={})", level);
-				break;
-			case TRIM_MEMORY_UI_HIDDEN:
-				logger.debug("onTrimMemory (level={}, ui hidden)", level);
-				/* fallthrough */
-			default:
-				if (level != TRIM_MEMORY_UI_HIDDEN) { // See above
-					logger.info("onTrimMemory (level={})", level);
+		/* save our master key now if necessary, as we may get killed and if the user was still in the
+	     * initial setup procedure, this can lead to trouble as the database may already be there
+	     * but we may no longer be able to access it due to missing master key
+		 */
+		try {
+			if (getMasterKey() != null && !getMasterKey().isProtected()) {
+				if (serviceManager != null && serviceManager.getPreferenceService().getWizardRunning()) {
+					getMasterKey().setPassphrase(null);
 				}
-
-				/* save our master key now if necessary, as we may get killed and if the user was still in the
-			     * initial setup procedure, this can lead to trouble as the database may already be there
-			     * but we may no longer be able to access it due to missing master key
-				 */
-				try {
-					if (getMasterKey() != null && !getMasterKey().isProtected()) {
-						if (serviceManager != null && serviceManager.getPreferenceService().getWizardRunning()) {
-							getMasterKey().setPassphrase(null);
-						}
-					}
-				} catch (Exception e) {
-					logger.error("Exception", e);
-				}
-
-				try {
-					if (serviceManager != null) {
-						serviceManager.getAvatarCacheService().clear();
-					}
-				} catch (Exception e) {
-					logger.error("Exception", e);
-				}
-
-				break;
+			}
+		} catch (Exception e) {
+			logger.error("Exception", e);
 		}
 	}
 

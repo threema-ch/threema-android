@@ -103,16 +103,7 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 							messageModel
 					);
 				} else if (messageModel.getType() == MessageType.FILE) {
-					if (MimeUtil.isGifFile(messageModel.getFileData().getMimeType())) {
-						o = new GifMessagePlayer(
-							this.context,
-							this.messageService,
-							this.fileService,
-							this.preferenceService,
-							messageReceiver,
-							messageModel
-						);
-					} else if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())
+					if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())
 							&& messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
 						o = new AudioMessagePlayer(
 							this.context,
@@ -124,7 +115,7 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 							mediaControllerFuture,
 							messageModel
 						);
-					} else if (ConfigUtils.isSupportedAnimatedImageFormat(messageModel.getFileData().getMimeType())
+					} else if (MimeUtil.isAnimatedImageFormat(messageModel.getFileData().getMimeType())
 							&& (messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA
 							|| messageModel.getFileData().getRenderingType() == FileData.RENDERING_STICKER)) {
 						o = new AnimatedImageDrawableMessagePlayer(
@@ -203,11 +194,8 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 		synchronized (this.messagePlayers) {
 			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
 				if (!entry.getKey().equals(messageModel.getId())) {
-					if (!(entry.getValue() instanceof GifMessagePlayer)) {
-						logger.debug("maybe stopping player {} if not running ", entry.getKey());
-
-						entry.getValue().stop();
-					}
+					logger.debug("maybe stopping player {} if not running ", entry.getKey());
+					entry.getValue().stop();
 				}
 			}
 		}

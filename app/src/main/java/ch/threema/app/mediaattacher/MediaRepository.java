@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.MimeUtil;
@@ -181,7 +180,7 @@ public class MediaRepository {
 	 */
 	@SuppressLint("NewApi")
 	@WorkerThread
-	private void addToMediaResults(@Nullable Cursor cursor, @NonNull List<MediaAttachItem> mediaList, boolean isVideo) {
+	private void addToMediaResults(@Nullable Cursor cursor, @NonNull List<MediaAttachItem> mediaAttachItems, boolean isVideo) {
 		if (cursor != null) {
 			while (cursor.moveToNext()) {
 				int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
@@ -205,7 +204,7 @@ public class MediaRepository {
 
 				int type;
 				if (MimeUtil.isVideoFile(mimeType)) {
-					type = MediaItem.TYPE_VIDEO;
+					type = MediaAttachItem.TYPE_VIDEO;
 					if (duration == 0) {
 						// do not use automatic resource management on MediaMetadataRetriever
 						MediaMetadataRetriever metaDataRetriever = new MediaMetadataRetriever();
@@ -222,17 +221,17 @@ public class MediaRepository {
 						}
 					}
 				} else if (MimeUtil.isGifFile(mimeType)) {
-					type = MediaItem.TYPE_GIF;
-				} else if (ConfigUtils.isSupportedAnimatedImageFormat(mimeType) && FileUtil.isAnimatedImageFile(contentUri)) {
-					type = MediaItem.TYPE_IMAGE_ANIMATED;
+					type = MediaAttachItem.TYPE_GIF;
+				} else if (MimeUtil.isWebPFile(mimeType)) {
+					type = MediaAttachItem.TYPE_WEBP;
 				} else {
-					type = MediaItem.TYPE_IMAGE;
+					type = MediaAttachItem.TYPE_IMAGE;
 				}
 				MediaAttachItem item = new MediaAttachItem(
 					id, dateAdded, dateTaken, dateModified, contentUri,
 					displayName, bucketName, orientation, duration, type
 				);
-				mediaList.add(item);
+				mediaAttachItems.add(item);
 			}
 		}
 	}

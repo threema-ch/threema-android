@@ -619,7 +619,7 @@ public class MessageSectionFragment extends MainFragment
 	};
 
 	private void showConversation(ConversationModel conversationModel, View v) {
-		conversationTagService.unTag(conversationModel, unreadTagModel);
+		conversationTagService.removeTagAndNotify(conversationModel, unreadTagModel);
 		conversationModel.setUnreadCount(0);
 
 		// Close keyboard if search view is expanded
@@ -1457,7 +1457,7 @@ public class MessageSectionFragment extends MainFragment
 				}
 				break;
 			case TAG_MARK_READ:
-				conversationTagService.unTag(conversationModel, unreadTagModel);
+				conversationTagService.removeTagAndNotify(conversationModel, unreadTagModel);
 				conversationModel.setIsUnreadTagged(false);
 				conversationModel.setUnreadCount(0);
 				new Thread(() -> messageService.markConversationAsRead(
@@ -1466,7 +1466,7 @@ public class MessageSectionFragment extends MainFragment
 				).start();
 				break;
 			case TAG_MARK_UNREAD:
-				conversationTagService.tag(conversationModel, unreadTagModel);
+				conversationTagService.addTagAndNotify(conversationModel, unreadTagModel);
 				conversationModel.setIsUnreadTagged(true);
 				break;
 		}

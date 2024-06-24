@@ -27,6 +27,7 @@ import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.FileMessage
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
@@ -124,18 +125,33 @@ class OutgoingFileMessageTask(
     private fun FileDataModel.toFileData(
         thumbnailBlobId: ByteArray?,
         messageModel: AbstractMessageModel,
-    ) = FileData().also {
-        it.fileBlobId = blobId
-        it.thumbnailBlobId = thumbnailBlobId
-        it.encryptionKey = encryptionKey
-        it.mimeType = mimeType
-        it.thumbnailMimeType = thumbnailMimeType
-        it.fileSize = fileSize
-        it.fileName = fileName
-        it.renderingType = renderingType
-        it.caption = caption
-        it.correlationId = messageModel.correlationId
-        it.metaData = metaData
+    ): FileData {
+
+        // Validate that the blob id has the correct length
+        if (blobId == null || blobId.size != ProtocolDefines.BLOB_ID_LEN) {
+            logger.error("Invalid blob id of length {}", blobId?.size)
+            throw IllegalStateException("Invalid blob id")
+        }
+
+        // Validate that the encryption key has the correct length
+        if (encryptionKey == null || encryptionKey.size != ProtocolDefines.BLOB_KEY_LEN) {
+            logger.error("Invalid encryption key of length {}", encryptionKey?.size)
+            throw IllegalStateException("Invalid blob encryption key")
+        }
+
+        return FileData().also {
+            it.fileBlobId = blobId
+            it.thumbnailBlobId = thumbnailBlobId
+            it.encryptionKey = encryptionKey
+            it.mimeType = mimeType
+            it.thumbnailMimeType = thumbnailMimeType
+            it.fileSize = fileSize
+            it.fileName = fileName
+            it.renderingType = renderingType
+            it.caption = caption
+            it.correlationId = messageModel.correlationId
+            it.metaData = metaData
+        }
     }
 
     override fun serialize(): SerializableTaskData = OutgoingFileMessageData(

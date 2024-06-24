@@ -35,6 +35,7 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.app.Person
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import ch.threema.app.R
@@ -232,6 +233,10 @@ class GroupCallService : Service() {
 
     private fun getForegroundNotification(startedAt: Long = System.currentTimeMillis()): Notification {
         val group = groupService.getById(groupId.id)
+        val callerPerson = Person.Builder()
+            .setName(getNotificationTitle(group))
+            .setImportant(true)
+            .build()
         val builder = NotificationBuilderWrapper(
             this, NotificationService.NOTIFICATION_CHANNEL_IN_CALL, null)
             .setContentTitle(getNotificationTitle(group))
@@ -246,11 +251,7 @@ class GroupCallService : Service() {
             .setWhen(startedAt)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(getJoinCallPendingIntent(PendingIntent.FLAG_UPDATE_CURRENT))
-            .addAction(
-                R.drawable.ic_outline_logout_bitmap,
-                getString(R.string.leave),
-                getLeaveCallPendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)
-            )
+            .setStyle(NotificationCompat.CallStyle.forOngoingCall(callerPerson, getLeaveCallPendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)))
 
         return builder.build()
     }
@@ -265,7 +266,7 @@ class GroupCallService : Service() {
 
     }
 
-    private fun getLeaveCallPendingIntent(flags: Int): PendingIntent? {
+    private fun getLeaveCallPendingIntent(flags: Int): PendingIntent {
         return PendingIntent.getService(
             applicationContext,
             REQUEST_CODE_LEAVE_CALL,

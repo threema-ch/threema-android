@@ -1367,6 +1367,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="clear_forward_security_warning">Tuto akci provádějte pouze na pokyn týmu podpory společnosti Threema.</string>
     <string name="forward_security_cleared">Perfect Forward Secrecy relace s tímto kontaktem byly vyčištěny</string>
     <string name="message_without_forward_security">Byla přijata zpráva bez Perfect Forward Secrecy. Ověřte, zda odesílatel záměrně zakázal Perfect Forward Secrecy.</string>
+    <string name="forward_security_disabled">V této konverzaci je protokol Perfect Forward Secrecy zakázán.</string>
     <string name="forward_security_established">Zprávy s touto protistranou jsou nyní chráněny protokolem Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Zprávy přijaté v této konverzaci jsou nyní chráněny protokolem Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Funkce Perfect Forward Secrecy byla resetována. K tomu může dojít, pokud partner v konverzaci změní své zařízení nebo přeinstaluje aplikaci.</string>
@@ -1438,6 +1439,8 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="prefs_sum_group_calls_vibration">Vyberte, zda má zařízení po zahájení skupinového hovoru vibrovat</string>
     <string name="forward_security_mode_4dh">Kompletní</string>
     <string name="forward_security_mode_2dh">Unilaterální</string>
+    <string name="forward_security_mode_all">Plný</string>
+    <string name="forward_security_mode_partial">Částečný</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) chrání zaznamenanou komunikaci před zpětným dešifrováním i když je dlouhodobý šifrovací klíč kompromitován.\n\nTato možnost může být povolena v případě, když aplikace na obou stranách podporuje PFS.</string>
     <string name="group_call_inactivity_left">Skupinový hovor byl opuštěn z důvodu neaktivity</string>
     <string name="missing_permission_external_storage">Soubor nelze zkopírovat. Vyzkoušejte následující postup:\n1. Otevřete aplikaci nastavení.\n2. Přejděte do kategorie „Aplikace“ a zvolte položku „Aplikace se speciálním přístupem“.\n3. Klepněte na „Přístup ke všem souborům“.\n4. Klepněte na tři tečky v pravém horním rohu obrazovky a zvolte „Zobrazit systémové aplikace“.\n5. Klepněte na „Externí úložiště“ a ujistěte se, že je povolena volba „Povolit přístup ke správě všech souborů“.\n6. Znovu vyzkoušejte obnovit zálohu.</string>
@@ -1503,8 +1506,15 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="group_orphaned_notice">Tato skupina je osiřelá, protože ji tvůrce skupiny opustil. Klonujte prosím tuto skupinu, abyste se stal(a) novým správcem.</string>
     <string name="group_not_a_member_notice">Již nejste členem této skupiny, a nemůžete ji proto nadále používat.</string>
     <string name="group_dissolved_notice">Tato skupina byla rozpuštěna a nemůže být nadále používána.</string>
+    <string name="md_linked_devices">Propojená zařízení</string>
+    <string name="md_link_device">Propojit nové zařízení</string>
+    <string name="md_enable">Povolit propojená zařízení</string>
+    <string name="md_linked_devices_empty">Stáhněte si odněkud parádního desktopového klienta a vzneste se 🚀</string>
+    <string name="md_link_device_qr_scan_message">Naskenujte prosím QR kód</string>
     <string name="directory_request_failed">Požadavek složky selhal. Zkuste to znovu.</string>
     <string name="add_shortcut_exists">Zástupce pro tento cíl již existuje.</string>
+    <string name="resend_message_dialog_title">Znovu odeslat skupinovou zprávu?</string>
+    <string name="resend_message_dialog_message">Tuto zprávu se nezdařilo odeslat všem členům. Znovu odeslat zprávu kontaktu %1$s?</string>
     <string name="work_lost_credentials_help">Zapomněli jste své přihlašovací údaje? Obraťte se na svého správce %1$s.</string>
     <string name="problemsolver_intro">Nějaké problémy s nastavením systému pravděpodobně způsobují, že aplikace %s nefunguje správně. Opravte prosím tyto problémy podle níže uvedených pokynů.</string>
     <string name="problemsolver_title">Opravte problémy s nastavením</string>

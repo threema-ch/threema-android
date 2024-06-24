@@ -82,6 +82,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 	private LicenseService licenseService;
 	private PreferenceService preferenceService;
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -98,6 +99,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 			// Hide keyboard to make error message visible on low resolution displays
 			EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
 			Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
+			finish();
 			return;
 		}
 

@@ -84,11 +84,6 @@ public class LocaleUtil {
 	}
 
 	public static String formatTimeStampString(Context context, long when, boolean fullFormat) {
-		// TODO: optimize - currently extremely slow
-		return formatTimeStampStringRelative(context, when, fullFormat);
-	}
-
-	private static String formatTimeStampStringRelative(Context context, long when, boolean fullFormat) {
 		String time = DateUtils.formatDateTime(context, when, DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_SHOW_TIME);
 
 		if (DateUtils.isToday(when)) {

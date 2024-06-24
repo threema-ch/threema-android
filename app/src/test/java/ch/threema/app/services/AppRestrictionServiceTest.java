@@ -44,6 +44,8 @@ import android.os.Bundle;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -56,11 +58,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.license.UserCredentials;
 import ch.threema.app.stores.PreferenceStoreInterface;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkData;
@@ -68,6 +72,11 @@ import ch.threema.domain.protocol.api.work.WorkMDMSettings;
 
 @RunWith(PowerMockRunner.class)
 public class AppRestrictionServiceTest {
+
+	@BeforeClass
+	public static void assumeWorkBuild() {
+		Assume.assumeTrue(ConfigUtils.isWorkBuild());
+	}
 
 	@Test
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
@@ -292,7 +301,7 @@ public class AppRestrictionServiceTest {
 		when(mockContext.getString(anyInt())).thenReturn("");
 
 		ServiceManager serviceManagerMock = PowerMockito.mock(ServiceManager.class);
-		PreferenceStoreInterface preferenceStoreMock = PowerMockito.mock(PreferenceStoreInterface.class);
+		PreferenceStoreInterface preferenceStoreMock = mockPreferenceStore(null);
 		PowerMockito.mockStatic(ThreemaApplication.class);
 		when(ThreemaApplication.getServiceManager()).thenReturn(serviceManagerMock);
 		when(ThreemaApplication.getAppContext()).thenReturn(mockContext);
@@ -322,19 +331,16 @@ public class AppRestrictionServiceTest {
 		when(mockContext.getString(anyInt())).thenReturn("");
 
 		ServiceManager serviceManagerMock = PowerMockito.mock(ServiceManager.class);
-		PreferenceStoreInterface preferenceStoreMock = PowerMockito.mock(PreferenceStoreInterface.class);
+		JSONObject workRestrictionsJson = new JSONObject();
+		PreferenceStoreInterface preferenceStoreMock = mockPreferenceStore(workRestrictionsJson);
 		PowerMockito.mockStatic(ThreemaApplication.class);
 		when(ThreemaApplication.getServiceManager()).thenReturn(serviceManagerMock);
 		when(ThreemaApplication.getAppContext()).thenReturn(mockContext);
 		when(serviceManagerMock.getPreferenceStore()).thenReturn(preferenceStoreMock);
 
-		JSONObject jsonObject = new JSONObject();
-		when(preferenceStoreMock.getJSONObject(eq("wrk_app_restriction"), eq(true)))
-				.thenReturn(jsonObject);
-
 		WorkMDMSettings s = new WorkMDMSettings();
 
-		when(service.convert(eq(jsonObject))).thenReturn(s);
+		when(service.convert(eq(workRestrictionsJson))).thenReturn(s);
 		Assert.assertEquals(s, service.getWorkMDMSettings());
 		Assert.assertEquals(s, service.getWorkMDMSettings());
 		Assert.assertEquals(s, service.getWorkMDMSettings());
@@ -399,8 +405,7 @@ public class AppRestrictionServiceTest {
 		JSONObject workRestrictionsJson = new JSONObject();
 		workRestrictionsJson.put("override", true);
 		workRestrictionsJson.put("parameters", parameters);
-		PreferenceStoreInterface preferenceStoreMock = PowerMockito.mock(PreferenceStoreInterface.class);
-		when(preferenceStoreMock.getJSONObject(eq("wrk_app_restriction"), eq(true))).thenReturn(workRestrictionsJson);
+		PreferenceStoreInterface preferenceStoreMock = mockPreferenceStore(workRestrictionsJson);
 
 		ServiceManager serviceManagerMock = PowerMockito.mock(ServiceManager.class);
 		when(serviceManagerMock.getPreferenceStore()).thenReturn(preferenceStoreMock);
@@ -493,11 +498,7 @@ public class AppRestrictionServiceTest {
 		JSONObject workRestrictionsJson = new JSONObject();
 		workRestrictionsJson.put("override", true);
 		workRestrictionsJson.put("parameters", mdmWorkParameters);
-		PreferenceStoreInterface preferenceStoreMock = PowerMockito.mock(PreferenceStoreInterface.class);
-		when(preferenceStoreMock.getJSONObject(eq("wrk_app_restriction"), eq(true))).thenReturn(workRestrictionsJson);
-
-		ServiceManager serviceManagerMock = PowerMockito.mock(ServiceManager.class);
-		when(serviceManagerMock.getPreferenceStore()).thenReturn(preferenceStoreMock);
+		PreferenceStoreInterface preferenceStoreMock = mockPreferenceStore(workRestrictionsJson);
 
 		Context mockContext = PowerMockito.mock(Context.class);
 		when(mockContext.getSystemService(Context.RESTRICTIONS_SERVICE)).thenReturn(restrictionManagerMock);
@@ -506,6 +507,10 @@ public class AppRestrictionServiceTest {
 		when(mockContext.getString(R.string.restriction__safe_password)).thenReturn("th_safe_password");
 		when(mockContext.getString(R.string.restriction__license_username)).thenReturn("th_license_username");
 		when(mockContext.getString(R.string.restriction__license_password)).thenReturn("th_license_password");
+
+		ServiceManager serviceManagerMock = PowerMockito.mock(ServiceManager.class);
+		when(serviceManagerMock.getPreferenceStore()).thenReturn(preferenceStoreMock);
+		when(serviceManagerMock.getContext()).thenReturn(mockContext);
 
 		PowerMockito.mockStatic(ThreemaApplication.class);
 		when(ThreemaApplication.getAppContext()).thenReturn(mockContext);
@@ -518,7 +523,7 @@ public class AppRestrictionServiceTest {
 
 		// Assert
 		verify(preferenceStoreMock, times(1)).getJSONObject(eq("wrk_app_restriction"), eq(true));
-		verify(mockContext, times(5)).getString(anyInt());
+		verify(mockContext, times(7)).getString(anyInt());
 
 		Assert.assertEquals(15, appRestrictions.size());
 		// Application restrictions that must not be overridden by work mdm parameters:
@@ -543,6 +548,13 @@ public class AppRestrictionServiceTest {
 		Assert.assertTrue(appRestrictions.getBoolean("th_safe_enable"));
 		Assert.assertEquals("work_mdm_firstname", appRestrictions.getString("th_firstname"));
 		Assert.assertEquals("work_mdm_lastname", appRestrictions.getString("th_lastname"));
+	}
+
+	private PreferenceStoreInterface mockPreferenceStore(@Nullable JSONObject workRestrictionsJson) {
+		PreferenceStoreInterface preferenceStoreMock = PowerMockito.mock(PreferenceStoreInterface.class);
+		when(preferenceStoreMock.containsKey("wrk_app_restriction", true)).thenReturn(workRestrictionsJson != null);
+		when(preferenceStoreMock.getJSONObject(eq("wrk_app_restriction"), eq(true))).thenReturn(workRestrictionsJson);
+		return preferenceStoreMock;
 	}
 
 	private Bundle mockBundle() {

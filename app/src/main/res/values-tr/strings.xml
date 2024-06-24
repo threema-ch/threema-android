@@ -1361,6 +1361,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="clear_forward_security_warning">Bu işlemi yalnızca Threema\'nın destek ekibi tarafından talimat verildiğinde gerçekleştirin.</string>
     <string name="forward_security_cleared">Bu kişiyle Mükemmel İletme Gizliliği oturumları temizlendi</string>
     <string name="message_without_forward_security">Mükemmel İletme Gizliliği olmayan bir mesaj alındı. Gönderenin Mükemmel İletme Gizliliğini kasıtlı olarak devre dışı bıraktığını doğrulayın.</string>
+    <string name="forward_security_disabled">Mükemmel İletme Gizliliği bu sohbet için devre dışı bırakılmıştır.</string>
     <string name="forward_security_established">Bu sohbet ortağıyla olan mesajlar artık Mükemmel İletme Gizliliği ile korunmaktadır.</string>
     <string name="forward_security_established_rx">Bu sohbette alınan mesajlar artık Mükemmel İletme Gizliliği ile korunmaktadır.</string>
     <string name="forward_security_reset">Mükemmel İletme Gizliliği oturumu sıfırlandı. Bu, sohbet ortağı cihazları değiştirdiğinde veya uygulamayı yeniden yüklediğinde meydana gelebilir.</string>
@@ -1432,6 +1433,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_sum_group_calls_vibration">Bir grup araması başlatıldığında titreyip titremeyeceğini seçin</string>
     <string name="forward_security_mode_4dh">Tamamlandı</string>
     <string name="forward_security_mode_2dh">Tek taraflı</string>
+    <string name="forward_security_mode_all">Tam</string>
+    <string name="forward_security_mode_partial">Kısmi</string>
     <string name="forward_security_explanation">Mükemmel İletme Gizliliği (Perfect Forward Secrecy) (PFS), uzun süreli şifreleme anahtarı ele geçirilmiş olsa bile kaydedilmiş bir iletişimi geriye dönük şifre çözme işleminden korur.\n\nHer iki taraftaki uygulama PFS\'yi destekliyorsa bu seçenek etkinleştirilebilir.</string>
     <string name="group_call_inactivity_left">Hareketsizlik nedeniyle grup araması sonlandırıldı</string>
     <string name="missing_permission_external_storage">Dosya kopyalanamıyor. Aşağıdaki adımları deneyin:\n1. Ayarlar uygulamasını açın.\n2. \"Uygulamalar\"a gidin ve \"Özel uygulama erişimi\"ni seçin.\n3. “Tüm dosyalara erişim” seçeneğine dokunun.\n4. Sağ üst köşedeki üç noktaya dokunun ve \"Sistemi göster\"i seçin.\n5. \"Harici Depolama\" üzerine dokunun ve \"Tüm dosyaları yönetmek için erişime izin ver\" seçeneğinin verildiğinden emin olun.\n6. Yedeği tekrar geri yüklemeyi deneyin.</string>
@@ -1497,8 +1500,15 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="group_orphaned_notice">Grubu oluşturan kişi gruptan ayrıldığı için bu grup öksüz kaldı. Yeni yönetici olmak için lütfen bu grubu klonlayın.</string>
     <string name="group_not_a_member_notice">Artık bu grubun bir parçası değilsiniz ve bu grubu kullanamazsınız.</string>
     <string name="group_dissolved_notice">Bu grup dağıtılmıştır ve artık kullanılamaz.</string>
+    <string name="md_linked_devices">Bağlantılı cihazlar</string>
+    <string name="md_link_device">Yeni cihaz bağla</string>
+    <string name="md_enable">Bağlı cihazları etkinleştir</string>
+    <string name="md_linked_devices_empty">Süslü masaüstü istemcisini bir yerden indirin ve yola çıkın 🚀</string>
+    <string name="md_link_device_qr_scan_message">Lütfen qr kodunu tarayın</string>
     <string name="directory_request_failed">Dizin isteği başarısız oldu. Tekrar deneyin.</string>
     <string name="add_shortcut_exists">Bu hedef için bir kısayol zaten mevcut.</string>
+    <string name="resend_message_dialog_title">Grup mesajı yeniden gönderilsin mi?</string>
+    <string name="resend_message_dialog_message">Bu mesaj tüm üyelere gönderilemedi. Mesaj %1$s yeniden gönderilsin mi?</string>
     <string name="work_lost_credentials_help">Kimlik bilgilerinizi mi unuttunuz? Lütfen %1$s yöneticinizle iletişime geçin.</string>
     <string name="problemsolver_intro">Bazı sistem yapılandırma sorunları %s\'nin düzgün çalışmasını engelleyebilir. Lütfen aşağıdaki talimatları izleyerek bu sorunları giderin.</string>
     <string name="problemsolver_title">Yapılandırma sorunlarını düzelt</string>

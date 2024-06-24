@@ -21,19 +21,39 @@
 
 package ch.threema.app.services.license;
 
+import java.util.Objects;
+
+import androidx.annotation.NonNull;
+
 /**
  * save the username and password
  */
 public class UserCredentials implements LicenseService.Credentials {
+	@NonNull
 	public final String username;
+	@NonNull
 	public final String password;
 
-	public UserCredentials(String username, String password) {
+	public UserCredentials(@NonNull String username, @NonNull String password) {
 		this.username = username;
 		this.password = password;
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UserCredentials that = (UserCredentials) o;
+		return Objects.equals(username, that.username) && Objects.equals(password, that.password);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(username, password);
+	}
+
+	@Override
+	@NonNull
 	public String toString() {
 		return this.username;
 	}

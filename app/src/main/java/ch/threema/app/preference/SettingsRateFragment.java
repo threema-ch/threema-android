@@ -37,6 +37,7 @@ import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.RateDialog;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.ThreemaApplication.getAppContext;
@@ -94,12 +95,20 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 
 	@Override
 	public void onNo(String tag, Object data) {
-		onBackPressed();
+		if (!ConfigUtils.isTabletLayout()) {
+			// We only need to navigate back on phones, because on tablets this would leave the
+			// preferences entirely.
+			onBackPressed();
+		}
 	}
 
 	@Override
 	public void onCancel(String tag) {
-		onBackPressed();
+		if (!ConfigUtils.isTabletLayout()) {
+			// We only need to navigate back on phones, because on tablets this would leave the
+			// preferences entirely.
+			onBackPressed();
+		}
 	}
 
 	@Override

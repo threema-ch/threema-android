@@ -201,7 +201,6 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.mediaattacher.MediaAttachActivity;
 import ch.threema.app.mediaattacher.MediaFilterQuery;
-import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.routines.ReadMessagesRoutine;
 import ch.threema.app.services.ContactService;
@@ -361,6 +360,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	private AudioManager audioManager;
 	private ConversationListView convListView;
+	private FrameLayout historyParent;
 	private @Nullable ComposeMessageAdapter composeMessageAdapter;
 	private View isTypingView;
 
@@ -918,9 +918,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		@Override
-		public void onRemoved(BallotModel ballotModel) {
-
-		}
+		public void onRemoved(BallotModel ballotModel) { }
 
 		@Override
 		public boolean handle(BallotModel ballotModel) {
@@ -928,6 +926,39 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	};
 
+	private final QuotePopup.QuotePopupListener quotePopupListener = new QuotePopup.QuotePopupListener() {
+		@Override
+		public void onHeightSet(int height) {
+			if (historyParent != null) {
+				historyParent.postDelayed(() ->
+					historyParent.setPadding(
+					historyParent.getPaddingLeft(),
+					historyParent.getPaddingTop(),
+					historyParent.getPaddingRight(),
+					height), 30);
+			}
+		}
+
+		@Override
+		public void onDismiss() {
+			if (historyParent != null) {
+				historyParent.postDelayed(() ->
+					historyParent.setPadding(
+                    historyParent.getPaddingLeft(),
+                    historyParent.getPaddingTop(),
+                    historyParent.getPaddingRight(),
+                    0), 70);
+			}
+		}
+
+		@Override
+		public void onPostVisibilityChange() {
+			if (messageText != null) {
+				updateSendButton(messageText.getText());
+				updateCameraButton();
+			}
+		}
+	};
 
 	@SuppressLint("StaticFieldLeak")
 	@Override
@@ -1048,6 +1079,8 @@ public class ComposeMessageFragment extends Fragment implements
 			if (ConfigUtils.isTabletLayout()) {
 				this.convListView.setPadding(0, 0, 0, 0);
 			}
+
+			this.historyParent = fragmentView.findViewById(R.id.history_parent);
 
 			this.listViewTop = this.convListView.getPaddingTop();
 			this.swipeRefreshLayout = fragmentView.findViewById(R.id.ptr_layout);
@@ -1381,15 +1414,17 @@ public class ComposeMessageFragment extends Fragment implements
 					DISPATCH_MODE_STOP
 				)
 			);
-			ViewCompat.setWindowInsetsAnimationCallback(
-				emojiPicker,
-				new TranslateDeferringInsetsAnimationCallback(
+			if (emojiPicker != null) {
+				ViewCompat.setWindowInsetsAnimationCallback(
 					emojiPicker,
-					WindowInsetsCompat.Type.systemBars(),
-					WindowInsetsCompat.Type.ime(),
-					DISPATCH_MODE_STOP
-				)
-			);
+					new TranslateDeferringInsetsAnimationCallback(
+						emojiPicker,
+						WindowInsetsCompat.Type.systemBars(),
+						WindowInsetsCompat.Type.ime(),
+						DISPATCH_MODE_STOP
+					)
+				);
+			}
 		} catch (NullPointerException e) {
 			logger.error("Exception", e);
 		}
@@ -1861,9 +1896,11 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void updateCameraButton() {
-		if (cameraButton == null || messageText == null) {
+		if (cameraButton == null || attachButton == null || messageText == null) {
 			return;
 		}
+
+		boolean isCameraPermissionGranted = true;
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
 			ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -1874,31 +1911,62 @@ public class ComposeMessageFragment extends Fragment implements
 			// we hide the camera button only in case a)
 			if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) && preferenceService.getCameraPermissionRequestShown()) {
 				cameraButton.setVisibility(View.GONE);
-				fixMessageTextPadding(View.GONE);
-				return;
+				isCameraPermissionGranted = false;
 			}
 		}
 
-		int visibility = messageText.getText() == null ||
-						messageText.getText().length() == 0 ?
-						View.VISIBLE : View.GONE;
+		final int attachButtonVisibility = isQuotePopupShown() ?
+			View.GONE : View.VISIBLE;
 
-		if (cameraButton.getVisibility() != visibility) {
-			Transition transition = new Slide(Gravity.RIGHT);
-			transition.setDuration(150);
-			transition.setInterpolator(new LinearInterpolator());
-			transition.addTarget(R.id.camera_button);
+		final int cameraButtonVisibility =
+			(messageText.getText() == null ||
+				messageText.getText().length() == 0) &&
+				!isQuotePopupShown() &&
+				isCameraPermissionGranted ?
+				View.VISIBLE : View.GONE;
 
-			TransitionManager.beginDelayedTransition((ViewGroup) cameraButton.getParent(), transition);
-			cameraButton.setVisibility(visibility);
+		final boolean attachButtonVisibilityChange = attachButton.getVisibility() != attachButtonVisibility;
+		final boolean cameraButtonVisibilityChange = cameraButton.getVisibility() != cameraButtonVisibility;
 
-			fixMessageTextPadding(visibility);
+		if (cameraButtonVisibilityChange) {
+			Transition cameraTransition = new Slide(Gravity.RIGHT);
+			cameraTransition.setStartDelay(cameraButtonVisibility == View.VISIBLE && attachButtonVisibilityChange ? 100 : 0);
+			cameraTransition.setDuration(120);
+			cameraTransition.setInterpolator(new LinearInterpolator());
+			cameraTransition.addTarget(R.id.camera_button);
+			TransitionManager.beginDelayedTransition((ViewGroup) cameraButton.getParent(), cameraTransition);
+			cameraButton.setVisibility(cameraButtonVisibility);
 		}
+
+		if (attachButtonVisibilityChange) {
+			Transition attachTransition = new Slide(Gravity.RIGHT);
+			attachTransition.setStartDelay(attachButtonVisibility == View.VISIBLE ? 0 : 100);
+			attachTransition.setDuration(120);
+			attachTransition.setInterpolator(new LinearInterpolator());
+			attachTransition.addTarget(R.id.attach_button);
+			TransitionManager.beginDelayedTransition((ViewGroup) attachButton.getParent(), attachTransition);
+			attachButton.setVisibility(attachButtonVisibility);
+		}
+
+		messageText.postDelayed(() -> fixMessageTextPadding(cameraButtonVisibility, attachButtonVisibility), 50);
 	}
 
-	private void fixMessageTextPadding(int visibility) {
-		int marginRight = getResources().getDimensionPixelSize(visibility == View.VISIBLE ? R.dimen.emoji_and_photo_button_width : R.dimen.emoji_button_width);
-		messageText.setPadding(messageText.getPaddingLeft(), messageText.getPaddingTop(), marginRight, messageText.getPaddingBottom());
+	private void fixMessageTextPadding(int cameraButtonVisibility, int attachButtonVisibility) {
+		if (isAdded()) {
+			int marginRight = ThreemaApplication.getAppContext().getResources().getDimensionPixelSize(R.dimen.emoji_and_photo_button_width);
+
+			if (cameraButtonVisibility != View.VISIBLE) {
+				marginRight -= getResources().getDimensionPixelSize(R.dimen.emoji_button_width);
+			}
+
+			if (attachButtonVisibility != View.VISIBLE) {
+				marginRight -= getResources().getDimensionPixelSize(R.dimen.emoji_button_width);
+			}
+
+			marginRight = Math.max(marginRight, getResources().getDimensionPixelSize(R.dimen.no_emoji_button_padding_left));
+
+			messageText.setPadding(messageText.getPaddingLeft(), messageText.getPaddingTop(), marginRight, messageText.getPaddingBottom());
+		}
 	}
 
 	private void updateSendButton(CharSequence s) {
@@ -2475,14 +2543,6 @@ public class ComposeMessageFragment extends Fragment implements
 					}
 				}
 				deleteableMessages.clear();
-
-				if (messageReceiver != null) {
-					if (messageReceiver.getMessagesCount() <= 0 && messageReceiver instanceof ContactMessageReceiver) {
-						conversationService.empty(messageReceiver);
-					} else {
-						conversationService.refresh(messageReceiver);
-					}
-				}
 			}
 		}
 	}
@@ -3398,7 +3458,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		if (!TestUtil.empty(this.messageText.getText())) {
-			sendTextMessage();
+			prepareSendTextMessage();
 		} else {
 			if (ConfigUtils.requestAudioPermissions(requireActivity(), this, PERMISSION_REQUEST_ATTACH_VOICE_MESSAGE)) {
 				attachVoiceMessage();
@@ -3406,7 +3466,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
-	private void sendTextMessage() {
+	private void prepareSendTextMessage() {
 		final CharSequence message;
 
 		if (isQuotePopupShown()) {
@@ -3417,65 +3477,67 @@ public class ComposeMessageFragment extends Fragment implements
 				quoteInfo.getQuoteText(),
 				quoteInfo.getMessageModel()
 			);
-			// Close quote mode and then scroll to bottom. Note that the scrolling is needed because
-			// scrolling down will be interrupted when the quote panel's visibility is set to gone.
-			// Therefore we may need to initiate a scroll down again after the panel has been set to
-			// gone.
-			dismissQuotePopup(() -> scrollList(Integer.MAX_VALUE));
+
+			messageText.postDelayed(this::dismissQuotePopup, 500);
 		} else {
 			message = this.messageText.getText();
 		}
 
 		if (!TestUtil.empty(message)) {
-			// block send button to avoid double posting
-			this.messageText.setText("");
-
-			if (typingIndicatorTextWatcher != null) {
-				messageText.removeTextChangedListener(typingIndicatorTextWatcher);
-			}
-
-			if (typingIndicatorTextWatcher != null) {
-				messageText.addTextChangedListener(typingIndicatorTextWatcher);
-			}
-
-			//send stopped typing message
-			if (typingIndicatorTextWatcher != null) {
-				typingIndicatorTextWatcher.stopTyping();
-			}
-
-			new Thread(() -> TextMessageSendAction.getInstance()
-				.sendTextMessage(new MessageReceiver[]{messageReceiver}, message.toString(), new SendAction.ActionHandler() {
-					@Override
-					public void onError(final String errorMessage) {
-						RuntimeUtil.runOnUiThread(() -> {
-							LongToast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
-							if (!TestUtil.empty(message)) {
-								messageText.setText(message);
-								messageText.setSelection(messageText.length());
-							}
-						});
-					}
-
-					@Override
-					public void onWarning(String warning, boolean continueAction) {
-					}
-
-					@Override
-					public void onProgress(final int progress, final int total) {
-					}
-
-					@Override
-					public void onCompleted() {
-						RuntimeUtil.runOnUiThread(() -> {
-							scrollList(Integer.MAX_VALUE);
-							if (ConfigUtils.isTabletLayout()) {
-								// remove draft right now to make sure conversations pane is updated
-								ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
-							}
-						});
-					}
-				})).start();
+			sendTextMessage(message);
+		} else {
+			logger.warn("Message text is empty");
 		}
+	}
+
+	private void sendTextMessage(CharSequence message) {
+		// block send button to avoid double posting
+		this.messageText.setText("");
+
+		if (typingIndicatorTextWatcher != null) {
+			messageText.removeTextChangedListener(typingIndicatorTextWatcher);
+		}
+
+		if (typingIndicatorTextWatcher != null) {
+			messageText.addTextChangedListener(typingIndicatorTextWatcher);
+		}
+
+		//send stopped typing message
+		if (typingIndicatorTextWatcher != null) {
+			typingIndicatorTextWatcher.stopTyping();
+		}
+
+		new Thread(() -> TextMessageSendAction.getInstance()
+			.sendTextMessage(new MessageReceiver[]{messageReceiver}, message.toString(), new SendAction.ActionHandler() {
+				@Override
+				public void onError(final String errorMessage) {
+					RuntimeUtil.runOnUiThread(() -> {
+						LongToast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+						if (!TestUtil.empty(message)) {
+							messageText.setText(message);
+							messageText.setSelection(messageText.length());
+						}
+					});
+				}
+
+				@Override
+				public void onWarning(String warning, boolean continueAction) {
+				}
+
+				@Override
+				public void onProgress(final int progress, final int total) {
+				}
+
+				@Override
+				public void onCompleted() {
+					RuntimeUtil.runOnUiThread(() -> {
+						if (ConfigUtils.isTabletLayout()) {
+							// remove draft right now to make sure conversations pane is updated
+							ThreemaApplication.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
+						}
+					});
+				}
+			})).start();
 	}
 
 	private void attachVoiceMessage() {
@@ -3657,10 +3719,10 @@ public class ComposeMessageFragment extends Fragment implements
 
 		if (activity.isSoftKeyboardOpen() || isEmojiPickerShown()) {
 			messageText.requestFocus();
-			quotePopup.show(activity, messageText, textInputLayout, quotedMessageModel, identity, sidebarColor);
+			quotePopup.show(activity, messageText, textInputLayout, quotedMessageModel, identity, sidebarColor, quotePopupListener);
 		} else {
 			EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
-			messageText.postDelayed(() -> quotePopup.show(activity, messageText, textInputLayout, quotedMessageModel, identity, sidebarColor), 550);
+			messageText.postDelayed(() -> quotePopup.show(activity, messageText, textInputLayout, quotedMessageModel, identity, sidebarColor, quotePopupListener), 550);
 		}
 	}
 
@@ -4449,13 +4511,7 @@ public class ComposeMessageFragment extends Fragment implements
 				mode.finish();
 			} else if (id == R.id.menu_message_quote) {
 				showQuotePopup(null);
-
-/*				if (activity.isSoftKeyboardOpen() || isEmojiPickerShown()) {
-					showQuotePopup(null, () -> RuntimeUtil.runOnUiThread(() -> messageText.requestFocus()), 0);
-				} else {
-					showQuotePopup(null, () -> RuntimeUtil.runOnUiThread(() -> EditTextUtil.focusWindowAndShowSoftKeyboard(messageText)), 500);
-				}
-*/				mode.finish();
+				mode.finish();
 			} else if (id == R.id.menu_show_text) {
 				showTextChatBubble(selectedMessages.get(0));
 				mode.finish();

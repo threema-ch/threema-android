@@ -468,10 +468,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 		return helper.getPreferenceService();
 	}
 
-	protected LicenseService getLicenseService() {
-		return helper.getLicenseService();
-	}
-
 	protected UserService getUserService() {
 		return helper.getUserService();
 	}

@@ -40,9 +40,9 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import com.lambdaworks.crypto.SCrypt;
 import com.neilalexander.jnacl.NaCl;
 
+import org.bouncycastle.crypto.generators.SCrypt;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,7 +56,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -288,9 +287,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			try {
 				final byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
 				final byte[] identityBytes = identity.getBytes(StandardCharsets.UTF_8);
-				return SCrypt.scrypt(passwordBytes, identityBytes, SCRYPT_N, SCRYPT_R, SCRYPT_P, MASTERKEY_LENGTH);
-			} catch (GeneralSecurityException e) {
-				logger.error("Exception", e);
+				return SCrypt.generate(passwordBytes, identityBytes, SCRYPT_N, SCRYPT_R, SCRYPT_P, MASTERKEY_LENGTH);
+			} catch (Exception e) {
+				logger.error("Could not derive master key", e);
 			}
 		}
 		return null;

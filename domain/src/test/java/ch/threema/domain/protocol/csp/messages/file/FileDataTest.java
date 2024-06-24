@@ -25,26 +25,43 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
 public class FileDataTest {
-	private static final byte[] testByte1 = new byte[]{0x01,0x02,0x03,0x04};
-	private static final byte[] testByte2 = new byte[]{0x01,0x02,0x03,0x04};
-	private static final byte[] testByte3 = new byte[]{0x01,0x00,0x03,0x04};
+	private static final byte[] blobIdBytes1 = new byte[ProtocolDefines.BLOB_ID_LEN];
+	private static final byte[] blobIdBytes2 = new byte[ProtocolDefines.BLOB_ID_LEN];
+	private static final byte[] encryptionKeyBytes = new byte[ProtocolDefines.BLOB_KEY_LEN];
 
-	private static final String textByteHex1 = Utils.byteArrayToHexString(testByte1);
-	private static final String textByteHex2 = Utils.byteArrayToHexString(testByte2);
-	private static final String textByteHex3 = Utils.byteArrayToHexString(testByte3);
+	private static final String blobIdHex1;
+	private static final String blobIdHex2;
+	private static final String encryptionKeyHex;
+
+	static {
+		fillByteArray(blobIdBytes1, (byte) 0);
+		fillByteArray(blobIdBytes2, (byte) 32);
+		fillByteArray(encryptionKeyBytes, (byte) 0);
+
+		blobIdHex1 = Utils.byteArrayToHexString(blobIdBytes1);
+		blobIdHex2 = Utils.byteArrayToHexString(blobIdBytes2);
+		encryptionKeyHex = Utils.byteArrayToHexString(encryptionKeyBytes);
+	}
+
+	private static void fillByteArray(@NonNull byte[] array, byte offset) {
+		for (int i = 0; i < array.length; i++) {
+			array[i] = (byte) (i + offset);
+		}
+	}
 
 	private static final String testFile = "{"
-			+"\"b\":\"" + textByteHex1 + "\","
-			+"\"t\":\"" + textByteHex2 + "\","
-			+"\"k\":\"" + textByteHex3 + "\","
+			+"\"b\":\"" + blobIdHex1 + "\","
+			+"\"t\":\"" + blobIdHex2 + "\","
+			+"\"k\":\"" + encryptionKeyHex + "\","
 			+"\"m\":\"image/jpg\","
 			+"\"n\":\"testfile.jpg\","
 			+"\"s\":123,"
@@ -52,9 +69,9 @@ public class FileDataTest {
 			+"\"d\":\"this is a caption\""
 			+"}";
 	private static final String testFileCorrelation = "{"
-		+"\"b\":\"" + textByteHex1 + "\","
-		+"\"t\":\"" + textByteHex2 + "\","
-		+"\"k\":\"" + textByteHex3 + "\","
+		+"\"b\":\"" + blobIdHex1 + "\","
+		+"\"t\":\"" + blobIdHex2 + "\","
+		+"\"k\":\"" + encryptionKeyHex + "\","
 		+"\"m\":\"image/jpg\","
 		+"\"n\":\"testfile.jpg\","
 		+"\"s\":123,"
@@ -64,9 +81,9 @@ public class FileDataTest {
 		+"}";
 
 	private static final String testFileMetaData = "{"
-		+"\"b\":\"" + textByteHex1 + "\","
-		+"\"t\":\"" + textByteHex2 + "\","
-		+"\"k\":\"" + textByteHex3 + "\","
+		+"\"b\":\"" + blobIdHex1 + "\","
+		+"\"t\":\"" + blobIdHex2 + "\","
+		+"\"k\":\"" + encryptionKeyHex + "\","
 		+"\"m\":\"image/jpg\","
 		+"\"n\":\"testfile.jpg\","
 		+"\"s\":123,"
@@ -88,9 +105,9 @@ public class FileDataTest {
 		}
 		Assert.assertNotNull(result);
 
-		Assert.assertTrue(Arrays.equals(testByte1, result.getFileBlobId()));
-		Assert.assertTrue(Arrays.equals(testByte2, result.getThumbnailBlobId()));
-		Assert.assertTrue(Arrays.equals(testByte3, result.getEncryptionKey()));
+		Assert.assertArrayEquals(blobIdBytes1, result.getFileBlobId());
+		Assert.assertArrayEquals(blobIdBytes2, result.getThumbnailBlobId());
+		Assert.assertArrayEquals(encryptionKeyBytes, result.getEncryptionKey());
 
 		Assert.assertEquals("image/jpg", result.getMimeType());
 		Assert.assertEquals("testfile.jpg", result.getFileName());
@@ -107,9 +124,9 @@ public class FileDataTest {
 		}
 		Assert.assertNotNull(result);
 
-		Assert.assertTrue(Arrays.equals(testByte1, result.getFileBlobId()));
-		Assert.assertTrue(Arrays.equals(testByte2, result.getThumbnailBlobId()));
-		Assert.assertTrue(Arrays.equals(testByte3, result.getEncryptionKey()));
+		Assert.assertArrayEquals(blobIdBytes1, result.getFileBlobId());
+		Assert.assertArrayEquals(blobIdBytes2, result.getThumbnailBlobId());
+		Assert.assertArrayEquals(encryptionKeyBytes, result.getEncryptionKey());
 
 		Assert.assertEquals("image/jpg", result.getMimeType());
 		Assert.assertEquals("testfile.jpg", result.getFileName());
@@ -126,9 +143,9 @@ public class FileDataTest {
 		}
 		Assert.assertNotNull(result);
 
-		Assert.assertTrue(Arrays.equals(testByte1, result.getFileBlobId()));
-		Assert.assertTrue(Arrays.equals(testByte2, result.getThumbnailBlobId()));
-		Assert.assertTrue(Arrays.equals(testByte3, result.getEncryptionKey()));
+		Assert.assertArrayEquals(blobIdBytes1, result.getFileBlobId());
+		Assert.assertArrayEquals(blobIdBytes2, result.getThumbnailBlobId());
+		Assert.assertArrayEquals(encryptionKeyBytes, result.getEncryptionKey());
 
 		Assert.assertEquals("image/jpg", result.getMimeType());
 		Assert.assertEquals("testfile.jpg", result.getFileName());
@@ -157,9 +174,9 @@ public class FileDataTest {
 	public void generateStringTest() {
 		FileData d = new FileData();
 		d
-			.setFileBlobId(FileDataTest.testByte1)
-			.setThumbnailBlobId(FileDataTest.testByte2)
-			.setEncryptionKey(FileDataTest.testByte3)
+			.setFileBlobId(FileDataTest.blobIdBytes1)
+			.setThumbnailBlobId(FileDataTest.blobIdBytes2)
+			.setEncryptionKey(FileDataTest.encryptionKeyBytes)
 			.setMimeType("image/jpg")
 			.setFileName("testfile.jpg")
 			.setFileSize(123)
@@ -177,9 +194,9 @@ public class FileDataTest {
 
 		d = new FileData();
 		d
-			.setFileBlobId(FileDataTest.testByte1)
-			.setThumbnailBlobId(FileDataTest.testByte2)
-			.setEncryptionKey(FileDataTest.testByte3)
+			.setFileBlobId(FileDataTest.blobIdBytes1)
+			.setThumbnailBlobId(FileDataTest.blobIdBytes2)
+			.setEncryptionKey(FileDataTest.encryptionKeyBytes)
 			.setMimeType("image/jpg")
 			.setFileName("testfile.jpg")
 			.setFileSize(123)
@@ -204,9 +221,9 @@ public class FileDataTest {
 
 		d = new FileData();
 		d
-			.setFileBlobId(FileDataTest.testByte1)
-			.setThumbnailBlobId(FileDataTest.testByte2)
-			.setEncryptionKey(FileDataTest.testByte3)
+			.setFileBlobId(FileDataTest.blobIdBytes1)
+			.setThumbnailBlobId(FileDataTest.blobIdBytes2)
+			.setEncryptionKey(FileDataTest.encryptionKeyBytes)
 			.setMimeType("image/jpg")
 			.setFileName("testfile.jpg")
 			.setFileSize(123)
@@ -272,9 +289,9 @@ public class FileDataTest {
 
 		FileData fileData = new FileData();
 		fileData
-			.setFileBlobId(FileDataTest.testByte1)
-			.setThumbnailBlobId(FileDataTest.testByte2)
-			.setEncryptionKey(FileDataTest.testByte3)
+			.setFileBlobId(FileDataTest.blobIdBytes1)
+			.setThumbnailBlobId(FileDataTest.blobIdBytes2)
+			.setEncryptionKey(FileDataTest.encryptionKeyBytes)
 			.setMimeType("image/jpg")
 			.setFileName("testfile.jpg")
 			.setFileSize(123)

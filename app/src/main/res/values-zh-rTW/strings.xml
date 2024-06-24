@@ -432,7 +432,7 @@
     <string name="read_less">閱讀更少</string>
     <string name="changed_group_desc_date">"\u6700\u5f8c\u8b8a\u66f4\u6642\u9593: "</string>
     <string name="num_items_sected">已選定 %s</string>
-    <string name="really_delete_media">您確定要刪除%d條媒體訊息嗎？</string>
+    <string name="really_delete_media">您確定要刪除%d則媒體訊息嗎？</string>
     <string name="check_updates">檢查更新</string>
     <string name="masterkey_lock_explain">Threema 一直記錄密碼。如果您遇到需要經常重新輸入密碼
 的情况，請確保已停用可能會過早結束 Threema 的工作管理員和電池最佳化應用程式。</string>
@@ -1393,6 +1393,7 @@ Threema 支援的所有表情符號。</string>
     <string name="clear_forward_security_warning">僅限在 Threema 支援團隊的指示下，才執行此作業。</string>
     <string name="forward_security_cleared">與此聯絡人的完全正向保密對話已被清除</string>
     <string name="message_without_forward_security">您收到一則沒有完全正向保密的訊息，您可以驗證寄件者是否主動停用完美前向保密。</string>
+    <string name="forward_security_disabled">此對話已停用完全正向保密功能。</string>
     <string name="forward_security_established">與對方對話的訊息現正受完全正向保密的保護。</string>
     <string name="forward_security_established_rx">在此對話中的訊息現正受完全正向保密的保護。</string>
     <string name="forward_security_reset">這個之前已啟用「完全正向保密」的對話，現被重設保密狀態。如果聯絡人更換了裝置或重新安裝此應用程式，就會重設保密狀態。</string>
@@ -1464,6 +1465,8 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_sum_group_calls_vibration">選擇是否在群組通話開始時震動</string>
     <string name="forward_security_mode_4dh">完整保密</string>
     <string name="forward_security_mode_2dh">單向保密</string>
+    <string name="forward_security_mode_all">完整</string>
+    <string name="forward_security_mode_partial">部分</string>
     <string name="forward_security_explanation">完全正向保密（PFS）可以保護對話記錄不被追溯解密，即使長期加密密鑰已被盜用。\n\n如果雙方的應用程式都支援完全正向保密的話，就可以啟用此選項。</string>
     <string name="group_call_inactivity_left">因為長時間未使用，群組通話自動退出</string>
     <string name="missing_permission_external_storage">無法複製檔案，請嘗試以下步驟以解決問題：\n1. 開啟系統設定。\n2. 前往「應用程式」，然後按一下右上角的三個點，選擇「特殊存取」權限。\n3. 按一下「所有檔案存取」。\n4. 按一下右上角的三個點，選擇「顯示系統應用程式」。\n5. 按一下「外部儲存空間」並確保授予「允許存取所有檔案」權限。\n6. 再次嘗試還原備份。</string>
@@ -1529,8 +1532,15 @@ Threema 支援的所有表情符號。</string>
     <string name="group_orphaned_notice">由於群組建立者已離開群組，請您克隆群組，成為新的管理員。</string>
     <string name="group_not_a_member_notice">由於您不再是這個群組的成員，因此您不能再參與這個群組的討論。</string>
     <string name="group_dissolved_notice">因於這個群組已解散，因此您不能再參與這個群組的討論。</string>
+    <string name="md_linked_devices">已連結裝置</string>
+    <string name="md_link_device">連結新裝置</string>
+    <string name="md_enable">啟用連結裝置功能</string>
+    <string name="md_linked_devices_empty">從其他地方下載精美的桌面用戶端，並盡情使用 🚀</string>
+    <string name="md_link_device_qr_scan_message">請掃描QR碼</string>
     <string name="directory_request_failed">目錄要求失敗，請再試一次。</string>
     <string name="add_shortcut_exists">此目標的捷徑已經存在。</string>
+    <string name="resend_message_dialog_title">重新傳送群組訊息？</string>
+    <string name="resend_message_dialog_message">此訊息無法傳送給群組所有成員。重新傳送訊息至%1$s？</string>
     <string name="work_lost_credentials_help">忘記了您的憑證？請聯絡您的 %1$s 管理員。</string>
     <string name="problemsolver_intro">某些系統配置問題可能會阻止 %s 正常執行，請按照以下步驟以解決問題。</string>
     <string name="problemsolver_title">修復配置問題</string>

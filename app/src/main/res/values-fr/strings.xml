@@ -1366,6 +1366,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="clear_forward_security_warning">N\'effectuer cette action que lorsque l\'équipe d\'assistance de Threema vous y invite.</string>
     <string name="forward_security_cleared">Les sessions de confidentialité persistante avec ce contact ont été effacées</string>
     <string name="message_without_forward_security">Un message sans confidentialité persistante a été reçu. Vérifiez que l\'émetteur a délibérément désactivé la confidentialité persistante.</string>
+    <string name="forward_security_disabled">La confidentialité persistante est désactivée pour ce chat.</string>
     <string name="forward_security_established">Les messages échangés avec ce partenaire de chat sont maintenant protégés par la confidentialité persistante.</string>
     <string name="forward_security_established_rx">Les messages reçus dans ce chat sont maintenant protégés par la confidentialité persistante.</string>
     <string name="forward_security_reset">La session de confidentialité persistante a été réinitialisée. Cela peut se produire lorsque le partenaire de discussion change d\'appareil ou réinstalle l\'application.</string>
@@ -1437,6 +1438,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="prefs_sum_group_calls_vibration">Activer/désactiver la vibration lors du lancement des appels de groupe</string>
     <string name="forward_security_mode_4dh">Complète</string>
     <string name="forward_security_mode_2dh">Unilatéral</string>
+    <string name="forward_security_mode_all">Rempli</string>
+    <string name="forward_security_mode_partial">Partiel</string>
     <string name="forward_security_explanation">La Perfect Forward Secrecy (PFS) protège les communications enregistrées contre tout déchiffrement rétroactif, même si la clé de chiffrement à long terme est découverte.\n\nL\'option peut être activée si l\'application des deux côtés prend en charge la PFS.</string>
     <string name="group_call_inactivity_left">Appel de groupe arrêté pour cause d\'inactivité</string>
     <string name="missing_permission_external_storage">Impossible de copier le fichier. Essayez les étapes suivantes :\n1. Ouvrez l\'application Paramètres.\n2. Sous « Applications », choisissez « Accès spécial aux applications ».\n3. Touchez « Accès tous fichiers ».\n4. Touchez les trois points dans le coin supérieur droit et sélectionnez « Afficher le système ».\n5. Touchez « Stockage externe » et assurez-vous que « Autoriser l\'accès pour gérer tous les fichiers » est activé.\n6. Essayez à nouveau de restaurer la sauvegarde.</string>
@@ -1502,8 +1505,15 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="group_orphaned_notice">Ce groupe est orphelin car son créateur a quitté le groupe. Veuillez cloner ce groupe pour devenir le nouvel administrateur.</string>
     <string name="group_not_a_member_notice">Vous ne faites plus partie de ce groupe et ne pouvez plus l\'utiliser.</string>
     <string name="group_dissolved_notice">Ce groupe a été dissous et ne peut plus être utilisé.</string>
+    <string name="md_linked_devices">Appareils liés</string>
+    <string name="md_link_device">Associer un nouvel appareil</string>
+    <string name="md_enable">Activer les appareils liés</string>
+    <string name="md_linked_devices_empty">Téléchargez le client pour ordinateur sophistiqué quelque part et décollez 🚀</string>
+    <string name="md_link_device_qr_scan_message">Veuillez scanner le code QR</string>
     <string name="directory_request_failed">Échec de demande de répertoire. Réessayez.</string>
     <string name="add_shortcut_exists">Un raccourci pour cette cible existe déjà.</string>
+    <string name="resend_message_dialog_title">Renvoyer le message de groupe ?</string>
+    <string name="resend_message_dialog_message">Impossible d\'envoyer ce message à tous les membres. Renvoyer le message à %1$s ?</string>
     <string name="work_lost_credentials_help">Vous avez oublié vos identifiants ? Veuillez contacter votre administrateur %1$s.</string>
     <string name="problemsolver_intro">Certains problèmes de configuration du système peuvent empêcher %s de fonctionner correctement. Veuillez résoudre ces problèmes en suivant les instructions ci-dessous.</string>
     <string name="problemsolver_title">Résoudre les problèmes de configuration</string>
@@ -1550,6 +1560,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <plurals name="new_messages">
         <item quantity="one">%d nouveau message</item>
         <item quantity="other">%d nouveaux messages</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="one">%d message non lu</item>
+        <item quantity="other">%d messages non lus</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="one">%d fichier enregistré avec succès.</item>

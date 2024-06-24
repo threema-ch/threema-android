@@ -24,12 +24,15 @@ package ch.threema.storage.factories;
 import android.content.ContentValues;
 
 import android.database.Cursor;
+import android.database.SQLException;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.sqlite.db.SupportSQLiteQueryBuilder;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
@@ -44,40 +47,15 @@ public class ConversationTagFactory extends ModelFactory {
 	}
 
 	public List<ConversationTagModel> getAll() {
-		Cursor cursor = null;
-		try {
-			cursor = this.databaseService.getReadableDatabase().query(this.getTableName(),
+		try (Cursor cursor = this.databaseService.getReadableDatabase().query(this.getTableName(),
 				null,
 				null,
 				null,
 				null,
 				null,
-				null);
+				null)) {
 
 			return convertList(cursor);
-		} finally {
-			if (cursor != null) {
-				cursor.close();
-			}
-		}
-	}
-
-	public List<ConversationTagModel> getByConversationUid(String conversationUid) {
-		Cursor cursor = null;
-		try {
-			cursor = this.databaseService.getReadableDatabase().query(this.getTableName(),
-				null,
-				ConversationTagModel.COLUMN_CONVERSATION_UID + "=?",
-				new String[]{conversationUid},
-				null,
-				null,
-				null);
-
-			return convertList(cursor);
-		} finally {
-			if (cursor != null) {
-				cursor.close();
-			}
 		}
 	}
 
@@ -99,6 +77,27 @@ public class ConversationTagFactory extends ModelFactory {
 				tag
 			}
 		));
+	}
+
+	@NonNull
+	public List<String> getAllConversationUidsByTag(@NonNull String tag) {
+		try (Cursor cursor = databaseService.getReadableDatabase().query(
+			SupportSQLiteQueryBuilder.builder(getTableName())
+				.columns(new String[]{ConversationTagModel.COLUMN_CONVERSATION_UID})
+				.selection(ConversationTagModel.COLUMN_TAG + " = ?", new String[]{tag})
+				.create()
+		)) {
+			List<String> conversationUids = new ArrayList<>(cursor.getCount());
+			int columnIndex =
+					cursor.getColumnIndexOrThrow(ConversationTagModel.COLUMN_CONVERSATION_UID);
+			while (cursor.moveToNext()) {
+				conversationUids.add(cursor.getString(columnIndex));
+			}
+			return conversationUids;
+		} catch (SQLException | IllegalArgumentException e) {
+			logger.error("Could not get uids by tag '{}'", tag, e);
+			return List.of();
+		}
 	}
 
 	private List<ConversationTagModel> convertList(Cursor cursor) {
@@ -148,12 +147,8 @@ public class ConversationTagFactory extends ModelFactory {
 		this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
 	}
 
-	public int delete(ConversationTagModel model) {
-		return this.deleteByConversationUidAndTag(model.getConversationUid(), model.getTag());
-	}
-
-	public int deleteByConversationUidAndTag(String conversationUid, String tag) {
-		return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+	public void deleteByConversationUidAndTag(String conversationUid, String tag) {
+		this.databaseService.getWritableDatabase().delete(this.getTableName(),
 			ConversationTagModel.COLUMN_CONVERSATION_UID + "=? AND "
 				+ ConversationTagModel.COLUMN_TAG + "=? ",
 			new String[]{
@@ -162,19 +157,11 @@ public class ConversationTagFactory extends ModelFactory {
 			});
 	}
 
-	public int deleteByConversationUid(String conversationUid) {
-		return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+	public void deleteByConversationUid(String conversationUid) {
+		this.databaseService.getWritableDatabase().delete(this.getTableName(),
 			ConversationTagModel.COLUMN_CONVERSATION_UID + "=?",
 			new String[]{
 				conversationUid
-			});
-	}
-
-	public int deleteByConversationTag(String tag) {
-		return this.databaseService.getWritableDatabase().delete(this.getTableName(),
-			ConversationTagModel.COLUMN_TAG + "=?",
-			new String[]{
-				tag
 			});
 	}
 
@@ -189,14 +176,11 @@ public class ConversationTagFactory extends ModelFactory {
 				null
 		);
 
-		if(cursor != null) {
-			try {
+		if (cursor != null) {
+			try (cursor) {
 				if (cursor.moveToFirst()) {
 					return convert(cursor);
 				}
-			}
-			finally {
-				cursor.close();
 			}
 		}
 

@@ -130,7 +130,7 @@ public class ContentCommitComposeEditText extends ComposeEditText {
 							MediaItem mediaItem = new MediaItem(
 								uri,
 								MimeUtil.isGifFile(mimeType) ?
-									MediaItem.TYPE_GIF :
+									MediaItem.TYPE_IMAGE_ANIMATED :
 									MediaItem.TYPE_IMAGE);
 							mediaItem.setCaption(caption);
 							mediaItem.setMimeType(mimeType);

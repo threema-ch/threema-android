@@ -23,9 +23,7 @@ package ch.threema.app.adapters;
 
 import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DEFAULT;
 
-import android.animation.LayoutTransition;
 import android.content.Context;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -57,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 
 import ch.threema.app.R;
-import ch.threema.app.adapters.decorators.AnimGifChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.AudioChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.BallotChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
@@ -144,22 +141,16 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		TYPE_FILE_RECV,
 		TYPE_BALLOT_SEND,
 		TYPE_BALLOT_RECV,
-		TYPE_ANIMGIF_SEND,
-		TYPE_ANIMGIF_RECV,
 		TYPE_TEXT_QUOTE_SEND,
 		TYPE_TEXT_QUOTE_RECV,
 		TYPE_STATUS_DATA_SEND,
 		TYPE_STATUS_DATA_RECV,
 		TYPE_DATE_SEPARATOR,
-		TYPE_FILE_MEDIA_SEND,
-		TYPE_FILE_MEDIA_RECV,
 		TYPE_FILE_VIDEO_SEND,
 		TYPE_GROUP_CALL_STATUS,
 		TYPE_FORWARD_SECURITY_STATUS,
-		TYPE_IMAGE_ANIMATED_SEND,
-		TYPE_IMAGE_ANIMATED_RECV
 	})
-	public @interface ItemType {}
+	public @interface ItemLayoutType {}
 
 	public static final int TYPE_SEND = 0;
 	public static final int TYPE_RECV = 1;
@@ -175,23 +166,17 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	public static final int TYPE_FILE_RECV = 11;
 	public static final int TYPE_BALLOT_SEND = 12;
 	public static final int TYPE_BALLOT_RECV = 13;
-	public static final int TYPE_ANIMGIF_SEND = 14;
-	public static final int TYPE_ANIMGIF_RECV = 15;
-	public static final int TYPE_TEXT_QUOTE_SEND = 16;
-	public static final int TYPE_TEXT_QUOTE_RECV = 17;
-	public static final int TYPE_STATUS_DATA_SEND = 18;
-	public static final int TYPE_STATUS_DATA_RECV = 19;
-	public static final int TYPE_DATE_SEPARATOR = 20;
-	public static final int TYPE_FILE_MEDIA_SEND = 21;
-	public static final int TYPE_FILE_MEDIA_RECV = 22;
-	public static final int TYPE_FILE_VIDEO_SEND = 23;
-	public static final int TYPE_GROUP_CALL_STATUS = 24;
-	public static final int TYPE_FORWARD_SECURITY_STATUS = 25;
-	public static final int TYPE_IMAGE_ANIMATED_SEND = 26;
-	public static final int TYPE_IMAGE_ANIMATED_RECV = 27;
+	public static final int TYPE_TEXT_QUOTE_SEND = 14;
+	public static final int TYPE_TEXT_QUOTE_RECV = 15;
+	public static final int TYPE_STATUS_DATA_SEND = 16;
+	public static final int TYPE_STATUS_DATA_RECV = 17;
+	public static final int TYPE_DATE_SEPARATOR = 18;
+	public static final int TYPE_FILE_VIDEO_SEND = 19;
+	public static final int TYPE_GROUP_CALL_STATUS = 20;
+	public static final int TYPE_FORWARD_SECURITY_STATUS = 21;
 
 	// don't forget to update this after adding new types:
-	private static final int TYPE_MAX_COUNT = TYPE_IMAGE_ANIMATED_RECV + 1;
+	private static final int TYPE_MAX_COUNT = TYPE_FORWARD_SECURITY_STATUS + 1;
 
 	private OnClickListener onClickListener;
 	private Map<String, Integer> identityColors = null;
@@ -339,7 +324,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	}
 
 	@Override
-	public @ItemType int getItemViewType(int position) {
+	public @ItemLayoutType int getItemViewType(int position) {
 		if (position < values.size()) {
 			final AbstractMessageModel m = this.getItem(position);
 			return this.getItemType(m);
@@ -358,7 +343,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		return null;
 	}
 
-	private @ItemType int getItemType(AbstractMessageModel m) {
+	private @ItemLayoutType int getItemType(AbstractMessageModel m) {
 		if(m != null) {
 			if(m.isStatusMessage()) {
 				// Special handling for data status messages
@@ -388,19 +373,13 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					case FILE:
 						String mimeType = m.getFileData().getMimeType();
 						int renderingType = m.getFileData().getRenderingType();
-						if (MimeUtil.isGifFile(mimeType)) {
-							return o ? TYPE_ANIMGIF_SEND : TYPE_ANIMGIF_RECV;
-						} else if (MimeUtil.isAudioFile(mimeType) && renderingType == FileData.RENDERING_MEDIA) {
+						if (MimeUtil.isAudioFile(mimeType) && renderingType == FileData.RENDERING_MEDIA) {
 							return o ? TYPE_AUDIO_SEND : TYPE_AUDIO_RECV;
 						} else if (renderingType == FileData.RENDERING_MEDIA || renderingType == FileData.RENDERING_STICKER) {
 							if (MimeUtil.isSupportedImageFile(mimeType)) {
-								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ConfigUtils.isSupportedAnimatedImageFormat(mimeType)) {
-									return o ? TYPE_IMAGE_ANIMATED_SEND : TYPE_IMAGE_ANIMATED_RECV;
-								} else {
-									return o ? TYPE_FILE_MEDIA_SEND : TYPE_FILE_MEDIA_RECV;
-								}
+								return o ? TYPE_MEDIA_SEND : TYPE_MEDIA_RECV;
 							} else if (MimeUtil.isVideoFile(mimeType)) {
-								return o ? TYPE_FILE_VIDEO_SEND : TYPE_FILE_MEDIA_RECV;
+								return o ? TYPE_FILE_VIDEO_SEND : TYPE_MEDIA_RECV;
 							}
 						}
 						return o ? TYPE_FILE_SEND : TYPE_FILE_RECV;
@@ -423,7 +402,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		return TYPE_RECV;
 	}
 
-	private @LayoutRes int getLayoutByItemType(@ItemType int itemTypeId) {
+	private @LayoutRes int getLayoutByItemType(@ItemLayoutType int itemTypeId) {
 		switch (itemTypeId) {
 			case TYPE_SEND:
 				return R.layout.conversation_list_item_send;
@@ -435,12 +414,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 			case TYPE_FIRST_UNREAD:
 				return R.layout.conversation_list_item_unread;
 			case TYPE_MEDIA_SEND:
-			case TYPE_FILE_MEDIA_SEND:
-			case TYPE_IMAGE_ANIMATED_SEND:
 				return R.layout.conversation_list_item_media_send;
 			case TYPE_MEDIA_RECV:
-			case TYPE_FILE_MEDIA_RECV:
-			case TYPE_IMAGE_ANIMATED_RECV:
 				return R.layout.conversation_list_item_media_recv;
 			case TYPE_FILE_VIDEO_SEND:
 				return R.layout.conversation_list_item_video_send;
@@ -460,10 +435,6 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				return R.layout.conversation_list_item_ballot_send;
 			case TYPE_BALLOT_RECV:
 				return R.layout.conversation_list_item_ballot_recv;
-			case TYPE_ANIMGIF_SEND:
-				return R.layout.conversation_list_item_animgif_send;
-			case TYPE_ANIMGIF_RECV:
-				return R.layout.conversation_list_item_animgif_recv;
 			case TYPE_TEXT_QUOTE_SEND:
 				return R.layout.conversation_list_item_quote_send;
 			case TYPE_TEXT_QUOTE_RECV:
@@ -495,7 +466,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		final AbstractMessageModel messageModel = values.get(position);
 		MessageType messageType = messageModel.getType();
 
-		@ItemType int itemType = this.getItemType(messageModel);
+		@ItemLayoutType int itemType = this.getItemType(messageModel);
 		int itemLayout = this.getLayoutByItemType(itemType);
 
 		if (messageModel.isStatusMessage() && messageModel instanceof FirstUnreadMessageModel) {
@@ -599,16 +570,14 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					decorator = new BallotChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
 					break;
 				case FILE:
-					if (MimeUtil.isGifFile(messageModel.getFileData().getMimeType())) {
-						decorator = new AnimGifChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
-					} else if (MimeUtil.isVideoFile(messageModel.getFileData().getMimeType()) &&
+					if (MimeUtil.isVideoFile(messageModel.getFileData().getMimeType()) &&
 						(messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA ||
 							messageModel.getFileData().getRenderingType() == FileData.RENDERING_STICKER)) {
 						decorator = new VideoChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
 					} else if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType()) &&
 						messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
 						decorator = new AudioChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
-					} else if (ConfigUtils.isSupportedAnimatedImageFormat(messageModel.getFileData().getMimeType()) &&
+					} else if (MimeUtil.isAnimatedImageFormat(messageModel.getFileData().getMimeType()) &&
 						(messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA ||
 							messageModel.getFileData().getRenderingType() == FileData.RENDERING_STICKER)) {
 						decorator = new AnimatedImageDrawableDecorator(this.context, messageModel, this.decoratorHelper);
@@ -688,7 +657,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	 * @param itemType The Type the item is representing
 	 * @return true if it's the first item in a group, false if it's a consecutive iitem
 	 */
-	private boolean adjustMarginsForMessageGrouping(ComposeMessageHolder holder, View itemView, @ItemType int itemType, @NonNull AbstractMessageModel currentItem) {
+	private boolean adjustMarginsForMessageGrouping(ComposeMessageHolder holder, View itemView, @ItemLayoutType int itemType, @NonNull AbstractMessageModel currentItem) {
 		boolean isFirstItemInGroup = true, hasPreviousItem = false, hasNextItem = false;
 
 		if (itemView != null) {
@@ -777,7 +746,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	 * @param itemType Type to check
 	 * @return true if it's a user-generated message, false otherwise
 	 */
-	private boolean isUserMessage(@ItemType int itemType) {
+	private boolean isUserMessage(@ItemLayoutType int itemType) {
 		return (itemType != TYPE_STATUS &&
 			itemType != TYPE_FIRST_UNREAD &&
 			itemType != TYPE_DATE_SEPARATOR &&

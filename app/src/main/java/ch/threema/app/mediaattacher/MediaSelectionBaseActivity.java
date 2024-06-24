@@ -32,6 +32,7 @@ import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -100,7 +101,6 @@ import ch.threema.app.ui.CheckableView;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.MediaGridItemDecoration;
-import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -209,7 +209,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	}
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
+	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt(KEY_BOTTOM_SHEET_STATE, bottomSheetBehavior.getState());
 		outState.putBoolean(KEY_PREVIEW_MODE, isPreviewMode);
@@ -316,8 +316,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			}
 		});
 
-		// fill background with transparent black to see chat behind drawer
-		FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
+		@SuppressLint("RestrictedApi") FitWindowsFrameLayout contentFrameLayout = (FitWindowsFrameLayout) ((ViewGroup) rootView.getParent()).getParent();
 		contentFrameLayout.setOnClickListener(v -> finish());
 
 		// set status bar color
@@ -414,7 +413,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		ConfigUtils.tintMenuItem(this, topMenuItem, R.attr.colorOnSurface);
 
 		// Fetch all media, add a unique menu item for each media storage bucket and media type group.
-		registerOnAllDataFetchedListener(new Observer<List<MediaAttachItem>>() {
+		registerOnAllDataFetchedListener(new Observer<>() {
 			@Override
 			public void onChanged(List<MediaAttachItem> mediaAttachItems) {
 				synchronized (filterMenuLock) {
@@ -434,41 +433,41 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 
 					// Extract buckets and media types
 					final List<String> buckets = new ArrayList<>();
-					final TreeMap<String, Integer> mediaTypes = new TreeMap<>();
+					final TreeMap<String, Integer> mediaAttachTypes = new TreeMap<>();
 
-					for (MediaAttachItem mediaItem : mediaAttachItems) {
-						String bucket = mediaItem.getBucketName();
+					for (MediaAttachItem mediaAttachItem : mediaAttachItems) {
+						String bucket = mediaAttachItem.getBucketName();
 						if (!TextUtils.isEmpty(bucket) && !buckets.contains(bucket)) {
-							buckets.add(mediaItem.getBucketName());
+							buckets.add(mediaAttachItem.getBucketName());
 						}
 
-						int type = mediaItem.getType();
-						if (!mediaTypes.containsValue(type)) {
-							String mediaTypeName = MediaSelectionBaseActivity.this.getMimeTypeTitle(type);
-							mediaTypes.put(mediaTypeName, type);
+						int type = mediaAttachItem.getType();
+						if (!mediaAttachTypes.containsValue(type)) {
+							String mediaTypeName = MediaSelectionBaseActivity.this.getMediaAttachTypeTitle(type);
+							mediaAttachTypes.put(mediaTypeName, type);
 						}
 					}
 
 					Collections.sort(buckets);
 
 					// Fill menu first media types sorted then folders/buckets sorted
-					for (Map.Entry<String, Integer> mediaType : mediaTypes.entrySet()) {
+					for (Map.Entry<String, Integer> mediaType : mediaAttachTypes.entrySet()) {
 						MenuItem item = menu.add(mediaType.getKey()).setOnMenuItemClickListener(menuItem -> {
-							MediaSelectionBaseActivity.this.filterMediaByMimeType(menuItem.toString());
+							MediaSelectionBaseActivity.this.filterMediaByMediaAttachType(menuItem.toString());
 							return true;
 						});
 
 						switch (mediaType.getValue()) {
-							case MediaItem.TYPE_IMAGE:
+							case MediaAttachItem.TYPE_IMAGE:
 								item.setIcon(R.drawable.ic_image_outline);
 								break;
-							case MediaItem.TYPE_VIDEO:
+							case MediaAttachItem.TYPE_VIDEO:
 								item.setIcon(R.drawable.ic_movie_outline);
 								break;
-							case MediaItem.TYPE_GIF:
+							case MediaAttachItem.TYPE_GIF:
 								item.setIcon(R.drawable.ic_gif_24dp);
 								break;
-							case MediaItem.TYPE_IMAGE_ANIMATED:
+							case MediaAttachItem.TYPE_WEBP:
 								item.setIcon(R.drawable.ic_webp);
 								break;
 						}
@@ -503,7 +502,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				if (savedQueryType != null) {
 					switch (savedQueryType) {
 						case FILTER_MEDIA_TYPE:
-							MediaSelectionBaseActivity.this.filterMediaByMimeType(savedQuery);
+							MediaSelectionBaseActivity.this.filterMediaByMediaAttachType(savedQuery);
 							break;
 						case FILTER_MEDIA_BUCKET:
 							MediaSelectionBaseActivity.this.filterMediaByBucket(savedQuery);
@@ -733,27 +732,27 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_BUCKET, mediaBucket);
 	}
 
-	public void filterMediaByMimeType(@NonNull String mimeTypeTitle) {
-		int mimeTypeIndex = 0;
+	public void filterMediaByMediaAttachType(@NonNull String mediaAttachTypeTitle) {
+		int mediaAttachType = 0;
 
-		if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_pictures))) {
-			mimeTypeIndex = MediaItem.TYPE_IMAGE;
+		if (mediaAttachTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_pictures))) {
+			mediaAttachType = MediaAttachItem.TYPE_IMAGE;
 		}
-		else if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_videos))) {
-			mimeTypeIndex = MediaItem.TYPE_VIDEO;
+		else if (mediaAttachTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_videos))) {
+			mediaAttachType = MediaAttachItem.TYPE_VIDEO;
 		}
-		else if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_gifs))) {
-			mimeTypeIndex = MediaItem.TYPE_GIF;
+		else if (mediaAttachTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_gifs))) {
+			mediaAttachType = MediaAttachItem.TYPE_GIF;
 		}
-		else if (mimeTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_animated_webps))) {
-			mimeTypeIndex = MediaItem.TYPE_IMAGE_ANIMATED;
+		else if (mediaAttachTypeTitle.equals(ThreemaApplication.getAppContext().getResources().getString(R.string.media_gallery_animated_webps))) {
+			mediaAttachType = MediaAttachItem.TYPE_WEBP;
 		}
 
-		if (mimeTypeIndex != 0) {
-			mediaAttachViewModel.setMediaByType(mimeTypeIndex);
+		if (mediaAttachType != 0) {
+			mediaAttachViewModel.setMediaByType(mediaAttachType);
 		}
-		menuTitle.setText(mimeTypeTitle);
-		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_TYPE, mimeTypeTitle);
+		menuTitle.setText(mediaAttachTypeTitle);
+		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_TYPE, mediaAttachTypeTitle);
 	}
 
 	public void filterMediaBySelectedItems() {
@@ -762,15 +761,15 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		mediaAttachViewModel.setlastQuery(FILTER_MEDIA_SELECTED, null);
 	}
 
-	public String getMimeTypeTitle(int mimeType) {
-		switch (mimeType){
-			case (MediaItem.TYPE_IMAGE):
+	public String getMediaAttachTypeTitle(int mediaAttachType) {
+		switch (mediaAttachType){
+			case (MediaAttachItem.TYPE_IMAGE):
 				return getResources().getString(R.string.media_gallery_pictures);
-			case (MediaItem.TYPE_VIDEO):
+			case (MediaAttachItem.TYPE_VIDEO):
 				return getResources().getString(R.string.media_gallery_videos);
-			case (MediaItem.TYPE_GIF):
+			case (MediaAttachItem.TYPE_GIF):
 				return getResources().getString(R.string.media_gallery_gifs);
-			case (MediaItem.TYPE_IMAGE_ANIMATED):
+			case (MediaAttachItem.TYPE_WEBP):
 				return getResources().getString(R.string.media_gallery_animated_webps);
 			default:
 				return null;

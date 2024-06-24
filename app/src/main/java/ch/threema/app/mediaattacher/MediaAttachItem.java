@@ -25,6 +25,11 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
+
 /**
  * A MediaAttachItem represents a media item in the attacher (e.g. a photo or a video).
  *
@@ -40,7 +45,21 @@ public class MediaAttachItem implements Parcelable {
 	private final String displayName;
 	private final int orientation;
 	private final int duration;
-	private final int type;
+	@MediaAttachType private final int type;
+
+	@Retention(RetentionPolicy.SOURCE)
+	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_VOICEMESSAGE, TYPE_TEXT, TYPE_LOCATION, TYPE_GIF, TYPE_WEBP})
+	public @interface MediaAttachType {}
+	public static final int TYPE_FILE = 0;
+	public static final int TYPE_IMAGE = 1;
+	public static final int TYPE_VIDEO = 2;
+	public static final int TYPE_IMAGE_CAM = 3;
+	public static final int TYPE_VIDEO_CAM = 4;
+	public static final int TYPE_VOICEMESSAGE = 5;
+	public static final int TYPE_TEXT = 6;
+	public static final int TYPE_LOCATION = 7;
+	public static final int TYPE_GIF = 8;
+	public static final int TYPE_WEBP = 9;
 
 	public MediaAttachItem(
 		int id,
@@ -52,7 +71,7 @@ public class MediaAttachItem implements Parcelable {
 		String bucketName,
 		int orientation,
 		int duration,
-		int type
+		@MediaAttachType int type
 	) {
 		this.id = id;
 		this.dateAdded = dateAdded;
@@ -150,6 +169,7 @@ public class MediaAttachItem implements Parcelable {
 		return duration;
 	}
 
+	@MediaAttachType
 	public int getType() {
 		return type;
 	}

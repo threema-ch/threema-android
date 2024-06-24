@@ -21,24 +21,18 @@
 
 package ch.threema.app.mediaattacher;
 
-import android.content.Context;
-import android.media.AudioManager;
-import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import ch.threema.app.R;
 
 public abstract class PreviewFragment extends Fragment {
-	protected MediaAttachItem mediaItem;
+	protected MediaAttachItem mediaAttachItem;
 	protected MediaAttachViewModel mediaAttachViewModel;
 	protected View rootView;
 	protected boolean isChecked = false;
 
 	public PreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel) {
-		this.mediaItem = mediaItem;
+		this.mediaAttachItem = mediaItem;
 		this.mediaAttachViewModel = mediaAttachViewModel;
 
 		setRetainInstance(true);

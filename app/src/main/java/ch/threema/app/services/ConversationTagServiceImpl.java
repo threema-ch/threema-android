@@ -23,7 +23,6 @@ package ch.threema.app.services;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +58,6 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 	}
 
 	@Override
-	public List<TagModel> getTagModels() {
-		return this.tagModels;
-	}
-
-	@Override
 	@Nullable
 	public TagModel getTagModel(@NonNull final String tagKey) {
 		for (TagModel tagModel : this.tagModels) {
@@ -75,36 +69,31 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 	}
 
 	@Override
-	public List<ConversationTagModel> getTagsForConversation(@NonNull final ConversationModel conversation) {
-		return this.databaseService.getConversationTagFactory()
-			.getByConversationUid(conversation.getUid());
-	}
-
-	@Override
-	public boolean tag(@Nullable ConversationModel conversation, @Nullable TagModel tagModel) {
+	public void addTagAndNotify(@Nullable ConversationModel conversation, @Nullable TagModel tagModel) {
 		if (conversation != null && tagModel != null) {
 			if (!this.isTaggedWith(conversation, tagModel)) {
 				this.databaseService.getConversationTagFactory()
 					.create(new ConversationTagModel(conversation.getUid(), tagModel.getTag()));
 				this.fireOnModifiedConversation(conversation);
-				return true;
 			}
 		}
-		return false;
 	}
 
 	@Override
-	@WorkerThread
-	public boolean unTag(@Nullable ConversationModel conversation, @Nullable TagModel tagModel) {
+	public void removeTagAndNotify(@Nullable ConversationModel conversation, @Nullable TagModel tagModel) {
 		if (conversation != null && tagModel != null) {
 			if (this.isTaggedWith(conversation, tagModel)) {
-				this.databaseService.getConversationTagFactory()
-					.deleteByConversationUidAndTag(conversation.getUid(), tagModel.getTag());
+				this.removeTag(conversation.getUid(), tagModel);
 				this.fireOnModifiedConversation(conversation);
-				return true;
 			}
 		}
-		return false;
+	}
+
+	@Override
+	public void removeTag(@NonNull String conversationUid, @NonNull TagModel tagModel) {
+		this.databaseService.getConversationTagFactory().deleteByConversationUidAndTag(
+			conversationUid, tagModel.getTag()
+		);
 	}
 
 	@Override
@@ -142,22 +131,27 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 	@Override
 	public void removeAll(@Nullable ConversationModel conversation) {
 		if (conversation != null) {
-			this.databaseService.getConversationTagFactory()
-				.deleteByConversationUid(conversation.getUid());
+			removeAll(conversation.getUid());
 		}
 	}
 
 	@Override
-	public void removeAll(@Nullable TagModel tagModel) {
-		if (tagModel != null) {
-			this.databaseService.getConversationTagFactory()
-				.deleteByConversationTag(tagModel.getTag());
-		}
+	public void removeAll(@NonNull String conversationUid) {
+		this.databaseService.getConversationTagFactory()
+			.deleteByConversationUid(conversationUid);
 	}
 
 	@Override
 	public List<ConversationTagModel> getAll() {
 		return this.databaseService.getConversationTagFactory().getAll();
+	}
+
+	@Override
+	@NonNull
+	public List<String> getConversationUidsByTag(@NonNull TagModel tagModel) {
+		return this.databaseService.getConversationTagFactory().getAllConversationUidsByTag(
+			tagModel.getTag()
+		);
 	}
 
 	@Override

@@ -59,6 +59,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.ThreemaKDF;
 import ch.threema.base.utils.Base64;
@@ -1140,6 +1141,7 @@ public class APIConnector {
 	 * @return result of license check (success status, error message if success = false)
 	 * @throws Exception on network error
 	 */
+	@WorkerThread
 	public CheckLicenseResult checkLicense(
 		String licenseKey,
 		String deviceId

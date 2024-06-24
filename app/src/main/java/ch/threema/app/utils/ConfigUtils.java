@@ -1595,13 +1595,12 @@ public class ConfigUtils {
 	}
 
 	/**
-	 * Check whether the provided mime type hints at an image format capable of animations and natively supported by the operating system
+	 * Check whether the provided mime type hints at an image format that can be displayed with Glide on this Android version
 	 * @param mimeType Mime type to check
 	 * @return true if conditions are met
 	 */
-	public static boolean isSupportedAnimatedImageFormat(@Nullable String mimeType) {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-			MimeUtil.isWebPFile(mimeType);
+	public static boolean isDisplayableAnimatedImageFormat(@Nullable String mimeType) {
+		return (MimeUtil.isWebPFile(mimeType) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) || MimeUtil.isGifFile(mimeType);
 	}
 
 	/**

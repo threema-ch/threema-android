@@ -74,6 +74,7 @@ import ch.threema.app.tasks.OutgoingGroupSyncTask;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
+import ch.threema.app.utils.ConversationUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
@@ -118,6 +119,7 @@ public class GroupServiceImpl implements GroupService {
 	private final @NonNull WallpaperService wallpaperService;
 	private final @NonNull DeadlineListService mutedChatsListService, hiddenChatsListService;
 	private final @NonNull RingtoneService ringtoneService;
+	private final @NonNull ConversationTagService conversationTagService;
 
 	private final SparseArray<Map<String, Integer>> groupMemberColorCache;
 	private final SparseArray<GroupModel> groupModelCache;
@@ -143,6 +145,7 @@ public class GroupServiceImpl implements GroupService {
 		@NonNull DeadlineListService mutedChatsListService,
 		@NonNull DeadlineListService hiddenChatsListService,
 		@NonNull RingtoneService ringtoneService,
+		@NonNull ConversationTagService conversationTagService,
 		@NonNull ServiceManager serviceManager
 	) {
 		this.context = context;
@@ -156,6 +159,7 @@ public class GroupServiceImpl implements GroupService {
 		this.mutedChatsListService = mutedChatsListService;
 		this.hiddenChatsListService = hiddenChatsListService;
 		this.ringtoneService = ringtoneService;
+		this.conversationTagService = conversationTagService;
 		this.serviceManager = serviceManager;
 
 		this.groupModelCache = cacheService.getGroupModelCache();
@@ -332,6 +336,7 @@ public class GroupServiceImpl implements GroupService {
 		this.hiddenChatsListService.remove(uniqueIdString);
 		ShortcutUtil.deleteShareTargetShortcut(uniqueIdString);
 		ShortcutUtil.deletePinnedShortcut(uniqueIdString);
+		this.conversationTagService.removeAll(ConversationUtil.getGroupConversationUid(groupModel.getId()));
 
 		// Update model
 		groupModel.setDeleted(true);

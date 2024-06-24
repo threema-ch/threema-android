@@ -1322,9 +1322,9 @@ Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'
     <string name="organization_type">Organisaziun</string>
     <string name="permission_bluetooth_connect_required">Activescha l\'autorisaziun «apparats en la vischinanza» per chattar apparats da bluetooth colliads.</string>
     <string name="threema_push_start_webclient_sessions_manually">Activà Threema Push. Threema Web e sesidas da dektop stos ti perquai avrir manualmain.</string>
-    <string name="tooltip_multiple_recipients_title">Plirs retschaviders</string>
-    <string name="tooltip_multiple_recipients_text">Tippar ditg per tscherner plirs retschaviders e trametter a tuts il medem messadi.</string>
-    <string name="synchronizing">Sincronisaziun ...</string>
+    <string name="tooltip_multiple_recipients_title">Plirs destinaturs</string>
+    <string name="tooltip_multiple_recipients_text">Tippar ditg per tscherner plirs destinaturs e trametter a tuts il medem messadi.</string>
+    <string name="synchronizing">Sincronisaziun …</string>
     <string name="self_updater_installation_failed">Betg reussì da chargiar giu l\'update. P.pl. chargiar giu l\'update da la pagina-web <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ed installar el manualmain.</string>
     <string name="spam_first_contact">Quest chat deriva d\'in contact nunenconuschent</string>
     <string name="spam_report">Annunziar spam</string>

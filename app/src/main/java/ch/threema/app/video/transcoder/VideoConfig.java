@@ -52,10 +52,6 @@ public class VideoConfig {
 	public static final int BITRATE_MEDIUM = 1500000;
 	public static final int BITRATE_DEFAULT = 2000000;
 
-	public static final int AUDIO_BITRATE_LOW = 32000;
-	public static final int AUDIO_BITRATE_MEDIUM = 64000;
-	public static final int AUDIO_BITRATE_DEFAULT = 128000;
-
 	// longest edge of video
 	public static final int VIDEO_SIZE_MEDIUM = 848;
 	public static final int VIDEO_SIZE_SMALL = 480;
@@ -70,32 +66,6 @@ public class VideoConfig {
 				return BITRATE_LOW;
 		}
 		return BITRATE_DEFAULT;
-	}
-
-	public static int getPreferredVideoDimensions(int videoSizeId) {
-		int maxSize = 0;
-		switch (videoSizeId) {
-			case PreferenceService.VideoSize_SMALL:
-				maxSize = VIDEO_SIZE_SMALL;
-				break;
-			case PreferenceService.VideoSize_MEDIUM:
-				maxSize = VIDEO_SIZE_MEDIUM;
-				break;
-			case PreferenceService.VideoSize_ORIGINAL:
-				maxSize = 65535;
-				break;
-		}
-		return maxSize;
-	}
-
-	public static int getPreferredAudioBitrate(int videoSizeId) {
-		switch (videoSizeId) {
-			case PreferenceService.VideoSize_MEDIUM:
-				return AUDIO_BITRATE_MEDIUM;
-			case PreferenceService.VideoSize_SMALL:
-				return AUDIO_BITRATE_LOW;
-		}
-		return AUDIO_BITRATE_DEFAULT;
 	}
 
 	public static int getMaxSizeFromBitrate(int bitrate) {
@@ -136,7 +106,7 @@ public class VideoConfig {
 	 * @throws ThreemaException
 	 */
 	public static int getTargetVideoBitrate(Context context, MediaItem mediaItem, int videoSize) throws ThreemaException {
-		int originalBitrate;
+		Integer originalBitrate = null;
 		int targetBitrate;
 		int preferredBitrate = getPreferredVideoBitrate(videoSize);
 
@@ -148,13 +118,17 @@ public class VideoConfig {
 			originalBitrate = Integer.parseInt(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
 		} catch (Exception e) {
 			logger.error("Exception querying MediaMetaDataRetriever", e);
-			throw new ThreemaException(e.getMessage());
 		} finally {
 			try {
 				metaRetriever.release();
 			} catch (IOException e) {
 				logger.debug("Failed to release MediaMetadataRetriever");
 			}
+		}
+
+		if (originalBitrate == null) {
+			logger.info("Original bit rate could not be extracted. Falling back to bit rate {}", preferredBitrate);
+			return preferredBitrate;
 		}
 
 		MediaExtractor extractor = new MediaExtractor();
@@ -180,6 +154,27 @@ public class VideoConfig {
 			}
 		}
 
+		targetBitrate = calculateTargetBitrate(extractor, mediaItem, originalBitrate);
+		extractor.release();
+
+		if (targetBitrate < preferredBitrate) {
+			logger.info("Preferred bit rate is {}. Falling back to bit rate {} due to size", preferredBitrate, targetBitrate);
+		}
+
+		if (mediaItem.getType() != MediaItem.TYPE_VIDEO_CAM && targetBitrate > preferredBitrate && preferredBitrate != BITRATE_DEFAULT) {
+			logger.info("Target bitrate ({}) is higher than preferred bitrate ({})", targetBitrate, preferredBitrate);
+			return preferredBitrate;
+		}
+
+		if (targetBitrate != originalBitrate) {
+			logger.info("Target bitrate ({}) is not original bitrate ({})", targetBitrate, originalBitrate);
+			return targetBitrate;
+		}
+
+		return 0; // no change necessary
+	}
+
+	private static int calculateTargetBitrate(MediaExtractor extractor, MediaItem mediaItem, int originalBitrate) throws ThreemaException {
 		int calculatedAudioSize = 0;
 		int srcAudioTrack = findTrack(extractor, MIME_AUDIO);
 		if (srcAudioTrack >= 0) {
@@ -209,34 +204,16 @@ public class VideoConfig {
 					if (calculatedFileSize > MAX_BLOB_SIZE) {
 						return -1;
 					} else {
-						targetBitrate = BITRATE_LOW;
+						return BITRATE_LOW;
 					}
 				} else {
-					targetBitrate = BITRATE_MEDIUM;
+					return BITRATE_MEDIUM;
 				}
 			} else {
-				targetBitrate = originalBitrate;
+				return originalBitrate;
 			}
 		} else {
 			throw new ThreemaException("No video track found in this file");
 		}
-
-		extractor.release();
-
-		if (targetBitrate < preferredBitrate) {
-			logger.info("Preferred bit rate is {}. Falling back to bit rate {} due to size", preferredBitrate, targetBitrate);
-		}
-
-		if (mediaItem.getType() != MediaItem.TYPE_VIDEO_CAM && targetBitrate > preferredBitrate && preferredBitrate != BITRATE_DEFAULT) {
-			logger.info("Target bitrate ({}) is higher than preferred bitrate ({})", targetBitrate, preferredBitrate);
-			return preferredBitrate;
-		}
-
-		if (targetBitrate != originalBitrate) {
-			logger.info("Target bitrate ({}) is not original bitrate ({})", targetBitrate, originalBitrate);
-			return targetBitrate;
-		}
-
-		return 0; // no change necessary
 	}
 }

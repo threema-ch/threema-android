@@ -885,7 +885,7 @@ anonimowo?</string>
     <string name="safe_learn_more_button">Więcej informacji</string>
     <string name="safe_enable_explain">Wszystko, czego potrzebujesz do rozmowy, przechowywane jest wyłącznie na Twoim urządzeniu. Nie musisz tworzyć u nas żadnego konta i nie możemy Ci pomóc, jeśli zgubisz swój telefon lub przypadkowo usuniesz dane.\n\nThreema Safe tworzy automatyczne kopie zapasowe wszystkich istotnych danych – w tym kluczy, listy kontaktów i członkostwa w grupach (lecz bez treści wiadomości),  anonimowo na bezpiecznym, wybranym przez Ciebie serwerze.</string>
     <string name="safe_disable_confirm">Czy na pewno chcesz wyłączyć usługę Threema Safe? Korzystając z Threema Safe możesz odzyskać dostęp do swojego Threema ID, kontaktów i grup, nawet w przypadku utracenia dostępu do urządzenia.</string>
-    <string name="safe_configure_choose_password">Wybierz hasło. Będzie ci ono potrzebne do przywrócenia kopii zapasowej Threema Safe.</string>
+    <string name="safe_configure_choose_password">Wybierz hasło. Będzie Ci ono potrzebne do przywrócenia kopii zapasowej Threema Safe.</string>
     <string name="safe_configure_choose_server">Wybierz serwer Threema Safe</string>
     <string name="safe_configure_server_explain">Możesz skorzystać z serwera Threema lub wybrać serwer zewnętrzny.</string>
     <string name="safe_use_default_server">Użyj serwera domyślnego</string>
@@ -899,7 +899,7 @@ anonimowo?</string>
     <string name="safe_no_id_found">Nie znaleziono identyfikatora Threema</string>
     <string name="safe_no_backup_found">Nie znaleziono kopii zapasowej na serwerze. Sprawdź identyfikator i hasło.</string>
     <string name="safe_select_id">Znaleziono kilka identyfikatorów Threema. Wybierz ten, którego chcesz użyć:</string>
-    <string name="safe_backup_now">Kopiuj teraz</string>
+    <string name="safe_backup_now">Utwórz kopię</string>
     <string name="safe_enable_explain_short">Pozwól Threema Safe automatycznie tworzyć bezpieczne i anonimowe kopie zapasowe wszystkich ważnych danych.</string>
     <string name="safe_deleting">Usuwanie kopii zapasowej Threema Safe</string>
     <string name="safe_delete_error">Błąd podczas usuwania kopii zapasowej: %s</string>
@@ -1274,7 +1274,7 @@ anonimowo?</string>
     <string name="group_link_property_expiration_desc">łącze wygasa po upływie ustalonego terminu.</string>
     <string name="group_image">Obraz grupy</string>
     <string name="add_group_link">Dodaj członków poprzez łącze grupy</string>
-    <string name="miui_battery_optimization">Wyłącz „optymalizację baterii” dla %s, aby wykonać to zadanie. Ponieważ Xiaomi nie pozwala aplikacjom wywoływać bezpośrednio tego ekranu ustawień, trzeba to zrobić ręcznie w ustawieniach telefonu. Skontaktuj się z pomocą techniczną Xiaomi, jeśli potrzebujesz pomocy w wyłąćzeniu optymalizacji baterii.</string>
+    <string name="miui_battery_optimization">Wyłącz „optymalizację baterii” dla %s, aby wykonać to zadanie. Ponieważ Xiaomi nie pozwala aplikacjom wywoływać bezpośrednio tego ekranu ustawień, trzeba to zrobić ręcznie w ustawieniach telefonu. Skontaktuj się z pomocą techniczną Xiaomi, jeśli potrzebujesz pomocy w wyłączeniu optymalizacji baterii.</string>
     <string name="forward_captions">Dołącz podpisy</string>
     <string name="importing_files_failed">Nie można zaimportować pliku kopii bezpieczeństwa. Sprawdź, czy jest dość wolnego miejsca w pamięci wewnętrznej.</string>
     <string name="label_continue">Kontynuuj</string>
@@ -1382,6 +1382,7 @@ anonimowo?</string>
     <string name="clear_forward_security_warning">Wykonaj tę czynności tylko, gdy poleci to zespół pomocy Threema.</string>
     <string name="forward_security_cleared">Sesje Perfect Forward Secrecy z tym kontaktem zostały wyczyszczone</string>
     <string name="message_without_forward_security">Odebrano wiadomość bez Perfect Forward Secrecy. Sprawdź, że nadawca rozmyślnie wyłączył Perfect Forward Secrecy.</string>
+    <string name="forward_security_disabled">Perfect Forward Secrecy jest wyłączona w tym czacie.</string>
     <string name="forward_security_established">Wiadomości z tym partnerem czatu są teraz chronione przez Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Wiadomości odbierane w tym czacie są teraz chronione przez Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Zresetowano sesję Perfect Forward Secrecy. Może się to zdarzyć, gdy partner na czacie zmienił urządzenia lub ponownie zainstalował aplikację.</string>
@@ -1453,6 +1454,8 @@ anonimowo?</string>
     <string name="prefs_sum_group_calls_vibration">Wybierz powiadomienia wibracjami po rozpoczęciu połączenia grupowego</string>
     <string name="forward_security_mode_4dh">Całkowite</string>
     <string name="forward_security_mode_2dh">Jednostronne</string>
+    <string name="forward_security_mode_all">Pełne</string>
+    <string name="forward_security_mode_partial">Częściowe</string>
     <string name="forward_security_explanation">Doskonałe utajnianie z wyprzedzeniem (Perfect Forward Secrecy – PFS) chroni rejestrowaną komunikację przed odszyfrowaniem po fakcie, nawet jeśli zostaną ujawnione długoterminowe klucze szyfrujące.\n\nOpcję tę można włączyć, jeśli aplikacja po obu stronach obsługuje PFS.</string>
     <string name="group_call_inactivity_left">Opuszczono rozmowę grupową z powodu nieaktywności</string>
     <string name="missing_permission_external_storage">Nie udało się skopiować pliku. Spróbuj następujących kroków:\n1. Otwórz aplikację Ustawienia.\n2. Przejdź do \"Aplikacje\" i wybierz \"Dostęp specjalny\".\n3. Dotknij \"Dostęp do wszystkich plików\".\n4. Dotknij trzech kropek w prawym górnym rogu i wybierz \"Pokaż aplikacje systemowe\".\n5. Dotknij \"Pamięć zewnętrzna\" i upewnij się, że \"Zezwól na dostęp do zarządzania wszystkimi plikami\" jest przyznane.\n6. Spróbuj ponownie przywrócić kopię zapasową.</string>
@@ -1518,8 +1521,15 @@ anonimowo?</string>
     <string name="group_orphaned_notice">Ta grupa jest porzucona, gdyż jej twórca ją opuścił. Sklonuj grupę, aby zostać nowym administratorem.</string>
     <string name="group_not_a_member_notice">Nie należysz już do tej grupy i nie możesz z niej korzystać.</string>
     <string name="group_dissolved_notice">Grupa ta została rozwiązana i nie można już z niej korzystać.</string>
+    <string name="md_linked_devices">Połączone urządzenia</string>
+    <string name="md_link_device">Połącz nowe urządzenie</string>
+    <string name="md_enable">Włącz połączone urządzenia</string>
+    <string name="md_linked_devices_empty">Pobierz skądś eleganckiego klienta komputerowego i startuj 🚀</string>
+    <string name="md_link_device_qr_scan_message">Zeskanuj kod QR</string>
     <string name="directory_request_failed">Żądanie katalogu nie powiodło się. Spróbuj ponownie.</string>
     <string name="add_shortcut_exists">Skrót tego obiektu docelowego już istnieje.</string>
+    <string name="resend_message_dialog_title">Ponownie wysłać wiadomość grupową?</string>
+    <string name="resend_message_dialog_message">Nie można było wysłać tej wiadomości do wszystkich członków. Wysłać ponownie do %1$s?</string>
     <string name="work_lost_credentials_help">Nie pamiętasz swoich referencji? Skontakuj się ze swoim administratorem %1$s.</string>
     <string name="problemsolver_intro">Niektóre problemy z konfiguracją systemu mogą uniemożliwiać prawidłowe działanie %s. Napraw te problemy, postępując zgodnie z poniższymi instrukcjami.</string>
     <string name="problemsolver_title">Napraw błędy konfiguracji</string>
@@ -1578,6 +1588,12 @@ anonimowo?</string>
         <item quantity="many">%d nowych wiadomości</item>
         <item quantity="one">%d nowa wiadomość</item>
         <item quantity="other">%d nowych wiadomości</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="few">%d nieprzeczytane wiadomości</item>
+        <item quantity="many">%d nieprzeczytanych wiadomości</item>
+        <item quantity="one">%d nieprzeczytana wiadomość</item>
+        <item quantity="other">%d nieprzeczytanych wiadomości</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="few">Zapisano %d pliki.</item>

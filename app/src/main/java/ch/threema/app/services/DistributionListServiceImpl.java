@@ -45,6 +45,7 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.utils.ColorUtil;
+import ch.threema.app.utils.ConversationUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.base.ThreemaException;
@@ -63,18 +64,20 @@ public class DistributionListServiceImpl implements DistributionListService {
 	private final AvatarCacheService avatarCacheService;
 	private final DatabaseServiceNew databaseServiceNew;
 	private final ContactService contactService;
+	private final @NonNull ConversationTagService conversationTagService;
 
 	public DistributionListServiceImpl(
 			Context context,
 			AvatarCacheService avatarCacheService,
 			DatabaseServiceNew databaseServiceNew,
-			ContactService contactService
-	)
-	{
+			ContactService contactService,
+			@NonNull ConversationTagService conversationTagService
+	) {
 		this.context = context;
 		this.avatarCacheService = avatarCacheService;
 		this.databaseServiceNew = databaseServiceNew;
 		this.contactService = contactService;
+		this.conversationTagService = conversationTagService;
 	}
 
 	@Override
@@ -229,6 +232,11 @@ public class DistributionListServiceImpl implements DistributionListService {
 
 		// Remove conversation
 		conversationService.removeFromCache(distributionListModel);
+
+		// Remove conversation tags
+		conversationTagService.removeAll(
+			ConversationUtil.getDistributionListConversationUid(distributionListModel.getId())
+		);
 
 		// Delete distribution list fully from database
 		this.databaseServiceNew.getDistributionListModelFactory().delete(distributionListModel);

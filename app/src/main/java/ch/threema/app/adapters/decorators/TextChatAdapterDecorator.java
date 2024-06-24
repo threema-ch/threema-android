@@ -24,7 +24,9 @@ package ch.threema.app.adapters.decorators;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
@@ -76,6 +78,8 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 				holder.bodyTextView.setText(formatTextString(messageText, this.filterString, helper.getMaxBubbleTextLength() + 8));
 			}
 
+			boolean isTruncated = false;
+
 			if (holder.readOnContainer != null) {
 				if (messageText != null && messageText.length() > helper.getMaxBubbleTextLength()) {
 					holder.readOnContainer.setVisibility(View.VISIBLE);
@@ -90,6 +94,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 						IntentDataUtil.append(this.getMessageModel(), intent);
 						helper.getFragment().startActivity(intent);
 					});
+					isTruncated = true;
 				} else {
 					holder.readOnContainer.setVisibility(View.GONE);
 					holder.readOnButton.setOnClickListener(null);
@@ -103,6 +108,19 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 				true,
 				actionModeStatus.getActionModeEnabled(),
 				onClickElement);
+
+			// remove any clickable link span at the end of truncated text as the link may not be complete
+			if (isTruncated && holder.bodyTextView.getText() instanceof SpannableString) {
+				SpannableString buffer = (SpannableString) holder.bodyTextView.getText();
+				if (buffer != null) {
+					int lastCharOffset = buffer.length() - 1;
+					ClickableSpan[] link = buffer.getSpans(lastCharOffset, lastCharOffset, ClickableSpan.class);
+					if (link.length > 0) {
+						// we found a clickable span at the end of the truncated text, remove it
+						buffer.removeSpan(link[link.length - 1]);
+					}
+				}
+			}
 		}
 
 		RuntimeUtil.runOnUiThread(() -> setupResendStatus(holder));

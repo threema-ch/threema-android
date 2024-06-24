@@ -143,12 +143,16 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 		}
 
 		this.infoSeparator.setVisibility(View.GONE);
-		if (messageModel.getType().equals(MessageType.STATUS) ||
-			messageModel.getType().equals(MessageType.VOIP_STATUS) ||
-			messageModel.getType().equals(MessageType.GROUP_CALL_STATUS) ||
-			messageModel.getType().equals(MessageType.GROUP_STATUS)) {
-			this.starButton.setVisibility(View.GONE);
-		} else {
+		if (
+			messageModel.getType().equals(MessageType.TEXT) ||
+			messageModel.getType().equals(MessageType.FILE) ||
+			messageModel.getType().equals(MessageType.LOCATION) ||
+			messageModel.getType().equals(MessageType.BALLOT) ||
+			messageModel.getType().equals(MessageType.CONTACT) ||
+			messageModel.getType().equals(MessageType.IMAGE) ||
+			messageModel.getType().equals(MessageType.VIDEO) ||
+			messageModel.getType().equals(MessageType.VOICEMESSAGE)
+		) {
 			this.infoButton.setVisibility(View.VISIBLE);
 			this.starButton.setVisibility(messageModel instanceof DistributionListMessageModel ? View.GONE : View.VISIBLE);
 			if (ackButton.getVisibility() == View.VISIBLE || decButton.getVisibility() == View.VISIBLE
@@ -162,6 +166,8 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 				this.starButton.setImageResource(R.drawable.ic_star_golden_24dp);
 				this.starButton.setColorFilter(null);
 			}
+		} else {
+			this.starButton.setVisibility(View.GONE);
 		}
 
 		int[] originLocation = {0, 0};

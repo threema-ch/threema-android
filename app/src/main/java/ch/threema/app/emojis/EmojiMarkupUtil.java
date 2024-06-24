@@ -140,7 +140,7 @@ public class EmojiMarkupUtil {
 				}
 			}
 
-			if (results.size() > 0) {
+			if (!results.isEmpty()) {
 				int scaleFactor = singleScale && ConfigUtils.isBiggerSingleEmojis(context) && !containsRegularText && results.size() <= LARGE_EMOJI_THRESHOLD ? LARGE_EMOJI_SCALE_FACTOR : 1;
 
 				if (ConfigUtils.isDefaultEmojiStyle()) {

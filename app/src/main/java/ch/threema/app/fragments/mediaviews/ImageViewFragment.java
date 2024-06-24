@@ -23,7 +23,6 @@ package ch.threema.app.fragments.mediaviews;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,6 +30,11 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
@@ -41,6 +45,7 @@ import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -48,7 +53,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 /**
- * This fragment is used to show images. Note that GIFs must be shown with the GifViewFragment.
+ * This fragment is used to show images.
  */
 public class ImageViewFragment extends MediaViewFragment {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ImageViewFragment");
@@ -165,20 +170,28 @@ public class ImageViewFragment extends MediaViewFragment {
 	 * @param file the image file
 	 */
 	private void showImage(@NonNull File file) {
-		Drawable drawable = null;
+		if (ConfigUtils.isDisplayableAnimatedImageFormat(getMessageModel().getFileData().getMimeType())) {
+			Glide.with(this)
+				.load(file)
+				.optionalFitCenter()
+				.error(R.drawable.ic_baseline_broken_image_200)
+				.addListener(new RequestListener<>() {
+					@Override
+					public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+						imageViewReference.get().setVisibility(View.GONE);
+						return true;
+					}
 
-		if (ConfigUtils.isSupportedAnimatedImageFormat(getMessageModel().getFileData().getMimeType())) {
-			drawable = Drawable.createFromPath(file.getPath());
-			if (drawable instanceof AnimatedImageDrawable) {
-				previewViewReference.get().setImageDrawable(drawable);
-				((AnimatedImageDrawable) drawable).start();
-				imageViewReference.get().setVisibility(View.GONE);
-			} else {
-				drawable = null;
-			}
+					@Override
+					public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+						imageViewReference.get().setVisibility(View.GONE);
+						return false;
+					}
+				})
+				.skipMemoryCache(true)
+				.into(previewViewReference.get());
 		}
-
-		if (drawable == null) {
+		else  {
 			imageViewReference.get().setImage(ImageSource.uri(file.getPath()));
 			imageViewReference.get().setVisibility(View.VISIBLE);
 

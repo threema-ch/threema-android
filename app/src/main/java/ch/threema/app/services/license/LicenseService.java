@@ -21,6 +21,9 @@
 
 package ch.threema.app.services.license;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
 public interface LicenseService<T extends LicenseService.Credentials> {
 	/**
 	 * Holder of the credential values
@@ -28,38 +31,31 @@ public interface LicenseService<T extends LicenseService.Credentials> {
 	interface Credentials{}
 
 	/**
-	 * validate by credentials (do not throw any exception)
-	 * save on success
+	 * Validate by credentials
+	 * On success, the credentials will be saved.
 	 * @param credentials holder of the credential values
-	 * @return null or a error message
+	 * @return `null` for success or an error message if validation failed
 	 */
+	@Nullable
+	@WorkerThread
 	String validate(T credentials);
 
 	/**
-	 * validate by credentials
-	 * save on success
-	 * @param credentials holder of the credential values
-	 * @param allowException
-	 * @return null or a error message
+	 * Validate by saved credentials
+	 * @param allowException If true, general exceptions will be ignored
+	 * @return `null` for success or an error message if validation failed
 	 */
-	String validate(T credentials, boolean allowException);
-
-	/**
-	 * validate by saved credentials
-	 * @param allowException
-	 * @return null or a error message
-	 */
+	@Nullable
+	@WorkerThread
 	String validate(boolean allowException);
 
 	/**
 	 * check if any credentials are saved
-	 * @return
 	 */
 	boolean hasCredentials();
 
 	/**
 	 * check if a validate check was successfully
-	 * @return
 	 */
 	boolean isLicensed();
 

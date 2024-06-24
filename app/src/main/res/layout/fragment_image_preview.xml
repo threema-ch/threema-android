@@ -6,13 +6,6 @@
 	android:layout_height="match_parent"
 	android:background="@color/gallery_background">
 
-	<pl.droidsonroids.gif.GifImageView
-			android:id="@+id/gif_view"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:adjustViewBounds="true"
-			android:scaleType="fitCenter"/>
-
 	<ImageView
 		android:id="@+id/image_view"
 		android:layout_width="match_parent"

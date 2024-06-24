@@ -266,14 +266,17 @@ class SendMediaPreviewAdapter(
             } else {
                 durationView.visibility = View.GONE
             }
-        } else if (item.type == TYPE_GIF) {
-            holder.qualifierView.visibility = View.VISIBLE
-            imageView.setImageResource(R.drawable.ic_gif_24dp)
+        } else if (item.type == TYPE_IMAGE_ANIMATED) {
             holder.qualifierView.findViewById<View>(R.id.video_duration_text).visibility = View.GONE
-        } else if (item.type == TYPE_IMAGE_ANIMATED && MimeUtil.isWebPFile(item.mimeType)) {
-            holder.qualifierView.visibility = View.VISIBLE
-            imageView.setImageResource(R.drawable.ic_webp)
-            holder.qualifierView.findViewById<View>(R.id.video_duration_text).visibility = View.GONE
+            if (MimeUtil.isWebPFile(item.mimeType)) {
+                holder.qualifierView.visibility = View.VISIBLE
+                imageView.setImageResource(R.drawable.ic_webp)
+            } else if (MimeUtil.isGifFile(item.mimeType)) {
+                holder.qualifierView.visibility = View.VISIBLE
+                imageView.setImageResource(R.drawable.ic_gif_24dp)
+            } else {
+                holder.qualifierView.visibility = View.GONE
+            }
         } else {
             holder.qualifierView.visibility = View.GONE
         }

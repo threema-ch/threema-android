@@ -243,23 +243,27 @@
 
                 </FrameLayout>
 
-                <ImageButton
-                    android:id="@+id/attach_button"
-                    style="?android:attr/borderlessButtonStyle"
+                <FrameLayout
                     android:layout_width="@dimen/emoji_button_width"
                     android:layout_height="@dimen/emoji_button_width"
                     android:layout_gravity="bottom|right"
-                    android:layout_marginRight="58dp"
                     android:layout_marginBottom="5dp"
-                    android:background="@drawable/selector_compose_button"
-                    android:contentDescription="@string/add_attachment"
-                    android:drawablePadding="0dip"
-                    android:focusable="true"
-                    android:nextFocusLeft="@+id/embedded_text_editor"
-                    android:nextFocusRight="@+id/send_button"
-                    android:padding="8dp"
-                    app:srcCompat="@drawable/ic_attachment"
-                    app:tint="?attr/colorOnSurface" />
+                    android:layout_marginRight="58dp">
+
+                    <ImageButton
+                        android:id="@+id/attach_button"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="@dimen/emoji_button_width"
+                        android:layout_height="@dimen/emoji_button_width"
+                        android:background="@drawable/selector_compose_button"
+                        android:contentDescription="@string/add_attachment"
+                        android:drawablePadding="0dip"
+                        android:focusable="true"
+                        android:nextFocusLeft="@+id/embedded_text_editor"
+                        android:nextFocusRight="@+id/send_button"
+                        app:srcCompat="@drawable/ic_attachment"
+                        app:tint="?attr/colorOnSurface" />
+                </FrameLayout>
 
                 <ch.threema.app.ui.SendButton
                     android:id="@+id/send_button"

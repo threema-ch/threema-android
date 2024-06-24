@@ -162,7 +162,7 @@ public class VideoPreviewFragment extends PreviewFragment implements DefaultLife
 			this.videoView.setControllerShowTimeoutMs(1500);
 			this.videoView.showController();
 
-			this.videoPlayer.setMediaItem(MediaItem.fromUri(this.mediaItem.getUri()));
+			this.videoPlayer.setMediaItem(MediaItem.fromUri(this.mediaAttachItem.getUri()));
 			this.videoPlayer.setPlayWhenReady(playWhenReady);
 			this.videoPlayer.prepare();
 		} catch (OutOfMemoryError e) {

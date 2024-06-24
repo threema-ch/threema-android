@@ -23,24 +23,31 @@ package ch.threema.app.services.messageplayer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
 import android.widget.ImageView;
 
-import androidx.annotation.RequiresApi;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import org.slf4j.Logger;
 
 import java.io.File;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -53,7 +60,6 @@ import ch.threema.storage.models.data.media.MediaMessageDataInterface;
  * A message player for animated image formats supported by AnimatedImageDrawable
  * Currently, this is limited to WebP
  */
-@RequiresApi(Build.VERSION_CODES.P)
 public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AnimatedImageDrawableMessagePlayer");
 
@@ -107,22 +113,30 @@ public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
 	public void autoPlay(final File decryptedFile) {
 		logger.debug("autoPlay(decryptedFile)");
 
-		if (this.imageContainer != null && this.currentActivityRef != null && this.currentActivityRef.get() != null) {
-			if (this.imageDrawable != null && this.imageDrawable instanceof AnimatedImageDrawable) {
-				((AnimatedImageDrawable) this.imageDrawable).stop();
+		if (this.imageContainer != null && this.currentActivityRef != null && this.currentActivityRef.get() != null && getMessageModel() != null) {
+			this.makePause(SOURCE_UNDEFINED);
+
+			final String mimeType = getMessageModel().getFileData().getMimeType();
+
+			if (ConfigUtils.isDisplayableAnimatedImageFormat(mimeType)) {
+				Glide.with(getContext())
+					.load(new File(decryptedFile.getPath()))
+					.optionalFitCenter()
+					.error(R.drawable.ic_image_outline)
+					.addListener(new RequestListener<>() {
+						@Override
+						public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+							return false;
+						}
+
+						@Override
+						public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+							imageDrawable = resource;
+							return false;
+						}
+					})
+					.into(imageContainer);
 			}
-
-			final Uri uri = Uri.parse(decryptedFile.getPath());
-			this.imageDrawable = Drawable.createFromPath(uri.getPath());
-
-			RuntimeUtil.runOnUiThread(() -> {
-				if (imageDrawable != null) {
-					imageContainer.setImageDrawable(imageDrawable);
-					if (imageDrawable instanceof AnimatedImageDrawable && preferenceService.isAnimationAutoplay()) {
-						((AnimatedImageDrawable) imageDrawable).start();
-					}
-				}
-			});
 		}
 	}
 
@@ -153,11 +167,10 @@ public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
 	@Override
 	protected void makePause(int source) {
 		logger.debug("makePause");
-		if (this.imageContainer != null) {
-			if (this.imageDrawable != null && imageDrawable instanceof AnimatedImageDrawable) {
-				AnimatedImageDrawable animatedImageDrawable = (AnimatedImageDrawable) imageDrawable;
-				if (animatedImageDrawable.isRunning()) {
-					animatedImageDrawable.stop();
+		if (this.imageContainer != null && this.imageDrawable != null) {
+			if (imageDrawable instanceof Animatable) {
+				if (((Animatable) imageDrawable).isRunning()) {
+					((Animatable) this.imageDrawable).stop();
 				}
 			}
 		}
@@ -166,11 +179,10 @@ public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
 	@Override
 	protected void makeResume(int source) {
 		logger.debug("makeResume: " + getMessageModel().getId());
-		if (this.imageContainer != null) {
-			if (this.imageDrawable != null && imageDrawable instanceof AnimatedImageDrawable) {
-				AnimatedImageDrawable animatedImageDrawable = (AnimatedImageDrawable) imageDrawable;
-				if (!animatedImageDrawable.isRunning()) {
-					animatedImageDrawable.start();
+		if (this.imageContainer != null && this.imageDrawable != null) {
+			if (imageDrawable instanceof Animatable) {
+				if (!((Animatable) imageDrawable).isRunning()) {
+					((Animatable) this.imageDrawable).start();
 				}
 			}
 		}
@@ -195,10 +207,12 @@ public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
 		super.removeListeners();
 		logger.debug("removeListeners");
 
-		// release webp players if item comes out of view
+		// release animated image players if item comes out of view
 		if (this.imageDrawable != null) {
-			if (imageDrawable instanceof AnimatedImageDrawable) {
-				((AnimatedImageDrawable) this.imageDrawable).stop();
+			if (imageDrawable instanceof Animatable) {
+				if (((Animatable) imageDrawable).isRunning()) {
+					((Animatable) this.imageDrawable).stop();
+				}
 			}
 			this.imageDrawable = null;
 		}

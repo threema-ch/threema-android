@@ -571,7 +571,12 @@
 		<item name="android:windowExitAnimation">@anim/medium_fade_out</item>
 	</style>
 
-	<style name="DateSeparatorText" parent="@style/TextAppearance.Material3.BodyMedium">
+    <style name="Threema_Animation_QuotePopup">
+        <item name="android:windowEnterAnimation">@anim/quote_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/quote_slide_down</item>
+    </style>
+
+    <style name="DateSeparatorText" parent="@style/TextAppearance.Material3.BodyMedium">
 		<item name="android:fontFamily">@font/lab_grotesque</item>
 		<item name="android:textStyle">normal</item>
 		<item name="android:textColor">@color/date_separator_text_color</item>

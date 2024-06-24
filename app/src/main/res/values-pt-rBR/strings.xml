@@ -1367,6 +1367,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="clear_forward_security_warning">Apenas realize esta ação quando a equipe de suporte do Threema instruir.</string>
     <string name="forward_security_cleared">As sessões com Perfect Forward Secrecy deste contato foram apagadas</string>
     <string name="message_without_forward_security">Uma mensagem sem Perfect Forward Secrecy foi recebida. Verifique se o remetente desativou o FPS intencionalmente.</string>
+    <string name="forward_security_disabled">O Perfect Forward Secrecy está desativado para esta conversa.</string>
     <string name="forward_security_established">As mensagens com este contato estão protegidas pelo Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">As mensagens recebidas nesta conversa estão protegidas pelo Perfect Forward Secrecy (PFS).</string>
     <string name="forward_security_reset">A sessão com Perfect Forward Secrecy foi redefinida. Isso pode acontecer quando o contato do chat muda de dispositivo ou reinstala o app.</string>
@@ -1438,6 +1439,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="prefs_sum_group_calls_vibration">Selecione se deseja ativar a vibração quando uma chamada de grupo começar</string>
     <string name="forward_security_mode_4dh">Concluída</string>
     <string name="forward_security_mode_2dh">Unilateral</string>
+    <string name="forward_security_mode_all">Completo</string>
+    <string name="forward_security_mode_partial">Parcial</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS), ou \"sigilo encaminhado perfeito\", protege uma comunicação gravada de uma decodificação retroativa, mesmo se a chave criptográfica de longo prazo for comprometida.\n\nA opção pode ser ativada se o app em ambas as pontas for compatível com PFS.</string>
     <string name="group_call_inactivity_left">Chamada de grupo abandonada devido à inatividade</string>
     <string name="missing_permission_external_storage">Não foi possível copiar o arquivo. Tente os passos a seguir:\n1. Abra o aplicativo de ajustes.\n2. Vá até “Aplicativos” e escolha “Acesso especial ao aplicativo”.\n3. Toque em \"Acesso a todos os arquivos\".\n4. Toque nos três pontos no canto superior direito e escolha “Mostrar sistema“.\n5. Toque em “Armazenamento externo” e conceda autorização para “Permitir acesso para gerenciar todos os arquivos”.\n6. Tente restaurar o backup novamente.</string>
@@ -1503,8 +1506,15 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="group_orphaned_notice">Este grupo está órfão porque o(a) criador(a) do grupo saiu. Clone este grupo para tornar-se o novo administrador.</string>
     <string name="group_not_a_member_notice">Você não faz mais parte deste grupo e não pode mais usá-lo.</string>
     <string name="group_dissolved_notice">Este grupo foi dissolvido e não pode mais ser usado.</string>
+    <string name="md_linked_devices">Dispositivos vinculados</string>
+    <string name="md_link_device">Vincular novo dispositivo</string>
+    <string name="md_enable">Ativar dispositivos vinculados</string>
+    <string name="md_linked_devices_empty">Baixe o cliente para desktop de algum lugar e decole 🚀</string>
+    <string name="md_link_device_qr_scan_message">Escaneie o código QR</string>
     <string name="directory_request_failed">A solicitação de diretório falhou. Tente novamente.</string>
     <string name="add_shortcut_exists">Já existe um atalho para esta opção.</string>
+    <string name="resend_message_dialog_title">Reenviar a mensagem de grupo?</string>
+    <string name="resend_message_dialog_message">Esta mensagem não pôde ser enviada a todos os membros. Reenviar a mensagem para %1$s?</string>
     <string name="work_lost_credentials_help">Esqueceu das suas credenciais? Entre em contato com o seu administrador do %1$s.</string>
     <string name="problemsolver_intro">Alguns problemas relacionados a configurações de sistema podem impedir o %s de funcionar corretamente. Corrija esses problemas seguindo as instruções abaixo.</string>
     <string name="problemsolver_title">Corrigir problemas de configuração</string>
@@ -1551,6 +1561,10 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <plurals name="new_messages">
         <item quantity="one">%d nova mensagem</item>
         <item quantity="other">%d novas mensagens</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="one">%d mensagem não lida</item>
+        <item quantity="other">%d mensagens não lidas</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="one">%d arquivo salvo com sucesso.</item>

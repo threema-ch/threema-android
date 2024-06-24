@@ -1047,8 +1047,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="delete">删除</string>
     <string name="continue_recording">继续录音</string>
     <string name="whatsnew_title">%1$s 5.2 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p>
-<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p>
+    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p> 
+<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p> 
 <p>这次更新还有大量其他改进和优化。</p> ]]></string>
     <string name="whatsnew2_title">" "</string>
     <string name="whatsnew2_body">" "</string>
@@ -1399,6 +1399,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="clear_forward_security_warning">仅在 Threema 支持团队的指示下，才执行此操作。</string>
     <string name="forward_security_cleared">与此联系人的完全正向保密会话已被清除</string>
     <string name="message_without_forward_security">您收到一条没有完全正向保密的消息，您可以验证发件人是否主动禁用完美前向保密。</string>
+    <string name="forward_security_disabled">此会话已禁用完全正向保密功能。</string>
     <string name="forward_security_established">跟对方聊天的消息现正受完全正向保密的保护。</string>
     <string name="forward_security_established_rx">在此会话中的消息现正受完全正向保密的保护。</string>
     <string name="forward_security_reset">这个之前已启用 “完全正向保密” 的会话，现被重置保密状态。如果对方更换了设备或重新安装此应用程序，就会重置保密状态。</string>
@@ -1470,6 +1471,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_sum_group_calls_vibration">选择是否在群组通话开始时进行振动</string>
     <string name="forward_security_mode_4dh">完整保密</string>
     <string name="forward_security_mode_2dh">单向保密</string>
+    <string name="forward_security_mode_all">完整</string>
+    <string name="forward_security_mode_partial">部分</string>
     <string name="forward_security_explanation">完全正向保密（PFS）可以保护会话记录不被追溯解密，即使长期加密密钥已被盗用。\n\n如果双方的应用程序都支持完全正向保密的话，就可以启用此选项。</string>
     <string name="group_call_inactivity_left">因为长时间不活动，群组通话自动退出</string>
     <string name="missing_permission_external_storage">无法复制文件，请尝试以下步骤以解決问题：\n1. 打开系统设置。\n2. 前往 “应用程序”，然后点击右上角的三个点，选择 “特殊访问” 权限。\n3. 点击 “所有文件访问”。\n4. 点击右上角的三个点，选择“显示系统应用程序”。\n5. 点击 “外部存储” 并确保授予 “允许访问所有文件” 权限。\n6. 再次尝试恢复备份。</string>
@@ -1535,8 +1538,15 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_orphaned_notice">由于群组创建者已离开群组，请您克隆该群组，成为新的管理员。</string>
     <string name="group_not_a_member_notice">由于您不再是这个群组的成员，因此您不能再参与这个群组的讨论。</string>
     <string name="group_dissolved_notice">由于这个群组已解散，因此您不能再参与这个群组的讨论。</string>
+    <string name="md_linked_devices">已链接设备</string>
+    <string name="md_link_device">链接新设备</string>
+    <string name="md_enable">启用链接设备功能</string>
+    <string name="md_linked_devices_empty">从其他地方下载精美的桌面客户端，并尽情使用 🚀</string>
+    <string name="md_link_device_qr_scan_message">请扫描二维码</string>
     <string name="directory_request_failed">目录请求失败，请再试一次。</string>
     <string name="add_shortcut_exists">此目标的快捷方式已经存在。</string>
+    <string name="resend_message_dialog_title">重新发送群组消息？</string>
+    <string name="resend_message_dialog_message">此消息无法发送给群组所有成员。重新发送消息到%1$s？</string>
     <string name="work_lost_credentials_help">忘记了您的凭证？请联系您的 %1$s 管理员。</string>
     <string name="problemsolver_intro">某些系统配置问题可能会阻止 %s 正常运行，请按照以下步骤以解决问题。</string>
     <string name="problemsolver_title">修复配置问题</string>

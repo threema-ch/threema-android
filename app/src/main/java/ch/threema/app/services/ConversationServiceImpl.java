@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +39,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
@@ -863,7 +861,7 @@ public class ConversationServiceImpl implements ConversationService {
 			// Update read/unread state if necessary
 			if(model.getReceiver() != null && MessageUtil.isUnread(model.getLatestMessage())) {
 				model.setUnreadCount(model.getReceiver().getUnreadMessagesCount());
-				conversationTagService.unTag(model, unreadTagModel);
+				conversationTagService.removeTagAndNotify(model, unreadTagModel);
 			} else {
 				if (model.getLatestMessage() == null) {
 					// If there are no messages, mark the conversation as read
@@ -1315,13 +1313,7 @@ public class ConversationServiceImpl implements ConversationService {
 		}
 
 		if (newestMessage == null) {
-			if (conversationModel.isGroupConversation() || conversationModel.isDistributionListConversation()) {
-				// do not remove groups and distribution list conversations from cache as they should still be accessible in message list
-				conversationModel.setMessageCount(0);
-			} else {
-				// remove model from cache completely
-				this.removeFromCache(conversationModel);
-			}
+			conversationModel.setMessageCount(0);
 		}
 	}
 

@@ -210,6 +210,10 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 			modelFileData.setEncryptionKey(encryptionResult.getKey());
 		}
 
+		// Set file data model again explicitly to enforce that the body of the message is rewritten
+		// and therefore updated.
+		messageModel.setFileData(modelFileData);
+
 		// Create a new message id if the given message id is null
 		messageModel.setApiMessageId(messageId != null ? messageId.toString() : new MessageId().toString());
 		saveLocalModel(messageModel);

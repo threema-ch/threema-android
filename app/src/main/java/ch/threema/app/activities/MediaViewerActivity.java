@@ -71,7 +71,6 @@ import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.fragments.mediaviews.AudioViewFragment;
 import ch.threema.app.fragments.mediaviews.FileViewFragment;
-import ch.threema.app.fragments.mediaviews.GifViewFragment;
 import ch.threema.app.fragments.mediaviews.ImageViewFragment;
 import ch.threema.app.fragments.mediaviews.MediaPlayerViewFragment;
 import ch.threema.app.fragments.mediaviews.MediaViewFragment;
@@ -719,9 +718,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 						break;
 					case FILE:
 						String mimeType = messageModel.getFileData().getMimeType();
-						if (MimeUtil.isGifFile(mimeType)) {
-							f = new GifViewFragment();
-						} else if (MimeUtil.isSupportedImageFile(mimeType)) {
+						if (MimeUtil.isSupportedImageFile(mimeType)) {
 							f = new ImageViewFragment();
 						} else if (MimeUtil.isVideoFile(mimeType)) {
 							f = new VideoViewFragment();

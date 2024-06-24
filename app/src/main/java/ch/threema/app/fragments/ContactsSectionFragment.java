@@ -1082,6 +1082,8 @@ public class ContactsSectionFragment
 
 		if (this.preferenceService.isSyncContacts() && ConfigUtils.requestContactPermissions(getActivity(), this, PERMISSION_REQUEST_REFRESH_CONTACTS)) {
 			if (this.synchronizeContactsService != null) {
+				// we force a contact sync even if the grace time has not yet been reached
+				preferenceService.setTimeOfLastContactSync(0L);
 				synchronizeContactsService.instantiateSynchronizationAndRun();
 			}
 		}

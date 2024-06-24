@@ -21,7 +21,6 @@
 
 package ch.threema.app.mediaattacher;
 
-import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -40,18 +39,14 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.ui.MediaItem;
-import pl.droidsonroids.gif.GifImageView;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class ImagePreviewFragment extends PreviewFragment {
-	private GifImageView gifView;
 	private SubsamplingScaleImageView scaleImageView;
 	private ImageView imageView;
 
-	ImagePreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel){
+	ImagePreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel) {
 		super(mediaItem, mediaAttachViewModel);
 	}
 
@@ -68,20 +63,17 @@ public class ImagePreviewFragment extends PreviewFragment {
 
 		if (rootView != null) {
 			this.scaleImageView = rootView.findViewById(R.id.scale_image_view);
-			this.gifView = rootView.findViewById(R.id.gif_view);
 			this.imageView = rootView.findViewById(R.id.image_view);
 
-			if (mediaItem.getType() == MediaItem.TYPE_GIF) {
-				scaleImageView.setVisibility(View.GONE);
-				imageView.setVisibility(View.GONE);
-				Glide.with(ThreemaApplication.getAppContext())
-					.load(mediaItem.getUri())
+			if (mediaAttachItem.getType() == MediaAttachItem.TYPE_GIF || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && mediaAttachItem.getType() == MediaAttachItem.TYPE_WEBP)) {
+				Glide.with(this).load(mediaAttachItem.getUri())
 					.transition(withCrossFade())
-					.into(gifView);
+					.optionalFitCenter()
+					.error(R.drawable.ic_baseline_broken_image_200)
+					.into(imageView);
 			} else {
-				gifView.setVisibility(View.GONE);
 				Glide.with(this)
-					.load(mediaItem.getUri())
+					.load(mediaAttachItem.getUri())
 					.transition(withCrossFade())
 					.optionalCenterInside()
 					.error(R.drawable.ic_baseline_broken_image_200)
@@ -92,19 +84,10 @@ public class ImagePreviewFragment extends PreviewFragment {
 
 						@Override
 						public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-							if (resource instanceof BitmapDrawable) {
-								scaleImageView.setImage(ImageSource.bitmap(((BitmapDrawable) resource).getBitmap()));
+							scaleImageView.setImage(ImageSource.bitmap(((BitmapDrawable) resource).getBitmap()));
 
-								scaleImageView.setVisibility(View.VISIBLE);
-								imageView.setVisibility(View.GONE);
-
-							} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && resource instanceof AnimatedImageDrawable) {
-								imageView.setImageDrawable(resource);
-								((AnimatedImageDrawable)resource).start();
-
-								imageView.setVisibility(View.VISIBLE);
-								scaleImageView.setVisibility(View.GONE);
-							}
+							scaleImageView.setVisibility(View.VISIBLE);
+							imageView.setVisibility(View.GONE);
 						}
 
 						@Override
@@ -112,6 +95,7 @@ public class ImagePreviewFragment extends PreviewFragment {
 						}
 					});
 			}
+
 		}
 	}
 }

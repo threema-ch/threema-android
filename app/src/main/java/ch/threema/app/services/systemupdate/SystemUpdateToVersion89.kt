@@ -60,12 +60,16 @@ internal class SystemUpdateToVersion89(
     private fun calculateLastUpdateContacts() {
         logger.info("Calculate lastUpdate for contacts")
 
+        // Consider all message types except date separators and forward security status messages.
+        // Note that in a previous version of the update script (that has been applied for most
+        // users), all message types have been used to determine the last update flag leading to
+        // some chat reordering.
         db.execSQL("""
             UPDATE contacts
             SET lastUpdate = tmp.lastUpdate FROM (
                 SELECT m.identity, max(m.createdAtUtc) as lastUpdate
                 FROM message m
-                WHERE m.isSaved = 1
+                WHERE m.isSaved = 1 AND type != 10 AND type != 12
                 GROUP BY m.identity
             ) tmp
             WHERE contacts.identity = tmp.identity;
@@ -76,12 +80,16 @@ internal class SystemUpdateToVersion89(
         logger.info("Calculate lastUpdate for groups")
 
         // Set lastUpdate to the create date of the latest message if present
+        // Consider all message types except date separators and group status messages. Note that in
+        // a previous version of the update script (that has been applied for most users), all
+        // message types have been used to determine the last update flag leading to some chat
+        // reordering.
         db.execSQL("""
             UPDATE m_group
             SET lastUpdate = tmp.lastUpdate FROM (
                 SELECT m.groupId, max(m.createdAtUtc) as lastUpdate
                 FROM m_group_message m
-                WHERE m.isSaved = 1
+                WHERE m.isSaved = 1 AND type != 10 AND type != 13
                 GROUP BY m.groupId
             ) tmp
             WHERE m_group.id = tmp.groupId;

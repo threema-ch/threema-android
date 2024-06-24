@@ -38,7 +38,6 @@ import android.text.Selection;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.SpannedString;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
@@ -262,9 +261,7 @@ public class LinkifyUtil {
 					return false;
 				}
 
-				// linkify message caption or body instead of linkified text which may be truncated by view
-				String s = messageModel.getCaption() != null ? messageModel.getCaption() : messageModel.getBody();
-				Spanned buffer = linkifyText(new SpannedString(s), true);
+				Spanned buffer = (Spanned) text;
 				int action = event.getAction();
 
 				int x = (int) event.getX() - widget.getTotalPaddingLeft() + widget.getScrollX();

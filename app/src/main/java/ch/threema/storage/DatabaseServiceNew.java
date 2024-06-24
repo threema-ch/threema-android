@@ -115,6 +115,7 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion89;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion9;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion90;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion91;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion92;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -148,7 +149,7 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 
 	public static final String DATABASE_NAME_V4 = "threema4.db";
 	public static final String DATABASE_BACKUP_EXT = ".backup";
-	private static final int DATABASE_VERSION = SystemUpdateToVersion91.VERSION;
+	private static final int DATABASE_VERSION = SystemUpdateToVersion92.VERSION;
 
 	private final Context context;
 	private final UpdateSystemService updateSystemService;
@@ -717,6 +718,9 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		}
 		if (oldVersion < SystemUpdateToVersion91.VERSION) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion91(this.context));
+		}
+		if (oldVersion < SystemUpdateToVersion92.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion92(sqLiteDatabase));
 		}
 	}
 

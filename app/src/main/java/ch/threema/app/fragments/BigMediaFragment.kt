@@ -42,7 +42,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.Rotate
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.progressindicator.CircularProgressIndicator
-import pl.droidsonroids.gif.GifImageView
 
 private val logger = LoggingUtil.getThreemaLogger("BigMediaFragment")
 
@@ -52,7 +51,6 @@ class BigMediaFragment : Fragment() {
     private var viewPager: ViewPager2? = null
     private lateinit var bigFileView: BigFileView
     private lateinit var bigImageView: ImageView
-    private lateinit var bigGifImageView: GifImageView
     private var videoEditView: VideoEditView? = null
     private lateinit var bigProgressBar: CircularProgressIndicator
     private var bottomElemHeight: Int = 0
@@ -75,7 +73,6 @@ class BigMediaFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_big_media, container, false).apply {
             bigFileView = findViewById(R.id.big_file_view)
             bigImageView = findViewById(R.id.preview_image)
-            bigGifImageView = findViewById(R.id.gif_image)
             videoEditView = findViewById(R.id.video_edit_view)
             bigProgressBar = findViewById(R.id.progress)
         }
@@ -132,7 +129,7 @@ class BigMediaFragment : Fragment() {
 
 
         when (item.type) {
-            MediaItem.TYPE_IMAGE, MediaItem.TYPE_IMAGE_CAM, MediaItem.TYPE_GIF, MediaItem.TYPE_IMAGE_ANIMATED -> {
+            MediaItem.TYPE_IMAGE, MediaItem.TYPE_IMAGE_CAM, MediaItem.TYPE_IMAGE_ANIMATED -> {
                 showBigImage(item)
             }
             MediaItem.TYPE_VIDEO, MediaItem.TYPE_VIDEO_CAM -> {
@@ -166,7 +163,6 @@ class BigMediaFragment : Fragment() {
     }
 
     private fun showBigFile(item: MediaItem) {
-        this.bigGifImageView.visibility = View.GONE
         this.bigImageView.visibility = View.GONE
         this.videoEditView?.visibility = View.GONE
         this.bigFileView.visibility = View.VISIBLE
@@ -177,7 +173,6 @@ class BigMediaFragment : Fragment() {
     private fun showBigVideo(item: MediaItem) {
         this.bigFileView.visibility = View.GONE
         this.bigImageView.visibility = View.GONE
-        this.bigGifImageView.visibility = View.GONE
         this.videoEditView?.visibility = View.VISIBLE
         this.videoEditView?.setOnTimelineDragListener(timelineDragListener)
         this.videoEditView?.doOnLayout {
@@ -190,27 +185,25 @@ class BigMediaFragment : Fragment() {
         bigImageView.visibility = View.VISIBLE
         bigFileView.visibility = View.GONE
         videoEditView?.visibility = View.GONE
-        if (item.type == MediaItem.TYPE_GIF) {
-            bigProgressBar.visibility = View.GONE
-            bigImageView.visibility = View.GONE
-            try {
-                bigGifImageView.setImageURI(item.uri)
-                bigGifImageView.visibility = View.VISIBLE
-            } catch (e: Exception) {
-                // may crash with a SecurityException on some exotic devices
-                logger.error("Error setting GIF", e)
-            }
-        } else {
-            val flipHorizontal =
-                (item.rotation in setOf(90, 270) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL)
-                    || (item.rotation in setOf(0, 180) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
-            val flipVertical =
-                (item.rotation in setOf(90, 270) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
-                    || (item.rotation in setOf(0, 180) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL)
-            bigImageView.rotationX = if (flipVertical) 180f else 0f
-            bigImageView.rotationY = if (flipHorizontal) 180f else 0f
+        val flipHorizontal =
+            (item.rotation in setOf(90, 270) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL)
+                || (item.rotation in setOf(0, 180) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
+        val flipVertical =
+            (item.rotation in setOf(90, 270) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
+                || (item.rotation in setOf(0, 180) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL)
+        bigImageView.rotationX = if (flipVertical) 180f else 0f
+        bigImageView.rotationY = if (flipHorizontal) 180f else 0f
 
-            Glide.with(context ?: return).load(item.uri)
+        if (item.type == MediaItem.TYPE_IMAGE_ANIMATED) {
+            Glide.with(this)
+                .load(item.uri)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .optionalFitCenter()
+                .error(R.drawable.ic_baseline_broken_image_200)
+                .into(bigImageView)
+        } else {
+            Glide.with(context ?: return)
+                .load(item.uri)
                 .skipMemoryCache(true)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .optionalFitCenter()

@@ -95,7 +95,7 @@ public class ActiveConversationHandler extends MessageReceiver {
 		if (messageReceiver != null) {
 			final ConversationModel conversationModel = this.conversationService.refresh(messageReceiver);
 			if (conversationModel != null) {
-				conversationTagService.unTag(conversationModel, conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD));
+				conversationTagService.removeTagAndNotify(conversationModel, conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD));
 			}
 		}
 	}

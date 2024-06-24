@@ -78,18 +78,17 @@ public class MediaItem implements Parcelable {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaItem");
 
 	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_GIF, TYPE_VOICEMESSAGE, TYPE_TEXT, TYPE_LOCATION, TYPE_IMAGE_ANIMATED})
+	@IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_VOICEMESSAGE, TYPE_TEXT, TYPE_LOCATION, TYPE_IMAGE_ANIMATED})
 	public @interface MediaType {}
 	public static final int TYPE_FILE = 0;
 	public static final int TYPE_IMAGE = 1;
 	public static final int TYPE_VIDEO = 2;
 	public static final int TYPE_IMAGE_CAM = 3;
 	public static final int TYPE_VIDEO_CAM = 4;
-	public static final int TYPE_GIF = 5;
-	public static final int TYPE_VOICEMESSAGE = 6;
-	public static final int TYPE_TEXT = 7;
-	public static final int TYPE_LOCATION = 8;
-	public static final int TYPE_IMAGE_ANIMATED = 9; // animated images such as animated WebP
+	public static final int TYPE_VOICEMESSAGE = 5;
+	public static final int TYPE_TEXT = 6;
+	public static final int TYPE_LOCATION = 7;
+	public static final int TYPE_IMAGE_ANIMATED = 8; // animated images such as animated WebP
 
 	public static final long TIME_UNDEFINED = Long.MIN_VALUE;
 
@@ -594,7 +593,7 @@ public class MediaItem implements Parcelable {
 		} else if (type == TYPE_IMAGE || type == TYPE_IMAGE_CAM) {
 			return getImageScale() == PreferenceService.ImageScale_SEND_AS_FILE;
 		} else {
-			return type == TYPE_FILE || type == TYPE_GIF || type == TYPE_IMAGE_ANIMATED;
+			return type == TYPE_FILE || type == TYPE_IMAGE_ANIMATED;
 		}
 	}
 

@@ -847,11 +847,11 @@ public class FileUtil {
 	}
 
 	/**
-	 * Check if the file at the provided Uri is an animation. Currently, only animated WebP is supported
+	 * Check if the file at the provided Uri is an animation. Currently, only animated WebP and (possibly static) GIFs are supported
 	 * @param uri A File Uri pointing to an image file
 	 * @return true if the file an animated image
 	 */
-	public static boolean isAnimatedImageFile(@NonNull Uri uri) {
-		return isAnimatedWebPFile(uri);
+	public static boolean isAnimatedImageFile(@NonNull Uri uri, String mimeType) {
+		return isAnimatedWebPFile(uri) || MimeUtil.isGifFile(mimeType);
 	}
 }

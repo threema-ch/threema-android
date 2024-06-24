@@ -1366,16 +1366,18 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="synchronizing">同期中…</string>
     <string name="forward_security">Perfect Forward Secrecyを使用してメッセージを送信</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
-    <string name="forward_security_mode_none">なし</string>
+    <string name="forward_security_mode_none">無し</string>
     <string name="clear_forward_security">この連絡先のPerfect Forward Secrecyを初期化</string>
     <string name="clear_forward_security_warning">これはThreemaのサポートチームからの指示がある場合にのみ実行してください。</string>
     <string name="forward_security_cleared">この連絡先とのPerfect Forward Secrecyセッションはクリアされました</string>
     <string name="message_without_forward_security">Perfect Forward Secrecyを使用しないメッセージを受信しました。送信者がPerfect Forward Secrecyを意図的に無効にしていることを確認してください。</string>
+    <string name="forward_security_disabled">Perfect Forward Secrecyはこのトークで無効になってます</string>
     <string name="forward_security_established">このトークのメッセージはPerfect Forward Secrecyによって保護されるようになりました。</string>
     <string name="forward_security_established_rx">このトークで受信したメッセージはPerfect Forward Secrecyによって保護されるようになりました。</string>
     <string name="forward_security_reset">Perfect Forward Secrecy セッションが初期化されました。これは、トークの相手がが端末を変更したり、アプリを再インストールしたりした場合に発生することがあります。</string>
     <string name="forward_security_reset_simple">この連絡先とのPerfect Forward Secrecyセッションはリセットされました。</string>
     <string name="forward_security_message_out_of_order">メッセージが間違った順序で受信されたため、復号化できませんでした。</string>
+    <string name="forward_security_notification_channel_name">Perfect Forward Secrecy</string>
     <string name="self_updater_installation_failed">アップデートのダウンロードに失敗しました。<a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> からアップデートをダウンロードしてインストールしてください。</string>
     <string name="spam_first_contact">このトークは不明な連絡先からのものです</string>
     <string name="spam_report">スパム報告</string>

@@ -58,6 +58,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.Person;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.lifecycle.LifecycleService;
@@ -2171,6 +2172,12 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		openIntent.putExtra(EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL);
 		openIntent.putExtra(EXTRA_CONTACT_IDENTITY, contact.getIdentity());
 		openIntent.putExtra(EXTRA_START_TIME, elapsedTimeMs);
+
+		final Person callerPerson = new Person.Builder()
+			.setName(NameUtil.getDisplayNameOrNickname(contact, true))
+			.setImportant(true)
+			.build();
+
 		final PendingIntent openPendingIntent = PendingIntent.getActivity(
 				this,
 				(int)System.currentTimeMillis(),
@@ -2189,7 +2196,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				.setSmallIcon(R.drawable.ic_phone_locked_white_24dp)
 				.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 				.setContentIntent(openPendingIntent)
-				.addAction(R.drawable.ic_call_end_grey600_24dp, getString(R.string.voip_hangup), hangupPendingIntent);
+				.setStyle(NotificationCompat.CallStyle.forOngoingCall(callerPerson, hangupPendingIntent));
 
 		final Bitmap avatar = contactService.getAvatar(contact, false);
 		notificationBuilder.setLargeIcon(avatar);

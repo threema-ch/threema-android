@@ -18,14 +18,14 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 // version codes
 
 // Only use the scheme "<major>.<minor>.<patch>" for the app_version
-def app_version = "5.3.1"
+def app_version = "5.3.2"
 
 // beta_suffix with leading dash (e.g. `-beta1`)
 // should be one of (alpha|beta|rc) and an increasing number or empty for a regular release.
 // Note: in nightly builds this will be overwritten with a nightly version "-n12345"
 def beta_suffix = ""
 
-def defaultVersionCode = 956
+def defaultVersionCode = 959
 
 /**
  * Return the git hash, if git is installed.
@@ -595,6 +595,7 @@ android {
             jniDebuggable false
             minifyEnabled true
             shrinkResources false // Caused inconsistencies between local and CI builds
+            vcsInfo.include false // For reproducible builds independent from git history
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-project.txt'
             ndk {
                 debugSymbolLevel 'FULL' // 'SYMBOL_TABLE'
@@ -772,7 +773,6 @@ dependencies {
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation "org.slf4j:slf4j-api:$slf4j_version"
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.28'
     implementation 'com.vanniktech:android-image-cropper:4.5.0'
     implementation 'com.datatheorem.android.trustkit:trustkit:1.1.5'
     implementation 'me.zhanghai.android.fastscroll:library:1.3.0'
@@ -814,6 +814,8 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.6.1'
     implementation 'androidx.window:window:1.2.0'
     kapt 'androidx.room:room-compiler:2.6.1'
+
+    implementation 'org.bouncycastle:bcprov-jdk15to18:1.78.1'
 
     implementation 'com.google.android.material:material:1.10.0' // last version before switch to tonal system: https://github.com/material-components/material-components-android/releases/tag/1.11.0
     implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on API < 24

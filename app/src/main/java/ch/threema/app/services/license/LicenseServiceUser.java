@@ -22,6 +22,7 @@
 package ch.threema.app.services.license;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -39,12 +40,13 @@ public class LicenseServiceUser extends LicenseServiceThreema<UserCredentials> {
 	}
 
 	@Override
+	@WorkerThread
 	protected APIConnector.CheckLicenseResult checkLicense(UserCredentials credentials, String deviceId) throws Exception {
 		return this.apiConnector.checkLicense(credentials.username, credentials.password, deviceId);
 	}
 
 	@Override
-	protected void saveCredentials(UserCredentials credentials) {
+	public void saveCredentials(UserCredentials credentials) {
 		this.preferenceService.setLicenseUsername(credentials.username);
 		this.preferenceService.setLicensePassword(credentials.password);
 	}

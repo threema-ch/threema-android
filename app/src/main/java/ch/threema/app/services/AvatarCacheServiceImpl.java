@@ -191,9 +191,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 		synchronized (this.groupAvatarStates) {
 			groupAvatarStates.clear();
 		}
-		RuntimeUtil.runOnUiThread(() -> {
-            Glide.get(context).clearMemory();
-        });
+		RuntimeUtil.runOnUiThread(() -> Glide.get(context).clearMemory());
 	}
 
 	@WorkerThread

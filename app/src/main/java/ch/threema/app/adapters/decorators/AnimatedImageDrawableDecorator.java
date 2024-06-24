@@ -27,19 +27,22 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import org.slf4j.Logger;
 
 import java.io.File;
 
+import ch.threema.app.R;
 import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.services.messageplayer.AnimatedImageDrawableMessagePlayer;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.FileUtil;
-import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -49,10 +52,8 @@ import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 /**
- * A decorator for animated image formats natively supported by AnimatedImageDrawable
- * Currently, this is limited to WebP
+ * A decorator for animated image formats natively supported by AnimatedImageDrawable and/or by Glide
  */
-@TargetApi(Build.VERSION_CODES.P)
 public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("AnimatedImageDrawableDecorator");
 
@@ -129,17 +130,37 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
 			thumbnail = null;
 		}
 
+
 		final FileDataModel fileData = getMessageModel().getFileData();
 		fileSize = fileData.getFileSize();
 
-		ImageViewUtil.showBitmapOrImagePlaceholder(
-			getContext(),
-			holder.contentView,
-			holder.attachmentImage,
-			thumbnail,
-			getThumbnailWidth()
-		);
-		holder.bodyTextView.setWidth(getThumbnailWidth());
+		int width = getThumbnailWidth();
+		int height;
+		if (thumbnail != null) {
+			height = (int) ((float) thumbnail.getHeight() * getThumbnailWidth() / thumbnail.getWidth());
+		} else {
+			height = ViewGroup.LayoutParams.WRAP_CONTENT;
+		}
+
+		ViewGroup.LayoutParams params = holder.contentView.getLayoutParams();
+		params.width = width;
+		params.height = height;
+		holder.contentView.setLayoutParams(params);
+
+		params = holder.attachmentImage.getLayoutParams();
+		params.width = width;
+		params.height = height;
+		holder.attachmentImage.setLayoutParams(params);
+		holder.attachmentImage.setVisibility(View.VISIBLE);
+
+		Glide.with(getContext())
+			.load(thumbnail)
+			.optionalFitCenter()
+			.override(width, height)
+			.error(R.drawable.ic_image_outline)
+			.into(holder.attachmentImage);
+
+		holder.bodyTextView.setWidth(width);
 
 		if (holder.attachmentImage != null) {
 			holder.attachmentImage.invalidate();

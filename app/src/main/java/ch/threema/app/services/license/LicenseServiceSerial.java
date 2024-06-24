@@ -42,7 +42,7 @@ public class LicenseServiceSerial extends LicenseServiceThreema<SerialCredential
 	}
 
 	@Override
-	protected void saveCredentials(SerialCredentials credentials) {
+	public void saveCredentials(SerialCredentials credentials) {
 		this.preferenceService.setSerialNumber(credentials.licenseKey);
 	}
 

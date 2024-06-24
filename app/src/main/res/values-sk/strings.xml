@@ -1375,6 +1375,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="clear_forward_security_warning">Túto akciu vykonajte iba vtedy, keď k tomu dostanete pokyn od podporného tímu spoločnosti Threema.</string>
     <string name="forward_security_cleared">Relácie Perfect Forward Secrecy s týmto kontaktom boli odstránené</string>
     <string name="message_without_forward_security">Bola prijatá správa bez Perfect Forward Secrecy. Overte, či odosielateľ úmyselne zakázal funkciu Perfect Forward Secrecy.</string>
+    <string name="forward_security_disabled">Pre túto konverzáciu je Perfect Forward Secrecy vypnuté.</string>
     <string name="forward_security_established">Správy s týmto partnerom sú teraz chránené technológiou Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Správy prijaté v tejto konverzácii sú odteraz chránené systémom Perfect Forward Secrecy (PFS).</string>
     <string name="forward_security_reset">Relácia Perfect Forward Secrecy bola resetovaná. Môže sa to stať, keď partner rozhovoru zmení zariadenie alebo preinštaluje aplikáciu.</string>
@@ -1446,6 +1447,8 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="prefs_sum_group_calls_vibration">Vyberte, či má po začatí skupinového hovoru vibrovať</string>
     <string name="forward_security_mode_4dh">Dokončené</string>
     <string name="forward_security_mode_2dh">Jednostranné</string>
+    <string name="forward_security_mode_all">Plný</string>
+    <string name="forward_security_mode_partial">Čiastočný</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) chráni zaznamenanú komunikáciu pred spätným dešifrovaním, aj keď je ohrozený dlhodobý šifrovací kľúč.\n\nToto je možné povoliť, ak aplikácia na oboch stranách podporuje PFS.</string>
     <string name="group_call_inactivity_left">Skupinový hovor prerušený z dôvodu nečinnosti</string>
     <string name="missing_permission_external_storage">Súbor nie je možné skopírovať. Vyskúšajte nasledujúce kroky:\n1. Otvorte Nastavenia systému.\n2. Prejdite na „Aplikácie“ a kliknite na aplikáciu Threema\n3. Kliknite na „Povolenia“.\n4. Kliknite na \"Súbory a médiá\" a uistite sa, že má aplikácia povolený prístup k médiám.\n5. Skúste znova obnoviť zálohu.</string>
@@ -1511,8 +1514,15 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="group_orphaned_notice">Táto skupina je osirelá, pretože jej tvorca ju opustil. Klonujte túto skupinu, aby ste sa stali novým správcom.</string>
     <string name="group_not_a_member_notice">Už nie ste súčasťou tejto skupiny a nemôžete ju ďalej používať.</string>
     <string name="group_dissolved_notice">Táto skupina bola zrušená a už sa nedá používať.</string>
+    <string name="md_linked_devices">Prepojené zariadenia</string>
+    <string name="md_link_device">Pripojiť nové zariadenie</string>
+    <string name="md_enable">Povoliť pripojené zariadenia</string>
+    <string name="md_linked_devices_empty">Stiahnite si odniekiaľ luxusného desktopového klienta a vzlietnite 🚀</string>
+    <string name="md_link_device_qr_scan_message">Naskenujte QR kód, prosím</string>
     <string name="directory_request_failed">Žiadosť o zložku sa nepodarila. Skúste to znova.</string>
     <string name="add_shortcut_exists">Odkaz pre tento cieľ už existuje.</string>
+    <string name="resend_message_dialog_title">Znovu odoslať skupinovú správu?</string>
+    <string name="resend_message_dialog_message">Táto správa nemohla byť odoslaná všetkým členom. Opätovne poslať správu na adresu %1$s?</string>
     <string name="work_lost_credentials_help">Zabudli ste svoje poverenia? Obráťte sa na vášho správcu %1$s.</string>
     <string name="problemsolver_intro">Niektoré problémy s konfiguráciou systému pravdepodobne bránia správnemu fungovaniu %s. Tieto problémy odstráňte podľa nižšie uvedených pokynov.</string>
     <string name="problemsolver_title">Oprava problémov s konfiguráciou</string>

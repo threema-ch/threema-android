@@ -155,6 +155,15 @@ internal abstract class BaseServerConnection(
                     socket.connect()
                     setConnectionState(ConnectionState.CONNECTED)
 
+                    // To prevent races where this while loop has been entered just before stop()
+                    // has been called, and stop() has been called before the socket was
+                    // initialized, check again if a reconnect is still allowed. Otherwise, close
+                    // the socket and abort connection.
+                    if (!reconnectAllowed.get()) {
+                        socket.close(ServerSocketCloseReason("Reconnect not allowed"))
+                        break
+                    }
+
                     // Handle IO until the connection dies
                     ioJob = launch { processIo() }
 

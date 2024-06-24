@@ -152,6 +152,7 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
             Pair(getPref("pref_key_chatdisplay"), intArrayOf(R.string.prefs_header_keyboard, R.string.media).reduce()),
             Pair(getPref("pref_key_particular_settings"), intArrayOf(R.string.prefs_image_size, R.string.prefs_auto_download_title, R.string.prefs_storage_mgmt_title).reduce()),
             getPrefOrNull<Preference>("pref_key_calls")?.let { Pair(it, intArrayOf(R.string.prefs_title_voip, R.string.video_calls, R.string.group_calls).reduce()) },
+            Pair(getPref("pref_key_rate"), ""),
             Pair(getPref("pref_key_about"), ""),
             Pair(getPref("pref_key_developers"), "")
     )

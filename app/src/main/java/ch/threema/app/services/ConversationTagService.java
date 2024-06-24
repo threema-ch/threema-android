@@ -23,7 +23,6 @@ package ch.threema.app.services;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 
 import java.util.List;
 
@@ -32,10 +31,6 @@ import ch.threema.storage.models.ConversationTagModel;
 import ch.threema.storage.models.TagModel;
 
 public interface ConversationTagService {
-	/**
-	 * Return all available {@link TagModel}
-	 */
-	List<TagModel> getTagModels();
 
 	/**
 	 * Select a {@link TagModel} by the key
@@ -43,19 +38,19 @@ public interface ConversationTagService {
 	@Nullable TagModel getTagModel(@NonNull String tagKey);
 
 	/**
-	 * Return all tags for the specified  {@link ConversationModel}.
-	 */
-	List<ConversationTagModel> getTagsForConversation(@NonNull final ConversationModel conversation);
-
-	/**
 	 * Tag the {@link ConversationModel} with the given {@link TagModel}
 	 */
-	boolean tag(@Nullable ConversationModel conversation, @Nullable TagModel tagModel);
+	void addTagAndNotify(@Nullable ConversationModel conversation, @Nullable TagModel tagModel);
 
 	/**
 	 * Untag the {@link ConversationModel} with the given {@link TagModel}
 	 */
-	@WorkerThread boolean unTag(@Nullable ConversationModel conversation, @Nullable TagModel tagModel);
+	void removeTagAndNotify(@Nullable ConversationModel conversation, @Nullable TagModel tagModel);
+
+	/**
+	 * Remove the given tag of the conversation with the provided conversation uid.
+	 */
+	void removeTag(@NonNull String conversationUid, @NonNull TagModel tagModel);
 
 	/**
 	 * Toggle the {@link TagModel} of the {@link ConversationModel}
@@ -73,14 +68,20 @@ public interface ConversationTagService {
 	void removeAll(@Nullable ConversationModel conversation);
 
 	/**
-	 * Remove all tags linked with the given {@link TagModel}
+	 * Remove all tags linked with the given conversation uid
 	 */
-	void removeAll(@Nullable TagModel tagModel);
+	void removeAll(@NonNull String conversationUid);
 
 	/**
 	 * Get all tags regardless of type
 	 */
 	List<ConversationTagModel> getAll();
+
+	/**
+	 * Get all conversation uids that are tagged with the provided type.
+	 */
+	@NonNull
+	List<String> getConversationUidsByTag(@NonNull TagModel tagModel);
 
 	/**
 	 * Return the number of conversations with the provided tag

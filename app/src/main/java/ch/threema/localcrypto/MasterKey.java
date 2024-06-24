@@ -21,8 +21,7 @@
 
 package ch.threema.localcrypto;
 
-import com.lambdaworks.crypto.SCrypt;
-
+import org.bouncycastle.crypto.generators.SCrypt;
 import org.slf4j.Logger;
 
 import java.io.DataInputStream;
@@ -525,11 +524,11 @@ public class MasterKey {
 					SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 					return factory.generateSecret(keySpec).getEncoded();
 				case SCRYPT:
-					return SCrypt.scrypt(new String(passphrase).getBytes(StandardCharsets.UTF_8), salt, SCRYPT_N, SCRYPT_R, SCRYPT_P, KEY_LENGTH);
+					return SCrypt.generate(new String(passphrase).getBytes(StandardCharsets.UTF_8), salt, SCRYPT_N, SCRYPT_R, SCRYPT_P, KEY_LENGTH);
 				default:
 					throw new RuntimeException("Unsupported protection type " + protectionType);
 			}
-		} catch (GeneralSecurityException e) {
+		} catch (GeneralSecurityException | IllegalArgumentException e) {
 			throw new RuntimeException(e);
 		}
 	}

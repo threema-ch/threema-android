@@ -12,7 +12,7 @@
     <string name="title_invite_friend">Fründe iilade</string>
     <string name="invite_via">Iilade über…</string>
     <string name="invite_email_body">Hallo\n\nIch bruuch %1$s, de sicheri Instant Messenger, wo d’Privatsphäre schützt.\n\nMini Threema-ID: https://threema.id/%2$s\n\nChum, mer chatted über %1$s!\n\nLiebi Grüess\n</string>
-    <string name="invite_sms_body">Hallo! Lah üs sicher und dateschutzkonform über %1$s kommuniziere! Mini Threema-ID: https://threema.id/%2$s</string>
+    <string name="invite_sms_body">Hallo! Chum, mer kommuniziered sicher und dateschutzkonform über %1$s! Mini Threema-ID: https://threema.id/%2$s</string>
     <string name="invite_email_subject">Threema. De sicheri Messenger, wo dini und mini Privatsphäre schützt</string>
     <string name="enter_id_hint">Threema-ID iigeh</string>
     <string name="account_links">Verchnüpfige</string>
@@ -35,7 +35,7 @@
     <string name="prefs_header_reset">Zruggsetze</string>
     <string name="prefs_header_keyboard">Tastatur</string>
     <string name="prefs_sum_sync_contacts_on">%s-Kontäkt mitem Adrässbuech vom System verbinde</string>
-    <string name="prefs_sum_sync_contacts_off">Verbindig zwüsched %s undem Adrässbuech entfernt</string>
+    <string name="prefs_sum_sync_contacts_off">Verbindig zwüsched %s undem Adrässbuech glöscht</string>
     <string name="prefs_title_sync_contacts">Kontäkt synchronisiere</string>
     <string name="prefs_sum_block_unknown_off">Jede cha Ihne Nachrichte schicke. Neui Kontäkt werded bi de erste Nachricht automatisch dezue taa.</string>
     <string name="prefs_sum_block_unknown_on">Nur Persone i Ihrere Kontaktliste chönd Ihne Nachrichte schicke.</string>
@@ -52,7 +52,7 @@
     <string name="prefs_light">Benachrichtigungsliecht</string>
     <string name="prefs_sum_light">Wiiss</string>
     <string name="prefs_title_wallpaper">Hindergrundbild uswähle</string>
-    <string name="prefs_sum_wallpaper">Bild fürde Hindergrund wähle</string>
+    <string name="prefs_sum_wallpaper">Bild fürde Hindergrund usläse</string>
     <string name="prefs_title_wallpaper_switch">Hindergrundbild</string>
     <string name="prefs_title_enter">Direkt verschicke</string>
     <string name="prefs_sum_enter_on">Iigabetaste verschickt d’Nachricht sofort</string>
@@ -105,7 +105,7 @@
     <string name="wizard2_phone_linking">Handynummere mitde ID verchnüpfe</string>
     <string name="wizard3_nickname_hint">Nickname iigeh</string>
     <string name="set_nickname_title">Nickname festlegge</string>
-    <string name="ok">Easy</string>
+    <string name="ok">Ja eh</string>
     <string name="cancel">Abbräche</string>
     <string name="copy_message_action">Kopiere</string>
     <string name="delete_contact_action">Kontakt lösche</string>
@@ -157,10 +157,10 @@
     <string name="password_hint">Passwort</string>
     <string name="generating_backup_data">ID wird verschlüsslet</string>
     <string name="backup_id_title">Ihre ID-Export</string>
-    <string name="backup_id_summary">Die Zeichefolg oder de QR-Code cha zäme mitem gwählte Passwort zum Wiederherstelle vo Ihrere ID ufeme andere Grät bruucht werde. Sie chönd die Date mittels Kopiere und Iifüege amene geeignete Ort ablegge, usdrucke, sich sälber über d’Teile-Funktion per E-Mail schicke oder de QR-Code miteme andere Grät scanne.</string>
+    <string name="backup_id_summary">D’Zeichefolg oder de QR-Code cha zäme mitem gwählte Passwort zum Wiederherstelle vo Ihrere ID ufeme andere Grät bruucht werde. Sie chönd die Date mittels Kopiere und Iifüege amene geeignete Ort ablegge, usdrucke, sich sälber über d’Teile-Funktion per E-Mail schicke oder de QR-Code miteme andere Grät scanne.</string>
     <string name="support">Hilfe</string>
     <string name="support_url">https://threema.ch/android/support/</string>
-    <string name="backup_share_content">Die folgendi Zeichefolg cha zäme mitem gwählte Passwort zum Wiederherstelle vo Ihrere Threema-ID bruucht werde.</string>
+    <string name="backup_share_content">Di folgendi Zeichefolg cha zäme mitem gwählte Passwort zum Wiederherstelle vo Ihrere Threema-ID bruucht werde.</string>
     <string name="backup_share_subject">Threema-ID-Export für</string>
     <string name="add_attachment">Iifüege</string>
     <string name="invalid_passphrase">Ungültigi Passphrase</string>
@@ -210,7 +210,7 @@
     <string name="acknowledge">Bestätige</string>
     <string name="decline">Ablehne</string>
     <string name="forward_message">Wiiterleite</string>
-    <string name="file_is_not_a_image">Die usgwählti Datei isch kei Bilddatei.</string>
+    <string name="file_is_not_a_image">Di usgwählti Datei isch kei Bilddatei.</string>
     <string name="connection_error">Verbindigsfehler, bitte versueched Sie’s spöter nomal.</string>
     <string name="me_myself_and_i">Ich</string>
     <string name="really_forward">Wiiterleite a «%1$s»?</string>
@@ -363,7 +363,7 @@
     <string name="prefs_validate_contacts">Kontaktverbindig überprüefe</string>
     <string name="prefs_validate_contacts_loading">Kontaktverbindig in Überprüefig</string>
     <string name="prefs_title_fullscreen_ime">Bildschirmfüllendi Tastatur</string>
-    <string name="prefs_sum_fullscreen_ime_on">Die Tastatur füllt im Querformat de ganz Bildschirm</string>
+    <string name="prefs_sum_fullscreen_ime_on">D’Tastatur füllt im Querformat de ganz Bildschirm</string>
     <string name="prefs_sum_fullscreen_ime_off">Oberhalb vode Tastatur wird en Uusschnitt vom Chat aazeigt</string>
     <string name="add_acount_from_within_threema">Erstelled Sie e neui ID vo de Threema-App us.</string>
     <string name="save_image">Bild speichere</string>
@@ -373,14 +373,14 @@
     <string name="internet_connection_required">Kei Internet-Verbindig.</string>
     <string name="prefs_sum_save_media">Iigehendi Bilder und Videos sowie usgehendi Kamerabilder unverschlüsslet sichere</string>
     <string name="prefs_save_media">Ide Galerie speichere</string>
-    <string name="title_add_distribution_list">Neui Verteilerliste</string>
-    <string name="title_edit_distribution_list">Verteilerliste bearbeite</string>
-    <string name="really_delete_distribution_list">Verteilerliste lösche</string>
-    <string name="really_delete_distribution_list_message">Wänd Sie die Verteilerliste würklich lösche?</string>
+    <string name="title_add_distribution_list">Neui Verteilerlischte</string>
+    <string name="title_edit_distribution_list">Verteilerlischte bearbeite</string>
+    <string name="really_delete_distribution_list">Verteilerlischte lösche</string>
+    <string name="really_delete_distribution_list_message">Wänd Sie die Verteilerlischte würklich lösche?</string>
     <string name="enter_distribution_list_name">Wähled Sie en Name für die Liste</string>
-    <string name="distribution_list">Verteilerliste</string>
-    <string name="title_tab_distribution_list">Verteilerliste</string>
-    <string name="no_matching_distribution_lists">No kei Verteilerliste definiert.</string>
+    <string name="distribution_list">Verteilerlischte</string>
+    <string name="title_tab_distribution_list">Verteilerlischte</string>
+    <string name="no_matching_distribution_lists">No kei Verteilerlischte definiert.</string>
     <string name="is_typing">schriibt grad…</string>
     <string name="push_not_available_title">Push-Dienst nöd verfüegbar</string>
     <string name="push_not_available_text1">Kein Push-Dienst uf Ihrem Grät gfunde, wil Google-Play-Dienst fehled oder nöd aktuell sind.</string>
@@ -470,7 +470,7 @@
     <string name="wearable_reply">Antworte</string>
     <string name="wearable_reply_label">Antwort a %s</string>
     <string name="message_acknowledged">Nachricht bestätigt</string>
-    <string name="push_disable_text">Wenn Sie wiitermached, wird «Threema Push» statt de Push-Dienst vom System bruucht. Das treit dezue bii, Ihre digital Fuessabdruck chliner z’mache, defür muess Ihres Grät so konfiguriert sii, dass d’App im Hindergrund cha usgfüehrt werde. Kontaktiered Sie ggf. de Support vo Ihrem Grätehersteller für Unterstützig bide Konfiguration, falls die entsprächende Optione ide Gräteiistellige nöd uffindbar sind.</string>
+    <string name="push_disable_text">Wenn Sie wiitermached, wird «Threema Push» statt de Push-Dienst vom System bruucht. Das treit dezue bii, Ihre digital Fuessabdruck chliner z’mache, defür muess Ihres Grät so konfiguriert sii, dass d’App im Hindergrund cha usgfüehrt werde. Kontaktiered Sie ggf. de Support vo Ihrem Grätehersteller für Unterstützig bide Konfiguration, falls di entsprächende Optione ide Gräteiistellige nöd uffindbar sind.</string>
     <string name="ballot_intermediate_results_show">Zwüscheresultat zeige</string>
     <string name="converting_video">Video wird bearbeitet</string>
     <string name="video_size_small">Höch (chliini Datemängi)</string>
@@ -761,7 +761,7 @@
     <string name="profile_picture_release">Wer cha Ihres Profilbild gseh?</string>
     <string name="picrelease_nobody">Niemer</string>
     <string name="picrelease_selected">Usgwählti Kontäkt</string>
-    <string name="picrelease_everyone">Alli, wo sie schriibed</string>
+    <string name="picrelease_everyone">All, dene Sie schribed</string>
     <string name="prefs_title_receive_profilepics">Profilbilder aazeige</string>
     <string name="prefs_sum_receive_profilepics_off">Profilbilder vo Ihrne Kontäkt uusblände</string>
     <string name="prefs_sum_receive_profilepics_on">Profilbilder vo Ihrne Kontäkt aazeige</string>
@@ -852,7 +852,7 @@
     <string name="tooltip_imagepaint">Werded Sie kreativ! Tipped Sie ufde Zauberstaab, zum z’chritzle oder vorem Schicke Sticker oder Text zu Ihrne Bilder hinzuezfüege.</string>
     <string name="call_ongoing">Aruef lauft</string>
     <string name="ballot_received_votes">Iigangeni Stimme: %1$d/%2$d</string>
-    <string name="quote_not_found">Zitiert Nachricht nöd gfunde</string>
+    <string name="quote_not_found">Zitierti Nachricht nöd gfunde</string>
     <string name="ballot_secret">gheim</string>
     <string name="password_too_short_generic">Passwort isch z’churz</string>
     <string name="passwords_dont_match">Kei Übereinstimmig</string>
@@ -1049,7 +1049,7 @@
     <string name="permission_record_video_audio_required">Bitte aktiviered Sie d’Mikrofon-Berächtigung, zum Videos mit Ton ufneh z’chöne</string>
     <string name="media_files">Dateie</string>
     <string name="auto_download_limit_explain">Videos und Dateie mit meh als %s werded immer uf Verlange abeglade</string>
-    <string name="quoted_message_deleted">Zitiert Nachricht isch nüme verfüegbar</string>
+    <string name="quoted_message_deleted">Di zitiert Nachricht isch nüme verfüegbar</string>
     <string name="searching">Wird gsuecht…</string>
     <string name="prefs_work_life_balance">Nöd störe</string>
     <string name="prefs_title_working_days">Arbetstäg</string>
@@ -1288,8 +1288,8 @@
     <string name="reset_default_group_link_title">Zruggsetze Info</string>
     <string name="reset_default_group_link_desc">De vorher teilti Link isch somit ungültig, und Aafrage über de alt Link werded automatisch abglehnt.</string>
     <string name="custom">anderi</string>
-    <string name="show_public_key">Öffentlich Schlüssel aazeige</string>
-    <string name="public_key_for">Öffentlich Schlüssel vo %s</string>
+    <string name="show_public_key">Öffentliche Schlüssel aazeige</string>
+    <string name="public_key_for">Öffentliche Schlüssel vo %s</string>
     <string name="copied">Kopiert</string>
     <string name="no_votes_yet">Bis jetzt sind no kei Stimme abgeh worde.</string>
     <string name="permission_contacts_sync_required">Erlaubed Sie bitte de Zuegriff uf d’Kontäkt, zum sie z’synchronisiere.</string>
@@ -1359,6 +1359,7 @@
     <string name="clear_forward_security_warning">Füehred Sie die Aktion nur us, wenn Sie vom Threema-Support explizit dezue ufgforderet worde sind.</string>
     <string name="forward_security_cleared">Perfect-Forward-Secrecy-Sitzige mit dem Kontakt sind glöscht worde</string>
     <string name="message_without_forward_security">E Nachricht ohni Perfect Forward Secrecy isch empfange worde. Stelled Sie sicher, dass de Absänder absichtlich Perfect Forward Secrecy deaktiviert hät.</string>
+    <string name="forward_security_disabled">Perfect Forward Secrecy isch für de Chat deaktiviert.</string>
     <string name="forward_security_established">Nachrichte mit dem Kontakt sind jetzt dur Perfect Forward Secrecy gschützt.</string>
     <string name="forward_security_established_rx">Nachrichte, wo i dem Chat empfange werded, sind jetzt dur Perfect Forward Secrecy gschützt.</string>
     <string name="forward_security_reset">D’Perfect-Forward-Secrecy-Sitzig isch zrugggsetzt worde. Das cha passiere, wenn de Chat-Partner es neus Grät verwändet oder d’App neu installiert hät.</string>
@@ -1430,6 +1431,8 @@
     <string name="prefs_sum_group_calls_vibration">Vibriere, wenn en Gruppearuef gstartet worde isch</string>
     <string name="forward_security_mode_4dh">vollständig</string>
     <string name="forward_security_mode_2dh">einsiitig</string>
+    <string name="forward_security_mode_all">all</string>
+    <string name="forward_security_mode_partial">teilwiis</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) schützt e uufzeichneti Kommunikation vor nachträglicher Entschlüsslig au bi Kenntnis vom Langziitschlüssel.\n\nDie Option cha aktiviert werde, wenn d’App uf beide Siite PFS unterstützt.</string>
     <string name="group_call_inactivity_left">Gruppearuef wäge Inaktivität verlaa</string>
     <string name="missing_permission_external_storage">Fehler bim Kopiere vode Datei. Versueched Sie folgendi Schritt:\n1. Mached Sie uf Ihrem Handy d’App «Einstellungen» uf.\n2. Navigiered Sie zu «Apps».\n3. Tipped Sie uf «Zugriff auf alle Dateien».\n4. Tipped Sie uf die drü Pünkt obe und wähled Sie «System Apps anzeigen».\n5. Tipped Sie uf «Externer Speicher» und stelled Sie sicher, dass «Zugriff zum Verwalten aller Dateien zulassen» aktiviert isch.\n6. Versueched Sie nomal, s’Date-Backup wiederherzstelle.</string>
@@ -1495,8 +1498,13 @@
     <string name="group_orphaned_notice">Die Gruppe isch verwaist, wil de Gruppe-Ersteller d’Gruppe verlaa hät. Bitte chloned Sie d’Gruppe, zum de neu Adminstrator z’werde.</string>
     <string name="group_not_a_member_notice">Sie sind nüme Mitglied vo dere Gruppe und chönd Sie nüme bruuche.</string>
     <string name="group_dissolved_notice">Die Gruppe isch ufglöst worde und cha nüme bruucht werde.</string>
+    <string name="md_linked_devices">Verchnüpfti Grät</string>
+    <string name="md_link_device">Neus Grät verchnüpfe</string>
+    <string name="md_enable">Verchnüpfti Grät zuelaa</string>
     <string name="directory_request_failed">Verzeichnis-Abfrag fehlgschlage. Versueched Sie’s nomal.</string>
     <string name="add_shortcut_exists">E Verchnüpfig für das Ziil existiert scho.</string>
+    <string name="resend_message_dialog_title">Gruppenachricht nomal schicke?</string>
+    <string name="resend_message_dialog_message">Die Nachricht hät nöd a all Mitglieder chöne verschickt werde. Wänd Sie die Nachricht nomal a %1$s schicke?</string>
     <string name="work_lost_credentials_help">Zuegangsdate vergässe? – Mäldet Sie sich bi Ihrem %1$s-Administrator.</string>
     <string name="problemsolver_intro">Konfigurationsproblem ide Systemiistellige verhinderet möglicherwiis, dass %s korrekt funktioniert. Bitte behebed Sie die Problem, indem Sie de folgende Aaleitige folged.</string>
     <string name="problemsolver_title">Konfigurationsproblem behebe</string>

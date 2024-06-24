@@ -1368,6 +1368,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="clear_forward_security_warning">Deze actie alleen uitvoeren wanneer je hiertoe door de Klantenservice van Threema wordt geïnstrueerd.</string>
     <string name="forward_security_cleared">De Perfect Forward Secrecy-sessies met deze contactpersoon zijn gewist</string>
     <string name="message_without_forward_security">Er is een bericht zonder Perfect Forward Secrecy ontvangen. Controleer of de afzender Perfect Forward Secrecy opzettelijk heeft uitgeschakeld.</string>
+    <string name="forward_security_disabled">Perfect Forward Secrecy is uitgeschakeld voor deze chat.</string>
     <string name="forward_security_established">De berichten met deze chatpartner zijn nu beschermd met Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">De ontvangen berichten in deze chat zijn nu beschermd met Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">De Perfect Forward Secrecy-sessie is gereset. Dit kan gebeuren wanneer de gesprekspartner een ander apparaat gebruikt of de app opnieuw installeert.</string>
@@ -1439,6 +1440,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_sum_group_calls_vibration">Selecteer of u een trilling wilt wanneer een groepsgesprek is gestart</string>
     <string name="forward_security_mode_4dh">Voltooid</string>
     <string name="forward_security_mode_2dh">Eenzijdig</string>
+    <string name="forward_security_mode_all">Volledig</string>
+    <string name="forward_security_mode_partial">Gedeeltelijk</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beschermt opgenomen communicatie tegen ontsleuteling met terugwerkende kracht, zelfs wanneer de lange termijn-coderingssleutel gecomprimeerd is.\n\nDe optie kan worden ingeschakeld als de app aan beide zijden PFS ondersteunt.</string>
     <string name="group_call_inactivity_left">Groepsgesprek verlaten vanwege inactiviteit</string>
     <string name="missing_permission_external_storage">Het bestand kon niet worden gekopieerd. Probeer de volgende stappen:\n1. Open de Instellingen-app.\n2. Ga naar \'Apps\' en kies \'Speciale apptoegang\'.\n3. Tik op \'Toegang tot alle bestanden\'.\n4. Tik op de drie stippen rechts bovenaan en kies \'Systeem tonen\'.\n5. Tik op \'Externe opslag\' en zorg dat \'Toegang voor het beheren van alle bestanden toestaan\' verleend is.\n6. Probeer de back-up opnieuw te herstellen.</string>
@@ -1504,8 +1507,15 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="group_orphaned_notice">Deze groep is een orphan omdat de maker de groep heeft verlaten. Kloon deze groep om de nieuwe beheerder te worden.</string>
     <string name="group_not_a_member_notice">U maakt geen deel meer uit van deze groep en kunt deze niet langer gebruiken.</string>
     <string name="group_dissolved_notice">Deze groep is opgeheven en kan niet langer worden gebruikt.</string>
+    <string name="md_linked_devices">Gekoppelde apparaten</string>
+    <string name="md_link_device">Koppel een nieuw apparaat</string>
+    <string name="md_enable">Gekoppelde apparaten inschakelen</string>
+    <string name="md_linked_devices_empty">Zorg dat u deze leuke desktopclient download en ga aan de slag 🚀</string>
+    <string name="md_link_device_qr_scan_message">Scan de QR-code</string>
     <string name="directory_request_failed">Directory-aanvraag is mislukt. Probeer het opnieuw.</string>
     <string name="add_shortcut_exists">Er bestaat al een snelkoppeling voor dit doel.</string>
+    <string name="resend_message_dialog_title">Het groepsbericht opnieuw verzenden?</string>
+    <string name="resend_message_dialog_message">Dit bericht is niet naar alle leden verzonden. Het bericht opnieuw verzenden naar %1$s?</string>
     <string name="work_lost_credentials_help">Bent u uw toegangsgegevens vergeten? Neem contact op met de beheerder van %1$s.</string>
     <string name="problemsolver_intro">Een paar problemen met de systeemconfiguratie kunnen verhinderen dat %s juist werkt. Volg de onderstaande instructies om deze problemen op te lossen.</string>
     <string name="problemsolver_title">Configuratieproblemen oplossen</string>
@@ -1552,6 +1562,10 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <plurals name="new_messages">
         <item quantity="one">%d nieuw bericht</item>
         <item quantity="other">%d nieuwe berichten</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="one">%d ongelezen bericht</item>
+        <item quantity="other">%d ongelezen berichten</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="one">%d bestand is opgeslagen.</item>

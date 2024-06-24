@@ -20,12 +20,20 @@
  */
 
 package ch.threema.app.services.license;
+import org.slf4j.Logger;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.onprem.UnauthorizedFetchException;
 import ch.threema.domain.protocol.api.APIConnector;
 
 abstract public class  LicenseServiceThreema<T extends LicenseService.Credentials>  implements LicenseService<T> {
+	private static final Logger logger = LoggingUtil.getThreemaLogger("LicenseServiceThreema");
+
 	protected final APIConnector apiConnector;
 	protected final PreferenceService preferenceService;
 	private final String deviceId;
@@ -49,15 +57,37 @@ abstract public class  LicenseServiceThreema<T extends LicenseService.Credential
 	}
 
 	@Override
+	@Nullable
+	@WorkerThread
 	public String validate(T credentials) {
 		return this.validate(credentials, false);
 	}
 
-	/**
-	 * Validate the license credentials and check for updates.
-	 */
 	@Override
-	public String validate(T credentials, boolean allowException) {
+	@Nullable
+	@WorkerThread
+	public String validate(boolean allowException) {
+		T credentials = this.loadCredentials();
+		if(credentials != null) {
+			return this.validate(credentials, allowException);
+		}
+		return "no license";
+	}
+
+	/**
+	 * Validate the license credentials. If the credentials validate, the licensed state
+	 * will be set to `true` and saved. In case of success also an update message and update url
+	 * (if available) are retrieved.
+	 * If the validation yields an invalid result, the licensed state will be set to `false`.
+	 *
+	 * @param credentials holder of the credential values
+	 * @param allowException If true, general exceptions will be ignored
+	 * @return In case of success `null` is returned. If validation failed an error message will be
+	 *         returned
+	 */
+	@Nullable
+	@WorkerThread
+	private String validate(T credentials, boolean allowException) {
 		APIConnector.CheckLicenseResult result;
 		try {
 			result = this.checkLicense(credentials, deviceId);
@@ -69,8 +99,7 @@ abstract public class  LicenseServiceThreema<T extends LicenseService.Credential
 				this.saveCredentials(credentials);
 				this.preferenceService.setLicensedStatus(true);
 				this.isLicensed = true;
-			}
-			else {
+			} else {
 				this.preferenceService.setLicensedStatus(false);
 				this.isLicensed = false;
 				return result.error;
@@ -78,14 +107,32 @@ abstract public class  LicenseServiceThreema<T extends LicenseService.Credential
 		} catch (UnauthorizedFetchException e) {
 			// Treat unauthorized OPPF fetch like (temporarily) bad license
 			this.isLicensed = false;
-			return e.getMessage();
+			return getExceptionMessageOrDefault(
+				e,
+				"Unauthorized"
+			);
 		} catch (Exception e) {
 			if(!allowException) {
-				return e.getMessage();
+				return getExceptionMessageOrDefault(
+					e,
+					"Error during validation"
+				);
+			} else {
+				logger.warn("Could not validate credentials", e);
 			}
 		}
-
 		return null;
+	}
+
+	@NonNull
+	private String getExceptionMessageOrDefault(
+		@NonNull Throwable t,
+		@NonNull String defaultMessage
+	) {
+		String message = t.getMessage();
+		return message == null
+			? defaultMessage
+			: message;
 	}
 
 	public String getUpdateMessage() {
@@ -109,15 +156,14 @@ abstract public class  LicenseServiceThreema<T extends LicenseService.Credential
 		return this.isLicensed;
 	}
 
-	@Override
-	public String validate(boolean allowException) {
-		T credentials = this.loadCredentials();
-		if(credentials != null) {
-			return this.validate(credentials, allowException);
-		}
-		return "no license";
-	}
+	/**
+	 * Save the credentials. Note that the credentials will override existing credentials, even if
+	 * the new credentials are invalid.
+	 *
+	 * @param credentials The credentials to save
+	 */
+	abstract public void saveCredentials(T credentials);
 
+	@WorkerThread
 	abstract protected APIConnector.CheckLicenseResult checkLicense(T credentials, String deviceId) throws Exception;
-	abstract protected void saveCredentials(T credentials);
 }

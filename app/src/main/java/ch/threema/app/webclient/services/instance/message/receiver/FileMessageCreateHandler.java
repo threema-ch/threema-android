@@ -35,7 +35,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +56,10 @@ import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.utils.MimeUtil.MIME_TYPE_AUDIO_OGG;
+import static ch.threema.app.utils.MimeUtil.MIME_TYPE_IMAGE_JPEG;
+import static ch.threema.app.utils.MimeUtil.MIME_TYPE_IMAGE_JPG;
+import static ch.threema.app.utils.MimeUtil.MIME_TYPE_IMAGE_PNG;
 
 @WorkerThread
 public class FileMessageCreateHandler extends MessageCreateHandler {
@@ -68,14 +72,15 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 	private static final String FIELD_CAPTION = "caption";
 	private static final String FIELD_SEND_AS_FILE = "sendAsFile";
 
-	private static final List<String> IMAGE_MIME_TYPES = new ArrayList<String>() {{
-		add("image/png");
-		add("image/jpg");
-		add("image/jpeg");
-	}};
-	private static final List<String> AUDIO_MIME_TYPES = new ArrayList<String>() {{
-		add("audio/ogg");
-	}};
+	private static final List<String> IMAGE_MIME_TYPES = Arrays.asList(
+		MIME_TYPE_IMAGE_PNG,
+		MIME_TYPE_IMAGE_JPG,
+		MIME_TYPE_IMAGE_JPEG
+	);
+
+	private static final List<String> AUDIO_MIME_TYPES = List.of(
+		MIME_TYPE_AUDIO_OGG
+	);
 
 	private final FileService fileService;
 
@@ -84,8 +89,8 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 	                                MessageService messageService,
 	                                FileService fileService,
 	                                LifetimeService lifetimeService,
-	                                IdListService blackListservice) {
-		super(Protocol.SUB_TYPE_FILE_MESSAGE, dispatcher, messageService, lifetimeService, blackListservice);
+	                                IdListService blackListService) {
+		super(Protocol.SUB_TYPE_FILE_MESSAGE, dispatcher, messageService, lifetimeService, blackListService);
 
 		this.fileService = fileService;
 	}
@@ -141,6 +146,14 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 			BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(ThreemaApplication.getAppContext(), Uri.fromFile(file));
 			exifRotation = (int) exifOrientation.getRotation();
 			exifFlip = exifOrientation.getFlip();
+		} else if (!sendAsFile && MimeUtil.isAnimatedImageFormat(mimeType)) {
+			mediaType = MediaItem.TYPE_IMAGE_ANIMATED;
+			renderingType = FileData.RENDERING_MEDIA;
+			if (MimeUtil.isWebPFile(mimeType)) {
+				BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(ThreemaApplication.getAppContext(), Uri.fromFile(file));
+				exifRotation = (int) exifOrientation.getRotation();
+				exifFlip = exifOrientation.getFlip();
+			}
 		} else if (!sendAsFile && FileMessageCreateHandler.AUDIO_MIME_TYPES.contains(mimeType)) {
 			mediaType = MediaItem.TYPE_VOICEMESSAGE;
 			renderingType = FileData.RENDERING_DEFAULT;

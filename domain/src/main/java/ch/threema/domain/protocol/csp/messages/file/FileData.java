@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
 public class FileData {
@@ -200,6 +201,9 @@ public class FileData {
 
 			try {
 				fileData.encryptionKey = Utils.hexStringToByteArray(o.getString(KEY_ENCRYPTION_KEY));
+				if (fileData.encryptionKey.length != ProtocolDefines.BLOB_KEY_LEN) {
+					throw new BadMessageException("Invalid encryption key length: " + fileData.encryptionKey.length);
+				}
 			}
 			catch (IllegalArgumentException e) {
 				throw new BadMessageException("TM040");

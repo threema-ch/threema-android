@@ -1384,6 +1384,7 @@ Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
     <string name="clear_forward_security_warning">Completa questa azione solo qualora ti venga richiesta dal team di assistenza di Threema.</string>
     <string name="forward_security_cleared">Le sessioni Perfect Forward Secrecy con questo contatto sono state cancellate</string>
     <string name="message_without_forward_security">È stato ricevuto un messaggio senza Perfect Forward Secrecy. Assicurati che il mittente abbia volutamente disattivato il Perfect Forward Secrecy.</string>
+    <string name="forward_security_disabled">Perfect Forward Secrecy è stato disabilitato per questa chat.</string>
     <string name="forward_security_established">I messaggi con questo contatto sono d\'ora in poi protetti da Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">I messaggi ricevuti in questa chat sono d\'ora in poi protetti da Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">La sessione Perfect Forward Secrecy con questo contatto è stata reimpostata. Ciò può succedere se il contatto ha cambiato dispositivo o reinstallato l\'app.</string>
@@ -1455,6 +1456,8 @@ Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
     <string name="prefs_sum_group_calls_vibration">Vibrazione all\'avvio di una chiamata di gruppo</string>
     <string name="forward_security_mode_4dh">Completata</string>
     <string name="forward_security_mode_2dh">Unilaterale</string>
+    <string name="forward_security_mode_all">completo</string>
+    <string name="forward_security_mode_partial">in parte</string>
     <string name="forward_security_explanation">La Perfect Forward Secrecy (PFS) protegge le comunicazioni registrate contro qualsiasi decodifica retroattiva, anche se la chiave di codifica a lungo termine è nota.\n\nL\'opzione può essere attivata se l\'app di entrambe le parti supporta la PFS.</string>
     <string name="group_call_inactivity_left">Abbandona chiamata di gruppo per inattività</string>
     <string name="missing_permission_external_storage">Errore durante la copia del file. Prova a seguire questi passi:\n1. Apri sul telefono l\'app «Impostazioni».\n2. Vai su «App».\n3. Tocca su «Accedere a tutti i file».\n4. Tocca sui tre punti in alto e seleziona «Visualizza app di sistema».\n5. Tocca su «Memoria esterna» e verifica che sia attivo «Autorizza accesso per gestire tutti i file».\n6. Riprova a ripristinare il backup dei dati.</string>
@@ -1522,6 +1525,8 @@ Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
     <string name="group_dissolved_notice">Questo gruppo è stato chiuso e non può più essere utilizzato.</string>
     <string name="directory_request_failed">Consultazione della directory non riuscita. Riprova.</string>
     <string name="add_shortcut_exists">Esiste già un collegamento con questo obiettivo.</string>
+    <string name="resend_message_dialog_title">Ripetere invio messaggio di gruppo?</string>
+    <string name="resend_message_dialog_message">Non è stato possibile inviare questo messaggio a tutti i membri. Vuoi ripetere l\'invio del messaggio a %1$s?</string>
     <string name="work_lost_credentials_help">Hai dimenticato le credenziali? Contatta l\'amministratore %1$s.</string>
     <string name="problemsolver_intro">Problemi di configurazione nelle impostazioni del sistema possono impedire il corretto funzionamento di %s. Per risolvere il problema segui le istruzioni riportate di seguito.</string>
     <string name="problemsolver_title">Risolvere problemi di configurazione</string>

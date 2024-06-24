@@ -43,7 +43,7 @@ public class AvatarGlideModule extends AppGlideModule {
 
 	@Override
 	public void applyOptions(@NonNull Context context, @NonNull GlideBuilder builder) {
-		builder.setDefaultRequestOptions(new RequestOptions().format(DecodeFormat.PREFER_RGB_565));
+		builder.setDefaultRequestOptions(new RequestOptions().format(DecodeFormat.PREFER_ARGB_8888));
 	}
 
 	@Override

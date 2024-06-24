@@ -1,3 +1,5 @@
+HINWEIS: Für Threema Libre wird ein Lizenzcode benötigt. Dieser kann unter https://shop.threema.ch gekauft werden.
+
 Threema ist der weltweit meistverkaufte sichere Messenger und schützt Ihre Daten vor dem Zugriff durch Hacker, Unternehmen und Regierungen. Der Dienst kann völlig anonym (ohne Angabe einer Telefonnummer oder E-Mail-Adresse) verwendet werden. Threema ist Open Source und bietet alle Funktionen, die man von einer modernen Instant Messaging-App erwartet. Es lassen sich Ende-zu-Ende-verschlüsselte Sprach-, Video- und Gruppenanrufe durchführen, und die Desktop-App sowie der Web-Client erlauben, Threema bequem vom PC aus zu nutzen.
 
 Im Gegensatz zur Version auf Google Play enthält Threema Libre keine proprietären Bibliotheken / Komponenten (wie Google Play Services).

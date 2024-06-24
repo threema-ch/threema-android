@@ -38,13 +38,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.routines.UpdateWorkInfoRoutine;
+import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.app.services.license.UserCredentials;
+import ch.threema.app.stores.PreferenceStoreInterface;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -85,8 +93,7 @@ public class AppRestrictionService {
 	 */
 	public void storeWorkMDMSettings(@NonNull final WorkMDMSettings settings) {
 		if (!Objects.equals(this.workMDMSettings, settings)) {
-			if (ThreemaApplication.getServiceManager() != null
-					&& ThreemaApplication.getServiceManager().getPreferenceStore() != null) {
+			if (ThreemaApplication.getServiceManager() != null) {
 				logger.debug("Store work mdm settings");
 				ThreemaApplication.getServiceManager().getPreferenceStore()
 						.save(PREFERENCE_KEY, convert(settings), true);
@@ -102,13 +109,15 @@ public class AppRestrictionService {
 	public WorkMDMSettings getWorkMDMSettings() {
 		if (this.workMDMSettings == null) {
 			// Load from preference store
-			if (ThreemaApplication.getServiceManager() != null
-					&& ThreemaApplication.getServiceManager().getPreferenceStore() != null) {
-				JSONObject object = ThreemaApplication.getServiceManager().getPreferenceStore()
-						.getJSONObject(PREFERENCE_KEY, true);
-
-				if (object != null) {
-					this.workMDMSettings = filterWorkMdmSettings(convert(object));
+			if (ThreemaApplication.getServiceManager() != null) {
+				PreferenceStoreInterface preferenceStore = ThreemaApplication.getServiceManager().getPreferenceStore();
+				if (preferenceStore.containsKey(PREFERENCE_KEY, true)) {
+					JSONObject object = preferenceStore.getJSONObject(PREFERENCE_KEY, true);
+					if (object != null) {
+						this.workMDMSettings = filterWorkMdmSettings(convert(object));
+					}
+				} else {
+					logger.warn("No work mdm settings stored");
 				}
 			}
 		}
@@ -117,11 +126,11 @@ public class AppRestrictionService {
 
 	/**
 	 * Get the source of active mdm parameters in text representation.
-	 *
+	 * <p>
 	 * If at least one Threema-MDM parameter and at least one external MDM parameter is active, "me" is returned.
 	 * If at least one Threema-MDM parameter is active, append "m" is returned.
 	 * If at least one external MDM parameter is active, append "e" is returned.
-	 *
+	 * <p>
 	 * (See "Update Work Info" in documentation)
 	 *
 	 * @return the source(s) of active mdm parameters as text, null if no mdm parameters are active
@@ -176,7 +185,7 @@ public class AppRestrictionService {
 	 * @return true if Threema MDM is active
 	 */
 	private boolean hasThreemaMDMRestrictions() {
-		return this.workMDMSettings != null && this.workMDMSettings.parameters != null && this.workMDMSettings.parameters.size() > 0;
+		return this.workMDMSettings != null && this.workMDMSettings.parameters != null && !this.workMDMSettings.parameters.isEmpty();
 	}
 
 	/**
@@ -220,8 +229,9 @@ public class AppRestrictionService {
 	 */
 	public void reload() {
 		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-			RestrictionsManager restrictionsManager = (RestrictionsManager)
-				ThreemaApplication.getAppContext().getSystemService(Context.RESTRICTIONS_SERVICE);
+			RestrictionsManager restrictionsManager = (RestrictionsManager) ThreemaApplication
+				.getAppContext()
+				.getSystemService(Context.RESTRICTIONS_SERVICE);
 			this.appRestrictions = restrictionsManager.getApplicationRestrictions();
 		}
 
@@ -229,7 +239,11 @@ public class AppRestrictionService {
 			this.appRestrictions = new Bundle();
 		}
 
-		hasExternalMDMRestrictions = this.appRestrictions.size() > 0;
+		hasExternalMDMRestrictions = !this.appRestrictions.isEmpty();
+
+		if (ConfigUtils.isWorkBuild() && hasExternalMDMRestrictions) {
+			updateUserCredentials();
+		}
 
 		WorkMDMSettings settings = this.getWorkMDMSettings();
 
@@ -241,17 +255,13 @@ public class AppRestrictionService {
 				{
 					if (miniMDMSetting.getValue() instanceof Integer) {
 						appRestrictions.putInt(miniMDMSetting.getKey(), (Integer)miniMDMSetting.getValue());
-					}
-					else if (miniMDMSetting.getValue() instanceof Boolean) {
+					} else if (miniMDMSetting.getValue() instanceof Boolean) {
 						appRestrictions.putBoolean(miniMDMSetting.getKey(), (Boolean)miniMDMSetting.getValue());
-					}
-					else if (miniMDMSetting.getValue() instanceof String) {
+					} else if (miniMDMSetting.getValue() instanceof String) {
 						appRestrictions.putString(miniMDMSetting.getKey(), (String)miniMDMSetting.getValue());
-					}
-					else if (miniMDMSetting.getValue() instanceof Long) {
+					} else if (miniMDMSetting.getValue() instanceof Long) {
 						appRestrictions.putLong(miniMDMSetting.getKey(), (Long)miniMDMSetting.getValue());
-					}
-					else if (miniMDMSetting.getValue() instanceof Double) {
+					} else if (miniMDMSetting.getValue() instanceof Double) {
 						appRestrictions.putDouble(miniMDMSetting.getKey(), (Double)miniMDMSetting.getValue());
 					}
 				}
@@ -313,6 +323,109 @@ public class AppRestrictionService {
 			}
 		}
 		return json;
+	}
+
+	/**
+	 * Update the stored credentials if changed username or password are provided via mdm.
+	 * */
+	private void updateUserCredentials() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			Context context = serviceManager.getContext();
+			@Nullable String mdmUsername = getStringRestriction(context.getString(R.string.restriction__license_username));
+			@Nullable String mdmPassword = getStringRestriction(context.getString(R.string.restriction__license_password));
+
+			if (TestUtil.empty(mdmUsername) && TestUtil.empty(mdmPassword)) {
+				logger.debug("No credentials provided via mdm");
+				return;
+			}
+
+			LicenseServiceUser licenseService = getLicenseService(serviceManager);
+			if (licenseService == null) {
+				logger.error("User license service not available");
+				return;
+			}
+
+			UserCredentials currentCredentials = licenseService.loadCredentials();
+			UserCredentials mergedCredentials = mergeCurrentAndMdmCredentials(
+				currentCredentials,
+				mdmUsername,
+				mdmPassword
+			);
+
+			if (mergedCredentials != null && !mergedCredentials.equals(currentCredentials)) {
+				logger.info("Update changed work credentials");
+				licenseService.saveCredentials(mergedCredentials);
+
+				if (serviceManager.getUserService().hasIdentity()) {
+					updateWorkInfo(licenseService);
+				}
+			}
+		} else {
+			logger.warn("Could not update mdm credentials. Service manager not available");
+		}
+	}
+
+	/**
+	 * Updates the work info if the stored credentials are valid.
+	 */
+	@AnyThread
+	private void updateWorkInfo(@NonNull LicenseServiceUser licenseService) {
+		logger.info("Schedule work info update");
+		new Thread(() -> {
+			String error = licenseService.validate(false);
+			if (error == null) {
+				UpdateWorkInfoRoutine routine = UpdateWorkInfoRoutine.create();
+				if (routine != null) {
+					routine.run();
+				}
+			} else {
+				logger.info("Credentials could not be validated, do not update work info: {}", error);
+			}
+		}).start();
+	}
+
+	@Nullable
+	private LicenseServiceUser getLicenseService(@NonNull ServiceManager serviceManager) {
+		try {
+			return (LicenseServiceUser) serviceManager.getLicenseService();
+		} catch (ClassCastException | FileSystemNotPresentException e) {
+			logger.error("Could not get license service", e);
+			return null;
+		}
+	}
+
+	@Nullable
+	private UserCredentials mergeCurrentAndMdmCredentials(
+		@Nullable UserCredentials currentCredentials,
+		@Nullable String mdmUsername,
+		@Nullable String mdmPassword
+	) {
+		@Nullable String currentUsername = currentCredentials != null ? currentCredentials.username : null;
+		@Nullable String currentPassword = currentCredentials != null ? currentCredentials.password : null;
+
+		String username = !TestUtil.empty(mdmUsername) && !mdmUsername.equals(currentUsername)
+			? mdmUsername
+			: currentUsername;
+
+		String password = !TestUtil.empty(mdmPassword) && !mdmPassword.equals(currentPassword)
+			? mdmPassword
+			: currentPassword;
+
+		return username != null && password != null
+			? new UserCredentials(username, password)
+			: null;
+	}
+
+	@Nullable
+	private String getStringRestriction(String key) {
+		if (appRestrictions != null && appRestrictions.containsKey(key)) {
+			String value = appRestrictions.getString(key);
+			if (!TestUtil.empty(value)) {
+				return value;
+			}
+		}
+		return null;
 	}
 
 	/***********************************************************************************************

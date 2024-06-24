@@ -23,6 +23,7 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.DocumentsContract;
 
 import java.util.EnumMap;
@@ -40,7 +41,6 @@ import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 import static ch.threema.app.ui.MediaItem.TYPE_FILE;
-import static ch.threema.app.ui.MediaItem.TYPE_GIF;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
 import static ch.threema.app.ui.MediaItem.TYPE_VOICEMESSAGE;
@@ -274,6 +274,13 @@ public class MimeUtil {
 		MIME_TYPE_IMAGE_HEIC
 	};
 
+	private static final String[] supportedImageMimeTypes_pre28 = {
+		MIME_TYPE_IMAGE_JPEG,
+		MIME_TYPE_IMAGE_JPG,
+		MIME_TYPE_IMAGE_PNG,
+		MIME_TYPE_IMAGE_GIF,
+	};
+
 	public enum MimeCategory {
 		APK,
 		AUDIO,
@@ -356,7 +363,11 @@ public class MimeUtil {
 	}
 
 	public static String[] getSupportedImageMimeTypes() {
-		return supportedImageMimeTypes;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			return supportedImageMimeTypes;
+		} else {
+			return supportedImageMimeTypes_pre28;
+		}
 	}
 
 	public static boolean isVideoFile(@Nullable String mimeType) {
@@ -490,19 +501,24 @@ public class MimeUtil {
 
 	public static @MediaItem.MediaType int getMediaTypeFromMimeType(String mimeType, Uri uri) {
 		if (MimeUtil.isSupportedImageFile(mimeType)) {
-			if (MimeUtil.isGifFile(mimeType)) {
-				return TYPE_GIF;
-			} else {
-				if (ConfigUtils.isSupportedAnimatedImageFormat(mimeType) && FileUtil.isAnimatedImageFile(uri)) {
-					return MediaItem.TYPE_IMAGE_ANIMATED;
-				}
-				return TYPE_IMAGE;
+			if (FileUtil.isAnimatedImageFile(uri, mimeType)) {
+				return MediaItem.TYPE_IMAGE_ANIMATED;
 			}
+			return TYPE_IMAGE;
 		} else if (MimeUtil.isVideoFile(mimeType)) {
 			return TYPE_VIDEO;
 		} else if (MimeUtil.isAudioFile(mimeType) && (mimeType.startsWith(MimeUtil.MIME_TYPE_AUDIO_AAC) || mimeType.startsWith(MimeUtil.MIME_TYPE_AUDIO_M4A))) {
 			return TYPE_VOICEMESSAGE;
 		}
 		return TYPE_FILE;
+	}
+
+	/**
+	 * Check whether the provided mime type hints at an image format capable of animations (this does not necessarily mean that the image is animated)
+	 * @param mimeType Mime type to check
+	 * @return true if conditions are met
+	 */
+	public static boolean isAnimatedImageFormat(@Nullable String mimeType) {
+		return MimeUtil.isWebPFile(mimeType) || MimeUtil.isGifFile(mimeType);
 	}
 }

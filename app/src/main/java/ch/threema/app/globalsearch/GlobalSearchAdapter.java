@@ -284,13 +284,13 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 			.error(placeholderIcon)
 			.addListener(new RequestListener<>() {
 				@Override
-				public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+				public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
 					setupPlaceholder(holder);
 					return false;
 				}
 
 				@Override
-				public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+				public boolean onResourceReady(@NonNull Bitmap resource, @NonNull Object model, Target<Bitmap> target, @NonNull DataSource dataSource, boolean isFirstResource) {
 					holder.thumbnailView.clearColorFilter();
 					holder.thumbnailView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 					return false;
@@ -314,7 +314,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 	 * @param holder   ItemHolder containing a textview
 	 * @return Snippet containing the match with a trailing ellipsis if the match is located beyond the first snippetThreshold characters
 	 */
-	private String getSnippet(@NonNull String fullText, @Nullable String needle, ItemHolder holder) {
+	private CharSequence getSnippet(@NonNull String fullText, @Nullable String needle, ItemHolder holder) {
 		if (!TestUtil.empty(needle)) {
 			int firstMatch = fullText.toLowerCase().indexOf(needle);
 			if (firstMatch > snippetThreshold) {
@@ -326,7 +326,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 					}
 				}
 
-				SpannableStringBuilder emojified = (SpannableStringBuilder) EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, holder.snippetView, true);
+				SpannableStringBuilder emojified = (SpannableStringBuilder) EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, holder.snippetView, true, false, false);
 
 				int transitionStart = emojified.nextSpanTransition(firstMatch - snippetThreshold, firstMatch, EmojiImageSpan.class);
 				if (transitionStart == firstMatch) {
@@ -337,7 +337,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 				}
 			}
 		}
-		return fullText;
+		return EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, holder.snippetView, false, false, false);
 	}
 
 
@@ -347,7 +347,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 	}
 
 	private void setSnippetToTextView(AbstractMessageModel current, ItemHolder itemHolder) {
-		String snippetText = null;
+		CharSequence snippetText = null;
 		switch (current.getType()) {
 			case FILE:
 				// fallthrough

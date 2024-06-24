@@ -29,15 +29,12 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.media3.common.util.UnstableApi;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.MediaViewerActivity;
-import ch.threema.app.ui.MediaItem;
 
 public class ImagePreviewPagerAdapter extends FragmentStateAdapter {
 	private final MediaAttachViewModel mediaAttachViewModel;
@@ -54,14 +51,14 @@ public class ImagePreviewPagerAdapter extends FragmentStateAdapter {
 	public Fragment createFragment(int position) {
 		MediaAttachItem mediaAttachItem = getItem(position);
 		if (mediaAttachItem != null) {
-			int mimeType = mediaAttachItem.getType();
+			int mediaType = mediaAttachItem.getType();
 			Bundle args = new Bundle();
 			args.putBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, true);
 
 			PreviewFragment fragment = null;
-			if (mimeType == MediaItem.TYPE_IMAGE || mimeType == MediaItem.TYPE_GIF || mimeType == MediaItem.TYPE_IMAGE_ANIMATED) {
+			if (mediaType == MediaAttachItem.TYPE_IMAGE || mediaType == MediaAttachItem.TYPE_GIF || mediaType == MediaAttachItem.TYPE_WEBP) {
 				fragment = new ImagePreviewFragment(mediaAttachItem, mediaAttachViewModel);
-			} else if (mimeType == MediaItem.TYPE_VIDEO) {
+			} else if (mediaType == MediaAttachItem.TYPE_VIDEO) {
 				fragment = new VideoPreviewFragment(mediaAttachItem, mediaAttachViewModel);
 			}
 

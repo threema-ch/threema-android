@@ -55,7 +55,6 @@ import java.util.concurrent.RejectedExecutionException;
 
 import ch.threema.app.R;
 import ch.threema.app.ui.CheckableFrameLayout;
-import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -184,11 +183,11 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 
 							contentView.setContentDescription(context.getString(R.string.attach_picture) +  ": " + mediaAttachItem.getDisplayName());
 
-							if (mediaAttachItem.getType() == MediaItem.TYPE_GIF) {
+							if (mediaAttachItem.getType() == MediaAttachItem.TYPE_GIF) {
 								gifIndicator.setVisibility(View.VISIBLE);
 								gifIcon.setImageResource(R.drawable.ic_gif_24dp);
 								contentView.setContentDescription(context.getString(R.string.attach_gif) +  ": " + mediaAttachItem.getDisplayName());
-							} else if (mediaAttachItem.getType() == MediaItem.TYPE_IMAGE_ANIMATED) {
+							} else if (mediaAttachItem.getType() == MediaAttachItem.TYPE_WEBP) {
 								gifIndicator.setVisibility(View.VISIBLE);
 								gifIcon.setImageResource(R.drawable.ic_webp);
 								contentView.setContentDescription("WebP: " + mediaAttachItem.getDisplayName());
@@ -196,7 +195,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
 								gifIndicator.setVisibility(View.GONE);
 							}
 
-							if (mediaAttachItem.getType() == MediaItem.TYPE_VIDEO) {
+							if (mediaAttachItem.getType() == MediaAttachItem.TYPE_VIDEO) {
 								videoDuration.setText(StringConversionUtil.getDurationString(mediaAttachItem.getDuration()));
 								videoIndicator.setVisibility(View.VISIBLE);
 								contentView.setContentDescription(context.getString(R.string.attach_video) +  ": " + mediaAttachItem.getDisplayName());

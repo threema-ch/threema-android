@@ -814,8 +814,8 @@ almacenado.</string>
     <string name="notifications_disabled_text">Se han desactivado las notificaciones de Threema en los ajustes del sistema. No se le notificará de mensajes nuevos.</string>
     <string name="notifications_disabled_settings">Editar ajustes del sistema</string>
     <string name="error_attaching_files">Error al añadir archivos adjuntos.</string>
-    <string name="prefs_fix_powermanager_problems">Solucionar problemas en Huawei</string>
-    <string name="prefs_fix_powermanager_problems_desc">Solucione problemas en los dispositivos Huawei para recibir mensajes mientras la aplicación está en segundo plano</string>
+    <string name="prefs_fix_powermanager_problems">Desactivar las restricciones de energía</string>
+    <string name="prefs_fix_powermanager_problems_desc">Permite que Threema se ejecute en segundo plano para que pueda recibir mensajes aunque no esté activo.</string>
     <string name="disable_powermanager_explain">Para recibir mensajes en segundo plano, active el interruptor que hay junto a «%s» en la siguiente pantalla.</string>
     <string name="disable_autostart_explain">En la pantalla siguiente, asegúrate de incluir «%s» en la lista de apps que pueden iniciarse automáticamente. Toca el botón «atrás» cuando termines.</string>
     <string name="notification_priority_default">Baja</string>
@@ -1375,6 +1375,7 @@ almacenado.</string>
     <string name="clear_forward_security_warning">Realice esta acción solo si se lo indica el equipo de asistencia de Threema.</string>
     <string name="forward_security_cleared">Se han borrado las sesiones Perfect Forward Secrecy con este contacto</string>
     <string name="message_without_forward_security">Se ha recibido un mensaje sin Perfect Forward Secrecy. Comprueba que el remitente ha desactivado el Perfect Forward Secrecy intencionadamente.</string>
+    <string name="forward_security_disabled">Perfect Forward Secrecy está desactivado para este chat.</string>
     <string name="forward_security_established">Los mensajes con este compañero de chat ahora están protegidos con Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Los mensajes recibidos en este chat están protegidos con Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Se ha restablecido la sesión de Perfect Forward Secrecy. Esto puede ocurrir si el compañero de chat cambia de dispositivo o reinstala la app.</string>
@@ -1446,6 +1447,8 @@ almacenado.</string>
     <string name="prefs_sum_group_calls_vibration">Indica si quieres que vibre cuando se haya iniciado una llamada grupal</string>
     <string name="forward_security_mode_4dh">Completado</string>
     <string name="forward_security_mode_2dh">Unilateral</string>
+    <string name="forward_security_mode_all">Completo</string>
+    <string name="forward_security_mode_partial">Parcial</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protege una comunicación grabada del descifrado retroactivo incluso si la clave de cifrado a largo plazo se ve comprometida.\n\nLa opción se puede activar si la app es compatible con PFS por ambas partes.</string>
     <string name="group_call_inactivity_left">Llamada grupal abandonada por inactividad</string>
     <string name="missing_permission_external_storage">No se ha podido copiar el archivo. Prueba lo siguiente:\n1. Abre los ajustes.\n2. Ve a \"Aplicaciones\" y selecciona \"Acceso especial a la app\".\n3. Toca en \"Acceso a todos los archivos\".\n4. Toca en los tres puntos de la parte superior derecha y selecciona \"Mostrar sistema\".\n5. Toca en \"Almacenamiento externo\" y verifica que la opción de \"Permitir acceso para gestionar todos los archivos\" está activada.\n6. Vuelve a intentar restaurar la copia de seguridad.</string>
@@ -1511,8 +1514,15 @@ almacenado.</string>
     <string name="group_orphaned_notice">Este grupo está huérfano porque el creador del grupo lo ha abandonado. Clone el grupo para convertirse en el nuevo administrador.</string>
     <string name="group_not_a_member_notice">Ya no forma parte de este grupo y no puede usarlo.</string>
     <string name="group_dissolved_notice">Este grupo se ha disuelto y ya no puede usarse.</string>
+    <string name="md_linked_devices">Dispositivos vinculados</string>
+    <string name="md_link_device">Vincular nuevo dispositivo</string>
+    <string name="md_enable">Activar dispositivos vinculados</string>
+    <string name="md_linked_devices_empty">Descárgate el sofisticado cliente de escritorio desde algún sitio y prepárate para despegar 🚀</string>
+    <string name="md_link_device_qr_scan_message">Escanee el código QR</string>
     <string name="directory_request_failed">Error en la solicitud de directorio. Inténtelo de nuevo.</string>
     <string name="add_shortcut_exists">Ya existe un acceso directo para este objetivo.</string>
+    <string name="resend_message_dialog_title">¿Reenviar mensaje grupal?</string>
+    <string name="resend_message_dialog_message">Este mensaje no se ha podido enviar a todos los miembros. ¿Reenviar mensaje a %1$s?</string>
     <string name="work_lost_credentials_help">¿Ha olvidado sus credenciales? Póngase en contacto con su administrador de %1$s.</string>
     <string name="problemsolver_intro">Es posible que algunos problemas de configuración del sistema impidan que %s funcione correctamente. Solucione estos problemas siguiendo las siguientes instrucciones.</string>
     <string name="problemsolver_title">Problemas de configuración de reparaciones</string>
@@ -1559,6 +1569,10 @@ almacenado.</string>
     <plurals name="new_messages">
         <item quantity="one">%d mensaje nuevo</item>
         <item quantity="other">%d mensajes nuevos</item>
+    </plurals>
+    <plurals name="unread_messages">
+        <item quantity="one">%d mensaje sin leer</item>
+        <item quantity="other">%d mensajes sin leer</item>
     </plurals>
     <plurals name="file_saved">
         <item quantity="one">%d archivo guardado correctamente.</item>

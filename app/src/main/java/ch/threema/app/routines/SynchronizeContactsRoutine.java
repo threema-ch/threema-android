@@ -186,8 +186,8 @@ public class SynchronizeContactsRoutine implements Runnable {
 
 			if (preferenceService.getEmailSyncHashCode() == emailsHash
 				&& preferenceService.getPhoneNumberSyncHashCode() == phoneNumbersHash
-				&& (preferenceService.getTimeOfLastContactSync() + DateUtils.DAY_IN_MILLIS) > System.currentTimeMillis()) {
-				logger.info("Contacts are unchanged. Not syncing.");
+				&& (preferenceService.getTimeOfLastContactSync() + (DateUtils.HOUR_IN_MILLIS * 23)) > System.currentTimeMillis()) {
+				logger.info("System contacts are unchanged or grace time not yet reached. Not syncing.");
 				success = true;
 				return;
 			}

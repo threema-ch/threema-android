@@ -391,7 +391,7 @@ public class ServiceManager {
 		logger.trace("startConnection");
 
 		String currentIdentity = this.identityStore.getIdentity();
-		if (currentIdentity == null || currentIdentity.length() == 0) {
+		if (currentIdentity == null || currentIdentity.isEmpty()) {
 			throw new NoIdentityException();
 		}
 
@@ -623,15 +623,9 @@ public class ServiceManager {
 						}
 
 						@Override
-						public String validate(Credentials credentials, boolean allowException) {
-							return null;
-						}
-
-						@Override
 						public String validate(boolean allowException) {
 							return null;
 						}
-
 						@Override
 						public boolean hasCredentials() {
 							return false;
@@ -693,6 +687,7 @@ public class ServiceManager {
 				this.getMutedChatsListService(),
 				this.getHiddenChatsListService(),
 				this.getRingtoneService(),
+				this.getConversationTagService(),
 				this
 			);
 		}
@@ -762,10 +757,11 @@ public class ServiceManager {
 	public DistributionListService getDistributionListService() throws MasterKeyLockedException, NoIdentityException, FileSystemNotPresentException {
 		if(null == this.distributionListService) {
 			this.distributionListService = new DistributionListServiceImpl(
-					this.getContext(),
-					this.getAvatarCacheService(),
-					this.databaseServiceNew,
-					this.getContactService()
+				this.getContext(),
+				this.getAvatarCacheService(),
+				this.databaseServiceNew,
+				this.getContactService(),
+				this.getConversationTagService()
 			);
 		}
 

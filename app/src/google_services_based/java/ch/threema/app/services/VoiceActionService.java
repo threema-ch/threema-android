@@ -63,7 +63,7 @@ public class VoiceActionService extends SearchActionVerificationClientService {
 
 	@Override
 	public void performAction(Intent intent, boolean isVerified, Bundle options) {
-		logger.debug(String.format("performAction: intent - %s, isVerified - %s", intent, isVerified));
+		logger.debug("performAction: intent - {}, isVerified - {}", intent, isVerified);
 
 		this.instantiate();
 

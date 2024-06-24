@@ -923,6 +923,10 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="empty_chat_title">Tøm samtale</string>
     <string name="empty_chat_confirm">Alle meldinger i denne samtalen vil bli slettet. Vil du fortsette?</string>
     <string name="emptying_chat">Tømmer samtale</string>
+    <string name="emptying_chat_deleting_messages">Sletter meldinger</string>
+    <string name="delete_chat_title">Slett samtale</string>
+    <string name="delete_chat_confirm">Alle meldinger i denne samtalen vil bli slettet, og samtalen blir fjernet. Vil du fortsette?</string>
+    <string name="deleting_chat">Sletter samtale</string>
     <string name="set_private">Merk som \"privat samtale\"</string>
     <string name="unset_private">Deaktiver \"privat samtale\"</string>
     <string name="delete_group_message">Vil du forlate denne gruppen og slette den helt? Alle meldinger blir slettet.</string>
@@ -1367,11 +1371,17 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="clear_forward_security_warning">Sørg for å bare gjøre dette om du får beskjed fra Threema support.</string>
     <string name="forward_security_cleared">Perfect Forward Secrecy-økt med denne kontakten har blitt fjernet</string>
     <string name="message_without_forward_security">En melding uten Perfect Forward Secrecy er mottatt. Verifiser at avsender har skrudd av Perfect Forward Secrecy med vilje.</string>
-    <string name="forward_security_established">Meldinger i denne samtalen er nå beskyttet av Perfect Forward Secrecy.</string>
+    <string name="forward_security_disabled">Perfect Forward Secrecy er deaktivert for denne samtalen.</string>
+    <string name="forward_security_established">Meldinger med denne kontakten er nå beskyttet av Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Meldinger mottatt i denne samtalen blir nå beskyttet av Perfect Forward Secrecy.</string>
     <string name="forward_security_reset">Perfect Forward Secrecy-økten har blitt resatt. Dette kan skje om den du chattet med har byttet enhet eller reinstallert appen.</string>
     <string name="forward_security_reset_simple">Økten med Perfect Forward Secrecy som du har med denne kontakten har blitt resatt.</string>
     <string name="forward_security_message_out_of_order">En melding ble mottatt ute av rekkefølge og kunne derfor ikke bli dekryptert.</string>
+    <string name="forward_security_notification_channel_name">Perfect Forward Secrecy advarsler</string>
+    <string name="forward_security_notification_rejected_title">Sending av meldinger feilet</string>
+    <string name="forward_security_notification_rejected_text_contact">En eller flere meldinger kunne ikke bli sendt til %1$s.</string>
+    <string name="forward_security_notification_rejected_text_group">En eller flere meldinger kunne ikke bli sendt til \"%1$s\".</string>
+    <string name="forward_security_notification_rejected_text_generic">En eller flere meldinger kunne ikke bli sendt.</string>
     <string name="self_updater_installation_failed">Det skjedde en feil under nedlasting av oppdateringen. Vennligst last ned oppdateringen fra <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> manuelt.</string>
     <string name="spam_first_contact">Denne samtalen er fra en ukjent kontakt</string>
     <string name="spam_report">Rapporter spam</string>
@@ -1383,6 +1393,7 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="spam_report_short">Rapporter</string>
     <string name="wizard_incompatible_contact_sync_params">Det er valgt inkompatible MDM parametre. Threema MDM parameter th_contact_sync kan ikke bli satt til \"True\" om brukerbegrensning DISALLOW_MODIFY_ACCOUNTS er valgt. Vennligst kontakt enhetens administrator.</string>
     <string name="messages_cannot_be_recovered">Du har ikke muligheten til å gjenopprette meldingene.</string>
+    <string name="groups_left_or_dissolved">Grupper vil bli forlatt eller oppløst og deretter slettet.</string>
     <string name="contact_deleted">Kontakt slettet</string>
     <string name="last_added_contact">Sist lagt til</string>
     <string name="directory_explain_text">Søk i firmaets oppføringsliste etter ansatte som ikke er lagt til i din kontaktliste.</string>
@@ -1436,6 +1447,8 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="prefs_sum_group_calls_vibration">Velg om mobilen skal vibrere når en gruppesamtale har startet</string>
     <string name="forward_security_mode_4dh">Sikret</string>
     <string name="forward_security_mode_2dh">En-veis</string>
+    <string name="forward_security_mode_all">Full</string>
+    <string name="forward_security_mode_partial">Delvis</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beskytter kommunikasjonen fra å kunne bli dekryptert i fremtiden, selv om den langsiktige krypteringsnøkkelen er kompromittert.\n\nDette kan skrus på om appen på begge sider av kommunikasjonen støtter PFS.</string>
     <string name="group_call_inactivity_left">Gruppesamtale avsluttet på grunn av inaktivitet</string>
     <string name="missing_permission_external_storage">Ikke mulig å kopiere filen. Prøv følgende: \n1. Åpne innstillinger på enheten.\n2. Gå til \"Apper\" og velg \"Spesiell tilgang\" på menyen med tre prikker eller en nedtrekksmeny.\n3. Trykk på \"Lagring\" eller \"Tilgang til filer\".\n4. Trykk på de tre prikkene oppe i høyre hjørne og velg \"Vis systemet\". \n5. Trykk på \"Ekstern lagring\" og sørg for at \"Tilgang til alle filer\" er gitt.\n6. Prøv igjen å gjenopprette sikkerhetskopien.</string>
@@ -1501,8 +1514,15 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="group_orphaned_notice">Gruppen mangler en administrator fordi grunnleggeren har forlatt gruppen. Vennligst klon gruppen for å bli den nye administratoren.</string>
     <string name="group_not_a_member_notice">Du er ikke lenger medlem av gruppen og kan ikke bruke den lenger.</string>
     <string name="group_dissolved_notice">Gruppen har blitt oppløst og kan ikke bli brukt lenger.</string>
+    <string name="md_linked_devices">Tilkoblede enheter</string>
+    <string name="md_link_device">Koble til ny enhet</string>
+    <string name="md_enable">Aktiver tilkoblede enheter</string>
+    <string name="md_linked_devices_empty">Last ned det nye, flotte skrivebodsprogrammet fra en plass og skyt opp i rommet 🚀</string>
+    <string name="md_link_device_qr_scan_message">Vennligst skann QR-koden</string>
     <string name="directory_request_failed">Katalogforespørsel mislyktes. Prøv igjen.</string>
     <string name="add_shortcut_exists">En snarvei for dette finnes allerede.</string>
+    <string name="resend_message_dialog_title">Send gruppemelding på nytt?</string>
+    <string name="resend_message_dialog_message">Meldingen kunne ikke bli sendt til alle medlemmer. Send på nytt til %1$s?</string>
     <string name="work_lost_credentials_help">Glemt innloggingsdetaljene dine? Vennligst kontakt din %1$s administrator.</string>
     <string name="problemsolver_intro">Noen systemkonfigurasjoner kan føre til at %s ikke fungerer skikkelig. Vennligst rett opp i disse ved å følge instruksjonene nedenfor.</string>
     <string name="problemsolver_title">Løs problemer med konfigurasjon</string>
@@ -1525,6 +1545,7 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="edit_and_send">Rediger og send</string>
     <string name="media_gallery_animated_webps">Animerte WebP-er</string>
     <string name="unsupported_image_type">Ustøttet bildeformat: %s</string>
+    <string name="application_setup_steps_failed">Det er krav om en aktiv internettforbindelse for å sjekke tilstanden til kontaktene dine. Sørg for at du er tilkoblet internett, og prøv igjen.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
