@@ -1,1 +1,2 @@
-* Restored connection fallback functionality in case of blocked ports or IPv6 issues
+* Fixed various UI glitches
+* GIFs are now rendered using Glide

@@ -1,1 +1,2 @@
-* Die Fallback-Funktionalität bei blockierten Ports oder IPv6-Verbindungsproblemen wurde wiederhergestellt
+* Behebung verschiedener Darstellungsfehler
+* GIFs werden neu mittels Glide gerendert
