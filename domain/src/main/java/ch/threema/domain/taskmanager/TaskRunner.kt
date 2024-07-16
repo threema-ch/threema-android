@@ -53,7 +53,7 @@ internal class TaskRunner(
     private var executorJob: Job? = null
 
     /**
-     * The semaphore that the executor must acquire while running.
+     * The semaphore that the executor must acquire while starting.
      */
     private val executorSemaphore = Semaphore(1, 0)
 
@@ -89,33 +89,33 @@ internal class TaskRunner(
      *
      * @param layer5Codec the current layer 5 codec for sending messages
      */
-    internal suspend fun startTaskRunner(layer5Codec: Layer5Codec) {
-        if (executorJob?.isCancelled == false) {
-            logger.info("Stopping task manager, as a new connection has been started")
+    internal suspend fun startTaskRunner(layer5Codec: Layer5Codec, incomingMessageProcessor: IncomingMessageProcessor) {
+        logger.info("Starting task runner")
+
+        // Stop old executor job to allow tasks to detect faster that they cannot send or receive
+        // messages anymore
+        if (executorJob?.isActive == true) {
+            logger.info("Stopping previous executor job")
             stopTaskRunner()
         }
 
-        logger.info("Trying to acquire executor semaphore")
-        // Acquire the executor semaphore to ensure, that only one executor is set up.
+        // Acquire the executor semaphore during startup
         executorSemaphore.acquire()
 
-        logger.info("Executor semaphore acquired")
+        // Stop old executor job in case it has been started while waiting for the executor
+        // semaphore
+        if (executorJob?.isActive == true) {
+            logger.info("Old executor job is still active. Stopping it.")
+            stopTaskRunner()
+        }
 
         this.layer5Codec = layer5Codec
 
-        // Wait until the old job has finished
-        executorJob?.let {
-            logger.warn("Executor job still running. Cancel and join running task")
-            it.cancelAndJoin(ConnectionStoppedException("A newer server connection has been established"))
-            executorJob = null
-            logger.info("Executor job completed.")
-        }
-
-        // Clear incoming message queues to get rid of old unprocessed messages
+        // Clear incoming message queue to get rid of old unprocessed messages
         runBlocking(executorCoroutineContext) {
             logger.info("Flushing incoming message queues")
             // As the connection just has been initiated, we will again receive un-acked messages
-            taskQueue.flushIncomingMessageQueues()
+            taskQueue.recreateIncomingMessageQueue(incomingMessageProcessor)
         }
 
         // We handle the exceptions in invokeOnCompletion instead of the exception handler
@@ -134,8 +134,6 @@ internal class TaskRunner(
             }
         }.also {
             it.invokeOnCompletion { cause ->
-                executorSemaphore.release()
-
                 when (cause) {
                     // The task manager has detected that the server connection has been stopped or
                     // a new server connection has been established and the current executor job is
@@ -163,12 +161,15 @@ internal class TaskRunner(
                     else -> {
                         logger.error("Task manager failed", cause)
                         CoroutineScope(scheduleCoroutineContext).launch {
-                            startTaskRunner(layer5Codec)
+                            startTaskRunner(layer5Codec, incomingMessageProcessor)
                         }
                     }
                 }
             }
         }
+
+        logger.info("Task runner started")
+        executorSemaphore.release()
     }
 
     @Deprecated("Do not use the task codec outside of a task")
@@ -198,9 +199,7 @@ internal class TaskRunner(
         logger.info("Stopping task runner")
 
         executorJob?.cancelAndJoin(ConnectionStoppedException("The server connection has been ended"))
-        logger.info("Executor canceled and joined")
-
-        executorJob = null
+        logger.info("Executor job canceled and joined")
     }
 
     private suspend fun runNextTask() {

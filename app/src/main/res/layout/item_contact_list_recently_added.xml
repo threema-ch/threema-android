@@ -4,15 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/topLayout"
     android:layout_width="match_parent"
-    android:layout_height="88dp"
+    android:layout_height="wrap_content"
     android:clickable="false"
     android:focusable="false"
-    android:paddingRight="@dimen/listitem_contacts_margin_left_right">
+    android:paddingRight="@dimen/listitem_contacts_margin_left_right"
+    android:paddingBottom="12dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/recently_added_background"
         android:layout_width="match_parent"
-        android:layout_height="76dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginLeft="8dp"
         android:clickable="true"
@@ -35,18 +36,20 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/shapeable_avatar_view"
-                android:layout_width="88dp"
-                android:layout_height="80dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:minWidth="88dp"
                 android:scaleType="centerCrop"
                 app:shapeAppearance="@style/Threema.ShapeAppearance.RecentlyAdded"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="H,1:1" />
 
             <ImageView
                 android:id="@+id/gradient"
-                android:layout_width="88dp"
-                android:layout_height="80dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:src="@drawable/shape_recently_added_contacts_overlay"
                 app:layout_constraintLeft_toLeftOf="@id/shapeable_avatar_view"
                 app:layout_constraintTop_toTopOf="@id/shapeable_avatar_view"
@@ -60,6 +63,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="@dimen/listitem_contacts_margin_top_bottom"
                 android:layout_marginBottom="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
@@ -113,6 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="16dp"
+                android:layout_marginBottom="@dimen/listitem_contacts_margin_top_bottom"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine"

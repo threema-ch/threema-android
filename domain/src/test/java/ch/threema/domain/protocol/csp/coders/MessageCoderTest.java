@@ -44,6 +44,7 @@ public class MessageCoderTest {
 	@Test
 	public void testVoipFlagsOffer() throws ThreemaException {
 		final VoipCallOfferMessage msg = new VoipCallOfferMessage();
+		msg.setToIdentity("TESTTEST");
 		final VoipCallOfferData offerData = new VoipCallOfferData();
 		final VoipCallOfferData.OfferData data = new VoipCallOfferData.OfferData()
 			.setSdp("testsdp")
@@ -58,6 +59,7 @@ public class MessageCoderTest {
 	@Test
 	public void testVoipFlagsAnswer() throws ThreemaException {
 		final VoipCallAnswerMessage msg = new VoipCallAnswerMessage();
+		msg.setToIdentity("TESTTEST");
 		final VoipCallAnswerData answerData = new VoipCallAnswerData()
 			.setAction(VoipCallAnswerData.Action.REJECT)
 			.setAnswerData(null)
@@ -71,6 +73,7 @@ public class MessageCoderTest {
 	@Test
 	public void testVoipFlagsCandidates() throws ThreemaException {
 		final VoipICECandidatesMessage msg = new VoipICECandidatesMessage();
+		msg.setToIdentity("TESTTEST");
 		final VoipICECandidatesData candidatesData = new VoipICECandidatesData()
 			.setCandidates(new VoipICECandidatesData.Candidate[]{
 				new VoipICECandidatesData.Candidate("testcandidate1", "testmid1", 42, "testufrag1"),
@@ -85,6 +88,7 @@ public class MessageCoderTest {
 	@Test
 	public void testVoipFlagsHangup() throws ThreemaException {
 		final VoipCallHangupMessage msg = new VoipCallHangupMessage();
+		msg.setToIdentity("TESTTEST");
 		msg.setData(new VoipCallHangupData());
 		final MessageBox boxed = this.box(msg);
 		// Flags: Push only

@@ -109,6 +109,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 		private final TextView titleView;
 		private final TextView dateView;
 		private final TextView snippetView;
+		@Nullable private final TextView deletedPlaceholder; // will be null for layouts other than item_starred_messages
 		private final ImageView thumbnailView;
 		private final MaterialCardView messageBlock;
 		AvatarListItemHolder avatarListItemHolder;
@@ -119,6 +120,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 			titleView = itemView.findViewById(R.id.name);
 			dateView = itemView.findViewById(R.id.date);
 			snippetView = itemView.findViewById(R.id.snippet);
+			deletedPlaceholder = itemView.findViewById(R.id.deleted_placeholder);
 			AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
 			thumbnailView = itemView.findViewById(R.id.thumbnail_view);
 			messageBlock = itemView.findViewById(R.id.message_block);
@@ -178,6 +180,11 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 				}
 			}
 
+			itemHolder.snippetView.setVisibility(View.VISIBLE);
+			if (itemHolder.deletedPlaceholder != null) {
+				itemHolder.deletedPlaceholder.setVisibility(View.GONE);
+			}
+
 			if (hiddenChatsListService.has(
 				current instanceof GroupMessageModel ?
 					groupService.getUniqueIdString(
@@ -193,9 +200,11 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 				itemHolder.snippetView.setText(R.string.private_chat_subject);
 				itemHolder.avatarListItemHolder.avatarView.setVisibility(View.INVISIBLE);
 				itemHolder.avatarListItemHolder.avatarView.setBadgeVisible(false);
+			} else if (current.isDeleted()) {
+				// deleted placeholder for starred items - global search will never find deleted items
+				initDeletedViewHolder(itemHolder, current);
 			} else {
 				if (current instanceof GroupMessageModel) {
-					final ContactModel contactModel = current.isOutbox() ? this.contactService.getMe() : this.contactService.getByIdentity(current.getIdentity());
 					final GroupModel groupModel = groupService.getById(((GroupMessageModel) current).getGroupId());
 					AvatarListItemUtil.loadAvatar(
 						groupModel,
@@ -204,10 +213,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 						requestManager
 					);
 
-					String groupName = NameUtil.getDisplayName(groupModel, groupService);
-					itemHolder.titleView.setText(
-						String.format("%s %s %s", NameUtil.getDisplayNameOrNickname(contactModel, true), FLOW_CHARACTER, groupName)
-					);
+					itemHolder.titleView.setText(getTitle((GroupMessageModel) current, groupModel));
 				} else {
 					final ContactModel contactModel = this.contactService.getByIdentity(current.getIdentity());
 					AvatarListItemUtil.loadAvatar(
@@ -217,12 +223,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 						requestManager
 					);
 
-					String name = NameUtil.getDisplayNameOrNickname(context, current, contactService);
-					itemHolder.titleView.setText(
-						current.isOutbox() ?
-							name + " " + FLOW_CHARACTER + " " + NameUtil.getDisplayNameOrNickname(contactModel, true) :
-							name
-					);
+					itemHolder.titleView.setText(getTitle(current, contactModel));
 				}
 				itemHolder.dateView.setText(LocaleUtil.formatDateRelative(current.getCreatedAt().getTime()));
 
@@ -263,6 +264,39 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 			itemHolder.dateView.setText("");
 			itemHolder.snippetView.setText("");
 		}
+	}
+
+	private void initDeletedViewHolder(ItemHolder holder, AbstractMessageModel message) {
+		holder.snippetView.setVisibility(View.INVISIBLE);
+		holder.snippetView.setText("");
+
+		if (holder.deletedPlaceholder != null) {
+			holder.deletedPlaceholder.setVisibility(View.VISIBLE);
+			holder.deletedPlaceholder.setText(R.string.message_was_deleted);
+		}
+
+		holder.dateView.setText(LocaleUtil.formatDateRelative(message.getCreatedAt().getTime()));
+
+		if (message instanceof GroupMessageModel) {
+			final GroupModel groupModel = groupService.getById(((GroupMessageModel) message).getGroupId());
+			holder.titleView.setText(getTitle((GroupMessageModel) message, groupModel));
+		} else {
+			final ContactModel contactModel = this.contactService.getByIdentity(message.getIdentity());
+			holder.titleView.setText(getTitle(message, contactModel));
+		}
+	}
+
+	private String getTitle(AbstractMessageModel messageModel, ContactModel contactModel) {
+		String name = NameUtil.getDisplayNameOrNickname(context, messageModel, contactService);
+		return messageModel.isOutbox() ?
+			name + " " + FLOW_CHARACTER + " " + NameUtil.getDisplayNameOrNickname(contactModel, true) :
+			name;
+	}
+
+	private String getTitle(GroupMessageModel messageModel, GroupModel groupModel) {
+		final ContactModel contactModel = messageModel.isOutbox() ? this.contactService.getMe() : this.contactService.getByIdentity(messageModel.getIdentity());
+		String groupName = NameUtil.getDisplayName(groupModel, groupService);
+		return String.format("%s %s %s", NameUtil.getDisplayNameOrNickname(contactModel, true), FLOW_CHARACTER, groupName);
 	}
 
 	private void loadThumbnail(AbstractMessageModel messageModel, ItemHolder holder) {

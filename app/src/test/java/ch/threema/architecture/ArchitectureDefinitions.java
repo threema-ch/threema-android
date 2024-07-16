@@ -38,6 +38,7 @@ public class ArchitectureDefinitions {
 		ANNOTATION = "annotation",
 		APP = "app",
 		BASE ="base",
+		DATA ="data",
 		DOMAIN = "domain",
 		LOCALCRYPTO = "localcrypto",
 		LOGGING = "logging",
@@ -48,6 +49,7 @@ public class ArchitectureDefinitions {
 		PACKAGE_ANNOTATION = THREEMA_ROOT_PACKAGE_DOT + ANNOTATION,
 		PACKAGE_APP = THREEMA_ROOT_PACKAGE_DOT + APP,
 		PACKAGE_BASE = THREEMA_ROOT_PACKAGE_DOT + BASE,
+		PACKAGE_DATA = THREEMA_ROOT_PACKAGE_DOT + DATA,
 		PACKAGE_DOMAIN = THREEMA_ROOT_PACKAGE_DOT + DOMAIN,
 		PACKAGE_LOCALCRYPTO = THREEMA_ROOT_PACKAGE_DOT + LOCALCRYPTO,
 		PACKAGE_LOGGING = THREEMA_ROOT_PACKAGE_DOT + LOGGING,
@@ -59,6 +61,7 @@ public class ArchitectureDefinitions {
 			.layer(APP).definedBy(PACKAGE_APP + "..")
 			.layer(STORAGE).definedBy(PACKAGE_STORAGE + "..")
 			.layer(LOCALCRYPTO).definedBy(PACKAGE_LOCALCRYPTO + "..")
+			.layer(DATA).definedBy(PACKAGE_DATA + "..")
 			.layer(DOMAIN).definedBy(PACKAGE_DOMAIN + "..")
 			.layer(BASE).definedBy(PACKAGE_BASE + "..")
 			.layer(LOGGING).definedBy(PACKAGE_LOGGING + "..")

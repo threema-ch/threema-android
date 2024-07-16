@@ -21,25 +21,28 @@
 
 package ch.threema.domain.protocol;
 
-import androidx.annotation.LongDef;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import androidx.annotation.LongDef;
+import ch.threema.protobuf.Common;
+
 public class ThreemaFeature {
 	// Feature flags. When adding new flags, also update LATEST_FEATURE!
-	public final static long AUDIO = 0x01;
-	public final static long GROUP_CHAT = 0x02;
-	public final static long BALLOT = 0x04;
-	public final static long FILE = 0x08;
-	public final static long VOIP = 0x10;
-	public final static long VIDEOCALLS = 0x20;
-	public final static long FORWARD_SECURITY = 0x40;
-	public final static long GROUP_CALLS = 0x80;
+	public final static long AUDIO = Common.CspFeatureMaskFlag.VOICE_MESSAGE_SUPPORT_VALUE;
+	public final static long GROUP_CHAT = Common.CspFeatureMaskFlag.GROUP_SUPPORT_VALUE;
+	public final static long BALLOT = Common.CspFeatureMaskFlag.POLL_SUPPORT_VALUE;
+	public final static long FILE = Common.CspFeatureMaskFlag.FILE_MESSAGE_SUPPORT_VALUE;
+	public final static long VOIP = Common.CspFeatureMaskFlag.O2O_AUDIO_CALL_SUPPORT_VALUE;
+	public final static long VIDEOCALLS = Common.CspFeatureMaskFlag.O2O_VIDEO_CALL_SUPPORT_VALUE;
+	public final static long FORWARD_SECURITY = Common.CspFeatureMaskFlag.FORWARD_SECURITY_SUPPORT_VALUE;
+	public final static long GROUP_CALLS = Common.CspFeatureMaskFlag.GROUP_CALL_SUPPORT_VALUE;
+	public final static long EDIT_MESSAGES = Common.CspFeatureMaskFlag.EDIT_MESSAGE_SUPPORT_VALUE;
+	public final static long DELETE_MESSAGES = Common.CspFeatureMaskFlag.DELETE_MESSAGE_SUPPORT_VALUE;
 
 	@Retention(RetentionPolicy.SOURCE)
-	@LongDef({ AUDIO, GROUP_CHAT, BALLOT, FILE, VOIP, VIDEOCALLS, FORWARD_SECURITY, GROUP_CALLS })
-	private @interface Feature {}
+	@LongDef({ AUDIO, GROUP_CHAT, BALLOT, FILE, VOIP, VIDEOCALLS, FORWARD_SECURITY, GROUP_CALLS, EDIT_MESSAGES, DELETE_MESSAGES })
+	public @interface Feature {}
 
 	/**
 	 * Feature mask builder
@@ -77,6 +80,14 @@ public class ThreemaFeature {
 
 		public Builder groupCalls(boolean enable) {
 			return this.set(ThreemaFeature.GROUP_CALLS, enable);
+		}
+
+		public Builder editMessages(boolean enable) {
+			return this.set(ThreemaFeature.EDIT_MESSAGES, enable);
+		}
+
+		public Builder deleteMessages(boolean enable) {
+			return this.set(ThreemaFeature.DELETE_MESSAGES, enable);
 		}
 
 		public long build() {
@@ -125,6 +136,12 @@ public class ThreemaFeature {
 	}
 	public static boolean canGroupCalls(long featureMask) {
 		return hasFeature(featureMask, GROUP_CALLS);
+	}
+	public static boolean canEditMessages(long featureMask) {
+		return hasFeature(featureMask, EDIT_MESSAGES);
+	}
+	public static boolean canDeleteMessages(long featureMask) {
+		return hasFeature(featureMask, DELETE_MESSAGES);
 	}
 
 	public static boolean hasFeature(long featureMask, @Feature long feature) {

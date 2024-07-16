@@ -319,6 +319,8 @@
 	<string name="state_dialog_created">Created</string>
 	<string name="state_dialog_posted">Sent</string>
 	<string name="state_dialog_modified">Updated</string>
+    <string name="state_dialog_edited">Edited</string>
+    <string name="state_dialog_deleted">Deleted</string>
 	<string name="state_dialog_status">Status</string>
 	<string name="title_tab_recent">Recent</string>
 	<string name="no_recent_conversations">No chats found</string>
@@ -786,6 +788,9 @@
 	<string name="data_backup_explain">Data backups contain:\n\n&#9679; Your ID and your key pair\n&#9679; Contacts and trust levels\n&#9679; Group memberships\n&#9679; Chats\n&#9679; Media and files (optional)\n\nData will be saved to an encrypted ZIP file. It is recommended to move the file away from the device after the backup has completed successfully.</string>
 	<string name="draw">Draw</string>
 	<string name="edit">Edit</string>
+    <string name="edit_message">Edit message</string>
+	<string name="edited">Edited</string>
+	<string name="confirm_edit_desc">Confirm edit</string>
 	<string name="discard_changes">Would you like to discard changes?</string>
 	<string name="prefs_title_network">Network</string>
 	<string name="prefs_title_ipv6_preferred">IPv6 for messages</string>
@@ -1056,6 +1061,8 @@
 	<string name="system_default">System default</string>
 	<string name="open_in_maps_app">Open in Maps app</string>
 	<string name="delete">Delete</string>
+    <string name="delete_for_all">Delete for all</string>
+    <string name="message_was_deleted">This message was deleted</string>
 	<string name="continue_recording">Continue recording</string>
 	<string name="whatsnew_title">What\'s new in %1$s 5.2?</string>
 	<string name="whatsnew_headline">
@@ -1585,6 +1592,14 @@
 	<string name="media_gallery_animated_webps">Animated WebPs</string>
 	<string name="unsupported_image_type">Unsupported image type: %s</string>
     <string name="application_setup_steps_failed">An active Internet connection is required to check the state of your contacts. Please make sure that you are connected to the Internet and try again.</string>
+    <string name="add_contact_failed">Adding the contact failed</string>
+
+    <string name="edit_message_not_supported_for_contact">Cannot edit the message because the recipient’s app version does not support this feature.</string>
+    <string name="edit_message_not_supported_for_all_group_members">The following group members will not be able to see your edits: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Cannot edit the message because no group member has an app version that supports this feature.</string>
+
+    <string name="delete_message_not_supported_for_all_group_members">This message will not be deleted for the following group members: %1$s</string>
+
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d contact</item>
 		<item quantity="few">%d contacts</item>
@@ -1754,10 +1769,10 @@
 		<item quantity="other">%d messages have been lost since the last message.</item>
 	</plurals>
 	<plurals name="delete_messages">
-		<item quantity="one">Delete %d message on this device?</item>
-		<item quantity="few">Delete %d messages on this device?</item>
-		<item quantity="many">Delete %d messages on this device?</item>
-		<item quantity="other">Delete %d messages on this device?</item>
+		<item quantity="one">Delete %d message?</item>
+		<item quantity="few">Delete %d messages?</item>
+		<item quantity="many">Delete %d messages?</item>
+		<item quantity="other">Delete %d messages?</item>
 	</plurals>
 	<plurals name="number_of_group_members">
 		<item quantity="one">%d group member</item>

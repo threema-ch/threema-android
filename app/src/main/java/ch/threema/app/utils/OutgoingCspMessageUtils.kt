@@ -31,6 +31,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.IdentityState
+import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.protocol.api.APIConnector
@@ -72,7 +73,11 @@ fun String.fetchContactModel(apiConnector: APIConnector): ContactModel =
         .let {
             ContactModel(it.identity, it.publicKey)
                 .setFeatureMask(it.featureMask)
-                .setIdentityType(it.type)
+                .setIdentityType(when (it.type) {
+                    0 -> IdentityType.NORMAL
+                    1 -> IdentityType.WORK
+                    else -> IdentityType.NORMAL /* Out of range! */
+                })
                 .setState(
                     when (it.state) {
                         IdentityState.ACTIVE -> ContactModel.State.ACTIVE

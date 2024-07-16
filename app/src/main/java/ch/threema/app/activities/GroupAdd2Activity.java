@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.util.Set;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -126,7 +127,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 	}
 
 	@Override
-	public void onYes(String tag, String text1, String text2, File avatarFile) {
+	public void onYes(String tag, String text1, String text2, @Nullable File avatarFile) {
 		createGroup(text1, Set.of(this.groupIdentities), avatarFile);
 	}
 

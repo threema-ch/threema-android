@@ -73,7 +73,8 @@
 					app:layout_constraintBottom_toBottomOf="parent"
 					app:layout_constraintLeft_toLeftOf="parent"
 					app:layout_constraintTop_toTopOf="parent"
-					app:singleLine="true" />
+					app:singleLine="true"
+                    android:animateLayoutChanges="true" />
 
 			</HorizontalScrollView>
 

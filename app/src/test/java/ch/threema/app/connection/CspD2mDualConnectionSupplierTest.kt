@@ -32,6 +32,7 @@ import ch.threema.domain.protocol.connection.d2m.D2mConnection
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
 import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 import java8.util.function.Supplier
 import okhttp3.OkHttpClient
@@ -93,6 +94,7 @@ class CspD2mDualConnectionSupplierTest {
         Mockito.`when`(multiDeviceManager.isMultiDeviceActive).thenAnswer { mdActiveHandle.isMdActive }
         Mockito.`when`(multiDeviceManager.propertiesProvider).thenReturn(propertiesProvider)
         Mockito.`when`(multiDeviceManager.socketCloseListener).thenReturn(socketCloseListener)
+        val incomingMessageProcessor = Mockito.mock(IncomingMessageProcessor::class.java)
         val taskManager = Mockito.mock(TaskManager::class.java)
         val deviceCookieManager = Mockito.mock(DeviceCookieManager::class.java)
         val serverAddressProviderService = Mockito.mock(ServerAddressProviderService::class.java)
@@ -106,6 +108,7 @@ class CspD2mDualConnectionSupplierTest {
 
         return CspD2mDualConnectionSupplier(
             multiDeviceManager,
+            incomingMessageProcessor,
             taskManager,
             deviceCookieManager,
             serverAddressProviderService,

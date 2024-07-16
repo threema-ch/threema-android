@@ -116,6 +116,10 @@ enum CspFeatureMaskFlag {
   FORWARD_SECURITY_SUPPORT = 0x0040;
   // Supports group calls.
   GROUP_CALL_SUPPORT = 0x0080;
+  // Supports editing messages.
+  EDIT_MESSAGE_SUPPORT = 0x0100;
+  // Supports deleting messages.
+  DELETE_MESSAGE_SUPPORT = 0x0200;
 }
 
 // E2E message type as defined by the Chat Server Protocol.
@@ -126,8 +130,8 @@ enum CspE2eMessageType {
   // [`empty`](ref:e2e.empty)
   EMPTY = 0xfc;
 
-  // Conversation messages
-  // ---------------------
+  // 1:1 messages
+  // ------------
 
   // [`text`](ref:e2e.text)
   TEXT = 0x01;
@@ -156,16 +160,20 @@ enum CspE2eMessageType {
   // [`call-ringing`](ref:e2e.call-ringing)
   CALL_RINGING = 0x64;
 
-  // Status updates
-  // --------------
+  // 1:1 message updates
+  // -------------------
 
   // [`delivery-receipt`](ref:e2e.delivery-receipt)
   DELIVERY_RECEIPT = 0x80;
   // [`typing-indicator`](ref:e2e.typing-indicator)
   TYPING_INDICATOR = 0x90;
+  // `csp-e2e.EditMessage`
+  EDIT_MESSAGE = 0x91;
+  // `csp-e2e.DeleteMessage`
+  DELETE_MESSAGE = 0x92;
 
-  // Contact control
-  // ---------------
+  // 1:1 contact control
+  // -------------------
 
   // [`set-profile-picture`](ref:e2e.set-profile-picture) of a contact
   CONTACT_SET_PROFILE_PICTURE = 0x18;
@@ -207,8 +215,8 @@ enum CspE2eMessageType {
   // [`group-member-container`](ref:e2e.group-member-container)
   GROUP_CALL_START = 0x4f;
 
-  // Group conversation messages
-  // ---------------------------
+  // Group messages
+  // --------------
 
   // `0x41`: [`text`](ref:e2e.text) wrapped by
   // [`group-member-container`](ref:e2e.group-member-container)
@@ -235,12 +243,18 @@ enum CspE2eMessageType {
   // [`group-member-container`](ref:e2e.group-member-container)
   GROUP_POLL_VOTE = 0x53;
 
-  // Group status updates
-  // --------------------
+  // Group message updates
+  // ---------------------
 
   // [`delivery-receipt`](ref:e2e.delivery-receipt) wrapped by
   // [`group-member-container`](ref:e2e.group-member-container)
   GROUP_DELIVERY_RECEIPT = 0x81;
+  // `csp-e2e.EditMessage` wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_EDIT_MESSAGE = 0x93;
+  // `csp-e2e.DeleteMessage` wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_DELETE_MESSAGE = 0x94;
 
   // Forward security
   // ----------------

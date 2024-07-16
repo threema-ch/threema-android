@@ -118,7 +118,7 @@ class ContactAvatarFetcher(
 
     private fun getProfilePicture(contactModel: ContactModel, highRes: Boolean): Bitmap? {
         try {
-            val result = fileService?.getContactPhoto(contactModel)
+            val result = fileService?.getContactPhoto(contactModel.identity)
             if (result != null && !highRes) {
                 return AvatarConverterUtil.convert(this.context.resources, result)
             }
@@ -130,7 +130,7 @@ class ContactAvatarFetcher(
 
     private fun getLocallySavedAvatar(contactModel: ContactModel, highRes: Boolean): Bitmap? {
         return try {
-            var result = fileService?.getContactAvatar(contactModel)
+            var result = fileService?.getContactAvatar(contactModel.identity)
             if (result != null && !highRes) {
                 result = AvatarConverterUtil.convert(this.context.resources, result)
             }
@@ -141,7 +141,7 @@ class ContactAvatarFetcher(
     }
 
     private fun getAndroidContactAvatar(contactModel: ContactModel, highRes: Boolean): Bitmap? {
-        if (ContactUtil.isChannelContact(contactModel) || AndroidContactUtil.getInstance().getAndroidContactUri(contactModel) == null) {
+        if (ContactUtil.isGatewayContact(contactModel) || AndroidContactUtil.getInstance().getAndroidContactUri(contactModel) == null) {
             return null
         }
         // regular contacts
@@ -159,7 +159,7 @@ class ContactAvatarFetcher(
     private fun buildDefaultAvatar(contactModel: ContactModel?, highRes: Boolean, backgroundColor: Int): Bitmap {
         val color = contactService?.getAvatarColor(contactModel)
             ?: ColorUtil.getInstance().getCurrentThemeGray(context)
-        val drawable = if (ContactUtil.isChannelContact(contactModel)) contactBusinessAvatar else contactDefaultAvatar
+        val drawable = if (ContactUtil.isGatewayContact(contactModel)) contactBusinessAvatar else contactDefaultAvatar
         return if (highRes) {
             buildDefaultAvatarHighRes(drawable, color, backgroundColor)
         } else {

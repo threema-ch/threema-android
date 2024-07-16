@@ -24,6 +24,7 @@ package ch.threema.app.voip.groupcall.sfu
 import ch.threema.app.voip.groupcall.sfu.webrtc.DtlsParameters
 import ch.threema.app.voip.groupcall.sfu.webrtc.IceParameters
 import ch.threema.app.voip.groupcall.sfu.webrtc.SessionParameters
+import ch.threema.base.utils.toHexString
 import ch.threema.protobuf.groupcall.SfuHttpResponse
 
 typealias JoinResponse = SfuResponse<JoinResponseBody>
@@ -101,5 +102,9 @@ data class JoinResponseBody(
         result = 31 * result + dtlsFingerprint.contentHashCode()
         result = 31 * result + addresses.hashCode()
         return result
+    }
+
+    override fun toString(): String {
+        return "JoinResponseBody(startedAt=$startedAt, maxParticipants=$maxParticipants, participantId=$participantId, iceUsernameFragment='$iceUsernameFragment', icePassword='$icePassword', dtlsFingerprint=${dtlsFingerprint.toHexString()}, addresses=$addresses)"
     }
 }

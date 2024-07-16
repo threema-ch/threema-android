@@ -1030,6 +1030,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="system_default">Impostazioni predefinite di sistema</string>
     <string name="open_in_maps_app">Apri in Mappe</string>
     <string name="delete">Elimina</string>
+    <string name="message_was_deleted">Messaggio cancellato</string>
     <string name="continue_recording">Continua registrazione</string>
     <string name="whatsnew_title">Nuove funzioni in %1$s 5.2</string>
     <string name="whatsnew_headline"><![CDATA[

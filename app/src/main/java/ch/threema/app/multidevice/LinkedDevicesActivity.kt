@@ -59,7 +59,7 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
     private val qrScanner = QRScannerUtil.prepareScanner(this) {
         if (it?.isNotEmpty() == true) {
             logger.debug("Got device link data: {}", it)
-            viewModel.linkDevice(it)
+            viewModel.linkDevice(it, serviceManager.deviceJoinDataCollector)
         }
     }
 

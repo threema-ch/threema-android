@@ -23,6 +23,7 @@ package ch.threema.app.adapters.decorators;
 
 import android.content.Context;
 import android.os.Parcel;
+import android.view.View;
 
 import org.slf4j.Logger;
 
@@ -32,6 +33,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.BallotUtil;
@@ -88,9 +90,12 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
 				holder.secondaryTextView.setText(explain);
 			}
 
-			this.setOnClickListener(view -> {
-				if (messageModel.getState() != MessageState.FS_KEY_MISMATCH && messageModel.getState() != MessageState.SENDFAILED) {
-					onActionButtonClick(ballotModel);
+			this.setOnClickListener(new DebouncedOnClickListener(500) {
+				@Override
+				public void onDebouncedClick(View v) {
+					if (messageModel.getState() != MessageState.FS_KEY_MISMATCH && messageModel.getState() != MessageState.SENDFAILED) {
+						BallotChatAdapterDecorator.this.onActionButtonClick(ballotModel);
+					}
 				}
 			}, holder.messageBlockView);
 

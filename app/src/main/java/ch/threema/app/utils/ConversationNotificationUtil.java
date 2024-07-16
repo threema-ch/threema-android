@@ -23,6 +23,7 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 import org.slf4j.Logger;
 
@@ -30,8 +31,10 @@ import java.util.Date;
 import java.util.HashMap;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.core.app.Person;
 import androidx.core.graphics.drawable.IconCompat;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -56,6 +59,7 @@ public class ConversationNotificationUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationNotificationUtil");
 
 	protected static final HashMap<String, NotificationService.ConversationNotificationGroup> notificationGroupHashMap = new HashMap<>();
+	private static final int MAX_NOTIFICATION_THUMBNAIL_SIZE_BYTES = 1024 * 1024;
 
 	public static NotificationService.ConversationNotification convert(Context context,
 	                                                                   AbstractMessageModel messageModel,
@@ -71,16 +75,12 @@ public class ConversationNotificationUtil {
 		}
 
 		return conversationNotification;
-		/*if(conversationNotification != null) {
-			conversationNotification.
-		}*/
 	}
 
 	private static MessageService.MessageString getMessage(AbstractMessageModel messageModel) {
-		//load lazy
 		try {
 			return ThreemaApplication.getServiceManager().getMessageService()
-						.getMessageString(messageModel, -1, !ConfigUtils.canDoGroupedNotifications());
+						.getMessageString(messageModel, -1, false);
 		} catch (ThreemaException e) {
 			logger.error("Exception", e);
 			return new MessageService.MessageString(null);
@@ -88,7 +88,6 @@ public class ConversationNotificationUtil {
 	}
 
 	private static @Nullable Person getSenderPerson(AbstractMessageModel messageModel) {
-		//load lazy
 		try {
 			final ContactService contactService = ThreemaApplication.getServiceManager().getContactService();
 			final ContactModel contactModel = contactService.getByIdentity(messageModel.getIdentity());
@@ -113,7 +112,7 @@ public class ConversationNotificationUtil {
 			IconCompat iconCompat = IconCompat.createWithBitmap(avatar);
 			builder.setIcon(iconCompat);
 		}
-		if (contactModel != null && contactModel.getAndroidContactLookupKey() != null) {
+		if (contactModel != null && contactModel.isLinkedToAndroidContact()) {
 			builder.setUri(contactService.getAndroidContactLookupUriString(contactModel));
 		}
 		return builder.build();
@@ -137,7 +136,6 @@ public class ConversationNotificationUtil {
 					NameUtil.getDisplayNameOrNickname(contactModel, true);
 			String shortName = hiddenChatsListService.has(contactService.getUniqueIdString(contactModel)) ? context.getString(R.string.private_chat_subject) :
 					NameUtil.getShortName(contactModel);
-			String contactLookupUri = contactService.getAndroidContactLookupUriString(contactModel);
 
 			if(group == null) {
 				group = new NotificationService.ConversationNotificationGroup(
@@ -145,21 +143,16 @@ public class ConversationNotificationUtil {
 						longName,
 						shortName,
 						contactService.createReceiver(contactModel),
-						new NotificationService.FetchBitmap() {
-							@Override
-							public Bitmap fetch() {
-								//lacy stuff
-								if (contactService != null) {
-									return contactService.getAvatar(
-											hiddenChatsListService.has(contactService.getUniqueIdString(contactModel)) ? null :
-											contactModel,
-											false
-									);
-								}
-								return null;
-							}
-						},
-						contactLookupUri);
+                        () -> {
+                            if (contactService != null) {
+                                return contactService.getAvatar(
+                                        hiddenChatsListService.has(contactService.getUniqueIdString(contactModel)) ? null :
+                                        contactModel,
+                                        false
+                                );
+                            }
+                            return null;
+                        });
 				notificationGroupHashMap.put(groupUid, group);
 			} else {
 				// contact name may change between notifications - set it again
@@ -174,11 +167,24 @@ public class ConversationNotificationUtil {
 					getUid(messageModel),
 					group,
 					getFetchThumbnail(messageModel),
+					getThumbnailMimeType(messageModel),
 					getSenderPerson(messageModel),
-					getMessageType(messageModel)
+					getMessageType(messageModel),
+					messageModel.isDeleted()
 			);
 
 		}
+	}
+
+	@Nullable
+	private static String getThumbnailMimeType(AbstractMessageModel messageModel) {
+		if (MessageType.FILE.equals(messageModel.getType()) &&
+			(messageModel.getMessageContentsType() == MessageContentsType.IMAGE ||
+			messageModel.getMessageContentsType() == MessageContentsType.VIDEO
+		)) {
+			return MimeUtil.MIME_TYPE_IMAGE_PNG.equals(messageModel.getFileData().getThumbnailMimeType()) ? MimeUtil.MIME_TYPE_IMAGE_PNG : MimeUtil.MIME_TYPE_IMAGE_JPEG;
+		}
+		return null;
 	}
 
 	private static NotificationService.ConversationNotification create(final Context context, final GroupMessageModel messageModel, final GroupService groupService, final DeadlineListService hiddenChatsListService) {
@@ -196,21 +202,17 @@ public class ConversationNotificationUtil {
 					name,
 					name,
 					groupService.createReceiver(groupModel),
-					new NotificationService.FetchBitmap() {
-						@Override
-						public Bitmap fetch() {
-							if (groupService != null) {
-								return groupService.getAvatar(
-										hiddenChatsListService.has(groupService.getUniqueIdString(groupModel)) ? null :
-										groupModel,
-										false
-								);
-							}
-							return null;
-						}
-					},
-					null
-				);
+                        () -> {
+                            if (groupService != null) {
+                                return groupService.getAvatar(
+                                        hiddenChatsListService.has(groupService.getUniqueIdString(groupModel)) ? null :
+                                        groupModel,
+                                        false
+                                );
+                            }
+                            return null;
+                        }
+                );
 				notificationGroupHashMap.put(groupUid, group);
 			} else {
 				// group name may change between notifications - set it again
@@ -225,8 +227,10 @@ public class ConversationNotificationUtil {
 					getUid(messageModel),
 					group,
 					getFetchThumbnail(messageModel),
+					getThumbnailMimeType(messageModel),
 					getSenderPerson(messageModel),
-					getMessageType(messageModel)
+					getMessageType(messageModel),
+					messageModel.isDeleted()
 			);
 		}
 	}
@@ -239,7 +243,7 @@ public class ConversationNotificationUtil {
 		return messageModel.getId();
 	}
 
-	public static NotificationService.FetchBitmap getFetchThumbnail(final AbstractMessageModel messageModel) {
+	public static NotificationService.FetchCacheUri getFetchThumbnail(final AbstractMessageModel messageModel) {
 		if (messageModel.getMessageContentsType() == MessageContentsType.IMAGE ||
 			messageModel.getMessageContentsType() == MessageContentsType.VIDEO
 		) {
@@ -247,34 +251,28 @@ public class ConversationNotificationUtil {
 				return null;
 			}
 
-			return new NotificationService.FetchBitmap() {
+			return new NotificationService.FetchCacheUri() {
 				@Override
-				public Bitmap fetch() {
-					//get file service directly...
-					//... its the evil way!
-					FileService f = null;
+				@Nullable
+				@WorkerThread
+				public Uri fetch() {
+					FileService fileService = null;
 
 					if (ThreemaApplication.getServiceManager() != null) {
 						try {
-							f = ThreemaApplication.getServiceManager().getFileService();
+							fileService = ThreemaApplication.getServiceManager().getFileService();
 						} catch (FileSystemNotPresentException e) {
 							logger.error("FileSystemNotPresentException", e);
 						}
 					}
 
-					if (f != null) {
-						try {
-							return f.getMessageThumbnailBitmap(messageModel, null);
-						} catch (Exception e) {
-							logger.debug("cannot fetch thumbnail, abort");
-						}
+					if (fileService != null) {
+						return fileService.getThumbnailShareFileUri(messageModel, MAX_NOTIFICATION_THUMBNAIL_SIZE_BYTES);
 					}
-
 					return null;
 				}
 			};
 		}
-
 		return null;
 	}
 }

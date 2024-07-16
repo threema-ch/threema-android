@@ -32,8 +32,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.TextView;
 
-import com.mapbox.mapboxsdk.constants.GeometryConstants;
-import com.mapbox.mapboxsdk.geometry.LatLng;
+import org.maplibre.android.constants.GeometryConstants;
+import org.maplibre.android.geometry.LatLng;
 
 import org.slf4j.Logger;
 
@@ -252,6 +252,16 @@ public class GeoLocationUtil {
 	 * @return true if the device supports map libre and the location can be shown, false otherwise
 	 */
 	public static boolean viewLocation(@NonNull Context context, @NonNull LocationDataModel locationData) {
+		// Note that this check does only work for some devices. Other devices may report version
+		// 3.0 even if they do not support it. This may lead to a crash when displaying a location.
+		if (ConfigUtils.getSupportedGlEsVersion(context) < 3.0) {
+			// Note that we do not abort here if the supported version could not be determined. The
+			// risk of showing the location without support for gl es 3.0 is low, as this does not
+			// necessarily lead to a crash. The potential damage would be larger if we would prevent
+			// supported devices from displaying locations.
+			return false;
+		}
+
 		Intent intent = new Intent(context, MapActivity.class);
 		IntentDataUtil.append(new LatLng(locationData.getLatitude(),
 				locationData.getLongitude()),

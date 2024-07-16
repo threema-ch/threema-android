@@ -192,6 +192,21 @@ public interface MessageService {
     AbstractMessageModel sendText(String message, MessageReceiver receiver) throws Exception;
 	AbstractMessageModel sendLocation(@NonNull Location location, String poiName, MessageReceiver receiver, CompletionHandler completionHandler) throws ThreemaException;
 
+	/**
+	 * Edit a message's text and send it to a receiver
+	 * @param message original message to edit
+	 * @param newText new message text
+	 */
+	void sendEditedMessageText(@NonNull AbstractMessageModel message, @NonNull String newText, @NonNull MessageReceiver receiver) throws Exception;
+
+	void saveEditedMessageText(@NonNull AbstractMessageModel message, String text, @Nullable Date editedAt);
+
+	/**
+	 * Delete a message's content and send it to a receiver
+	 * @param message original message to delete
+	 */
+	void deleteMessageContents(@NonNull AbstractMessageModel message, Date deletedAt);
+
 	String getCorrelationId();
 
 	@AnyThread
@@ -268,6 +283,8 @@ public interface MessageService {
 	 * if silent is true, no event will be fired on delete
 	 */
 	void remove(AbstractMessageModel messageModel, boolean silent);
+
+	void sendDeleteMessage(@NonNull AbstractMessageModel messageModel, @NonNull MessageReceiver receiver) throws Exception;
 
 	/**
 	 * Process an incoming contact message. Note that this method must not be used for voip and poll

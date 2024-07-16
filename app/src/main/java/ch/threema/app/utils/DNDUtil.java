@@ -220,9 +220,8 @@ public class DNDUtil {
 		}
 
 		Uri contactUri;
-		String lookupKey = contactModel.getAndroidContactLookupKey();
 
-		if (lookupKey != null) {
+		if (contactModel.isLinkedToAndroidContact()) {
 			try {
 				contactUri = AndroidContactUtil.getInstance().getAndroidContactUri(contactModel);
 			} catch (Exception e) {

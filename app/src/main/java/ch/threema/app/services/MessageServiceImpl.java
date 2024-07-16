@@ -82,6 +82,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -91,7 +92,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.collection.ArrayMap;
 import androidx.core.app.NotificationManagerCompat;
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
@@ -140,26 +140,28 @@ import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.blob.BlobUploader;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.AudioMessage;
-import ch.threema.domain.protocol.csp.messages.ImageMessage;
-import ch.threema.domain.protocol.csp.messages.LocationMessage;
-import ch.threema.domain.protocol.csp.messages.TextMessage;
-import ch.threema.domain.protocol.csp.messages.VideoMessage;
+import ch.threema.domain.protocol.csp.messages.BadMessageException;
+import ch.threema.domain.protocol.csp.messages.DeleteMessage;
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
+import ch.threema.domain.protocol.csp.messages.EditMessage;
 import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage;
 import ch.threema.domain.protocol.csp.messages.GroupImageMessage;
 import ch.threema.domain.protocol.csp.messages.GroupLocationMessage;
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage;
 import ch.threema.domain.protocol.csp.messages.GroupVideoMessage;
+import ch.threema.domain.protocol.csp.messages.ImageMessage;
+import ch.threema.domain.protocol.csp.messages.LocationMessage;
+import ch.threema.domain.protocol.csp.messages.TextMessage;
+import ch.threema.domain.protocol.csp.messages.VideoMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateInterface;
-import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage;
+import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.file.FileMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileMessageInterface;
@@ -444,16 +446,7 @@ public class MessageServiceImpl implements MessageService {
 
 		logger.info("{}: start", tag);
 
-		// Strip leading/trailing whitespace and throw if nothing is left
-		String trimmedMessage = message.trim();
-		if (trimmedMessage.length() == 0) {
-			throw new ThreemaException("Tried to send empty message");
-		}
-
-		// Check maximum length in UTF-8 bytes (can be reached quickly with Unicode emojis etc.)
-		if (message.getBytes(StandardCharsets.UTF_8).length > ProtocolDefines.MAX_TEXT_MESSAGE_LEN) {
-			throw new MessageTooLongException();
-		}
+		String trimmedMessage = validateTextMessage(message);
 
 		logger.debug("{}: create model instance", tag);
 		final AbstractMessageModel messageModel = messageReceiver.createLocalModel(MessageType.TEXT, MessageContentsType.TEXT, new Date());
@@ -478,6 +471,153 @@ public class MessageServiceImpl implements MessageService {
 		fireOnModifiedMessage(messageModel);
 
 		return messageModel;
+	}
+
+	@Override
+	public void sendEditedMessageText(
+		@NonNull AbstractMessageModel message, // 1. Let `message` be the referred message.
+		@NonNull String newText,
+		@NonNull MessageReceiver receiver
+	) throws ThreemaException {
+		logger.debug("editText message = {}", message.getApiMessageId());
+
+		if (!message.isOutbox()) {
+			throw new ThreemaException("Tried editing a message that is not outgoing. message = " + message.getApiMessageId());
+		}
+
+		String trimmedNewText = validateTextMessage(newText);
+
+		if (Objects.equals(message.getBody(), trimmedNewText)) {
+			throw new ThreemaException("Tried editing a message with no changes. message = " + message.getApiMessageId());
+		}
+
+		if (message.getPostedAt() == null) {
+			logger.error("postedAt is null for messageId={}}", message.getId());
+			return;
+		}
+
+		// 3. Let `created-at` be the current timestamp to be applied to the edit
+		//    message.
+		Date createdAt = new Date();
+		long deltaTime = createdAt.getTime() - message.getPostedAt().getTime();
+		// 2. If the referred message has been sent (`sent-at`) more than 6 hours ago,
+		//    prevent creation and abort these steps.
+		if (deltaTime > EditMessage.EDIT_MESSAGES_MAX_AGE) {
+			logger.error("Cannot edit message older than {}}ms", EditMessage.EDIT_MESSAGES_MAX_AGE);
+			return;
+		}
+
+		// 4. Edit `message` as defined by the associated _Edit applies to_ property and
+		//    add an indicator to `message`, informing the user that the message has
+		//    been edited by the user at `created-at`.
+		saveEditedMessageText(message, newText, createdAt);
+
+		if (receiver instanceof ContactMessageReceiver) {
+			((ContactMessageReceiver) receiver).sendEditMessage(
+				message.getId(),
+				trimmedNewText,
+				createdAt
+			);
+		} else if (receiver instanceof GroupMessageReceiver) {
+			((GroupMessageReceiver) receiver).sendEditMessage(
+				message.getId(),
+				trimmedNewText,
+				createdAt
+			);
+		} else {
+			throw new ThreemaException("Unsupported receiver type of: " + receiver.getClass());
+		}
+	}
+
+	@Override
+	public void saveEditedMessageText(@NonNull AbstractMessageModel message, String text, @Nullable Date editedAt) {
+		logger.info("Save edited message = {}", message.getApiMessageId());
+
+		switch (message.getType()) {
+			case TEXT:
+				message.setBody(text);
+				break;
+			case FILE:
+				message.setCaption(text);
+				message.getFileData().setCaption(text);
+				message.setBody(message.getFileData().toString());
+				break;
+			default:
+				logger.error("Tried saving an edited message of unsupported type {} for messageId = {}}", message.getType(), message.getId());
+				return;
+		}
+
+		message.setEditedAt(editedAt);
+
+		save(message);
+		fireOnModifiedMessage(message);
+		fireOnEditMessage(message);
+	}
+
+	@Override
+	public void sendDeleteMessage(
+		@NonNull AbstractMessageModel message, // 1. Let `message` be the referred message.
+		@NonNull MessageReceiver receiver
+	) throws Exception {
+		logger.debug("sendDeleteMessage message = {}", message.getApiMessageId());
+
+		if (!message.isOutbox()) {
+			logger.error("Tried deleting a message that is not outgoing. message = {}", message.getId());
+		}
+
+		if (message.getPostedAt() == null) {
+			logger.error("postedAt is null for messageId={}}", message.getId());
+			return;
+		}
+
+		// 3. Let `created-at` be the current timestamp to be applied to the delete
+		//    message.
+		Date createdAt = new Date();
+		long deltaTime = createdAt.getTime() - message.getPostedAt().getTime();
+		// 2. If the referred message has been sent (`sent-at`) more than 6 hours ago,
+		//    prevent creation and abort these steps.
+		if (deltaTime > DeleteMessage.DELETE_MESSAGES_MAX_AGE) {
+			logger.error("Cannot delete message older than {}}ms", DeleteMessage.DELETE_MESSAGES_MAX_AGE);
+		}
+
+		// 4. Replace `message` with a message informing the user that the message of
+		//    the user has been removed at `created-at`.
+		deleteMessageContents(message, createdAt);
+
+		if (receiver instanceof ContactMessageReceiver) {
+			((ContactMessageReceiver) receiver).sendDeleteMessage(
+				message.getId(),
+				createdAt
+			);
+		} else if (receiver instanceof GroupMessageReceiver) {
+			((GroupMessageReceiver) receiver).sendDeleteMessage(
+				message.getId(),
+				createdAt
+			);
+		} else {
+			throw new ThreemaException("Unsupported receiver type of: " + receiver.getClass());
+		}
+	}
+
+	@Override
+	public void deleteMessageContents(@NonNull AbstractMessageModel message, Date deletedAt) {
+		logger.info("deleteMessageContents = {}", message.getApiMessageId());
+
+		fileService.removeMessageFiles(message, true);
+
+		message.setBody(null);
+		message.setCaption(null);
+
+		message.setState(null);
+		if (message instanceof GroupMessageModel) {
+			((GroupMessageModel) message).setGroupMessageStates(null);
+		}
+
+		message.setDeletedAt(deletedAt);
+
+		save(message);
+		fireOnModifiedMessage(message);
+		fireOnMessageDeletedForAll(message);
 	}
 
 	@Override
@@ -966,7 +1106,7 @@ public class MessageServiceImpl implements MessageService {
 	                               @NonNull DeliveryReceiptMessage stateMessage) {
 
 		AbstractMessageModel messageModel = getAbstractMessageModelByApiIdAndIdentity(apiMessageId, stateMessage.getFromIdentity());
-		if (messageModel != null) {
+		if (messageModel != null && !messageModel.isDeleted()) {
 			updateMessageState(messageModel, state, stateMessage.getDate());
 		}
 	}
@@ -986,7 +1126,7 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		GroupMessageModel messageModel = getGroupMessageModel(apiMessageId, stateMessage.getApiGroupId(), stateMessage.getGroupCreator());
-		if (messageModel != null) {
+		if (messageModel != null && !messageModel.isDeleted()) {
 			updateGroupMessageState(messageModel, stateMessage, state);
 		}
 	}
@@ -1118,24 +1258,6 @@ public class MessageServiceImpl implements MessageService {
 
 			saved = true;
 
-			if (BuildConfig.SEND_CONSUMED_DELIVERY_RECEIPTS) {
-				ContactModel contactModel = contactService.getByIdentity(message.getIdentity());
-				if (preferenceService.isReadReceipts()
-					&& message instanceof MessageModel
-					&& (message.getMessageFlags() & ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS) != ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS
-					&& contactModel != null
-				) {
-					contactService.createReceiver(contactModel).sendDeliveryReceipt(
-						ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED,
-						new MessageId[]{MessageId.fromString(message.getApiMessageId())}
-					);
-					logger.info("Enqueue delivery receipt (consumed) message for message ID {} from {}",
-						message.getApiMessageId(),
-						contactModel.getIdentity()
-					);
-				}
-			}
-
 			fireOnModifiedMessage(message);
 		}
 
@@ -1162,9 +1284,6 @@ public class MessageServiceImpl implements MessageService {
 
 		//remove from sdcard
 		fileService.removeMessageFiles(messageModel, true);
-
-		// Remove all matching messages from message queue
-		// TODO(ANDR-2482): cancel sending message that has not yet been sent
 
 		//remove from dao
 		if(messageModel instanceof GroupMessageModel) {
@@ -2390,6 +2509,9 @@ public class MessageServiceImpl implements MessageService {
 				AbstractMessageModel m = messageModels.get(n);
 
 				if(m != null) {
+					if (m.isDeleted()) {
+						continue;
+					}
 					if(m.isOutbox()) {
 						break;
 					}
@@ -2964,6 +3086,14 @@ public class MessageServiceImpl implements MessageService {
 
 			listener.onModified(list);
 		});
+	}
+
+	private void fireOnMessageDeletedForAll(final AbstractMessageModel messageModel) {
+		ListenerManager.messageDeletedForAllListener.handle(listener -> listener.onDeletedForAll(messageModel));
+	}
+
+	private void fireOnEditMessage(final AbstractMessageModel messageModel) {
+		ListenerManager.editMessageListener.handle(listener -> listener.onEdit(messageModel));
 	}
 
 	private void fireOnRemovedMessage(final AbstractMessageModel messageModel) {
@@ -4588,5 +4718,26 @@ public class MessageServiceImpl implements MessageService {
 				}
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @param message the text message user input
+	 * @return trimmed message
+	 */
+	private String validateTextMessage(@NonNull String message) throws ThreemaException {
+		// Strip leading/trailing whitespace and throw if nothing is left
+		String trimmedMessage = message.trim();
+
+		if (trimmedMessage.isEmpty()) {
+			throw new ThreemaException("Tried to send empty message");
+		}
+
+		// Check maximum length in UTF-8 bytes (can be reached quickly with Unicode emojis etc.)
+		if (message.getBytes(StandardCharsets.UTF_8).length > ProtocolDefines.MAX_TEXT_MESSAGE_LEN) {
+			throw new MessageTooLongException();
+		}
+
+		return trimmedMessage;
 	}
 }

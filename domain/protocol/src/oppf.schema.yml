@@ -9,7 +9,7 @@ properties:
       - '1.0'
   signatureKey:
     type: string
-    description: A 32 byte, base64 encoded ED25519 public key (44 chararcters)
+    description: A 32 byte, base64 encoded Ed25519 public key
     examples:
       - ek1qBp4DyRmLL9J5sCmsKSfwbsiGNB4veDAODjkwe/k=
   refresh:
@@ -18,7 +18,7 @@ properties:
       The refresh interval in seconds
 
       Clients should fetch the OPPF after the specified amount of time has passed.
-    minimum: 0
+    minimum: 1800
     examples:
       - 86400
   license:
@@ -92,7 +92,6 @@ properties:
         type: string
         description:
           The 32-byte, base64 encoded permanent public key of the chat server
-          (44 characters)
         examples:
           - r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=
       ports:
@@ -114,7 +113,9 @@ properties:
     properties:
       url:
         type: string
-        description: Base URL (ending with `/`) of the directory server
+        description: |-
+          Base URL of the directory server (protocol: `https://`, ending with
+          `/`, no parameters, no fragment)
         pattern: '^https://.*/$'
     required:
       - url
@@ -124,14 +125,17 @@ properties:
     properties:
       uploadUrl:
         type: string
-        description: URL to the blob upload endpoint
+        description: |-
+          URL to the blob upload endpoint (protocol: `https://`, no parameters,
+          no fragment)
         pattern: '^https://'
         examples:
-          - https://threemaonprem.initrode.com/blob/upload
+          - https://blob-threemaonprem.initrode.com/blob/upload
       downloadUrl:
         type: string
         description: |-
-          URL to the blob download endpoint
+          URL to the blob download endpoint (protocol: `https://`, no
+          parameters, no fragment)
 
           Valid placeholders:
 
@@ -139,11 +143,12 @@ properties:
           - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
         pattern: '^https://'
         examples:
-          - https://threemaonprem.initrode.com/blob/{blobId}
+          - https://blob-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}
       doneUrl:
         type: string
         description: |-
-          URL to the blob done endpoint
+          URL to the blob done endpoint (protocol: `https://`, no parameters, no
+          fragment)
 
           Valid placeholders:
 
@@ -151,7 +156,7 @@ properties:
           - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
         pattern: '^https://'
         examples:
-          - https://threemaonprem.initrode.com/blob/{blobId}/done
+          - https://blob-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}/done
     required:
       - uploadUrl
       - downloadUrl
@@ -162,7 +167,9 @@ properties:
     properties:
       url:
         type: string
-        description: Base URL (ending with `/`) of the Threema Work server
+        description: |-
+          Base URL of the Threema Work server (protocol: `https://`, ending with
+          `/`, no parameters, no fragment)
         pattern: '^https://.*/$'
         examples:
           - https://threemaonprem.initrode.com/work/
@@ -175,7 +182,9 @@ properties:
     properties:
       url:
         type: string
-        description: Base URL (ending with `/`) of the avatar server
+        description: |-
+          Base URL of the avatar server (protocol: `https://`, ending with `/`,
+          no parameters, no fragment)
         pattern: '^https://.*/$'
         examples:
           - https://threemaonprem.initrode.com/avatar/
@@ -187,7 +196,9 @@ properties:
     properties:
       url:
         type: string
-        description: Base URL (ending with `/`) of the Threema Safe server
+        description: |-
+          Base URL of the Threema Safe server (protocol: `https://`, ending with
+          `/`, no parameters, no fragment)
         pattern: '^https://.*/$'
         examples:
           - https://threemaonprem.initrode.com/safe/
@@ -200,7 +211,8 @@ properties:
       url:
         type: string
         description: |-
-          URL to the Threema Web endpoint
+          URL to the Threema Web endpoint (protocol: `https://`, may have
+          parameters, no fragment)
 
           Not required for app functionality, but is displayed in the app
           (help/info text) so user knows where to go.
@@ -225,12 +237,15 @@ properties:
       url:
         type: string
         description: |-
-          Base URL (ending with `/`) of the rendezvous server
+          Base URL of the rendezvous server (protocol: `wss://`, ending with
+          `/`, no parameters, no fragment)
 
           Valid placeholders:
 
-          - `{rendezvousPathPrefix4}`: The first hex nibble (4 bits) of the rendezvous path
-          - `{rendezvousPathPrefix8}`: The first two hex nibbles (8 bits) of the rendezvous path
+          - `{rendezvousPathPrefix4}`: The first hex nibble (4 bits) of the
+            rendezvous path
+          - `{rendezvousPathPrefix8}`: The first two hex nibbles (8 bits) of the
+            rendezvous path
         pattern: '^wss://.*/$'
         examples:
           - wss://threemaonprem.initrode.com/rendezvous/
@@ -247,12 +262,15 @@ properties:
       url:
         type: string
         description: |-
-          Base URL (ending with `/`) of the rendezvous server
+          Base URL of the rendezvous server (protocol: `wss://`, ending with
+          `/`, no parameters, no fragment)
 
           Valid placeholders:
 
-          - `{deviceGroupIdPrefix4}`: The first hex nibble (4 bits) of the device group ID
-          - `{deviceGroupIdPrefix8}`: The first two hex nibbles (8 bits) of the device group ID
+          - `{deviceGroupIdPrefix4}`: The first hex nibble (4 bits) of the
+            device group ID
+          - `{deviceGroupIdPrefix8}`: The first two hex nibbles (8 bits) of the
+            device group ID
         pattern: '^wss://.*/$'
         examples:
           - wss://threemaonprem.initrode.com/mediator/
@@ -263,28 +281,38 @@ properties:
         properties:
           uploadUrl:
             type: string
-            description: URL to the blob upload endpoint
+            description: |-
+              URL to the blob upload endpoint (protocol: `https://`, no
+              parameters, no fragment)
             pattern: '^https://'
+            examples:
+              - https://blob-mirror-threemaonprem.initrode.com/blob/upload
           downloadUrl:
             type: string
             description: |-
-              URL to the blob download endpoint
+              URL to the blob download endpoint (protocol: `https://`, no
+              parameters, no fragment)
 
               Valid placeholders:
 
               - `{blobId}`: The blob ID (32 hex nibbles)
               - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
             pattern: '^https://'
+            examples:
+              - https://blob-mirror-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}
           doneUrl:
             type: string
             description: |-
-              URL to the blob done endpoint
+              URL to the blob done endpoint (protocol: `https://`, no
+              parameters, no fragment)
 
               Valid placeholders:
 
               - `{blobId}`: The blob ID (32 hex nibbles)
               - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
             pattern: '^https://'
+            examples:
+              - https://blob-mirror-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}/done
         required:
           - uploadUrl
           - downloadUrl

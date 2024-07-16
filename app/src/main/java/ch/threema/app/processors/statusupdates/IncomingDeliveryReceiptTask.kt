@@ -44,7 +44,6 @@ class IncomingDeliveryReceiptTask(
             ProtocolDefines.DELIVERYRECEIPT_MSGREAD -> MessageState.READ
             ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK -> MessageState.USERACK
             ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC -> MessageState.USERDEC
-            ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED -> MessageState.CONSUMED
             else -> {
                 logger.warn("Message {} error: unknown delivery receipt type", message.messageId)
                 return ReceiveStepsResult.DISCARD

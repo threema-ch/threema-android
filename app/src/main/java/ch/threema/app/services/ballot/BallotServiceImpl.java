@@ -50,6 +50,7 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.TestUtil;
@@ -964,53 +965,65 @@ public class BallotServiceImpl implements BallotService {
 
 	@Override
 	public boolean remove(final BallotModel ballotModel) throws NotAllowedException {
-		if(ballotModel != null) {
+		if (serviceManager == null) {
+			logger.debug("Unable to delete ballot, ServiceManager is not available");
+			return false;
+		}
+
+		MessageService messageService;
+		try {
+			messageService = serviceManager.getMessageService();
+		} catch (ThreemaException e) {
+			logger.error("Unable to delete ballot, MessageService not available", e);
+			return false;
+		}
+
+		if (ballotModel != null) {
+			List<AbstractMessageModel> messageModels = messageService.getMessageForBallot(ballotModel);
+
 			//remove all votes
 			this.databaseServiceNew.getBallotVoteModelFactory().deleteByBallotId(
-					ballotModel.getId());
+				ballotModel.getId());
 
 			//remove choices
 			this.databaseServiceNew.getBallotChoiceModelFactory().deleteByBallotId(
-					ballotModel.getId());
-
+				ballotModel.getId());
 
 			//remove link
 			this.databaseServiceNew.getGroupBallotModelFactory().deleteByBallotId(
-					ballotModel.getId());
+				ballotModel.getId());
 
 			this.databaseServiceNew.getIdentityBallotModelFactory().deleteByBallotId(
-					ballotModel.getId());
+				ballotModel.getId());
 
 			//remove ballot
 			this.databaseServiceNew.getBallotModelFactory().delete(
-					ballotModel
+				ballotModel
 			);
 
-			try {
-				if (serviceManager.getMessageService() != null) {
-					List<AbstractMessageModel> messageModels = serviceManager.getMessageService().getMessageForBallot(ballotModel);
-					if (messageModels != null) {
-						for (AbstractMessageModel m : messageModels) {
-							if (m != null) {
-								serviceManager.getMessageService().remove(m);
-								logger.debug("Removing ballot message {} of type {}", m.getApiMessageId() != null ? m.getApiMessageId() : m.getId(), m.getBallotData().getType());
-							}
+			// delete associated messages
+			if (messageModels != null) {
+				for (AbstractMessageModel m : messageModels) {
+					if (m != null) {
+						try {
+							logger.debug("Removing ballot message {} of type {}", m.getApiMessageId() != null ? m.getApiMessageId() : m.getId(), m.getBallotData().getType());
+							messageService.remove(m);
+						} catch (Exception e) {
+							logger.error("Unable to remove message", e);
 						}
-						ListenerManager.ballotListeners.handle(listener -> {
-							if (listener.handle(ballotModel)) {
-								listener.onRemoved(ballotModel);
-							}
-						});
 					}
 				}
-			} catch (ThreemaException e) {
-				logger.error("Exception", e);
 			}
 
-			//remove ballot from cache
+			// remove ballot from cache
 			this.resetCache(ballotModel);
-		}
 
+			ListenerManager.ballotListeners.handle(listener -> {
+				if (listener.handle(ballotModel)) {
+					listener.onRemoved(ballotModel);
+				}
+			});
+		}
 		return true;
 	}
 

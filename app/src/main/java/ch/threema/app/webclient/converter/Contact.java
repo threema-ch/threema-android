@@ -90,7 +90,7 @@ public class Contact extends Converter {
 			builder.maybePut(FIRST_NAME, Utils.nullIfEmpty(contact.getFirstName()));
 			builder.maybePut(LAST_NAME, Utils.nullIfEmpty(contact.getLastName()));
 			builder.maybePut(PUBLIC_NICKNAME, Utils.nullIfEmpty(contact.getPublicNickName()));
-			builder.put(VERIFICATION_LEVEL, VerificationLevel.convert(contact.getVerificationLevel()));
+			builder.put(VERIFICATION_LEVEL, VerificationLevel.convert(contact.verificationLevel));
 			builder.put(STATE, contact.getState().toString());
 			builder.put(HIDDEN, contact.isHidden());
 			builder.maybePut(IS_WORK, ConfigUtils.isWorkBuild() && contact.isWork());
@@ -124,7 +124,7 @@ public class Contact extends Converter {
 		final MsgpackArrayBuilder phoneNumberBuilder = new MsgpackArrayBuilder();
 		final MsgpackArrayBuilder emailBuilder = new MsgpackArrayBuilder();
 
-		if(ContactUtil.isLinked(contact)) {
+		if(contact.isLinkedToAndroidContact()) {
 			//if android is older than version M or read contacts permission granted
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M
 					|| ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)

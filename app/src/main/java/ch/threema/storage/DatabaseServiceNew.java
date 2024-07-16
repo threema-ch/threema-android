@@ -34,6 +34,7 @@ import net.zetetic.database.sqlcipher.SQLiteOpenHelper;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion10;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion11;
@@ -116,6 +117,11 @@ import ch.threema.app.services.systemupdate.SystemUpdateToVersion9;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion90;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion91;
 import ch.threema.app.services.systemupdate.SystemUpdateToVersion92;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion93;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion94;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion95;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion96;
+import ch.threema.app.services.systemupdate.SystemUpdateToVersion97;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -147,9 +153,9 @@ import ch.threema.storage.factories.WebClientSessionModelFactory;
 public class DatabaseServiceNew extends SQLiteOpenHelper {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseServiceNew");
 
-	public static final String DATABASE_NAME_V4 = "threema4.db";
+	public static final String DEFAULT_DATABASE_NAME_V4 = "threema4.db";
 	public static final String DATABASE_BACKUP_EXT = ".backup";
-	private static final int DATABASE_VERSION = SystemUpdateToVersion92.VERSION;
+	private static final int DATABASE_VERSION = SystemUpdateToVersion97.VERSION;
 
 	private final Context context;
 	private final UpdateSystemService updateSystemService;
@@ -178,12 +184,23 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 	private TaskArchiveFactory taskArchiveFactory;
 	private RejectedGroupMessageFactory rejectedGroupMessageFactory;
 
-	public DatabaseServiceNew(final Context context,
-	                          final String databaseKey,
-	                          UpdateSystemService updateSystemService) {
+	public DatabaseServiceNew(
+		final Context context,
+	    final @NonNull String databaseKey,
+	    final @NonNull UpdateSystemService updateSystemService
+	) {
+		this(context, DEFAULT_DATABASE_NAME_V4, databaseKey, updateSystemService);
+	}
+
+	public DatabaseServiceNew(
+		final Context context,
+		final @Nullable String databaseName,
+	    final @NonNull String databaseKey,
+	    final @NonNull UpdateSystemService updateSystemService
+	) {
 		super(
 			context,
-			DATABASE_NAME_V4,
+			databaseName,
 			databaseKey,
 			null,
 			DATABASE_VERSION,
@@ -721,6 +738,21 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
 		}
 		if (oldVersion < SystemUpdateToVersion92.VERSION) {
 			this.updateSystemService.addUpdate(new SystemUpdateToVersion92(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion93.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion93(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion94.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion94(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion95.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion95(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion96.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion96(sqLiteDatabase));
+		}
+		if (oldVersion < SystemUpdateToVersion97.VERSION) {
+			this.updateSystemService.addUpdate(new SystemUpdateToVersion97(sqLiteDatabase));
 		}
 	}
 

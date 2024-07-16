@@ -639,7 +639,7 @@ public class BitmapUtil {
 	 */
 	@WorkerThread
 	public static Bitmap blurBitmap(@Nullable Bitmap bitmap, Context context) {
-		if (bitmap != null && bitmap.getConfig() != null) {
+		if (bitmap != null && (bitmap.getConfig() == Bitmap.Config.RGB_565 || bitmap.getConfig() == Bitmap.Config.ARGB_8888)) {
 			final RenderScript rs = RenderScript.create(context);
 			final Allocation input = Allocation.createFromBitmap(rs, bitmap);
 			final Allocation output = Allocation.createTyped(rs, input.getType());

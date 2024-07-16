@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
-    ext.kotlin_version = '1.8.10'
-    ext.kotlin_coroutines_version = '1.6.4'
+    ext.kotlin_version = '1.9.21'
+    ext.kotlin_coroutines_version = '1.8.1'
     ext.slf4j_version = '1.7.36'
     ext.junit_version = '4.13.2'
     repositories {
@@ -11,17 +11,16 @@ buildscript {
         flatDir { dirs 'app/libs' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath 'com.android.tools.build:gradle:8.5.0'
         classpath 'org.owasp:dependency-check-gradle:9.0.2'
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // Huawei agconnect plugin
         classpath 'com.huawei.agconnect:agcp-1.9.1.301'
         classpath 'com.huawei.agconnect:agconnect-crash-symbol-lib-1.9.1.301'
         classpath 'com.huawei.agconnect:agconnect-apms-plugin-1.6.2.300'
         classpath 'com.huawei.agconnect:agconnect-core-1.9.1.301@aar'
-
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

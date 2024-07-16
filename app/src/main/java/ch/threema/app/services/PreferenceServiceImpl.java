@@ -995,11 +995,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public String getLocaleOverride() {
-		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__language_override), false);
-	}
-
-	@Override
 	public HashMap<String, String> getDiverseEmojiPrefs() {
 		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis), false);
 	}
@@ -1485,7 +1480,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public boolean showDeveloperMenu() {
-		return BuildConfig.DEBUG && this.preferenceStore.getBoolean(
+		return ConfigUtils.isDevBuild() && this.preferenceStore.getBoolean(
 			this.getKeyName(R.string.preferences__developer_menu),
 			false
 		);

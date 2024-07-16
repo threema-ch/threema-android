@@ -36,7 +36,7 @@
 					app:layout_constraintLeft_toLeftOf="parent"
 					app:layout_constraintTop_toTopOf="parent">
 
-					<com.mapbox.mapboxsdk.maps.MapView
+					<org.maplibre.android.maps.MapView
 						android:id="@+id/map"
 						app:maplibre_cameraZoom="16"
 						app:maplibre_uiCompass="false"

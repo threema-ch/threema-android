@@ -95,15 +95,15 @@
     <string name="voip_gc_call_full_generic">Достигнут максимум: новые участники больше не могут присоединиться к групповому звонку.</string>
     <string name="voip_gc_call_full_n">Достигнут максимум (не более %1$d участников), вы не можете присоединиться к этому групповому звонку.</string>
     <plurals name="n_participants_in_call">
-        <item quantity="one">%d участник</item>
-        <item quantity="other">%d участников</item>
         <item quantity="few">%d участника</item>
         <item quantity="many">%d участников</item>
+        <item quantity="one">%d участник</item>
+        <item quantity="other">%d участников</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
+        <item quantity="many">Уведомление: %d участников не могут участвовать в групповых звонках.</item>
+        <item quantity="few">Уведомление: %d участника не могут участвовать в групповых звонках.</item>
         <item quantity="one" tools:ignore="ImpliedQuantity">Уведомление: один участник не может участвовать в групповых звонках.</item>
         <item quantity="other">Уведомление: %d участников не могут участвовать в групповых звонках.</item>
-        <item quantity="few">Уведомление: %d участника не могут участвовать в групповых звонках.</item>
-        <item quantity="many">Уведомление: %d участников не могут участвовать в групповых звонках.</item>
     </plurals>
 </resources>

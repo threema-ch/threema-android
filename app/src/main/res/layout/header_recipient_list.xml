@@ -1,42 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+				android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom"
+				android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/listitem_background_selector">
 
-	<RelativeLayout
-	                android:id="@+id/container"
-	                android:layout_width="match_parent"
-	                android:layout_height="@dimen/messagelist_item_height"
-	                android:paddingLeft="@dimen/listitem_contacts_margin_left_right"
-	                android:paddingRight="@dimen/listitem_contacts_margin_left_right"
-	                android:gravity="center_vertical"
-	                android:clickable="true"
-	                android:focusable="true"
-	                android:background="@drawable/listitem_background_selector">
+	<ImageView
+		android:id="@+id/avatar_view"
+		android:layout_width="@dimen/avatar_size_small"
+		android:layout_height="@dimen/avatar_size_small"
+		android:layout_alignParentLeft="true"
+		android:layout_centerVertical="true"
+		android:scaleType="center"
+		app:srcCompat="@drawable/ic_person_add_outline"
+		android:contentDescription="@string/menu_add_contact"
+		app:tint="?attr/colorOnSurface" />
 
-		<ImageView
-			android:id="@+id/avatar_view"
-			android:layout_width="@dimen/avatar_size_small"
-			android:layout_height="@dimen/avatar_size_small"
-			android:layout_alignParentLeft="true"
-			android:layout_centerVertical="true"
-			android:scaleType="center"
-			app:srcCompat="@drawable/ic_person_add_outline"
-			android:contentDescription="@string/menu_add_contact"
-			app:tint="?attr/colorOnSurface" />
+	<TextView
+		android:id="@+id/text_view"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+		android:layout_toRightOf="@id/avatar_view"
+		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+		android:text="@string/menu_add_contact"/>
 
-		<TextView
-			android:id="@+id/text_view"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
-			android:layout_marginLeft="@dimen/messagelist_avatar_padding"
-			android:layout_toRightOf="@id/avatar_view"
-			android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-			android:text="@string/menu_add_contact"/>
-
-	</RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

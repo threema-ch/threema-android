@@ -353,6 +353,8 @@
 	<string name="state_dialog_created">Erstellt</string>
 	<string name="state_dialog_posted">Gesendet</string>
 	<string name="state_dialog_modified">Aktualisiert</string>
+    <string name="state_dialog_edited">Bearbeitet</string>
+    <string name="state_dialog_deleted">Gelöscht</string>
 	<string name="state_dialog_status">Status</string>
 	<string name="title_tab_recent">Zuletzt</string>
 	<string name="no_recent_conversations">Keine Chats gefunden</string>
@@ -734,11 +736,11 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	</string>
 	<string name="new_wizard_info_link">Wenn Sie Ihre eigene Handynummer und/oder E-Mail-Adresse angeben, kann Threema Ihren Freunden helfen, Sie
 		automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Angaben werden dazu in einwegverschlüsselter (gehashter) Form
-		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie Threema anonym benutzen möchten.
+		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach überspringen, wenn Sie Threema anonym benutzen möchten.
 	</string>
 	<string name="new_wizard_info_link_phone_only">Wenn Sie Ihre eigene Handynummer angeben, kann Threema Ihren Freunden helfen, Sie
 		automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Nummer wird dazu in einwegverschlüsselter (gehashter) Form
-		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie Threema anonym benutzen möchten.
+		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach überspringen, wenn Sie Threema anonym benutzen möchten.
 	</string>
 	<string name="new_wizard_info_nickname">Der Nickname wird auf einigen Geräten in Benachrichtigungen angezeigt und dient in der Kontaktliste als zusätzliche
 		Identifikationsmöglichkeit für Chatpartner, die Sie nicht in ihrer Kontaktliste haben. Wir empfehlen, nur einen Vornamen oder ein Pseudonym zu verwenden.
@@ -852,6 +854,9 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="data_backup_explain" tools:ignore="Typos">Ein Daten-Backup sichert:\n\n&#9679; ID und Schlüsselpaar\n&#9679; Kontakte und Vertrauensstatus\n&#9679; Gruppenmitgliedschaften\n&#9679; Chats\n&#9679; Medien und Dateien (optional)\n\nDie Daten werden in ein verschlüsseltes ZIP gesichert. Das Backup sollte anschliessend an einem geeigneten Ort ausserhalb des Geräts gespeichert werden.</string>
 	<string name="draw">Zeichnen</string>
 	<string name="edit">Bearbeiten</string>
+    <string name="edit_message">Nachricht bearbeiten</string>
+	<string name="edited">Bearbeitet</string>
+	<string name="confirm_edit_desc">Bearbeitung bestätigen</string>
 	<string name="discard_changes">Möchten Sie die Änderungen verwerfen?</string>
 	<string name="prefs_title_network">Netzwerk</string>
 	<string name="prefs_title_ipv6_preferred">IPv6 für Nachrichten</string>
@@ -1122,6 +1127,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="system_default">Systemstandard</string>
 	<string name="open_in_maps_app">In Maps-App öffnen</string>
 	<string name="delete">Löschen</string>
+    <string name="delete_for_all">Für alle löschen</string>
+    <string name="message_was_deleted">Diese Nachricht wurde gelöscht</string>
 	<string name="continue_recording">Weiter aufnehmen</string>
 	<string name="whatsnew_title">Neue Funktionen in %1$s 5.2</string>
 	<string name="whatsnew_headline">
@@ -1642,6 +1649,14 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="media_gallery_animated_webps">Animierte WebPs</string>
 	<string name="unsupported_image_type">Nicht unterstütztes Bildformat: %s</string>
     <string name="application_setup_steps_failed">Um den Status Ihrer Kontakte zu überprüfen, wird eine aktive Internetverbindung benötigt. Bitte stellen Sie sicher, dass Sie mit dem Internet verbunden sind und versuchen Sie es erneut.</string>
+    <string name="add_contact_failed">Kontakt konnte nicht erstellt werden</string>
+
+    <string name="edit_message_not_supported_for_contact">Diese Nachricht kann nicht bearbeitet werden, weil die App-Version des Empfängers dieses Feature nicht unterstützt.</string>
+	<string name="edit_message_not_supported_for_all_group_members">Folgende Gruppenmitglieder werden Ihre Änderungen nicht sehen: %1$s</string>
+	<string name="edit_message_not_supported_for_any_group_members">Diese Nachricht kann nicht bearbeitet werden, weil kein Gruppenmitglied eine App-Version hat, die dieses Feature unterstützt.</string>
+
+    <string name="delete_message_not_supported_for_all_group_members">Bei folgenden Gruppenmitgliedern wird diese Nachricht nicht gelöscht: %1$s</string>
+
 	<plurals name="contacts_counter_label">
 		<item quantity="one">%d Kontakt</item>
 		<item quantity="other">%d Kontakte</item>
@@ -1747,8 +1762,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 		<item quantity="other">%d Nachrichten sind seit der letzten Nachricht verloren gegangen.</item>
 	</plurals>
 	<plurals name="delete_messages">
-		<item quantity="one">%d Nachricht auf diesem Gerät löschen?</item>
-		<item quantity="other">%d Nachrichten auf diesem Gerät löschen?</item>
+		<item quantity="one">%d Nachricht löschen?</item>
+		<item quantity="other">%d Nachrichten löschen?</item>
 	</plurals>
 	<plurals name="number_of_group_members">
 		<item quantity="one">%d Gruppenmitglied</item>

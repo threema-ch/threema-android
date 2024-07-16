@@ -1,2 +1,3 @@
-* Behebung verschiedener Darstellungsfehler
-* GIFs werden neu mittels Glide gerendert
+* Verbesserte Unterstützung grosser Schriftgrössen
+* Verbesserte Anzeige von Benachrichtigungen mit Medienvorschau
+* Behebung verschiedener Fehler

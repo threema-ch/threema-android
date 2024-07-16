@@ -190,14 +190,14 @@ class MentionSelectorPopup(
         var popupY = coordinates[1]
 
         if (anchorView == null) {
-            popupY += context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_vertical)
+            popupY += context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_bottom)
         }
 
         this.editText = editText
         editText.setLocked(true)
         editText.addTextChangedListener(textWatcher)
         filterStart = editText.selectionStart
-        viewableSpaceHeight = coordinates[2] - context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_vertical)
+        viewableSpaceHeight = coordinates[2] - context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_bottom)
         this.width =
             if (anchorView == null) WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity).bounds.width()
             else editText.width

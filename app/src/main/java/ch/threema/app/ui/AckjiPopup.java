@@ -50,7 +50,7 @@ import ch.threema.storage.models.data.DisplayTag;
 public class
 AckjiPopup extends PopupWindow implements View.OnClickListener {
 
-	private final ImageView ackButton, decButton, imageReplyButton, infoButton, starButton;
+	private final ImageView ackButton, decButton, imageReplyButton, infoButton, starButton, editButton;
 	private final View parentView, imageReplySeparator, infoSeparator;
 	private AckDecPopupListener ackDecPopupListener;
 	private final int popupHeight, popupHorizontalOffset;
@@ -62,6 +62,7 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 	public static final int ITEM_IMAGE_REPLY = 2;
 	public static final int ITEM_INFO = 3;
 	public static final int ITEM_STAR = 4;
+	public static final int ITEM_EDIT = 5;
 
 	public AckjiPopup(Context context, View parentView) {
 		super(context);
@@ -80,6 +81,7 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 		this.imageReplyButton = topLayout.findViewById(R.id.image_reply);
 		this.infoButton = topLayout.findViewById(R.id.info);
 		this.starButton = topLayout.findViewById(R.id.star);
+		this.editButton = topLayout.findViewById(R.id.edit);
 
 		this.imageReplySeparator = topLayout.findViewById(R.id.image_reply_separator);
 		this.infoSeparator = topLayout.findViewById(R.id.info_separator);
@@ -89,6 +91,7 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 		this.imageReplyButton.setOnClickListener(this);
 		this.infoButton.setOnClickListener(this);
 		this.starButton.setOnClickListener(this);
+		this.editButton.setOnClickListener(this);
 
 		setContentView(topLayout);
 		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -119,6 +122,7 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 		this.decButton.setVisibility(MessageUtil.canSendUserDecline(messageModel) ? View.VISIBLE : View.GONE);
 		this.ackButton.setVisibility(MessageUtil.canSendUserAcknowledge(messageModel) ? View.VISIBLE : View.GONE);
 		this.imageReplyButton.setVisibility(MessageUtil.canSendImageReply(messageModel) ? View.VISIBLE : View.GONE);
+		this.editButton.setVisibility(MessageUtil.canEdit(messageModel) ? View.VISIBLE : View.GONE);
 
 		if (messageModel instanceof GroupMessageModel) {
 			try {
@@ -143,15 +147,15 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 		}
 
 		this.infoSeparator.setVisibility(View.GONE);
-		if (
-			messageModel.getType().equals(MessageType.TEXT) ||
+		if (!messageModel.isDeleted() &&
+			(messageModel.getType().equals(MessageType.TEXT) ||
 			messageModel.getType().equals(MessageType.FILE) ||
 			messageModel.getType().equals(MessageType.LOCATION) ||
 			messageModel.getType().equals(MessageType.BALLOT) ||
 			messageModel.getType().equals(MessageType.CONTACT) ||
 			messageModel.getType().equals(MessageType.IMAGE) ||
 			messageModel.getType().equals(MessageType.VIDEO) ||
-			messageModel.getType().equals(MessageType.VOICEMESSAGE)
+			messageModel.getType().equals(MessageType.VOICEMESSAGE))
 		) {
 			this.infoButton.setVisibility(View.VISIBLE);
 			this.starButton.setVisibility(messageModel instanceof DistributionListMessageModel ? View.GONE : View.VISIBLE);
@@ -196,6 +200,9 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 				if (infoButton.getVisibility() == View.VISIBLE) {
 					AnimationUtil.bubbleAnimate(infoButton, animationDelay += animationDelayStep);
 				}
+				if (editButton.getVisibility() == View.VISIBLE) {
+					AnimationUtil.bubbleAnimate(editButton, animationDelay += animationDelayStep);
+				}
 				if (starButton.getVisibility() == View.VISIBLE) {
 					AnimationUtil.bubbleAnimate(starButton, animationDelay += animationDelayStep);
 				}
@@ -235,6 +242,8 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 				clickedItem = ITEM_IMAGE_REPLY;
 			} else if (id == R.id.star) {
 				clickedItem = ITEM_STAR;
+			} else if (id == R.id.edit) {
+				clickedItem = ITEM_EDIT;
 			} else {
 				clickedItem = ITEM_INFO;
 			}

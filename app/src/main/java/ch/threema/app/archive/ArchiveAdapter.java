@@ -23,6 +23,7 @@ package ch.threema.app.archive;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,7 +56,6 @@ import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -160,6 +160,16 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
 					holder.attachmentView.setVisibility(View.GONE);
 					holder.dateView.setVisibility(View.INVISIBLE);
 					holder.deliveryView.setVisibility(View.GONE);
+				} else if (messageModel.isDeleted()) {
+					holder.subjectView.setText(R.string.message_was_deleted);
+					holder.subjectView.setVisibility(View.VISIBLE);
+
+					holder.subjectView.setTextColor(context.getResources().getColor(R.color.text_color_deleted));
+					holder.subjectView.setTypeface(holder.subjectView.getTypeface(), Typeface.ITALIC);
+
+					holder.attachmentView.setVisibility(View.GONE);
+					holder.dateView.setVisibility(View.INVISIBLE);
+					holder.deliveryView.setVisibility(View.GONE);
 				} else {
 					holder.dateView.setText(MessageUtil.getDisplayDate(this.context, messageModel, false));
 					holder.dateView.setVisibility(View.VISIBLE);
@@ -199,9 +209,10 @@ public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveV
 						holder.attachmentView.setVisibility(View.GONE);
 					}
 
-					if (ViewUtil.show(holder.subjectView, subject != null)) {
+					boolean showSubject = subject != null;
+					holder.subjectView.setVisibility(showSubject ? View.VISIBLE : View.INVISIBLE);
+					if (showSubject) {
 						// Append space if attachmentView is visible
-
 						if (holder.attachmentView.getVisibility() == View.VISIBLE) {
 							subject = " " + subject;
 						}

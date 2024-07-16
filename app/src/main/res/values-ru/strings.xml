@@ -115,8 +115,8 @@
     <string name="id_mismatch">Открытый ключ, который вы отсканировали, не соответствует ключу, который хранится на сервере для этого ID. Это означает, что кто-то изменил отсканированный код, и ключу нельзя доверять.</string>
     <string name="scan_successful">ID успешно отсканирован, а контакт проверен.</string>
     <string name="scan_duplicate">Этот ID уже был отсканирован и проверен.</string>
-    <string name="linked_email">Эл. почта</string>
-    <string name="linked_mobile">Номер мобильного телефона</string>
+    <string name="linked_email">Электронная почта</string>
+    <string name="linked_mobile">Мобильный телефон</string>
     <string name="public_nickname">Псевдоним</string>
     <string name="share_via">Отправить через…</string>
     <string name="share_subject">Беседа в %s</string>
@@ -306,6 +306,8 @@
     <string name="state_dialog_created">Создано</string>
     <string name="state_dialog_posted">Отправлено</string>
     <string name="state_dialog_modified">Обновлено</string>
+    <string name="state_dialog_edited">Отредакт.</string>
+    <string name="state_dialog_deleted">Удалено</string>
     <string name="state_dialog_status">Статус</string>
     <string name="title_tab_recent">Последний</string>
     <string name="no_recent_conversations">Беседы не найдены</string>
@@ -741,6 +743,9 @@
     <string name="data_backup_explain">Резервные копии данных содержат:\n&#9679; Ваш ID и вашу ключевую пару\n&#9679; Контакты и уровень доверия к ним\n&#9679; Членство в группах\n&#9679; Чаты\n&#9679; Мультимедиа и файлы (по желанию)\nДанные будут сохранены в зашифрованном ZIP-файле. Рекомендуется переместить файл из устройства после успешного завершения резервного копирования.</string>
     <string name="draw">Рисовать</string>
     <string name="edit">Редактировать</string>
+    <string name="edit_message">Изменить сообщение</string>
+    <string name="edited">Отредакт.</string>
+    <string name="confirm_edit_desc">Подтвердите изменение</string>
     <string name="discard_changes">Отменить изменения?</string>
     <string name="prefs_title_network">Сеть</string>
     <string name="prefs_title_ipv6_preferred">IPv6 для сообщений</string>
@@ -1011,6 +1016,8 @@
     <string name="system_default">Системная</string>
     <string name="open_in_maps_app">Открыть в приложении «Карты»</string>
     <string name="delete">Удалить</string>
+    <string name="delete_for_all">Удалить для всех</string>
+    <string name="message_was_deleted">Сообщение удалено</string>
     <string name="continue_recording">Продолжить запись</string>
     <string name="whatsnew_title">Что нового в версии %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
@@ -1537,6 +1544,11 @@
     <string name="media_gallery_animated_webps">Анимированные WebPs</string>
     <string name="unsupported_image_type">Неподдерживаемый тип изображения: %s</string>
     <string name="application_setup_steps_failed">Для проверки состояния ваших контактов требуется активное соединение с Интернетом. Убедитесь, что вы подключены к Интернету, и повторите попытку.</string>
+    <string name="add_contact_failed">Не удалось добавить контакт</string>
+    <string name="edit_message_not_supported_for_contact">Невозможно отредактировать сообщение, поскольку версия приложения получателя не поддерживает эту функцию.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Следующие участники группы не смогут увидеть ваши изменения: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Невозможно отредактировать сообщение, так как ни у одного участника группы нет версии приложения, поддерживающей эту функцию.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Данное сообщение не будет удалено для следующих участников группы: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>
@@ -1704,10 +1716,10 @@
         <item quantity="other">После получения последнего сообщения утрачено %d сообщений.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="few">Удалить %d сообщения на этом устройстве?</item>
-        <item quantity="many">Удалить %d сообщений на этом устройстве?</item>
-        <item quantity="one">Удалить %d сообщение на этом устройстве?</item>
-        <item quantity="other">Удалить %d сообщений на этом устройстве?</item>
+        <item quantity="few">Удалить %d сообщения?</item>
+        <item quantity="many">Удалить %d сообщений?</item>
+        <item quantity="one">Удалить %d сообщение?</item>
+        <item quantity="other">Удалить %d сообщения?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="few">%d участника группы</item>

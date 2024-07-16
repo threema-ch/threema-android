@@ -21,6 +21,7 @@
 
 package ch.threema.app.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
@@ -371,7 +372,6 @@ public class FileUtil {
 			String type = contentResolver.getType(uri);
 
 			if (TestUtil.empty(type) || MimeUtil.MIME_TYPE_DEFAULT.equals(type)) {
-//				path = FileUtil.getRealPathFromURI(context, uri);
 				String filename = FileUtil.getFilenameFromUri(contentResolver, uri);
 
 				return getMimeTypeFromPath(filename);
@@ -733,7 +733,7 @@ public class FileUtil {
 		} else {
 			try (final Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
 				if (cursor != null && cursor.moveToNext()) {
-					filename = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+					filename = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME));
 				}
 			} catch (Exception e) {
 				logger.error("Unable to query Content Resolver", e);

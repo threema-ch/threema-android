@@ -127,13 +127,7 @@ public class AvatarUpdateHandler extends MessageUpdater {
 		@Override
 		public void onAvatarChanged(ContactModel contactModel) {
 			logger.debug("Contact Listener: onAvatarChanged");
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					AvatarUpdateHandler.this.update(contactModel);
-				}
-			});
+			handler.post(() -> AvatarUpdateHandler.this.update(contactModel));
 		}
 	}
 
@@ -142,13 +136,7 @@ public class AvatarUpdateHandler extends MessageUpdater {
 		@Override
 		public void onUpdatePhoto(GroupModel groupModel) {
 			logger.debug("Group Listener: onUpdatePhoto");
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					AvatarUpdateHandler.this.update(groupModel);
-				}
-			});
+			handler.post(() -> AvatarUpdateHandler.this.update(groupModel));
 		}
 	}
 }

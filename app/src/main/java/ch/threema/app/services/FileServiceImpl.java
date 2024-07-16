@@ -491,15 +491,15 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public boolean hasContactAvatarFile(ContactModel contactModel) {
-		File avatar = getContactAvatarFile(contactModel);
+	public boolean hasContactAvatarFile(@NonNull String identity) {
+		File avatar = getContactAvatarFile(identity);
 
 		return avatar != null && avatar.exists();
 	}
 
 	@Override
-	public boolean hasContactPhotoFile(ContactModel contactModel) {
-		File avatar = getContactPhotoFile(contactModel);
+	public boolean hasContactPhotoFile(@NonNull String identity) {
+		File avatar = getContactPhotoFile(identity);
 
 		return avatar != null && avatar.exists();
 	}
@@ -516,16 +516,16 @@ public class FileServiceImpl implements FileService {
 		return null;
 	}
 
-	private File getContactAvatarFile(ContactModel contactModel) {
-		return getPictureFile(getAvatarDirPath(), ".c-", contactModel.getIdentity());
+	private File getContactAvatarFile(@NonNull String identity) {
+		return getPictureFile(getAvatarDirPath(), ".c-", identity);
 	}
 
-	private File getContactPhotoFile(ContactModel contactModel) {
-		return getPictureFile(getAvatarDirPath(), ".p-", contactModel.getIdentity());
+	private File getContactPhotoFile(@NonNull String identity) {
+		return getPictureFile(getAvatarDirPath(), ".p-", identity);
 	}
 
-	private File getAndroidContactAvatarFile(ContactModel contactModel) {
-		return getPictureFile(getAvatarDirPath(), ".a-", contactModel.getIdentity());
+	private File getAndroidContactAvatarFile(@NonNull String identity) {
+		return getPictureFile(getAvatarDirPath(), ".a-", identity);
 	}
 
 	@Override
@@ -852,6 +852,7 @@ public class FileServiceImpl implements FileService {
 		return new File(getAppDataPathAbsolute(), "." + uid);
 	}
 
+	@Nullable
 	private File getMessageThumbnail(@Nullable AbstractMessageModel messageModel) {
 		// locations do not have a file, do not check for existing!
 		if (messageModel == null) {
@@ -966,102 +967,94 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public boolean writeContactAvatar(ContactModel contactModel, File file) throws Exception {
-		return this.decryptFileToFile(file, this.getContactAvatarFile(contactModel));
+	public boolean writeContactAvatar(@NonNull String identity, File file) throws Exception {
+		return this.decryptFileToFile(file, this.getContactAvatarFile(identity));
 	}
 
 	@Override
-	public boolean writeContactAvatar(ContactModel contactModel, byte[] avatarFile) throws Exception {
-		return this.writeFile(avatarFile, this.getContactAvatarFile(contactModel));
+	public boolean writeContactAvatar(@NonNull String identity, byte[] avatarFile) throws Exception {
+		return this.writeFile(avatarFile, this.getContactAvatarFile(identity));
 	}
 
 	@Override
-	public boolean writeContactPhoto(ContactModel contactModel, byte[] encryptedBlob) throws Exception {
-		return this.writeFile(encryptedBlob, this.getContactPhotoFile(contactModel));
+	public boolean writeContactPhoto(@NonNull String identity, byte[] encryptedBlob) throws Exception {
+		return this.writeFile(encryptedBlob, this.getContactPhotoFile(identity));
 	}
 
 	@Override
-	public boolean writeAndroidContactAvatar(ContactModel contactModel, byte[] avatarFile) throws Exception {
-		return this.writeFile(avatarFile, this.getAndroidContactAvatarFile(contactModel));
+	public boolean writeAndroidContactAvatar(@NonNull String identity, byte[] avatarFile) throws Exception {
+		return this.writeFile(avatarFile, this.getAndroidContactAvatarFile(identity));
 	}
 
 	@Override
-	public Bitmap getContactAvatar(ContactModel contactModel) throws Exception {
+	public Bitmap getContactAvatar(@NonNull String identity) throws Exception {
 		if (this.masterKey.isLocked()) {
 			throw new Exception("no masterkey or locked");
 		}
 
-		return decryptBitmapFromFile(this.getContactAvatarFile(contactModel));
+		return decryptBitmapFromFile(this.getContactAvatarFile(identity));
 	}
 
 	@Override
-	public Bitmap getAndroidContactAvatar(ContactModel contactModel) throws Exception {
+	public Bitmap getAndroidContactAvatar(@NonNull ContactModel contactModel) throws Exception {
 		if (this.masterKey.isLocked()) {
 			throw new Exception("no masterkey or locked");
 		}
 
 		long now = System.currentTimeMillis();
-		long expiration = contactModel.getAvatarExpires() != null ? contactModel.getAvatarExpires().getTime() : 0;
+		long expiration = contactModel.getLocalAvatarExpires() != null ? contactModel.getLocalAvatarExpires().getTime() : 0;
 		if (expiration < now) {
 			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 			if (serviceManager != null) {
-					if (AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel)) {
-						ContactService contactService = serviceManager.getContactService();
-						if (contactService != null) {
-							contactService.save(contactModel);
-						}
-					}
+				if (AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel)) {
+					ContactService contactService = serviceManager.getContactService();
+					contactService.save(contactModel);
+				}
 			}
 		}
 
-		return decryptBitmapFromFile(this.getAndroidContactAvatarFile(contactModel));
+		return decryptBitmapFromFile(this.getAndroidContactAvatarFile(contactModel.getIdentity()));
 	}
 
 	@Override
-	public InputStream getContactAvatarStream(ContactModel contactModel) throws IOException, MasterKeyLockedException {
-		if (contactModel != null) {
-			File f = this.getContactAvatarFile(contactModel);
-			if (f != null && f.exists() && f.length() > 0) {
-				return masterKey.getCipherInputStream(new FileInputStream(f));
-			}
+	public InputStream getContactAvatarStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
+		File f = this.getContactAvatarFile(identity);
+		if (f != null && f.exists() && f.length() > 0) {
+			return masterKey.getCipherInputStream(new FileInputStream(f));
 		}
 
 		return null;
 	}
 
 	@Override
-	public InputStream getContactPhotoStream(ContactModel contactModel) throws IOException, MasterKeyLockedException {
-		if (contactModel != null) {
-			File f = this.getContactPhotoFile(contactModel);
-			if (f != null && f.exists() && f.length() > 0) {
-				return masterKey.getCipherInputStream(new FileInputStream(f));
-			}
+	public InputStream getContactPhotoStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
+		File f = this.getContactPhotoFile(identity);
+		if (f != null && f.exists() && f.length() > 0) {
+			return masterKey.getCipherInputStream(new FileInputStream(f));
 		}
 		return null;
 	}
 
 	@Override
-	public Bitmap getContactPhoto(ContactModel contactModel) throws Exception {
+	public Bitmap getContactPhoto(@NonNull String identity) throws Exception {
 		if (this.masterKey.isLocked()) {
 			throw new Exception("no masterkey or locked");
 		}
 
 		if (this.preferenceService.getProfilePicReceive()) {
-			return decryptBitmapFromFile(this.getContactPhotoFile(contactModel));
+			return decryptBitmapFromFile(this.getContactPhotoFile(identity));
 		}
 		return null;
 	}
 
-	private Bitmap decryptBitmapFromFile(File file) throws Exception {
-		if (file.exists()) {
+	private Bitmap decryptBitmapFromFile(@Nullable File file) throws Exception {
+		if (file != null && file.exists()) {
 			InputStream inputStream = masterKey.getCipherInputStream(new FileInputStream(file));
 			if (inputStream != null) {
-				try {
+				try (inputStream) {
 					return BitmapFactory.decodeStream(inputStream);
 				} catch (Exception e) {
 					logger.error("Exception", e);
-				} finally {
-					inputStream.close();
 				}
 			}
 		}
@@ -1069,20 +1062,20 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public boolean removeContactAvatar(ContactModel contactModel) {
-		File f = this.getContactAvatarFile(contactModel);
+	public boolean removeContactAvatar(@NonNull String identity) {
+		File f = this.getContactAvatarFile(identity);
 		return f != null && f.exists() && f.delete();
 	}
 
 	@Override
-	public boolean removeContactPhoto(ContactModel contactModel) {
-		File f = this.getContactPhotoFile(contactModel);
+	public boolean removeContactPhoto(@NonNull String identity) {
+		File f = this.getContactPhotoFile(identity);
 		return f != null && f.exists() && f.delete();
 	}
 
 	@Override
-	public boolean removeAndroidContactAvatar(ContactModel contactModel) {
-		File f = this.getAndroidContactAvatarFile(contactModel);
+	public boolean removeAndroidContactAvatar(@NonNull String identity) {
+		File f = this.getAndroidContactAvatarFile(identity);
 		return f != null && f.exists() && f.delete();
 	}
 
@@ -1339,13 +1332,13 @@ public class FileServiceImpl implements FileService {
 	}
 
 	/**
-	 * Get an Uri for the destination file that can be shared to other apps. On Android 5+ our own content provider will be used to serve the file.
+	 * Get an Uri for the destination file that can be shared to other apps. Our own content provider will be used to serve the file.
 	 * @param destFile File to get an Uri for
 	 * @param filename Desired filename for this file. Can be different from the filename of destFile
-	 * @return Uri (Content Uri on Android 5+, File Uri otherwise)
+	 * @return Uri (Content Uri)
 	 */
 	@Override
-	public Uri getShareFileUri(@NonNull File destFile, @Nullable String filename) {
+	public Uri getShareFileUri(@Nullable File destFile, @Nullable String filename) {
 		if (destFile != null) {
 			// see https://code.google.com/p/android/issues/detail?id=76683
 			return NamedFileProvider.getUriForFile(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getPackageName() + ".fileprovider", destFile, filename);
@@ -1575,9 +1568,9 @@ public class FileServiceImpl implements FileService {
 		return new File(getAppDataPathAbsolute(),"appicon_" + key + ".png");
 	}
 
-	@NonNull
 	@Override
-	public Uri getTempShareFileUri(Bitmap bitmap) throws IOException {
+	@NonNull
+	public Uri getTempShareFileUri(@NonNull Bitmap bitmap) throws IOException {
 		File tempQrCodeFile = createTempFile(FileUtil.getMediaFilenamePrefix(), ".png");
 		try (FileOutputStream fos = new FileOutputStream(tempQrCodeFile)) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -1588,4 +1581,35 @@ public class FileServiceImpl implements FileService {
 		return getShareFileUri(tempQrCodeFile, null);
 	}
 
+	@Override
+	@Nullable
+	@WorkerThread
+	public Uri getThumbnailShareFileUri(AbstractMessageModel messageModel, int maxSize) {
+		try {
+			final File inputFile = getMessageThumbnail(messageModel);
+			if (inputFile != null && inputFile.exists()) {
+				String thumbnailMimeType = messageModel.getFileData().getThumbnailMimeType();
+				if (thumbnailMimeType != null) {
+					String prefix = FileUtil.getMediaFilenamePrefix(messageModel);
+					final File outputFile = createTempFile(prefix, MimeUtil.MIME_TYPE_IMAGE_PNG.equals(thumbnailMimeType) ? ".png" : ".jpg", false);
+
+					try (CipherInputStream inputStream = getDecryptedMessageThumbnailStream(messageModel)) {
+						if (inputStream != null) {
+							try (OutputStream outputStream = context.getContentResolver().openOutputStream(Uri.fromFile(outputFile))) {
+								int numBytes = IOUtils.copy(inputStream, outputStream);
+								if (numBytes > 0 && numBytes <= maxSize) {
+									return getShareFileUri(outputFile, messageModel.getFileData().getFileName());
+								}
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Exception fetching thumbnail", e);
+		}
+
+		logger.debug("Could not fetch thumbnail");
+		return null;
+	}
 }

@@ -89,6 +89,18 @@
 				android:clickable="true"
 				android:focusable="true"/>
 
+            <ImageView
+                android:id="@+id/edit"
+                android:layout_width="@dimen/ackdec_emoji_size"
+                android:layout_height="@dimen/ackdec_emoji_size"
+                android:padding="@dimen/ackdec_popup_content_margin"
+                android:src="@drawable/ic_edit_file_name"
+                android:contentDescription="@string/edit_message"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="?attr/colorOnSurface"/>
+
 			<ImageView
 				android:id="@+id/star"
 				android:layout_width="@dimen/ackdec_emoji_size"

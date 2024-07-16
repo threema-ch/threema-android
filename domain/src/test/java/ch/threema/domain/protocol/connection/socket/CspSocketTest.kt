@@ -82,7 +82,7 @@ class CspSocketTest {
         // maximum allowed frame length according to protocol (8192)
         testDataFrame(it, ProtocolDefines.MAX_PKT_LEN.toUShort())
 
-        // maximum length (with to bytes for length indication)
+        // maximum length (with two bytes for length indication)
         testDataFrame(it, 0xffffu)
 
         testDataFrame(it, 0xffu) // 255u

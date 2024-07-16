@@ -21,7 +21,7 @@
 
 package ch.threema.app.locationpicker;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
+import org.maplibre.android.geometry.LatLng;
 
 public class Poi {
 	private long id;

@@ -299,15 +299,7 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
 
 	private void fireOnModifiedContact(final String identity) {
 		if (contactService != null) {
-			ListenerManager.contactListeners.handle(new ListenerManager.HandleListener<ContactListener>() {
-				@Override
-				public void handle(ContactListener listener) {
-					ContactModel contactModel = contactService.getByIdentity(identity);
-					if(contactModel != null) {
-						listener.onModified(contactModel);
-					}
-				}
-			});
+			ListenerManager.contactListeners.handle(listener -> listener.onModified(identity));
 		}
 	}
 

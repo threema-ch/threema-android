@@ -307,6 +307,8 @@
     <string name="state_dialog_created">Stworzony</string>
     <string name="state_dialog_posted">Wysłany</string>
     <string name="state_dialog_modified">Zaktualizowany</string>
+    <string name="state_dialog_edited">Edytowano</string>
+    <string name="state_dialog_deleted">Usunięto</string>
     <string name="state_dialog_status">Status</string>
     <string name="title_tab_recent">Niedawne</string>
     <string name="no_recent_conversations">Nie znalezione konwersacj</string>
@@ -758,6 +760,9 @@ anonimowo?</string>
     <string name="data_backup_explain">Kopie zapasowe danych zawierają:\n\n&#9679; Twój identyfikator i parę kluczy\n&#9679; Kontakty i poziomy zaufania\n&#9679; Członkostwa w grupach\n&#9679; Chaty\n&#9679; Multimedia i pliki (opcjonalnie)\n\nDane zostaną zapisane w zaszyfrowanym pliku ZIP. Zalecamy przeniesienie pliku z urządzenia po wykonaniu kopii.</string>
     <string name="draw">Rysuj</string>
     <string name="edit">Edytuj</string>
+    <string name="edit_message">Edytuj wiadomość</string>
+    <string name="edited">Edytowano</string>
+    <string name="confirm_edit_desc">Potwierdź edycję</string>
     <string name="discard_changes">Czy chcesz odrzucić zmiany?</string>
     <string name="prefs_title_network">Sieć</string>
     <string name="prefs_title_ipv6_preferred">IPv6 do wiadomości</string>
@@ -1028,6 +1033,8 @@ anonimowo?</string>
     <string name="system_default">Domyślne ustawienia systemowe</string>
     <string name="open_in_maps_app">Otwórz w aplikacji Mapy</string>
     <string name="delete">Usuń</string>
+    <string name="delete_for_all">Usuń dla wszystkich</string>
+    <string name="message_was_deleted">Wiadomość skasowana</string>
     <string name="continue_recording">Kontynuuj nagrywanie</string>
     <string name="whatsnew_title">Co nowego w %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
@@ -1553,6 +1560,11 @@ anonimowo?</string>
     <string name="media_gallery_animated_webps">Animowane obrazy WebP</string>
     <string name="unsupported_image_type">Nieobsługiwany typ obrazu: %s</string>
     <string name="application_setup_steps_failed">Do sprawdzenia stanu kontaktów wymagane jest aktywne połączenie internetowe. Sprawdź, czy jesteś połączony z Internetem i spróbuj ponownie.</string>
+    <string name="add_contact_failed">Dodanie kontaktu nie powiodło się</string>
+    <string name="edit_message_not_supported_for_contact">Nie można edytować wiadomości, ponieważ wersja aplikacji odbiorcy nie obsługuje tej funkcji.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Następujący członkowie grupy nie będą mogli zobaczyć Twoich edycji: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Nie można edytować wiadomości, ponieważ żaden członek grupy nie posiada wersji aplikacji, która obsługuje tę funkcję.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Ta wiadomość nie zostanie usunięta dla następujących członków grupy: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktów</item>
@@ -1662,10 +1674,10 @@ anonimowo?</string>
         <item quantity="other">Utracono %d wiadomości od ostatniej wiadomości.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="few">Usunąć %d wiadomości z tego urządzenia?</item>
-        <item quantity="many">Usunąć %d wiadomości z tego urządzenia?</item>
-        <item quantity="one">Usunąć %d wiadomość z tego urządzenia?</item>
-        <item quantity="other">Usunąć %d wiadomości z tego urządzenia?</item>
+        <item quantity="few">Usunąć %d wiadomości?</item>
+        <item quantity="many">Usunąć %d wiadomości?</item>
+        <item quantity="one">Usunąć %d wiadomość?</item>
+        <item quantity="other">Usunąć %d wiadomości?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="few">%d członków grupy</item>

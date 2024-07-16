@@ -29,6 +29,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.NonceStore;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
@@ -45,7 +46,7 @@ public class TestHelpers {
 		return new ContactStore() {
 			@Override
 			public Contact getContactForIdentity(@NonNull String identity) {
-				return new Contact(identity, new byte[256]);
+				return new Contact(identity, new byte[256], VerificationLevel.UNVERIFIED);
 			}
 
 			@Override
@@ -60,9 +61,6 @@ public class TestHelpers {
 
 			@Override
 			public void addContact(@NonNull Contact contact) { }
-
-			@Override
-			public void addContact(@NonNull Contact contact, boolean hide) { }
 
 			@Override
 			public void removeContact(@NonNull Contact contact) { }

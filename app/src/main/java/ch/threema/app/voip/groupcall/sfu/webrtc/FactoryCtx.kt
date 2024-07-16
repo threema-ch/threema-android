@@ -68,11 +68,11 @@ class FactoryCtx(
         // Determine video encoder/decoder factories
         val (encoder, decoder) = parameters.hardwareVideoCodecs.let { hardwareVideoCodecs ->
             if (hardwareVideoCodecs.isEmpty()) {
-                logger.trace("Using software-based video codecs")
+                logger.info("Using software-based video codecs")
                 Pair(SoftwareVideoEncoderFactory(), SoftwareVideoDecoderFactory())
             } else {
                 val eglBaseContext = eglBase.eglBaseContext
-                logger.trace("Using hardware-based video codecs ({})", hardwareVideoCodecs)
+                logger.info("Using hardware-based video codecs ({})", hardwareVideoCodecs)
                 Pair(
                     // Note: VP8 hardware encoder does not seem to support simulcast, so we are
                     //       left with software. :( Leaving the code in case it works at some point

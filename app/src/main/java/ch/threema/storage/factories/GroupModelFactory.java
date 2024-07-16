@@ -115,6 +115,7 @@ public class GroupModelFactory extends ModelFactory {
 							.setArchived(cursorHelper.getBoolean(GroupModel.COLUMN_IS_ARCHIVED))
 							.setGroupDesc(cursorHelper.getString(GroupModel.COLUMN_GROUP_DESC))
 							.setGroupDescTimestamp(cursorHelper.getDateByString(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP))
+							.setColorIndex(cursorHelper.getInt(GroupModel.COLUMN_COLOR_INDEX))
 					;
 
 					return false;
@@ -171,6 +172,7 @@ public class GroupModelFactory extends ModelFactory {
 		contentValues.put(GroupModel.COLUMN_IS_ARCHIVED, groupModel.isArchived());
 		contentValues.put(GroupModel.COLUMN_GROUP_DESC, groupModel.getGroupDesc());
 		contentValues.put(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP, groupModel.getGroupDescTimestamp() !=null ? CursorHelper.dateAsStringFormat.get().format(groupModel.getGroupDescTimestamp()) : null);
+		contentValues.put(GroupModel.COLUMN_COLOR_INDEX, groupModel.getColorIndex());
 
 		return contentValues;
 	}
@@ -291,8 +293,23 @@ public class GroupModelFactory extends ModelFactory {
 	@Override
 	public String[] getStatements() {
 		return new String[]{
-				"CREATE TABLE `m_group` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `name` VARCHAR , `creatorIdentity` VARCHAR , `createdAt` VARCHAR , `lastUpdate` INTEGER, `synchronizedAt` BIGINT , `deleted` SMALLINT , `isArchived` TINYINT DEFAULT 0, `groupKind` INT DEFAULT 0, `groupDesc` VARCHAR DEFAULT NULL, `changedGroupDescTimestamp` VARCHAR DEFAULT NULL);",
-				"CREATE UNIQUE INDEX `apiGroupIdAndCreator` ON `m_group` ( `apiGroupId`, `creatorIdentity` );"
+			"CREATE TABLE `" + GroupModel.TABLE + "` (" +
+				"`" + GroupModel.COLUMN_ID + "` INTEGER " + "PRIMARY KEY AUTOINCREMENT , " +
+				"`" + GroupModel.COLUMN_API_GROUP_ID + "` VARCHAR , " +
+				"`" + GroupModel.COLUMN_NAME + "` VARCHAR , " +
+				"`" + GroupModel.COLUMN_CREATOR_IDENTITY + "` VARCHAR , " +
+				"`" + GroupModel.COLUMN_CREATED_AT + "` VARCHAR , " +
+				"`" + GroupModel.COLUMN_LAST_UPDATE + "` INTEGER, " +
+				"`" + GroupModel.COLUMN_SYNCHRONIZED_AT + "` BIGINT , " +
+				"`" + GroupModel.COLUMN_DELETED + "` SMALLINT , " +
+				"`" + GroupModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0, " +
+				"`" + GroupModel.COLUMN_GROUP_DESC + "` VARCHAR DEFAULT NULL, " +
+				"`" + GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP + "` VARCHAR DEFAULT NULL, " +
+				"`" + GroupModel.COLUMN_COLOR_INDEX + "` INTEGER DEFAULT 0 NOT NULL" +
+				");",
+			"CREATE UNIQUE INDEX `apiGroupIdAndCreator` ON `" + GroupModel.TABLE + "` ( " +
+				"`" + GroupModel.COLUMN_API_GROUP_ID + "`, `" + GroupModel.COLUMN_CREATOR_IDENTITY + "` " +
+				");"
 		};
 	}
 }

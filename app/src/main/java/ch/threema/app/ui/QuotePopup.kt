@@ -116,7 +116,7 @@ class QuotePopup(
         val coordinates = ConfigUtils.getPopupWindowPositionAboveAnchor(activity, textInputLayout)
         val popupX = coordinates[0]
         val popupY = coordinates[1]
-        val viewableSpaceHeight = coordinates[2] - context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_vertical)
+        val viewableSpaceHeight = coordinates[2] - context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_bottom)
         this.width = editText.width
         this.height = viewableSpaceHeight
 

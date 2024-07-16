@@ -96,15 +96,15 @@
     <string name="voip_gc_call_full_generic">Osiągnięto maksimum: inni uczestnicy nie mogą dołączyć do tego połączenia grupowego.</string>
     <string name="voip_gc_call_full_n">Osiągnięto maks. %1$d uczestników, nie możesz dołączyć do tego połączenia grupowego.</string>
     <plurals name="n_participants_in_call">
-        <item quantity="one">%d uczestnik</item>
-        <item quantity="other">%d uczestników</item>
         <item quantity="few">%d uczestnicy</item>
         <item quantity="many">%d uczestników</item>
+        <item quantity="one">%d uczestnik</item>
+        <item quantity="other">%d uczestników</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
+        <item quantity="many">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
+        <item quantity="few">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
         <item quantity="one">Uwaga: jeden uczestnik nie może brać udziału w połączeniach grupowych.</item>
         <item quantity="other">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
-        <item quantity="few">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
-        <item quantity="many">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
     </plurals>
 </resources>

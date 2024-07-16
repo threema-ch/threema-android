@@ -45,6 +45,7 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStoreInterface;
@@ -56,6 +57,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 	private final ContentResolver contentResolver;
 	private final APIConnector apiConnector;
 	private final ContactService contactService;
+	private final @NonNull ContactModelRepository contactModelRepository;
 	private final UserService userService;
 	private final LocaleService localeService;
 	private final IdentityStoreInterface identityStore;
@@ -74,6 +76,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 
 	public SynchronizeContactsServiceImpl(Context context, APIConnector apiConnector,
 										  ContactService contactService,
+										  @NonNull ContactModelRepository contactModelRepository,
 										  UserService userService,
 										  LocaleService localeService,
 										  IdListService excludedIdentityListService,
@@ -92,6 +95,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 		this.contentResolver = context.getContentResolver();
 		this.apiConnector = apiConnector;
 		this.contactService = contactService;
+		this.contactModelRepository = contactModelRepository;
 		this.userService = userService;
 		this.localeService = localeService;
 		this.identityStore = identityStore;
@@ -133,8 +137,13 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 							}
 
 							for (ContactModel contactModel : contactService.getAll()) {
-								if (ContactUtil.isChannelContact(contactModel)) {
-									UpdateBusinessAvatarRoutine.start(contactModel, fileService, contactService, apiService, true);
+								if (ContactUtil.isGatewayContact(contactModel)) {
+									ch.threema.data.models.ContactModel model = contactModelRepository.getByIdentity(contactModel.getIdentity());
+									if (model == null) {
+										logger.error("Could not get contact model with identity {}", contactModel.getIdentity());
+										continue;
+									}
+									UpdateBusinessAvatarRoutine.start(model, fileService, contactService, apiService, true);
 								}
 							}
 							//fore update business account avatars
@@ -287,9 +296,9 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 
 			// cleanup / degrade remaining identities that are still server verified
 			List<String> identities = contactService.getIdentitiesByVerificationLevel(VerificationLevel.SERVER_VERIFIED);
-			if (identities != null && identities.size() > 0) {
+			if (identities != null && !identities.isEmpty()) {
 				for (ContactModel contactModel : contactService.getByIdentities(identities)) {
-					contactModel.setVerificationLevel(VerificationLevel.UNVERIFIED);
+					contactModel.verificationLevel = VerificationLevel.UNVERIFIED;
 					contactService.save(contactModel);
 				}
 			}

@@ -59,19 +59,19 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.mapbox.android.gestures.MoveGestureDetector;
-import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdate;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.location.LocationComponent;
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
-import com.mapbox.mapboxsdk.location.modes.CameraMode;
-import com.mapbox.mapboxsdk.location.modes.RenderMode;
-import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.Style;
+import org.maplibre.android.annotations.Marker;
+import org.maplibre.android.annotations.MarkerOptions;
+import org.maplibre.android.camera.CameraPosition;
+import org.maplibre.android.camera.CameraUpdate;
+import org.maplibre.android.camera.CameraUpdateFactory;
+import org.maplibre.android.geometry.LatLng;
+import org.maplibre.android.location.LocationComponent;
+import org.maplibre.android.location.LocationComponentActivationOptions;
+import org.maplibre.android.location.modes.CameraMode;
+import org.maplibre.android.location.modes.RenderMode;
+import org.maplibre.android.maps.MapView;
+import org.maplibre.android.maps.MapLibreMap;
+import org.maplibre.android.maps.Style;
 
 import org.slf4j.Logger;
 
@@ -119,7 +119,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	private PreferenceService preferenceService;
 
 	private MapView mapView;
-	private MapboxMap mapboxMap;
+	private MapLibreMap MapLibreMap;
 
 	private LocationManager locationManager;
 	private LocationComponent locationComponent;
@@ -343,9 +343,9 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	}
 
 	private void initMap() {
-		mapView.getMapAsync(mapboxMap1 -> {
-			mapboxMap = mapboxMap1;
-			mapboxMap.setStyle(new Style.Builder().fromUri(MAP_STYLE_URL), style -> {
+		mapView.getMapAsync(MapLibreMap1 -> {
+			MapLibreMap = MapLibreMap1;
+			MapLibreMap.setStyle(new Style.Builder().fromUri(MAP_STYLE_URL), style -> {
 				// Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
 				setupLocationComponent(style);
 				// Initialize map to world view (gets changed as soon as current location is available)
@@ -353,9 +353,9 @@ public class LocationPickerActivity extends ThreemaActivity implements
 				// hack: delay location query
 				mapView.postDelayed(this::zoomToCurrentLocation, 500);
 			});
-			mapboxMap.getUiSettings().setAttributionEnabled(false);
-			mapboxMap.getUiSettings().setLogoEnabled(false);
-			mapboxMap.setOnMarkerClickListener(marker -> {
+			MapLibreMap.getUiSettings().setAttributionEnabled(false);
+			MapLibreMap.getUiSettings().setLogoEnabled(false);
+			MapLibreMap.setOnMarkerClickListener(marker -> {
 				for (Poi poi : places) {
 					if (poi.getId() == Long.parseLong(marker.getSnippet())) {
 						returnData(poi);
@@ -364,7 +364,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 				}
 				return false;
 			});
-			mapboxMap.addOnMoveListener(new MapboxMap.OnMoveListener() {
+			MapLibreMap.addOnMoveListener(new MapLibreMap.OnMoveListener() {
 				@Override
 				public void onMoveBegin(@NonNull MoveGestureDetector detector) {}
 
@@ -376,7 +376,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 					updatePois();
 				}
 			});
-			mapboxMap.addOnCameraIdleListener(this::updatePois);
+			MapLibreMap.addOnCameraIdleListener(this::updatePois);
 		});
 	}
 
@@ -388,12 +388,16 @@ public class LocationPickerActivity extends ThreemaActivity implements
 			return;
 		}
 
-		locationComponent = mapboxMap.getLocationComponent();
+		locationComponent = MapLibreMap.getLocationComponent();
 		locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(this, style).build());
 		locationComponent.setCameraMode(CameraMode.TRACKING);
 		locationComponent.setRenderMode(RenderMode.COMPASS);
 		if (hasLocationPermission()) {
-			locationComponent.setLocationComponentEnabled(true);
+			try {
+				locationComponent.setLocationComponentEnabled(true);
+			} catch (Exception e) {
+				logger.error("Failed to obtain last location update", e);
+			}
 		}
 	}
 
@@ -416,7 +420,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 			protected void onPreExecute() {
 				startTime = System.currentTimeMillis();
 
-				markerList = mapboxMap.getMarkers();
+				markerList = MapLibreMap.getMarkers();
 			}
 
 			@Override
@@ -450,10 +454,10 @@ public class LocationPickerActivity extends ThreemaActivity implements
 				startTime = System.currentTimeMillis();
 				for (Map.Entry<Long, Marker> marker : poiMarkerMap.entrySet()) {
 					logger.debug("Remove marker {}", marker.getValue().getTitle());
-					mapboxMap.removeMarker(marker.getValue());
+					MapLibreMap.removeMarker(marker.getValue());
 				}
 				startTime = System.currentTimeMillis();
-				mapboxMap.addMarkers(markerOptionsList);
+				MapLibreMap.addMarkers(markerOptionsList);
 			}
 		}.execute();
 	}
@@ -528,7 +532,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 			getString(R.string.lp_use_this_location),
 			name,
 			latLng,
-			mapboxMap.getProjection().getVisibleRegion().latLngBounds,
+			MapLibreMap.getProjection().getVisibleRegion().latLngBounds,
 			(tag, object) -> reallyReturnData((Poi) object));
 
 		dialog.setData(poi);
@@ -549,7 +553,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
 	}
 
 	private LatLng getMapCenterPosition() {
-		CameraPosition cameraPosition = mapboxMap.getCameraPosition();
+		CameraPosition cameraPosition = MapLibreMap.getCameraPosition();
 		if (cameraPosition != null && cameraPosition.target != null) {
 			return new LatLng(cameraPosition.target.getLatitude(), cameraPosition.target.getLongitude());
 		}
@@ -658,8 +662,8 @@ public class LocationPickerActivity extends ThreemaActivity implements
 				}
 				Location newLocation = IntentDataUtil.getLocation(data);
 
-				if (mapboxMap != null) {
-					int zoom = (int) (mapboxMap.getCameraPosition().zoom < 12 ? 12 : mapboxMap.getCameraPosition().zoom);
+				if (MapLibreMap != null) {
+					int zoom = (int) (MapLibreMap.getCameraPosition().zoom < 12 ? 12 : MapLibreMap.getCameraPosition().zoom);
 					moveCameraAndUpdatePOIs(new LatLng(newLocation.getLatitude(), newLocation.getLongitude()), false, zoom);
 				}
 			}
@@ -672,11 +676,11 @@ public class LocationPickerActivity extends ThreemaActivity implements
 		long time = System.currentTimeMillis();
 		logger.debug("moveCamera to {}", latLng);
 
-		mapboxMap.cancelTransitions();
-		mapboxMap.addOnCameraIdleListener(new MapboxMap.OnCameraIdleListener() {
+		MapLibreMap.cancelTransitions();
+		MapLibreMap.addOnCameraIdleListener(new MapLibreMap.OnCameraIdleListener() {
 			@Override
 			public void onCameraIdle() {
-				mapboxMap.removeOnCameraIdleListener(this);
+				MapLibreMap.removeOnCameraIdleListener(this);
 				RuntimeUtil.runOnUiThread(() -> {
 					logger.debug("camera has been moved. Time in ms = {}", (System.currentTimeMillis() - time));
 					updatePois();
@@ -693,9 +697,9 @@ public class LocationPickerActivity extends ThreemaActivity implements
 			CameraUpdateFactory.newLatLng(latLng);
 
 		if (animate) {
-			mapboxMap.animateCamera(cameraUpdate);
+			MapLibreMap.animateCamera(cameraUpdate);
 		} else {
-			mapboxMap.moveCamera(cameraUpdate);
+			MapLibreMap.moveCamera(cameraUpdate);
 		}
 	}
 

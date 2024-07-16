@@ -160,6 +160,16 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 		return dialog;
 	}
 
+	public static GenericAlertDialog newInstance(String titleString, CharSequence messageString,
+	                                             @StringRes int positive, @StringRes int negative, @StringRes int neutral) {
+		GenericAlertDialog dialog = newInstance(titleString, messageString, positive, negative);
+		if (dialog.getArguments() != null) {
+			dialog.getArguments().putInt("neutral", neutral);
+		}
+		return dialog;
+	}
+
+
 	public interface DialogClickListener {
 		void onYes(String tag, Object data);
 		default void onNo(String tag, Object data) {};

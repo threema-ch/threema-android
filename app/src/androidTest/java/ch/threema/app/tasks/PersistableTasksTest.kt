@@ -232,6 +232,38 @@ class PersistableTasksTest {
         )
     }
 
+    @Test
+    fun testOutgoingContactEditMessageTask() {
+        assertValidEncoding(
+            OutgoingContactEditMessageTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.OutgoingContactEditMessageTask.OutgoingContactEditMessageData\",\"toIdentity\":\"01234567\",\"messageId\":0, \"text\":\"test\", \"editedAt\":0}"
+        )
+    }
+
+    @Test
+    fun testOutgoingGroupEditMessageTask() {
+        assertValidEncoding(
+            OutgoingGroupEditMessageTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.OutgoingGroupEditMessageTask.OutgoingGroupEditMessageData\",\"messageId\":0, \"text\":\"test\", \"editedAt\":0,\"recipientIdentities\":[\"01234567\",\"01234567\"]}"
+        )
+    }
+
+    @Test
+    fun testOutgoingContactDeleteMessageTask() {
+        assertValidEncoding(
+            OutgoingContactDeleteMessageTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.OutgoingContactDeleteMessageTask.OutgoingContactDeleteMessageData\",\"toIdentity\":\"01234567\",\"messageId\":0, \"deletedAt\":0}"
+        )
+    }
+
+    @Test
+    fun testOutgoingGroupDeleteMessageTask() {
+        assertValidEncoding(
+            OutgoingGroupDeleteMessageTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.OutgoingGroupDeleteMessageTask.OutgoingGroupDeleteMessageData\",\"messageId\":0,\"deletedAt\":0,\"recipientIdentities\":[\"01234567\",\"01234567\"]}"
+        )
+    }
+
     private fun <T> assertValidEncoding(expectedTaskClass: Class<T>, encodedTask: String) {
         val decodedTask = encodedTask.decodeToTask()
         assertNotNull(decodedTask)

@@ -308,6 +308,8 @@
     <string name="state_dialog_created">Aangemaakt</string>
     <string name="state_dialog_posted">Verstuurd</string>
     <string name="state_dialog_modified">Bijgewerkt</string>
+    <string name="state_dialog_edited">Bewerkt</string>
+    <string name="state_dialog_deleted">Verwijderd</string>
     <string name="state_dialog_status">Status</string>
     <string name="title_tab_recent">Recent</string>
     <string name="no_recent_conversations">Geen gesprekken gevonden</string>
@@ -744,6 +746,9 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="data_backup_explain">Gegevensback-ups bevatten:\n\n&#9679; Uw ID en sleutelpaar\n&#9679; Contactpersonen en vertrouwensniveaus\n&#9679; Lidmaatschappen groepen\n&#9679; Chats\n&#9679; Media en bestanden (optioneel)\n\nGegevens worden opgeslagen in een versleuteld zipbestand. We raden aan het bestand op een ander apparaat te bewaren nadat de back-up is voltooid.</string>
     <string name="draw">Tekenen</string>
     <string name="edit">Bewerken</string>
+    <string name="edit_message">Bericht bewerken</string>
+    <string name="edited">Bewerkt</string>
+    <string name="confirm_edit_desc">Bewerking bevestigen</string>
     <string name="discard_changes">Wilt u de wijzigingen ongedaan maken?</string>
     <string name="prefs_title_network">Netwerk</string>
     <string name="prefs_title_ipv6_preferred">IPv6 voor berichten</string>
@@ -1014,6 +1019,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="system_default">Standaardinstellingen van systeem</string>
     <string name="open_in_maps_app">Openen in Maps-app</string>
     <string name="delete">Verwijderen</string>
+    <string name="delete_for_all">Voor iedereen verwijderen</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
     <string name="whatsnew_title">Wat is er nieuw in %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
@@ -1539,6 +1545,11 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="media_gallery_animated_webps">Geanimeerde WebP\'s</string>
     <string name="unsupported_image_type">Niet-ondersteund afbeeldingstype: %s</string>
     <string name="application_setup_steps_failed">Er is een actieve internetverbinding nodig om de status van uw contacten te zien. Zorg ervoor dat u internetverbinding hebt en probeer het opnieuw.</string>
+    <string name="add_contact_failed">Contactpersoon is niet toegevoegd</string>
+    <string name="edit_message_not_supported_for_contact">Het bericht is niet bewerkt omdat de app-versie van de ontvanger deze functie niet ondersteunt.</string>
+    <string name="edit_message_not_supported_for_all_group_members">De volgende groepsleden kunnen uw bewerkingen niet zien: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Het bericht is niet bewerkt omdat geen van de groepsleden een app-versie heeft die deze functie ondersteunt.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Dit bericht wordt niet verwijderd voor de volgende groepsleden: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>
@@ -1612,8 +1623,8 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
         <item quantity="other">%d berichten zijn verloren gegaan sinds het laatste bericht.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="one">%d bericht op dit apparaat verwijderen?</item>
-        <item quantity="other">%d berichten op dit apparaat verwijderen?</item>
+        <item quantity="one">%d bericht verwijderen?</item>
+        <item quantity="other">%d berichten verwijderen?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="one">%d groepslid</item>

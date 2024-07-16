@@ -399,8 +399,17 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 				holder.starredIcon.setVisibility((messageModel.getDisplayTags() & DisplayTag.DISPLAY_TAG_STARRED) == DisplayTag.DISPLAY_TAG_STARRED ? View.VISIBLE : View.GONE);
 			}
 
-			stateBitmapUtil.setStateDrawable(getContext(), messageModel, holder.deliveredIndicator, true);
-			stateBitmapUtil.setGroupAckCount(messageModel, holder);
+			if (holder.deliveredIndicator != null) {
+				stateBitmapUtil.setStateDrawable(getContext(), messageModel, holder.deliveredIndicator, true);
+			}
+
+			if (holder.groupAckContainer != null) {
+				stateBitmapUtil.setGroupAckCount(messageModel, holder);
+			}
+
+			if (holder.editedText != null) {
+				holder.editedText.setVisibility(messageModel.getEditedAt() != null ? View.VISIBLE : View.GONE);
+			}
 		}
 	}
 

@@ -3,10 +3,10 @@
 <ch.threema.app.ui.CheckableConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
-	android:layout_height="@dimen/messagelist_item_height"
+	android:layout_height="wrap_content"
 	android:background="@drawable/listitem_background_selector"
-	android:paddingLeft="@dimen/listitem_standard_margin_left_right"
-	android:paddingRight="@dimen/listitem_standard_margin_left_right">
+	android:paddingVertical="@dimen/listitem_standard_margin_top_bottom"
+	android:paddingHorizontal="@dimen/listitem_standard_margin_left_right">
 
 	<!-- avatar -->
 
@@ -18,6 +18,7 @@
 		android:id="@+id/name"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+        android:minHeight="@dimen/listitem_min_height_first_line"
 		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
 		android:ellipsize="end"
 		android:singleLine="true"
@@ -39,7 +40,8 @@
 		android:baselineAlignBottom="true"
 		android:visibility="visible"
 		app:srcCompat="@drawable/ic_verification_full"
-		app:layout_constraintBaseline_toBaselineOf="@id/name"
+		app:layout_constraintTop_toTopOf="@id/name"
+		app:layout_constraintBottom_toBottomOf="@id/name"
 		app:layout_constraintRight_toRightOf="parent"
 		app:layout_constraintLeft_toRightOf="@id/name" />
 
@@ -49,6 +51,7 @@
 		android:id="@+id/subject"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+        android:minHeight="@dimen/listitem_min_height_second_line"
 		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
 		android:ellipsize="end"
 		android:singleLine="true"
@@ -69,6 +72,7 @@
 		android:layout_marginRight="5dp"
 		android:tint="?attr/colorOnSurface"
 		app:srcCompat="@drawable/ic_chat_filled"
+		app:layout_constraintTop_toTopOf="@id/subject"
 		app:layout_constraintBottom_toBottomOf="@id/subject"
 		app:layout_constraintLeft_toRightOf="@id/subject"
 		app:layout_constraintRight_toLeftOf="@+id/date"/>
@@ -91,6 +95,7 @@
 		android:layout_marginLeft="5dip"
 		android:visibility="visible"
 		app:srcCompat="@drawable/ic_block"
+		app:layout_constraintTop_toTopOf="@id/subject"
 		app:layout_constraintBottom_toBottomOf="@id/subject"
 		app:layout_constraintRight_toRightOf="parent"
 		app:layout_constraintLeft_toRightOf="@id/date"

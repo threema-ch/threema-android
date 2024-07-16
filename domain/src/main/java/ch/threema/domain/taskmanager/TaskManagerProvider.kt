@@ -24,7 +24,6 @@ package ch.threema.domain.taskmanager
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 
 data class TaskManagerConfiguration(
-    val incomingMessageProcessor: IncomingMessageProcessor,
     val taskArchiver: () -> TaskArchiver,
     val deviceCookieManager: DeviceCookieManager,
     val assertContext: Boolean,
@@ -35,7 +34,6 @@ interface TaskManagerProvider {
         @JvmStatic
         fun getTaskManager(configuration: TaskManagerConfiguration): TaskManager =
             TaskManagerImpl(
-                configuration.incomingMessageProcessor,
                 configuration.taskArchiver,
                 configuration.deviceCookieManager,
                 TaskManagerImpl.TaskManagerDispatchers(

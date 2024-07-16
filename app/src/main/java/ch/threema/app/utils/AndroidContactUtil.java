@@ -163,11 +163,9 @@ public class AndroidContactUtil {
 		}
 
 		if (contactModel != null) {
-			String contactLookupKey = contactModel.getAndroidContactLookupKey();
-
-			if (!TestUtil.empty(contactLookupKey)) {
-				Uri contactLookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, contactLookupKey);
-
+			final String androidContactLookupKey = contactModel.getAndroidContactLookupKey();
+			if (androidContactLookupKey != null) {
+				Uri contactLookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, androidContactLookupKey);
 				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
 					try {
 						contactLookupUri = ContactsContract.Contacts.lookupContact(contentResolver, contactLookupUri);
@@ -197,8 +195,8 @@ public class AndroidContactUtil {
 			return false;
 		}
 
-		String androidContactId = contactModel.getAndroidContactLookupKey();
-		if (TestUtil.empty(androidContactId)) {
+		final String androidContactLookupKey = contactModel.getAndroidContactLookupKey();
+		if (androidContactLookupKey == null) {
 			return false;
 		}
 
@@ -209,23 +207,23 @@ public class AndroidContactUtil {
 
 			if (bitmap != null) {
 				try {
-					fileService.writeAndroidContactAvatar(contactModel, BitmapUtil.bitmapToByteArray(bitmap, Bitmap.CompressFormat.PNG, 100));
-					contactModel.setAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
+					fileService.writeAndroidContactAvatar(contactModel.getIdentity(), BitmapUtil.bitmapToByteArray(bitmap, Bitmap.CompressFormat.PNG, 100));
+					contactModel.setLocalAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
 					return true;
 				} catch (Exception e) {
 					logger.error("Exception", e);
 				}
 			} else {
 				// delete old avatar
-				boolean success = fileService.removeAndroidContactAvatar(contactModel);
+				boolean success = fileService.removeAndroidContactAvatar(contactModel.getIdentity());
 				if (success) {
-					contactModel.setAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
+					contactModel.setLocalAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
 					return true;
 				}
 			}
 		}
 
-		logger.debug("Unable to get avatar for {} lookupKey = {} contactUri = {}", contactModel.getIdentity(), contactModel.getAndroidContactLookupKey(), contactUri);
+		logger.debug("Unable to get avatar for {} lookupKey = {} contactUri = {}", contactModel.getIdentity(), androidContactLookupKey, contactUri);
 		return false;
 	}
 
@@ -694,11 +692,12 @@ public class AndroidContactUtil {
 			return null;
 		}
 
-		if (contactModel.getAndroidContactLookupKey() == null) {
+		final String androidContactLookupKey = contactModel.getAndroidContactLookupKey();
+		if (androidContactLookupKey == null) {
 			return null;
 		}
 
-		long nameSourceRawContactId = getMainRawContact(contactModel.getAndroidContactLookupKey());
+		long nameSourceRawContactId = getMainRawContact(androidContactLookupKey);
 		if (nameSourceRawContactId == 0) {
 			return null;
 		}

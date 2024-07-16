@@ -38,6 +38,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
@@ -45,15 +46,15 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.models.Contact;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.storage.models.ContactModel;
+
+import static ch.threema.domain.models.ContactKt.CONTACT_NAME_MAX_LENGTH_BYTES;
 
 public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEditView.AvatarEditListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactEditDialog");
@@ -78,20 +79,20 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 	private AvatarEditView avatarEditView;
 	private File croppedAvatarFile = null;
 
-	public static ContactEditDialog newInstance(ContactModel contactModel) {
+	public static ContactEditDialog newInstance(@NonNull ContactModelData contactModelData) {
 		final int inputType = InputType.TYPE_CLASS_TEXT
 			| InputType.TYPE_TEXT_VARIATION_PERSON_NAME
 			| InputType.TYPE_TEXT_FLAG_CAP_WORDS;
 
-		if(ContactUtil.isChannelContact(contactModel)) {
+		if(ContactUtil.isGatewayContact(contactModelData.identity)) {
 			//business contact don't have a second name
 			return newInstance(
 					R.string.edit_name_only,
-					contactModel.getFirstName(),
+					contactModelData.firstName,
 					null,
 					R.string.name,
 					0,
-					contactModel.getIdentity(),
+					contactModelData.identity,
 					inputType,
 					ContactUtil.CHANNEL_NAME_MAX_LENGTH_BYTES);
 
@@ -99,17 +100,17 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 		else {
 			return newInstance(
 					R.string.edit_name_only,
-					contactModel.getFirstName(),
-					contactModel.getLastName(),
+					contactModelData.firstName,
+					contactModelData.lastName,
 					R.string.first_name,
 					R.string.last_name,
-					contactModel.getIdentity(),
+					contactModelData.identity,
 					inputType,
-					Contact.CONTACT_NAME_MAX_LENGTH_BYTES);
+					CONTACT_NAME_MAX_LENGTH_BYTES);
 		}
 	}
 
-	public static ContactEditDialog newInstance(Bundle args) {
+	private static ContactEditDialog newInstance(Bundle args) {
 		ContactEditDialog dialog = new ContactEditDialog();
 		dialog.setArguments(args);
 		return dialog;
@@ -118,7 +119,7 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 	/**
 	 * Create a ContactEditDialog with two input fields.
 	 */
-	public static ContactEditDialog newInstance(@StringRes int title, String text1, String text2,
+	private static ContactEditDialog newInstance(@StringRes int title, String text1, String text2,
 	                                            @StringRes int hint1, @StringRes int hint2,
 	                                            String identity, int inputType, int maxLength) {
 		final Bundle args = new Bundle();
@@ -127,22 +128,6 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 		args.putString(ARG_TEXT2, text2);
 		args.putInt(ARG_HINT1, hint1);
 		args.putInt(ARG_HINT2, hint2);
-		args.putString(ARG_IDENTITY, identity);
-		args.putInt("inputType", inputType);
-		args.putInt("maxLength", maxLength);
-		return newInstance(args);
-	}
-
-	/**
-	 * Create a ContactEditDialog with just one input field.
-	 */
-	public static ContactEditDialog newInstance(@StringRes int title, String text1,
-	                                            @StringRes int hint1,
-	                                            String identity, int inputType, int maxLength) {
-		final Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putString(ARG_TEXT1, text1);
-		args.putInt(ARG_HINT1, hint1);
 		args.putString(ARG_IDENTITY, identity);
 		args.putInt("inputType", inputType);
 		args.putInt("maxLength", maxLength);
@@ -187,7 +172,7 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 	}
 
 	public interface ContactEditDialogClickListener {
-		void onYes(String tag, String text1, String text2, File avatar);
+		void onYes(String tag, String text1, String text2, @Nullable File avatar);
 		void onNo(String tag);
 	}
 
@@ -234,10 +219,8 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 		croppedAvatarFile = (File) getArguments().getSerializable("avatarPreset");
 
 		ContactService contactService = null;
-		GroupService groupService = null;
 		try {
 			contactService = ThreemaApplication.getServiceManager().getContactService();
-			groupService = ThreemaApplication.getServiceManager().getGroupService();
 		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 			logger.error("Exception", e);
 		}
@@ -262,10 +245,8 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 		if (!TestUtil.empty(identity)) {
 			avatarEditView.setVisibility(View.GONE);
 			if (contactService != null) {
-				ContactModel contactModel = contactService.getByIdentity(identity);
-
-				//hide second name on business contact
-				if (ContactUtil.isChannelContact(contactModel)) {
+				// Hide second name on business contact
+				if (ContactUtil.isGatewayContact(identity)) {
 					ViewUtil.show(editText2, false);
 				}
 			}
@@ -313,21 +294,17 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 
 		builder.setView(dialogView);
 
-		builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						if (callbackRef.get() != null) {
-							callbackRef.get().onYes(tag, editText1.getText().toString(), editText2.getText().toString(), croppedAvatarFile);
-						}
-					}
-				}
+		builder.setPositiveButton(getString(R.string.ok), (dialog, whichButton) -> {
+			if (callbackRef.get() != null) {
+				callbackRef.get().onYes(tag, editText1.getText().toString(), editText2.getText().toString(), null);
+			}
+		}
 		);
-		builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						if (callbackRef.get() != null) {
-							callbackRef.get().onNo(tag);
-						}
-					}
-				}
+		builder.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> {
+			if (callbackRef.get() != null) {
+				callbackRef.get().onNo(tag);
+			}
+		}
 		);
 
 		setCancelable(false);

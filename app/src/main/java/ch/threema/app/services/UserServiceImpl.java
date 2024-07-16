@@ -46,7 +46,6 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.listeners.SMSVerificationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.routines.UpdateWorkInfoRoutine;
@@ -154,14 +153,9 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 			AccountManager accountManager = AccountManager.get(this.context);
 
 			try {
-				this.account = Functional.select(new HashSet<Account>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), new IPredicateNonNull<Account>() {
-					@Override
-					public boolean apply(@NonNull Account type) {
-						return true;
-					}
-				});
+				this.account = Functional.select(new HashSet<>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), type -> true);
 			} catch (SecurityException e) {
-				logger.error("Exception", e);
+				logger.error("Could not get account", e);
 			}
 
 			//if sync enabled, create one!
@@ -177,7 +171,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 						ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
 					}
 				} catch (SecurityException e) {
-					logger.error("Exception", e);
+					logger.error("Could not add account", e);
 				}
 			}
 
@@ -188,12 +182,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 	@Override
 	public boolean checkAccount() {
 		AccountManager accountManager = AccountManager.get(this.context);
-		return Functional.select(new HashSet<Account>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), new IPredicateNonNull<Account>() {
-			@Override
-			public boolean apply(@NonNull Account type) {
-				return true;
-			}
-		}) != null;
+		return Functional.select(new HashSet<>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), type -> true) != null;
 	}
 
 	@Override
@@ -339,12 +328,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 		this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE_PENDING, System.currentTimeMillis());
 		this.preferenceStore.save(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID, verificationId);
 
-		ListenerManager.smsVerificationListeners.handle(new ListenerManager.HandleListener<SMSVerificationListener>() {
-			@Override
-			public void handle(SMSVerificationListener listener) {
-				listener.onVerificationStarted();
-			}
-		});
+		ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerificationStarted);
 
 		return linkWithMobileTime;
 	}
@@ -382,12 +366,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 		this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
 		this.preferenceStore.remove(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
 
-		ListenerManager.smsVerificationListeners.handle(new ListenerManager.HandleListener<SMSVerificationListener>() {
-			@Override
-			public void handle(SMSVerificationListener listener) {
-				listener.onVerified();
-			}
-		});
+		ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerified);
 	}
 
 	@Override
@@ -399,12 +378,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 			this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
 			this.preferenceStore.remove(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
 
-			ListenerManager.smsVerificationListeners.handle(new ListenerManager.HandleListener<SMSVerificationListener>() {
-				@Override
-				public void handle(SMSVerificationListener listener) {
-					listener.onVerified();
-				}
-			});
+			ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerified);
 			return true;
 		}
 
@@ -574,11 +548,10 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 			.file(true)
 			.voip(true)
 			.videocalls(true)
-			.forwardSecurity(isFsEnabled);
-
-		if (BuildConfig.GROUP_CALLS_ENABLED) {
-			builder.groupCalls(true);
-		}
+			.forwardSecurity(isFsEnabled)
+			.groupCalls(true)
+			.editMessages(true)
+			.deleteMessages(true);
 
 		return builder.build();
 	}
@@ -602,11 +575,11 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
 	@Override
 	public boolean setRevocationKey(String revocationKey) {
-		APIConnector.SetRevocationKeyResult result = null;
+		APIConnector.SetRevocationKeyResult result;
 		try {
 			result = this.apiConnector.setRevocationKey(this.identityStore, revocationKey);
 			if (!result.success) {
-				logger.error("set revocation key failed: " + result.error);
+				logger.error("set revocation key failed: {}", result.error);
 				return false;
 			}
 			else {
@@ -616,7 +589,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
 			return true;
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Could not set revocation key", e);
 		}
 		return false;
 	}
@@ -628,7 +601,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
 	@Override
 	public void checkRevocationKey(boolean force) {
-		logger.debug("RevocationKey", "check (force = " + force + ")");
+		logger.debug("checkRevocationKey (force={})", force);
 		Date lastSet = null;
 		try {
 			//check if force = true or PREFS_REVOCATION_KEY_CHECKED is false or not set
@@ -636,7 +609,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 				||!this.preferenceStore.getBoolean(PreferenceStore.PREFS_REVOCATION_KEY_CHECKED);
 
 
-			logger.debug("RevocationKey", "check = " + check);
+			logger.debug("checkRevocationKey (check={})", check);
 			if(check) {
 				APIConnector.CheckRevocationKeyResult result = this.apiConnector.checkRevocationKey(this.identityStore);
 				if (result != null) {
@@ -644,15 +617,14 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 						lastSet = result.lastChanged;
 					}
 
-					logger.debug("RevocationKey", "result = " + result.isSet);
+					logger.debug("checkRevocationKey (result={})", result.isSet);
 					//update new state
 					this.preferenceStore.save(PreferenceStore.PREFS_LAST_REVOCATION_KEY_SET, lastSet);
 
 					//update checked state
 					this.preferenceStore.save(PreferenceStore.PREFS_REVOCATION_KEY_CHECKED, true);
-				}
-				else {
-					logger.debug("RevocationKey", "result is null");
+				} else {
+					logger.debug("checkRevocationKey (result is null)");
 				}
 			}
 		} catch (Exception e) {
@@ -667,9 +639,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 		BuildFlavor.LicenseType licenseType = BuildFlavor.getLicenseType();
 		String deviceId = DeviceIdUtil.getDeviceId(this.context);
 
-		if (deviceId != null) {
-			baseObject.put("deviceId", deviceId);
-		}
+		baseObject.put("deviceId", deviceId);
 
 		if (licenseType == BuildFlavor.LicenseType.GOOGLE) {
 			baseObject.put("lvlResponseData", policyResponseData);

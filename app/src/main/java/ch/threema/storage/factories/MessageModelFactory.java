@@ -240,7 +240,8 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 						+ " AND " + MessageModel.COLUMN_OUTBOX + "=0"
 						+ " AND " + MessageModel.COLUMN_IS_SAVED + "=1"
 						+ " AND " + MessageModel.COLUMN_IS_READ + "=0"
-						+ " AND " + MessageModel.COLUMN_IS_STATUS_MESSAGE + "=0",
+						+ " AND " + MessageModel.COLUMN_IS_STATUS_MESSAGE + "=0"
+						+ " AND " + MessageModel.COLUMN_DELETED_AT + " IS NULL",
 				new String[]{
 						identity
 				}
@@ -526,7 +527,9 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
 						"`" + MessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
 						"`" + MessageModel.COLUMN_READ_AT +"` DATETIME ," +
 						"`" + MessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 ," +
-						"`" + MessageModel.COLUMN_DISPLAY_TAGS +"` TINYINT DEFAULT 0 );",
+						"`" + MessageModel.COLUMN_DISPLAY_TAGS +"` TINYINT DEFAULT 0 ," +
+						"`" + MessageModel.COLUMN_EDITED_AT +"` DATETIME ," +
+						"`" + MessageModel.COLUMN_DELETED_AT +"` DATETIME );",
 
 			//indices
 				"CREATE INDEX `messageUidIdx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_UID +"` )",

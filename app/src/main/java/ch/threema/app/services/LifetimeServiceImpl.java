@@ -298,7 +298,7 @@ public class LifetimeServiceImpl implements LifetimeService {
 				TaskManager taskManager = getTaskManager();
 				if (taskManager != null && taskManager.hasPendingTasks()) {
 					long resendTime = SystemClock.elapsedRealtime() + MESSAGE_RESEND_INTERVAL;
-					logger.info("cleanupConnection: tasks are pending; scheduling resend at {}", new Date(resendTime));
+					logger.info("cleanupConnection: tasks are pending; scheduling resend in {}ms", MESSAGE_RESEND_INTERVAL);
 					scheduleAlarm(REQUEST_CODE_RESEND, resendTime);
 				}
 			}

@@ -21,6 +21,7 @@
 
 package ch.threema.app.ui;
 
+import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -205,6 +206,12 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.notice_open_ballots, this);
 
+		getLayoutTransition().disableTransitionType(LayoutTransition.CHANGING);
+		getLayoutTransition().disableTransitionType(LayoutTransition.CHANGE_APPEARING);
+		getLayoutTransition().disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+		getLayoutTransition().enableTransitionType(LayoutTransition.DISAPPEARING);
+		getLayoutTransition().enableTransitionType(LayoutTransition.APPEARING);
+
 		findViewById(R.id.button_cancel).setOnClickListener(v -> {
 			if (onCloseClickedListener != null) {
 				onCloseClickedListener.onCloseClicked();
@@ -339,6 +346,11 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 		super.onFinishInflate();
 
 		this.chipGroup = findViewById(R.id.chip_group);
+		this.chipGroup.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGING);
+		this.chipGroup.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGE_APPEARING);
+		this.chipGroup.getLayoutTransition().disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+		this.chipGroup.getLayoutTransition().enableTransitionType(LayoutTransition.DISAPPEARING);
+		this.chipGroup.getLayoutTransition().enableTransitionType(LayoutTransition.APPEARING);
 	}
 
 	@Override

@@ -101,6 +101,12 @@ class IncomingGroupSetupTask(
                 groupCallManager.abortCurrentCall()
             }
 
+            // If we are not a member anyway, we do not have to do anything. Especially, we should
+            // not call the listener as this would trigger a status message each time.
+            if (!groupService.isGroupMember(group)) {
+                return ReceiveStepsResult.SUCCESS
+            }
+
             // 4.2 Mark the group as left and abort these steps.
             groupService.removeMemberFromGroup(group, myIdentity)
 

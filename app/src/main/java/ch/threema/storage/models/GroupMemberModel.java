@@ -27,12 +27,10 @@ public class GroupMemberModel  {
 	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_IDENTITY = "identity";
 	public static final String COLUMN_GROUP_ID = "groupId";
-	public static final String COLUMN_IS_ACTIVE = "isActive";
 
 	private int id;
 	private String identity;
 	private int groupId;
-	private boolean isActive = true;
 
 	public int getGroupId() {
 		return groupId;
@@ -57,15 +55,6 @@ public class GroupMemberModel  {
 	}
 	public GroupMemberModel setId(int id) {
 		this.id = id;
-		return this;
-	}
-
-	public boolean isActive() {
-		return this.isActive;
-	}
-
-	public GroupMemberModel setActive(boolean active) {
-		this.isActive = active;
 		return this;
 	}
 }

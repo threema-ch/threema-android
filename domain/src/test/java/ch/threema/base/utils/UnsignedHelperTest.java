@@ -19,14 +19,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app.utils;
+package ch.threema.base.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Random;
 
-import ch.threema.app.voip.util.UnsignedHelper;
+import ch.threema.base.utils.UnsignedHelper;
 
 public class UnsignedHelperTest {
 	@Test
@@ -45,5 +46,14 @@ public class UnsignedHelperTest {
 		for (int i = 0; i < 10000; i++) {
 			Assert.assertTrue(UnsignedHelper.getUnsignedInt(random.nextInt()) >= 0);
 		}
+	}
+
+	@Test
+	public void testUnsignedLongToBigInteger() {
+		final BigInteger bigInteger = new BigInteger("18446744073709551610");
+		final long unsignedLong = bigInteger.longValue();
+		Assert.assertTrue(unsignedLong < 0);
+		final BigInteger bigInteger2 = UnsignedHelper.unsignedLongToBigInteger(unsignedLong);
+		Assert.assertEquals(bigInteger, bigInteger2);
 	}
 }

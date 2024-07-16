@@ -97,7 +97,6 @@ public class VideoUtil {
 		DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);
 		renderersFactory.setEnableDecoderFallback(true);
 		if (ConfigUtils.hasAsyncMediaCodecBug()) {
-			// Workaround for https://github.com/google/ExoPlayer/issues/10021
 			renderersFactory.forceDisableMediaCodecAsynchronousQueueing();
 		}
 		return new ExoPlayer.Builder(context, renderersFactory)

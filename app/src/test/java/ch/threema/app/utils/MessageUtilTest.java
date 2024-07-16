@@ -21,9 +21,6 @@
 
 package ch.threema.app.utils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,6 +28,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
@@ -49,6 +48,8 @@ import ch.threema.storage.models.MessageType;
 import java8.util.stream.Collectors;
 import java8.util.stream.StreamSupport;
 
+import static ch.threema.testhelpers.TestHelpersKt.nonSecureRandomArray;
+import static ch.threema.testhelpers.TestHelpersKt.randomIdentity;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -57,9 +58,6 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 public class MessageUtilTest  {
-	private final String contactThreemaId = ThreemaApplication.ECHO_USER_IDENTITY;
-	private final String businessContactThreemaId = "*THREEMA";
-
 	private MessageModel contactMessageModelInbox;
 	private MessageModel contactMessageModelInboxUserAcknowledged;
 	private MessageModel contactMessageModelInboxUserDeclined;
@@ -79,87 +77,89 @@ public class MessageUtilTest  {
 
 	private ServiceManager serviceManagerMock = mock(ServiceManager.class);
 
-
 	private DistributionListMessageModel distributionListMessageModelOutbox;
 
 	@Before
 	public void setUp() throws Exception {
+		final String contactThreemaId = ThreemaApplication.ECHO_USER_IDENTITY;
+		final String businessContactThreemaId = "*THREEMA";
+
 		//mock object
 		this.contactMessageModelInbox = new MessageModel();
-		this.contactMessageModelInbox.setIdentity(this.contactThreemaId);
+		this.contactMessageModelInbox.setIdentity(contactThreemaId);
 		this.contactMessageModelInbox.setSaved(true);
 		this.contactMessageModelInbox.setOutbox(false);
 		this.contactMessageModelInbox.setType(MessageType.TEXT);
 
 		this.contactMessageModelInboxUserAcknowledged = new MessageModel();
-		this.contactMessageModelInboxUserAcknowledged.setIdentity(this.contactThreemaId);
+		this.contactMessageModelInboxUserAcknowledged.setIdentity(contactThreemaId);
 		this.contactMessageModelInboxUserAcknowledged.setSaved(true);
 		this.contactMessageModelInboxUserAcknowledged.setOutbox(false);
 		this.contactMessageModelInboxUserAcknowledged.setType(MessageType.TEXT);
 		this.contactMessageModelInboxUserAcknowledged.setState(MessageState.USERACK);
 
 		this.contactMessageModelInboxUserDeclined = new MessageModel();
-		this.contactMessageModelInboxUserDeclined.setIdentity(this.contactThreemaId);
+		this.contactMessageModelInboxUserDeclined.setIdentity(contactThreemaId);
 		this.contactMessageModelInboxUserDeclined.setSaved(true);
 		this.contactMessageModelInboxUserDeclined.setOutbox(false);
 		this.contactMessageModelInboxUserDeclined.setType(MessageType.TEXT);
 		this.contactMessageModelInboxUserDeclined.setState(MessageState.USERDEC);
 
 		this.contactMessageModelOutbox = new MessageModel();
-		this.contactMessageModelOutbox.setIdentity(this.contactThreemaId);
+		this.contactMessageModelOutbox.setIdentity(contactThreemaId);
 		this.contactMessageModelOutbox.setSaved(true);
 		this.contactMessageModelOutbox.setOutbox(true);
 		this.contactMessageModelOutbox.setType(MessageType.TEXT);
 
 		this.contactMessageModelOutboxUserAcknowledged = new MessageModel();
-		this.contactMessageModelOutboxUserAcknowledged.setIdentity(this.contactThreemaId);
+		this.contactMessageModelOutboxUserAcknowledged.setIdentity(contactThreemaId);
 		this.contactMessageModelOutboxUserAcknowledged.setSaved(true);
 		this.contactMessageModelOutboxUserAcknowledged.setOutbox(true);
 		this.contactMessageModelOutboxUserAcknowledged.setType(MessageType.TEXT);
 		this.contactMessageModelOutboxUserAcknowledged.setState(MessageState.USERACK);
 
 		this.contactMessageModelOutboxUserDeclined = new MessageModel();
-		this.contactMessageModelOutboxUserDeclined.setIdentity(this.contactThreemaId);
+		this.contactMessageModelOutboxUserDeclined.setIdentity(contactThreemaId);
 		this.contactMessageModelOutboxUserDeclined.setSaved(true);
 		this.contactMessageModelOutboxUserDeclined.setOutbox(true);
 		this.contactMessageModelOutboxUserDeclined.setType(MessageType.TEXT);
 		this.contactMessageModelOutboxUserDeclined.setState(MessageState.USERDEC);
 
 		this.businessContactMessageModelInbox = new MessageModel();
-		this.businessContactMessageModelInbox.setIdentity(this.businessContactThreemaId);
+		this.businessContactMessageModelInbox.setIdentity(businessContactThreemaId);
 		this.businessContactMessageModelInbox.setSaved(true);
 		this.businessContactMessageModelInbox.setOutbox(false);
 		this.businessContactMessageModelInbox.setType(MessageType.TEXT);
 
 		this.businessContactMessageModelInboxUserAcknowledged = new MessageModel();
-		this.businessContactMessageModelInboxUserAcknowledged.setIdentity(this.businessContactThreemaId);
+		this.businessContactMessageModelInboxUserAcknowledged.setIdentity(businessContactThreemaId);
 		this.businessContactMessageModelInboxUserAcknowledged.setSaved(true);
 		this.businessContactMessageModelInboxUserAcknowledged.setOutbox(false);
 		this.businessContactMessageModelInboxUserAcknowledged.setType(MessageType.TEXT);
 		this.businessContactMessageModelInboxUserAcknowledged.setState(MessageState.USERACK);
 
 		this.businessContactMessageModelInboxUserDeclined = new MessageModel();
-		this.businessContactMessageModelInboxUserDeclined.setIdentity(this.businessContactThreemaId);
+		this.businessContactMessageModelInboxUserDeclined.setIdentity(businessContactThreemaId);
 		this.businessContactMessageModelInboxUserDeclined.setSaved(true);
 		this.businessContactMessageModelInboxUserDeclined.setOutbox(false);
 		this.businessContactMessageModelInboxUserDeclined.setType(MessageType.TEXT);
 		this.businessContactMessageModelInboxUserDeclined.setState(MessageState.USERDEC);
 
 		this.businessContactMessageModelOutbox = new MessageModel();
-		this.businessContactMessageModelOutbox.setIdentity(this.businessContactThreemaId);
+		this.businessContactMessageModelOutbox.setIdentity(businessContactThreemaId);
 		this.businessContactMessageModelOutbox.setSaved(true);
 		this.businessContactMessageModelOutbox.setOutbox(true);
 		this.businessContactMessageModelOutbox.setType(MessageType.TEXT);
 
 		this.businessContactMessageModelOutboxUserAcknowledged = new MessageModel();
-		this.businessContactMessageModelOutboxUserAcknowledged.setIdentity(this.businessContactThreemaId);
+		this.businessContactMessageModelOutboxUserAcknowledged.setIdentity(businessContactThreemaId);
 		this.businessContactMessageModelOutboxUserAcknowledged.setSaved(true);
 		this.businessContactMessageModelOutboxUserAcknowledged.setOutbox(true);
 		this.businessContactMessageModelOutboxUserAcknowledged.setType(MessageType.TEXT);
 		this.businessContactMessageModelOutboxUserAcknowledged.setState(MessageState.USERACK);
 
 		this.businessContactMessageModelOutboxUserDeclined = new MessageModel();
-		this.businessContactMessageModelOutboxUserDeclined.setIdentity(this.businessContactThreemaId);
+		this.businessContactMessageModelOutboxUserDeclined.setIdentity(businessContactThreemaId);
 		this.businessContactMessageModelOutboxUserDeclined.setSaved(true);
 		this.businessContactMessageModelOutboxUserDeclined.setOutbox(true);
 		this.businessContactMessageModelOutboxUserDeclined.setType(MessageType.TEXT);
@@ -460,11 +460,10 @@ public class MessageUtilTest  {
 		String identity1 = "ABCDEFG1";
 		String identity2 = "ABCDEFG2";
 		String identity3 = "ABCDEFG3";
-		ContactMessageReceiver contactMessageReceiver1 = createContactMessageReceiver();
-		ContactMessageReceiver contactMessageReceiver2 = createContactMessageReceiver();
-		ContactMessageReceiver contactMessageReceiver3 = createContactMessageReceiver();
 		MessageReceiver distributionListReceiver = createDistributionListMessageReceiver(Arrays.asList(
-			identity1, identity2, identity3
+			Pair.create(identity1, nonSecureRandomArray(32)),
+			Pair.create(identity2, nonSecureRandomArray(32)),
+			Pair.create(identity3, nonSecureRandomArray(32))
 		));
 
 		List<MessageReceiver> allReceivers = MessageUtil.getAllReceivers(distributionListReceiver);
@@ -495,15 +494,15 @@ public class MessageUtilTest  {
 
 	@Test
 	public void addDistributionListReceivers_must_preserve_order_of_receivers() {
-		MessageReceiver contactMessageReceiver1 = createContactMessageReceiver("ABCDEFG1");
-		MessageReceiver contactMessageReceiver2 = createContactMessageReceiver("ABCDEFG2");
-		MessageReceiver contactMessageReceiver3 = createContactMessageReceiver("ABCDEFG3");
+		MessageReceiver contactMessageReceiver1 = createContactMessageReceiver("ABCDEFG1", nonSecureRandomArray(32));
+		MessageReceiver contactMessageReceiver2 = createContactMessageReceiver("ABCDEFG2", nonSecureRandomArray(32));
+		MessageReceiver contactMessageReceiver3 = createContactMessageReceiver("ABCDEFG3", nonSecureRandomArray(32));
 		String identity4 = "ABCDEFG4";
 		String identity5 = "ABCDEFG5";
 		MessageReceiver emptyDistributionListMessageReceiver = createDistributionListMessageReceiver(Collections.emptyList());
 		MessageReceiver distributionListMessageReceiver = createDistributionListMessageReceiver(Arrays.asList(
-			identity4,
-			identity5
+			Pair.create(identity4, nonSecureRandomArray(32)),
+			Pair.create(identity5, nonSecureRandomArray(32))
 		));
 
 		MessageReceiver[] receivers = new MessageReceiver[] {
@@ -528,11 +527,17 @@ public class MessageUtilTest  {
 
 	@Test
 	public void addDistributionListReceivers_must_preserve_order_of_receivers_and_remove_duplicates() {
-		MessageReceiver contactMessageReceiver1 = createContactMessageReceiver("ABCDEFG1");
-		MessageReceiver contactMessageReceiver2 = createContactMessageReceiver("ABCDEFG2");
-		MessageReceiver contactMessageReceiver3 = createContactMessageReceiver("ABCDEFG3");
+		final byte[] publicKey1 = nonSecureRandomArray(32);
+		final byte[] publicKey2 = nonSecureRandomArray(32);
+		final byte[] publicKey3 = nonSecureRandomArray(32);
+		final byte[] publicKey4 = nonSecureRandomArray(32);
+		final byte[] publicKey5 = nonSecureRandomArray(32);
 
-		ContactMessageReceiver duplicate1 = createContactMessageReceiver("ABCDEFG1");
+		ContactMessageReceiver contactMessageReceiver1 = createContactMessageReceiver("ABCDEFG1", publicKey1);
+		ContactMessageReceiver contactMessageReceiver2 = createContactMessageReceiver("ABCDEFG2", publicKey2);
+		ContactMessageReceiver contactMessageReceiver3 = createContactMessageReceiver("ABCDEFG3", publicKey3);
+
+		ContactMessageReceiver duplicate1 = createContactMessageReceiver("ABCDEFG1", publicKey1);
 
 		String identity2 = "ABCDEFG2";
 		String identity3 = "ABCDEFG3";
@@ -541,10 +546,10 @@ public class MessageUtilTest  {
 
 		MessageReceiver emptyDistributionListMessageReceiver = createDistributionListMessageReceiver(Collections.emptyList());
 		MessageReceiver distributionListMessageReceiver = createDistributionListMessageReceiver(Arrays.asList(
-			identity4,
-			identity5,
-			identity2,
-			identity3
+			Pair.create(identity4, publicKey4),
+			Pair.create(identity5, publicKey5),
+			Pair.create(identity2, publicKey2),
+			Pair.create(identity3, publicKey3)
 		));
 
 		MessageReceiver[] receivers = new MessageReceiver[] {
@@ -570,19 +575,18 @@ public class MessageUtilTest  {
 	}
 
 	private ContactMessageReceiver createContactMessageReceiver() {
-		return createContactMessageReceiver(null);
+		return createContactMessageReceiver(randomIdentity(), nonSecureRandomArray(32));
 	}
 
-	private ContactMessageReceiver createContactMessageReceiver(@Nullable String identity) {
-		ContactModel contactModel = new ContactModel(identity, null);
+	private ContactMessageReceiver createContactMessageReceiver(@NonNull String identity, @NonNull byte[] publicKey) {
+		ContactModel contactModel = new ContactModel(identity, publicKey);
 		return new ContactMessageReceiver(contactModel, null, serviceManagerMock, null, null, null);
-
 	}
 
-	private @NonNull MessageReceiver createDistributionListMessageReceiver(@NonNull List<String> identities) {
+	private @NonNull MessageReceiver createDistributionListMessageReceiver(@NonNull List<Pair<String, byte[]>> identitiesWithPublicKey) {
 		DistributionListService distributionListService = mock(DistributionListService.class);
-		List<ContactModel> contacts = StreamSupport.stream(identities)
-			.map(identity -> new ContactModel(identity, null))
+		List<ContactModel> contacts = StreamSupport.stream(identitiesWithPublicKey)
+			.map(pair -> new ContactModel(pair.first, pair.second))
 			.collect(Collectors.toList());
 		when(distributionListService.getMembers(any())).thenReturn(contacts);
 

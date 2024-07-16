@@ -1,2 +1,3 @@
-* Fixed various UI glitches
-* GIFs are now rendered using Glide
+* Improved support for large font sizes
+* Improved the display of notifications with media preview
+* Various bug fixes

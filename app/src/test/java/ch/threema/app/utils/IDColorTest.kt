@@ -22,6 +22,7 @@
 package ch.threema.app.utils
 
 import android.graphics.Color
+import ch.threema.testhelpers.nonSecureRandomArray
 import ch.threema.domain.models.GroupId
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
@@ -39,9 +40,9 @@ import org.powermock.modules.junit4.PowerMockRunner
 @PrepareForTest(Color::class)
 class IDColorTest {
 
-    private val echo = ContactModel("ECHOECHO", null)
-    private val abcd1234 = ContactModel("ABCD1234", null)
-    private val abcd0123 = ContactModel("ABCD0123", null)
+    private val echo = ContactModel("ECHOECHO", nonSecureRandomArray(32))
+    private val abcd1234 = ContactModel("ABCD1234", nonSecureRandomArray(32))
+    private val abcd0123 = ContactModel("ABCD0123", nonSecureRandomArray(32))
 
     private val greenLight = 1
     private val greenDark = 2

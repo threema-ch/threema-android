@@ -83,8 +83,7 @@ public class GroupMemberModelFactory extends ModelFactory {
 					groupMemberModel
 							.setId(cursorHelper.getInt(GroupMemberModel.COLUMN_ID))
 							.setGroupId(cursorHelper.getInt(GroupMemberModel.COLUMN_GROUP_ID))
-							.setIdentity(cursorHelper.getString(GroupMemberModel.COLUMN_IDENTITY))
-							.setActive(cursorHelper.getBoolean(GroupMemberModel.COLUMN_IS_ACTIVE));
+							.setIdentity(cursorHelper.getString(GroupMemberModel.COLUMN_IDENTITY));
 					return false;
 				}
 			});
@@ -146,7 +145,6 @@ public class GroupMemberModelFactory extends ModelFactory {
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(GroupMemberModel.COLUMN_GROUP_ID, groupMemberModel.getGroupId());
 		contentValues.put(GroupMemberModel.COLUMN_IDENTITY, groupMemberModel.getIdentity());
-		contentValues.put(GroupMemberModel.COLUMN_IS_ACTIVE, groupMemberModel.isActive());
 		return contentValues;
 	}
 
@@ -275,7 +273,7 @@ public class GroupMemberModelFactory extends ModelFactory {
 	@Override
 	public String[] getStatements() {
 		return new String[]{
-				"CREATE TABLE `group_member` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `identity` VARCHAR , `groupId` INTEGER , `isActive` SMALLINT NOT NULL )"
+				"CREATE TABLE `group_member` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `identity` VARCHAR , `groupId` INTEGER)"
 		};
 	}
 }

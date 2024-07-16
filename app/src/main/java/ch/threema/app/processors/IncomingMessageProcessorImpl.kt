@@ -32,7 +32,11 @@ import ch.threema.app.processors.contactcontrol.IncomingDeleteProfilePictureTask
 import ch.threema.app.processors.contactcontrol.IncomingSetProfilePictureTask
 import ch.threema.app.processors.conversation.IncomingBallotVoteTask
 import ch.threema.app.processors.conversation.IncomingContactConversationMessageTask
+import ch.threema.app.processors.conversation.IncomingContactDeleteMessageTask
+import ch.threema.app.processors.conversation.IncomingContactEditMessageTask
 import ch.threema.app.processors.conversation.IncomingGroupConversationMessageTask
+import ch.threema.app.processors.conversation.IncomingGroupDeleteMessageTask
+import ch.threema.app.processors.conversation.IncomingGroupEditMessageTask
 import ch.threema.app.processors.fs.IncomingEmptyTask
 import ch.threema.app.processors.groupcontrol.IncomingGroupCallControlTask
 import ch.threema.app.processors.groupcontrol.IncomingGroupDeleteProfilePictureTask
@@ -68,11 +72,15 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage
+import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage
+import ch.threema.domain.protocol.csp.messages.EditMessage
 import ch.threema.domain.protocol.csp.messages.EmptyMessage
+import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.protocol.csp.messages.GroupDeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
+import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
@@ -380,6 +388,14 @@ class IncomingMessageProcessorImpl(
             is VoipICECandidatesMessage -> IncomingCallIceCandidateTask(message, serviceManager)
             is VoipCallRingingMessage -> IncomingCallRingingTask(message, serviceManager)
             is VoipCallHangupMessage -> IncomingCallHangupTask(message, serviceManager)
+
+            // Check if message is an edit message
+            is EditMessage -> IncomingContactEditMessageTask(message, serviceManager)
+            is GroupEditMessage -> IncomingGroupEditMessageTask(message, serviceManager)
+
+            // Check if message is a delete message
+            is DeleteMessage -> IncomingContactDeleteMessageTask(message, serviceManager)
+            is GroupDeleteMessage -> IncomingGroupDeleteMessageTask(message, serviceManager)
 
             // If it is a group message, process it as a group conversation message
             is AbstractGroupMessage -> IncomingGroupConversationMessageTask(message, serviceManager)

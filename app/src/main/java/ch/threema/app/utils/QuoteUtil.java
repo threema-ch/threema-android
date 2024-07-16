@@ -154,7 +154,7 @@ public class QuoteUtil {
 			messageReceiver
 		);
 
-		if (quotedMessageModel != null) {
+		if (quotedMessageModel != null && !quotedMessageModel.isDeleted()) {
 			boolean receiverMatch = false;
 			switch (messageReceiver.getType()) {
 				case Type_CONTACT:
@@ -319,6 +319,10 @@ public class QuoteUtil {
 	 * @return true if the message can be quoted, false otherwise
 	 */
 	public static boolean isQuoteable(@NonNull AbstractMessageModel messageModel) {
+		if (messageModel.isDeleted()) {
+			return false;
+		}
+
 		MessageType messageType = messageModel.getType();
 		if (messageType != null) {
 			switch (messageModel.getType()) {

@@ -38,8 +38,13 @@ public class BuildFlavor {
 		NONE, GOOGLE, SERIAL, GOOGLE_WORK, HMS, HMS_WORK, ONPREM
 	}
 
+	public enum BuildEnvironment {
+		LIVE, SANDBOX, ONPREM
+	}
+
 	private static volatile boolean initialized = false;
 	private static LicenseType licenseType = null;
+	private static BuildEnvironment buildEnvironment = null;
 	private static String name = null;
 
 	/**
@@ -83,6 +88,14 @@ public class BuildFlavor {
 		return FLAVOR_LIBRE.equals(BuildConfig.FLAVOR);
 	}
 
+	/**
+	 * Return whether this build flavor uses the sandbox build environment.
+	 */
+	public static boolean isSandbox() {
+		init();
+		return buildEnvironment == BuildEnvironment.SANDBOX;
+	}
+
 	@SuppressWarnings("ConstantConditions")
 	private static synchronized void init() {
 		if (!initialized) {
@@ -112,6 +125,29 @@ public class BuildFlavor {
 				case FLAVOR_STORE_THREEMA:
 				case FLAVOR_LIBRE:
 					licenseType = LicenseType.SERIAL;
+					break;
+				default:
+					throw new IllegalStateException("Unhandled build flavor " + BuildConfig.FLAVOR);
+			}
+
+			// Build Environment
+			switch (BuildConfig.FLAVOR) {
+				case FLAVOR_GREEN:
+				case FLAVOR_BLUE:
+				case FLAVOR_SANDBOX_WORK:
+					buildEnvironment = BuildEnvironment.SANDBOX;
+					break;
+				case FLAVOR_ONPREM:
+					buildEnvironment = BuildEnvironment.ONPREM;
+					break;
+				case FLAVOR_NONE:
+				case FLAVOR_STORE_GOOGLE:
+				case FLAVOR_STORE_GOOGLE_WORK:
+				case FLAVOR_HMS:
+				case FLAVOR_HMS_WORK:
+				case FLAVOR_STORE_THREEMA:
+				case FLAVOR_LIBRE:
+					buildEnvironment = BuildEnvironment.LIVE;
 					break;
 				default:
 					throw new IllegalStateException("Unhandled build flavor " + BuildConfig.FLAVOR);

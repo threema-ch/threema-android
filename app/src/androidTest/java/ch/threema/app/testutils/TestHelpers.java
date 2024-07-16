@@ -46,6 +46,7 @@ import ch.threema.base.utils.Utils;
 import ch.threema.domain.helpers.InMemoryIdentityStore;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.GroupId;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -85,7 +86,7 @@ public class TestHelpers {
 
 		@NonNull
 		public Contact getContact() {
-			return new Contact(this.identity, this.publicKey);
+			return new Contact(this.identity, this.publicKey, VerificationLevel.UNVERIFIED);
 		}
 
 		@NonNull

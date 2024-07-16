@@ -128,14 +128,9 @@ public interface FileService {
 	 */
 	File createWallpaperFile(MessageReceiver messageReceiver) throws IOException;
 
-	/**
-	 *
-	 * @param contactModel
-	 * @return true if avatar file exists
-	 */
-	boolean hasContactAvatarFile(ContactModel contactModel);
+	boolean hasContactAvatarFile(@NonNull String identity);
 
-	boolean hasContactPhotoFile(ContactModel contactModel);
+	boolean hasContactPhotoFile(@NonNull String identity);
 
 	/**
 	 * decrypt a file and save into a new one
@@ -224,65 +219,65 @@ public interface FileService {
 	/**
 	 * write the contact avatar
 	 */
-	boolean writeContactAvatar(ContactModel contactModel, File file) throws Exception;
+	boolean writeContactAvatar(@NonNull String identity, File file) throws Exception;
 
 	/**
 	 * write the contact avatar
 	 */
-	boolean writeContactAvatar(ContactModel contactModel, byte[] avatarFile) throws Exception;
+	boolean writeContactAvatar(@NonNull String identity, byte[] avatarFile) throws Exception;
 
 	/**
 	 * write the contact photo received by the contact
 	 */
-	boolean writeContactPhoto(ContactModel contactModel, byte[] encryptedBlob) throws Exception;
+	boolean writeContactPhoto(@NonNull String identity, byte[] encryptedBlob) throws Exception;
 
 	/**
 	 * write the contact avatar from Android's address book
 	 */
-	boolean writeAndroidContactAvatar(ContactModel contactModel, byte[] avatarFile) throws Exception;
+	boolean writeAndroidContactAvatar(@NonNull String identity, byte[] avatarFile) throws Exception;
 
 	/**
 	 * return the decrypted bitmap of a contact avatar
 	 * if no file exists, null will be returned
 	 */
-	Bitmap getContactAvatar(ContactModel contactModel) throws Exception;
+	Bitmap getContactAvatar(@NonNull String identity) throws Exception;
 
-	Bitmap getAndroidContactAvatar(ContactModel contactModel) throws Exception;
+	Bitmap getAndroidContactAvatar(@NonNull ContactModel contactModel) throws Exception;
 
 	/**
 	 * Return a input stream of a local saved contact avatar
 	 */
-	InputStream getContactAvatarStream(ContactModel contactModel) throws IOException, MasterKeyLockedException;
+	InputStream getContactAvatarStream(@NonNull String identity) throws IOException, MasterKeyLockedException;
 
 	/**
 	 * Return a input stream of a contact photo
 	 */
-	InputStream getContactPhotoStream(ContactModel contactModel) throws IOException, MasterKeyLockedException;
+	InputStream getContactPhotoStream(@NonNull String identity) throws IOException, MasterKeyLockedException;
 
 	/**
 	 * return the decrypted bitmap of a contact-provided profile picture
 	 * returns null if no file exists
 	 */
-	Bitmap getContactPhoto(ContactModel contactModel) throws Exception;
+	Bitmap getContactPhoto(@NonNull String identity) throws Exception;
 
 	/**
 	 * remove the saved avatar
 	 * return true if the avatar was deleted, false if the remove failed or no avatar file exists
 	 */
-	boolean removeContactAvatar(ContactModel contactModel);
+	boolean removeContactAvatar(@NonNull String identity);
 
 	/**
 	 * remove the saved profile pic for this contact
-	 * @param contactModel
+	 * @param identity the identity of the contact
 	 * @return true if avatar was deleted, false if the remove failed or no avatar file exists
 	 */
-	boolean removeContactPhoto(ContactModel contactModel);
+	boolean removeContactPhoto(@NonNull String identity);
 
 	/**
 	 * remove the saved avatar from Android's address book
 	 * return true if the avatar was deleted, false if the remove failed or no avatar file exists
 	 */
-	boolean removeAndroidContactAvatar(ContactModel contactModel);
+	boolean removeAndroidContactAvatar(@NonNull String identity);
 
 	/**
 	 * remove all avatars in the respective directory
@@ -362,6 +357,16 @@ public interface FileService {
 
 	@NonNull
 	Uri getTempShareFileUri(@NonNull Bitmap bitmap) throws IOException;
+
+	/**
+	 * Copy the decrypted thumbnail to a temporary file accessible through our FileProvider and return the Uri of the temporary file
+	 * @param messageModel Message Model used as the source for the thumbnail
+	 * @param maxSize Maximum size of the thumbnail in bytes. Set to Integer.MAX_VALUE if no limit
+	 * @return Uri of the temporary file or null if the thumbnail does not exist, is too large or an error occurred
+	 */
+	@WorkerThread
+	@Nullable
+	Uri getThumbnailShareFileUri(AbstractMessageModel messageModel, int maxSize);
 
 	interface OnDecryptedFileComplete {
 		void complete(File decryptedFile);

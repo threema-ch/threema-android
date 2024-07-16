@@ -60,7 +60,7 @@ internal class CspConnectionTest : ServerConnectionTest() {
                 // Nothing to do
             }
 
-            override suspend fun startRunningTasks(layer5Codec: Layer5Codec) {
+            override suspend fun startRunningTasks(layer5Codec: Layer5Codec, incomingMessageProcessor: IncomingMessageProcessor) {
                 // Nothing to do
             }
 
@@ -100,7 +100,7 @@ internal class CspConnectionTest : ServerConnectionTest() {
             ServerConnectionDependencies(
                 controllers.mainController,
                 socket,
-                createConnectionLayers(it, controllers, taskManager)
+                createConnectionLayers(it, controllers, configuration.incomingMessageProcessor, taskManager)
             )
         }
 
@@ -108,12 +108,12 @@ internal class CspConnectionTest : ServerConnectionTest() {
     }
 
     private fun createConfiguration(): CspConnectionConfiguration {
+        val incomingMessageProcessor = object : IncomingMessageProcessor {
+            override suspend fun processIncomingMessage(messageBox: MessageBox, handle: ActiveTaskCodec) { }
+            override fun processIncomingServerAlert(alertData: CspMessage.ServerAlertData) { }
+            override fun processIncomingServerError(errorData: CspMessage.ServerErrorData) { }
+        }
         val taskManager = TaskManagerProvider.getTaskManager(TaskManagerConfiguration(
-            object : IncomingMessageProcessor {
-                override suspend fun processIncomingMessage(messageBox: MessageBox, handle: ActiveTaskCodec) { }
-                override fun processIncomingServerAlert(alertData: CspMessage.ServerAlertData) { }
-                override fun processIncomingServerError(errorData: CspMessage.ServerErrorData) { }
-            },
             {
                 object : TaskArchiver {
                     override fun addTask(task: Task<*, TaskCodec>) {}
@@ -130,6 +130,7 @@ internal class CspConnectionTest : ServerConnectionTest() {
             Version(),
             assertDispatcherContext = true,
             TestNoopDeviceCookieManager(),
+            incomingMessageProcessor,
             taskManager,
             { arrayOf() },
             ipv6 = false,
@@ -137,13 +138,18 @@ internal class CspConnectionTest : ServerConnectionTest() {
         )
     }
 
-    private fun createConnectionLayers(connection: ServerConnection, controllers: CspControllers, taskManager: InternalTaskManager): ServerConnectionLayers {
+    private fun createConnectionLayers(
+        connection: ServerConnection,
+        controllers: CspControllers,
+        incomingMessageProcessor: IncomingMessageProcessor,
+        taskManager: InternalTaskManager,
+    ): ServerConnectionLayers {
         return ServerConnectionLayers(
             CspFrameLayer(),
             MultiplexLayer(controllers.serverConnectionController),
             AuthLayer(controllers.layer3Controller),
             MonitoringLayer(connection, controllers.layer4Controller),
-            EndToEndLayer(controllers.serverConnectionController.dispatcher.coroutineContext, controllers.serverConnectionController, connection, taskManager)
+            EndToEndLayer(controllers.serverConnectionController.dispatcher.coroutineContext, controllers.serverConnectionController, connection, incomingMessageProcessor, taskManager)
         )
     }
 

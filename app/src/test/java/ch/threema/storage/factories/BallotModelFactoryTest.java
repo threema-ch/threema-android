@@ -21,7 +21,6 @@
 
 package ch.threema.storage.factories;
 
-
 import android.content.ContentValues;
 
 import android.database.Cursor;
@@ -478,7 +477,7 @@ public class BallotModelFactoryTest {
 
 		BallotService.BallotFilter filterMock = mock(BallotService.BallotFilter.class);
 		ContactMessageReceiver receiverMock = mock(ContactMessageReceiver.class);
-		ContactModel contactModelMock = mock(ContactModel.class);
+		ContactModel contactModel = new ContactModel("C-I-D", new byte[] { 32 });
 		String[] convertedArgumentsMock = new String[]{"a", "b", "c"};
 		Cursor cursorMock = mock(Cursor.class);
 
@@ -487,8 +486,7 @@ public class BallotModelFactoryTest {
 		when(filterMock.createdOrNotVotedByIdentity()).thenReturn(null);
 		when(filterMock.getStates()).thenReturn(new BallotModel.State[]{BallotModel.State.OPEN, BallotModel.State.TEMPORARY});
 		when(receiverMock.getType()).thenReturn(MessageReceiver.Type_CONTACT);
-		when(receiverMock.getContact()).thenReturn(contactModelMock);
-		when(contactModelMock.getIdentity()).thenReturn("C-I-D");
+		when(receiverMock.getContact()).thenReturn(contactModel);
 		when(DatabaseUtil.convertArguments(expectedArguments)).thenReturn(convertedArgumentsMock);
 		when(DatabaseUtil.makePlaceholders(2)).thenReturn("two-placeholder-argument");
 		when(readableDatabaseMock.rawQuery(expectedQuery, convertedArgumentsMock)).thenReturn(cursorMock);
@@ -567,7 +565,7 @@ public class BallotModelFactoryTest {
 
 		BallotService.BallotFilter filterMock = mock(BallotService.BallotFilter.class);
 		ContactMessageReceiver receiverMock = mock(ContactMessageReceiver.class);
-		ContactModel contactModelMock = mock(ContactModel.class);
+		ContactModel contactModel = new ContactModel("C-I-D", new byte[] { 32 });
 		String[] convertedArgumentsMock = new String[]{"a", "b", "c"};
 		Cursor cursorMock = mock(Cursor.class);
 
@@ -576,8 +574,7 @@ public class BallotModelFactoryTest {
 		when(filterMock.createdOrNotVotedByIdentity()).thenReturn(null);
 		when(filterMock.getStates()).thenReturn(null);
 		when(receiverMock.getType()).thenReturn(MessageReceiver.Type_CONTACT);
-		when(receiverMock.getContact()).thenReturn(contactModelMock);
-		when(contactModelMock.getIdentity()).thenReturn("C-I-D");
+		when(receiverMock.getContact()).thenReturn(contactModel);
 		when(DatabaseUtil.convertArguments(expectedArguments)).thenReturn(convertedArgumentsMock);
 		when(readableDatabaseMock.rawQuery(expectedQuery, convertedArgumentsMock)).thenReturn(cursorMock);
 

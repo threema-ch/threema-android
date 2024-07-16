@@ -105,7 +105,7 @@ public class WorkUserMemberListFragment extends MemberListFragment {
 				}), new IPredicateNonNull<ContactModel>() {
 					@Override
 					public boolean apply(@NonNull ContactModel type) {
-						return type.isWork() && (!profilePics || !ContactUtil.isEchoEchoOrChannelContact(type));
+						return type.isWork() && (!profilePics || !ContactUtil.isEchoEchoOrGatewayContact(type));
 					}
 				});
 

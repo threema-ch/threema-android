@@ -47,7 +47,7 @@ class IncomingDeleteProfilePictureTask(
             return ReceiveStepsResult.DISCARD
         }
 
-        fileService.removeContactPhoto(contactModel)
+        fileService.removeContactPhoto(contactModel.identity)
         this.avatarCacheService.reset(contactModel)
         ListenerManager.contactListeners.handle { listener: ContactListener ->
             listener.onAvatarChanged(contactModel)

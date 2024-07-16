@@ -126,6 +126,10 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_EMPTY = 0xfc;
 	public static final int MSGTYPE_WEB_SESSION_RESUME = 0xfe;
 	public static final int MSGTYPE_AUTH_TOKEN = 0xff;
+	public static final int MSGTYPE_EDIT_MESSAGE = 0x91;
+	public static final int MSGTYPE_DELETE_MESSAGE = 0x92;
+	public static final int MSGTYPE_GROUP_EDIT_MESSAGE = 0x93;
+	public static final int MSGTYPE_GROUP_DELETE_MESSAGE = 0x94;
 
 	/* message flags */
 	// Note: Do not forget to update AbstractMessage#getMessageTypeDefaultFlags when adding a flag
@@ -141,7 +145,6 @@ public class ProtocolDefines {
 	public static final int DELIVERYRECEIPT_MSGREAD = 0x02;
 	public static final int DELIVERYRECEIPT_MSGUSERACK = 0x03;
 	public static final int DELIVERYRECEIPT_MSGUSERDEC = 0x04;
-	public static final int DELIVERYRECEIPT_MSGCONSUMED = 0x05;
 
 	/* payload types */
 	public static final int PLTYPE_ECHO_REQUEST = 0x00;

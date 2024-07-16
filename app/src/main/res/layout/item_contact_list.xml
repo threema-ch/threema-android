@@ -5,10 +5,10 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/topLayout"
                 android:layout_width="match_parent"
-				android:layout_height="@dimen/listitem_contact_height"
+				android:layout_height="wrap_content"
 				android:orientation="vertical"
-				android:paddingLeft="@dimen/listitem_contacts_margin_left_right"
-				android:paddingRight="@dimen/listitem_contacts_margin_left_right"
+				android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom"
+				android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right"
 				android:background="@drawable/listitem_background_selector">
 
 	<!-- index -->
@@ -21,9 +21,9 @@
 		android:importantForAccessibility="no"
 		android:textColor="@null"
 		android:textAppearance="@style/Threema.Material.Header.Big.Text"
-		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintBottom_toBottomOf="@id/avatar_view"
 		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintTop_toTopOf="@id/avatar_view" />
 		<!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
 
 	<ImageView
@@ -46,9 +46,9 @@
 		android:duplicateParentState="true"
 		android:stateListAnimator="@animator/selector_list_checkbox_bg"
 		android:visibility="visible"
-		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 	<ch.threema.app.ui.CheckableView
 		android:id="@+id/check_box"
@@ -68,6 +68,7 @@
 		android:id="@+id/name"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+        android:minHeight="@dimen/listitem_min_height_first_line"
 		android:layout_marginLeft="90dp"
 		android:ellipsize="end"
 		android:singleLine="true"
@@ -90,7 +91,7 @@
 		android:ellipsize="end"
 		android:singleLine="true"
 		android:textColor="@null"
-		android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine"
+		android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
 		app:layout_constraintLeft_toRightOf="@id/name"
 		app:layout_constraintRight_toLeftOf="@+id/blocked_contact"
 		app:layout_constraintBaseline_toBaselineOf="@id/name"
@@ -104,13 +105,13 @@
 		android:id="@+id/blocked_contact"
 		android:layout_width="22dp"
 		android:layout_height="18dp"
-		android:layout_marginBottom="2dp"
 		android:paddingLeft="4dp"
 		android:baselineAlignBottom="true"
 		app:srcCompat="@drawable/ic_block"
 		android:contentDescription="@string/blocked"
 		android:visibility="visible"
-		app:layout_constraintBottom_toBottomOf="@id/name"
+		app:layout_constraintTop_toTopOf="@id/nick"
+		app:layout_constraintBottom_toBottomOf="@id/nick"
 		app:layout_constraintRight_toRightOf="parent"
 		app:tint="@color/material_red" />
 
@@ -124,6 +125,7 @@
 		android:layout_marginBottom="2dp"
 		android:baselineAlignBottom="true"
 		android:visibility="visible"
+		app:layout_constraintTop_toTopOf="@id/subject"
 		app:layout_constraintBottom_toBottomOf="@+id/subject"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintRight_toLeftOf="@+id/subject"
@@ -134,10 +136,12 @@
 		android:id="@+id/subject"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+        android:minHeight="@dimen/listitem_min_height_second_line"
 		android:layout_marginLeft="3dp"
 		android:ellipsize="end"
 		android:singleLine="true"
-		android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine.Bold"
+		android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+        android:textAllCaps="true"
 		android:textColor="@null"
 		android:gravity="right"
 		app:layout_constraintBottom_toBottomOf="parent"

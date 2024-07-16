@@ -75,7 +75,9 @@ import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConversationUtil;
+import ch.threema.app.utils.GroupFeatureSupport;
 import ch.threema.app.utils.NameUtil;
+import ch.threema.app.utils.OutgoingCspMessageUtilsKt;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.groupcall.GroupCallManager;
@@ -85,6 +87,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.taskmanager.TaskManager;
@@ -520,7 +523,6 @@ public class GroupServiceImpl implements GroupService {
 			// added to the group.
 			if (contactService.getByIdentity(identity) != null) {
 				GroupMemberModel newMemberModel = new GroupMemberModel()
-					.setActive(true)
 					.setGroupId(groupModel.getId())
 					.setIdentity(identity);
 				this.databaseServiceNew.getGroupMemberModelFactory().create(newMemberModel);
@@ -1429,5 +1431,13 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		return taskManager;
+	}
+
+	@Override
+	public GroupFeatureSupport getFeatureSupport(@NonNull GroupModel groupModel, @ThreemaFeature.Feature long feature) {
+		return new GroupFeatureSupport(
+			feature,
+			new ArrayList<>(OutgoingCspMessageUtilsKt.filterBroadcastIdentity(getMembers(groupModel), groupModel))
+		);
 	}
 }

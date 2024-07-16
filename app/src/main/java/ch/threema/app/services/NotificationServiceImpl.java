@@ -45,21 +45,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
-import android.os.storage.StorageManager;
 import android.service.notification.StatusBarNotification;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.text.format.Formatter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -76,13 +70,15 @@ import androidx.core.graphics.drawable.IconCompat;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Objects;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
@@ -141,7 +137,6 @@ public class NotificationServiceImpl implements NotificationService {
 	public static final int APP_RESTART_NOTIFICATION_ID = 481773;
 	private static final int GC_PENDING_INTENT_BASE = 30000;
 
-	private static final String GROUP_KEY_MESSAGES="threema_messages_key";
 	private static final String PIN_LOCKED_NOTIFICATION_ID = "(transition to locked state)";
 	private AsyncQueryHandler queryHandler;
 
@@ -460,6 +455,7 @@ public class NotificationServiceImpl implements NotificationService {
 		this.visibleConversationReceiver = receiver;
 	}
 
+	@SuppressLint("MissingPermission")
 	@Override
 	public void addGroupCallNotification(@NonNull GroupModel group, @NonNull ContactModel contactModel) {
 		if (getGroupService() == null) {
@@ -545,10 +541,9 @@ public class NotificationServiceImpl implements NotificationService {
 		);
 	}
 
-	@SuppressLint({"StaticFieldLeak"})
 	@Override
-	public void addConversationNotification(final ConversationNotification conversationNotification, boolean updateExisting) {
-		logger.debug("addConversationNotifications");
+	public void showConversationNotification(final ConversationNotification conversationNotification, boolean updateExisting) {
+		logger.debug("showConversationNotifications");
 
 		if (ConfigUtils.hasInvalidCredentials()) {
 			logger.debug("Credentials are not (or no longer) valid. Suppressing notification.");
@@ -562,8 +557,8 @@ public class NotificationServiceImpl implements NotificationService {
 
 		synchronized (this.conversationNotifications) {
 			//check if current receiver is the receiver of the group
-			if(this.visibleConversationReceiver != null &&
-					conversationNotification.getGroup().getMessageReceiver().isEqual(this.visibleConversationReceiver)) {
+			if (this.visibleConversationReceiver != null &&
+				conversationNotification.getGroup().getMessageReceiver().isEqual(this.visibleConversationReceiver)) {
 				//ignore notification
 				logger.info("No notification - chat visible");
 				return;
@@ -571,7 +566,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 			String uniqueId = null;
 			//check if notification not exist
-			if(Functional.select(this.conversationNotifications, conversationNotification1 -> TestUtil.compare(conversationNotification1.getUid(), conversationNotification.getUid())) == null) {
+			if (Functional.select(this.conversationNotifications, conversationNotification1 -> TestUtil.compare(conversationNotification1.getUid(), conversationNotification.getUid())) == null) {
 				uniqueId = conversationNotification.getGroup().getMessageReceiver().getUniqueIdString();
 				if (!DNDUtil.getInstance().isMuted(conversationNotification.getGroup().getMessageReceiver(), conversationNotification.getRawMessage())) {
 					this.conversationNotifications.addFirst(conversationNotification);
@@ -586,12 +581,31 @@ public class NotificationServiceImpl implements NotificationService {
 			final ConversationNotificationGroup newestGroup = conversationNotification.getGroup();
 
 			int numberOfNotificationsForCurrentChat = 0;
-			for(ConversationNotification notification: this.conversationNotifications) {
+
+			ListIterator<ConversationNotification> iterator = this.conversationNotifications.listIterator();
+			while (iterator.hasNext()) {
+				ConversationNotification notification = iterator.next();
 				ConversationNotificationGroup group = notification.getGroup();
 				uniqueNotificationGroups.put(group.getGroupUid(), group);
-				if (notification.getGroup().equals(newestGroup)) {
+				boolean isMessageDeleted = conversationNotification.isMessageDeleted();
+
+				if (group.equals(newestGroup) && !isMessageDeleted) {
 					numberOfNotificationsForCurrentChat++;
 				}
+
+				if (conversationNotification.getUid().equals(notification.getUid()) && updateExisting) {
+					if (isMessageDeleted) {
+						iterator.remove();
+					} else {
+						iterator.set(conversationNotification);
+					}
+				}
+			}
+
+			if (this.conversationNotifications.stream().noneMatch(notification -> Objects.equals(notification.getGroup().getGroupUid(), conversationNotification.getGroup().getGroupUid()))) {
+				this.conversationNotifications.add(conversationNotification);
+				cancelConversationNotification(conversationNotification.getUid());
+				return;
 			}
 
 			if(!TestUtil.required(conversationNotification, newestGroup)) {
@@ -600,10 +614,6 @@ public class NotificationServiceImpl implements NotificationService {
 			}
 
 			if (updateExisting) {
-				if (!ConfigUtils.canDoGroupedNotifications() || numberOfNotificationsForCurrentChat > 1) {
-					return;
-				}
-
 				if (!this.preferenceService.isShowMessagePreview() || hiddenChatsListService.has(uniqueId)) {
 					return;
 				}
@@ -617,14 +627,13 @@ public class NotificationServiceImpl implements NotificationService {
 			int unreadMessagesCount = this.conversationNotifications.size();
 			int unreadConversationsCount = uniqueNotificationGroups.size();
 			NotificationSchema notificationSchema = this.createNotificationSchema(newestGroup, conversationNotification.getRawMessage());
-			Bitmap latestThumbnail = null;
 
 			if (notificationSchema == null) {
 				logger.warn("No notification - no notification schema");
 				return;
 			}
 
-			if(this.lockAppService.isLocked()) {
+			if (this.lockAppService.isLocked()) {
 				this.showPinLockedNewMessageNotification(notificationSchema, conversationNotification.getUid(), false);
 				return;
 			}
@@ -639,23 +648,11 @@ public class NotificationServiceImpl implements NotificationService {
 				ConfigUtils.getSafeQuantityString(context, R.plurals.new_messages, unreadMessagesCount, unreadMessagesCount);
 			String contentTitle;
 			Intent notificationIntent;
-			Bitmap summaryAvatar;
-			NotificationCompat.InboxStyle inboxStyle = null;
 
 			/* set avatar, intent and contentTitle */
-			if (unreadConversationsCount > 1 && !ConfigUtils.canDoGroupedNotifications()) {
-				/* notification is for more than one chat */
-				summaryAvatar = getConversationNotificationAvatar();
-				notificationIntent = new Intent(context, HomeActivity.class);
-				contentTitle = context.getString(R.string.app_name);
-			}
-			else {
-				/* notification is for single chat */
-				summaryAvatar = newestGroup.getAvatar();
-				notificationIntent = new Intent(context, ComposeMessageActivity.class);
-				newestGroup.getMessageReceiver().prepareIntent(notificationIntent);
-				contentTitle = latestFullName;
-			}
+			notificationIntent = new Intent(context, ComposeMessageActivity.class);
+			newestGroup.getMessageReceiver().prepareIntent(notificationIntent);
+			contentTitle = latestFullName;
 
 			if (hiddenChatsListService.has(uniqueId)) {
 				tickerText = summaryText;
@@ -663,14 +660,6 @@ public class NotificationServiceImpl implements NotificationService {
 			} else {
 				if (this.preferenceService.isShowMessagePreview()) {
 					tickerText = latestFullName + NAME_PREPEND_SEPARATOR + TextUtil.trim(conversationNotification.getMessage(), MAX_TICKER_TEXT_LENGTH, "...");
-					inboxStyle = new NotificationCompat.InboxStyle();
-
-					getInboxStyle(inboxStyle, unreadConversationsCount);
-
-					inboxStyle.setBigContentTitle(contentTitle);
-					inboxStyle.setSummaryText(summaryText);
-
-					latestThumbnail = conversationNotification.getThumbnail();
 					singleMessageText = conversationNotification.getMessage();
 				} else {
 					tickerText = latestFullName + NAME_PREPEND_SEPARATOR + summaryText;
@@ -714,144 +703,57 @@ public class NotificationServiceImpl implements NotificationService {
 
 			final NotificationCompat.Builder builder;
 
-			if (ConfigUtils.canDoGroupedNotifications()) {
-				summaryText = ConfigUtils.getSafeQuantityString(
-					context,
-					R.plurals.new_messages,
-					numberOfNotificationsForCurrentChat,
-					numberOfNotificationsForCurrentChat
-				);
+			summaryText = ConfigUtils.getSafeQuantityString(
+				context,
+				R.plurals.new_messages,
+				numberOfNotificationsForCurrentChat,
+				numberOfNotificationsForCurrentChat
+			);
 
-				if (!this.preferenceService.isShowMessagePreview() || hiddenChatsListService.has(uniqueId)) {
-					singleMessageText = summaryText;
-					tickerText = summaryText;
-				}
-
-				// public version of the notification
-				NotificationCompat.Builder publicBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_CHAT)
-						.setContentTitle(summaryText)
-						.setContentText(context.getString(R.string.notification_hidden_text))
-						.setSmallIcon(R.drawable.ic_notification_small)
-						.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
-						.setOnlyAlertOnce(onlyAlertOnce);
-
-				// private version
-				builder = new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_CHAT, notificationSchema, publicBuilder)
-								.setContentTitle(contentTitle)
-								.setContentText(singleMessageText)
-								.setTicker(tickerText)
-								.setSmallIcon(R.drawable.ic_notification_small)
-								.setLargeIcon(newestGroup.getAvatar())
-								.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
-								.setGroup(newestGroup.getGroupUid())
-								.setGroupSummary(false)
-								.setOnlyAlertOnce(onlyAlertOnce)
-								.setPriority(this.preferenceService.getNotificationPriority())
-								.setCategory(NotificationCompat.CATEGORY_MESSAGE)
-								.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
-
-				// Add identity to notification for system DND priority override
-				builder.addPerson(conversationNotification.getSenderPerson());
-
-				if (this.preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
-					builder.setStyle(getMessagingStyle(newestGroup, getConversationNotificationsForGroup(newestGroup)));
-					if (uniqueId != null) {
-						builder.setShortcutId(uniqueId);
-						builder.setLocusId(new LocusIdCompat(uniqueId));
-					}
-
-					latestThumbnail = conversationNotification.getThumbnail();
-					if (latestThumbnail != null && !latestThumbnail.isRecycled() && numberOfNotificationsForCurrentChat == 1) {
-						// add image preview
-						builder.setStyle(new NotificationCompat.BigPictureStyle()
-								.bigPicture(latestThumbnail)
-								.setSummaryText(conversationNotification.getMessage()));
-
-						if (newestGroup.getMessageReceiver() instanceof GroupMessageReceiver) {
-							// prepend sender name manually
-							builder.setContentText(
-								TextUtils.concat(conversationNotification.getSenderPerson().getName(), NAME_PREPEND_SEPARATOR, singleMessageText)
-							);
-						}
-					}
-					addConversationNotificationActions(builder, replyPendingIntent, ackPendingIntent, markReadPendingIntent, conversationNotification, numberOfNotificationsForCurrentChat, unreadConversationsCount, uniqueId, newestGroup);
-					addWearableExtender(builder, newestGroup, ackPendingIntent, decPendingIntent, replyPendingIntent, markReadPendingIntent, timestamp, latestThumbnail, numberOfNotificationsForCurrentChat, singleMessageText != null ? singleMessageText.toString() : "", uniqueId);
-				}
-
-				builder.setContentIntent(openPendingIntent);
-
-				if (this.conversationNotifications.size() == 1 && updateExisting) {
-					// we need to delay the updated notification to allow the sound of the first notification to play properly
-					new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-						@TargetApi(Build.VERSION_CODES.M)
-						@Override
-						public void run() {
-
-							try {
-								NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-								if (notificationManager != null) {
-									StatusBarNotification[] notifications = notificationManager.getActiveNotifications();
-									for (StatusBarNotification notification : notifications) {
-										if (notification.getId() == newestGroup.getNotificationId()) {
-											NotificationServiceImpl.this.notify(newestGroup.getNotificationId(), builder, null, NOTIFICATION_CHANNEL_CHAT);
-											break;
-										}
-									}
-								}
-							} catch (Exception e) {
-								// catch IllegalStateException
-							}
-						}
-					}, 4000);
-				} else {
-					this.notify(newestGroup.getNotificationId(), builder, notificationSchema, NOTIFICATION_CHANNEL_CHAT);
-				}
-			} else {
-				createSingleNotification(newestGroup,
-							conversationNotification,
-							openPendingIntent,
-							ackPendingIntent,
-							decPendingIntent,
-							replyPendingIntent,
-							markReadPendingIntent,
-							timestamp,
-							latestThumbnail,
-							numberOfNotificationsForCurrentChat,
-							uniqueId);
-
-				// summary notification
-				builder = new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_CHAT, notificationSchema)
-								.setContentTitle(contentTitle)
-								.setContentText(unreadConversationsCount > 1 ? summaryText : singleMessageText)
-								.setTicker(tickerText)
-								.setLargeIcon(summaryAvatar)
-								.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
-								.setNumber(unreadMessagesCount)
-								.setGroup(GROUP_KEY_MESSAGES)
-								// https://code.google.com/p/android/issues/detail?id=219876
-								.setGroupSummary(true)
-								.setWhen(timestamp)
-								.setPriority(this.preferenceService.getNotificationPriority())
-								.setCategory(NotificationCompat.CATEGORY_MESSAGE)
-								.setOnlyAlertOnce(onlyAlertOnce);
-
-				int smallIcon = getSmallIconResource(unreadConversationsCount);
-				if (smallIcon > 0) {
-					builder.setSmallIcon(smallIcon);
-				}
-
-				if (this.preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
-					addConversationNotificationPreviews(builder, latestThumbnail, singleMessageText, contentTitle, conversationNotification.getMessage(), unreadMessagesCount);
-					addConversationNotificationActions(builder, replyPendingIntent, ackPendingIntent, markReadPendingIntent, conversationNotification, unreadMessagesCount, unreadConversationsCount, uniqueId, newestGroup);
-				}
-
-				if (unreadMessagesCount > 1 && inboxStyle != null) {
-					builder.setStyle(inboxStyle);
-				}
-
-				builder.setContentIntent(openPendingIntent);
-				notificationManagerCompat.notify(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID, builder.build());
+			if (!this.preferenceService.isShowMessagePreview() || hiddenChatsListService.has(uniqueId)) {
+				singleMessageText = summaryText;
+				tickerText = summaryText;
 			}
+
+			// public version of the notification
+			NotificationCompat.Builder publicBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_CHAT)
+				.setContentTitle(summaryText)
+				.setContentText(context.getString(R.string.notification_hidden_text))
+				.setSmallIcon(R.drawable.ic_notification_small)
+				.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
+				.setOnlyAlertOnce(onlyAlertOnce);
+
+			// private version
+			builder = new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_CHAT, notificationSchema, publicBuilder)
+				.setContentTitle(contentTitle)
+				.setContentText(singleMessageText)
+				.setTicker(tickerText)
+				.setSmallIcon(R.drawable.ic_notification_small)
+				.setLargeIcon(newestGroup.getAvatar())
+				.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
+				.setGroup(newestGroup.getGroupUid())
+				.setGroupSummary(false)
+				.setOnlyAlertOnce(onlyAlertOnce)
+				.setPriority(this.preferenceService.getNotificationPriority())
+				.setCategory(NotificationCompat.CATEGORY_MESSAGE)
+				.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
+
+			// Add identity to notification for system DND priority override
+			builder.addPerson(conversationNotification.getSenderPerson());
+
+			if (this.preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
+				builder.setStyle(getMessagingStyle(newestGroup, getConversationNotificationsForGroup(newestGroup)));
+				if (uniqueId != null) {
+					builder.setShortcutId(uniqueId);
+					builder.setLocusId(new LocusIdCompat(uniqueId));
+				}
+				addConversationNotificationActions(builder, replyPendingIntent, ackPendingIntent, markReadPendingIntent, conversationNotification, numberOfNotificationsForCurrentChat, unreadConversationsCount, uniqueId, newestGroup);
+				addWearableExtender(builder, newestGroup, ackPendingIntent, decPendingIntent, replyPendingIntent, markReadPendingIntent, numberOfNotificationsForCurrentChat, uniqueId);
+			}
+
+			builder.setContentIntent(openPendingIntent);
+
+			this.notify(newestGroup.getNotificationId(), builder, notificationSchema, NOTIFICATION_CHANNEL_CHAT);
 
 			logger.info("Showing notification {} sound: {}",
 				conversationNotification.getUid(),
@@ -863,19 +765,6 @@ public class NotificationServiceImpl implements NotificationService {
 
 	private int getRandomRequestCode() {
 		return (int) System.nanoTime();
-	}
-
-	private void getInboxStyle(NotificationCompat.InboxStyle inboxStyle, int unreadConversationsCount) {
-		// show 8 lines max
-		for(int i = 0; i < this.conversationNotifications.size() && i < 8; i++ ) {
-			CharSequence message = conversationNotifications.get(i).getMessage();
-			if (unreadConversationsCount > 1 && !conversationNotifications.get(i).getGroup().getGroupUid().startsWith("g")) {
-				// we need to add a name prefix manually if a contact notification is part of a grouped notifications
-				CharSequence shortName = conversationNotifications.get(i).getGroup().getShortName();
-				message = TextUtils.concat(shortName, NAME_PREPEND_SEPARATOR, message);
-			}
-			inboxStyle.addLine(message);
-		}
 	}
 
 	private NotificationCompat.MessagingStyle getMessagingStyle(ConversationNotificationGroup group, ArrayList<ConversationNotification> notifications) {
@@ -897,17 +786,18 @@ public class NotificationServiceImpl implements NotificationService {
 		Person me = builder.build();
 
 		NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle(me);
-
 		messagingStyle.setConversationTitle(isGroupChat ? chatName : null);
 		messagingStyle.setGroupConversation(isGroupChat);
 
-		for(int i = notifications.size() < MAXIMUM_RETAINED_MESSAGES ? notifications.size() - 1 : MAXIMUM_RETAINED_MESSAGES -1 ;
-		    i >= 0; i-- ) {
+		List<NotificationCompat.MessagingStyle.Message> messages = new ArrayList<>();
 
-			CharSequence message = notifications.get(i).getMessage();
-			Date date = notifications.get(i).getWhen();
+		for (int i = 0; i < Math.min(notifications.size(), MAXIMUM_RETAINED_MESSAGES); i++) {
+			ConversationNotification notification = notifications.get(i);
 
-			Person person = notifications.get(i).getSenderPerson();
+			CharSequence messageText = notification.getMessage();
+			Date date = notification.getWhen();
+
+			Person person = notification.getSenderPerson();
 
 			// hack to show full name in non-group chats
 			if (!isGroupChat) {
@@ -920,13 +810,22 @@ public class NotificationServiceImpl implements NotificationService {
 				}
 			}
 
-			long created = 0;
+			long created = date == null ? 0 : date.getTime();
 
-			if (date != null) {
-				created = date.getTime();
+			NotificationCompat.MessagingStyle.Message message = new NotificationCompat.MessagingStyle.Message(messageText, created, person);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && notification.getThumbnailUri() != null && notification.getThumbnailMimeType() != null) {
+				message.setData(notification.getThumbnailMimeType(), notification.getThumbnailUri());
 			}
-			messagingStyle.addMessage(message, created, person);
+			messages.add(message);
 		}
+
+		Collections.reverse(messages);
+
+		for (NotificationCompat.MessagingStyle.Message message: messages) {
+			messagingStyle.addMessage(message);
+		}
+
 		return messagingStyle;
 	}
 
@@ -937,24 +836,7 @@ public class NotificationServiceImpl implements NotificationService {
 				notifications.add(notification);
 			}
 		}
-
 		return notifications;
-	}
-
-	private void addConversationNotificationPreviews(NotificationCompat.Builder builder, Bitmap latestThumbnail, CharSequence singleMessageText, String contentTitle, CharSequence message, int unreadMessagesCount) {
-		if (latestThumbnail != null && !latestThumbnail.isRecycled()) {
-			// add image preview
-			builder.setStyle(new NotificationCompat.BigPictureStyle()
-					.bigPicture(latestThumbnail)
-					.setSummaryText(message));
-		} else {
-			// add big text preview
-			if (unreadMessagesCount == 1) {
-				builder.setStyle(new NotificationCompat.BigTextStyle()
-						.bigText(singleMessageText)
-						.setBigContentTitle(contentTitle));
-			}
-		}
 	}
 
 	private void addConversationNotificationActions(NotificationCompat.Builder builder, PendingIntent replyPendingIntent, PendingIntent ackPendingIntent, PendingIntent markReadPendingIntent, ConversationNotification conversationNotification, int unreadMessagesCount, int unreadGroupsCount, String uniqueId, ConversationNotificationGroup newestGroup) {
@@ -962,32 +844,29 @@ public class NotificationServiceImpl implements NotificationService {
 		boolean showMarkAsReadAction = false;
 
 		if (preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
-			if (ConfigUtils.canDoGroupedNotifications()) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 				RemoteInput remoteInput = new RemoteInput.Builder(ThreemaApplication.EXTRA_VOICE_REPLY)
-						.setLabel(context.getString(R.string.compose_message_and_enter))
-						.build();
+					.setLabel(context.getString(R.string.compose_message_and_enter))
+					.build();
 
 				NotificationCompat.Action.Builder replyActionBuilder = new NotificationCompat.Action.Builder(
-						R.drawable.ic_reply_black_18dp, context.getString(R.string.wearable_reply), replyPendingIntent)
-						.addRemoteInput(remoteInput)
-						.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY);
+					R.drawable.ic_reply_black_18dp, context.getString(R.string.wearable_reply), replyPendingIntent)
+					.addRemoteInput(remoteInput)
+					.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY)
+					.setShowsUserInterface(false);
 
 				if (Build.VERSION.SDK_INT >= 29) {
 					replyActionBuilder.setAllowGeneratedReplies(!preferenceService.getDisableSmartReplies());
 				}
 
-				NotificationCompat.Action replyAction = replyActionBuilder.build();
-
-				builder.addAction(replyAction);
+				builder.addAction(replyActionBuilder.build());
 			}
-
 			if (newestGroup.getMessageReceiver() instanceof GroupMessageReceiver) {
 				if (unreadMessagesCount == 1) {
 					builder.addAction(getThumbsUpAction(ackPendingIntent));
 				}
 				showMarkAsReadAction = true;
 			} else if (newestGroup.getMessageReceiver() instanceof ContactMessageReceiver) {
-
 				if (conversationNotification.getMessageType().equals(MessageType.VOIP_STATUS))  {
 					// Create an intent for the call action
 					Intent callActivityIntent = new Intent(context, CallActivity.class);
@@ -997,17 +876,16 @@ public class NotificationServiceImpl implements NotificationService {
 					callActivityIntent.putExtra(EXTRA_CALL_ID, -1L);
 
 					PendingIntent callPendingIntent = PendingIntent.getActivity(
-							context,
-							getRandomRequestCode(), // http://stackoverflow.com/questions/19031861/pendingintent-not-opening-activity-in-android-4-3
-							callActivityIntent,
-							this.pendingIntentFlags);
-					if (unreadGroupsCount == 1 || ConfigUtils.canDoGroupedNotifications()) {
-						builder.addAction(
-							new NotificationCompat.Action.Builder(R.drawable.ic_call_white_24dp, context.getString(R.string.voip_return_call), callPendingIntent)
-								.setShowsUserInterface(true)
-								.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_CALL)
-								.build());
-					}
+						context,
+						getRandomRequestCode(), // http://stackoverflow.com/questions/19031861/pendingintent-not-opening-activity-in-android-4-3
+						callActivityIntent,
+						this.pendingIntentFlags);
+
+					builder.addAction(
+						new NotificationCompat.Action.Builder(R.drawable.ic_call_white_24dp, context.getString(R.string.voip_return_call), callPendingIntent)
+							.setShowsUserInterface(true)
+							.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_CALL)
+							.build());
 				} else {
 					if (unreadMessagesCount == 1) {
 						builder.addAction(getThumbsUpAction(ackPendingIntent));
@@ -1064,53 +942,13 @@ public class NotificationServiceImpl implements NotificationService {
 			.build();
 	}
 
-	private void createSingleNotification(ConversationNotificationGroup newestGroup,
-										 ConversationNotification newestNotification,
-										 PendingIntent openPendingIntent,
-										 PendingIntent ackPendingIntent,
-										 PendingIntent decPendingIntent,
-										 PendingIntent replyPendingIntent,
-										 PendingIntent markReadPendingIntent,
-										 long timestamp,
-										 Bitmap latestThumbnail,
-										 int numberOfUnreadMessagesForThisChat,
-										 String uniqueId) {
-
-		CharSequence messageText;
-		messageText = newestNotification.getMessage();
-		int conversationNotificationSize = this.conversationNotifications.size();
-		if (this.preferenceService.isShowMessagePreview()) {
-			messageText = newestNotification.getMessage();
-		} else {
-			ConfigUtils.getSafeQuantityString(context, R.plurals.new_messages, conversationNotificationSize, conversationNotificationSize);
-		}
-
-		// create a unified single notification for wearables and auto
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-				.setSmallIcon(R.drawable.ic_notification_small)
-				.setLargeIcon(newestGroup.getAvatar())
-				.setContentText(messageText)
-				.setWhen(timestamp)
-				.setContentTitle(newestGroup.getName())
-				.setContentIntent(openPendingIntent)
-				.setGroup(GROUP_KEY_MESSAGES)
-				.setGroupSummary(false)
-				.setCategory(NotificationCompat.CATEGORY_MESSAGE);
-
-		addWearableExtender(builder, newestGroup, ackPendingIntent, decPendingIntent, replyPendingIntent, markReadPendingIntent, timestamp, latestThumbnail, numberOfUnreadMessagesForThisChat, messageText, uniqueId);
-		notificationManagerCompat.notify(newestGroup.getNotificationId(), builder.build());
-	}
-
 	private void addWearableExtender(NotificationCompat.Builder builder,
 	                                 ConversationNotificationGroup newestGroup,
 	                                 PendingIntent ackPendingIntent,
 	                                 PendingIntent decPendingIntent,
 	                                 PendingIntent replyPendingIntent,
 	                                 PendingIntent markReadPendingIntent,
-	                                 long timestamp,
-	                                 Bitmap latestThumbnail,
 	                                 int numberOfUnreadMessagesForThisChat,
-	                                 CharSequence messageText,
 	                                 String uniqueId) {
 
 		String replyLabel = String.format(context.getString(R.string.wearable_reply_label), newestGroup.getName());
@@ -1119,68 +957,18 @@ public class NotificationServiceImpl implements NotificationService {
 				.setChoices(context.getResources().getStringArray(R.array.wearable_reply_choices))
 				.build();
 
-		int numMessages = this.conversationNotifications.size();
-		List<Notification> wearablePages = new ArrayList<>();
-
-		// Create an unread conversation object to organize a group of messages
-		// from a particular sender.
-		NotificationCompat.CarExtender.UnreadConversation.Builder unreadConvBuilder =
-				new NotificationCompat.CarExtender.UnreadConversation.Builder(newestGroup.getName())
-						.setReadPendingIntent(markReadPendingIntent)
-						.setReplyAction(replyPendingIntent, remoteInput)
-						.setLatestTimestamp(timestamp);
-
-		if (preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
-			String wearableSummaryText = "";
-
-			// Note: Add messages from oldest to newest to the UnreadConversation.Builder
-			for (int i = numMessages - 1; i >= 0; i--) {
-				if (conversationNotifications.get(i).getGroup() == newestGroup) {
-					CharSequence message = conversationNotifications.get(i).getMessage();
-
-					// auto
-					unreadConvBuilder.addMessage(message.toString());
-
-					// wearable
-					if (wearableSummaryText.length() > 0) {
-						wearableSummaryText += "\n\n";
-					}
-					wearableSummaryText += message;
-				}
-			}
-
-			// add pic if image message
-			if (latestThumbnail != null && !latestThumbnail.isRecycled()) {
-				NotificationCompat.Builder wearableBuilder = new NotificationCompat.Builder(context)
-								.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(latestThumbnail))
-								.extend(new NotificationCompat.WearableExtender().setHintShowBackgroundOnly(true));
-				wearablePages.add(wearableBuilder.build());
-			}
-
-			if (wearableSummaryText.length() > 0) {
-				NotificationCompat.BigTextStyle wearablePageStyle = new NotificationCompat.BigTextStyle();
-				wearablePageStyle.setBigContentTitle(newestGroup.getName())
-						.bigText(wearableSummaryText);
-				NotificationCompat.Builder wearableBuilder = new NotificationCompat.Builder(context)
-						.setStyle(wearablePageStyle);
-				wearablePages.add(wearableBuilder.build());
-			}
-		} else {
-			unreadConvBuilder.addMessage(messageText.toString());
-		}
-
 		NotificationCompat.Action.Builder replyActionBuilder =
 				new NotificationCompat.Action.Builder(R.drawable.ic_wear_full_reply,
 						context.getString(R.string.wearable_reply), replyPendingIntent)
 						.addRemoteInput(remoteInput)
-						.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY);
+						.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY)
+						.setShowsUserInterface(false);
 
 		NotificationCompat.Action.WearableExtender replyActionExtender =
 				new NotificationCompat.Action.WearableExtender()
 						.setHintDisplayActionInline(true);
 
 		NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender()
-				.addPages(wearablePages)
 				.addAction(replyActionBuilder.extend(replyActionExtender).build());
 
 		if (this.preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
@@ -1201,16 +989,16 @@ public class NotificationServiceImpl implements NotificationService {
 			}
 
 			NotificationCompat.Action markReadAction =
-					new NotificationCompat.Action.Builder(R.drawable.ic_mark_read,
-							context.getString(R.string.mark_read), markReadPendingIntent)
-							.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ)
-							.build();
+				new NotificationCompat.Action.Builder(R.drawable.ic_mark_read,
+					context.getString(R.string.mark_read), markReadPendingIntent)
+					.setShowsUserInterface(false)
+					.setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ)
+					.build();
 			wearableExtender.addAction(markReadAction);
 		}
 		builder.extend(wearableExtender);
 		builder.extend(new NotificationCompat.CarExtender()
 				.setLargeIcon(newestGroup.getAvatar())
-				.setUnreadConversation(unreadConvBuilder.build())
 				.setColor(context.getResources().getColor(R.color.md_theme_light_primary)));
 	}
 
@@ -1232,14 +1020,14 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public void cancelConversationNotification(final String... uids) {
+	public void cancelConversationNotification(@Nullable final String... uids) {
 		if (uids == null) {
 			logger.warn("Unique id array must not be null! Ignoring.");
 			return;
 		}
-		logger.info("Cancel {} conversation notifications", uids.length);
 		synchronized (this.conversationNotifications) {
-			for(final String uid: uids) {
+			logger.info("Cancel {} conversation notifications", uids.length);
+			for (final String uid: uids) {
 				ConversationNotification conversationNotification = Functional.select(this.conversationNotifications, new IPredicateNonNull<ConversationNotification>() {
 					@Override
 					public boolean apply(@NonNull ConversationNotification conversationNotification1) {
@@ -1247,26 +1035,18 @@ public class NotificationServiceImpl implements NotificationService {
 					}
 				});
 
-				if(conversationNotification != null) {
+				if (conversationNotification != null) {
 					logger.info("Cancel notification {}", uid);
-					conversationNotifications.remove(conversationNotification);
 					cancelAndDestroyConversationNotification(conversationNotification);
-
-					if (ConfigUtils.canDoGroupedNotifications()) {
-						notificationManagerCompat.cancel(conversationNotification.getGroup().getNotificationId());
-					}
 				} else {
 					logger.info("Notification {} not found", uid);
 				}
 			}
 
-			if (!ConfigUtils.canDoGroupedNotifications()) {
-				this.updateConversationNotifications();
-			} else {
-				showIconBadge(this.conversationNotifications.size());
-			}
+			showIconBadge(this.conversationNotifications.size());
+
 			// no unread conversations left. make sure PIN locked notification is canceled as well
-			if (this.conversationNotifications.size() == 0) {
+			if (this.conversationNotifications.isEmpty()) {
 				cancelPinLockedNewMessagesNotification();
 			}
 		}
@@ -1274,217 +1054,14 @@ public class NotificationServiceImpl implements NotificationService {
 		WidgetUtil.updateWidgets(context);
 	}
 
-	private void cancelAndDestroyConversationNotification(ConversationNotification conversationNotification) {
-		if(conversationNotification != null) {
-			logger.info("Cancel notification {}", conversationNotification.getUid());
-			//remove wearable
+	private void cancelAndDestroyConversationNotification(@Nullable ConversationNotification conversationNotification) {
+		if (conversationNotification == null) {
+			return;
+		}
+		synchronized (this.conversationNotifications) {
+			logger.info("Destroy notification {}", conversationNotification.getUid());
 			cancel(conversationNotification.getGroup().getNotificationId());
 			conversationNotification.destroy();
-		}
-	}
-
-	@Override
-	public void updateConversationNotifications() {
-		int unreadMessagesCount = 0;
-
-		if (!ConfigUtils.canDoGroupedNotifications()) {
-			updateConversationNotificationsPreN();
-		} else {
-
-			synchronized (this.conversationNotifications) {
-				cancelPinLockedNewMessagesNotification();
-
-				//check if more than one group in the notification
-				ConversationNotification newestNotification = null;
-				HashSet<ConversationNotificationGroup> uniqueNotificationGroups = new HashSet<>();
-
-				if (this.conversationNotifications.size() != 0) {
-					for (ConversationNotification notification : this.conversationNotifications) {
-						ConversationNotificationGroup group = notification.getGroup();
-						newestNotification = notification;
-						uniqueNotificationGroups.add(group);
-					}
-
-					if (newestNotification == null) {
-						logger.info("Aborting notification update");
-						return;
-					}
-
-					unreadMessagesCount = this.conversationNotifications.size();
-
-					if (!this.lockAppService.isLocked()) {
-						NotificationCompat.Builder builder;
-						String summaryText;
-						CharSequence singleMessageText;
-
-						for (ConversationNotificationGroup group : uniqueNotificationGroups) {
-
-							ArrayList<ConversationNotification> notifications = getConversationNotificationsForGroup(group);
-
-							if (notifications.size() > 0) {
-								ConversationNotification mostRecentNotification = notifications.get(notifications.size() - 1);
-								String uniqueId = group.getMessageReceiver().getUniqueIdString();
-
-								summaryText = ConfigUtils.getSafeQuantityString(context, R.plurals.new_messages, unreadMessagesCount, unreadMessagesCount);
-
-								if (this.preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
-									singleMessageText = mostRecentNotification.getMessage();
-								} else {
-									singleMessageText = summaryText;
-								}
-
-								NotificationCompat.Builder publicBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_CHAT_UPDATE)
-										.setContentTitle(summaryText)
-										.setContentText(context.getString(R.string.notification_hidden_text))
-										.setSmallIcon(R.drawable.ic_notification_small)
-										.setColor(context.getResources().getColor(R.color.md_theme_light_primary));
-
-								builder = new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_CHAT_UPDATE, null, publicBuilder)
-												.setContentTitle(group.getName())
-												.setContentText(singleMessageText)
-												.setSmallIcon(R.drawable.ic_notification_small)
-												.setLargeIcon(group.getAvatar())
-												.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
-												.setGroup(group.getGroupUid())
-												.setGroupSummary(false)
-												.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
-
-								if (this.preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId) && notifications.size() > 1) {
-									builder.setStyle(getMessagingStyle(group, notifications));
-								}
-
-								Intent notificationIntent = new Intent(context, ComposeMessageActivity.class);
-								group.getMessageReceiver().prepareIntent(notificationIntent);
-								notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-								PendingIntent pendingIntent = createPendingIntentWithTaskStack(notificationIntent);
-								builder.setContentIntent(pendingIntent);
-
-								try {
-									notificationManagerCompat.notify(group.getNotificationId(), builder.build());
-								} catch (RuntimeException e) {
-									logger.error("Exception", e);
-								}
-							}
-						}
-						logger.info("Updating notification {}", newestNotification.getUid());
-					}
-				} else {
-					this.cancelAllCachedConversationNotifications();
-				}
-				showIconBadge(unreadMessagesCount);
-			}
-		}
-
-		// update widgets
-		WidgetUtil.updateWidgets(context);
-	}
-
-	private void updateConversationNotificationsPreN() {
-		int unreadMessagesCount = 0;
-
-		synchronized (this.conversationNotifications) {
-			cancelPinLockedNewMessagesNotification();
-
-			//check if more than one group in the notification
-			ConversationNotificationGroup newestGroup = null;
-			ConversationNotification newestNotification = null;
-			Map<String, ConversationNotificationGroup> uniqueNotificationGroups = new HashMap<>();
-			if (this.conversationNotifications.size() != 0) {
-				for (ConversationNotification notification : this.conversationNotifications) {
-					ConversationNotificationGroup group = notification.getGroup();
-					newestGroup = group;
-					newestNotification = notification;
-					uniqueNotificationGroups.put(group.getGroupUid(), group);
-				}
-
-				if (newestNotification == null) {
-					logger.info("Aborting notification update");
-					showIconBadge(0);
-					return;
-				}
-
-				final String latestFullName = newestGroup.getName();
-				unreadMessagesCount = this.conversationNotifications.size();
-				int unreadConversationsCount = uniqueNotificationGroups.size();
-
-				if (!this.lockAppService.isLocked()) {
-					String summaryText = unreadMessagesCount > 1 && unreadConversationsCount > 1
-						? ConfigUtils.getSafeQuantityString(context, R.plurals.new_messages_in_chats, unreadMessagesCount, unreadMessagesCount, unreadConversationsCount)
-						: ConfigUtils.getSafeQuantityString(context, R.plurals.new_messages, unreadMessagesCount, unreadMessagesCount);
-					CharSequence singleMessageText;
-					String contentTitle;
-					Intent notificationIntent;
-					Bitmap avatar;
-					NotificationCompat.InboxStyle inboxStyle = null;
-
-					/* set avatar, intent and contentTitle */
-					if (unreadConversationsCount > 1) {
-						/* notification is for more than one chat */
-						//HACK
-						avatar = getConversationNotificationAvatar();
-						notificationIntent = new Intent(context, HomeActivity.class);
-						contentTitle = context.getString(R.string.app_name);
-					} else {
-						/* notification is for single chat */
-						avatar = newestGroup.getAvatar();
-						notificationIntent = new Intent(context, ComposeMessageActivity.class);
-						newestGroup.getMessageReceiver().prepareIntent(notificationIntent);
-						contentTitle = latestFullName;
-					}
-
-					/* fix for <4.1 - keeps android from re-using existing intent and stripping extras */
-					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-					if (this.preferenceService.isShowMessagePreview()) {
-						inboxStyle = new NotificationCompat.InboxStyle();
-
-						getInboxStyle(inboxStyle, unreadConversationsCount);
-
-						inboxStyle.setBigContentTitle(contentTitle);
-						inboxStyle.setSummaryText(summaryText);
-
-						singleMessageText = newestNotification.getMessage();
-					} else {
-						singleMessageText = summaryText;
-					}
-
-					PendingIntent pendingIntent = createPendingIntentWithTaskStack(notificationIntent);
-
-					// update summary notification
-					NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-									.setContentTitle(contentTitle)
-									.setContentText(unreadMessagesCount > 1 ? summaryText : singleMessageText)
-									.setLargeIcon(avatar)
-									.setColor(context.getResources().getColor(R.color.md_theme_light_primary))
-									.setNumber(unreadMessagesCount)
-									.setGroup(GROUP_KEY_MESSAGES)
-									.setOnlyAlertOnce(false);
-
-					int smallIcon = getSmallIconResource(unreadConversationsCount);
-					if (smallIcon > 0) {
-						builder.setSmallIcon(smallIcon);
-					}
-
-					// https://code.google.com/p/android/issues/detail?id=219876
-					builder.setGroupSummary(true);
-
-					if (unreadMessagesCount > 1 && inboxStyle != null) {
-						builder.setStyle(inboxStyle);
-					}
-
-					builder.setContentIntent(pendingIntent);
-					NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-					notificationManager.notify(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID, builder.build());
-
-					logger.info("Updating notification {}", newestNotification.getUid());
-				}
-			} else {
-				//cancel all
-				this.cancel(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID);
-			}
-
-			// update widgets
-			showIconBadge(unreadMessagesCount);
 		}
 	}
 
@@ -1532,15 +1109,6 @@ public class NotificationServiceImpl implements NotificationService {
 		return notificationSchema;
 	}
 
-	private Bitmap getConversationNotificationAvatar() {
-		/* notification is for more than one chat */
-		return BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_notification_multi_color);
-	}
-
-	private int getSmallIconResource(int unreadConversationsCount) {
-		return unreadConversationsCount > 1 ? R.drawable.ic_notification_multi : R.drawable.ic_notification_small;
-	}
-
 	@Override
 	public void cancel(ConversationModel conversationModel) {
 		if(conversationModel != null) {
@@ -1552,24 +1120,9 @@ public class NotificationServiceImpl implements NotificationService {
 	public void cancel(final MessageReceiver receiver) {
 		if(receiver != null) {
 			int id = receiver.getUniqueId();
-			if (id != 0) {
-				this.cancel(id);
-			}
+			String uniqueIdString = receiver.getUniqueIdString();
 
-			//remove all cached notifications from the receiver
-			synchronized (this.conversationNotifications) {
-				for (Iterator<ConversationNotification> iterator = this.conversationNotifications.iterator(); iterator.hasNext(); ) {
-					ConversationNotification conversationNotification = iterator.next();
-					if (conversationNotification != null
-							&& conversationNotification.getGroup() != null
-							&& conversationNotification.getGroup().getMessageReceiver().isEqual(receiver)) {
-						iterator.remove();
-						//call destroy
-						this.cancelAndDestroyConversationNotification(conversationNotification);
-					}
-				}
-				showIconBadge(conversationNotifications.size());
-			}
+			this.cancel(id, uniqueIdString);
 		}
 		this.cancel(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID);
 	}
@@ -1726,37 +1279,6 @@ public class NotificationServiceImpl implements NotificationService {
 					.setAutoCancel(true);
 
 		this.notify(ThreemaApplication.SERVER_MESSAGE_NOTIFICATION_ID, builder, null, NOTIFICATION_CHANNEL_NOTICE);
-	}
-
-	@Override
-	public void cancelServerMessage() {
-		this.cancel(ThreemaApplication.SERVER_MESSAGE_NOTIFICATION_ID);
-	}
-
-	@Override
-	public void showNotEnoughDiskSpace(long availableSpace, long requiredSpace) {
-		logger.warn("Not enough diskspace. Available: {} required: {}", availableSpace, requiredSpace);
-
-		String text = this.context.getString(R.string.not_enough_disk_space_text,
-				Formatter.formatFileSize(this.context, requiredSpace));
-
-		NotificationCompat.Builder builder =
-			new NotificationBuilderWrapper(context, NOTIFICATION_CHANNEL_ALERT, null)
-					.setSmallIcon(R.drawable.ic_notification_small)
-					.setTicker(this.context.getString(R.string.not_enough_disk_space_title))
-					.setPriority(NotificationCompat.PRIORITY_MAX)
-					.setContentTitle(this.context.getString(R.string.not_enough_disk_space_title))
-					.setLocalOnly(true)
-					.setContentText(text)
-					.setStyle(new NotificationCompat.BigTextStyle().bigText(text));
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-			Intent cleanupIntent = new Intent(StorageManager.ACTION_MANAGE_STORAGE);
-			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, cleanupIntent, PENDING_INTENT_FLAG_IMMUTABLE);
-			builder.addAction(R.drawable.ic_sd_card_black_24dp, context.getString(R.string.check_now), pendingIntent);
-		}
-
-		this.notify(ThreemaApplication.NOT_ENOUGH_DISK_SPACE_NOTIFICATION_ID, builder, null, NOTIFICATION_CHANNEL_ALERT);
 	}
 
 	private PendingIntent createPendingIntentWithTaskStack(Intent intent) {
@@ -1958,6 +1480,41 @@ public class NotificationServiceImpl implements NotificationService {
 		notificationManager.cancel(id);
 	}
 
+	@Override
+	public void cancel(@NonNull String identity) {
+		if (contactService == null) {
+			logger.warn("Cannot cancel notification because contact service is null");
+			return;
+		}
+
+		int uniqueId = contactService.getUniqueId(identity);
+		String uniqueIdString = contactService.getUniqueIdString(identity);
+
+		this.cancel(uniqueId, uniqueIdString);
+	}
+
+	private void cancel(int uniqueId, @Nullable String uniqueIdString) {
+		if (uniqueId != 0) {
+			this.cancel(uniqueId);
+		}
+
+		//remove all cached notifications from the receiver
+		synchronized (this.conversationNotifications) {
+			for (Iterator<ConversationNotification> iterator = this.conversationNotifications.iterator(); iterator.hasNext(); ) {
+				ConversationNotification conversationNotification = iterator.next();
+				if (conversationNotification != null
+					&& conversationNotification.getGroup() != null
+					&& conversationNotification.getGroup().getMessageReceiver().getUniqueIdString().equals(uniqueIdString)) {
+					iterator.remove();
+					//call destroy
+					this.cancelAndDestroyConversationNotification(conversationNotification);
+				}
+			}
+			showIconBadge(conversationNotifications.size());
+		}
+		this.cancel(ThreemaApplication.NEW_MESSAGE_NOTIFICATION_ID);
+	}
+
 	private int getColorValue(String colorString) {
 		int[] colorsHex = context.getResources().getIntArray(R.array.list_light_color_hex);
 		if (colorString != null && colorString.length() > 0) {
@@ -2064,11 +1621,6 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public void cancelRestoreNotification() {
 		cancel(RESTORE_COMPLETION_NOTIFICATION_ID);
-	}
-
-	@Override
-	public void resetConversationNotifications(){
-		conversationNotifications.clear();
 	}
 
 	@Override

@@ -306,6 +306,8 @@
     <string name="state_dialog_created">Criado(s)</string>
     <string name="state_dialog_posted">Enviado(s)</string>
     <string name="state_dialog_modified">Atualizado(s)</string>
+    <string name="state_dialog_edited">Editado</string>
+    <string name="state_dialog_deleted">Excluído</string>
     <string name="state_dialog_status">Status</string>
     <string name="title_tab_recent">Recente(s)</string>
     <string name="no_recent_conversations">Nenhuma conversa encontrada</string>
@@ -742,6 +744,9 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="data_backup_explain">Backups de dados contêm:\n\n&#9679; Seu ID e seu par de chaves\n&#9679; Contatos e níveis de confiança\n&#9679; Associações de grupo\n&#9679; Conversas\n&#9679; Arquivos e mídia (opcional)\n\nOs dados serão salvos em um arquivo ZIP criptografado. É recomendado mover o arquivo para fora do aparelho após o backup ter sido concluído com sucesso.</string>
     <string name="draw">Desenhar</string>
     <string name="edit">Editar</string>
+    <string name="edit_message">Editar mensagem</string>
+    <string name="edited">Editado</string>
+    <string name="confirm_edit_desc">Confirmar edição</string>
     <string name="discard_changes">Gostaria de descartar as alterações?</string>
     <string name="prefs_title_network">Rede</string>
     <string name="prefs_title_ipv6_preferred">IPv6 para mensagens</string>
@@ -1013,6 +1018,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="system_default">Padrão do sistema</string>
     <string name="open_in_maps_app">Abrir no Maps</string>
     <string name="delete">Excluir</string>
+    <string name="delete_for_all">Excluir para todos</string>
+    <string name="message_was_deleted">Mensagem apagada</string>
     <string name="continue_recording">Continuar gravação</string>
     <string name="whatsnew_title">Quais são as novidades no %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
@@ -1538,6 +1545,11 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="media_gallery_animated_webps">WebPs animados</string>
     <string name="unsupported_image_type">Tipo de imagem não suportado: %s</string>
     <string name="application_setup_steps_failed">É necessário ter uma conexão de internet ativa para verificar o estado dos seus contatos. Confirme que você está conectado(a) com a internet e tente novamente.</string>
+    <string name="add_contact_failed">Falha ao adicionar contato</string>
+    <string name="edit_message_not_supported_for_contact">Não é possível editar a mensagem porque a versão do aplicativo do destinatário não suporta este recurso.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Os seguintes membros do grupo não poderão ver suas edições: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Não é possível editar a mensagem porque nenhum membro do grupo possui uma versão do aplicativo que suporte esse recurso.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Esta mensagem não será excluída para os seguintes membros do grupo: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>
@@ -1623,8 +1635,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
         <item quantity="other">%d mensagens foram perdidas desde a última mensagem.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="one">Excluir %d mensagem neste dispositivo?</item>
-        <item quantity="other">Excluir %d mensagens neste dispositivo?</item>
+        <item quantity="one">Excluir %d mensagem?</item>
+        <item quantity="other">Excluir %d mensagens?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="one">%d membro do grupo</item>

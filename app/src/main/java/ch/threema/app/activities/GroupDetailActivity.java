@@ -32,6 +32,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -221,17 +222,20 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
-		public void onModified(ContactModel modifiedContactModel) {
-			resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
+		public void onModified(final @NonNull String identity) {
+			if (this.shouldHandleChange(identity)) {
+				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
+			}
 		}
 
 		@Override
 		public void onAvatarChanged(ContactModel contactModel) {
-			this.onModified(contactModel);
+			if (this.shouldHandleChange(contactModel.getIdentity())) {
+				this.onModified(contactModel.getIdentity());
+			}
 		}
 
-		@Override
-		public boolean handle(String identity) {
+		private boolean shouldHandleChange(@NonNull String identity) {
 			return groupDetailViewModel.containsModel(identity);
 		}
 	};
@@ -1076,12 +1080,49 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 
 		if (this.groupService.isGroupCreator(this.groupModel) && hasChanges()) {
-			this.floatingActionButton.show();
+			this.floatingActionButton.show(new ExtendedFloatingActionButton.OnChangedCallback() {
+				@Override
+				public void onShown(ExtendedFloatingActionButton extendedFab) {
+					super.onShown(extendedFab);
+					adjustEditTextLocation(true);
+				}
+			});
 		} else {
-			this.floatingActionButton.hide();
+			this.floatingActionButton.hide(new ExtendedFloatingActionButton.OnChangedCallback() {
+				@Override
+				public void onHidden(ExtendedFloatingActionButton extendedFab) {
+					super.onHidden(extendedFab);
+					adjustEditTextLocation(false);
+				}
+			});
 		}
-
 		invalidateOptionsMenu();
+	}
+
+	synchronized private void adjustEditTextLocation(boolean show) {
+		floatingActionButton.post(() -> {
+            // check if FAB overlaps the group name
+            if (show) {
+                int[] editTextLocation = new int[2];
+                int[] fabLocation = new int[2];
+
+                groupNameEditText.getLocationInWindow(editTextLocation);
+                floatingActionButton.getLocationInWindow(fabLocation);
+
+                Rect editTextRect = new Rect(editTextLocation[0], editTextLocation[1],
+                    editTextLocation[0] + groupNameEditText.getMeasuredWidth(), editTextLocation[1] + groupNameEditText.getMeasuredHeight());
+                Rect fabRect = new Rect(fabLocation[0], fabLocation[1],
+                    fabLocation[0] + floatingActionButton.getMeasuredWidth(), fabLocation[1] + floatingActionButton.getMeasuredHeight());
+
+                if (editTextRect.intersect(fabRect)) {
+                    // place above fab
+                    groupNameEditText.setTranslationY((float) fabRect.top - editTextRect.bottom - getResources().getDimensionPixelSize(R.dimen.floating_button_margin));
+                }
+            }
+            else {
+                groupNameEditText.setTranslationY(0F);
+            }
+        });
 	}
 
 	private void navigateHome() {

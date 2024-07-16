@@ -23,15 +23,14 @@ package ch.threema.app.managers;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.slf4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
@@ -45,10 +44,9 @@ import ch.threema.app.emojis.EmojiService;
 import ch.threema.app.emojis.search.EmojiSearchIndex;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.NoIdentityException;
+import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.multidevice.linking.DeviceJoinDataCollector;
 import ch.threema.app.processors.IncomingMessageProcessorImpl;
-import ch.threema.app.multidevice.MultiDeviceManager;
-import ch.threema.app.multidevice.MultiDeviceManagerImpl;
 import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ApiServiceImpl;
@@ -127,12 +125,10 @@ import ch.threema.app.stores.AuthTokenStore;
 import ch.threema.app.stores.DatabaseContactStore;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.stores.PreferenceStoreInterface;
-import ch.threema.app.tasks.TaskArchiverImpl;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.DeviceCookieManagerImpl;
 import ch.threema.app.utils.DeviceIdUtil;
 import ch.threema.app.utils.ForwardSecurityStatusSender;
 import ch.threema.app.utils.LazyProperty;
@@ -148,20 +144,17 @@ import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.SymmetricEncryptionService;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.Version;
+import ch.threema.data.repositories.ModelRepositories;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.connection.ConvertibleServerConnection;
 import ch.threema.domain.protocol.connection.ServerConnection;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.stores.DHSessionStoreInterface;
-import ch.threema.domain.taskmanager.TaskArchiver;
-import ch.threema.domain.taskmanager.IncomingMessageProcessor;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
+import ch.threema.domain.taskmanager.IncomingMessageProcessor;
 import ch.threema.domain.taskmanager.TaskManager;
-import ch.threema.domain.taskmanager.TaskManagerConfiguration;
-import ch.threema.domain.taskmanager.TaskManagerProvider;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.DatabaseNonceStore;
@@ -173,17 +166,13 @@ public class ServiceManager {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ServiceManager");
 
 	@NonNull
-	private final Version version;
+	private final CoreServiceManager coreServiceManager;
 	@NonNull
 	private final Supplier<Boolean> isIpv6Preferred;
-	@Nullable
-	private DeviceCookieManager deviceCookieManager;
 	@NonNull
 	private final IdentityStore identityStore;
 	@NonNull
 	private final MasterKey masterKey;
-	@NonNull
-	private final PreferenceStoreInterface preferenceStore;
 	@NonNull
 	private final UpdateSystemService updateSystemService;
 	@NonNull
@@ -265,6 +254,8 @@ public class ServiceManager {
 	private BackupChatService backupChatService;
 	@NonNull
 	private final DatabaseServiceNew databaseServiceNew;
+	@NonNull
+	private final ModelRepositories modelRepositories;
 	@Nullable
 	private SensorService sensorService;
 	@Nullable
@@ -297,46 +288,40 @@ public class ServiceManager {
 	@Nullable
 	private NonceFactory nonceFactory;
 
-	@NonNull
-	private final TaskManager taskManager;
-
 	@Nullable
 	private TaskCreator taskCreator;
 
 	@Nullable
-	TaskArchiver taskArchiver;
-
-	@Nullable
-	private MultiDeviceManager multiDeviceManager;
+	private DeviceJoinDataCollector deviceJoinDataCollector;
 
 	@NonNull
 	private final ConvertibleServerConnection connection;
 	@NonNull
 	private final LazyProperty<OkHttpClient> okHttpClient = new LazyProperty<>(this::createOkHttpClient);
 
-	// TODO(ANDR-2604): Use this wherever server messages are used
-	@NonNull
-	private final LazyProperty<ServerMessageService> serverMessageService = new LazyProperty<>(this::createServerMessageService);
-
 	public ServiceManager(
-		@NonNull Version version,
-		@NonNull DatabaseServiceNew databaseServiceNew,
+		@NonNull ModelRepositories modelRepositories,
 		@NonNull DHSessionStoreInterface dhSessionStore,
 		@NonNull IdentityStore identityStore,
-		@NonNull PreferenceStoreInterface preferenceStore,
 		@NonNull MasterKey masterKey,
-		@NonNull UpdateSystemService updateSystemService) throws ThreemaException {
+		@NonNull CoreServiceManager coreServiceManager,
+		@NonNull UpdateSystemService updateSystemService
+	) throws ThreemaException {
 		this.cacheService = new CacheService();
-		this.version = version;
-		this.preferenceStore = preferenceStore;
+		this.coreServiceManager = coreServiceManager;
 		this.isIpv6Preferred = new LazyProperty<>(() -> getPreferenceService().isIpv6Preferred());
 		this.identityStore = identityStore;
 		this.masterKey = masterKey;
-		this.databaseServiceNew = databaseServiceNew;
+		this.databaseServiceNew = coreServiceManager.getDatabaseService();
+		this.modelRepositories = modelRepositories;
 		this.dhSessionStore = dhSessionStore;
 		this.updateSystemService = updateSystemService;
-		this.taskManager = TaskManagerProvider.getTaskManager(getTaskManagerConfiguration());
+		// Finalize initialization of task archiver and device cookie manager before the connection
+		// is created.
+		coreServiceManager.getTaskArchiver().setServiceManager(this);
+		coreServiceManager.getDeviceCookieManager().setNotificationService(getNotificationService());
 		this.connection = createServerConnection();
+		coreServiceManager.getMultiDeviceManager().setReconnectHandle(connection);
 	}
 
 	@NonNull
@@ -405,7 +390,7 @@ public class ServiceManager {
 
 	@NonNull
 	public PreferenceStoreInterface getPreferenceStore() {
-		return preferenceStore;
+		return coreServiceManager.getPreferenceStore();
 	}
 
 	/**
@@ -439,7 +424,7 @@ public class ServiceManager {
 			try {
 				this.userService = new UserServiceImpl(
 						this.getContext(),
-						this.preferenceStore,
+						this.coreServiceManager.getPreferenceStore(),
 						this.getLocaleService(),
 						this.getAPIConnector(),
 						this.getIdentityStore(),
@@ -454,33 +439,32 @@ public class ServiceManager {
 		return this.userService;
 	}
 
-	@NonNull
-	public ContactService getContactService() throws MasterKeyLockedException, FileSystemNotPresentException {
+	public @NonNull ContactService getContactService() throws MasterKeyLockedException, FileSystemNotPresentException {
 		if (this.contactService == null) {
 			if(this.masterKey.isLocked()) {
 				throw new MasterKeyLockedException("master key is locked");
 			}
 			this.contactService = new ContactServiceImpl(
-					this.getContext(),
-					this.getContactStore(),
-					this.getAvatarCacheService(),
-					this.databaseServiceNew,
-					this.getDeviceService(),
-					this.getUserService(),
-					this.getNonceFactory(),
-					this.getIdentityStore(),
-					this.getPreferenceService(),
-					this.getBlackListService(),
-					this.getProfilePicRecipientsService(),
-					this.getRingtoneService(),
-					this.getMutedChatsListService(),
-					this.getHiddenChatsListService(),
-					this.getFileService(),
-					this.cacheService,
-					this.getApiService(),
-					this.getWallpaperService(),
-					this.getLicenseService(),
-					this.getAPIConnector()
+				this.getContext(),
+				this.getContactStore(),
+				this.getAvatarCacheService(),
+				this.databaseServiceNew,
+				this.getDeviceService(),
+				this.getUserService(),
+				this.getIdentityStore(),
+				this.getPreferenceService(),
+				this.getBlackListService(),
+				this.getProfilePicRecipientsService(),
+				this.getRingtoneService(),
+				this.getMutedChatsListService(),
+				this.getHiddenChatsListService(),
+				this.getFileService(),
+				this.cacheService,
+				this.getApiService(),
+				this.getWallpaperService(),
+				this.getLicenseService(),
+				this.getAPIConnector(),
+				this.getModelRepositories().getContacts()
 			);
 		}
 
@@ -517,7 +501,7 @@ public class ServiceManager {
 		if (this.preferencesService == null) {
 			this.preferencesService = new PreferenceServiceImpl(
 					this.getContext(),
-					this.preferenceStore
+					this.coreServiceManager.getPreferenceStore()
 			);
 		}
 		return this.preferencesService;
@@ -823,19 +807,20 @@ public class ServiceManager {
 	public SynchronizeContactsService getSynchronizeContactsService() throws MasterKeyLockedException, FileSystemNotPresentException {
 		if(this.synchronizeContactsService == null) {
 			this.synchronizeContactsService = new SynchronizeContactsServiceImpl(
-					this.getContext(),
-					this.getAPIConnector(),
-					this.getContactService(),
-					this.getUserService(),
-					this.getLocaleService(),
-					this.getExcludedSyncIdentitiesService(),
-					this.getPreferenceService(),
-					this.getDeviceService(),
-					this.getFileService(),
-					this.getIdentityStore(),
-					this.getBlackListService(),
-					this.getLicenseService(),
-					this.getApiService()
+				this.getContext(),
+				this.getAPIConnector(),
+				this.getContactService(),
+				this.getModelRepositories().getContacts(),
+				this.getUserService(),
+				this.getLocaleService(),
+				this.getExcludedSyncIdentitiesService(),
+				this.getPreferenceService(),
+				this.getDeviceService(),
+				this.getFileService(),
+				this.getIdentityStore(),
+				this.getBlackListService(),
+				this.getLicenseService(),
+				this.getApiService()
 			);
 		}
 
@@ -957,6 +942,7 @@ public class ServiceManager {
 				this.getProfilePicRecipientsService(),
 				this.getDatabaseServiceNew(),
 				this.getIdentityStore(),
+				this.getApiService(),
 				this.getAPIConnector(),
 				this.getHiddenChatsListService(),
 				this.getServerAddressProviderService().getServerAddressProvider(),
@@ -1081,6 +1067,11 @@ public class ServiceManager {
 	}
 
 	@NonNull
+	public ModelRepositories getModelRepositories() {
+		return this.modelRepositories;
+	}
+
+	@NonNull
 	public DHSessionStoreInterface getDHSessionStore() {
 		return this.dhSessionStore;
 	}
@@ -1187,7 +1178,7 @@ public class ServiceManager {
 	}
 
 	public @NonNull TaskManager getTaskManager() {
-		return this.taskManager;
+		return this.coreServiceManager.getTaskManager();
 	}
 
 	public @NonNull TaskCreator getTaskCreator() {
@@ -1197,28 +1188,18 @@ public class ServiceManager {
 		return this.taskCreator;
 	}
 
-	public @NonNull TaskArchiver getTaskArchiver() {
-		if (this.taskArchiver == null) {
-			this.taskArchiver = new TaskArchiverImpl(this);
-		}
-		return this.taskArchiver;
+	@NonNull
+	public MultiDeviceManager getMultiDeviceManager() {
+		return this.coreServiceManager.getMultiDeviceManager();
 	}
 
 	@NonNull
-	public MultiDeviceManager getMultiDeviceManager() {
-		if (multiDeviceManager == null) {
-			DeviceJoinDataCollector dataCollector = new DeviceJoinDataCollector(this);
-			multiDeviceManager = new MultiDeviceManagerImpl(
-				// Due to a circular dependency `connection` is not initialized at this point
-				// we use a proxying lambda function.
-				this::reconnectConnection,
-				getPreferenceStore(),
-				serverMessageService.get(),
-				version,
-				dataCollector
-			);
+	public DeviceJoinDataCollector getDeviceJoinDataCollector() {
+		if (deviceJoinDataCollector == null) {
+			deviceJoinDataCollector = new DeviceJoinDataCollector(this);
+			return deviceJoinDataCollector;
 		}
-		return multiDeviceManager;
+		return deviceJoinDataCollector;
 	}
 
 	/**
@@ -1235,24 +1216,16 @@ public class ServiceManager {
 		return getTaskManager().getMigrationTaskHandle();
 	}
 
-	private @NonNull TaskManagerConfiguration getTaskManagerConfiguration() throws ThreemaException {
-		return new TaskManagerConfiguration(
-			getIncomingMessageProcessor(),
-			this::getTaskArchiver,
-			getDeviceCookieManager(),
-			ConfigUtils.isDevBuild()
-		);
-	}
-
 	@NonNull
-	private ConvertibleServerConnection createServerConnection() {
+	private ConvertibleServerConnection createServerConnection() throws ThreemaException {
 		Supplier<ServerConnection> connectionSupplier = new CspD2mDualConnectionSupplier(
 			getMultiDeviceManager(),
+			getIncomingMessageProcessor(),
 			getTaskManager(),
 			getDeviceCookieManager(),
 			getServerAddressProviderService(),
 			getIdentityStore(),
-			version,
+			coreServiceManager.getVersion(),
 			isIpv6Preferred.get(),
 			okHttpClient,
 			ConfigUtils.isDevBuild()
@@ -1262,10 +1235,7 @@ public class ServiceManager {
 
 	@NonNull
 	public DeviceCookieManager getDeviceCookieManager() {
-		if (deviceCookieManager == null) {
-			deviceCookieManager = new DeviceCookieManagerImpl(this);
-		}
-		return deviceCookieManager;
+		return coreServiceManager.getDeviceCookieManager();
 	}
 
 	@NonNull

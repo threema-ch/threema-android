@@ -133,6 +133,10 @@ public class MessageRequestHandler extends MessageReceiver {
 				messages.remove(messages.size()-1);
 			}
 
+			if(messages != null) {
+				messages.removeIf(AbstractMessageModel::isDeleted);
+			}
+
 			// Convert and send messages
 			List<MsgpackBuilder> data = Message.convert(messages, receiver, true);
 			logger.debug("Sending message response");

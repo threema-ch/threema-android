@@ -24,6 +24,7 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,15 +41,20 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.tasks.OutgoingFileMessageTask;
+import ch.threema.app.tasks.OutgoingGroupDeleteMessageTask;
+import ch.threema.app.tasks.OutgoingGroupEditMessageTask;
 import ch.threema.app.tasks.OutgoingLocationMessageTask;
 import ch.threema.app.tasks.OutgoingPollSetupMessageTask;
 import ch.threema.app.tasks.OutgoingPollVoteGroupMessageTask;
 import ch.threema.app.tasks.OutgoingTextMessageTask;
+import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.MessageId;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
@@ -276,6 +283,33 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 			group.getCreatorIdentity(),
 			serviceManager
 		));
+	}
+
+	public void sendEditMessage(int messageId, @NonNull String body, @NonNull Date editedAt) {
+		taskManager.schedule(
+			new OutgoingGroupEditMessageTask(
+				messageId,
+				body,
+				editedAt,
+				GroupUtil.getRecipientIdentitiesByFeatureSupport(
+					groupService.getFeatureSupport(group, ThreemaFeature.EDIT_MESSAGES)
+				),
+				serviceManager
+			)
+		);
+	}
+
+	public void sendDeleteMessage(int messageId, @NonNull Date deletedAt) {
+		taskManager.schedule(
+			new OutgoingGroupDeleteMessageTask(
+				messageId,
+				deletedAt,
+				GroupUtil.getRecipientIdentitiesByFeatureSupport(
+					groupService.getFeatureSupport(group, ThreemaFeature.DELETE_MESSAGES)
+				),
+				serviceManager
+			)
+		);
 	}
 
 	@Override

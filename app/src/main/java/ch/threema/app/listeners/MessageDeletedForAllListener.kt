@@ -19,18 +19,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app
+package ch.threema.app.listeners
 
-import kotlin.random.Random
+import ch.threema.storage.models.AbstractMessageModel
 
-class UnitTestHelpers {
-    /**
-     * Generate an array of length `length` and fill it using a non-cryptographically-secure
-     * random number generator.
-     *
-     * (This is fine since it's only a test util.)
-     */
-    fun nonSecureRandomArray(length: Int): ByteArray {
-        return Random.nextBytes(length)
-    }
+interface MessageDeletedForAllListener {
+    fun onDeletedForAll(message: AbstractMessageModel)
 }

@@ -63,11 +63,11 @@ public class VerificationLevelImageView extends androidx.appcompat.widget.AppCom
 	/**
 	 * takes a ContactModel and gets the according verificationlevel description.
 	 * The ContactModel input contains a contacts' attributes name, publicKey etc.
-	 * @param ContactModel contactModel 
+	 * @param ContactModel contactModel
 	 * @return String defined text in strings.xml for the according verification level
 	 */
 	private @NonNull String getVerificationLevelDescription(@NonNull ContactModel contactModel) {
-		switch (contactModel.getVerificationLevel()) {
+		switch (contactModel.verificationLevel) {
 			case FULLY_VERIFIED:
 				if (ConfigUtils.isWorkBuild() && contactModel.isWork()) {
 					return context.getString(R.string.verification_level3_work_explain);

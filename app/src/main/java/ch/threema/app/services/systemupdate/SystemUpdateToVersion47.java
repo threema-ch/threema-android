@@ -44,9 +44,9 @@ public class SystemUpdateToVersion47 implements UpdateSystemService.SystemUpdate
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_DATE_CREATED)) {
+		if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_CREATED_AT)) {
 			sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
-					+ " ADD COLUMN " + ContactModel.COLUMN_DATE_CREATED + " BIGINT DEFAULT 0");
+					+ " ADD COLUMN " + ContactModel.COLUMN_CREATED_AT + " BIGINT DEFAULT 0");
 		}
 		return true;
 	}

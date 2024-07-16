@@ -218,7 +218,12 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
                     val ballotModel = ballotService.get(messageModel.ballotData.ballotId)
                     if (messageModel.ballotData.type == BallotDataModel.Type.BALLOT_CLOSED) {
                         logger.info("Removing ballot message {}", messageModel.apiMessageId ?: messageModel.id)
-                        ballotService.remove(ballotModel)
+                        if (ballotModel != null) {
+                            ballotService.remove(ballotModel)
+                        } else {
+                            // associated BallotModel has already been deleted - just remove the remaining message
+                            messageService.remove(messageModel, false)
+                        }
                         numDeletedMessages++
                     } else {
                         logger.info("Skipping ballot message {} of type {}.", messageModel.apiMessageId ?: messageModel.id, messageModel.ballotData.type)

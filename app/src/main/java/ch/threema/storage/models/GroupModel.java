@@ -58,6 +58,7 @@ public class GroupModel implements ReceiverModel {
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this group has been archived by user */
 	public static final String COLUMN_GROUP_DESC = "groupDesc";
 	public static final String COLUMN_GROUP_DESC_CHANGED_TIMESTAMP = "changedGroupDescTimestamp";
+	public static final String COLUMN_COLOR_INDEX = "colorIndex";
 
 	private String groupDesc;
 	private Date changedGroupDescTimestamp;
@@ -164,6 +165,18 @@ public class GroupModel implements ReceiverModel {
 	public boolean isHidden() {
 		// Groups can't currently be hidden from the conversation list
 		return false;
+	}
+
+	public int getColorIndex() {
+		if (colorIndex < 0) {
+			computeColorIndex();
+		}
+		return colorIndex;
+	}
+
+	public GroupModel setColorIndex(int colorIndex) {
+		this.colorIndex = colorIndex;
+		return this;
 	}
 
 	public GroupModel setGroupDesc(String description) {

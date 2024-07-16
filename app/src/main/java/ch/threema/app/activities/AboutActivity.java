@@ -22,14 +22,14 @@
 package ch.threema.app.activities;
 
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import ch.threema.app.BuildConfig;
+import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
+import ch.threema.app.utils.ConfigUtils;
 
 public class AboutActivity extends ThreemaToolbarActivity {
 
@@ -47,7 +47,7 @@ public class AboutActivity extends ThreemaToolbarActivity {
 		AnimationUtil.bubbleAnimate(threemaLogo, 200);
 
 		// Enable developer menu
-		if (BuildConfig.DEBUG) {
+		if (ConfigUtils.isDevBuild()) {
 			this.preferenceService.setShowDeveloperMenu(true);
 			Toast
 				.makeText(this, "You are now a craaazy developer!", Toast.LENGTH_LONG)

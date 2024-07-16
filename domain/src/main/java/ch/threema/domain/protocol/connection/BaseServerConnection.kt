@@ -31,6 +31,7 @@ import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.protocol.connection.util.MainConnectionController
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -395,6 +396,8 @@ interface BaseServerConnectionConfiguration {
     val assertDispatcherContext: Boolean
 
     val deviceCookieManager: DeviceCookieManager
+
+    val incomingMessageProcessor: IncomingMessageProcessor
 
     val taskManager: TaskManager
 }

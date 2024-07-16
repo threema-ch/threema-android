@@ -25,6 +25,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.icu.text.ListFormatter;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -34,6 +36,8 @@ import org.slf4j.Logger;
 import java.text.Collator;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -48,6 +52,11 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
+/**
+ * Static utility functions related to contacts.
+ *
+ * TODO(ANDR-2985): Most of these could be contact model methods.
+ */
 public class ContactUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactUtil");
 
@@ -55,79 +64,67 @@ public class ContactUtil {
 
 	public static final long PROFILE_PICTURE_BLOB_CACHE_DURATION = DateUtils.WEEK_IN_MILLIS;
 
-	/**
-	 * check if this contact is *currently* linked to an android contact
-	 * @param contact
-	 * @return
-	 */
-	public static boolean isLinked(ContactModel contact) {
-		return contact != null
-				&& !TestUtil.empty(contact.getAndroidContactLookupKey());
+	public static boolean canChangeFirstName(@Nullable ContactModel contact) {
+		return contact != null && !contact.isLinkedToAndroidContact();
 	}
 
-	/**
-	 * @param contact
-	 * @return
-	 */
-	public static boolean canChangeFirstName(ContactModel contact) {
+	public static boolean canChangeLastName(@Nullable ContactModel contact) {
 		return contact != null
-				&& !isLinked(contact);
+				&& !contact.isLinkedToAndroidContact()
+				&& !isGatewayContact(contact);
 	}
 
-	/**
-	 * @param contact
-	 * @return
-	 */
-	public static boolean canChangeLastName(ContactModel contact) {
-		return contact != null
-				&& !isLinked(contact)
-				&& !isChannelContact(contact);
-	}
-
-	public static boolean canChangeAvatar(ContactModel contactModel, PreferenceService preferenceService, FileService fileService) {
+	public static boolean canChangeAvatar(
+		@NonNull ContactModel contactModel,
+		@NonNull PreferenceService preferenceService,
+		@NonNull FileService fileService
+	) {
 		return canHaveCustomAvatar(contactModel)
-				&& !(preferenceService.getProfilePicReceive() && fileService.hasContactPhotoFile(contactModel));
+				&& !(preferenceService.getProfilePicReceive() && fileService.hasContactPhotoFile(contactModel.getIdentity()));
 	}
 
 	/**
-	 * return true on channel-type contact (i.e. gateway, threema broadcast)
-	 *
-	 * @param contactModel
-	 * @return if channel contact
+	 * Return whether this {@param contactModel} is a Threema Gateway contact.
 	 */
-	public static boolean isChannelContact(ContactModel contactModel) {
+	public static boolean isGatewayContact(ContactModel contactModel) {
 		if(contactModel != null) {
-			return isChannelContact(contactModel.getIdentity());
+			return isGatewayContact(contactModel.getIdentity());
 		}
 		return false;
 	}
 
 	/**
-	 * return true on channel-type contact (i.e. gateway, threema broadcast)
-	 *
-	 * @param identity
-	 * @return if channel contact
+	 * Return whether this {@param identity} is a Threema Gateway contact (starting with "*").
 	 */
-	public static boolean isChannelContact(String identity) {
-		return identity != null && identity.startsWith("*");
+	public static boolean isGatewayContact(@NonNull String identity) {
+		return identity.startsWith("*");
 	}
 
 	/**
-	 * Checks whether the contact's id is ECHOECHO or a Channel ID
-	 * @return {@code true} if the contact is ECHOECHO or a channel ID, {@code false} otherwise
+	 * Return whether this {@param contactModel} is a Threema Gateway contact
+	 * or the special contact "ECHOECHO".
 	 */
-	public static boolean isEchoEchoOrChannelContact(ContactModel contactModel) {
+	public static boolean isEchoEchoOrGatewayContact(ContactModel contactModel) {
 		return contactModel != null
-			&& (isChannelContact(contactModel)
-			|| ThreemaApplication.ECHO_USER_IDENTITY.equals(contactModel.getIdentity())
+			&& (isGatewayContact(contactModel.getIdentity())
+				|| ThreemaApplication.ECHO_USER_IDENTITY.equals(contactModel.getIdentity())
 		);
+	}
+
+	/**
+	 * Return whether this {@param identity} is a Threema Gateway contact (starting with "*")
+	 * or the special contact "ECHOECHO".
+	 */
+	public static boolean isEchoEchoOrGatewayContact(@NonNull String identity) {
+		return isGatewayContact(identity)
+			|| ThreemaApplication.ECHO_USER_IDENTITY.equals(identity);
 	}
 
 	public static boolean canReceiveVoipMessages(ContactModel contactModel, IdListService blackListIdentityService) {
 		return contactModel != null
 				&& blackListIdentityService != null
 				&& !blackListIdentityService.has(contactModel.getIdentity())
-				&& !isEchoEchoOrChannelContact(contactModel);
+				&& !isEchoEchoOrGatewayContact(contactModel);
 	}
 
 	public static boolean allowedChangeToState(
@@ -150,28 +147,20 @@ public class ContactUtil {
 		return false;
 	}
 
-	/**
-	 *
-	 * @param contact
-	 * @return
-	 */
-	public static boolean canHaveCustomAvatar(ContactModel contact) {
+	public static boolean canHaveCustomAvatar(@Nullable ContactModel contact) {
 		return contact != null
-				&& !isLinked(contact)
-				&& !isChannelContact(contact);
+				&& !contact.isLinkedToAndroidContact()
+				&& !isGatewayContact(contact);
 	}
 
 	/**
 	 * check if the avatar is expired (or no date set)
-	 *
-	 * @param contactModel
-	 * @return
 	 */
 	public static boolean isAvatarExpired(ContactModel contactModel) {
 		return contactModel != null
 				&& (
-					contactModel.getAvatarExpires() == null
-					|| contactModel.getAvatarExpires().before(new Date())
+					contactModel.getLocalAvatarExpires() == null
+					|| contactModel.getLocalAvatarExpires().before(new Date())
 			);
 	}
 
@@ -228,7 +217,7 @@ public class ContactUtil {
 	public static @DrawableRes int getVerificationResource(ContactModel contactModel) {
 		int iconResource = R.drawable.ic_verification_none;
 		if(contactModel != null) {
-			switch (contactModel.getVerificationLevel()) {
+			switch (contactModel.verificationLevel) {
 				case SERVER_VERIFIED:
 					if (ConfigUtils.isWorkBuild() && contactModel.isWork()) {
 						iconResource = R.drawable.ic_verification_server_work;
@@ -274,5 +263,21 @@ public class ContactUtil {
 			}
 		}
 		return null;
+	}
+
+	public static String joinDisplayNames(@Nullable Context context, @Nullable List<ContactModel> contacts) {
+		if (contacts == null) {
+			return "";
+		}
+
+		List<String> contactNames = contacts.stream()
+			.map(contact -> NameUtil.getDisplayNameOrNickname(contact, true))
+			.collect(Collectors.toList());
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context != null) {
+			return ListFormatter.getInstance(LocaleUtil.getCurrentLocale(context)).format(contactNames);
+		} else {
+			return String.join(", ", contactNames);
+		}
 	}
 }

@@ -27,17 +27,19 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.Person;
 
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.DatabaseServiceNew;
@@ -93,24 +95,26 @@ public interface NotificationService {
 		Bitmap fetch();
 	}
 
+	interface FetchCacheUri {
+		@Nullable Uri fetch();
+	}
+
 	class ConversationNotificationGroup {
 		private String name, shortName;
 		private final String groupUid;
 		private final FetchBitmap fetchAvatar;
 		private final MessageReceiver messageReceiver;
-		private final String lookupUri;
 		private long lastNotificationDate = 0;
 
 		//reference to conversations
 		protected List<ConversationNotification> conversations = new ArrayList<>();
 
-		public ConversationNotificationGroup(String groupUid, String name, String shortName, MessageReceiver receiver, FetchBitmap fetchAvatar, String lookupUri) {
+		public ConversationNotificationGroup(String groupUid, String name, String shortName, MessageReceiver receiver, FetchBitmap fetchAvatar) {
 			this.groupUid = groupUid;
 			this.name = name;
 			this.shortName = shortName;
 			this.fetchAvatar = fetchAvatar;
 			this.messageReceiver = receiver;
-			this.lookupUri = lookupUri;
 		}
 
 		public String getGroupUid(){
@@ -145,23 +149,6 @@ public interface NotificationService {
 			return this.fetchAvatar.fetch();
 		}
 
-		public String getLookupUri() {
-			return lookupUri;
-		}
-
-		public void destroy() {
-			//do not recycle
-			/*synchronized (this.conversations) {
-				if (this.conversations.size() == 0 && this.avatar != null) {
-					logger.debug("destroy ConversationNotificationGroup");
-					BitmapUtil.recycle(this.avatar);
-				}
-				else {
-					logger.debug("do not destroy ConversationNotification (conversationCount = " + this.conversations.size()+ ")");
-				}
-			}*/
-		}
-
 		public void setLastNotificationDate(long lastNotificationDate) {
 			this.lastNotificationDate = lastNotificationDate;
 		}
@@ -178,22 +165,26 @@ public interface NotificationService {
 		private final Date when;
 		private final String uid;
 		private final ConversationNotificationGroup group;
-		private final FetchBitmap fetchThumbnail;
+		private final FetchCacheUri fetchThumbnailUri;
 		private final int id;
-		private Bitmap thumbnail = null;
-		private MessageType messageType;
-		private EmojiMarkupUtil emojiMarkupUtil;
+		private Uri thumbnailUri = null;
+		private final String thumbnailMimeType;
+		private final MessageType messageType;
+		private final EmojiMarkupUtil emojiMarkupUtil;
+		private final boolean isMessageDeleted;
 
 		public ConversationNotification(MessageService.MessageString messageString, Date when, int id, String uid,
-		                                ConversationNotificationGroup group, FetchBitmap fetchThumbnail,
-		                                Person senderPerson, MessageType messageType) {
+		                                ConversationNotificationGroup group, FetchCacheUri fetchThumbnailUri, String thumbnailMimeType,
+		                                Person senderPerson, MessageType messageType, boolean isMessageDeleted) {
 			this.when = when;
 			this.uid = uid;
 			this.id = id;
 			this.group = group;
-			this.fetchThumbnail = fetchThumbnail;
+			this.fetchThumbnailUri = fetchThumbnailUri;
+			this.thumbnailMimeType = thumbnailMimeType;
 			this.emojiMarkupUtil = EmojiMarkupUtil.getInstance();
 			this.messageType = messageType;
+			this.isMessageDeleted = isMessageDeleted;
 			setMessage(messageString.getMessage());
 			setRawMessage(messageString.getRawMessage());
 			setSenderPerson(senderPerson);
@@ -252,24 +243,40 @@ public interface NotificationService {
 			return this.group;
 		}
 
-		public Bitmap getThumbnail() {
-			if(this.thumbnail == null && this.fetchThumbnail != null) {
-				this.thumbnail = this.fetchThumbnail.fetch();
+		@Nullable
+		public Uri getThumbnailUri() {
+			if(this.thumbnailUri == null && this.fetchThumbnailUri != null) {
+				this.thumbnailUri = this.fetchThumbnailUri.fetch();
 			}
-			return this.thumbnail;
+			return this.thumbnailUri;
 		}
 
 		public MessageType getMessageType() {
 			return this.messageType;
 		}
 
+
+		public boolean isMessageDeleted() {
+			return this.isMessageDeleted;
+		}
+
 		public void destroy() {
-			if(this.thumbnail != null) {
+			if (this.thumbnailUri != null) {
 				logger.debug("destroy ConversationNotification");
-				BitmapUtil.recycle(this.thumbnail);
+
+				File thumbnailFile = new File(ThreemaApplication.getAppContext().getCacheDir(), thumbnailUri.getLastPathSegment());
+				if (thumbnailFile.exists()) {
+					//noinspection ResultOfMethodCallIgnored
+					thumbnailFile.delete();
+				}
+
 				this.group.conversations.remove(this);
-				this.group.destroy();
 			}
+		}
+
+		@Nullable
+		public String getThumbnailMimeType() {
+			return thumbnailMimeType;
 		}
 	}
 
@@ -294,7 +301,7 @@ public interface NotificationService {
 	 * add a new conversation notification
 	 * @param conversationNotification
 	 */
-	void addConversationNotification(ConversationNotification conversationNotification, boolean updateExisting);
+	void showConversationNotification(ConversationNotification conversationNotification, boolean updateExisting);
 
 	/**
 	 * cancel a conversation notification
@@ -330,24 +337,15 @@ public interface NotificationService {
 	 */
 	boolean isConversationNotificationVisible();
 
-	void updateConversationNotifications();
-
 	void cancel(ConversationModel conversationModel);
 	void cancel(MessageReceiver receiver);
 	void cancel(int notificationId);
+	void cancel(@NonNull String identity);
 
 	void showMasterKeyLockedNewMessageNotification();
 	void showPinLockedNewMessageNotification(NotificationSchema notificationSchema, String uid, boolean quiet);
 
 	void showServerMessage(ServerMessageModel m);
-	void cancelServerMessage();
-
-	/**
-	 * show the "not enough disk space"
-	 * @param availableSpace
-	 * @param requiredSpace
-	 */
-	void showNotEnoughDiskSpace(long availableSpace, long requiredSpace);
 
 	/**
 	 * Show a notification that a message could not be sent. Note that this is should not be used
@@ -375,7 +373,6 @@ public interface NotificationService {
 	void showWebclientResumeFailed(String msg);
 	void cancelRestartNotification();
 	void cancelRestoreNotification();
-	void resetConversationNotifications();
 
 	void showGroupJoinResponseNotification(@NonNull OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel,
 	                                       @NonNull OutgoingGroupJoinRequestModel.Status status,

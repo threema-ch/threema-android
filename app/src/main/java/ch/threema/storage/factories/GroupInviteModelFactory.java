@@ -155,7 +155,7 @@ public class GroupInviteModelFactory extends ModelFactory {
 
 	/**
 	 * Return the number of all active group links that have been created individually apart from the default link for a group
-	 * @param GroupId groupApiId identifying the unique group for which the custom invites should be queried
+	 * @param groupApiId groupApiId identifying the unique group for which the custom invites should be queried
 	 */
 	public @NonNull List<GroupInviteModel> getAllActiveCustomForGroup(GroupId groupApiId) {
 		final String selection = GroupInviteModel.COLUMN_IS_INVALIDATED + "=?"
@@ -255,15 +255,16 @@ public class GroupInviteModelFactory extends ModelFactory {
 			null,
 			null);
 
-		final CursorHelper cursorHelper = new CursorHelper(cursor, this.getColumnIndexCache());
-		final Iterator<GroupInviteModel> modelIterator =
-			cursorHelper.modelIterator(GroupInviteModelFactory::cursorHelperToGroupInviteModel);
-		final List<GroupInviteModel> groupInvites = new ArrayList<>(cursor.getCount());
+		try (final CursorHelper cursorHelper = new CursorHelper(cursor, this.getColumnIndexCache())) {
+			final Iterator<GroupInviteModel> modelIterator =
+				cursorHelper.modelIterator(GroupInviteModelFactory::cursorHelperToGroupInviteModel);
+			final List<GroupInviteModel> groupInvites = new ArrayList<>(cursor.getCount());
 
-		while (modelIterator.hasNext()) {
-			groupInvites.add(modelIterator.next());
+			while (modelIterator.hasNext()) {
+				groupInvites.add(modelIterator.next());
+			}
+			return groupInvites;
 		}
-		return groupInvites;
 	}
 
 	private static GroupInviteModel cursorHelperToGroupInviteModel(CursorHelper cursorHelper) {

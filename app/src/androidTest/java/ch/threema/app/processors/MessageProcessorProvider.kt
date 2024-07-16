@@ -26,21 +26,25 @@ import android.content.Intent
 import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.multidevice.MultiDeviceManagerImpl
 import ch.threema.app.services.FileService
 import ch.threema.app.services.LifetimeService
+import ch.threema.app.tasks.TaskArchiverImpl
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
+import ch.threema.app.utils.DeviceCookieManagerImpl
 import ch.threema.app.utils.ForwardSecurityStatusSender
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceStore
 import ch.threema.domain.fs.DHSession
+import ch.threema.domain.helpers.DecryptTaskCodec
 import ch.threema.domain.helpers.InMemoryContactStore
 import ch.threema.domain.helpers.InMemoryDHSessionStore
 import ch.threema.domain.helpers.InMemoryNonceStore
-import ch.threema.domain.helpers.DecryptTaskCodec
 import ch.threema.domain.models.Contact
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.ThreemaFeature
@@ -73,8 +77,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.rules.Timeout
 import java.io.File
-import java.util.LinkedList
 import java.util.Queue
+import java.util.concurrent.ConcurrentLinkedQueue
 
 open class MessageProcessorProvider {
 
@@ -111,10 +115,10 @@ open class MessageProcessorProvider {
 
     protected val serviceManager: ServiceManager = ThreemaApplication.requireServiceManager()
     private val contactStore: ContactStore = InMemoryContactStore().apply {
-        addContact(myContact.contact, true)
-        addContact(contactA.contact, true)
-        addContact(contactB.contact, true)
-        addContact(contactC.contact, true)
+        addContact(myContact.contact)
+        addContact(contactA.contact)
+        addContact(contactB.contact)
+        addContact(contactC.contact)
     }
 
     private val identityMap = listOf(
@@ -179,7 +183,7 @@ open class MessageProcessorProvider {
     private val globalTaskCodec =
         DecryptTaskCodec(contactStore, identityMap, forwardSecurityMessageProcessorMap)
 
-    private val globalTaskQueue: Queue<QueueEntry<*>> = LinkedList()
+    private val globalTaskQueue: Queue<QueueEntry<*>> = ConcurrentLinkedQueue()
 
     private data class QueueEntry<R>(
         private val task: Task<R, TaskCodec>,
@@ -379,9 +383,20 @@ open class MessageProcessorProvider {
     }
 
     private fun setTaskManager(taskManager: TaskManager) {
-        val field = ServiceManager::class.java.getDeclaredField("taskManager")
+        val serviceManager = ThreemaApplication.requireServiceManager()
+        val coreServiceManager = TestCoreServiceManager(
+            ThreemaApplication.getAppVersion(),
+            serviceManager.databaseServiceNew,
+            serviceManager.preferenceStore,
+            TaskArchiverImpl(serviceManager.databaseServiceNew.taskArchiveFactory),
+            serviceManager.deviceCookieManager as DeviceCookieManagerImpl,
+            taskManager,
+            serviceManager.multiDeviceManager as MultiDeviceManagerImpl
+        )
+
+        val field = ServiceManager::class.java.getDeclaredField("coreServiceManager")
         field.isAccessible = true
-        field.set(ThreemaApplication.getServiceManager(), taskManager)
+        field.set(ThreemaApplication.getServiceManager(), coreServiceManager)
     }
 
     private fun disableLifetimeService() {

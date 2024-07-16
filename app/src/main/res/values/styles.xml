@@ -267,6 +267,15 @@
 		<item name="android:letterSpacing">0.012</item>
 	</style>
 
+    <style name="Threema.Bubble.Text.Footer.Deleted" parent="Threema.Bubble.Text.Footer">
+        <item name="android:textColor">@color/bubble_text_deleted_colorstatelist</item>
+    </style>
+
+    <style name="Threema.Bubble.Text.Body.Deleted" parent="@style/Threema.Bubble.Text.Body">
+        <item name="android:textColor">@color/bubble_text_deleted_colorstatelist</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
 	<style name="Threema.Bubble.Text.Body.Status" parent="">
 		<item name="fontFamily">@font/lab_grotesque</item>
 		<item name="android:textColor">@color/bubble_text_status_colorstatelist</item>

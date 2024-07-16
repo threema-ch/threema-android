@@ -77,7 +77,6 @@
 	<string name="preferences__bigger_single_emojis" translatable="false">pref_bigger_single_emojis</string>
 	<string name="preferences__custom_support_url" translatable="false">pref_custom_support_url</string>
 	<string name="preferences__reset_ringtones" translatable="false">pref_reset_ringtones</string>
-	<string name="preferences__language_override" translatable="false">pref_language_override</string>
 	<!-- Note that 'app_language' is only used for displaying the preference in the settings. The
 	current value is stored in the language framework: AppCompatDelegate.getApplicationLocales -->
 	<string name="preferences__app_language" translatable="false">pref_app_language</string>

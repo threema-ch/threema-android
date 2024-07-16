@@ -6,7 +6,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/list_item"
 	android:layout_width="match_parent"
-	android:layout_height="@dimen/messagelist_item_height"
+	android:layout_height="wrap_content"
 	android:clickable="true"
 	android:focusable="true"
 	android:foreground="@drawable/listitem_background_selector">
@@ -14,10 +14,10 @@
 	<RelativeLayout
 		android:id="@+id/list_item_fg"
 		android:layout_width="match_parent"
-		android:layout_height="@dimen/messagelist_item_height"
+		android:layout_height="wrap_content"
 		android:background="?android:attr/colorBackground"
-		android:paddingLeft="@dimen/listitem_message_margin_left_right"
-		android:paddingRight="@dimen/listitem_message_margin_left_right">
+        android:paddingVertical="@dimen/listitem_message_margin_top_bottom"
+        android:paddingHorizontal="@dimen/listitem_message_margin_left_right">
 
 		<ch.threema.app.ui.AvatarView
 			android:id="@+id/avatar_view"
@@ -27,8 +27,7 @@
 			android:layout_alignParentLeft="true"
 			android:clickable="true"
 			android:contentDescription="@string/show_contact"
-			android:foreground="@drawable/selector_avatar"
-			/>
+			android:foreground="@drawable/selector_avatar" />
 
 		<RelativeLayout
 			android:id="@+id/content_container"
@@ -55,8 +54,9 @@
 				android:id="@+id/from"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+                android:minHeight="@dimen/listitem_min_height_first_line"
 				android:layout_alignWithParentIfMissing="true"
-				android:layout_toLeftOf="@+id/unread_count"
+				android:layout_toLeftOf="@+id/pin_icon"
 				android:layout_toRightOf="@+id/mute_status"
 				android:ellipsize="end"
 				android:singleLine="true"
@@ -65,7 +65,7 @@
 			<ImageView
 				android:id="@+id/pin_icon"
 				android:layout_width="24dp"
-				android:layout_height="wrap_content"
+				android:layout_height="24dp"
 				android:layout_alignBottom="@id/from"
 				android:layout_alignWithParentIfMissing="true"
 				android:layout_marginLeft="3dp"
@@ -102,72 +102,85 @@
 					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
 			</FrameLayout>
 
-			<RelativeLayout
+			<androidx.constraintlayout.widget.ConstraintLayout
 				android:id="@+id/latest_message_container"
-				android:layout_width="fill_parent"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+                android:minHeight="@dimen/listitem_min_height_second_line"
 				android:layout_below="@id/from"
 				android:visibility="visible">
+
+                <ch.threema.app.emojis.EmojiTextView
+                    android:id="@+id/group_member_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/attachment"
+                    app:layout_constrainedWidth="true"
+                    tools:text="Member: "/>
+
+                <ImageView
+                    android:id="@+id/attachment"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:translationY="0.5dp"
+                    android:importantForAccessibility="no"
+                    android:visibility="visible"
+                    app:tint="?attr/colorOnSurface"
+                    app:srcCompat="@drawable/ic_attachment"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/group_member_name"
+                    app:layout_constraintRight_toLeftOf="@id/subject"/>
+
+                <!-- app:layout_constraintWidth_min="1dp" is a hack to ensure correct constraint when group_member_name overflows -->
+                <ch.threema.app.emojis.EmojiTextView
+                    android:id="@+id/subject"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="2dp"
+                    android:ellipsize="none"
+                    android:singleLine="true"
+                    android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+                    app:layout_constraintWidth_min="1dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/attachment"
+                    app:layout_constraintRight_toLeftOf="@id/date"
+                    tools:text="Subject"/>
 
 				<TextView
 					style="@style/Threema.TextAppearance.List.ThirdLine"
 					android:id="@+id/date"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_alignWithParentIfMissing="true"
 					android:layout_marginLeft="4dp"
 					android:layout_marginRight="2dp"
-					android:layout_marginTop="2sp"
-					android:layout_toLeftOf="@id/delivery"
 					android:singleLine="true"
-					android:text="Date" />
-
-				<ch.threema.app.emojis.EmojiTextView
-					android:id="@+id/group_member_name"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_alignBaseline="@id/date"
-					android:layout_alignWithParentIfMissing="true"
-					android:singleLine="true"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
-
-				<ImageView
-					android:id="@+id/attachment"
-					android:layout_width="20dp"
-					android:layout_height="20dp"
-					android:layout_marginBottom="-0.5dp"
-					android:layout_alignBottom="@id/date"
-					android:layout_alignWithParentIfMissing="true"
-					android:layout_toRightOf="@id/group_member_name"
-					app:tint="?attr/colorOnSurface"
-					android:visibility="visible"
-					app:srcCompat="@drawable/ic_attachment"/>
-
-				<ch.threema.app.emojis.EmojiTextView
-					android:id="@+id/subject"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_alignBaseline="@id/date"
-					android:layout_alignWithParentIfMissing="true"
-					android:layout_marginRight="2dp"
-					android:layout_toLeftOf="@id/date"
-					android:layout_toRightOf="@id/attachment"
-					android:ellipsize="none"
-					android:singleLine="true"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/delivery"
+                    app:layout_constraintLeft_toRightOf="@id/subject"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="3:15 PM"/>
 
 				<ImageView
 					android:id="@+id/delivery"
 					android:layout_width="20dp"
 					android:layout_height="20dp"
-					android:layout_marginBottom="-0.5dp"
-					android:layout_alignBottom="@+id/date"
-					android:layout_alignParentRight="true"
+                    android:translationY="0.5dp"
 					android:visibility="visible"
+                    android:importantForAccessibility="no"
 					app:srcCompat="@drawable/ic_attachment"
-					app:tint="?attr/colorOnSurface" />
+					app:tint="?attr/colorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
-			</RelativeLayout>
+			</androidx.constraintlayout.widget.ConstraintLayout>
 
 			<RelativeLayout
 				android:id="@+id/ongoing_group_call_container"

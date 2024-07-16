@@ -41,7 +41,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import ch.threema.app.BuildConfig;
-import ch.threema.app.UnitTestHelpers;
+import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
@@ -63,6 +63,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 
+import static ch.threema.testhelpers.TestHelpersKt.nonSecureRandomArray;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -90,6 +91,8 @@ public class ThreemaSafeServiceTest {
 	private	DatabaseServiceNew databaseServiceNewMock;
 	@Mock
 	private	IdentityStore identityStoreMock;
+	@Mock
+	private ApiService apiService;
 	@Mock
 	private	APIConnector apiConnectorMock;
 	@Mock
@@ -125,8 +128,8 @@ public class ThreemaSafeServiceTest {
 			contactServiceMock, groupServiceMock, distributionListServiceMock,
 			localeServiceMock, fileServiceMock,
 			blackListServiceMock, excludedSyncIdentitiesServiceMock, profilePicRecipientsServiceMock,
-			databaseServiceNewMock, identityStoreMock, apiConnectorMock, hiddenContactsListMock,
-			serverAddressProviderMock, preferenceStoreMock
+			databaseServiceNewMock, identityStoreMock, apiService, apiConnectorMock,
+			hiddenContactsListMock, serverAddressProviderMock, preferenceStoreMock
 		);
 	}
 
@@ -256,9 +259,9 @@ public class ThreemaSafeServiceTest {
 	public void testSafeJsonContacts() throws Exception {
 		// Set up mocks
 		when(contactServiceMock.find(null)).thenReturn(Arrays.asList(
-			new ContactModel("HELLO123", new UnitTestHelpers().nonSecureRandomArray(32)).setLastUpdate(null),
-			new ContactModel("HELLO234", new UnitTestHelpers().nonSecureRandomArray(32)).setLastUpdate(testDate1),
-			new ContactModel("HELLO345", new UnitTestHelpers().nonSecureRandomArray(32)).setLastUpdate(testDate2)
+			new ContactModel("HELLO123", nonSecureRandomArray(32)).setLastUpdate(null),
+			new ContactModel("HELLO234", nonSecureRandomArray(32)).setLastUpdate(testDate1),
+			new ContactModel("HELLO345", nonSecureRandomArray(32)).setLastUpdate(testDate2)
 		));
 
 		// Generate and parse JSON

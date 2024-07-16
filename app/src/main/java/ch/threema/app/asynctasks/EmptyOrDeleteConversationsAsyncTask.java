@@ -26,6 +26,8 @@ import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -42,18 +44,19 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 
 /**
  * Empty or delete one or more conversation/chat.
- *
+ * <p>
  * The primary use case is a user pressing the "delete" icon on a conversation
  * in the conversation list. This will show a dialog while the process is ongoing.
- *
+ * <p>
  * Note: Behavior with Mode.DELETE depends on the {@link MessageReceiver} passed in:
- *
+ * <p>
  *   - Contacts: Delete conversation, but not contact
  *   - Groups:
  *     - Left: Delete conversation and group
@@ -62,6 +65,8 @@ import ch.threema.storage.models.GroupModel;
  *   - Distribution lists: Delete distribution list
  */
 public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, Void> {
+	private static final Logger logger = LoggingUtil.getThreemaLogger("EmptyOrDeleteConversationAsyncTask");
+
 	private static final String DIALOG_TAG_EMPTYING_OR_DELETING_CHAT = "edc";
 
 	// Services
@@ -132,14 +137,17 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
 	@Override
 	protected Void doInBackground(Void... params) {
 		// Empty or delete conversations
+		logger.info("{} chat for {} receivers.", this.mode, messageReceivers.length);
 		switch (this.mode) {
 			case EMPTY:
 				for (MessageReceiver receiver : this.messageReceivers) {
-					this.conversationService.empty(receiver);
+					int countRemoved = this.conversationService.empty(receiver);
+					logger.info("Removed {} messages for receiver {} (type={}).", countRemoved, receiver.getUniqueIdString(), receiver.getType());
 				}
 				break;
 			case DELETE:
 				for (MessageReceiver receiver : this.messageReceivers) {
+					logger.info("Delete chat with receiver {} (type={}).", receiver.getUniqueIdString(), receiver.getType());
 					if (receiver instanceof ContactMessageReceiver) {
 						final ContactModel contactModel = ((ContactMessageReceiver) receiver).getContact();
 						this.deleteContactConversation(contactModel);

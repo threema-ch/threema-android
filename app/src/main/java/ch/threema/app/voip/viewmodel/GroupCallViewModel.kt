@@ -307,6 +307,7 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 				callController.callLeftSignal.await()
 				getFinishEvent(FinishEvent.Reason.LEFT)
 			} catch (e: Exception) {
+				logger.error("Call left with exception", e)
 				mapExceptionToFinishEvent(e)
 			})
 			callRunning.value = false

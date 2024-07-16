@@ -34,8 +34,8 @@ def getGitVersion = { ->
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
-    api 'com.googlecode.libphonenumber:libphonenumber:8.13.23'
-    api 'androidx.annotation:annotation:1.7.1'
+    api 'com.googlecode.libphonenumber:libphonenumber:8.13.39'
+    api 'androidx.annotation:annotation:1.8.0'
     api 'net.sourceforge.streamsupport:streamsupport-flow:1.7.4'
 
     api 'com.google.protobuf:protobuf-kotlin-lite:3.25.1'

@@ -190,7 +190,7 @@ public class BackupService extends Service {
 			if (!isCanceled) {
 				config = (BackupRestoreDataConfig) intent.getSerializableExtra(EXTRA_BACKUP_RESTORE_DATA_CONFIG);
 
-				if (config == null || userService.getIdentity() == null || userService.getIdentity().length() == 0) {
+				if (config == null || userService.getIdentity() == null || userService.getIdentity().isEmpty()) {
 					safeStopSelf();
 					return START_NOT_STICKY;
 				}
@@ -542,7 +542,7 @@ public class BackupService extends Service {
 			try {
 				ZipUtil.addZipStream(
 					zipOutputStream,
-					this.fileService.getContactAvatarStream(contactService.getMe()),
+					this.fileService.getContactAvatarStream(contactService.getMe().getIdentity()),
 					Tags.CONTACT_AVATAR_FILE_PREFIX + Tags.CONTACT_AVATAR_FILE_SUFFIX_ME,
 					false
 				);
@@ -556,7 +556,6 @@ public class BackupService extends Service {
 			Tags.TAG_CONTACT_PUBLIC_KEY,
 			Tags.TAG_CONTACT_VERIFICATION_LEVEL,
 			Tags.TAG_CONTACT_ANDROID_CONTACT_ID,
-			Tags.TAG_CONTACT_THREEMA_ANDROID_CONTACT_ID,
 			Tags.TAG_CONTACT_FIRST_NAME,
 			Tags.TAG_CONTACT_LAST_NAME,
 			Tags.TAG_CONTACT_NICK_NAME,
@@ -584,6 +583,8 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_READ_AT,
 			Tags.TAG_GROUP_MESSAGE_STATES,
 			Tags.TAG_MESSAGE_DISPLAY_TAGS,
+			Tags.TAG_MESSAGE_EDITED_AT,
+			Tags.TAG_MESSAGE_DELETED_AT
 		};
 
 		// Iterate over all contacts. Then backup every contact with the corresponding messages.
@@ -600,9 +601,8 @@ public class BackupService extends Service {
 					contactCsv.createRow()
 						.write(Tags.TAG_CONTACT_IDENTITY, contactModel.getIdentity())
 						.write(Tags.TAG_CONTACT_PUBLIC_KEY, Utils.byteArrayToHexString(contactModel.getPublicKey()))
-						.write(Tags.TAG_CONTACT_VERIFICATION_LEVEL, contactModel.getVerificationLevel().toString())
+						.write(Tags.TAG_CONTACT_VERIFICATION_LEVEL, contactModel.verificationLevel.toString())
 						.write(Tags.TAG_CONTACT_ANDROID_CONTACT_ID, contactModel.getAndroidContactLookupKey())
-						.write(Tags.TAG_CONTACT_THREEMA_ANDROID_CONTACT_ID, contactModel.getThreemaAndroidContactId())
 						.write(Tags.TAG_CONTACT_FIRST_NAME, contactModel.getFirstName())
 						.write(Tags.TAG_CONTACT_LAST_NAME, contactModel.getLastName())
 						.write(Tags.TAG_CONTACT_NICK_NAME, contactModel.getPublicNickName())
@@ -618,7 +618,7 @@ public class BackupService extends Service {
 							if (!userService.getIdentity().equals(contactModel.getIdentity())) {
 								ZipUtil.addZipStream(
 									zipOutputStream,
-									this.fileService.getContactAvatarStream(contactModel),
+									this.fileService.getContactAvatarStream(contactModel.getIdentity()),
 									Tags.CONTACT_AVATAR_FILE_PREFIX + identityId,
 									false
 								);
@@ -631,7 +631,7 @@ public class BackupService extends Service {
 						try {
 							ZipUtil.addZipStream(
 								zipOutputStream,
-								this.fileService.getContactPhotoStream(contactModel),
+								this.fileService.getContactPhotoStream(contactModel.getIdentity()),
 								Tags.CONTACT_PROFILE_PIC_FILE_PREFIX + identityId,
 								false
 							);
@@ -675,6 +675,8 @@ public class BackupService extends Service {
 										.write(Tags.TAG_MESSAGE_DELIVERED_AT, messageModel.getDeliveredAt())
 										.write(Tags.TAG_MESSAGE_READ_AT, messageModel.getReadAt())
 										.write(Tags.TAG_MESSAGE_DISPLAY_TAGS, messageModel.getDisplayTags())
+										.write(Tags.TAG_MESSAGE_EDITED_AT, messageModel.getEditedAt())
+										.write(Tags.TAG_MESSAGE_DELETED_AT, messageModel.getDeletedAt())
 										.write();
 								}
 
@@ -748,6 +750,8 @@ public class BackupService extends Service {
 			Tags.TAG_MESSAGE_READ_AT,
 			Tags.TAG_GROUP_MESSAGE_STATES,
 			Tags.TAG_MESSAGE_DISPLAY_TAGS,
+			Tags.TAG_MESSAGE_EDITED_AT,
+			Tags.TAG_MESSAGE_DELETED_AT
 		};
 
 		final GroupService.GroupFilter groupFilter = new GroupService.GroupFilter() {
@@ -848,6 +852,8 @@ public class BackupService extends Service {
 									.write(Tags.TAG_MESSAGE_READ_AT, groupMessageModel.getReadAt())
 									.write(Tags.TAG_GROUP_MESSAGE_STATES, groupMessageStates)
 									.write(Tags.TAG_MESSAGE_DISPLAY_TAGS, groupMessageModel.getDisplayTags())
+									.write(Tags.TAG_MESSAGE_EDITED_AT, groupMessageModel.getEditedAt())
+									.write(Tags.TAG_MESSAGE_DELETED_AT, groupMessageModel.getDeletedAt())
 									.write();
 
 								this.backupMediaFile(

@@ -24,13 +24,18 @@ package ch.threema.app.tasks
 import android.graphics.Bitmap
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.BitmapUtil
+import ch.threema.app.utils.ConfigUtils
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
 import com.neilalexander.jnacl.NaCl
+import java.io.FileNotFoundException
 import java.security.SecureRandom
+
+private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSetProfilePictureTask")
 
 class OutgoingGroupSetProfilePictureTask(
     override val groupId: GroupId,
@@ -41,7 +46,7 @@ class OutgoingGroupSetProfilePictureTask(
     serviceManager: ServiceManager,
 ): OutgoingCspGroupControlMessageTask(serviceManager) {
     private val apiService = serviceManager.apiService
-    private val groupPhotoUploadResult by lazy { uploadGroupPhoto(groupPhoto) }
+    private val groupPhotoUploadResult by lazy { tryUploadingGroupPhoto(groupPhoto) }
 
     override val type = "OutgoingGroupSetProfilePictureTask"
 
@@ -59,6 +64,22 @@ class OutgoingGroupSetProfilePictureTask(
     }
 
     override fun serialize() = null
+
+    private fun tryUploadingGroupPhoto(picture: Bitmap): GroupPhotoUploadResult = try {
+        // Upload group photo
+        uploadGroupPhoto(picture)
+    } catch (e: FileNotFoundException) {
+        // On onprem builds this exception may occur if the auth token is not valid anymore.
+        // Therefore, we invalidate the auth token and retry it once more.
+        if (ConfigUtils.isOnPremBuild()) {
+            logger.info("Invalidating auth token")
+            apiService.invalidateAuthToken()
+            logger.info("Retrying upload")
+            uploadGroupPhoto(picture)
+        } else {
+            throw e
+        }
+    }
 
     private fun uploadGroupPhoto(picture: Bitmap): GroupPhotoUploadResult {
         val rnd = SecureRandom()

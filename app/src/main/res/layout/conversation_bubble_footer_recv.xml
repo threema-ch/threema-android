@@ -12,6 +12,19 @@
 			  android:gravity="bottom"
 			  android:layout_gravity="bottom">
 
+	<TextView
+		style="@style/Threema.Bubble.Text.Footer"
+		android:id="@+id/edited_text"
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:layout_gravity="bottom"
+		android:layout_weight="1.0"
+		android:layout_marginRight="4dp"
+		android:maxLines="1"
+		android:ellipsize="end"
+		android:text="@string/edited"
+		android:visibility="gone" />
+
 	<ImageView
 			android:id="@+id/delivered_indicator"
 			android:layout_width="18dp"

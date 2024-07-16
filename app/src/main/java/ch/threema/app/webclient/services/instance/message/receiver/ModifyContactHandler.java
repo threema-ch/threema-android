@@ -102,7 +102,7 @@ public class ModifyContactHandler extends MessageReceiver {
 			this.failed(identity, temporaryId, Protocol.ERROR_INVALID_CONTACT);
 			return;
 		}
-		if (ContactUtil.isLinked(contactModel)) {
+		if (contactModel.isLinkedToAndroidContact()) {
 			this.failed(identity, temporaryId, Protocol.ERROR_NOT_ALLOWED_LINKED);
 			return;
 		}
@@ -131,7 +131,7 @@ public class ModifyContactHandler extends MessageReceiver {
 
 		// Update avatar
 		if (data.containsKey(Protocol.ARGUMENT_AVATAR)) {
-			if (ContactUtil.isChannelContact(contactModel)) {
+			if (ContactUtil.isGatewayContact(contactModel)) {
 				this.failed(identity, temporaryId, Protocol.ERROR_NOT_ALLOWED_BUSINESS);
 				return;
 			} else {

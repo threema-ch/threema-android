@@ -29,4 +29,6 @@
 	<color name="mention_text_color_inverted">@color/md_theme_light_onBackground</color>
 
 	<color name="voice_recorder_counter_background">@color/dark_surface</color>
+
+    <color name="text_color_deleted">#cccccc</color>
 </resources>

@@ -27,8 +27,11 @@ import ch.threema.app.processors.IncomingCspMessageSubTask
 import ch.threema.app.processors.ReceiveStepsResult
 import ch.threema.app.services.GroupService
 import ch.threema.app.tasks.OutgoingGroupSyncRequestTask
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+
+private val logger = LoggingUtil.getThreemaLogger("IncomingGroupLeaveTask")
 
 class IncomingGroupLeaveTask(
     private val groupLeaveMessage: GroupLeaveMessage,
@@ -43,7 +46,10 @@ class IncomingGroupLeaveTask(
         val sender = groupLeaveMessage.fromIdentity
 
         // 1. If the sender is the creator of the group, abort these steps
-        // TODO(ANDR-2385): apply group leave messages from the creator in the transition phase
+        if (sender == creator) {
+            logger.warn("Discarding group leave message from group creator")
+            return ReceiveStepsResult.DISCARD
+        }
 
         // 2. Look up the group
         val group = groupService.getByGroupMessage(groupLeaveMessage)

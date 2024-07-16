@@ -48,6 +48,8 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UserService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.protocol.csp.messages.DeleteMessage;
+import ch.threema.domain.protocol.csp.messages.EditMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -176,7 +178,8 @@ public class MessageUtil {
 					&& messageModel.getType() != MessageType.VOIP_STATUS
 					&& messageModel.getType() != MessageType.GROUP_CALL_STATUS
 					&& !messageModel.isStatusMessage()
-					&& !(messageModel instanceof DistributionListMessageModel);
+					&& !(messageModel instanceof DistributionListMessageModel)
+					&& !messageModel.isDeleted();
 		} else {
 			return
 				messageModel != null
@@ -186,7 +189,8 @@ public class MessageUtil {
 					&& messageModel.getType() != MessageType.GROUP_CALL_STATUS
 					&& !messageModel.isStatusMessage()
 					&& !(messageModel instanceof DistributionListMessageModel)
-					&& !(messageModel instanceof GroupMessageModel);
+					&& !(messageModel instanceof GroupMessageModel)
+					&& !messageModel.isDeleted();
 		}
 	}
 	/**
@@ -201,7 +205,8 @@ public class MessageUtil {
 					&& messageModel.getType() != MessageType.VOIP_STATUS
 					&& messageModel.getType() != MessageType.GROUP_CALL_STATUS
 					&& !messageModel.isStatusMessage()
-					&& !(messageModel instanceof DistributionListMessageModel);
+					&& !(messageModel instanceof DistributionListMessageModel)
+					&& !messageModel.isDeleted();
 		} else {
 			return
 				messageModel != null
@@ -211,12 +216,15 @@ public class MessageUtil {
 					&& messageModel.getType() != MessageType.GROUP_CALL_STATUS
 					&& !messageModel.isStatusMessage()
 					&& !(messageModel instanceof DistributionListMessageModel)
-					&& !(messageModel instanceof GroupMessageModel);
+					&& !(messageModel instanceof GroupMessageModel)
+					&& !messageModel.isDeleted();
 		}
 	}
 
 	public static boolean canSendImageReply(@Nullable AbstractMessageModel messageModel) {
-		if (messageModel == null || messageModel.getMessageContentsType() != MessageContentsType.IMAGE) {
+		if (messageModel == null ||
+			messageModel.getMessageContentsType() != MessageContentsType.IMAGE ||
+			messageModel.isDeleted()) {
 			return false;
 		}
 		try {
@@ -270,7 +278,7 @@ public class MessageUtil {
 				}
 				else {
 					// on outgoing message
-					if (ContactUtil.isChannelContact(messageModel.getIdentity())) {
+					if (ContactUtil.isGatewayContact(messageModel.getIdentity())) {
 						showState = messageState == MessageState.SENDFAILED
 							|| messageState == MessageState.FS_KEY_MISMATCH
 							|| messageState == MessageState.PENDING
@@ -300,7 +308,7 @@ public class MessageUtil {
 	}
 
 	/**
-	 * Returns all affected receivers of a distribution list (including myself)
+	 * Returns all affected receivers of a distribution list (including itself)
 	 * @return ArrayList of all MessageReceivers
 	 */
 	public static ArrayList<MessageReceiver> getAllReceivers(final MessageReceiver messageReceiver) {
@@ -844,5 +852,29 @@ public class MessageUtil {
 				messageState == MessageState.UPLOADING ||
 				messageState == MessageState.SENDING
 		);
+	}
+
+	public static boolean canEdit(@NonNull AbstractMessageModel message) {
+		long deltaTime = new Date().getTime() - message.getCreatedAt().getTime();
+		return (message.getType() == MessageType.TEXT || message.getType() == MessageType.FILE)
+			&& !message.isStatusMessage()
+			&& message.isOutbox()
+			&& ConfigUtils.isEditMessagesEnabled()
+			&& deltaTime <= EditMessage.EDIT_MESSAGES_MAX_AGE
+			&& (message instanceof MessageModel || message instanceof GroupMessageModel)
+			&& (message.getPostedAt() != null || message.getState() == MessageState.SENDFAILED)
+			&& !message.isDeleted();
+	}
+
+	public static boolean canDeleteRemotely(@NonNull AbstractMessageModel message) {
+		long deltaTime = new Date().getTime() - message.getCreatedAt().getTime();
+		return message.getType() != MessageType.BALLOT
+			&& !message.isStatusMessage()
+			&& message.isOutbox()
+			&& ConfigUtils.isDeleteMessagesEnabled()
+			&& deltaTime <= DeleteMessage.DELETE_MESSAGES_MAX_AGE
+			&& (message instanceof MessageModel || message instanceof GroupMessageModel)
+			&& (message.getPostedAt() != null && message.getState() != MessageState.SENDFAILED)
+			&& !message.isDeleted();
 	}
 }

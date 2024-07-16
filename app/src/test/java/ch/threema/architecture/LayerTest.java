@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_ANNOTATION;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_APP;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_BASE;
+import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_DATA;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_DOMAIN;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_LOCALCRYPTO;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_LOGGING;
@@ -46,6 +47,7 @@ public class LayerTest {
 		PACKAGE_ANNOTATION,
 		PACKAGE_APP + "..",
 		PACKAGE_BASE + "..",
+		PACKAGE_DATA + "..",
 		PACKAGE_DOMAIN + "..",
 		PACKAGE_LOCALCRYPTO + "..",
 		PACKAGE_LOGGING + "..",
@@ -53,7 +55,8 @@ public class LayerTest {
 	).orShould().resideInAnyPackage(
 		"ch.threema.protobuf..",
 		"ch.threema.webrtc..",
-		"ch.threema.taskmanager.."
+		"ch.threema.taskmanager..",
+		"ch.threema.testhelpers.."
 	);
 
 }

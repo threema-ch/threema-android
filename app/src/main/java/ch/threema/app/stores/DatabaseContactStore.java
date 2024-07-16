@@ -23,8 +23,11 @@ package ch.threema.app.stores;
 
 import org.slf4j.Logger;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,11 +36,13 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -86,12 +91,17 @@ public class DatabaseContactStore implements ContactStore {
 
 		try {
 			// Add special contact '*3MAPUSH'
-			specialContacts.put(
-				ProtocolDefines.SPECIAL_CONTACT_PUSH,
-				new Contact(ProtocolDefines.SPECIAL_CONTACT_PUSH, serverAddressProvider.getThreemaPushPublicKey())
-			);
+			final byte[] publicKey = serverAddressProvider.getThreemaPushPublicKey();
+			if (publicKey == null) {
+				logger.error("Could not add special contact {} due to missing public key", ProtocolDefines.SPECIAL_CONTACT_PUSH);
+			} else {
+				specialContacts.put(
+					ProtocolDefines.SPECIAL_CONTACT_PUSH,
+					new Contact(ProtocolDefines.SPECIAL_CONTACT_PUSH, publicKey, VerificationLevel.FULLY_VERIFIED)
+				);
+			}
 		} catch (ThreemaException e) {
-			logger.error("Could not add special contact {} due to missing public key", ProtocolDefines.SPECIAL_CONTACT_PUSH, e);
+			logger.error("Could not add special contact {}", ProtocolDefines.SPECIAL_CONTACT_PUSH, e);
 		}
 	}
 
@@ -131,15 +141,8 @@ public class DatabaseContactStore implements ContactStore {
 
 	@Override
 	public void addContact(@NonNull Contact contact) {
-		addContact(contact, false);
-	}
-
-	@Override
-	public void addContact(@NonNull Contact contact, boolean hide) {
 		ContactModel contactModel = (ContactModel)contact;
 		boolean isUpdate = false;
-
-		contactModel.setAcquaintanceLevel(hide ? AcquaintanceLevel.GROUP : AcquaintanceLevel.DIRECT);
 
 		ContactModelFactory contactModelFactory = this.databaseServiceNew.getContactModelFactory();
 		//get db record
@@ -149,8 +152,26 @@ public class DatabaseContactStore implements ContactStore {
 			isUpdate = true;
 			//check for modifications!
 			if(TestUtil.compare(contactModel.getModifiedValueCandidates(), existingModel.getModifiedValueCandidates())) {
-				logger.debug("do not save unmodified contact");
+				logger.info("Do not save unmodified contact");
 				return;
+			}
+
+			// TODO(ANDR-3113): Just for debugging. Must be removed once the error is found.
+			if (ConfigUtils.isDevBuild()) {
+				Date existingLastUpdate = existingModel.getLastUpdate();
+				Date newLastUpdate = contactModel.getLastUpdate();
+				if (existingLastUpdate != null && newLastUpdate != null
+					&& newLastUpdate.before(existingLastUpdate)) {
+					logger.error(
+						"Storing contact model of '{}' with older last update ({}) than before ({}): {}",
+						contactModel.getIdentity(),
+						newLastUpdate.getTime(),
+						existingLastUpdate.getTime(),
+						Arrays.stream(Thread.currentThread().getStackTrace())
+							.map(StackTraceElement::toString)
+							.collect(Collectors.joining("\n"))
+					);
+				}
 			}
 
 			// Only warn about an FS feature mask downgrade if an FS session existed.
@@ -182,7 +203,7 @@ public class DatabaseContactStore implements ContactStore {
 		if (!isUpdate) {
 			this.fireOnNewContact(contactModel);
 		} else {
-			this.fireOnModifiedContact(contactModel);
+			this.fireOnModifiedContact(contactModel.getIdentity());
 		}
 	}
 
@@ -218,11 +239,7 @@ public class DatabaseContactStore implements ContactStore {
 		contactModelFactory.createOrUpdate(contactModel);
 
 		// Fire listeners
-		if (hide) {
-			this.fireOnRemovedContact(contactModel);
-		} else {
-			this.fireOnNewContact(contactModel);
-		}
+		this.fireOnModifiedContact(contactModel.getIdentity());
 	}
 
 	@Override
@@ -236,26 +253,20 @@ public class DatabaseContactStore implements ContactStore {
 	}
 
 	private void fireOnNewContact(final ContactModel createdContactModel) {
-		ListenerManager.contactListeners.handle(listener -> {
-			if (listener.handle(createdContactModel.getIdentity())) {
-				listener.onNew(createdContactModel);
-			}
-		});
+		ListenerManager.contactListeners.handle(listener ->
+			listener.onNew(createdContactModel.getIdentity())
+		);
 	}
 
-	private void fireOnModifiedContact(final ContactModel modifiedContactModel) {
+	private void fireOnModifiedContact(final String identity) {
 		ListenerManager.contactListeners.handle(listener -> {
-			if (listener.handle(modifiedContactModel.getIdentity())) {
-				listener.onModified(modifiedContactModel);
-			}
+			listener.onModified(identity);
 		});
 	}
 
 	private void fireOnRemovedContact(final ContactModel removedContactModel) {
 		ListenerManager.contactListeners.handle(listener -> {
-			if (listener.handle(removedContactModel.getIdentity())) {
-				listener.onRemoved(removedContactModel);
-			}
+			listener.onRemoved(removedContactModel.getIdentity());
 		});
 	}
 }

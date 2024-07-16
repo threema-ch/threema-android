@@ -34,6 +34,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -197,9 +198,13 @@ public class MessageUpdateHandler extends MessageUpdater {
 
 		@Override
 		public void onModified(List<AbstractMessageModel> modifiedMessageModels) {
+			// split deleted messages to dispatch with different mode
+			Map<String, List<AbstractMessageModel>> modeToModifiedMessages = modifiedMessageModels.stream().collect(
+				Collectors.groupingBy(message -> message.isDeleted() ? Protocol.ARGUMENT_MODE_REMOVED : Protocol.ARGUMENT_MODE_MODIFIED)
+			);
 			// TODO: Here we should probably batch update messages for the same receiver.
 			// Also, if the same msg is updated multiple times, only send the last one.
-			this.dispatch(modifiedMessageModels, Protocol.ARGUMENT_MODE_MODIFIED);
+			modeToModifiedMessages.forEach((mode, modifiedMessages) -> this.dispatch(modifiedMessages, mode));
 		}
 
 		@Override

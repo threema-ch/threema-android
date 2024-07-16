@@ -80,6 +80,11 @@ public class ApiServiceImpl implements ApiService {
 	}
 
 	@Override
+	public void invalidateAuthToken() {
+		this.authTokenStore.storeToken(null);
+	}
+
+	@Override
 	public HttpsURLConnection createAvatarURLConnection(String identity) throws ThreemaException, IOException {
 		URL url = new URL(serverAddressProvider.getAvatarServerUrl(false) + identity);
 		HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();

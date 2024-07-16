@@ -56,24 +56,22 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public static final String COLUMN_PUBLIC_NICK_NAME = "publicNickName";
 	public static final String COLUMN_VERIFICATION_LEVEL = "verificationLevel";
 	public static final String COLUMN_ANDROID_CONTACT_LOOKUP_KEY = "androidContactId"; /* The complete lookup key (consisting of key and ID) of the android contact this contact is linked with */
-	@Deprecated	public static final String COLUMN_THREEMA_ANDROID_CONTACT_ID = "threemaAndroidContactId";
-	@Deprecated public static final String COLUMN_IS_SYNCHRONIZED = "isSynchronized";
-	public static final String COLUMN_FEATURE_LEVEL = "featureLevel";
+	public static final String COLUMN_FEATURE_MASK = "featureLevel";
 	public static final String COLUMN_STATE = "state";
-	@Deprecated public static final String COLUMN_COLOR = "color";
 	public static final String COLUMN_ID_COLOR_INDEX = "idColorIndex";
-	public static final String COLUMN_AVATAR_EXPIRES = "avatarExpires";
+	public static final String COLUMN_LOCAL_AVATAR_EXPIRES = "avatarExpires";
 	public static final String COLUMN_IS_WORK = "isWork";
 	public static final String COLUMN_TYPE = "type";
 	public static final String COLUMN_PROFILE_PIC_BLOB_ID = "profilePicBlobID"; /* the blob ID of the profile pic that was last sent to this contact */
-	public static final String COLUMN_DATE_CREATED = "dateCreated"; /* date when this contact was created locally */
+	public static final String COLUMN_CREATED_AT = "dateCreated"; /* date when this contact was created locally */
 	public static final String COLUMN_LAST_UPDATE = "lastUpdate"; /* date when the conversation was last updated */
-	public static final String COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP = "isHidden"; /* whether this contact has the acquaintance level "GROUP" and should be hidden */
+	public static final String COLUMN_ACQUAINTANCE_LEVEL = "acquaintanceLevel"; /* 0: DIRECT, 1: GROUP */
 	public static final String COLUMN_IS_RESTORED = "isRestored"; /* whether this contact has been restored from a backup and not yet been contacted */
 	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this contact has been archived by user */
 	public static final String COLUMN_READ_RECEIPTS = "readReceipts"; /* whether read receipts should be sent to this contact */
 	public static final String COLUMN_TYPING_INDICATORS = "typingIndicators"; /* whether typing indicators should be sent to this contact */
 	public static final String COLUMN_FORWARD_SECURITY_STATE = "forwardSecurityState"; /* current state of forward security with this contact */
+	public static final String COLUMN_SYNC_STATE = "syncState"; /* contact synchronization state, 0: INITIAL, 1: IMPORTED, 2: CUSTOM */
 
 	public static final byte[] NO_PROFILE_PICTURE_BLOB_ID = new byte[0];
 
@@ -136,22 +134,27 @@ public class ContactModel extends Contact implements ReceiverModel {
 	private String publicNickName;
 	private State state;
 	private String androidContactId;
-	private String threemaAndroidContactId;
-	private boolean isSynchronized;
 	private long featureMask;
 	private int colorIndex = -1;
 	private boolean isWork, isRestored, isArchived;
 	private AcquaintanceLevel acquaintanceLevel = AcquaintanceLevel.DIRECT;
-	private Date avatarExpires, dateCreated;
+	private Date localAvatarExpires, dateCreated;
 	private @Nullable Date lastUpdate;
 	private byte[] profilePicBlobID;
-	private @IdentityType.Type int type;
+	private @Nullable IdentityType type;
 	private @OverridePolicy int readReceipts, typingIndicators;
 	// TODO(ANDR-2452): Remove the forward security state when most of clients support 1.1 anyway
 	private int forwardSecurityState;
 
-	public ContactModel(String identity, byte[] publicKey) {
-		super(identity, publicKey);
+	public ContactModel(String identity, @NonNull byte[] publicKey) {
+		super(identity, publicKey, VerificationLevel.UNVERIFIED);
+	}
+
+	/**
+	 * Return whether or not this contact is linked to an Android contact.
+	 */
+	public boolean isLinkedToAndroidContact() {
+		return this.getAndroidContactLookupKey() != null;
 	}
 
 	/**
@@ -166,8 +169,8 @@ public class ContactModel extends Contact implements ReceiverModel {
 	public ContactModel setAndroidContactLookupKey(String androidContactId) {
 		this.androidContactId = androidContactId;
 		// degrade verification level as this contact is no longer connected to an address book contact
-		if (androidContactId == null && getVerificationLevel() == VerificationLevel.SERVER_VERIFIED) {
-			setVerificationLevel(VerificationLevel.UNVERIFIED);
+		if (androidContactId == null && verificationLevel == VerificationLevel.SERVER_VERIFIED) {
+			verificationLevel = VerificationLevel.UNVERIFIED;
 		}
 		return this;
 	}
@@ -184,50 +187,6 @@ public class ContactModel extends Contact implements ReceiverModel {
 
 	public ContactModel setPublicNickName(String publicNickName) {
 		this.publicNickName = publicNickName;
-		return this;
-	}
-
-	/**
-	 * Deprecated. Do not use. Used to store the ID or lookup key of the raw contact created by Threema.
-	 * @return
-	 */
-	@Deprecated
-	public String getThreemaAndroidContactId() {
-		return this.threemaAndroidContactId;
-	}
-
-	/**
-	 * Deprecated. Do not use. Used to store the ID or lookup key of the raw contact created by Threema.
-	 * @return
-	 */
-	@Deprecated
-	public ContactModel setThreemaAndroidContactId(String id) {
-		this.threemaAndroidContactId = id;
-		return this;
-	}
-
-	/**
-	 * Whether the contact is synchronized with the address book, i.e. the information came from an automatic sync
-	 * or it was manually linked
-	 * @return true if the contact in androidContactId was automatically synced, false if it was manually linked or not linked at all.
-	 *
-	 * @Deprecated Use getAndroidContactLookupKey() != null to determine if the contact is synchronized with the address book
-	 */
-	@Deprecated
-	public boolean isSynchronized() {
-		return this.isSynchronized;
-	}
-
-	/**
-	 * Sets whether this contact is synchronized with the address book, either from an automatic sync or manually
-	 * @param isSynchronized
-	 * @return ContactModel for a builder
-	 *
-	 * @Deprecated Use setAndroidContactLookupKey()
-	 */
-	@Deprecated
-	public ContactModel setIsSynchronized(boolean isSynchronized) {
-		this.isSynchronized = isSynchronized;
 		return this;
 	}
 
@@ -332,12 +291,20 @@ public class ContactModel extends Contact implements ReceiverModel {
 		return this;
 	}
 
-	public Date getAvatarExpires() {
-		return avatarExpires;
+	/**
+	 * Get the expiration date of a local avatar (either a gateway contact avatar,
+	 * or the avatar of a contact linked to an Android system contact).
+	 */
+	public @Nullable Date getLocalAvatarExpires() {
+		return localAvatarExpires;
 	}
 
-	public ContactModel setAvatarExpires(Date avatarExpires) {
-		this.avatarExpires = avatarExpires;
+	/**
+	 * Update the expiration date of a local avatar (either a gateway contact avatar,
+	 * or the avatar of a contact linked to an Android system contact).
+	 */
+	public @NonNull ContactModel setLocalAvatarExpires(@Nullable Date avatarExpires) {
+		this.localAvatarExpires = avatarExpires;
 		return this;
 	}
 
@@ -435,7 +402,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 	/**
 	 * Set the {@link IdentityType} (regular or work).
 	 */
-	public ContactModel setIdentityType(@IdentityType.Type int type) {
+	public ContactModel setIdentityType(IdentityType type) {
 		this.type = type;
 		return this;
 	}
@@ -443,7 +410,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 	/**
 	 * Return the {@link IdentityType} (regular or work).
 	 */
-	public @IdentityType.Type int getIdentityType() {
+	public @Nullable IdentityType getIdentityType() {
 		return this.type;
 	}
 
@@ -506,14 +473,12 @@ public class ContactModel extends Contact implements ReceiverModel {
 			this.getFirstName(),
 			this.getLastName(),
 			this.publicNickName,
-			this.getVerificationLevel(),
+			this.verificationLevel,
 			this.androidContactId,
-			this.threemaAndroidContactId,
-			this.isSynchronized,
 			this.colorIndex,
 			this.state,
 			this.featureMask,
-			this.avatarExpires,
+			this.localAvatarExpires,
 			this.isWork,
 			this.profilePicBlobID,
 			this.type,

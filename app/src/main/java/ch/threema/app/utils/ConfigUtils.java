@@ -21,20 +21,6 @@
 
 package ch.threema.app.utils;
 
-import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
-import static android.os.Build.VERSION_CODES.O_MR1;
-import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-import static android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
-import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
-import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
-import static ch.threema.app.camera.CameraUtil.isInternalCameraSupported;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
-import static ch.threema.app.services.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -49,6 +35,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
+import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -80,6 +67,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datatheorem.android.trustkit.TrustKit;
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.maplibre.android.MapLibre;
+import org.slf4j.Logger;
+
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
@@ -110,22 +113,6 @@ import androidx.window.layout.WindowMetricsCalculator;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
-
-import com.datatheorem.android.trustkit.TrustKit;
-import com.google.android.material.search.SearchBar;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-import com.mapbox.mapboxsdk.Mapbox;
-
-import org.slf4j.Logger;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSocketFactory;
-
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -142,6 +129,20 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeConfigureActivity;
 import ch.threema.app.workers.RestartWorker;
 import ch.threema.base.utils.LoggingUtil;
+
+import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
+import static android.os.Build.VERSION_CODES.O_MR1;
+import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+import static android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
+import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+import static ch.threema.app.camera.CameraUtil.isInternalCameraSupported;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
+import static ch.threema.app.services.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class ConfigUtils {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ConfigUtils");
@@ -161,9 +162,9 @@ public class ConfigUtils {
 
 	private static Integer miuiVersion = null;
 	private static int emojiStyle = 0;
-	private static Boolean isTablet = null, isBiggerSingleEmojis = null, hasMapLibreSupport = null;
+	private static Boolean isTablet = null, isBiggerSingleEmojis = null;
 	private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1, currentDayNightMode;
-	private static Mapbox mapbox = null;
+	private static WeakReference<MapLibre> mapLibreWeakReference = null;
 
 	private static final float[] NEGATIVE_MATRIX = {
 		-1.0f,     0,     0,    0, 255, // red
@@ -226,10 +227,6 @@ public class ConfigUtils {
 		return Build.MANUFACTURER.equalsIgnoreCase("HMD Global");
 	}
 
-	public static boolean canDoGroupedNotifications() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
-	}
-
 	public static boolean supportsNotificationChannels() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
 	}
@@ -242,6 +239,28 @@ public class ConfigUtils {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
 	}
 
+	/**
+	 * Get the supported gl es version on this device. Note that in cases where the version could
+	 * not be determined, {@link Double#NaN} is returned.
+	 * Note that this check may not work on all devices. On some devices, this returns version 3.0
+	 * even if only version 2.x is supported. However, on some devices this check works.
+	 */
+	public static double getSupportedGlEsVersion(@NonNull Context context) {
+		try {
+			ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+			ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
+			double supportedGlVersion = Double.parseDouble(configurationInfo.getGlEsVersion());
+			logger.debug("GlEs version: {}", supportedGlVersion);
+			return supportedGlVersion;
+		} catch (Exception e) {
+			logger.error("Could not determine gl es version", e);
+			return Double.NaN;
+		}
+	}
+
+	/**
+         * Check if this device has a bug related to media codec's async mode as described here https://github.com/google/ExoPlayer/issues/10021
+         */
 	public static boolean hasAsyncMediaCodecBug() {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ConfigUtils.isSamsungDevice() && Build.MODEL.startsWith("SM-G97");
 	}
@@ -279,13 +298,10 @@ public class ConfigUtils {
 	public static boolean isGroupCallsEnabled() {
 		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if (serviceManager != null) {
-			return BuildConfig.GROUP_CALLS_ENABLED
-				&& serviceManager.getPreferenceService().isGroupCallsEnabled()
-				&& !AppRestrictionUtil.isGroupCallsDisabled()
-				&& !AppRestrictionUtil.isCallsDisabled();
-		}
-		return BuildConfig.GROUP_CALLS_ENABLED;
+		return serviceManager != null
+			&& serviceManager.getPreferenceService().isGroupCallsEnabled()
+			&& !AppRestrictionUtil.isGroupCallsDisabled()
+			&& !AppRestrictionUtil.isCallsDisabled();
 	}
 
 	public static boolean isWorkDirectoryEnabled() {
@@ -307,6 +323,14 @@ public class ConfigUtils {
 			&& serviceManager.getPreferenceService().isMdUnlocked()
 			// If web is disabled by restriction, multi device is also not allowed
 			&& !AppRestrictionUtil.isWebDisabled(ThreemaApplication.getAppContext());
+	}
+
+	public static boolean isEditMessagesEnabled() {
+		return BuildConfig.EDIT_MESSAGES_ENABLED;
+	}
+
+	public static boolean isDeleteMessagesEnabled() {
+		return BuildConfig.DELETE_MESSAGES_ENABLED;
 	}
 
 	/**
@@ -580,7 +604,10 @@ public class ConfigUtils {
 	}
 
 	private static String getLicenceURL(Context context, @StringRes int url) {
-		String lang = LocaleUtil.getAppLanguage().startsWith("de") ? "de" : "en";
+		String language = LocaleUtil.getAppLanguage();
+		String lang = language.startsWith("de") || language.startsWith("gsw")
+			? "de"
+			: "en";
 		String version = ConfigUtils.getAppVersion();
 		boolean darkModeOverride = false;
 		if (context instanceof AppCompatActivity) {
@@ -1529,8 +1556,8 @@ public class ConfigUtils {
 
 	@UiThread
 	public static void getMapLibreInstance() {
-		if (mapbox == null) {
-			mapbox = Mapbox.getInstance(ThreemaApplication.getAppContext());
+		if (mapLibreWeakReference == null || mapLibreWeakReference.get() == null) {
+			mapLibreWeakReference = new WeakReference<>(MapLibre.getInstance(ThreemaApplication.getAppContext()));
 			logger.info("MapLibre enabled");
 		}
 	}

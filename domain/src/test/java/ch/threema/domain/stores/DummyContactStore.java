@@ -48,11 +48,6 @@ public class DummyContactStore implements ContactStore {
 	}
 
 	@Override
-	public void addContact(@NonNull Contact contact, boolean hide) {
-		contactMap.put(contact.getIdentity(), contact);
-	}
-
-	@Override
 	public void removeContact(@NonNull Contact contact) {
 		contactMap.remove(contact.getIdentity());
 	}

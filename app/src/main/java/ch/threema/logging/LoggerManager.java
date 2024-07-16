@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import ch.threema.app.BuildConfig;
+import ch.threema.app.BuildFlavor;
 import ch.threema.logging.backend.DebugLogFileBackend;
 import ch.threema.logging.backend.LogBackend;
 import ch.threema.logging.backend.LogcatBackend;
@@ -90,7 +91,8 @@ public class LoggerManager {
 
 		// Initialize backends
 		final List<LogBackend> backends = new ArrayList<>();
-		if (BuildConfig.DEBUG) {
+		if (BuildConfig.DEBUG || BuildFlavor.isSandbox()) {
+			// Enable logging to logcat only for debug and sandbox builds
 			backends.add(new LogcatBackend(Log.VERBOSE));
 		}
 		backends.add(new DebugLogFileBackend(minLogLevel));

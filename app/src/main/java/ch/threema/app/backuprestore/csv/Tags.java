@@ -59,7 +59,6 @@ public abstract class Tags {
 	public static final String TAG_CONTACT_NICK_NAME = "nick_name";
 	public static final String TAG_CONTACT_VERIFICATION_LEVEL = "verification";
 	public static final String TAG_CONTACT_ANDROID_CONTACT_ID = "acid";
-	public static final String TAG_CONTACT_THREEMA_ANDROID_CONTACT_ID = "tacid";
 	public static final String TAG_CONTACT_LAST_UPDATE = "last_update";
 	public static final String TAG_CONTACT_HIDDEN = "hidden";
 	public static final String TAG_CONTACT_ARCHIVED = "archived";
@@ -90,6 +89,8 @@ public abstract class Tags {
 	public static final String TAG_MESSAGE_MODIFIED_AT = "modified_at";
 	public static final String TAG_MESSAGE_DELIVERED_AT = "delivered_at";
 	public static final String TAG_MESSAGE_READ_AT = "read_at";
+	public static final String TAG_MESSAGE_EDITED_AT = "edited_at";
+	public static final String TAG_MESSAGE_DELETED_AT = "deleted_at";
 	public static final String TAG_GROUP_MESSAGE_STATES = "g_msg_states";
 
 	public static final String TAG_MESSAGE_MESSAGE_STATE = "messagestae";

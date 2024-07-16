@@ -98,6 +98,10 @@ public abstract class AbstractMessageModel {
 	public static final String COLUMN_FORWARD_SECURITY_MODE = "forwardSecurityMode";
 	/** Display tags. Used e.g. for starred or pinned messages */
 	public static final String COLUMN_DISPLAY_TAGS = "displayTags";
+	/** When the message was edited */
+	public static final String COLUMN_EDITED_AT = "editedAtUtc";
+	/** When the message was deleted */
+	public static final String COLUMN_DELETED_AT = "deletedAtUtc";
 
 	private int id;
 	private String uid;
@@ -115,6 +119,8 @@ public abstract class AbstractMessageModel {
 	private Date deliveredAt;
 	private Date readAt;
 	private Date modifiedAt;
+	private Date editedAt;
+	private Date deletedAt;
 	private boolean isStatusMessage;
 	private String caption;
 	private String quotedMessageId;
@@ -322,6 +328,30 @@ public abstract class AbstractMessageModel {
 
 	public AbstractMessageModel setReadAt(Date readAt) {
 		this.readAt = readAt;
+		return this;
+	}
+
+	@Nullable
+	public Date getEditedAt() {
+		return this.editedAt;
+	}
+
+	public AbstractMessageModel setEditedAt(Date editedAt) {
+		this.editedAt = editedAt;
+		return this;
+	}
+
+	@Nullable
+	public Date getDeletedAt() {
+		return this.deletedAt;
+	}
+
+	public boolean isDeleted() {
+		return this.deletedAt != null;
+	}
+
+	public AbstractMessageModel setDeletedAt(Date deletedAt) {
+		this.deletedAt = deletedAt;
 		return this;
 	}
 
@@ -570,6 +600,8 @@ public abstract class AbstractMessageModel {
 				.setModifiedAt(sourceModel.getModifiedAt())
 				.setDeliveredAt(sourceModel.getDeliveredAt())
 				.setReadAt(sourceModel.getReadAt())
+				.setEditedAt(sourceModel.getEditedAt())
+				.setDeletedAt(sourceModel.getDeletedAt())
 				.setBody(sourceModel.getBody())
 				.setCaption(sourceModel.getCaption())
 				.setQuotedMessageId(sourceModel.getQuotedMessageId())

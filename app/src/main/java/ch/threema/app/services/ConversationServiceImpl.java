@@ -21,6 +21,9 @@
 
 package ch.threema.app.services;
 
+import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_PIN;
+import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_UNREAD;
+
 import android.content.Context;
 import android.database.Cursor;
 
@@ -136,7 +139,7 @@ public class ConversationServiceImpl implements ConversationService {
 		this.conversationCache = cacheService.getConversationModelCache();
 		this.conversationTagService = conversationTagService;
 
-		TagModel pinTagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
+		TagModel pinTagModel = conversationTagService.getTagModel(FIXED_TAG_PIN);
 		this.pinTag = pinTagModel != null ? pinTagModel.getTag() : "";
 
 		this.unreadTagModel = conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
@@ -402,7 +405,7 @@ public class ConversationServiceImpl implements ConversationService {
 						logger.warn("No result for updating identity {}", contactModel.getIdentity());
 						return;
 					}
-					ConversationModel updatedModel = conversationModelParser.parseResult(result.get(0), null, false);
+					ConversationModel updatedModel = conversationModelParser.parseResult(result.get(0), conversationModel, false);
 					if (updatedModel != null) {
 						// persist tags from original model
 						updatedModel.setIsPinTagged(conversationModel.isPinTagged());
@@ -438,7 +441,18 @@ public class ConversationServiceImpl implements ConversationService {
 	public synchronized ConversationModel refresh(@NonNull MessageReceiver receiver) {
 		switch (receiver.getType()) {
 			case MessageReceiver.Type_CONTACT:
-				return this.refresh(((ContactMessageReceiver)receiver).getContact());
+				// TODO(ANDR-3139): This comparison should be removed once we use the new contact
+				//  model in the webclient. This will allow us to use the new model in the message
+				//  receiver as well.
+				ContactModel providedModel = ((ContactMessageReceiver) receiver).getContact();
+				String identity = providedModel.getIdentity();
+				ContactModel cachedModel = contactService.getByIdentity(identity);
+				if (providedModel != cachedModel) {
+					logger.warn("Several contact model instances are in use. Resetting cache.");
+					contactService.removeFromCache(identity);
+					cachedModel = contactService.getByIdentity(identity);
+				}
+				return this.refresh(cachedModel);
 			case MessageReceiver.Type_GROUP:
 				return this.refresh(((GroupMessageReceiver)receiver).getGroup());
 			case MessageReceiver.Type_DISTRIBUTION_LIST:
@@ -530,8 +544,11 @@ public class ConversationServiceImpl implements ConversationService {
 			this.messageService.remove(m, silentMessageUpdate);
 		}
 
-		// Remove tags
-		this.conversationTagService.removeAll(conversation);
+		// Remove unread tag but not the pinned tag
+		TagModel unreadTagModel = conversationTagService.getTagModel(FIXED_TAG_UNREAD);
+		if (unreadTagModel != null) {
+			this.conversationTagService.removeTag(conversation.getUid(), unreadTagModel);
+		}
 
 		// Update conversation
 		conversation.setLatestMessage(null);
@@ -545,7 +562,12 @@ public class ConversationServiceImpl implements ConversationService {
 
 	@Override
 	public synchronized int empty(@NonNull ContactModel contactModel) {
-		final ConversationModel conversationModel = new ContactConversationModelParser().getCached(contactModel);
+		return empty(contactModel.getIdentity());
+	}
+
+	@Override
+	public int empty(@NonNull String identity) {
+		final ConversationModel conversationModel = new ContactConversationModelParser().getCached(identity);
 		if (conversationModel != null) {
 			return this.empty(conversationModel, true);
 		}
@@ -572,15 +594,22 @@ public class ConversationServiceImpl implements ConversationService {
 
 	@Override
 	public synchronized int delete(@NonNull ContactModel contactModel) {
+		return delete(contactModel.getIdentity());
+	}
+
+	@Override
+	public synchronized int delete(@NonNull String identity) {
 		// Empty chat (if it isn't already empty)
-		final int removedCount = this.empty(contactModel);
+		final int removedCount = this.empty(identity);
 
 		// Clear lastUpdate
-		this.contactService.clearLastUpdate(contactModel.getIdentity());
+		this.contactService.clearLastUpdate(identity);
 
 		// Remove from cache and notify listeners
-		final ConversationModel conversationModel = new ContactConversationModelParser().getCached(contactModel);
+		final ConversationModel conversationModel = new ContactConversationModelParser().getCached(identity);
 		if (conversationModel != null) {
+			// Remove tags
+			this.conversationTagService.removeAll(conversationModel);
 			this.removeFromCache(conversationModel);
 		}
 
@@ -1009,7 +1038,7 @@ public class ConversationServiceImpl implements ConversationService {
 				"SELECT c.identity, IFNULL(m.messageCount, 0) AS messageCount, c.lastUpdate, m.latestMessageId " +
 				"FROM contacts c " +
 				"LEFT JOIN message_info m ON c.identity = m.identity " +
-				"WHERE c.lastUpdate IS NOT NULL AND c.isHidden != 1 AND c.isArchived = " + (archived ? "1" : "0")
+				"WHERE c.lastUpdate IS NOT NULL AND c.acquaintanceLevel != 1 AND c.isArchived = " + (archived ? "1" : "0")
 			);
 		}
 

@@ -35,6 +35,7 @@ import ch.threema.domain.protocol.connection.csp.socket.ProxyAwareSocketFactory
 import ch.threema.domain.protocol.connection.d2m.D2mConnectionConfiguration
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 import java8.util.function.Supplier
 import okhttp3.OkHttpClient
@@ -51,6 +52,7 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("CspD2mDualConnec
  */
 class CspD2mDualConnectionSupplier (
     private val multiDeviceManager: MultiDeviceManager,
+    private val incomingMessageProcessor: IncomingMessageProcessor,
     private val taskManager: TaskManager,
     private val deviceCookieManager: DeviceCookieManager,
     private val serverAddressProviderService: ServerAddressProviderService,
@@ -99,6 +101,7 @@ class CspD2mDualConnectionSupplier (
             version,
             isTestBuild,
             deviceCookieManager,
+            incomingMessageProcessor,
             taskManager,
             AsyncResolver::getAllByName,
             isIpv6Preferred,
@@ -114,6 +117,7 @@ class CspD2mDualConnectionSupplier (
             version,
             isTestBuild,
             deviceCookieManager,
+            incomingMessageProcessor,
             taskManager,
             multiDeviceManager.propertiesProvider,
             multiDeviceManager.socketCloseListener,

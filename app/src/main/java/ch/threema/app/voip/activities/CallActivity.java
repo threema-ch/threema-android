@@ -34,7 +34,6 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.app.KeyguardManager;
 import android.app.PictureInPictureParams;
@@ -635,18 +634,20 @@ public class CallActivity extends ThreemaActivity implements
 
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
-		public void onModified(ContactModel modifiedContactModel) {
-			RuntimeUtil.runOnUiThread(CallActivity.this::updateContactInfo);
+		public void onModified(final @NonNull String identity) {
+			this.handleUpdate(identity);
 		}
 
 		@Override
 		public void onAvatarChanged(ContactModel contactModel) {
-			RuntimeUtil.runOnUiThread(CallActivity.this::updateContactInfo);
+			this.handleUpdate(contactModel.getIdentity());
 		}
 
-		@Override
-		public boolean handle(String identity) {
-			return contact != null && TestUtil.compare(contact.getIdentity(), identity);
+		private void handleUpdate(String identity) {
+			if (contact == null || !TestUtil.compare(contact.getIdentity(), identity)) {
+				return;
+			}
+			RuntimeUtil.runOnUiThread(CallActivity.this::updateContactInfo);
 		}
 	};
 

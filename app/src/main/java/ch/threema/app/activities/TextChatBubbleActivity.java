@@ -25,20 +25,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.ActionMode;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.LayoutRes;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.card.MaterialCardView;
 
 import org.slf4j.Logger;
 
@@ -48,13 +40,10 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.emojis.EmojiConversationTextView;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
+import ch.threema.app.ui.MessageBubbleView;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
-import ch.threema.app.utils.MessageUtil;
-import ch.threema.app.utils.QuoteUtil;
-import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -68,8 +57,7 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 
 	private int defaultTextSizeDp;
 	private MaterialToolbar toolbar;
-
-	private EmojiConversationTextView textView;
+	private MessageBubbleView messageBubbleView;
 
 	private final ActionMode.Callback textSelectionCallback = new ActionMode.Callback() {
 		@Override
@@ -136,8 +124,7 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 
 		MessageService messageService;
 		MessageReceiver<? extends AbstractMessageModel> messageReceiver;
-		@LayoutRes int footerLayout;
-		@ColorInt int color;
+
 		String title;
 
 		try {
@@ -158,15 +145,15 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 
 		if (messageModel.isOutbox()) {
 			// send
-			color = ConfigUtils.getColorFromAttribute(this, R.attr.colorSecondaryContainer);
 			title = getString(R.string.threema_message_to, messageReceiver.getDisplayName());
-			footerLayout = R.layout.conversation_bubble_footer_send;
 		} else {
 			// recv
-			color = getResources().getColor(R.color.bubble_receive);
 			title = getString(R.string.threema_message_from, messageReceiver.getDisplayName());
-			footerLayout = R.layout.conversation_bubble_footer_recv;
 		}
+
+		messageBubbleView = findViewById(R.id.message_bubble);
+		messageBubbleView.show(messageModel);
+		messageBubbleView.linkifyText(this, messageModel, false);
 
 		toolbar = findViewById(R.id.material_toolbar);
 		toolbar.setNavigationOnClickListener(view -> finish());
@@ -174,18 +161,16 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 			if (item.getItemId() == R.id.enable_formatting) {
 				if (item.isChecked()) {
 					item.setChecked(false);
-					textView.setIgnoreMarkup(true);
-					setText(messageModel, true);
+					messageBubbleView.linkifyText(this, messageModel, true);
 				} else {
 					item.setChecked(true);
-					textView.setIgnoreMarkup(false);
-					setText(messageModel, false);
+					messageBubbleView.linkifyText(this, messageModel, false);
 				}
 			} else if (item.getItemId() == R.id.zoom_in) {
-				textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, getTextSizeDp(textView) + TEXT_SIZE_INCREMENT_DP);
+				messageBubbleView.increaseTextSizeByDp((int) TEXT_SIZE_INCREMENT_DP);
 				updateMenus();
 			} else if (item.getItemId() == R.id.zoom_out) {
-				textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, getTextSizeDp(textView) - TEXT_SIZE_INCREMENT_DP);
+				messageBubbleView.increaseTextSizeByDp((int) -TEXT_SIZE_INCREMENT_DP);
 				updateMenus();
 			}
 			return true;
@@ -194,36 +179,11 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 
 		ConfigUtils.addIconsToOverflowMenu(this, toolbar.getMenu());
 
-		MaterialCardView cardView = findViewById(R.id.card_view);
-		cardView.setCardBackgroundColor(color);
-
-		View footerView = LayoutInflater.from(this).inflate(footerLayout, null);
-		((ViewGroup) findViewById(R.id.footer)).addView(footerView);
-
-		textView = findViewById(R.id.text_view);
-		setText(messageModel, false);
-		defaultTextSizeDp = getTextSizeDp(textView);
-
-		// display date
-		CharSequence s = MessageUtil.getDisplayDate(this, messageModel, true);
-		((TextView) footerView.findViewById(R.id.date_view)).setText(s != null ? s : "");
-
-		// display message status
-		StateBitmapUtil.getInstance().setStateDrawable(this, messageModel, findViewById(R.id.delivered_indicator), true);
-
-		// mock a composemessageholder
-		ComposeMessageHolder holder = new ComposeMessageHolder();
-		holder.groupAckContainer = footerView.findViewById(R.id.groupack_container);
-		holder.groupAckThumbsUpCount = footerView.findViewById(R.id.groupack_thumbsup_count);
-		holder.groupAckThumbsDownCount = footerView.findViewById(R.id.groupack_thumbsdown_count);
-		holder.groupAckThumbsUpImage = footerView.findViewById(R.id.groupack_thumbsup);
-		holder.groupAckThumbsDownImage = footerView.findViewById(R.id.groupack_thumbsdown);
-		holder.deliveredIndicator = findViewById(R.id.delivered_indicator);
-		StateBitmapUtil.getInstance().setGroupAckCount(messageModel, holder);
+		defaultTextSizeDp = messageBubbleView.getTextSizeDp();
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			// do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508
-			textView.setCustomSelectionActionModeCallback(textSelectionCallback);
+			messageBubbleView.setCustomSelectionActionModeCallback(textSelectionCallback);
 		}
 
 		findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
@@ -242,23 +202,12 @@ public class TextChatBubbleActivity extends ThreemaToolbarActivity implements Ge
 	}
 
 	private void updateMenus() {
-		if (textView != null && toolbar != null) {
+		if (messageBubbleView != null && toolbar != null) {
 			Menu menu = toolbar.getMenu();
 			if (menu != null) {
-				menu.findItem(R.id.zoom_in).setVisible(getTextSizeDp(textView) < (defaultTextSizeDp * 4));
-				menu.findItem(R.id.zoom_out).setVisible(getTextSizeDp(textView) > (defaultTextSizeDp / 2));
+				menu.findItem(R.id.zoom_in).setVisible(messageBubbleView.getTextSizeDp() < (defaultTextSizeDp * 4));
+				menu.findItem(R.id.zoom_out).setVisible(messageBubbleView.getTextSizeDp() > (defaultTextSizeDp / 2));
 			}
-		}
-	}
-
-	private int getTextSizeDp(TextView textView) {
-		return (int) Math.round(textView.getTextSize() / getResources().getDisplayMetrics().density);
-	}
-
-	private void setText(AbstractMessageModel messageModel, boolean ignoreMarkup) {
-		textView.setText(QuoteUtil.getMessageBody(messageModel, false));
-		if (!ignoreMarkup) {
-			LinkifyUtil.getInstance().linkify(null, this, textView, messageModel, true, false, null);
 		}
 	}
 

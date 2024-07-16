@@ -72,7 +72,6 @@ class TaskExecutionTest {
      * The task manager that is tested.
      */
     private val taskManager: TaskManagerImpl = TaskManagerImpl(
-        mock(IncomingMessageProcessor::class.java),
         { mock(TaskArchiver::class.java) },
         mock(DeviceCookieManager::class.java),
         TaskManagerImpl.TaskManagerDispatchers(
@@ -322,10 +321,10 @@ class TaskExecutionTest {
             // Launch new coroutine to restart the task manager
             CoroutineScope(Dispatchers.Default).launch {
                 taskManager.pauseRunningTasks()
-                taskManager.startRunningTasks(layer5Codec)
+                taskManager.startRunningTasks(layer5Codec, mock(IncomingMessageProcessor::class.java))
             }
         }
-        taskManager.startRunningTasks(layer5Codec)
+        taskManager.startRunningTasks(layer5Codec, mock(IncomingMessageProcessor::class.java))
     }
 
     private suspend fun stopConnection() {

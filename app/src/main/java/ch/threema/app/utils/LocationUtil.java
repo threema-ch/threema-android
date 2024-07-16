@@ -26,8 +26,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
-import com.mapbox.mapboxsdk.annotations.Icon;
-import com.mapbox.mapboxsdk.annotations.IconFactory;
+import org.maplibre.android.annotations.Icon;
+import org.maplibre.android.annotations.IconFactory;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;

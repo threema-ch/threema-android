@@ -56,7 +56,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
@@ -268,6 +267,11 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 			this.attachGalleryButton.setVisibility(View.GONE);
 		}
 
+		// If gl es version 3.0 or newer is not supported, we cannot send a location
+		if (ConfigUtils.getSupportedGlEsVersion(this) < 3.0) {
+			this.attachLocationButton.setVisibility(View.GONE);
+		}
+
 		if (messageReceiver instanceof DistributionListMessageReceiver ||
 			(messageReceiver instanceof GroupMessageReceiver && groupService != null && groupService.isNotesGroup(((GroupMessageReceiver) messageReceiver).getGroup()))) {
 			this.attachBallotButton.setVisibility(View.GONE);
@@ -366,18 +370,22 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				0,
 				0,
 				0);
+			final int animDelayDiff = 25;
+			int animDelay = animDelayDiff;
 			if (attachGalleryButton.getVisibility() == View.VISIBLE) {
-				AnimationUtil.bubbleAnimate(attachGalleryButton, 25);
+				AnimationUtil.bubbleAnimate(attachGalleryButton, animDelay);
 			}
-			AnimationUtil.bubbleAnimate(attachFileButton, 25);
-			AnimationUtil.bubbleAnimate(attachLocationButton, 50);
+			AnimationUtil.bubbleAnimate(attachFileButton, animDelay += animDelayDiff);
+			if (attachLocationButton.getVisibility() == View.VISIBLE) {
+				AnimationUtil.bubbleAnimate(attachLocationButton, animDelay += animDelayDiff);
+			}
 			if (attachBallotButton.getVisibility() == View.VISIBLE) {
-				AnimationUtil.bubbleAnimate(attachBallotButton, 50);
+				AnimationUtil.bubbleAnimate(attachBallotButton, animDelay += animDelayDiff);
 			}
-			AnimationUtil.bubbleAnimate(attachContactButton, 75);
-			AnimationUtil.bubbleAnimate(attachDrawingButton, 75);
-			AnimationUtil.bubbleAnimate(attachQRButton, 75);
-			AnimationUtil.bubbleAnimate(attachFromExternalCameraButton, 100);
+			AnimationUtil.bubbleAnimate(attachContactButton, animDelay += animDelayDiff);
+			AnimationUtil.bubbleAnimate(attachDrawingButton, animDelay += animDelayDiff);
+			AnimationUtil.bubbleAnimate(attachQRButton, animDelay += animDelayDiff);
+			AnimationUtil.bubbleAnimate(attachFromExternalCameraButton, animDelay + animDelayDiff);
 		}
 	}
 

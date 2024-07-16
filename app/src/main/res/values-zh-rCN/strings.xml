@@ -1047,8 +1047,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="delete">删除</string>
     <string name="continue_recording">继续录音</string>
     <string name="whatsnew_title">%1$s 5.2 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p> 
-<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p> 
+    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p>
+<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p>
 <p>这次更新还有大量其他改进和优化。</p> ]]></string>
     <string name="whatsnew2_title">" "</string>
     <string name="whatsnew2_body">" "</string>

@@ -25,7 +25,6 @@ import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
-import kotlinx.coroutines.test.runTest
 import ch.threema.app.activities.HomeActivity
 import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.ListenerManager
@@ -39,9 +38,10 @@ import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import junit.framework.TestCase.fail
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -74,8 +74,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      * Test that the creator of a group cannot leave the group.
      */
     @Test
-    @Ignore("TODO(ANDR-2385): ignore group leave messages from group creators")
-    fun testLeaveFromSender() = runTest {
+    fun testLeaveFromCreator() = runTest {
         assertUnsuccessfulLeave(groupA, contactA)
         assertUnsuccessfulLeave(groupB, contactB)
     }

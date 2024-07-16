@@ -64,4 +64,8 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 
 	// associated messageplayer
 	public MessagePlayer messagePlayer;
+
+	public TextView editedText;
+	// content type of item represented by this holder (layout, decorator etc.)
+	public int itemType;
 }

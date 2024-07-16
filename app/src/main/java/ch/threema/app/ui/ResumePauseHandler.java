@@ -34,7 +34,7 @@ public class ResumePauseHandler {
 	private static final Map<String, ResumePauseHandler> instances = new HashMap<>();
 	private static final Object lock = new Object();
 
-	private final Map<String, RunIfActive> runIfActiveList = new HashMap<String, RunIfActive>();
+	private final Map<String, RunIfActive> runIfActiveList = new HashMap<>();
 	private final WeakReference<Activity> activityReference;
 	private boolean isActive;
 	private boolean hasHandlers = false;

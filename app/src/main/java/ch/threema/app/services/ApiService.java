@@ -33,5 +33,11 @@ public interface ApiService {
 	BlobUploader createUploader(byte[] data) throws ThreemaException;
 	BlobLoader createLoader(byte[] blobId);
 	String getAuthToken() throws ThreemaException;
+
+	/**
+	 * Invalidate the auth token (only used for onprem). This forces a new fetch of the auth token
+	 * the next time the token is obtained with {@link #getAuthToken()}.
+	 */
+	void invalidateAuthToken();
 	HttpsURLConnection createAvatarURLConnection(String identity) throws ThreemaException, IOException;
 }

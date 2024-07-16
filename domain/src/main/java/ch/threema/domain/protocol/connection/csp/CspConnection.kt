@@ -32,6 +32,7 @@ import ch.threema.domain.protocol.connection.csp.socket.HostResolver
 import ch.threema.domain.protocol.connection.csp.socket.SocketFactory
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 /**
  * Only this interface is exposed to other modules
@@ -75,6 +76,7 @@ data class CspConnectionConfiguration(
     override val version: Version,
     override val assertDispatcherContext: Boolean,
     override val deviceCookieManager: DeviceCookieManager,
+    override val incomingMessageProcessor: IncomingMessageProcessor,
     override val taskManager: TaskManager,
     val hostResolver: HostResolver,
     val ipv6: Boolean,

@@ -58,7 +58,7 @@ class ProfilePictureDistributionTask(
         }
 
         // Step 2: Abort if the contact's id is ECHOECHO or a Gateway ID
-        if (ContactUtil.isEchoEchoOrChannelContact(contactModel)) {
+        if (ContactUtil.isEchoEchoOrGatewayContact(contactModel)) {
             logger.info(
                 "{}: Contact {} should not receive the profile picture",
                 prefix,

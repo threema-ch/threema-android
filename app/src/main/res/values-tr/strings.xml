@@ -1014,6 +1014,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="whatsnew_headline"><![CDATA[<p>Yıldızlı mesajlar: Daha sonra kolayca bulmak için, önemli mesajlara uzun süre dokunarak bir yıldızla işaretleyin.</p>
 <p>Otomatik Silme: Sohbetlerinizin seçilebilir bir süre sonra otomatik olarak temizlenmesini sağlayın. Mesajlar için otomatik silme işlevi depolama yönetiminde etkinleştirilebilir.</p>
 <p>Diğer sayısız iyileştirme ve optimizasyon.</p>]]></string>
+    <string name="whatsnew2_title">(boş bir ifade)</string>
+    <string name="whatsnew2_body">(boş bir ifade)</string>
     <string name="tap_to_start">%s şimdi başlatmak için buraya dokunun.</string>
     <string name="two_years">2 yıl</string>
     <string name="invalid_backup_path">Geçersiz yedekleme dizini</string>

@@ -43,12 +43,6 @@ public class ContactUtilTest {
 	private ContactModel createModel(String identity) {
 		return new ContactModel(identity, new byte[32]);
 	}
-	@Test
-	public void isLinked() {
-		Assert.assertFalse(ContactUtil.isLinked(null));
-		Assert.assertFalse(ContactUtil.isLinked(createModel("ECHOECHO").setAndroidContactLookupKey(null)));
-		Assert.assertTrue(ContactUtil.isLinked(createModel("ECHOECHO").setAndroidContactLookupKey("abc")));
-	}
 
 	@Test
 	public void canHaveCustomAvatar() {
@@ -94,7 +88,7 @@ public class ContactUtilTest {
 		// Preferences disabled
 		when(preferenceServiceMock.getProfilePicReceive()).thenReturn(false);
 		// No contact photo defined
-		when(fileServiceMock.hasContactPhotoFile(any(ContactModel.class))).thenReturn(false);
+		when(fileServiceMock.hasContactPhotoFile(any(String.class))).thenReturn(false);
 
 		// Normal contact, not linked
 		Assert.assertTrue(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
@@ -110,7 +104,7 @@ public class ContactUtilTest {
 		// Preferences disabled
 		when(preferenceServiceMock.getProfilePicReceive()).thenReturn(false);
 		// Contact photo defined
-		when(fileServiceMock.hasContactPhotoFile(any(ContactModel.class))).thenReturn(true);
+		when(fileServiceMock.hasContactPhotoFile(any(String.class))).thenReturn(true);
 
 		// Normal contact, not linked
 		Assert.assertTrue(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
@@ -126,7 +120,7 @@ public class ContactUtilTest {
 		// Preferences enabled
 		when(preferenceServiceMock.getProfilePicReceive()).thenReturn(true);
 		// No contact photo defined
-		when(fileServiceMock.hasContactPhotoFile(any(ContactModel.class))).thenReturn(false);
+		when(fileServiceMock.hasContactPhotoFile(any(String.class))).thenReturn(false);
 
 		// Normal contact, not linked
 		Assert.assertTrue(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));
@@ -142,7 +136,7 @@ public class ContactUtilTest {
 		// Preferences enabled
 		when(preferenceServiceMock.getProfilePicReceive()).thenReturn(true);
 		// Contact photo defined
-		when(fileServiceMock.hasContactPhotoFile(any(ContactModel.class))).thenReturn(true);
+		when(fileServiceMock.hasContactPhotoFile(any(String.class))).thenReturn(true);
 
 		// Normal contact, not linked
 		Assert.assertFalse(ContactUtil.canChangeAvatar(createModel("ECHOECHO").setAndroidContactLookupKey(null), preferenceServiceMock, fileServiceMock));

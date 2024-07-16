@@ -25,7 +25,6 @@ import ch.threema.app.DangerousTest
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSGCONSUMED
 import ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSGREAD
 import ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED
 import ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK
@@ -126,14 +125,6 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
                 it.receiptType = DELIVERYRECEIPT_MSGRECEIVED
                 it.receiptMessageIds = arrayOf(messageId)
                 it.messageId = MessageId(0)
-            }.enrich(), contactA
-        )
-
-        // Test 'consumed'
-        assertSuccessfulMessageProcessing(
-            DeliveryReceiptMessage().also {
-                it.receiptType = DELIVERYRECEIPT_MSGCONSUMED
-                it.receiptMessageIds = arrayOf(messageId)
             }.enrich(), contactA
         )
 

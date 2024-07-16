@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
 
 public class DeviceIdUtil {
@@ -37,6 +38,7 @@ public class DeviceIdUtil {
 
 	private static final String DEVICE_ID_FILENAME = "device_id";
 
+	@NonNull
 	public static String getDeviceId(Context context) {
 		String deviceId = null;
 		File deviceIdFile = new File(context.getFilesDir(), DEVICE_ID_FILENAME);

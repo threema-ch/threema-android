@@ -53,7 +53,13 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.AudioMessage;
+import ch.threema.domain.protocol.csp.messages.DeleteMessage;
+import ch.threema.domain.protocol.csp.messages.DeleteMessageData;
 import ch.threema.domain.protocol.csp.messages.EmptyMessage;
+import ch.threema.domain.protocol.csp.messages.EditMessage;
+import ch.threema.domain.protocol.csp.messages.EditMessageData;
+import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage;
+import ch.threema.domain.protocol.csp.messages.GroupEditMessage;
 import ch.threema.domain.protocol.csp.messages.ImageMessage;
 import ch.threema.domain.protocol.csp.messages.LocationMessage;
 import ch.threema.domain.protocol.csp.messages.TextMessage;
@@ -1037,6 +1043,58 @@ public class MessageCoder {
 					throw new BadMessageException(e.getMessage());
 				}
 				msg = new WebSessionResumeMessage(webSessionResumeData);
+				break;
+			}
+
+			case ProtocolDefines.MSGTYPE_EDIT_MESSAGE: {
+				final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
+				final EditMessageData editMessageData = EditMessageData.fromProtobuf(protobufPayload);
+				msg = new EditMessage(editMessageData);
+				break;
+			}
+
+			case ProtocolDefines.MSGTYPE_DELETE_MESSAGE: {
+				final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
+				final DeleteMessageData deleteMessageData = DeleteMessageData.fromProtobuf(protobufPayload);
+				msg = new DeleteMessage(deleteMessageData);
+				break;
+			}
+
+			case ProtocolDefines.MSGTYPE_GROUP_EDIT_MESSAGE: {
+				int headerLength = 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN;
+				if (realDataLength < headerLength) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for group call start message");
+				}
+
+				final byte[] protobufPayload = Arrays.copyOfRange(data, headerLength, realDataLength);
+
+				final EditMessageData editMessageData = EditMessageData.fromProtobuf(protobufPayload);
+				final GroupEditMessage editMessage = new GroupEditMessage(editMessageData);
+
+				editMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
+				editMessage.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
+
+				msg = editMessage;
+
+				break;
+			}
+
+			case ProtocolDefines.MSGTYPE_GROUP_DELETE_MESSAGE: {
+				int headerLength = 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN;
+				if (realDataLength < headerLength) {
+					throw new BadMessageException("Bad length (" + realDataLength + ") for delete message");
+				}
+
+				final byte[] protobufPayload = Arrays.copyOfRange(data, headerLength, realDataLength);
+
+				final DeleteMessageData deleteMessageData = DeleteMessageData.fromProtobuf(protobufPayload);
+				final GroupDeleteMessage deleteMessage = new GroupDeleteMessage(deleteMessageData);
+
+				deleteMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
+				deleteMessage.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
+
+				msg = deleteMessage;
+
 				break;
 			}
 

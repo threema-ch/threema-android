@@ -179,6 +179,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 		final ReceiverUpdateHandler receiverUpdateHandler = new ReceiverUpdateHandler(
 			handler,
 			updateDispatcher,
+			services.database,
 			services.synchronizeContacts
 		);
 		final ReceiversUpdateHandler receiversUpdateHandler = new ReceiversUpdateHandler(
@@ -480,7 +481,9 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 			services.contact,
 			services.group,
 			services.conversation,
-			services.conversationTag
+			services.conversationTag,
+			services.message,
+			services.notification
 		));
 
 		deleteDispatcher.addReceiver(new DeleteMessageHandler(

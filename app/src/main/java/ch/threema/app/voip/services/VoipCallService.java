@@ -923,7 +923,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 		final boolean gatherContinually = true;
 
 		boolean forceTurn;
-		if (contact.getVerificationLevel() == VerificationLevel.UNVERIFIED) {
+		if (contact.verificationLevel == VerificationLevel.UNVERIFIED) {
 			// Force TURN if the contact is unverified, to hide the local IP address.
 			// This makes sure that a stranger cannot find out your IP simply by calling you.
 			logCallInfo(callId, "Force TURN since contact is unverified");

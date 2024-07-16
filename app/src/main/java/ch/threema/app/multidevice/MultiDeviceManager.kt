@@ -24,6 +24,7 @@ package ch.threema.app.multidevice
 
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
+import ch.threema.app.multidevice.linking.DeviceJoinDataCollector
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
@@ -54,7 +55,7 @@ interface MultiDeviceManager {
         taskManager: TaskManager, // TODO(ANDR-2519): Remove
         contactService: ContactService, // TODO(ANDR-2519): remove
         userService: UserService, // TODO(ANDR-2519): remove
-        fsMessageProcessor: ForwardSecurityMessageProcessor // TODO(ANDR-2519): remove
+        fsMessageProcessor: ForwardSecurityMessageProcessor, // TODO(ANDR-2519): remove
     )
 
     @WorkerThread
@@ -68,5 +69,8 @@ interface MultiDeviceManager {
     suspend fun setDeviceLabel(deviceLabel: String)
 
     @AnyThread
-    suspend fun linkDevice(deviceJoinOfferUri: String)
+    suspend fun linkDevice(
+        deviceJoinOfferUri: String,
+        deviceJoinDataCollector: DeviceJoinDataCollector,
+    )
 }

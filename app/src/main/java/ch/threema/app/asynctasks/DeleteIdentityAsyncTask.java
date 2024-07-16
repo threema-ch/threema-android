@@ -114,9 +114,9 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 			}
 
 			File aesFile = new File(ThreemaApplication.getAppContext().getFilesDir(), ThreemaApplication.AES_KEY_FILE);
-			File databaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME_V4);
+			File databaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DEFAULT_DATABASE_NAME_V4);
 			File nonceDatabaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseNonceStore.DATABASE_NAME_V4);
-			File backupFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DATABASE_NAME_V4 + DatabaseServiceNew.DATABASE_BACKUP_EXT);
+			File backupFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseServiceNew.DEFAULT_DATABASE_NAME_V4 + DatabaseServiceNew.DATABASE_BACKUP_EXT);
 			File cacheDirectory = ThreemaApplication.getAppContext().getCacheDir();
 			File externalCacheDirectory = ThreemaApplication.getAppContext().getExternalCacheDir();
 

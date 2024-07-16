@@ -22,11 +22,16 @@
 package ch.threema.app.utils;
 
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import ch.threema.domain.models.Contact;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupUtil {
-	private static String CENTRALLY_MANAGED_GATEWAY_GROUP_PREFIX = "☁";
+	public static String CENTRALLY_MANAGED_GATEWAY_GROUP_PREFIX = "☁";
 
 	/**
 	 * Return true, if the group is created by a normal threema user
@@ -38,10 +43,18 @@ public class GroupUtil {
 		return sendMessageToCreator(groupModel.getCreatorIdentity(), groupModel.getName());
 	}
 
-	public static boolean sendMessageToCreator(String groupCreator, String groupName ) {
+	public static boolean sendMessageToCreator(@NonNull String groupCreator, @Nullable String groupName ) {
 		return
-			!ContactUtil.isChannelContact(groupCreator)
+			!ContactUtil.isGatewayContact(groupCreator)
 				|| (groupName != null && groupName.startsWith(CENTRALLY_MANAGED_GATEWAY_GROUP_PREFIX));
+	}
+
+	public static Set<String> getRecipientIdentitiesByFeatureSupport(GroupFeatureSupport groupFeatureSupport) {
+		return groupFeatureSupport
+			.getContactsWithFeatureSupport()
+			.stream()
+				.map(Contact::getIdentity)
+				.collect(Collectors.toSet());
 	}
 
 }

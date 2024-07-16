@@ -36,6 +36,7 @@ import java.util.List;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseServiceNew;
@@ -133,20 +134,22 @@ public class ContactModelFactory extends ModelFactory {
 					.setPublicNickName(cursorFactory.getString(ContactModel.COLUMN_PUBLIC_NICK_NAME))
 					.setState(ContactModel.State.valueOf(cursorFactory.getString(ContactModel.COLUMN_STATE)))
 					.setAndroidContactLookupKey(cursorFactory.getString(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY))
-					.setThreemaAndroidContactId(cursorFactory.getString(ContactModel.COLUMN_THREEMA_ANDROID_CONTACT_ID))
-					.setIsSynchronized(cursorFactory.getInt(ContactModel.COLUMN_IS_SYNCHRONIZED) == 1)
 					.setIsWork(cursorFactory.getInt(ContactModel.COLUMN_IS_WORK) == 1)
-					.setIdentityType(cursorFactory.getInt(ContactModel.COLUMN_TYPE))
-					.setFeatureMask(cursorFactory.getLong(ContactModel.COLUMN_FEATURE_LEVEL))
+					.setIdentityType(
+						cursorFactory.getInt(ContactModel.COLUMN_TYPE) == 1
+						? IdentityType.WORK
+						: IdentityType.NORMAL
+					)
+					.setFeatureMask(cursorFactory.getLong(ContactModel.COLUMN_FEATURE_MASK))
 					.setIdColorIndex(cursorFactory.getInt(ContactModel.COLUMN_ID_COLOR_INDEX))
 					.setAcquaintanceLevel(
-						cursorFactory.getInt(ContactModel.COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP) == 1
+						cursorFactory.getInt(ContactModel.COLUMN_ACQUAINTANCE_LEVEL) == 1
 						? AcquaintanceLevel.GROUP
 						: AcquaintanceLevel.DIRECT
 					)
-					.setAvatarExpires(cursorFactory.getDate(ContactModel.COLUMN_AVATAR_EXPIRES))
+					.setLocalAvatarExpires(cursorFactory.getDate(ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES))
 					.setProfilePicBlobID(cursorFactory.getBlob(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID))
-					.setDateCreated(cursorFactory.getDate(ContactModel.COLUMN_DATE_CREATED))
+					.setDateCreated(cursorFactory.getDate(ContactModel.COLUMN_CREATED_AT))
 					.setLastUpdate(cursorFactory.getDate(ContactModel.COLUMN_LAST_UPDATE))
 					.setIsRestored(cursorFactory.getInt(ContactModel.COLUMN_IS_RESTORED) == 1)
 					.setArchived(cursorFactory.getInt(ContactModel.COLUMN_IS_ARCHIVED) == 1)
@@ -171,13 +174,13 @@ public class ContactModelFactory extends ModelFactory {
 
 				switch (cursorFactory.getInt(ContactModel.COLUMN_VERIFICATION_LEVEL)) {
 					case 1:
-						c.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
+						c.verificationLevel = VerificationLevel.SERVER_VERIFIED;
 						break;
 					case 2:
-						c.setVerificationLevel(VerificationLevel.FULLY_VERIFIED);
+						c.verificationLevel = VerificationLevel.FULLY_VERIFIED;
 						break;
 					default:
-						c.setVerificationLevel(VerificationLevel.UNVERIFIED);
+						c.verificationLevel = VerificationLevel.UNVERIFIED;
 				}
 
 				cm[0] = c;
@@ -217,31 +220,30 @@ public class ContactModelFactory extends ModelFactory {
 		contentValues.put(ContactModel.COLUMN_FIRST_NAME, contactModel.getFirstName());
 		contentValues.put(ContactModel.COLUMN_LAST_NAME, contactModel.getLastName());
 		contentValues.put(ContactModel.COLUMN_PUBLIC_NICK_NAME, contactModel.getPublicNickName());
-		contentValues.put(ContactModel.COLUMN_VERIFICATION_LEVEL, contactModel.getVerificationLevel().ordinal());
+		contentValues.put(ContactModel.COLUMN_VERIFICATION_LEVEL, contactModel.verificationLevel.ordinal());
 
 		if(contactModel.getState() == null) {
 			contactModel.setState(ContactModel.State.ACTIVE);
 		}
 		contentValues.put(ContactModel.COLUMN_STATE, contactModel.getState().toString());
 		contentValues.put(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY, contactModel.getAndroidContactLookupKey());
-		contentValues.put(ContactModel.COLUMN_THREEMA_ANDROID_CONTACT_ID, contactModel.getThreemaAndroidContactId());
-		contentValues.put(ContactModel.COLUMN_IS_SYNCHRONIZED, contactModel.isSynchronized());
-		contentValues.put(ContactModel.COLUMN_FEATURE_LEVEL, contactModel.getFeatureMask());
+		contentValues.put(ContactModel.COLUMN_FEATURE_MASK, contactModel.getFeatureMask());
 		contentValues.put(ContactModel.COLUMN_ID_COLOR_INDEX, contactModel.getIdColorIndex());
-		contentValues.put(ContactModel.COLUMN_AVATAR_EXPIRES, contactModel.getAvatarExpires() != null ?
-				contactModel.getAvatarExpires().getTime()
+		contentValues.put(ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES, contactModel.getLocalAvatarExpires() != null ?
+				contactModel.getLocalAvatarExpires().getTime()
 				: null);
 		contentValues.put(ContactModel.COLUMN_IS_WORK, contactModel.isWork());
-		contentValues.put(ContactModel.COLUMN_TYPE, contactModel.getIdentityType());
+		contentValues.put(ContactModel.COLUMN_TYPE, contactModel.getIdentityType() == IdentityType.WORK ? 1 : 0);
 		contentValues.put(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID, contactModel.getProfilePicBlobID());
-		contentValues.put(ContactModel.COLUMN_DATE_CREATED, contactModel.getDateCreated() != null ? contactModel.getDateCreated().getTime() : null);
+		contentValues.put(ContactModel.COLUMN_CREATED_AT, contactModel.getDateCreated() != null ? contactModel.getDateCreated().getTime() : null);
 		contentValues.put(ContactModel.COLUMN_LAST_UPDATE, contactModel.getLastUpdate() != null ? contactModel.getLastUpdate().getTime() : null);
-		contentValues.put(ContactModel.COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP, contactModel.getAcquaintanceLevel() == AcquaintanceLevel.GROUP);
+		contentValues.put(ContactModel.COLUMN_ACQUAINTANCE_LEVEL, contactModel.getAcquaintanceLevel() == AcquaintanceLevel.GROUP ? 1 : 0);
 		contentValues.put(ContactModel.COLUMN_IS_RESTORED, contactModel.isRestored());
 		contentValues.put(ContactModel.COLUMN_IS_ARCHIVED, contactModel.isArchived());
 		contentValues.put(ContactModel.COLUMN_READ_RECEIPTS, contactModel.getReadReceipts());
 		contentValues.put(ContactModel.COLUMN_TYPING_INDICATORS, contactModel.getTypingIndicators());
 		contentValues.put(ContactModel.COLUMN_FORWARD_SECURITY_STATE, contactModel.getForwardSecurityState());
+		// Note: Sync state not implemented in "old model" anymore
 
 		if (insert) {
 			//never update identity field
@@ -279,22 +281,21 @@ public class ContactModelFactory extends ModelFactory {
 						"`" + ContactModel.COLUMN_VERIFICATION_LEVEL + "` INTEGER ," +
 						"`" + ContactModel.COLUMN_STATE + "` VARCHAR DEFAULT 'ACTIVE' NOT NULL ," +
 						"`" + ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY + "` VARCHAR ," +
-						"`" + ContactModel.COLUMN_THREEMA_ANDROID_CONTACT_ID + "` VARCHAR ," +
-						"`" + ContactModel.COLUMN_IS_SYNCHRONIZED + "` SMALLINT DEFAULT 0 ," +
-						"`" + ContactModel.COLUMN_FEATURE_LEVEL + "` INTEGER DEFAULT 0 NOT NULL ," +
+						"`" + ContactModel.COLUMN_FEATURE_MASK + "` INTEGER DEFAULT 0 NOT NULL ," +
 						"`" + ContactModel.COLUMN_ID_COLOR_INDEX + "` INTEGER ," +
-						"`" + ContactModel.COLUMN_AVATAR_EXPIRES + "` BIGINT," +
+						"`" + ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES + "` BIGINT," +
 						"`" + ContactModel.COLUMN_IS_WORK + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_TYPE + "` INT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_PROFILE_PIC_BLOB_ID + "` BLOB DEFAULT NULL," +
-						"`" + ContactModel.COLUMN_DATE_CREATED + "` BIGINT DEFAULT 0," +
+						"`" + ContactModel.COLUMN_CREATED_AT + "` BIGINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_LAST_UPDATE + "` INTEGER," +
-						"`" + ContactModel.COLUMN_HAS_ACQUAINTANCE_LEVEL_GROUP + "` TINYINT DEFAULT 0," +
+						"`" + ContactModel.COLUMN_ACQUAINTANCE_LEVEL + "` TINYINT DEFAULT 0 NOT NULL," +
 						"`" + ContactModel.COLUMN_IS_RESTORED + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_READ_RECEIPTS + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_TYPING_INDICATORS + "` TINYINT DEFAULT 0," +
 						"`" + ContactModel.COLUMN_FORWARD_SECURITY_STATE + "` TINYINT DEFAULT 0," +
+						"`" + ContactModel.COLUMN_SYNC_STATE + "` INTEGER NOT NULL DEFAULT 0," +
 					"PRIMARY KEY (`" + ContactModel.COLUMN_IDENTITY + "`) );"
 		};
 	}

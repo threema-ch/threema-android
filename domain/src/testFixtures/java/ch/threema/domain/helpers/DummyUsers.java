@@ -22,6 +22,7 @@
 package ch.threema.domain.helpers;
 
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.base.utils.Utils;
 import com.neilalexander.jnacl.NaCl;
@@ -63,15 +64,15 @@ public class DummyUsers {
 
 	public static class DummyContact extends Contact {
 		public DummyContact(String identity, byte[] publicKey) {
-			super(identity, publicKey);
+			super(identity, publicKey, VerificationLevel.UNVERIFIED);
 		}
 
 		// equals needed for Mockito
 		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			Contact contact = (Contact) o;
+		public boolean equals(Object other) {
+			if (this == other) return true;
+			if (other == null || getClass() != other.getClass()) return false;
+			Contact contact = (Contact) other;
 			return Objects.equals(getIdentity(), contact.getIdentity()) && Arrays.equals(getPublicKey(), contact.getPublicKey());
 		}
 	}

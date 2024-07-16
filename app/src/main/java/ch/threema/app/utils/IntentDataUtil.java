@@ -29,7 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
+import org.maplibre.android.geometry.LatLng;
 
 import org.slf4j.Logger;
 

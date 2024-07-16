@@ -385,29 +385,19 @@ public class MessageSectionFragment extends MainFragment
 
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
-		public void onModified(ContactModel modifiedContactModel) {
-			logger.debug("contactListener.onModified [" + modifiedContactModel + "]");
-			refreshListEvent();
+		public void onModified(final @NonNull String identity) {
+			this.handleChange();
 		}
 
 		@Override
 		public void onAvatarChanged(ContactModel contactModel) {
-			this.onModified(contactModel); // TODO: Is this required?
+			this.handleChange();
 		}
 
-		@Override
-		public void onNew(ContactModel createdContactModel) {
-			//ignore
-		}
-
-		@Override
-		public void onRemoved(ContactModel removedContactModel) {
-			//ignore
-		}
-
-		@Override
-		public boolean handle(String identity) {
-			return currentFullSyncs <= 0;
+		public void handleChange() {
+			if (currentFullSyncs <= 0) {
+				refreshListEvent();
+			}
 		}
 	};
 
@@ -471,7 +461,7 @@ public class MessageSectionFragment extends MainFragment
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 
-		logger.debug("onAttach");
+		logger.info("onAttach");
 
 		this.activity = activity;
 	}
@@ -480,7 +470,7 @@ public class MessageSectionFragment extends MainFragment
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		logger.debug("onCreate");
+		logger.info("onCreate");
 
 		setRetainInstance(true);
 		setHasOptionsMenu(true);
@@ -494,7 +484,7 @@ public class MessageSectionFragment extends MainFragment
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		logger.debug("onViewCreated");
+		logger.info("onViewCreated");
 
 		try {
 			//show loading first
@@ -522,6 +512,8 @@ public class MessageSectionFragment extends MainFragment
 
 	@Override
 	public void onDestroyView() {
+		logger.info("onDestroyView");
+
 		searchView = null;
 
 		if (searchMenuItemRef != null && searchMenuItemRef.get() != null) {
@@ -1198,7 +1190,7 @@ public class MessageSectionFragment extends MainFragment
 	@Override
 	public void onPause() {
 		super.onPause();
-		logger.debug("*** onPause");
+		logger.info("*** onPause");
 
 		if (this.resumePauseHandler != null) {
 			this.resumePauseHandler.onPause();
@@ -1207,7 +1199,7 @@ public class MessageSectionFragment extends MainFragment
 
 	@Override
 	public void onResume() {
-		logger.debug("*** onResume");
+		logger.info("*** onResume");
 
 		if (this.resumePauseHandler != null) {
 			this.resumePauseHandler.onResume();
@@ -1518,9 +1510,15 @@ public class MessageSectionFragment extends MainFragment
 				final EmptyOrDeleteConversationsAsyncTask.Mode mode = tag.equals(DIALOG_TAG_REALLY_DELETE_CHAT)
 					? EmptyOrDeleteConversationsAsyncTask.Mode.DELETE
 					: EmptyOrDeleteConversationsAsyncTask.Mode.EMPTY;
+				MessageReceiver<?> receiver = conversationModel.getReceiver();
+				if (receiver != null) {
+					logger.info("{} chat with receiver {} (type={}).", mode, receiver.getUniqueIdString(), receiver.getType());
+				} else {
+					logger.warn("Cannot {} chat, receiver is null", mode);
+				}
 				new EmptyOrDeleteConversationsAsyncTask(
 					mode,
-					new MessageReceiver[]{ conversationModel.getReceiver() },
+					new MessageReceiver[]{ receiver },
 					conversationService,
 					groupService,
 					distributionListService,
@@ -1730,7 +1728,7 @@ public class MessageSectionFragment extends MainFragment
 			);
 		} else if (receiver instanceof ContactMessageReceiver) {
 			ListenerManager.contactListeners.handle(listener ->
-				listener.onModified(((ContactMessageReceiver) receiver).getContact())
+				listener.onModified(((ContactMessageReceiver) receiver).getContact().getIdentity())
 			);
 		} else if (receiver instanceof DistributionListMessageReceiver) {
 			ListenerManager.distributionListListeners.handle(listener ->

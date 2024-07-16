@@ -42,8 +42,10 @@ public class RestoreSettings {
 	 * 20: add message display type (starred etc.)
 	 * 21: refactored group status messages
 	 * 22: add lastUpdate and remove isQueued flag
+	 * 23: add editedAt
+	 * 24: add deletedAt
 	 */
-	public static final int CURRENT_VERSION = 22;
+	public static final int CURRENT_VERSION = 24;
 	private int version;
 
 	public RestoreSettings(int version) {

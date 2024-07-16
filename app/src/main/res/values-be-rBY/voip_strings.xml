@@ -8,7 +8,7 @@
     <string name="voip_switch_cam_front">Пераключана на пярэднюю камеру</string>
     <string name="voip_switch_cam_rear">Пераключана на заднюю камеру</string>
     <string name="voip_toggle_video">Пераключыць рэжым відэа</string>
-    <string name="voip_call_confirm">Хочаце патэлефанаваць карыстачу %1$s?</string>
+    <string name="voip_call_confirm">Хочаце патэлефанаваць карыстальніку %1$s?</string>
     <string name="voip_error_call">Памылка падчас званка Threema</string>
     <string name="voip_error_init_call">Памылка ініцыялізацыі званка</string>
     <string name="voip_notification_title">Уваходны званок Threema</string>
@@ -95,15 +95,15 @@
     <string name="voip_gc_call_full_generic">Дасягнуты максімум: больш удзельнікаў не можа далучыцца да гэтага супольнага выкліку.</string>
     <string name="voip_gc_call_full_n">Дасягнута максімальная колькасць удзельнікаў: %1$d, вы не можаце далучыцца да гэтага супольнага выкліку.</string>
     <plurals name="n_participants_in_call">
-        <item quantity="one">%d удзельнік</item>
-        <item quantity="other">%d удзельнікі</item>
         <item quantity="few">удзельнікаў</item>
         <item quantity="many">удзельнікаў</item>
+        <item quantity="one">%d удзельнік</item>
+        <item quantity="other">%d удзельнікі</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
+        <item quantity="many">Заўвага: некалькі удзельнікаў не можа ўдзельнічаць у супольных выкліках.</item>
+        <item quantity="few">Заўвага: некалькі удзельнікаў не можа ўдзельнічаць у супольных выкліках.</item>
         <item quantity="one" tools:ignore="ImpliedQuantity">Заўвага: адзін удзельнік не можа ўдзельнічаць у супольных выкліках.</item>
         <item quantity="other">Заўвага: %d удзельнікі не могуць удзельнічаць у супольных выкліках.</item>
-        <item quantity="few">Заўвага: некалькі удзельнікаў не можа ўдзельнічаць у супольных выкліках.</item>
-        <item quantity="many">Заўвага: некалькі удзельнікаў не можа ўдзельнічаць у супольных выкліках.</item>
     </plurals>
 </resources>

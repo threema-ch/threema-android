@@ -52,9 +52,9 @@
     <string name="voip_prefs_video_codec_no_vp8">VP8 deaktiviere</string>
     <string name="voip_prefs_video_codec_no_h264hip">H264-HiP deaktiviere</string>
     <string name="voip_prefs_video_codec_sw">Software-Codecs</string>
-    <string name="voip_connection_failed">Verbindig hät nöd chöne ufbaut werde</string>
+    <string name="voip_connection_failed">Verbindig hät nöd chöne ufbaut werde.</string>
     <string name="voip_connection_lost">Verbindig isch unterbroche worde</string>
-    <string name="prefs_voip_reject_incoming_calls_title">Mobiltelefon-Arüef zruggwiise</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Natel-Arüef zruggwiise</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Iigehendi Mobiltelefon-Arüef zruggwiise, während en Threema-Aruef lauft.</string>
     <string name="voip_contact_not_found">Für die Nummere isch kein Threema-Kontakt gfunde worde.</string>
     <string name="voip_another_pstn_call">Aruef nöd möglich. En gwöhnliche Telefonaruef lauft scho.</string>
@@ -93,7 +93,7 @@
     <string name="voip_gc_call_start_error">Gruppearuef hät nöd chöne gstarted werde</string>
     <string name="voip_gc_call_already_ended">Gruppearuef isch scho beendet worde</string>
     <string name="voip_gc_call_full_generic">Kei Teilnahm möglich: Die maximal Teilnehmerzahl isch erreicht.</string>
-    <string name="voip_gc_call_full_n">Kei Teilnahm möglich: Die maximal Teilnehmerzahl (%1$d) isch erreicht.</string>
+    <string name="voip_gc_call_full_n">Kei Teilnahm möglich: Di maximal Teilnehmerzahl (%1$d) isch erreicht.</string>
     <plurals name="n_participants_in_call">
         <item quantity="other">%d Teilnehmer</item>
     </plurals>

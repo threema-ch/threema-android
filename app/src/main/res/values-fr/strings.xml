@@ -306,6 +306,8 @@
     <string name="state_dialog_created">Créé</string>
     <string name="state_dialog_posted">Envoyé</string>
     <string name="state_dialog_modified">Mis à jour</string>
+    <string name="state_dialog_edited">Modifié</string>
+    <string name="state_dialog_deleted">Supprimé</string>
     <string name="state_dialog_status">État</string>
     <string name="title_tab_recent">Récent</string>
     <string name="no_recent_conversations">Aucune conversation trouvée</string>
@@ -742,6 +744,9 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="data_backup_explain">Les sauvegardes de données contiennent :\n\n&#9679; Votre identifiant et votre paire de clés\n&#9679; Contacts et niveaux de confiance\n&#9679; Adhésions à des groupes\n&#9679; Conversations\n&#9679; Fichiers et fichiers multimédias (facultatif)\n\nLes données seront enregistrées dans un fichier ZIP chiffré. Il est recommandé de retirer le fichier de votre appareil quand la sauvegarde est terminée.</string>
     <string name="draw">Dessin</string>
     <string name="edit">Modifier</string>
+    <string name="edit_message">Modifier le message</string>
+    <string name="edited">Modifié</string>
+    <string name="confirm_edit_desc">Confirmez la modification</string>
     <string name="discard_changes">Voulez-vous annuler les modifications ?</string>
     <string name="prefs_title_network">Réseau</string>
     <string name="prefs_title_ipv6_preferred">IPv6 pour les messages</string>
@@ -1012,6 +1017,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="system_default">Paramètre système par défaut</string>
     <string name="open_in_maps_app">Ouvrir dans l\'app de cartes</string>
     <string name="delete">Supprimer</string>
+    <string name="delete_for_all">Supprimer pour tous</string>
+    <string name="message_was_deleted">Message supprimé</string>
     <string name="continue_recording">Continuer l\'enregistrement</string>
     <string name="whatsnew_title">Quoi de neuf dans %1$s 5.2 ?</string>
     <string name="whatsnew_headline"><![CDATA[
@@ -1537,6 +1544,11 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="media_gallery_animated_webps">WebP animés</string>
     <string name="unsupported_image_type">Type d\'image non pris en charge : %s</string>
     <string name="application_setup_steps_failed">Une connexion Internet active est nécessaire pour vérifier l\'état de vos contacts. Vérifiez que vous êtes bien connecté à Internet et réessayez.</string>
+    <string name="add_contact_failed">L\'ajout du contact à échoué</string>
+    <string name="edit_message_not_supported_for_contact">Impossible de modifier le message car la version de l\'application du destinataire ne prend pas en charge cette fonctionnalité.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Les membres suivants groupe ne pourront pas voir vos modifications : %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Impossible de modifier le message, car aucun membre du groupe ne dispose d\'une version de l\'application prenant en charge cette fonctionnalité.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Ce message ne sera pas supprimé pour les membres suivants du groupe : %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>
@@ -1610,8 +1622,8 @@ Veuillez saisir une question pour votre enquête.</string>
         <item quantity="other">%d messages ont été perdus depuis le dernier message.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="one">Supprimer %d message sur cet appareil ?</item>
-        <item quantity="other">Supprimer %d messages sur cet appareil ?</item>
+        <item quantity="one">Supprimer %d message ?</item>
+        <item quantity="other">Supprimer %d messages ?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="one">%d membre de groupe</item>

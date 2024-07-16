@@ -21,10 +21,6 @@
 
 package ch.threema.app.backuprestore.csv;
 
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
-
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -40,10 +36,6 @@ import android.os.StrictMode;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
@@ -64,6 +56,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
@@ -79,7 +74,6 @@ import ch.threema.app.notifications.NotificationBuilderWrapper;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BackupUtils;
@@ -122,6 +116,10 @@ import ch.threema.storage.models.ballot.LinkBallotModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.BallotDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
+
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
+import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 public class RestoreService extends Service {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("RestoreService");
@@ -969,7 +967,7 @@ public class RestoreService extends Service {
 		// Set contact avatar
 		try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
 			return fileService.writeContactAvatar(
-				contactModel,
+				contactModel.getIdentity(),
 				IOUtils.toByteArray(inputStream)
 			);
 		} catch (Exception e) {
@@ -998,7 +996,7 @@ public class RestoreService extends Service {
 		// Set contact profile picture
 		try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
 			return fileService.writeContactPhoto(
-				contactModel,
+				contactModel.getIdentity(),
 				IOUtils.toByteArray(inputStream));
 		} catch (Exception e) {
 			logger.error("Exception while writing contact profile picture", e);
@@ -1468,7 +1466,6 @@ public class RestoreService extends Service {
 				GroupMemberModel m = new GroupMemberModel();
 				m.setGroupId(groupId);
 				m.setIdentity(identity);
-				m.setActive(true);
 				res.add(m);
 			}
 		}
@@ -1503,7 +1500,7 @@ public class RestoreService extends Service {
 		} else if (verificationString.equals(VerificationLevel.FULLY_VERIFIED.name())) {
 			verification = VerificationLevel.FULLY_VERIFIED;
 		}
-		contactModel.setVerificationLevel(verification);
+		contactModel.verificationLevel = verification;
 		contactModel.setFirstName(row.getString(Tags.TAG_CONTACT_FIRST_NAME));
 		contactModel.setLastName(row.getString(Tags.TAG_CONTACT_LAST_NAME));
 
@@ -1655,6 +1652,15 @@ public class RestoreService extends Service {
 			messageModel.setDeliveredAt(row.getDate(Tags.TAG_MESSAGE_DELIVERED_AT));
 			messageModel.setReadAt(row.getDate(Tags.TAG_MESSAGE_READ_AT));
 		}
+
+		if (restoreSettings.getVersion() >= 23) {
+			messageModel.setEditedAt(row.getDate(Tags.TAG_MESSAGE_EDITED_AT));
+		}
+
+		if (restoreSettings.getVersion() >= 24) {
+			messageModel.setDeletedAt(row.getDate(Tags.TAG_MESSAGE_DELETED_AT));
+		}
+
 		return messageModel;
 	}
 
@@ -1683,6 +1689,12 @@ public class RestoreService extends Service {
 					// map may not be available, empty or invalid
 				}
 			}
+		}
+		if (restoreSettings.getVersion() >= 23) {
+			messageModel.setEditedAt(row.getDate(Tags.TAG_MESSAGE_EDITED_AT));
+		}
+		if (restoreSettings.getVersion() >= 24) {
+			messageModel.setDeletedAt(row.getDate(Tags.TAG_MESSAGE_DELETED_AT));
 		}
 		return messageModel;
 	}

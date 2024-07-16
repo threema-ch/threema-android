@@ -308,6 +308,8 @@
     <string name="state_dialog_created">Creado</string>
     <string name="state_dialog_posted">Entregado</string>
     <string name="state_dialog_modified">Modificado</string>
+    <string name="state_dialog_edited">Editado</string>
+    <string name="state_dialog_deleted">Eliminado</string>
     <string name="state_dialog_status">Estado</string>
     <string name="title_tab_recent">Por último</string>
     <string name="no_recent_conversations">No se han encontrado chats</string>
@@ -751,6 +753,9 @@ almacenado.</string>
     <string name="data_backup_explain">Las copias de seguridad de datos incluyen:\n\n&#9679; Su ID y sus dos claves\n&#9679; Contactos y niveles de confianza\n&#9679; Pertenencias a grupos\n&#9679; Chats\n&#9679; Contenido multimedia y archivos (opcional)\n\nLos datos se guardan en un fichero ZIP encriptado. Una vez completada correctamente la copia de seguridad, se recomienda mover este fichero fuera del dispositivo.</string>
     <string name="draw">Dibujar</string>
     <string name="edit">Editar</string>
+    <string name="edit_message">Editar mensaje</string>
+    <string name="edited">Editado</string>
+    <string name="confirm_edit_desc">Confirmar edición</string>
     <string name="discard_changes">¿Desea descartar los cambios?</string>
     <string name="prefs_title_network">Red</string>
     <string name="prefs_title_ipv6_preferred">IPv6 para mensajes</string>
@@ -1021,6 +1026,7 @@ almacenado.</string>
     <string name="system_default">Estándar del sistema</string>
     <string name="open_in_maps_app">Abrir en Maps</string>
     <string name="delete">Borrar</string>
+    <string name="delete_for_all">Eliminar para todos</string>
     <string name="continue_recording">Continuar grabando</string>
     <string name="whatsnew_title">Novedades de %1$s 5.2</string>
     <string name="whatsnew_headline"><![CDATA[
@@ -1546,6 +1552,11 @@ almacenado.</string>
     <string name="media_gallery_animated_webps">WebP animados</string>
     <string name="unsupported_image_type">Tipo de imagen no admitido: %s</string>
     <string name="application_setup_steps_failed">Se requiere una conexión activa a Internet para comprobar el estado de sus contactos. Asegúrese de que está conectado a Internet e inténtelo de nuevo.</string>
+    <string name="add_contact_failed">Error al agregar el contacto</string>
+    <string name="edit_message_not_supported_for_contact">No se puede editar el mensaje porque la versión de la aplicación del destinatario no admite esta función.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Los siguientes miembros del grupo no podrán ver tus ediciones: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">No es posible editar el mensaje porque ningún miembro del grupo tiene una versión de la aplicación que admita esta función.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Este mensaje no se eliminará para los siguientes miembros del grupo: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>
@@ -1619,8 +1630,8 @@ almacenado.</string>
         <item quantity="other">Se ha perdido %d mensajes desde el último mensaje.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="one">¿Eliminar %d mensaje de este dispositivo?</item>
-        <item quantity="other">¿Eliminar %d mensajes de este dispositivo?</item>
+        <item quantity="one">¿Eliminar %d mensaje?</item>
+        <item quantity="other">¿Eliminar %d mensajes?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="one">%d miembro del grupo</item>

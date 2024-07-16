@@ -52,6 +52,7 @@
 				android:layout_marginBottom="-1dp"
 				app:layout_constraintLeft_toRightOf="@+id/identity_label"
 				app:layout_constraintBottom_toBottomOf="@+id/identity_label"
+				app:layout_constraintTop_toTopOf="@id/identity_label"
 				app:srcCompat="@drawable/ic_share_outline"
 				app:tint="?attr/colorOnSurface" />
 

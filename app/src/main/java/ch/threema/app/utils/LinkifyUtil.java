@@ -70,7 +70,6 @@ import ch.threema.app.activities.ContactDetailActivity;
 import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
 import ch.threema.app.dialogs.BottomSheetGridDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
-import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.BottomSheetItem;
 import ch.threema.app.ui.MentionClickableSpan;
@@ -206,7 +205,7 @@ public class LinkifyUtil {
 	 * @param actionModeEnabled Whether action mode (item selection) is currently enabled
 	 * @param onClickElement Callback to which unhandled clicks are forwarded
 	 */
-	public void linkify(@NonNull ComposeMessageFragment fragment,
+	public void linkify(@NonNull Fragment fragment,
 	                    @NonNull TextView bodyTextView,
 	                    @NonNull AbstractMessageModel messageModel,
 	                    boolean includePhoneNumbers,
@@ -227,7 +226,7 @@ public class LinkifyUtil {
 	 * @param onClickElement Callback to which unhandled clicks are forwarded
 	 */
 	@SuppressLint("ClickableViewAccessibility")
-	public void linkify(@Nullable ComposeMessageFragment fragment,
+	public void linkify(@Nullable Fragment fragment,
 	                    @Nullable AppCompatActivity activity,
 	                    @NonNull TextView bodyTextView,
 	                    @NonNull AbstractMessageModel messageModel,
@@ -365,13 +364,15 @@ public class LinkifyUtil {
 		return null;
 	}
 
-	public void openLink(Uri uri, ComposeMessageFragment fragment, AppCompatActivity activity) {
+	public void openLink(Uri uri, Fragment fragment, AppCompatActivity activity) {
 		final Context context = fragment != null ? fragment.getContext() : activity;
 		if (context == null) return;
 
 		// Open geo uris with internal map activity
 		if (uri.toString().startsWith("geo:")) {
-			GeoLocationUtil.viewLocation(context, uri);
+			if (!GeoLocationUtil.viewLocation(context, uri)) {
+				Toast.makeText(context, R.string.error, Toast.LENGTH_LONG).show();
+			}
 			return;
 		}
 

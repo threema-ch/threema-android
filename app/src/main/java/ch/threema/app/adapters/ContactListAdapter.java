@@ -256,7 +256,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 		if (sortingValue.length() == 0) {
 			firstLetter = PLACEHOLDER_BLANK_HEADER;
 		} else {
-			if (ContactUtil.isChannelContact(c)) {
+			if (ContactUtil.isGatewayContact(c)) {
 				firstLetter = afterSorting ? CHANNEL_SIGN : PLACEHOLDER_CHANNELS;
 			} else if (getItemViewType(position) == VIEW_TYPE_RECENTLY_ADDED) {
 				if (contactListFilter != null && contactListFilter.getFilterString() != null) {

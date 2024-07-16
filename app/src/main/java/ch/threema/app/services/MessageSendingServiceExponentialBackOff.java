@@ -23,9 +23,13 @@ package ch.threema.app.services;
 
 import org.slf4j.Logger;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.concurrent.Future;
 
+import ch.threema.app.ThreemaApplication;
+import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ExponentialBackOffUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -50,6 +54,13 @@ public class MessageSendingServiceExponentialBackOff implements MessageSendingSe
 				} catch (Exception x) {
 					logger.error("Sending message failed", x);
 					messageSendingServiceState.exception(x, 0);
+					if (x instanceof FileNotFoundException && ConfigUtils.isOnPremBuild()) {
+						ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+						if (serviceManager != null) {
+							logger.info("Invalidating auth token");
+							serviceManager.getApiService().invalidateAuthToken();
+						}
+					}
 					throw x;
 				}
 			}

@@ -50,6 +50,10 @@ public abstract class DimmingPopupWindow extends PopupWindow {
 			if (p != null && wm != null) {
 				p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
 				p.dimAmount = 0.6f;
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+					p.flags |= WindowManager.LayoutParams.FLAG_BLUR_BEHIND;
+					p.setBlurBehindRadius(20);
+				}
 				wm.updateViewLayout(container, p);
 			}
 		}

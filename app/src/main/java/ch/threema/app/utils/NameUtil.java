@@ -185,7 +185,7 @@ public class NameUtil {
 			return "undefined";
 		}
 
-		if (contactModel.getIdentity() == null || contactModel.getIdentity().length() == 0) {
+		if (contactModel.getIdentity().isEmpty()) {
 			return "invalid contact";
 		}
 

@@ -34,14 +34,17 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.FileUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.models.ContactModel;
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.models.ContactModelData;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 
@@ -51,48 +54,52 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 public class UpdateBusinessAvatarRoutine implements Runnable {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateBusinessAvatarRoutine");
 
-	private final ContactService contactService;
-	private FileService fileService;
-	private ContactModel contactModel;
-	private final ApiService apiService;
+	private final @NonNull ContactService contactService;
+	private final @NonNull FileService fileService;
+	private final @NonNull ContactModel contactModel;
+	private final @NonNull ApiService apiService;
 	private boolean running = false;
 	private boolean forceUpdate = false;
 
-	protected UpdateBusinessAvatarRoutine(ContactService contactService, FileService fileService, ContactModel contactModel, ApiService apiService) {
+	protected UpdateBusinessAvatarRoutine(
+		@NonNull ContactService contactService,
+		@NonNull FileService fileService,
+		@NonNull ContactModel contactModel,
+		@NonNull ApiService apiService
+	) {
 		this.contactService = contactService;
 		this.fileService = fileService;
 		this.contactModel = contactModel;
 		this.apiService = apiService;
 	}
 
-	protected UpdateBusinessAvatarRoutine forceUpdate() {
+	private void forceUpdate() {
 		this.forceUpdate = true;
-		return this;
 	}
 
 	@Override
 	public void run() {
 		this.running = true;
 
-		//validate instances
-		if (!TestUtil.required(this.contactModel, this.contactService, this.fileService)) {
-			this.running = false;
-			logger.error(": not all required instances defined");
-			return;
-		}
-
-		if (!ContactUtil.isChannelContact(this.contactModel)) {
-			logger.error(": contact is not a business account");
+		if (!ContactUtil.isGatewayContact(this.contactModel.getIdentity())) {
+			logger.error("Contact is not a business account");
 			this.running = false;
 			return;
 
 		}
 		//validate expiry date
-		if (!this.forceUpdate
-			&& !ContactUtil.isAvatarExpired(this.contactModel)) {
-			logger.error(": avatar is not expired");
-			this.running = false;
-			return;
+		if (!this.forceUpdate) {
+			ContactModelData data = contactModel.getData().getValue();
+			if (data == null) {
+				logger.warn("Contact has been deleted");
+				this.running = false;
+				return;
+			}
+			if (!data.isAvatarExpired()) {
+				logger.error("Avatar is not expired");
+				this.running = false;
+				return;
+			}
 		}
 
 		//define default expiry date (now + 1day)
@@ -109,36 +116,40 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 			try {
 				// Warning: This may implicitly open an error stream in the 4xx/5xx case!
 				connection.connect();
-				boolean avatarModified = false;
 				int responseCode = connection.getResponseCode();
 				if (responseCode != HttpsURLConnection.HTTP_OK) {
 					if (responseCode == HttpsURLConnection.HTTP_NOT_FOUND) {
 						logger.debug("Avatar not found");
 						//remove existing avatar
-						avatarModified = this.fileService.removeContactAvatar(contactModel);
+						this.fileService.removeContactAvatar(contactModel.getIdentity());
 
 						//ok, no avatar set
 						//add expires date = now + 1day
-						this.contactModel.setAvatarExpires(tomorrow);
+						this.contactModel.setLocalAvatarExpires(tomorrow);
 
-						this.contactService.clearAvatarCache(this.contactModel);
-						this.contactService.save(this.contactModel);
+						this.contactService.clearAvatarCache(contactModel.getIdentity());
+					} else if (responseCode == HttpsURLConnection.HTTP_UNAUTHORIZED) {
+						 logger.warn("Unauthorized access to avatar server");
+						 if (ConfigUtils.isOnPremBuild()) {
+							 logger.info("Invalidating auth token");
+							 apiService.invalidateAuthToken();
+						 }
 					}
 				} else {
 					//cool, save avatar
 					logger.debug("Avatar found start download");
 
-					File temporaryFile = this.fileService.createTempFile(MEDIA_IGNORE_FILENAME, "avatardownload-" + String.valueOf(this.contactModel.getIdentity()).hashCode());
+					File temporaryFile = this.fileService.createTempFile(MEDIA_IGNORE_FILENAME, "avatardownload-" + this.contactModel.getIdentity().hashCode());
 					// this will be useful to display download percentage
 					// might be -1: server did not report the length
 					int fileLength = connection.getContentLength();
-					logger.debug("size: " + fileLength);
+					logger.debug("size: {}", fileLength);
 
 					// download the file
 					Date expires = new Date(connection.getHeaderFieldDate("Expires", tomorrow.getTime()));
-					logger.debug("expires " + expires);
+					logger.debug("expires {}", expires);
 
-					byte data[] = new byte[4096];
+					byte[] data = new byte[4096];
 					int count;
 					try (
 						InputStream input = connection.getInputStream();
@@ -153,17 +164,14 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 						logger.debug("Avatar downloaded");
 
 						//define avatar
-						this.contactService.setAvatar(contactModel, temporaryFile);
+						this.contactService.setAvatar(contactModel.getIdentity(), temporaryFile);
 
 						//set expires header
-						this.contactModel.setAvatarExpires(expires);
-						this.contactService.clearAvatarCache(this.contactModel);
-						this.contactService.save(this.contactModel);
+						this.contactModel.setLocalAvatarExpires(expires);
+						this.contactService.clearAvatarCache(contactModel.getIdentity());
 
 						//remove temporary file
 						FileUtil.deleteFileOrWarn(temporaryFile, "temporaryFile", logger);
-
-						avatarModified = true;
 					} catch (IOException x) {
 						//failed to download
 						//do nothing an try again later
@@ -191,82 +199,60 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 	}
 
 	/**
-	 * Static Stuff
-	 */
-
-	/**
 	 * routine states
 	 */
 	private static final Map<String, UpdateBusinessAvatarRoutine> runningUpdates = new HashMap<>();
 
 	/**
 	 * Update (if necessary) a business avatar
-	 *
-	 * @param contactModel
-	 * @param fileService
-	 * @param contactService
-	 * @return
 	 */
-	public static final boolean startUpdate(ContactModel contactModel,
-											FileService fileService,
-											ContactService contactService,
-											ApiService apiService) {
-		return startUpdate(contactModel, fileService, contactService, apiService, false);
-	}
-
-	/**
-	 * Update (if necessary) a business avatar
-	 *
-	 * @param contactModel
-	 * @param fileService
-	 * @param contactService
-	 * @param forceUpdate if true, the expiry date will be ignored
-	 * @return
-	 */
-	public static final boolean startUpdate(final ContactModel contactModel,
-											FileService fileService,
-											ContactService contactService,
-											ApiService apiService,
-											boolean forceUpdate) {
-		UpdateBusinessAvatarRoutine instance = createInstance(contactModel, fileService, contactService, apiService, forceUpdate);
-		if(instance != null) {
+	public static void startUpdate(
+		@NonNull ContactModel contactModel,
+		@NonNull FileService fileService,
+		@NonNull ContactService contactService,
+		@NonNull ApiService apiService
+	) {
+		UpdateBusinessAvatarRoutine instance = createInstance(
+			contactModel,
+			fileService,
+			contactService,
+			apiService,
+			false
+		);
+		if (instance != null) {
 			//simple start thread!
 			Thread thread = new Thread(instance);
-			thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-				@Override
-				public void uncaughtException(Thread thread, Throwable throwable) {
-					logger.error("Uncaught exception", throwable);
-					synchronized (runningUpdates) {
-						runningUpdates.remove(contactModel.getIdentity());
-					}
+			thread.setUncaughtExceptionHandler((thread1, throwable) -> {
+				logger.error("Uncaught exception", throwable);
+				synchronized (runningUpdates) {
+					runningUpdates.remove(contactModel.getIdentity());
 				}
 			});
 			thread.start();
-
-			return thread != null;
 		}
-
-
-		return false;
 	}
-
 
 	/**
 	 * Update (if necessary) a business avatar
-	 * IMPORTANT: this method run the method in the same thread
+	 * IMPORTANT: this method runs the update routine in the same thread
 	 *
-	 * @param contactModel
-	 * @param fileService
-	 * @param contactService
 	 * @param forceUpdate if true, the expiry date will be ignored
-	 * @return
 	 */
-	public static final boolean start(ContactModel contactModel,
-											FileService fileService,
-											ContactService contactService,
-											ApiService apiService,
-											boolean forceUpdate) {
-		UpdateBusinessAvatarRoutine instance = createInstance(contactModel, fileService, contactService, apiService, forceUpdate);
+	@WorkerThread
+	public static boolean start(
+		@NonNull ContactModel contactModel,
+		@NonNull FileService fileService,
+		@NonNull ContactService contactService,
+		@NonNull ApiService apiService,
+		boolean forceUpdate
+	) {
+		UpdateBusinessAvatarRoutine instance = createInstance(
+			contactModel,
+			fileService,
+			contactService,
+			apiService,
+			forceUpdate
+		);
 		if(instance != null) {
 			instance.run();
 			return true;
@@ -274,11 +260,13 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 		return false;
 	}
 
-	private static UpdateBusinessAvatarRoutine createInstance(ContactModel contactModel,
-															  FileService fileService,
-															  ContactService contactService,
-															  ApiService apiService,
-															  boolean forceUpdate) {
+	private static UpdateBusinessAvatarRoutine createInstance(
+		@NonNull ContactModel contactModel,
+		@NonNull FileService fileService,
+		@NonNull ContactService contactService,
+		@NonNull ApiService apiService,
+		boolean forceUpdate
+	) {
 		synchronized (runningUpdates) {
 			final String key = contactModel.getIdentity();
 			//check if a update is running now
@@ -288,8 +276,10 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 
 				//check if necessary
 				if (!forceUpdate) {
-					if (ContactUtil.isAvatarExpired(contactModel)) {
-						logger.debug("do not update avatar, not expired");
+					ContactModelData data = contactModel.getData().getValue();
+					if (data == null || !data.isAvatarExpired()) {
+						logger.warn("Contact has been deleted or avatar is not expired");
+						return null;
 					}
 				}
 

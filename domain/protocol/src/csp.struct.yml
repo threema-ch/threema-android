@@ -950,10 +950,7 @@ payload: &payload
           - `0x05`: APNs Production with `mutable-content` key
           - `0x06`: APNs Development with `mutable-content` key
           - `0x11`: FCM with empty payload
-          - `0x12`: FCM with encrypted payload
           - `0x13`: HMS with empty payload
-          - `0x21`: (obsolete) Microsoft MPNS
-          - `0x22`: (obsolete) Microsoft WNS
         name: type
         type: u8
       - _doc: |-
@@ -1748,6 +1745,8 @@ e2e: &e2e
         - Automatic: Yes
         - Manual: Yes
       - When rejected: Re-send after confirmation
+      - Edit applies to: Text
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -1765,6 +1764,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: Yes
       - When rejected: Re-send after confirmation
+      - Edit applies to: Text
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       When receiving this message as a 1:1 conversation message:
@@ -1807,6 +1808,8 @@ e2e: &e2e
         - Automatic: Yes
         - Manual: Yes
       - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: N/A
 
       The image must be in JPEG format, is uploaded to the blob server and
@@ -1860,6 +1863,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: Yes
       - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       The image must be in JPEG format, is uploaded to the blob server and
@@ -1909,6 +1914,8 @@ e2e: &e2e
         - Automatic: Yes
         - Manual: Yes
       - When rejected: Re-send after confirmation
+      - Edit applies to: N/A
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -1926,6 +1933,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: Yes
       - When rejected: Re-send after confirmation
+      - Edit applies to: N/A
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       When receiving this message as a group message (wrapped by
@@ -2000,6 +2009,8 @@ e2e: &e2e
         - Automatic: Yes
         - Manual: Yes
       - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -2017,6 +2028,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: Yes
       - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       The audio is uploaded to the blob server and encrypted by:
@@ -2079,6 +2092,8 @@ e2e: &e2e
         - Automatic: Yes
         - Manual: Yes
       - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -2096,6 +2111,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: Yes
       - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       The video is uploaded to the blob server and encrypted by:
@@ -2167,6 +2184,8 @@ e2e: &e2e
         - Automatic: Yes
         - Manual: Yes
       - When rejected: Re-send after confirmation
+      - Edit applies to: Caption
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -2184,6 +2203,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: Yes
       - When rejected: Re-send after confirmation
+      - Edit applies to: Caption
+      - Deletable by: User and sender
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       The file is uploaded to the blob server and encrypted by:
@@ -2293,6 +2314,8 @@ e2e: &e2e
         - Automatic: Yes
         - Manual: Yes
       - When rejected: Re-send after confirmation
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-383))
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -2310,6 +2333,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: Yes
       - When rejected: Re-send after confirmation
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-383))
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       When receiving this message as a 1:1 conversation message:
@@ -2422,6 +2447,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `poll-vote`)
+      - Deletable by: User only (TODO(SE-383))
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -2438,6 +2465,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: No
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `poll-vote`)
+      - Deletable by: User only (TODO(SE-383))
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       When receiving this message as a 1:1 conversation message:
@@ -2502,6 +2531,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: Abort call
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-384))
       - Send to Threema Gateway ID group creator: N/A
 
       [//]: # "When sending: TODO(SE-102)"
@@ -2545,6 +2576,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: Abort call
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-384))
       - Send to Threema Gateway ID group creator: N/A
 
       [//]: # "When sending: TODO(SE-102)"
@@ -2600,6 +2633,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: This message does not trigger any kind of reaction and adding ICE
@@ -2650,6 +2685,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-384))
       - Send to Threema Gateway ID group creator: N/A
 
       [//]: # "When sending: TODO(SE-102)"
@@ -2686,6 +2723,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: Abort call
+      - Edit applies to: N/A
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
       [//]: # "When sending: TODO(SE-102)"
@@ -2718,6 +2757,8 @@ e2e: &e2e
         - Outgoing: Yes²
       - Delivery receipts: No, that would be silly!
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `delivery-receipt`)
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: Repeating a status of type _received_ or _read_ has no ill-effects.
@@ -2739,6 +2780,8 @@ e2e: &e2e
           `delivery-receipt` is sent in this case).
       - Delivery receipts: No, that would be silly!
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `delivery-receipt`)
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       ¹: Repeating a status of type _received_ or _read_ has no ill-effects.
@@ -2807,6 +2850,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: It is deemed acceptable if the _typing_ indicator in the UI is replayed
@@ -2859,6 +2904,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `set-profile-picture`)
+      - Deletable by: N/A (can just send a `delete-profile-picture`)
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -2875,6 +2922,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: No
       - When rejected: N/A¹
+      - Edit applies to: N/A (can just send another `set-profile-picture`)
+      - Deletable by: N/A (can just send a `delete-profile-picture`)
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: For the group creator it will be handled as if `group-sync-request` was
@@ -2939,6 +2988,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `delete-profile-picture`)
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -2955,6 +3006,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: No
       - When rejected: N/A¹
+      - Edit applies to: N/A (can just send another `delete-profile-picture`)
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: For the group creator it will be handled as if `group-sync-request` was
@@ -2997,6 +3050,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: N/A (ignored)
+      - Edit applies to: N/A
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
       When receiving this message via CSP or reflection:
@@ -3038,6 +3093,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: No
       - When rejected: N/A¹
+      - Edit applies to: N/A (can just send another `group-setup`)
+      - Deletable by: N/A (can just send another `group-setup`)
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: For the group creator it will be handled as if `group-sync-request` was
@@ -3157,6 +3214,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: No
       - When rejected: N/A¹
+      - Edit applies to: N/A (can just send another `group-name`)
+      - Deletable by: N/A (can just send an empty name)
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: For the group creator it will be handled as if `group-sync-request` was
@@ -3201,6 +3260,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: No
       - When rejected: N/A¹
+      - Edit applies to: N/A
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: Yes
 
       ¹: Re-send of `group-leave` implicitly triggered by FS `Reject` receive
@@ -3256,6 +3317,8 @@ e2e: &e2e
         - Automatic: N/A
         - Manual: No
       - When rejected: N/A¹
+      - Edit applies to: N/A
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: Yes
 
       ¹: Implicitly ignored by FS `Reject` receive steps.
@@ -3303,6 +3366,8 @@ e2e: &e2e
         - Automatic: No
         - Manual: No
       - When rejected: N/A (not sent by clients)
+      - Edit applies to: N/A
+      - Deletable by: N/A
       - Send to Threema Gateway ID group creator: N/A
 
       When receiving this message:

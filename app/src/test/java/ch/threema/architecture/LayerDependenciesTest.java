@@ -29,6 +29,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import org.junit.runner.RunWith;
 
 import ch.threema.app.BuildConfig;
+import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.DatabaseMigrationFailedException;
 import ch.threema.app.exceptions.DatabaseMigrationLockedException;
@@ -50,6 +51,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 
 import static ch.threema.architecture.ArchitectureDefinitions.APP;
 import static ch.threema.architecture.ArchitectureDefinitions.BASE;
+import static ch.threema.architecture.ArchitectureDefinitions.DATA;
 import static ch.threema.architecture.ArchitectureDefinitions.DOMAIN;
 import static ch.threema.architecture.ArchitectureDefinitions.LOCALCRYPTO;
 import static ch.threema.architecture.ArchitectureDefinitions.LOGGING;
@@ -64,12 +66,26 @@ public class LayerDependenciesTest {
 	@ArchTest
 	public static final ArchRule appLayerAccess = getLayeredArchitecture()
 		.whereLayer(APP).mayNotBeAccessedByAnyLayer()
+		// Storage layer may access services and utils
 		.ignoreDependency(
 			nameMatching("ch\\.threema\\.storage\\..*"),
 			nameMatching("ch\\.threema\\.app\\.services\\..*")
 		)
 		.ignoreDependency(
 			nameMatching("ch\\.threema\\.storage\\..*"),
+			nameMatching("ch\\.threema\\.app\\.utils\\..*")
+		)
+		// Data layer may access listeners and utils
+		.ignoreDependency(
+			nameMatching("ch\\.threema\\.data\\..*"),
+			nameMatching("ch\\.threema\\.app\\.managers\\..*")
+		)
+		.ignoreDependency(
+			nameMatching("ch\\.threema\\.data\\..*"),
+			nameMatching("ch\\.threema\\.app\\.listeners\\..*")
+		)
+		.ignoreDependency(
+			nameMatching("ch\\.threema\\.data\\..*"),
 			nameMatching("ch\\.threema\\.app\\.utils\\..*")
 		)
 		.ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationFailedException.class)
@@ -84,26 +100,31 @@ public class LayerDependenciesTest {
 		.ignoreDependency(BallotModelFactory.class, MessageReceiver.class)
 		.ignoreDependency(FileDataModel.class, ListReader.class)
 		.ignoreDependency(LoggerManager.class, BuildConfig.class)
+		.ignoreDependency(LoggerManager.class, BuildFlavor.class)
 		.ignoreDependency(DebugLogFileBackend.class, FileService.class)
 		.ignoreDependency(DebugLogFileBackend.class, HandlerExecutor.class)
 		.ignoreDependency(DebugLogFileBackend.class, ZipUtil.class)
 		.ignoreDependency(DebugLogFileBackend.class, ThreemaApplication.class); // TODO(ANDR-1439): Refactor
 
 	@ArchTest
+	public static final ArchRule dataLayerAccess = getLayeredArchitecture()
+		.whereLayer(DATA).mayOnlyBeAccessedByLayers(APP);
+
+	@ArchTest
 	public static final ArchRule storageLayerAccess = getLayeredArchitecture()
-		.whereLayer(STORAGE).mayOnlyBeAccessedByLayers(APP);
+		.whereLayer(STORAGE).mayOnlyBeAccessedByLayers(APP, DATA);
 
 	@ArchTest
 	public static final ArchRule localcryptoLayerAccess = getLayeredArchitecture()
-		.whereLayer(LOCALCRYPTO).mayOnlyBeAccessedByLayers(APP, STORAGE);
+		.whereLayer(LOCALCRYPTO).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE);
 
 	@ArchTest
 	public static final ArchRule domainLayerAccess = getLayeredArchitecture()
-		.whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(APP, STORAGE);
+		.whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE);
 
 
 	@ArchTest
 	public static final ArchRule baseLayerAccess = getLayeredArchitecture()
-		.whereLayer(BASE).mayOnlyBeAccessedByLayers(APP, STORAGE, LOCALCRYPTO, DOMAIN, LOGGING);
+		.whereLayer(BASE).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE, LOCALCRYPTO, DOMAIN, LOGGING);
 
 }

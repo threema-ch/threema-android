@@ -42,6 +42,8 @@ import ch.threema.app.listeners.ContactTypingListener;
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.listeners.DistributionListListener;
 import ch.threema.app.listeners.GroupListener;
+import ch.threema.app.listeners.MessageDeletedForAllListener;
+import ch.threema.app.listeners.EditMessageListener;
 import ch.threema.app.listeners.MessageListener;
 import ch.threema.app.listeners.MessagePlayerListener;
 import ch.threema.app.listeners.NewSyncedContactsListener;
@@ -175,6 +177,7 @@ public class ListenerManager {
 	public static final TypedListenerManager<DistributionListListener> distributionListListeners = new TypedListenerManager<DistributionListListener>();
 	public static final TypedListenerManager<GroupListener> groupListeners = new TypedListenerManager<GroupListener>();
 	public static final TypedListenerManager<MessageListener> messageListeners = new TypedListenerManager<MessageListener>();
+	public static final TypedListenerManager<MessageDeletedForAllListener> messageDeletedForAllListener = new TypedListenerManager<>();
 	public static final TypedListenerManager<PreferenceListener>  preferenceListeners = new TypedListenerManager<PreferenceListener>();
 	public static final TypedListenerManager<ServerMessageListener>  serverMessageListeners = new TypedListenerManager<ServerMessageListener>();
 	public static final TypedListenerManager<SynchronizeContactsListener>  synchronizeContactsListeners = new TypedListenerManager<SynchronizeContactsListener>();
@@ -193,4 +196,5 @@ public class ListenerManager {
 	public static final TypedListenerManager<GroupJoinResponseListener> groupJoinResponseListener = new TypedListenerManager<>();
 	public static final TypedListenerManager<IncomingGroupJoinRequestListener> incomingGroupJoinRequestListener = new TypedListenerManager<>();
 	public static final TypedListenerManager<ContactCountListener> contactCountListener = new TypedListenerManager<>();
+	public static final TypedListenerManager<EditMessageListener> editMessageListener = new TypedListenerManager<>();
 }

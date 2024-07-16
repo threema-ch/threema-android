@@ -359,15 +359,6 @@ public interface PreferenceService {
 	void setCustomSupportUrl(String supportUrl);
 	String getCustomSupportUrl();
 
-	/**
-	 * This method returns the pre-target level api 33 locale override. This is only used for
-	 * migrating to the new per app language framework.
-	 *
-	 * @return the previous locale setting, null if already migrated or no language is selected
-	 */
-	@Deprecated
-	String getLocaleOverride();
-
 	HashMap<String, String> getDiverseEmojiPrefs();
 
 	void setDiverseEmojiPrefs(HashMap<String, String> diverseEmojis);

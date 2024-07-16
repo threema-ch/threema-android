@@ -22,13 +22,10 @@
 package ch.threema.app.dialogs
 
 import android.app.Dialog
-import android.icu.text.ListFormatter
-import android.os.Build
 import android.os.Bundle
 import ch.threema.app.R
 import ch.threema.app.services.ContactService
-import ch.threema.app.utils.LocaleUtil
-import ch.threema.app.utils.NameUtil
+import ch.threema.app.utils.ContactUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ResendGroupMessageDialog(
@@ -38,17 +35,7 @@ class ResendGroupMessageDialog(
 ) : ThreemaDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val context = context
-
-        val contactNames = rejectedIdentities.mapNotNull { contactService.getByIdentity(it) }
-            .map { NameUtil.getDisplayNameOrNickname(it, false) }
-        val concatenatedContactNames =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context != null) {
-                ListFormatter.getInstance(LocaleUtil.getCurrentLocale(context)).format(contactNames)
-            } else {
-                contactNames.joinToString(separator = ", ")
-            }
-
+        val concatenatedContactNames = ContactUtil.joinDisplayNames(context, contactService.getByIdentities(rejectedIdentities.toList()))
         val builder = MaterialAlertDialogBuilder(requireActivity())
         builder.setTitle(getString(R.string.resend_message_dialog_title))
         builder.setMessage(getString(R.string.resend_message_dialog_message, concatenatedContactNames))

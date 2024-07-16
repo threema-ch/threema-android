@@ -1373,7 +1373,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		View bottomPanel = findViewById(R.id.bottom_panel);
 		bottomPanel.setVisibility(View.VISIBLE);
 
-		if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
+		if (ConfigUtils.isDefaultEmojiStyle()) {
 			initializeEmojiView();
 		} else {
 			findViewById(R.id.emoji_button).setVisibility(View.GONE);
@@ -1442,7 +1442,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 		emojiButton.setColorFilter(getResources().getColor(android.R.color.white));
 
 		emojiPicker = (EmojiPicker) ((ViewStub) findViewById(R.id.emoji_stub)).inflate();
-		emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService());
+		emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService(), false);
 		emojiButton.attach(this.emojiPicker);
 		emojiPicker.setEmojiKeyListener(emojiKeyListener);
 

@@ -1011,6 +1011,7 @@
     <string name="system_default">Rendszer alapértelmezett</string>
     <string name="open_in_maps_app">Megnyitás a Térképalkalmazásban</string>
     <string name="delete">Törlés</string>
+    <string name="message_was_deleted">Üzenet törölve</string>
     <string name="continue_recording">Felvétel folytatása</string>
     <string name="tap_to_start">Kattintson ide a %s indításához.</string>
     <string name="two_years">2 év</string>
@@ -1348,5 +1349,4 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
         <item quantity="one">A média mentése folyamatban van</item>
         <item quantity="other"></item>
     </plurals>
-    <string name="edit_and_send">Szerkesztés</string>
 </resources>

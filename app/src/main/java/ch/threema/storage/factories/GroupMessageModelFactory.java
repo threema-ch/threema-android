@@ -43,6 +43,7 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
@@ -282,7 +283,8 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 						+ " AND " + GroupMessageModel.COLUMN_OUTBOX + "=0"
 						+ " AND " + GroupMessageModel.COLUMN_IS_SAVED + "=1"
 						+ " AND " + GroupMessageModel.COLUMN_IS_READ + "=0"
-						+ " AND " + GroupMessageModel.COLUMN_IS_STATUS_MESSAGE + "=0",
+						+ " AND " + GroupMessageModel.COLUMN_IS_STATUS_MESSAGE + "=0"
+						+ " AND " + GroupMessageModel.COLUMN_DELETED_AT + " IS NULL",
 				new String[]{
 						String.valueOf(groupId)
 				}
@@ -500,7 +502,9 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 						"`" + GroupMessageModel.COLUMN_READ_AT +"` DATETIME ," +
 						"`" + GroupMessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 ," +
 						"`" + GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES +"` VARCHAR ," +
-						"`" + GroupMessageModel.COLUMN_DISPLAY_TAGS +"` TINYINT DEFAULT 0 );",
+						"`" + GroupMessageModel.COLUMN_DISPLAY_TAGS +"` TINYINT DEFAULT 0 ," +
+						"`" + GroupMessageModel.COLUMN_EDITED_AT +"` DATETIME ," +
+						"`" + GroupMessageModel.COLUMN_DELETED_AT +"` DATETIME );",
 
 				//indices
 				"CREATE INDEX `m_group_message_outbox_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_OUTBOX + "` );",

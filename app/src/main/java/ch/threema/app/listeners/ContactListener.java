@@ -22,18 +22,19 @@
 package ch.threema.app.listeners;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import ch.threema.storage.models.ContactModel;
 
 public interface ContactListener {
 	/**
 	 * A new contact is added.
 	 */
-	@AnyThread default void onNew(final ContactModel createdContactModel) { }
+	@AnyThread default void onNew(final @NonNull String identity) { }
 
 	/**
-	 * Called when the contact is modified.
+	 * Called when the contact with the specified identity is modified.
 	 */
-	@AnyThread default void onModified(final ContactModel modifiedContactModel) { }
+	@AnyThread default void onModified(final @NonNull String identity) { }
 
 	/**
 	 * Called when the contact avatar was changed.
@@ -43,12 +44,5 @@ public interface ContactListener {
 	/**
 	 * The contact was removed.
 	 */
-	@AnyThread default void onRemoved(final ContactModel removedContactModel) { }
-
-	/**
-	 * Return true if the specified contact should be handled.
-	 */
-	@AnyThread default boolean handle(String identity) {
-		return true;
-	}
+	@AnyThread default void onRemoved(final @NonNull String identity) { }
 }

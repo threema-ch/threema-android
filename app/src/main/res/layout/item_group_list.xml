@@ -3,10 +3,10 @@
 <ch.threema.app.ui.CheckableConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
-	android:layout_height="@dimen/messagelist_item_height"
+	android:layout_height="wrap_content"
 	android:background="@drawable/listitem_background_selector"
-	android:paddingLeft="@dimen/listitem_standard_margin_left_right"
-	android:paddingRight="@dimen/listitem_standard_margin_left_right">
+	android:paddingVertical="@dimen/listitem_standard_margin_top_bottom"
+	android:paddingHorizontal="@dimen/listitem_standard_margin_left_right">
 
 	<include layout="@layout/avatar_view_checkable_constrained" />
 
@@ -16,6 +16,7 @@
 		android:id="@+id/name"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+        android:minHeight="@dimen/listitem_min_height_first_line"
 		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
 		android:ellipsize="end"
 		android:singleLine="true"
@@ -37,6 +38,7 @@
 		android:baselineAlignBottom="true"
 		app:srcCompat="@drawable/ic_group_outline"
 		android:visibility="visible"
+		app:layout_constraintTop_toTopOf="@id/name"
 		app:layout_constraintBottom_toBottomOf="@id/name"
 		app:layout_constraintLeft_toRightOf="@id/name"
 		app:layout_constraintRight_toRightOf="parent"
@@ -48,6 +50,7 @@
 		android:id="@+id/subject"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+        android:minHeight="@dimen/listitem_min_height_second_line"
 		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
 		android:ellipsize="end"
 		android:singleLine="true"

@@ -21,7 +21,7 @@
 
 package ch.threema.app.locationpicker;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
+import org.maplibre.android.geometry.LatLng;
 
 import androidx.annotation.Nullable;
 

@@ -656,7 +656,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="restore">復元</string>
     <string name="new_wizard_anonymous_confirm">Threema IDに登録する携帯電話番号やメールアドレスが入力されていません。友達の連絡先リストには表示されません。本当に匿名でThreemaを利用しますか？</string>
     <string name="new_wizard_anonymous_confirm_phone_only">Threema IDと連携する携帯電話番号が入力されていません。友達の連絡先リストには表示されません。本当に匿名でThreemaを利用しますか？</string>
-    <string name="new_wizard_scan_id_backup">QR コードをスキャンする</string>
+    <string name="new_wizard_scan_id_backup">QRコードをスキャンする</string>
     <string name="error_saving_file">ファイル保存のエラー。権限を確認してください。</string>
     <string name="wait_one_minute">SMSが届くまで10分以上待ってから、通話をリクエストしてください。</string>
     <string name="backup_id">エクスポート済みの ID</string>
@@ -790,15 +790,15 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="message_sent">メッセージが送信されました</string>
     <string name="threema_call">Threema通話</string>
     <string name="threema_message_to">%sへのメッセージ</string>
-    <string name="threema_call_with">%sへの通話</string>
+    <string name="threema_call_with">%s と通話する</string>
     <string name="prefs_title_voip">Threema通話</string>
     <string name="prefs_title_force_turn">常にリレーコールを使用</string>
     <string name="prefs_summary_force_turn_off">可能であれば直接接続を確立し、認証されていない連絡先にはThreemaのサーバーを介したリレーコールのみを使用します。直接接続では、IPアドレスが相手に知られる可能性があります。</string>
-    <string name="prefs_summary_force_turn_on">全通話でThreemaのサーバーを介したリレーコールを使用し、IP アドレスを守ります。通話の品質が劣化する可能性があります。</string>
+    <string name="prefs_summary_force_turn_on">全通話でThreemaのサーバーを経由し、IPアドレスを守ります。通話品質低下の可能性があります。</string>
     <string name="permission_record_audio_required">通話や音声メッセージを送信するには、マイクへのアクセスを許可してください。</string>
-    <string name="prefs_voice_call_notifications">音声通話</string>
+    <string name="prefs_voice_call_notifications">Threema通話</string>
     <string name="prefs_voice_call_sound">着信音</string>
-    <string name="prefs_sum_voice_call_sound">Threema通話の着信音を選ぶ</string>
+    <string name="prefs_sum_voice_call_sound">Threema通話の着信音を選択</string>
     <string name="prefs_sum_voice_call_vibrate">Threema通話の着信時にバイブレーションを鳴らします</string>
     <string name="prefs_title_voip_enable">Threema通話を有効化</string>
     <string name="webclient_invalid_push_token_message">手動起動が必要</string>
@@ -934,6 +934,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="empty_chat_title">トークをクリア</string>
     <string name="empty_chat_confirm">このトーク内のメッセージはすべて削除されます。続行しますか？</string>
     <string name="emptying_chat">トークを空にする</string>
+    <string name="emptying_chat_deleting_messages">メッセージを削除中…</string>
+    <string name="delete_chat_title">トークを削除</string>
+    <string name="deleting_chat">トークを削除中…</string>
     <string name="set_private">«プライベートトーク»としてマークする</string>
     <string name="unset_private">«プライベートトーク»を無効化する</string>
     <string name="delete_group_message">このグループを退会して完全に削除しますか？すべてのメッセージが削除されます。</string>
@@ -1021,6 +1024,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="whatsnew_headline"><![CDATA[<p>スター付きメッセージ: 重要なメッセージを後で簡単に見つけるために、長押しでスターを付けてください。</p>
 <p>自動削除: 選択可能な期間後にチャットが自動的に整理されるようにします。メッセージの自動削除機能はストレージ管理で有効にすることができます。</p>
 <p>その他多数の改善と最適化。</p>]]></string>
+    <string name="whatsnew2_title">(空のフレーズ)</string>
+    <string name="whatsnew2_body">(空のフレーズ)</string>
     <string name="tap_to_start">タップして %s を始めましょう</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">バックアップのパスが無効です</string>
@@ -1079,7 +1084,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="video_camera_on">ビデオカメラが有効</string>
     <string name="video_camera_off">ビデオカメラが無効</string>
     <string name="enable_picture_in_picture">ピクチャ・イン・ピクチャ・モードを開始</string>
-    <string name="call_with">通話 %s</string>
+    <string name="call_with">%s と通話する</string>
     <string name="picture_in_picture_disabled_in_setting">%sのピクチャ・イン・ピクチャ・モードは無効になっています。システム設定で有効にしてください。</string>
     <string name="delete_everything">すべて削除</string>
     <string name="prefs_title_voip_video_enable">ビデオ通話を許可</string>
@@ -1158,6 +1163,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="blur_faces">顔をぼかす</string>
     <string name="brush">ブラシ</string>
     <string name="pencil">ペンシル</string>
+    <string name="highlighter">蛍光ペン</string>
     <string name="error_detecting_faces">顔の検出エラー</string>
     <string name="no_faces_detected">顔が検出されません</string>
     <string name="smiley">絵文字</string>
@@ -1372,12 +1378,13 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="forward_security_cleared">この連絡先とのPerfect Forward Secrecyセッションはクリアされました</string>
     <string name="message_without_forward_security">Perfect Forward Secrecyを使用しないメッセージを受信しました。送信者がPerfect Forward Secrecyを意図的に無効にしていることを確認してください。</string>
     <string name="forward_security_disabled">Perfect Forward Secrecyはこのトークで無効になってます</string>
-    <string name="forward_security_established">このトークのメッセージはPerfect Forward Secrecyによって保護されるようになりました。</string>
+    <string name="forward_security_established">このトークのメッセージはPerfect Forward Secrecyにより保護されます。</string>
     <string name="forward_security_established_rx">このトークで受信したメッセージはPerfect Forward Secrecyによって保護されるようになりました。</string>
     <string name="forward_security_reset">Perfect Forward Secrecy セッションが初期化されました。これは、トークの相手がが端末を変更したり、アプリを再インストールしたりした場合に発生することがあります。</string>
     <string name="forward_security_reset_simple">この連絡先とのPerfect Forward Secrecyセッションはリセットされました。</string>
     <string name="forward_security_message_out_of_order">メッセージが間違った順序で受信されたため、復号化できませんでした。</string>
     <string name="forward_security_notification_channel_name">Perfect Forward Secrecy</string>
+    <string name="forward_security_notification_rejected_title">メッセージの送信に失敗</string>
     <string name="self_updater_installation_failed">アップデートのダウンロードに失敗しました。<a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> からアップデートをダウンロードしてインストールしてください。</string>
     <string name="spam_first_contact">このトークは不明な連絡先からのものです</string>
     <string name="spam_report">スパム報告</string>
@@ -1434,7 +1441,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="tap_to_resend">タップで再送</string>
     <string name="group_calls_tooltip_title">グループ通話</string>
     <string name="group_calls_tooltip_text">ここをタップすると、すべてのグループメンバーを通話に招待できます。すべてのグループメンバーは通知を受け取り、通話に参加するかどうかを決定できます。</string>
-    <string name="prefs_title_calls">セキュアな通話</string>
+    <string name="prefs_title_calls">安全な通話</string>
     <string name="prefs_sum_group_calls_vibration">グループ通話の開始時にバイブレーションを鳴らすかどうかを選択します</string>
     <string name="forward_security_mode_4dh">完全</string>
     <string name="forward_security_mode_2dh">単方向</string>
@@ -1503,8 +1510,13 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="group_orphaned_notice">グループの作成者がグループを離れたため、このグループは孤立しています。新しい管理者になるために、このグループを複製してください。</string>
     <string name="group_not_a_member_notice">あなたはもはやこのグループの一員ではなく、これ以上使用することはできません。</string>
     <string name="group_dissolved_notice">このグループは解散され、もはや使用することはできません。</string>
+    <string name="md_linked_devices">紐づいた端末</string>
+    <string name="md_link_device">新しい端末と紐づけ</string>
+    <string name="md_enable">紐づけされた端末を有効にする</string>
+    <string name="md_link_device_qr_scan_message">QRコードを読み取ってください</string>
     <string name="directory_request_failed">ディレクトリ要求に失敗しました。もう一度試してください。</string>
     <string name="add_shortcut_exists">この対象のためのショートカットは既に存在します。</string>
+    <string name="resend_message_dialog_title">グループメッセージを再送信しますか？</string>
     <string name="work_lost_credentials_help">資格情報を忘れましたか？%1$sの管理者に連絡してください。</string>
     <string name="problemsolver_intro">以下の指示に従ってこれらの問題を解決することによって、%sが正しく動作することを妨げる可能性のあるシステム設定の問題を修正してください。</string>
     <string name="problemsolver_title">構成の問題を修正する</string>
@@ -1522,6 +1534,11 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="problemsolver_to_settings">設定へ</string>
     <string name="prefs_advanced_options">高度なオプション</string>
     <string name="push_service">プッシュサービス</string>
+    <string name="zoom_out">縮小</string>
+    <string name="zoom_in">拡大</string>
+    <string name="edit_and_send">編集して送信</string>
+    <string name="media_gallery_animated_webps">アニメーションWebP</string>
+    <string name="unsupported_image_type">サポート外の画像形式: %s</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d 連絡先</item>
     </plurals>
@@ -1604,5 +1621,4 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <plurals name="number_of_group_members">
         <item quantity="other">%d名のグループメンバー</item>
     </plurals>
-    <string name="edit_and_send">編集</string>
 </resources>

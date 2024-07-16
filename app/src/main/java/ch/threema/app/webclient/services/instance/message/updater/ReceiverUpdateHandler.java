@@ -29,6 +29,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.managers.ListenerManager;
@@ -45,6 +46,7 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
@@ -73,18 +75,23 @@ public class ReceiverUpdateHandler extends MessageUpdater {
 	private final DistributionListListener distributionListListener;
 
 	// Dispatchers
-	private MessageDispatcher dispatcher;
+	private final @NonNull MessageDispatcher dispatcher;
 
 	// Services
-	private final SynchronizeContactsService synchronizeContactsService;
+	private final @NonNull DatabaseServiceNew databaseServiceNew;
+	private final @NonNull SynchronizeContactsService synchronizeContactsService;
 
 	@AnyThread
-	public ReceiverUpdateHandler(@NonNull HandlerExecutor handler,
-								 MessageDispatcher dispatcher,
-								 SynchronizeContactsService synchronizeContactsService) {
+	public ReceiverUpdateHandler(
+		@NonNull HandlerExecutor handler,
+		@NonNull MessageDispatcher dispatcher,
+		@NonNull DatabaseServiceNew databaseServiceNew,
+		@NonNull SynchronizeContactsService synchronizeContactsService
+	) {
 		super(Protocol.SUB_TYPE_RECEIVER);
 		this.handler = handler;
 		this.dispatcher = dispatcher;
+		this.databaseServiceNew = databaseServiceNew;
 		this.synchronizeContactsService = synchronizeContactsService;
 		this.contactListener = new ContactListener();
 		this.groupListener = new GroupListener();
@@ -181,7 +188,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
 	@AnyThread
 	private class ContactListener implements ch.threema.app.listeners.ContactListener {
 		@Override
-		public void onModified(ContactModel modifiedContactModel) {
+		public void onModified(final @NonNull String identity) {
 			if (synchronizeContactsService.isFullSyncInProgress()) {
 				// A sync is currently in progress. This causes a *lot* of onModified
 				// listeners to be called.
@@ -191,17 +198,44 @@ public class ReceiverUpdateHandler extends MessageUpdater {
 				return;
 			}
 
-			updateContact(modifiedContactModel, Protocol.ARGUMENT_MODE_MODIFIED);
+			final ContactModel modifiedContactModel = getContactModelByIdentity(identity);
+			if (modifiedContactModel != null) {
+				updateContact(modifiedContactModel, Protocol.ARGUMENT_MODE_MODIFIED);
+			}
 		}
 
 		@Override
-		public void onNew(ContactModel createdContactModel) {
-			updateContact(createdContactModel, Protocol.ARGUMENT_MODE_NEW);
+		public void onNew(final @NonNull String identity) {
+			final ContactModel newContactModel = getContactModelByIdentity(identity);
+			if (newContactModel != null) {
+				updateContact(newContactModel, Protocol.ARGUMENT_MODE_NEW);
+			}
 		}
 
 		@Override
-		public void onRemoved(ContactModel removedContactModel) {
-			updateContact(removedContactModel, Protocol.ARGUMENT_MODE_REMOVED);
+		public void onRemoved(@NonNull String identity) {
+			handler.post(new Runnable() {
+				@Override
+				@WorkerThread
+				public void run() {
+					try {
+						MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+						builder.put(Receiver.ID, identity);
+						ReceiverUpdateHandler.this.update(
+							new Utils.ModelWrapper(Receiver.Type.CONTACT, identity),
+							builder,
+							Protocol.ARGUMENT_MODE_REMOVED
+						);
+					} catch (ConversionException e) {
+						logger.error("Exception", e);
+					}
+				}
+			});
+		}
+
+		@Nullable
+		private ContactModel getContactModelByIdentity(@NonNull String identity) {
+			return databaseServiceNew.getContactModelFactory().getByIdentity(identity);
 		}
 	}
 

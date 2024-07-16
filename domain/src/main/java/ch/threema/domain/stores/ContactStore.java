@@ -60,20 +60,9 @@ public interface ContactStore {
 	Contact getContactForIdentityIncludingCache(@NonNull String identity);
 
 	/**
-	 * Add a contact to the contact store.
-	 *
-	 * If a contact already exists, update it.
+	 * Add or update a contact in the contact store.
 	 */
 	void addContact(@NonNull Contact contact);
-
-	/**
-	 * Add a contact to the contact store. If it already exists, update it. The given contact object
-	 * is modified when the hide argument is true.
-	 *
-	 * @param contact the contact that is added or updated
-	 * @param hide if true, updates the contact model object and adds or updates the contact; otherwise the contact is added/updated as is
-	 */
-	void addContact(@NonNull Contact contact, boolean hide);
 
 	/**
 	 * Remove a contact from the contact store.

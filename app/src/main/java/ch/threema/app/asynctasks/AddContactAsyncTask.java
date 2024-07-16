@@ -31,8 +31,8 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.models.IdentityType;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.models.ContactModel;
 
 public class AddContactAsyncTask extends AsyncTask<Void, Void, Boolean> {
@@ -79,8 +79,8 @@ public class AddContactAsyncTask extends AsyncTask<Void, Void, Boolean> {
 				if (contactModel.getIdentityType() == IdentityType.WORK || markAsWorkVerified) {
 					contactModel.setIsWork(true);
 
-					if(contactModel.getVerificationLevel() != VerificationLevel.FULLY_VERIFIED) {
-						contactModel.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
+					if(contactModel.verificationLevel != VerificationLevel.FULLY_VERIFIED) {
+						contactModel.verificationLevel = VerificationLevel.SERVER_VERIFIED;
 					}
 					contactService.save(contactModel);
 				}

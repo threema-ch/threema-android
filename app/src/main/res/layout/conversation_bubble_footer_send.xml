@@ -28,6 +28,20 @@
         android:visibility="gone"
         tools:visibility="visible"/>
 
+    <TextView
+        style="@style/Threema.Bubble.Text.Footer"
+        android:id="@+id/edited_text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_weight="1.0"
+        android:layout_marginRight="4dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="@string/edited"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
     <ImageView
         android:id="@+id/star_icon"
         app:srcCompat="@drawable/ic_star_golden_24dp"

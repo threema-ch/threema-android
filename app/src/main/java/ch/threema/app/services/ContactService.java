@@ -26,20 +26,18 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkContact;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage;
-import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.storage.models.ContactModel;
@@ -388,8 +386,6 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	VerificationLevel getInitialVerificationLevel(ContactModel contactModel);
 
-	ContactModel createContactByQRResult(QRCodeService.QRCodeContentResult qrResult) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException;
-
 	void removeAll();
 
 	/**
@@ -407,14 +403,18 @@ public interface ContactService extends AvatarService<ContactModel> {
 	void removeAllSystemContactLinks();
 
 	@Deprecated
-	int getUniqueId(ContactModel contactModel);
+	int getUniqueId(@Nullable ContactModel contactModel);
+	@Deprecated
+	int getUniqueId(@NonNull String identity);
 	String getUniqueIdString(ContactModel contactModel);
 
 	String getUniqueIdString(String identity);
 
-	boolean setAvatar(ContactModel contactModel, File temporaryAvatarFile) throws Exception;
+	boolean setAvatar(@Nullable ContactModel contactModel, @Nullable File temporaryAvatarFile) throws Exception;
+	boolean setAvatar(@NonNull String identity, @Nullable File temporaryAvatarFile) throws Exception;
 	boolean setAvatar(ContactModel contactModel, byte[] avatar) throws Exception;
 	boolean removeAvatar(ContactModel contactModel);
+	void clearAvatarCache(@NonNull String identity);
 
 	@NonNull
 	ProfilePictureSharePolicy getProfilePictureSharePolicy();
@@ -446,11 +446,16 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	ContactModel createContactModelByIdentity(String identity) throws InvalidEntryException;
 
-	boolean showBadge(ContactModel contactModel);
+	boolean showBadge(@Nullable ContactModel contactModel);
+	boolean showBadge(@NonNull ContactModelData contactModelData);
 
-	void setName(ContactModel contact, String firstName, String lastName);
 	String getAndroidContactLookupUriString(ContactModel contactModel);
 	@Nullable ContactModel addWorkContact(@NonNull WorkContact workContact, @Nullable List<ContactModel> existingWorkContacts);
+
+	/**
+	 * Remove the specified contact from the contact cache.
+	 */
+	void removeFromCache(@NonNull String identity);
 
 	/**
 	 * Fetch contact if not available locally. There are different steps executed to get the public

@@ -83,7 +83,6 @@ import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
 import ch.threema.storage.models.GroupModel
 import com.google.protobuf.ByteString
-import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 
 private val logger = LoggingUtil.getThreemaLogger("DeviceJoinDataCollector")
@@ -460,7 +459,7 @@ class DeviceJoinDataCollector(
 
     private fun collectSyncState(contactModel: ContactModel): SyncState {
         // TODO(ANDR-2327): Consolidate this mechanism
-        return if (contactModel.androidContactLookupKey != null) {
+        return if (contactModel.isLinkedToAndroidContact) {
             SyncState.IMPORTED
         } else  if (contactModel.lastName.isNullOrBlank() && contactModel.firstName.isNullOrBlank()) {
             SyncState.INITIAL
@@ -502,16 +501,16 @@ class DeviceJoinDataCollector(
     }
 
     private fun collectContactDefinedProfilePicture(contactModel: ContactModel): Pair<BlobDataProvider, DeltaImage>? {
-        return if (fileService.hasContactPhotoFile(contactModel)) {
-            createJpegBlobAssets { fileService.getContactPhoto(contactModel) }
+        return if (fileService.hasContactPhotoFile(contactModel.identity)) {
+            createJpegBlobAssets { fileService.getContactPhoto(contactModel.identity) }
         } else {
             null
         }
     }
 
     private fun collectUserDefinedProfilePicture(contactModel: ContactModel): Pair<BlobDataProvider, DeltaImage>? {
-        return if (fileService.hasContactAvatarFile(contactModel)) {
-            createJpegBlobAssets { fileService.getContactAvatar(contactModel) }
+        return if (fileService.hasContactAvatarFile(contactModel.identity)) {
+            createJpegBlobAssets { fileService.getContactAvatar(contactModel.identity) }
         } else {
             null
         }

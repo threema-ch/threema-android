@@ -38,7 +38,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
-import com.mapbox.mapboxsdk.geometry.LatLng;
+import org.maplibre.android.geometry.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;

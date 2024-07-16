@@ -38,8 +38,10 @@ import java.util.Set;
 
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.processors.groupcontrol.IncomingGroupSetupTask;
+import ch.threema.app.utils.GroupFeatureSupport;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.GroupId;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMemberModel;
@@ -489,4 +491,12 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @param newState state for the specified identity
 	 */
 	void addGroupMessageState(@NonNull GroupMessageModel messageModel, @NonNull String identityToAdd, @NonNull MessageState newState);
+
+	/**
+	 * Check to which extent a feature is supported by the members of a group
+	 * @param groupModel group
+	 * @param featureMask feature mask
+	 * @return the feature support indicating whether all, not all or none of the group members support the feature
+	 */
+	GroupFeatureSupport getFeatureSupport(@NonNull GroupModel groupModel, @ThreemaFeature.Feature long featureMask);
 }

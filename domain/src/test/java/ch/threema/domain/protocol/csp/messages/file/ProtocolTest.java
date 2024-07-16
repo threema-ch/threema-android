@@ -36,6 +36,7 @@ import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.NonceStore;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.GroupId;
+import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.coders.MessageCoder;
@@ -202,14 +203,11 @@ public class ProtocolTest {
 
 			@Override
 			public Contact getContactForIdentity(@NonNull String identity) {
-				return new Contact(identity, new byte[256]);
+				return new Contact(identity, new byte[256], VerificationLevel.UNVERIFIED);
 			}
 
 			@Override
 			public void addContact(@NonNull Contact contact) { }
-
-			@Override
-			public void addContact(@NonNull Contact contact, boolean hide) { }
 
 			@Override
 			public void removeContact(@NonNull Contact contact) { }

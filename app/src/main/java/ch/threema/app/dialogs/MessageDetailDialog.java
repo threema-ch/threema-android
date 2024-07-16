@@ -198,6 +198,10 @@ public class MessageDetailDialog extends ThreemaDialogFragment implements View.O
 			final TextView readDate = dialogView.findViewById(R.id.read_date);
 			final TextView modifiedText = dialogView.findViewById(R.id.modified_text);
 			final TextView modifiedDate = dialogView.findViewById(R.id.modified_date);
+			final TextView editedText = dialogView.findViewById(R.id.edited_text);
+			final TextView editedDate = dialogView.findViewById(R.id.edited_date);
+			final TextView deletedText = dialogView.findViewById(R.id.deleted_text);
+			final TextView deletedDate = dialogView.findViewById(R.id.deleted_date);
 			final TextView messageIdText = dialogView.findViewById(R.id.messageid_text);
 			final TextView messageIdDate = dialogView.findViewById(R.id.messageid_date);
 			final TextView mimeTypeText = dialogView.findViewById(R.id.filetype_text);
@@ -320,6 +324,18 @@ public class MessageDetailDialog extends ThreemaDialogFragment implements View.O
 						deliveredText.setVisibility(View.VISIBLE);
 						deliveredDate.setVisibility(View.VISIBLE);
 					}
+				}
+
+				if (messageModel.getEditedAt() != null) {
+					editedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getEditedAt().getTime()));
+					editedText.setVisibility(View.VISIBLE);
+					editedDate.setVisibility(View.VISIBLE);
+				}
+
+				if (messageModel.getDeletedAt() != null) {
+					deletedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getDeletedAt().getTime()));
+					deletedText.setVisibility(View.VISIBLE);
+					deletedDate.setVisibility(View.VISIBLE);
 				}
 
 				if (messageModel.getType() == MessageType.FILE && messageModel.getFileData() != null) {

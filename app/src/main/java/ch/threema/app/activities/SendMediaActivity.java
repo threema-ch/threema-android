@@ -406,11 +406,11 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		EmojiButton emojiButton = findViewById(R.id.emoji_button);
 
-		if (preferenceService.getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
+		if (ConfigUtils.isDefaultEmojiStyle()) {
 			emojiButton.setOnClickListener(v -> showEmojiPicker());
 
 			this.emojiPicker = (EmojiPicker) ((ViewStub) findViewById(R.id.emoji_stub)).inflate();
-			this.emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService());
+			this.emojiPicker.init(ThreemaApplication.requireServiceManager().getEmojiService(), false);
 			emojiButton.attach(this.emojiPicker);
 			this.emojiPicker.setEmojiKeyListener(new EmojiPicker.EmojiKeyListener() {
 				@Override

@@ -40,6 +40,8 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.stores.IdentityStore;
+import ch.threema.app.tasks.OutgoingContactDeleteMessageTask;
+import ch.threema.app.tasks.OutgoingContactEditMessageTask;
 import ch.threema.app.tasks.OutgoingPollSetupMessageTask;
 import ch.threema.app.tasks.OutgoingPollVoteContactMessageTask;
 import ch.threema.app.tasks.OutgoingContactDeliveryReceiptMessageTask;
@@ -411,6 +413,18 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		);
 	}
 
+	public void sendEditMessage(int messageId, @NonNull String newText, @NonNull Date editedAt) {
+		scheduleTask(
+			new OutgoingContactEditMessageTask(contactModel.getIdentity(), messageId, newText, editedAt, serviceManager)
+		);
+	}
+
+	public void sendDeleteMessage(int messageId, @NonNull Date deletedAt) {
+		scheduleTask(
+			new OutgoingContactDeleteMessageTask(contactModel.getIdentity(), messageId, deletedAt, serviceManager)
+		);
+	}
+
 	@Override
 	public List<MessageModel> loadMessages(MessageService.MessageFilter filter) {
 		return databaseServiceNew.getMessageModelFactory().find(
@@ -563,10 +577,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
 	@Override
 	public void bumpLastUpdate() {
-		String identity = contactModel.getIdentity();
-		if (identity != null) {
-			contactService.bumpLastUpdate(identity);
-		}
+		contactService.bumpLastUpdate(contactModel.getIdentity());
 	}
 
 	@Override

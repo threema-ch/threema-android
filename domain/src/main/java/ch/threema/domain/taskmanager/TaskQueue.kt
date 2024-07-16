@@ -28,7 +28,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 
 internal class TaskQueue(
-    incomingMessageProcessor: IncomingMessageProcessor,
     taskArchiver: TaskArchiver,
     private val dispatcherAsserters: TaskManagerImpl.TaskManagerDispatcherAsserters,
 ) {
@@ -49,7 +48,7 @@ internal class TaskQueue(
     /**
      * This queue contains the task created from inbound messages.
      */
-    private val incomingMessageQueue = IncomingMessageTaskQueue(incomingMessageProcessor)
+    private var incomingMessageQueue: IncomingMessageTaskQueue? = null
 
     /**
      * Enqueue a new local task. Note that this method must be called from the schedule dispatcher.
@@ -72,19 +71,20 @@ internal class TaskQueue(
         dispatcherAsserters.scheduleDispatcher.assertDispatcherContext()
 
         // Add the inbound message to the incoming message queue
-        incomingMessageQueue.add(inboundMessage)
+        incomingMessageQueue.get().add(inboundMessage)
 
         // Notify that a new message (task) is available
         newTaskChannel.send(Unit)
     }
 
     /**
-     * Flush all the incoming messages in the queue. This does not affect locally created tasks.
+     * Recreates the incoming message queue. This is needed when the server connection has been re-
+     * established. Locally created tasks aren't affected by this.
      */
-    internal fun flushIncomingMessageQueues() {
+    internal fun recreateIncomingMessageQueue(incomingMessageProcessor: IncomingMessageProcessor) {
         dispatcherAsserters.executorDispatcher.assertDispatcherContext()
 
-        incomingMessageQueue.flush()
+        incomingMessageQueue = IncomingMessageTaskQueue(incomingMessageProcessor)
     }
 
     /**
@@ -94,14 +94,14 @@ internal class TaskQueue(
     internal suspend fun readMessage(preProcess: (InboundMessage) -> MessageFilterInstruction): ReadMessageResult {
         dispatcherAsserters.executorDispatcher.assertDispatcherContext()
 
-        return incomingMessageQueue.readMessage(preProcess)
+        return incomingMessageQueue.get().readMessage(preProcess)
     }
 
     /**
      * Return whether there are pending tasks.
      */
     internal fun hasPendingTasks(): Boolean =
-        localTaskQueue.hasPendingTasks() || incomingMessageQueue.hasPendingTasks()
+        localTaskQueue.hasPendingTasks() || incomingMessageQueue?.hasPendingTasks() ?: false
 
     /**
      * Get the next task.
@@ -125,7 +125,18 @@ internal class TaskQueue(
      * Get the next task or incoming message if available. Otherwise null is returned.
      */
     private fun poll(): TaskQueueElement? =
-        localTaskQueue.getNextOrNull() ?: incomingMessageQueue.getNextOrNull()
+        localTaskQueue.getNextOrNull() ?: incomingMessageQueue?.getNextOrNull()
+
+    /**
+     * Get the incoming message task queue. Otherwise throws an illegal state exception.
+     */
+    private fun IncomingMessageTaskQueue?.get(runIfNull: () -> Unit = { }): IncomingMessageTaskQueue {
+        if (this == null) {
+            runIfNull()
+            throw  IllegalStateException("Cannot access incoming message queue as it is null")
+        }
+        return this
+    }
 
     /**
      * A task queue element that defines some properties of the task.

@@ -25,10 +25,12 @@ import org.slf4j.Logger;
 
 import java.security.SecureRandom;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.NotificationService;
+import ch.threema.app.stores.PreferenceStoreInterface;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager;
@@ -40,19 +42,32 @@ public class DeviceCookieManagerImpl implements DeviceCookieManager {
 
 	private static final int DEVICE_COOKIE_SIZE = 16;
 
-	private final ServiceManager serviceManager;
+	@NonNull
+	private final PreferenceStoreInterface preferenceStore;
+	@NonNull
+	private final DatabaseServiceNew databaseService;
+	@Nullable
+	private NotificationService notificationService;
 	private boolean skipNextIndication;
 
-	public DeviceCookieManagerImpl(ServiceManager serviceManager) {
-		this.serviceManager = serviceManager;
+	public DeviceCookieManagerImpl(
+		@NonNull PreferenceStoreInterface preferenceStore,
+		@NonNull DatabaseServiceNew databaseService
+	) {
+		this.preferenceStore = preferenceStore;
+		this.databaseService = databaseService;
 		this.skipNextIndication = false;
+	}
+
+	public void setNotificationService(@NonNull NotificationService notificationService) {
+		this.notificationService = notificationService;
 	}
 
 	@Override
 	public byte[] obtainDeviceCookie() {
 		// TODO(ANDR-2155): When the target API level is >= 23, use Android Keystore to store the device cookie
 
-		byte[] deviceCookie = serviceManager.getPreferenceStore().getBytes(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie), true);
+		byte[] deviceCookie = preferenceStore.getBytes(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie), true);
 		if (deviceCookie != null && deviceCookie.length == DEVICE_COOKIE_SIZE) {
 			logger.debug("Got existing device cookie {}...", Utils.byteArrayToHexString(deviceCookie).substring(0, 4));
 			return deviceCookie;
@@ -62,7 +77,7 @@ public class DeviceCookieManagerImpl implements DeviceCookieManager {
 		deviceCookie = new byte[DEVICE_COOKIE_SIZE];
 		SecureRandom random = new SecureRandom();
 		random.nextBytes(deviceCookie);
-		serviceManager.getPreferenceStore().save(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie), deviceCookie, true);
+		preferenceStore.save(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie), deviceCookie, true);
 
 		logger.info("Generated new device cookie {}...", Utils.byteArrayToHexString(deviceCookie).substring(0, 4));
 
@@ -85,17 +100,17 @@ public class DeviceCookieManagerImpl implements DeviceCookieManager {
 		logger.info("Device cookie change indication received, showing warning message");
 
 		ServerMessageModel serverMessageModel = new ServerMessageModel(ThreemaApplication.getAppContext().getString(R.string.rogue_device_warning), ServerMessageModel.TYPE_ALERT);
-		DatabaseServiceNew databaseService = serviceManager.getDatabaseServiceNew();
 		databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
 
-		NotificationService n = serviceManager.getNotificationService();
-		if (n != null) {
-			n.showServerMessage(serverMessageModel);
+		if (notificationService == null) {
+			logger.error("Could not display device cookie change indication as notification service is null");
+		} else {
+			notificationService.showServerMessage(serverMessageModel);
 		}
 	}
 
 	@Override
 	public void deleteDeviceCookie() {
-		serviceManager.getPreferenceStore().remove(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie));
+		preferenceStore.remove(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie));
 	}
 }

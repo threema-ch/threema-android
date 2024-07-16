@@ -91,6 +91,7 @@ public class Message extends Converter {
 	public final static String REACTIONS_ACK = "ack";
 	public final static String REACTIONS_DEC = "dec";
 	public final static String DATE = "date";
+	public final static String LAST_EDITED_AT = "lastEditedAt";
 	public final static String EVENTS = "events";
 	public final static String SORT_KEY = "sortKey";
 	public final static String THUMBNAIL = "thumbnail";
@@ -271,6 +272,7 @@ public class Message extends Converter {
 				}
 				maybePutState(builder, STATE, messageState);
 				maybePutDate(builder, DATE, message);
+				maybePutLastEditedAt(builder, LAST_EDITED_AT, message);
 				maybePutEvents(builder, EVENTS, message);
 				maybePutCaption(builder, CAPTION, message);
 				maybePutStatusType(builder, STATUS_TYPE, message);
@@ -440,9 +442,16 @@ public class Message extends Converter {
 			}
 		}
 
-		// Get dispay date
+		// Get display date
 		if (date != null) {
 			builder.put(field, date.getTime() / 1000);
+		}
+	}
+
+	private static void maybePutLastEditedAt(MsgpackObjectBuilder builder, String field, AbstractMessageModel message) {
+		Date editedAt = message.getEditedAt();
+		if (editedAt != null) {
+			builder.put(field, editedAt.getTime() / 1000);
 		}
 	}
 

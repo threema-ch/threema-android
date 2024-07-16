@@ -687,7 +687,7 @@ public class APIConnector {
 		@Nullable TokenStoreInterface matchTokenStore,
 		boolean forceRefresh
 	) throws Exception {
-		if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().length() == 0) {
+		if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().isEmpty()) {
 			return null;
 		}
 
@@ -775,7 +775,7 @@ public class APIConnector {
 		@Nullable TokenStoreInterface pushTokenStore,
 		boolean forceRefresh
 	) throws Exception {
-		if (identityStore.getIdentity() == null || identityStore.getIdentity().length() == 0) {
+		if (identityStore.getIdentity() == null || identityStore.getIdentity().isEmpty()) {
 			throw new RuntimeException("Identity not defined");
 		}
 
@@ -1048,7 +1048,7 @@ public class APIConnector {
 	 * @throws Exception If servers could not be obtained
 	 */
 	public TurnServerInfo obtainTurnServers(IdentityStoreInterface identityStore, String type) throws Exception {
-		if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().length() == 0) {
+		if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().isEmpty()) {
 			return null;
 		}
 
@@ -1093,7 +1093,7 @@ public class APIConnector {
 	 * @throws Exception If junk report could not be sent
 	 */
 	public void reportJunk(IdentityStoreInterface identityStore, @NonNull String senderIdentity, @Nullable String senderNickname) throws Exception {
-		if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().length() == 0) {
+		if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().isEmpty()) {
 			return;
 		}
 

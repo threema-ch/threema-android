@@ -28,8 +28,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.geometry.LatLngBounds;
+import org.maplibre.android.geometry.LatLng;
+import org.maplibre.android.geometry.LatLngBounds;
 
 import org.slf4j.Logger;
 

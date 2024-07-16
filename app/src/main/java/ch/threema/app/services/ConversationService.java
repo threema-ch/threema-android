@@ -174,6 +174,15 @@ public interface ConversationService {
 	 *
 	 * @return the number of removed messages.
 	 */
+	int empty(@NonNull String identity);
+
+	/**
+	 * Empty associated conversation (remove all messages).
+	 *
+	 * The message listener onRemoved method will *not* be called for removed messages.
+	 *
+	 * @return the number of removed messages.
+	 */
 	int empty(@NonNull GroupModel groupModel);
 
 	/**
@@ -192,6 +201,15 @@ public interface ConversationService {
 	 * @return the number of removed messages.
 	 */
 	int delete(@NonNull ContactModel contactModel);
+
+	/**
+	 * Delete the contact conversation by removing all messages, setting `lastUpdate` to null and
+	 * removing it from the cache.
+	 *
+	 * @param identity the identity of the contact
+	 * @return the number of removed messages.
+	 */
+	int delete(@NonNull String identity);
 
 	/**
 	 * Remove the group conversation from the cache, and thus hide it from the conversation list.

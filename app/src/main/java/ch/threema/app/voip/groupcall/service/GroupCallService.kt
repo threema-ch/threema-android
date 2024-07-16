@@ -46,6 +46,7 @@ import ch.threema.app.services.GroupService
 import ch.threema.app.services.NotificationService
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.stores.IdentityStore
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.voip.CallAudioManager
@@ -297,10 +298,16 @@ class GroupCallService : Service() {
                 this@GroupCallService::leaveCall,
                 contactService.me
             ).also {
+                // TODO(ANDR-2089): If test is successful always use sw codecs
+                val videoCodec = if (ConfigUtils.isDevBuild()) {
+                    PreferenceService.VIDEO_CODEC_SW
+                } else {
+                    preferenceService.videoCodec
+                }
                 it.parameters = GroupCallParameters(
                     preferenceService.allowWebrtcIpv6(),
                     preferenceService.aecMode,
-                    preferenceService.videoCodec
+                    videoCodec
                 )
                 it.dependencies = GroupCallDependencies(
                     identityStore,

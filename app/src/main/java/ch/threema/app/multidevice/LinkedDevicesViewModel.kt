@@ -25,6 +25,7 @@ import androidx.annotation.AnyThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.ThreemaApplication.requireServiceManager
+import ch.threema.app.multidevice.linking.DeviceJoinDataCollector
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseReason
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,9 +57,9 @@ class LinkedDevicesViewModel : ViewModel() {
     }
 
     @AnyThread
-    fun linkDevice(deviceJoinOfferUri: String) {
+    fun linkDevice(deviceJoinOfferUri: String, deviceJoinDataCollector: DeviceJoinDataCollector) {
         CoroutineScope(Dispatchers.Default).launch {
-            mdManager.linkDevice(deviceJoinOfferUri)
+            mdManager.linkDevice(deviceJoinOfferUri, deviceJoinDataCollector)
             emitStates()
         }
     }

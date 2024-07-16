@@ -4,21 +4,17 @@
   ~ All rights reserved.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical">
-
-<RelativeLayout android:id="@+id/share_container"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:app="http://schemas.android.com/apk/res-auto"
+				android:id="@+id/share_container"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/listitem_contact_height"
+                android:layout_height="wrap_content"
                 android:background="@drawable/listitem_background_selector"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
-                android:paddingLeft="@dimen/listitem_contacts_margin_left_right"
-                android:paddingRight="@dimen/listitem_contacts_margin_left_right">
+				android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom"
+				android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right">
 
 	<ImageView
 		android:id="@+id/avatar_view"
@@ -42,4 +38,3 @@
 		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
 
 </RelativeLayout>
-</LinearLayout>

@@ -27,13 +27,18 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.getDebugString
+import ch.threema.storage.factories.TaskArchiveFactory
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private val logger = LoggingUtil.getThreemaLogger("TaskArchiverImpl")
 
-class TaskArchiverImpl(private val serviceManager: ServiceManager) : TaskArchiver {
-    private val taskArchiveFactory = serviceManager.databaseServiceNew.taskArchiveFactory
+class TaskArchiverImpl(private val taskArchiveFactory: TaskArchiveFactory) : TaskArchiver {
+    private var serviceManager: ServiceManager? = null
+
+    fun setServiceManager(serviceManager: ServiceManager) {
+        this.serviceManager = serviceManager
+    }
 
     override fun addTask(task: Task<*, TaskCodec>) {
         task.toEncodedTaskData()?.let {
@@ -79,6 +84,9 @@ class TaskArchiverImpl(private val serviceManager: ServiceManager) : TaskArchive
     }
 
     private fun String.decodeToTask(): Task<*, TaskCodec>? {
+        val serviceManager = this@TaskArchiverImpl.serviceManager
+            ?: throw IllegalStateException("Service manager is not set while loading persisted tasks")
+
         return try {
             Json.decodeFromString<SerializableTaskData>(this).createTask(serviceManager)
         } catch (e: Exception) {

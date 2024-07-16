@@ -65,6 +65,20 @@
                 android:maxLines="4"
                 android:textAppearance="@style/Threema.Bubble.Text.Body.Unscaled" />
 
+            <ch.threema.app.emojis.EmojiTextView
+                android:id="@+id/deleted_placeholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/thumbnail_view"
+                android:textColor="@color/text_color_deleted"
+                android:textStyle="italic"
+                android:ellipsize="end"
+                android:maxLines="4"
+                android:textAppearance="@style/Threema.Bubble.Text.Body.Unscaled"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"

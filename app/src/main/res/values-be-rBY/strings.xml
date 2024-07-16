@@ -13,9 +13,9 @@
     <string name="invite_via">Запрасіць сябра праз...</string>
     <string name="invite_email_body">Прывітанне!\n\nЯ выкарыстоўваю %1$s – праграму для бяспечнага імгненнага абмену паведамленнямі, якае абараняе канфідэнцыяльнасць карыстальнікаў.\n\nМой Threema ID: https://threema.id/%2$s\n\nДавайце размаўляць у %1$s!\n\nУдачы!\n</string>
     <string name="invite_sms_body">Давайце выкарыстоўваць %1$s для бяспечнай і канфідэнцыйнай сувязі!  Мой Threema ID: https://threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema.Бясьпечны мэсанджар, які ахоўвае наша прыватнае жыццё.</string>
+    <string name="invite_email_subject">Threema. Бяспечны мэсанджар, які ахоўвае наша прыватнае жыццё.</string>
     <string name="enter_id_hint">"Увесці Threema ID "</string>
-    <string name="account_links">Сувязі уліковай запісі.</string>
+    <string name="account_links">Сувязі ўліковых запісаў.</string>
     <string name="menu_settings">Налады</string>
     <string name="menu_about">Аб Threema</string>
     <string name="menu_add_contact">Новы кантакт</string>
@@ -37,7 +37,8 @@
     <string name="prefs_sum_sync_contacts_on">Падтрымліваць сінхранізацыю карыстальнікаў %s з адраснай кнігай вашай прылады</string>
     <string name="prefs_sum_sync_contacts_off">Не сінхранізаваць карыстальнікаў %s з адраснай кнігай вашай прылады</string>
     <string name="prefs_title_sync_contacts">Сінхраніз. кантактаў</string>
-    <string name="prefs_sum_block_unknown_off">Любы карыстач можа адправіць вам паведамленне.  Новыя кантакты будуць дададзены аўтаматычна пры атрыманні першага паведамлення.</string>
+    <string name="prefs_sum_block_unknown_off">Любы карыстальнік можа адправіць вам паведамленне.  Новыя кантакты будуць дададзены аўтаматычна
+пры атрыманні першага паведамлення.</string>
     <string name="prefs_sum_block_unknown_on">Адправіць вам паведамленне могуць толькі людзі з вашага спісу кантактаў.</string>
     <string name="prefs_title_block_unknown">Блакаванне незнаёмых</string>
     <string name="prefs_title_read_receipts">Апавяшчаць аб чытанні</string>
@@ -46,13 +47,13 @@
     <string name="prefs_sum_media_title">Налады медыя і захоўвання</string>
     <string name="prefs_image_size">Памер відарыса</string>
     <string name="prefs_notification_sound">Гук апавяшчэнняў</string>
-    <string name="prefs_sum_notification_sound">Сістэмны па змаўчанні</string>
+    <string name="prefs_sum_notification_sound">Прадвызначаны сістэмны</string>
     <string name="prefs_vibrate">Вібрацыя</string>
     <string name="prefs_sum_vibrate">Вібрацыя пры ўваходным паведамленні</string>
     <string name="prefs_light">Колер індыкат. апавяшчэння</string>
     <string name="prefs_sum_light">Белы</string>
     <string name="prefs_title_wallpaper">Выбраць шпалеры</string>
-    <string name="prefs_sum_wallpaper">Абярыце відарыс для фону</string>
+    <string name="prefs_sum_wallpaper">Выбраць відарыс для фону</string>
     <string name="prefs_title_wallpaper_switch">Шпалеры</string>
     <string name="prefs_title_enter">Увяд. каб адправіць</string>
     <string name="prefs_sum_enter_on">Кнопка Ўвод выконвае адпраўку паведамлення</string>
@@ -76,7 +77,7 @@
     <string name="prefs_reset_push">Скід push-меткі</string>
     <string name="prefs_sum_reset_push">Паўторна зарэгістраваць прыладу для атрымання push-паведамленняў з дапамогай FCM/HMS</string>
     <string name="prefs_notification_preview">Папярэдні прагляд паведамл.</string>
-    <string name="prefs_sum_reset_ringtones">Аднавіць налады па змаўчанні</string>
+    <string name="prefs_sum_reset_ringtones">Аднавіць прадвызначаны налады</string>
     <string name="prefs_title_reset_ringtones">Скід налад гукавых апавяшчэнняў</string>
     <string name="image_size_small">Малы (640x640)</string>
     <string name="image_size_medium">Сярэдні (1024x1024)</string>
@@ -342,7 +343,7 @@
     <string name="prefs_contact_format">Адлюстр. імёны кантактаў</string>
     <string name="prefs_sum_contact_format">Задаць фармат імя кантакту</string>
     <string name="prefs_contact_list_title">Спіс кантактаў</string>
-    <string name="prefs_default_contact_picture_colored">Аватары кантакту па змаўчанні</string>
+    <string name="prefs_default_contact_picture_colored">Прадвызначаны аватары кантакту</string>
     <string name="prefs_show_inactive_contacts">Паказваць неактыўныя ID</string>
     <string name="prefs_sum_default_contact_picture_colored_on">Паказваць каляровыя меткі-запаўняльнікі, калі відарыс кантакту адсутнічае</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Паказваць шэрыя меткі-запаўняльнікі, калі відарыс кантакту адсутнічае</string>
@@ -588,7 +589,7 @@
     <string name="permission_contacts_required">Каб адпраўляць кантакты, дазвольце Threema чытанне кантактаў.</string>
     <string name="message_declined">Не згодны</string>
     <string name="notifications_settings">Налады апавяшчэнняў</string>
-    <string name="notifications_default">Налады па змаўчанні</string>
+    <string name="notifications_default">Прадвызначаны налады</string>
     <string name="notifications_until">Да% s</string>
     <string name="notifications_mute">Прыглушаны</string>
     <string name="notifications_choose_sound">Выбраць гук</string>
@@ -633,7 +634,7 @@
 Адрасы электроннай пошты будуць захоўвацца ў зашыфраваным (хэшаваным) выглядзе на нашым сэрверы. Вы можаце прапусціць гэты крок, калі хочаце выкарыстоўваць Threema ананімна.</string>
     <string name="new_wizard_info_link_phone_only">Калі вы пакажаце свой нумар тэлефона, Threema дапаможа вашым сябрам аўтаматычна знайсці вас, калі вы запісаны ў іх тэлефоннай кнізе.
 Нумары захоўваюцца на нашым сэрверы ў зашыфраваным (хэшаваным) выглядзе. Вы можаце прапусціць гэты крок, калі хочаце выкарыстоўваць Threema ананімна.</string>
-    <string name="new_wizard_info_nickname">Нік выкарыстоўваецца ў push-паведамленнях на некаторых прыладах або ў якасці дадатковага спосабу распавесці пра сябе карыстачам, у адраснай кнізе якіх вы пакуль адсутнічаеце. Мы рэкамендуем паведамляць толькі сваё імя або псеўданім. Калі вы не задалі нік, мы па змаўчанні будзем выкарыстоўваць ваш Threema ID.</string>
+    <string name="new_wizard_info_nickname">Псеўданім выкарыстоўваецца ў push-паведамленнях на некаторых прыладах або ў якасці дадатковага спосабу распавесці пра сябе карыстальнікам, у адраснай кнізе якіх вы пакуль адсутнічаеце. Мы рэкамендуем паведамляць толькі сваё імя або псеўданім. Калі вы не задалі псеўданім, мы прадвызначана будзем выкарыстоўваць ваш Threema ID.</string>
     <string name="not_linked">Не прывязаны</string>
     <string name="linked">Прывязаны</string>
     <string name="pending_sms_verification_notice">Ваш нумар мабільнага тэлефона яшчэ не пацверджаны.</string>
@@ -714,7 +715,7 @@
     <string name="prefs_bigger_single_emojis">Вялікія адзіночныя смайлікі</string>
     <string name="wizard1_sync_work">Сінхранізацыя даных Threema Work...</string>
     <string name="notification_hidden_text">Змест схаваны</string>
-    <string name="really_reset_ringtones">Скінуць налады гукавых апавяшчэнняў па змаўчанні?</string>
+    <string name="really_reset_ringtones">Скінуць прадвызначаны налады гукавых апавяшчэнняў?</string>
     <string name="reset_ringtones_confirm">Налады гукавых апавяшчэнняў былі скінутыя.</string>
     <string name="prefs_language_override">Мова</string>
     <string name="threema_channel_intro">Канал Threema дае вам навіны аб усім Threema.  Вы хочаце падпісацца на канал Threema і дадаць яго ў свае кантакты?  Гэта бясплатна, і вы можаце адмовіцца ад падпіскі ў любы час.</string>
@@ -870,7 +871,7 @@
     <string name="safe_configure_choose_password">Абярыце пароль. Гэты пароль спатрэбіцца вам для аднаўлення даных з рэзервовай копіі Threema Safe.</string>
     <string name="safe_configure_choose_server">Абярыце сэрвер Threema Safe</string>
     <string name="safe_configure_server_explain">Можна выкарыстоўваць сэрвер Threema Safe або паказаць пабочны сэрвер для рэзервовага капіявання.</string>
-    <string name="safe_use_default_server">Сэрвер па змаўчанні</string>
+    <string name="safe_use_default_server">Прадвызначаны сервер</string>
     <string name="safe_test_server">Тэставы сервер</string>
     <string name="safe_advanced_options">Пашыраныя налады</string>
     <string name="safe_enter_password">Увядзіце пароль Threema Safe</string>
@@ -918,7 +919,7 @@
     <string name="restore_success_body">Аднаўленне даных паспяхова завершана</string>
     <string name="work_data_sync">Сінхр. даных</string>
     <string name="private_contact">Прыватны кантакт</string>
-    <string name="ringtone_selection_default">Па змаўчанні (%s)</string>
+    <string name="ringtone_selection_default">Прадвызначана (%s)</string>
     <string name="work_data_sync_desc">Сінхранізацыя Threema Work</string>
     <string name="ballot_not_connected">Перад тым як зачыняць апытанне, пераканайцеся, што Threema зараз анлайн.</string>
     <string name="empty_chat_title">Ачысціць чат</string>
@@ -957,7 +958,7 @@
     <string name="hide_chat_enter_message_explain">Гэты чат пазначаны як прыватны. Каб увайсці ў яго, спачатку наладзьце абарону доступу.</string>
     <string name="unknown">Невядома</string>
     <string name="miui_notification_title">Важная заўвага па апавяшчэннях ў MIUI</string>
-    <string name="miui_notification_body">MIUI 10 па змаўчанні адключае гукавыя і светлавыя сігналы для ўсіх новаствораных каналаў апавяшчэнняў (за выключэннем некаторых праграм, пазначаных Xiaomi як важныя). Карыстачам неабходна відавочна актываваць апавяшчэнні для кожнага канала на экране налад апавяшчэнняў для кожнай праграмы ў тэлефоне. Каб атрымаць дадатковыя звесткі, звяртайцеся да вытворцы тэлефона.</string>
+    <string name="miui_notification_body">MIUI 10 прадвызначана адключае гукавыя і светлавыя сігналы для ўсіх новаствораных каналаў апавяшчэнняў (за выключэннем некаторых праграм, пазначаных Xiaomi як важныя). Карыстальнікам неабходна відавочна актываваць апавяшчэнні для кожнага канала на экране налад апавяшчэнняў для кожнай праграмы ў тэлефоне. Каб атрымаць дадатковыя звесткі, звяртайцеся да вытворцы тэлефона.</string>
     <string name="miui12_notification_body">MIUI па змаўчанні адключае гукавыя, светлавыя і якія плаваюць абвесткі для ўсіх праграм (за выключэннем некаторых вельмі папулярных праграм, якія аднесены кампаніяй Xiaomi да катэгорыі \"важных\"). Вы павінны будзеце ўручную актываваць гэтыя налады на экране налад апавяшчэнняў для вашага тэлефона, а таксама паўтараць гэтую працэдуру пасля кожнага абнаўлення праграмы.  Для атрымання дадатковых звестак звяртайцеся ў Xiaomi.</string>
     <string name="dont_show_again">Больш не паказваць</string>
     <string name="miui_notification_prefs">Налады MIUI</string>
@@ -1008,7 +1009,7 @@
     <string name="notification_channel_new_contact_desc">Апавяшчэнні аб новых кантактах</string>
     <string name="notification_contact_has_joined">%1$s далучыўся да %2$s. Краніце, каб адправіць паведамленне.</string>
     <string name="notification_contact_has_joined_multiple">%1$d кантакты(аў) далучылі(а)ся  да %2$s: %3$s. Краніце, каб адправіць ім паведамленне.</string>
-    <string name="system_default">Сістэмны па змаўчанні</string>
+    <string name="system_default">Прадвызначаны  сістэмны</string>
     <string name="open_in_maps_app">Адк-ць у праграме \"Мапы\"</string>
     <string name="delete">Выдаліць</string>
     <string name="continue_recording">Працягнуць запіс</string>
@@ -1016,6 +1017,8 @@
     <string name="whatsnew_headline"><![CDATA[<p>Пазначаныя зорачкай паведамленні: каб лёгка знайсці іх пазней, пазначце важныя паведамленні зорачкай доўгім націскам.</p>
  <p>Аўтаматычнае выдаленне: вашыя чаты ачышчаюцца аўтаматычна праз пэўны перыяд часу.  Функцыю аўтаматычнага выдалення паведамленняў можна актываваць у кіраванні сховішчам.</p>
  <p>Шматлікія іншыя паляпшэнні і аптымізацыі.</p>]]></string>
+    <string name="whatsnew2_title">(пустая фраза)</string>
+    <string name="whatsnew2_body">(пустая фраза)</string>
     <string name="tap_to_start">Націсьніце тут, каб запусціць %s.</string>
     <string name="two_years">2 года</string>
     <string name="invalid_backup_path">Нядзейнічае.шлях да рэз.копіі</string>
@@ -1038,7 +1041,7 @@
     <string name="unable_to_get_current_location">Немагчыма вызначыць бягучае месцазнаходжанне.</string>
     <string name="lp_search_place_min_chars">Для пошуку месца ўвядзіце не менш за тры сімвалы.</string>
     <string name="lp_search_place_no_matches">Такія месцы не знойдзены. Скарэктуйце свой запыт.</string>
-    <string name="wallpaper_default">Шпалеры па змаўчанні</string>
+    <string name="wallpaper_default">Прадвызначаны шпалеры</string>
     <string name="wallpaper_gallery">Выбраць з галерэі</string>
     <string name="wallpaper_none">Пусты фон</string>
     <string name="wallpaper_threema">Шпалеры %s</string>
@@ -1205,7 +1208,7 @@
     <string name="new_group_link_success">Дадад. новая спасылка</string>
     <string name="link_administration_off_explain">Гэта спасылка ўжо наладжана і адпраўлена раней, змяніць яе ўласцівасці ўжо нельга. Стварыце новую спасылку з патрэбнымі ўласцівасцямі.</string>
     <string name="group_link_update_success">Спасылка паспяхова абноўлена</string>
-    <string name="no_group_links">Няма спасылак на суполку. Каб стварыць спасылку на суполку, націсніце кнопку \"Дадаць\" унізе справа або актывуйце спасылку па змаўчанні ў акне звестак аб суполцы.</string>
+    <string name="no_group_links">Няма спасылак на суполку. Каб стварыць спасылку на суполку, націсніце кнопку \"Дадаць\" унізе справа або актывуйце прадвызначаную спасылку ў акне звестак аб суполцы.</string>
     <string name="group_links_overview_title">Спасылкі на суполку %s</string>
     <string name="group_link_invalid">Пратэрмін-а</string>
     <string name="group_link_valid">Дзейнічае</string>
@@ -1268,12 +1271,12 @@
     <string name="send_to">Адправіць %s</string>
     <string name="receipts_override_choice_send">Адправіць</string>
     <string name="receipts_override_choice_dont_send">Не адпраўляць</string>
-    <string name="receipts_override_choice_default">Па змаўчанні (%s)</string>
+    <string name="receipts_override_choice_default">Прадвызначаны (%s)</string>
     <string name="unable_to_determine_recording_length">Пусты запіс ці немагчыма вызначыць даўжыню</string>
     <string name="prefs_header_receipts">Апавяшчэнні</string>
     <string name="prefs_title_reset_receipts">Скінуць індывідуальныя налады</string>
     <string name="prefs_sum_reset_receipts">Скід апавяшчэнняў аб чытанні і індыкатара ўводу тэксту для канкрэтных кантактаў да налад па змаўчанні</string>
-    <string name="reset_successful">Паспяхова скінута да налад па змаўчанні</string>
+    <string name="reset_successful">Паспяхова скінута да прадвызначаных налад</string>
     <string name="group_link_add">Даб. сп-у на суполку</string>
     <string name="group_requests_show_menu_title">Паказаць адкрытыя запыты на ўступ.</string>
     <string name="group_request_show_all">Паказаць усе запыты ў суполку</string>
@@ -1284,16 +1287,16 @@
     <string name="qr_scan_result_dialog_title">Вынікі скан. QR-кода</string>
     <string name="scan_failure_dialog_title">Памылка сканір.</string>
     <string name="no_threema_qr_info">Гэта не QR-Code Threema. Расшыфраванае змесціва:</string>
-    <string name="default_group_link">Спас-а на суполку па змаўч.</string>
-    <string name="default_link_name">Спасылка па змаўч.</string>
-    <string name="reset_default_group_link">Скінуць спасылку па змаўчанні</string>
+    <string name="default_group_link">Спас-а на прадвызн. суполку</string>
+    <string name="default_link_name">Прадвызн. cпасылка</string>
+    <string name="reset_default_group_link">Скінуць прадвызначаную спасылку</string>
     <string name="resend">Адпр. зноў</string>
     <string name="group_request_already_sent_title">Запыт ужо адпраўлены</string>
     <string name="qr_scanner_id_hint">Скануйце QR-код кантакту для праверкі яго асобы. Каб паказаць код, папытаеце кантакту націснуць на аватар у левым верхнім куце на галоўным экране Threema.</string>
     <string name="enable_storage_access_for_media">Падайце доступ да сховішча прылады для прагляду відарысаў і відэа на ім.</string>
     <string name="take_me_there">Перайсці...</string>
     <string name="notification_channel_group_join_request">Канал апавяшчэнняў аб атрыманых запытах ўступлення ў суполку</string>
-    <string name="reset_default_group_link_title">Скінуць зв-кі аб спасылцы па змаўч.</string>
+    <string name="reset_default_group_link_title">"Скінуць зв-кі аб прадвызн. спасылцы "</string>
     <string name="reset_default_group_link_desc">Раней выкладзеная спасылка стане несапраўднай, а запыты праз старую спасылку будуць аўтаматычна адхіляцца з адказам \"Пратэрмінавана\".</string>
     <string name="custom">іншая асаблівая</string>
     <string name="show_public_key">Паказаць адкрыты ключ</string>
@@ -1674,10 +1677,10 @@
         <item quantity="other">%d паведамленні былі страчаны з моманту апошняга паведамлення.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="few">Выдаліць %d паведамленні на гэтай прыладзе?</item>
-        <item quantity="many">Выдаліць %d паведамленні на гэтай прыладзе?</item>
-        <item quantity="one">Выдаліць %d паведамленне на гэтай прыладзе?</item>
-        <item quantity="other">Выдаліць %d паведамленняў на гэтай прыладзе?</item>
+        <item quantity="few">Выдаліць %d паведамленні?</item>
+        <item quantity="many">Выдаліць %d паведамленняў?</item>
+        <item quantity="one">Выдаліць %d паведамленне?</item>
+        <item quantity="other">Выдаліць %d паведамленняў?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="few">%d удзельнікаў суполкі</item>

@@ -16,7 +16,7 @@
     <string name="webclient_disposable">nöd gspeicheret</string>
     <string name="webclient_unnamed_session">Unbenännti Sitzig</string>
     <string name="webclient_session_remove">Sitzig entferne</string>
-    <string name="webclient_welcome_title">Vom PC uus chatte!</string>
+    <string name="webclient_welcome_title">Vom PC uus chatte</string>
     <string name="webclient_welcome_explain">Mit de Desktop-App undem Web-Client chönd Sie bequem vo Ihrem PC oder Notebook uus chatte. Sie händ so volle Zuegriff uf all Kontäkt, Medie und Chats, au uf früehneri Unterhaltige.\n\n<b>Die gsamti Kommunikation zwüsched Handy und PC isch vollständig Endi-zu-Endi-verschlüsslet</b> und setzt e direkti Verbindig ii, wenn sich beid Grät im gliiche Netzwerch befindet.\n\nHiiwis: Wenn d’Desktop-App oder de Web-Client aktiv isch, cha de Batterieverbruuch höcher sii. Sie chönd d’Funktion jederziit ii- und usschalte.</string>
     <string name="webclient_launch">Desktop-App/Web-Client starte</string>
     <string name="webclient_qr_scan_message">Scanned Sie de QR-Code, wo ufem PC aazeigt wird.</string>
@@ -33,8 +33,8 @@
     <string name="webclient_cannot_start">D’Sitzig cha nöd gstartet werde</string>
     <string name="webclient_constrained_by_mdm">Server isch nöd dur de Administrator freigeh worde.</string>
     <string name="webclient_clear_all_sessions">All Sitzige lösche</string>
-    <string name="webclient_clear_all_sessions_confirm">Wänd Sie würklich all Sitzige stoppe und lösche?</string>
-    <string name="webclient_prefs_debug_tool_summary">Started Sie das Tool, zum Problem bim Ufbau vode Desktop-/Web-Verbindig z’analysiere</string>
+    <string name="webclient_clear_all_sessions_confirm">Wänd Sie würklich all Sitzige lösche?</string>
+    <string name="webclient_prefs_debug_tool_summary">Werchzüüg, zum Problem bim Ufbau vode Desktop-/Web-Verbindig z’analysiere</string>
     <string name="webclient_diagnostics">Desktop-/Web-Diagnose</string>
     <string name="webclient_diagnostics_start">Start</string>
     <string name="webclient_diagnostics_intro">Tipped Sie ufde «Start»-Button, zum de Test z’starte.</string>

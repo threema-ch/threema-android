@@ -737,6 +737,9 @@
     <string name="data_backup_explain">Es Date-Backup sicheret:\n\n&#9679; ID und Schlüsselpaar\n&#9679; Kontäkt und Vertrauensstatus\n&#9679; Gruppemitgliedschafte\n&#9679; Chats\n&#9679; Medie und Dateie (optional)\n\nD’Date werded ines verschlüsslets ZIP gsicheret. S’Backup sött aaschlüssend amene geeignete Ort usserhalb vom Grät gspeicheret werde.</string>
     <string name="draw">Zeichne</string>
     <string name="edit">Bearbeite</string>
+    <string name="edit_message">Nachricht bearbeite</string>
+    <string name="edited">Bearbeitet</string>
+    <string name="confirm_edit_desc">Bearbeitig bestätige</string>
     <string name="discard_changes">Wänd Sie d’Änderige verwerfe?</string>
     <string name="prefs_title_network">Netzwerch</string>
     <string name="prefs_title_ipv6_preferred">IPv6 für Nachrichte</string>
@@ -1007,6 +1010,8 @@
     <string name="system_default">Systemstandard</string>
     <string name="open_in_maps_app">Ide Maps-App ufmache</string>
     <string name="delete">Lösche</string>
+    <string name="delete_for_all">Für all lösche</string>
+    <string name="message_was_deleted">Die Nachricht isch glöscht worde</string>
     <string name="continue_recording">Wiiter ufneh</string>
     <string name="whatsnew_title">Neui Funktione in %1$s 5.2</string>
     <string name="whatsnew_headline"><![CDATA[<p>Sterndli-Nachrichte: Markiered Sie wichtigi Nachrichte dur langs Tippe miteme Sterndli, demit Sie sie spöter eifach wiederfinded.</p>
@@ -1605,7 +1610,7 @@ Beachted Sie, dass d’Afrage nöd widerruefe werded und Sie möglicherwiis no a
         <item quantity="other">%d Nachrichte sind sit de letschte Nachricht verlore gange.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="other">%d Nachrichte uf dem Grät lösche?</item>
+        <item quantity="other">%d Nachrichte lösche?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="other">%d Gruppemitglieder</item>

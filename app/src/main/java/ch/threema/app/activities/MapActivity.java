@@ -50,19 +50,19 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
-import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraUpdate;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.location.LocationComponent;
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
-import com.mapbox.mapboxsdk.location.modes.CameraMode;
-import com.mapbox.mapboxsdk.location.modes.RenderMode;
-import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-import com.mapbox.mapboxsdk.maps.Style;
+import org.maplibre.android.annotations.IconFactory;
+import org.maplibre.android.annotations.MarkerOptions;
+import org.maplibre.android.camera.CameraUpdate;
+import org.maplibre.android.camera.CameraUpdateFactory;
+import org.maplibre.android.geometry.LatLng;
+import org.maplibre.android.location.LocationComponent;
+import org.maplibre.android.location.LocationComponentActivationOptions;
+import org.maplibre.android.location.modes.CameraMode;
+import org.maplibre.android.location.modes.RenderMode;
+import org.maplibre.android.maps.MapView;
+import org.maplibre.android.maps.MapLibreMap;
+import org.maplibre.android.maps.OnMapReadyCallback;
+import org.maplibre.android.maps.Style;
 
 import org.slf4j.Logger;
 
@@ -105,7 +105,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 	public static final String MAP_STYLE_URL = "https://map.threema.ch/styles/streets/style.json";
 
 	private MapView mapView;
-	private MapboxMap mapboxMap;
+	private MapLibreMap maplibreMap;
 	private FrameLayout parentView;
 	private Style mapStyle;
 
@@ -254,9 +254,9 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 	private void initMap() {
 		mapView.getMapAsync(new OnMapReadyCallback() {
 			@Override
-			public void onMapReady(@NonNull MapboxMap mapboxMap1) {
-				mapboxMap = mapboxMap1;
-				mapboxMap.setStyle(new Style.Builder().fromUrl(MAP_STYLE_URL), new Style.OnStyleLoaded() {
+			public void onMapReady(@NonNull MapLibreMap mapLibreMap1) {
+				maplibreMap = mapLibreMap1;
+				maplibreMap.setStyle(new Style.Builder().fromUrl(MAP_STYLE_URL), new Style.OnStyleLoaded() {
 					@Override
 					public void onStyleLoaded(@NonNull Style style) {
 						// Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
@@ -265,12 +265,12 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 						if (checkLocationEnabled(locationManager)) {
 							setupLocationComponent(style);
 						}
-						mapboxMap.addMarker(getMarker(markerPosition, markerName, markerProvider));
+						maplibreMap.addMarker(getMarker(markerPosition, markerName, markerProvider));
 
 						int marginTop = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_top) + insetTop;
 						int marginRight = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_right);
 
-						mapboxMap.getUiSettings().setCompassMargins(0, marginTop, marginRight, 0);
+						maplibreMap.getUiSettings().setCompassMargins(0, marginTop, marginRight, 0);
 
 						moveCamera(markerPosition, false, -1);
 						mapView.postDelayed(new Runnable() {
@@ -311,7 +311,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 			@Override
 			protected void onPostExecute(List<MarkerOptions> markerOptions) {
 				if (markerOptions.size() > 0) {
-					mapboxMap.addMarkers(markerOptions);
+					maplibreMap.addMarkers(markerOptions);
 				}
 			}
 		}.execute(markerPosition);
@@ -321,7 +321,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 	private void setupLocationComponent(Style style) {
 		logger.debug("setupLocationComponent");
 
-		locationComponent = mapboxMap.getLocationComponent();
+		locationComponent = maplibreMap.getLocationComponent();
 		locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(this, style).build());
 		locationComponent.setCameraMode(CameraMode.NONE);
 		locationComponent.setRenderMode(RenderMode.COMPASS);
@@ -410,11 +410,11 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 		long time = System.currentTimeMillis();
 		logger.debug("moveCamera to " + latLng.toString());
 
-		mapboxMap.cancelTransitions();
-		mapboxMap.addOnCameraIdleListener(new MapboxMap.OnCameraIdleListener() {
+		maplibreMap.cancelTransitions();
+		maplibreMap.addOnCameraIdleListener(new MapLibreMap.OnCameraIdleListener() {
 			@Override
 			public void onCameraIdle() {
-				mapboxMap.removeOnCameraIdleListener(this);
+				maplibreMap.removeOnCameraIdleListener(this);
 				RuntimeUtil.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -429,9 +429,9 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 				CameraUpdateFactory.newLatLng(latLng);
 
 		if (animate) {
-			mapboxMap.animateCamera(cameraUpdate);
+			maplibreMap.animateCamera(cameraUpdate);
 		} else {
-			mapboxMap.moveCamera(cameraUpdate);
+			maplibreMap.moveCamera(cameraUpdate);
 		}
 	}
 

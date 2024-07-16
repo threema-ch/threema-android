@@ -33,6 +33,7 @@ import ch.threema.domain.protocol.connection.data.OutboundL5Message
 import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.protocol.connection.util.ServerConnectionController
+import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.InternalTaskManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -47,6 +48,7 @@ internal class EndToEndLayer(
     private val outputDispatcher: CoroutineContext,
     private val connectionController: ServerConnectionController,
     private val connection: ServerConnection,
+    private val incomingMessageProcessor: IncomingMessageProcessor,
     private val taskManager: InternalTaskManager,
 ) : Layer5Codec {
     private val inboundMessageChannel = Channel<InboundMessage>(capacity = Channel.UNLIMITED)
@@ -56,7 +58,7 @@ internal class EndToEndLayer(
             launch {
                 connectionController.cspAuthenticated.await()
                 // Start task manager when csp has been authenticated
-                taskManager.startRunningTasks(this@EndToEndLayer)
+                taskManager.startRunningTasks(this@EndToEndLayer, incomingMessageProcessor)
 
                 // Forward inbound messages to task manager after it has been started
                 inboundMessageChannel.receiveAsFlow().collect {

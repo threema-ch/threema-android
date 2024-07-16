@@ -54,6 +54,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -77,6 +78,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
+import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
@@ -103,6 +105,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityState;
+import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ProtocolStrings;
 import ch.threema.domain.protocol.ServerAddressProvider;
@@ -226,6 +229,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private final PreferenceService preferenceService;
 	private final UserService userService;
 	private final IdentityStore identityStore;
+	@NonNull
+	private final ApiService apiService;
+	@NonNull
 	private final APIConnector apiConnector;
 	private final LocaleService localeService;
 	private final ContactService contactService;
@@ -256,7 +262,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		IdListService profilePicRecipientsService,
 		DatabaseServiceNew databaseServiceNew,
 		IdentityStore identityStore,
-		APIConnector apiConnector,
+		@NonNull ApiService apiService,
+		@NonNull APIConnector apiConnector,
 		DeadlineListService hiddenChatsListService,
 		@NonNull ServerAddressProvider serverAddressProvider,
 		@NonNull PreferenceStoreInterface preferenceStore
@@ -268,6 +275,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		this.groupService = groupService;
 		this.distributionListService = distributionListService;
 		this.identityStore = identityStore;
+		this.apiService = apiService;
 		this.apiConnector = apiConnector;
 		this.localeService = localeService;
 		this.databaseServiceNew = databaseServiceNew;
@@ -383,6 +391,12 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		} catch (IOException e) {
 			try {
 				int responseCode = urlConnection.getResponseCode();
+
+				if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && ConfigUtils.isOnPremBuild()) {
+					logger.info("Invalidating auth token because safe server test failed");
+					apiService.invalidateAuthToken();
+				}
+
 				String responseMessage = urlConnection.getResponseMessage();
 				if (e instanceof FileNotFoundException && responseCode == 404) {
 					throw new ThreemaException("Config file not found");
@@ -618,6 +632,10 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 			final int responseCode = urlConnection.getResponseCode();
 			if (responseCode != 200 && responseCode != 201 && responseCode != 204) {
+				if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && ConfigUtils.isOnPremBuild()) {
+					logger.info("Invalidating auth token because deleting safe backup failed");
+					apiService.invalidateAuthToken();
+				}
 				throw new ThreemaException("Unable to delete backup. Response code: " + responseCode);
 			}
 		} catch (IOException e) {
@@ -675,6 +693,10 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 				final int responseCode = urlConnection.getResponseCode();
 				if (responseCode != 200) {
+					if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && ConfigUtils.isOnPremBuild()) {
+						logger.info("Invalidating auth token because safe backup restore failed");
+						apiService.invalidateAuthToken();
+					}
 					throw new ThreemaException("Server error: " + responseCode);
 				}
 			}
@@ -939,14 +961,23 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 						if (verificationLevel == VerificationLevel.FULLY_VERIFIED && !TestUtil.empty(publicKey)) {
 							// use the public key from the backup
 							contactModel = new ContactModel(identity, Base64.decode(publicKey));
-							contactModel.setVerificationLevel(verificationLevel);
+							contactModel.verificationLevel = verificationLevel;
 						} else {
 							// use the fetched key
 							contactModel = new ContactModel(result.identity, result.publicKey);
-							contactModel.setVerificationLevel(VerificationLevel.UNVERIFIED);
+							contactModel.verificationLevel = VerificationLevel.UNVERIFIED;
 						}
 						contactModel.setFeatureMask(result.featureMask);
-						contactModel.setIdentityType(result.type);
+						switch (result.type) {
+							case 0:
+								contactModel.setIdentityType(IdentityType.NORMAL);
+								break;
+							case 1:
+								contactModel.setIdentityType(IdentityType.WORK);
+								break;
+							default:
+								logger.warn("Identity fetch returned invalid identity type: {}", result.type);
+						}
 						switch (result.state) {
 							case IdentityState.ACTIVE:
 								contactModel.setState(ContactModel.State.ACTIVE);
@@ -1041,7 +1072,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 								GroupMemberModel groupMemberModel = new GroupMemberModel();
 								groupMemberModel.setGroupId(groupModel.getId());
 								groupMemberModel.setIdentity(identity);
-								groupMemberModel.setActive(true);
 
 								groupMemberModelFactory.create(groupMemberModel);
 							}
@@ -1216,6 +1246,10 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 			final int responseCode = urlConnection.getResponseCode();
 			if (responseCode != 200 && responseCode != 201 && responseCode != 204) {
+				if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && ConfigUtils.isOnPremBuild()) {
+					logger.info("Invalidating auth token because safe data upload failed");
+					apiService.invalidateAuthToken();
+				}
 				throw new ThreemaException("Server error: " + responseCode);
 			}
 		} catch (IOException e) {
@@ -1296,9 +1330,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		JSONObject contact = new JSONObject();
 
 		contact.put(TAG_SAFE_CONTACT_IDENTITY, contactModel.getIdentity());
-		boolean contactIsVerified = contactModel.getVerificationLevel() == VerificationLevel.FULLY_VERIFIED;
+		boolean contactIsVerified = contactModel.verificationLevel == VerificationLevel.FULLY_VERIFIED;
 		boolean contactIsRevoked = contactModel.getState() == ContactModel.State.INVALID;
-		if ((contactIsVerified || contactIsRevoked) && contactModel.getPublicKey() != null) {
+		if (contactIsVerified || contactIsRevoked) {
 			// Back up the public key if the contact is verified, or if it's revoked.
 			//
 			// Rationale: If the contact is unverified, then it doesn't really matter and the
@@ -1312,7 +1346,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		} else {
 			contact.put(TAG_SAFE_CONTACT_CREATED_AT, 0);
 		}
-		contact.put(TAG_SAFE_CONTACT_VERIFICATION_LEVEL, contactModel.getVerificationLevel().getCode());
+		contact.put(TAG_SAFE_CONTACT_VERIFICATION_LEVEL, contactModel.verificationLevel.getCode());
 		contact.put(TAG_SAFE_CONTACT_WORK_VERIFIED, contactModel.isWork());
 		contact.put(TAG_SAFE_CONTACT_HIDDEN, contactModel.isHidden());
 		contact.put(TAG_SAFE_CONTACT_FIRST_NAME, contactModel.getFirstName());
@@ -1485,7 +1519,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		user.put(TAG_SAFE_USER_NICKNAME, userService.getPublicNickname());
 
 		try {
-			Bitmap image = fileService.getContactAvatar(contactService.getMe());
+			Bitmap image = fileService.getContactAvatar(contactService.getMe().getIdentity());
 			if (image != null) {
 				// scale image - assume profile pics are always square
 				if (Math.max(image.getWidth(), image.getHeight()) > PROFILEPIC_MAX_WIDTH) {

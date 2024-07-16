@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
+    android:paddingLeft="@dimen/chat_bubble_container_padding_left_right">
+
+    <include layout="@layout/conversation_bubble_start_recv"/>
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Threema.CardView.Bubble.Receive"
+        android:id="@+id/message_block">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/conversation_bubble_header"
+                android:id="@+id/group_sender_view"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent" />
+
+            <ch.threema.app.emojis.EmojiConversationTextView
+                style="@style/Threema.Bubble.Text.Body.Deleted"
+                android:id="@+id/text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/chat_bubble_margin_start"
+                android:layout_marginRight="@dimen/chat_bubble_margin_end"
+                android:layout_gravity="center"
+                android:autoLink="none"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
+                android:text="@string/message_was_deleted"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/group_sender_view"
+                app:layout_constraintBottom_toTopOf="@id/date_view" />
+
+            <TextView
+                style="@style/Threema.Bubble.Text.Footer.Deleted"
+                android:id="@+id/date_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom|left"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="@dimen/chat_bubble_margin_start"
+                android:layout_marginRight="@dimen/chat_bubble_margin_end"
+                android:ellipsize="none"
+                android:singleLine="true"
+                tools:text="17:20 PM"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</RelativeLayout>

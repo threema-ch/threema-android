@@ -127,6 +127,7 @@ internal class SfuConnectionImpl (
             .build()
         val byteResponse = post(token, url, request.toByteArray(), ProtocolDefines.GC_JOIN_TIMEOUT_MILLIS)
         val body = byteResponse.body?.let { JoinResponseBody.fromSfuResponseBytes(it) }
+        logger.info("JoinResponse with HTTP-status={}: {}", byteResponse.statusCode, body)
         return JoinResponse(byteResponse.statusCode, body)
     }
 

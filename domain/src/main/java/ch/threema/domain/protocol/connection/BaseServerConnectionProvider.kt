@@ -39,6 +39,7 @@ import ch.threema.domain.protocol.connection.layer.EndToEndLayer
 import ch.threema.domain.protocol.connection.layer.MonitoringLayer
 import ch.threema.domain.protocol.connection.layer.MultiplexLayer
 import ch.threema.domain.protocol.connection.layer.ServerConnectionLayers
+import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.InternalTaskManager
 import kotlin.coroutines.CoroutineContext
 
@@ -86,6 +87,7 @@ object BaseServerConnectionProvider {
             connection,
             controllers,
             controllers.serverConnectionController.dispatcher.coroutineContext,
+            configuration.incomingMessageProcessor,
             configuration.taskManager as InternalTaskManager
         )
 
@@ -97,6 +99,7 @@ object BaseServerConnectionProvider {
         connection: ServerConnection,
         controllers: D2mControllers,
         dispatcher: CoroutineContext,
+        incomingMessageProcessor: IncomingMessageProcessor,
         taskManager: InternalTaskManager
     ): ServerConnectionLayers {
         return ServerConnectionLayers(
@@ -104,7 +107,7 @@ object BaseServerConnectionProvider {
             MultiplexLayer(controllers.serverConnectionController),
             AuthLayer(controllers.layer3Controller),
             MonitoringLayer(connection, controllers.layer4Controller),
-            EndToEndLayer(dispatcher, controllers.serverConnectionController, connection, taskManager)
+            EndToEndLayer(dispatcher, controllers.serverConnectionController, connection, incomingMessageProcessor, taskManager)
         )
     }
 
@@ -138,7 +141,8 @@ object BaseServerConnectionProvider {
             connection,
             controllers,
             controllers.serverConnectionController.dispatcher.coroutineContext,
-            configuration.taskManager as InternalTaskManager
+            configuration.incomingMessageProcessor,
+            configuration.taskManager as InternalTaskManager,
         )
 
         return ServerConnectionDependencies(controllers.mainController, socket, layers)
@@ -148,6 +152,7 @@ object BaseServerConnectionProvider {
         connection: ServerConnection,
         controllers: CspControllers,
         dispatcher: CoroutineContext,
+        incomingMessageProcessor: IncomingMessageProcessor,
         taskManager: InternalTaskManager,
     ): ServerConnectionLayers {
         return ServerConnectionLayers(
@@ -155,7 +160,7 @@ object BaseServerConnectionProvider {
             MultiplexLayer(controllers.serverConnectionController),
             AuthLayer(controllers.layer3Controller),
             MonitoringLayer(connection, controllers.layer4Controller),
-            EndToEndLayer(dispatcher, controllers.serverConnectionController, connection, taskManager),
+            EndToEndLayer(dispatcher, controllers.serverConnectionController, connection, incomingMessageProcessor, taskManager),
         )
     }
 }

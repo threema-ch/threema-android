@@ -59,8 +59,9 @@ public class ThreemaFeatureTest {
 			.videocalls(true)
 			.forwardSecurity(true)
 			.groupCalls(true)
+			.editMessages(true)
 			.build();
-		Assert.assertEquals(255, maskAllFeatures);
+		Assert.assertEquals(511, maskAllFeatures);
 
 		final long maskPartialFeatures = new ThreemaFeature.Builder()
 			.audio(true)
@@ -68,8 +69,12 @@ public class ThreemaFeatureTest {
 			.ballot(true)
 			.file(false)
 			.voip(true)
+			.videocalls(false)
+			.forwardSecurity(true)
+			.groupCalls(false)
+			.editMessages(true)
 			.build();
-		Assert.assertEquals(21, maskPartialFeatures);
+		Assert.assertEquals(341, maskPartialFeatures);
 	}
 
 }

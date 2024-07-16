@@ -375,8 +375,7 @@ public class ContactsSectionFragment
 
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
-		public void onModified(ContactModel modifiedContactModel) {
-			logger.debug("onModified " + modifiedContactModel.getIdentity());
+		public void onModified(final @NonNull String identity) {
 			if (resumePauseHandler != null) {
 				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_UPDATE_LIST, runIfActiveUpdateList);
 			}
@@ -384,37 +383,26 @@ public class ContactsSectionFragment
 
 		@Override
 		public void onAvatarChanged(ContactModel contactModel) {
-			logger.debug("onAvatarChanged -> onModified " + contactModel.getIdentity());
-			this.onModified(contactModel);
+			this.onModified(contactModel.getIdentity());
 		}
 
 		@Override
-		public void onNew(final ContactModel createdContactModel) {
-			if (resumePauseHandler != null) {
-				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_UPDATE_LIST, runIfActiveUpdateList);
-			}
+		public void onNew(final @NonNull String identity) {
+			this.onModified(identity);
 		}
 
 		@Override
-		public void onRemoved(ContactModel removedContactModel) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					if (searchView != null && searchMenuItem != null && searchMenuItem.isActionViewExpanded()) {
-						filterQuery = null;
-						searchMenuItem.collapseActionView();
-					}
+		public void onRemoved(@NonNull String identity) {
+			RuntimeUtil.runOnUiThread(() -> {
+				if (searchView != null && searchMenuItem != null && searchMenuItem.isActionViewExpanded()) {
+					filterQuery = null;
+					searchMenuItem.collapseActionView();
 				}
 			});
 
 			if (resumePauseHandler != null) {
 				resumePauseHandler.runOnActive(RUN_ON_ACTIVE_UPDATE_LIST, runIfActiveUpdateList);
 			}
-		}
-
-		@Override
-		public boolean handle(String identity) {
-			return true;
 		}
 	};
 
@@ -957,8 +945,8 @@ public class ContactsSectionFragment
 				@Override
 				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 					if (swipeRefreshLayout != null) {
-						if (view != null && view.getChildCount() > 0) {
-							swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && view.getChildAt(0).getTop() == 0);
+						if (view != null && view.getChildCount() >= 0) {
+							swipeRefreshLayout.setEnabled(firstVisibleItem == 0);
 						} else {
 							swipeRefreshLayout.setEnabled(false);
 						}
@@ -1195,10 +1183,10 @@ public class ContactsSectionFragment
 
 			if (!ConfigUtils.isOnPremBuild()) {
 				if (
-					contactModel.getAndroidContactLookupKey() == null &&
+					!contactModel.isLinkedToAndroidContact() &&
 					TestUtil.empty(contactModel.getFirstName()) &&
 					TestUtil.empty(contactModel.getLastName()) &&
-					contactModel.getVerificationLevel() == VerificationLevel.UNVERIFIED
+					contactModel.verificationLevel == VerificationLevel.UNVERIFIED
 				) {
 					MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
 					if (messageReceiver != null && messageReceiver.getMessagesCount() > 0) {
@@ -1262,7 +1250,7 @@ public class ContactsSectionFragment
 		}
 
 		for (ContactModel contactModel : contacts) {
-			if (contactModel.getAndroidContactLookupKey() != null) {
+			if (contactModel.isLinkedToAndroidContact()) {
 				return true;
 			}
 		}
@@ -1329,7 +1317,7 @@ public class ContactsSectionFragment
 		IdListService excludedService = serviceManager.getExcludedSyncIdentitiesService();
 		if (excludedService != null) {
 			for (ContactModel contactModel : contactModels) {
-				if (contactModel.getAndroidContactLookupKey() != null) {
+				if (contactModel.isLinkedToAndroidContact()) {
 					excludedService.add(contactModel.getIdentity());
 				}
 			}
@@ -1471,9 +1459,10 @@ public class ContactsSectionFragment
 							Toast.makeText(getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();
 						}
 
+						final String spammerIdentity = contactModel.getIdentity();
 						if (checked) {
-							ThreemaApplication.requireServiceManager().getBlackListService().add(contactModel.getIdentity());
-							ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(contactModel.getIdentity());
+							ThreemaApplication.requireServiceManager().getBlackListService().add(spammerIdentity);
+							ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerIdentity);
 
 							try {
 								new EmptyOrDeleteConversationsAsyncTask(
@@ -1486,13 +1475,13 @@ public class ContactsSectionFragment
 									null,
 									() -> {
 										ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
-										ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
+										ListenerManager.contactListeners.handle(listener -> listener.onModified(spammerIdentity));
 									}).execute();
 							} catch (Exception e) {
 								logger.error("Unable to empty chat", e);
 							}
 						} else {
-							ListenerManager.contactListeners.handle(listener -> listener.onModified(contactModel));
+							ListenerManager.contactListeners.handle(listener -> listener.onModified(spammerIdentity));
 						}
 					},
 					message -> {

@@ -27,7 +27,6 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
@@ -36,37 +35,45 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.slf4j.Logger;
+
 import java.io.IOException;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
+import ch.threema.app.asynctasks.AddOrUpdateContactBackgroundTask;
+import ch.threema.app.asynctasks.AlreadyVerified;
+import ch.threema.app.asynctasks.ContactAddResult;
+import ch.threema.app.asynctasks.ContactExists;
+import ch.threema.app.asynctasks.ContactModified;
+import ch.threema.app.asynctasks.Failed;
+import ch.threema.app.asynctasks.PolicyViolation;
+import ch.threema.app.asynctasks.Success;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.NewContactDialog;
-import ch.threema.app.exceptions.EntryAlreadyExistsException;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
-import ch.threema.app.exceptions.InvalidEntryException;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.QRCodeService;
-import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.webclient.services.QRCodeParser;
 import ch.threema.app.webclient.services.QRCodeParserImpl;
 import ch.threema.base.utils.Base64;
-import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.storage.models.ContactModel;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 
 import static ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ID;
 import static ch.threema.domain.protocol.csp.ProtocolDefines.IDENTITY_LEN;
@@ -74,22 +81,23 @@ import static ch.threema.domain.protocol.csp.ProtocolDefines.IDENTITY_LEN;
 public class AddContactActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener, NewContactDialog.NewContactDialogClickListener {
 	private static final String DIALOG_TAG_ADD_PROGRESS = "ap";
 	private static final String DIALOG_TAG_ADD_ERROR = "ae";
-	private static final String DIALOG_TAG_ADD_USER = "au";
 	private static final String DIALOG_TAG_ADD_BY_ID = "abi";
 	public static final String EXTRA_ADD_BY_ID = "add_by_id";
 	public static final String EXTRA_ADD_BY_QR = "add_by_qr";
 	public static final String EXTRA_QR_RESULT = "qr_result";
 
+	private static final Logger logger = LoggingUtil.getThreemaLogger("AddContactActivity");
+
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
-	private ContactService contactService;
 	private QRCodeService qrCodeService;
 	private LockAppService lockAppService;
-	private ServiceManager serviceManager;
-	private AsyncTask<Void, Void, Exception> addContactTask;
+	private ContactModelRepository contactModelRepository;
+	private APIConnector apiConnector;
+	private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
 	public void onCreate(Bundle savedInstanceState) {
-		serviceManager = ThreemaApplication.getServiceManager();
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
 		if (serviceManager == null) {
 			finish();
@@ -97,11 +105,12 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 		}
 
 		try {
-			this.qrCodeService = this.serviceManager.getQRCodeService();
-			this.contactService = this.serviceManager.getContactService();
-			this.lockAppService = this.serviceManager.getLockAppService();
-		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-			LogUtil.exception(e, this);
+			this.qrCodeService = serviceManager.getQRCodeService();
+			this.lockAppService = serviceManager.getLockAppService();
+			this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
+			this.apiConnector = serviceManager.getAPIConnector();
+		} catch (Exception e) {
+			logger.error("Could not instantiate services", e);
 			finish();
 			return;
 		}
@@ -184,67 +193,14 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 		}
 	}
 
-	@SuppressLint("StaticFieldLeak")
 	private void addContactByIdentity(final String identity) {
-		if (lockAppService.isLocked()) {
+		if (identity == null) {
+			logger.error("Identity is null");
 			finish();
 			return;
 		}
 
-		addContactTask = new AsyncTask<Void, Void, Exception>() {
-			ContactModel newContactModel;
-
-			@Override
-			protected void onPreExecute() {
-				GenericProgressDialog.newInstance(R.string.creating_contact, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS);
-			}
-
-			@Override
-			protected Exception doInBackground(Void... params) {
-				try {
-					newContactModel = contactService.createContactByIdentity(identity, false);
-				} catch (Exception e) {
-					return e;
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Exception exception) {
-				if (isDestroyed()) {
-					return;
-				}
-
-				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS, true);
-
-				if (exception == null) {
-					newContactAdded(newContactModel);
-				} else if (exception instanceof EntryAlreadyExistsException) {
-					Toast.makeText(AddContactActivity.this, ((EntryAlreadyExistsException) exception).getTextId(), Toast.LENGTH_SHORT).show();
-					showContactDetail(identity);
-					finish();
-				} else if (exception instanceof InvalidEntryException){
-					GenericAlertDialog.newInstance(
-						ConfigUtils.isOnPremBuild() ?
-						R.string.invalid_onprem_id_title :
-						R.string.title_adduser,
-						((InvalidEntryException) exception).getTextId(), R.string.close, 0).show(getSupportFragmentManager(), DIALOG_TAG_ADD_ERROR);
-				} else if (exception instanceof PolicyViolationException) {
-					Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
-					finish();
-				}
-			}
-		};
-		addContactTask.execute();
-	}
-
-	@Override
-	protected void onDestroy() {
-		if (addContactTask != null) {
-			addContactTask.cancel(true);
-		}
-
-		super.onDestroy();
+		addContactByIdentity(identity, null);
 	}
 
 	/**
@@ -272,81 +228,64 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 			return;
 		}
 
-		ContactModel contactModel = contactService.getByPublicKey(qrResult.getPublicKey());
+		addContactByIdentity(qrResult.getIdentity(), qrResult.getPublicKey());
+	}
 
-		if (contactModel != null) {
-			// contact already exists - update it
-			boolean c = true;
-
-			int contactVerification = this.contactService.updateContactVerification(contactModel.getIdentity(), qrResult.getPublicKey());
-			int textResId;
-			switch (contactVerification) {
-				case ContactService.ContactVerificationResult_ALREADY_VERIFIED:
-					textResId = R.string.scan_duplicate;
-					break;
-				case ContactService.ContactVerificationResult_VERIFIED:
-					textResId = R.string.scan_successful;
-					break;
-				default:
-					textResId = R.string.id_mismatch;
-					c = false;
-			}
-
-			if(!c) {
-				GenericAlertDialog.newInstance(R.string.title_adduser, getString(textResId), R.string.ok, 0).show(getSupportFragmentManager(), DIALOG_TAG_ADD_USER);
-			}
-			else {
-				if (contactService.getIsHidden(contactModel.getIdentity())) {
-					contactService.setIsHidden(contactModel.getIdentity(), false);
-					newContactAdded(contactModel);
-				} else {
-					Toast.makeText(this.getApplicationContext(), textResId, Toast.LENGTH_SHORT).show();
-					showContactDetail(contactModel.getIdentity());
-					this.finish();
-				}
-			}
-		} else {
-			if (AppRestrictionUtil.isAddContactDisabled(this)) {
-				Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
-				finish();
-				return;
-			}
-
-			// add new contact
-			new AsyncTask<Void, Void, String>() {
-				ContactModel newContactModel;
-
-				@Override
-				protected void onPreExecute() {
-					GenericProgressDialog.newInstance(R.string.creating_contact, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS);
-				}
-
-				@Override
-				protected String doInBackground(Void... params) {
-					try {
-						newContactModel = contactService.createContactByQRResult(qrResult);
-					} catch (final InvalidEntryException e) {
-						return getString(e.getTextId());
-					} catch (final EntryAlreadyExistsException e) {
-						return getString(e.getTextId());
-					} catch (final PolicyViolationException e) {
-						return getString(R.string.disabled_by_policy_short);
-					}
-					return null;
-				}
-
-				@Override
-				protected void onPostExecute(String message) {
-					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS, true);
-
-					if (TestUtil.empty(message)) {
-						newContactAdded(newContactModel);
-					} else {
-						GenericAlertDialog.newInstance(R.string.title_adduser, message, R.string.ok, 0).show(getSupportFragmentManager(), DIALOG_TAG_ADD_USER);
-					}
-				}
-			}.execute();
+	private void addContactByIdentity(@NonNull String identity, @Nullable byte[] publicKey) {
+		if (lockAppService.isLocked()) {
+			finish();
+			return;
 		}
+
+		backgroundExecutor.execute(new AddOrUpdateContactBackgroundTask(
+			identity,
+			getMyIdentity(),
+			apiConnector,
+			contactModelRepository,
+			AddContactRestrictionPolicy.CHECK,
+			this,
+			publicKey
+		) {
+			@Override
+			public void onBefore() {
+				GenericProgressDialog.newInstance(R.string.creating_contact, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS);
+			}
+
+			@Override
+			public void onFinished(@NonNull ContactAddResult result) {
+				if (isDestroyed()) {
+					return;
+				}
+
+				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS, true);
+
+				if (result instanceof Success) {
+					showContactAndFinish(identity, R.string.creating_contact_successful);
+				} else if (result instanceof ContactModified) {
+					if (((ContactModified) result).getAcquaintanceLevelChanged()) {
+						showContactAndFinish(identity, R.string.creating_contact_successful);
+					} else {
+						showContactAndFinish(identity, R.string.scan_successful);
+					}
+				} else if (result instanceof AlreadyVerified) {
+					showContactAndFinish(identity, R.string.scan_duplicate);
+				} else if (result instanceof ContactExists) {
+					showContactAndFinish(identity, R.string.identity_already_exists);
+				} else if (result instanceof Failed) {
+					GenericAlertDialog.newInstance(
+						ConfigUtils.isOnPremBuild() ?
+							R.string.invalid_onprem_id_title :
+							R.string.title_adduser,
+						((Failed) result).getMessage(),
+						R.string.close,
+						0
+					).show(getSupportFragmentManager(), DIALOG_TAG_ADD_ERROR);
+				} else if (result instanceof PolicyViolation) {
+					Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
+					finish();
+				}
+			}
+		});
 	}
 
 	private void showContactDetail(String id) {
@@ -356,12 +295,10 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 		finish();
 	}
 
-	private void newContactAdded(ContactModel contactModel) {
-		if(contactModel != null) {
-			Toast.makeText(this.getApplicationContext(), R.string.creating_contact_successful, Toast.LENGTH_SHORT).show();
- 			showContactDetail(contactModel.getIdentity());
-			finish();
-		}
+	private void showContactAndFinish(@NonNull String identity, @StringRes int stringRes) {
+		Toast.makeText(this.getApplicationContext(), stringRes, Toast.LENGTH_SHORT).show();
+		showContactDetail(identity);
+		finish();
 	}
 
 	private void scanQR() {

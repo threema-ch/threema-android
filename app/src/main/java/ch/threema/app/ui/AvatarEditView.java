@@ -180,20 +180,16 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
-		public void onModified(ContactModel modifiedContactModel) {
-			if (modifiedContactModel != null && handle(modifiedContactModel.getIdentity())) {
-				RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(modifiedContactModel, null));
+		public void onAvatarChanged(ContactModel contactModel) {
+			if (contactModel != null && this.shouldHandleChange(contactModel.getIdentity())) {
+				RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(contactModel, null));
 			}
 		}
 
 		@Override
-		public void onAvatarChanged(ContactModel contactModel) { }
+		public void onRemoved(@NonNull final String identity) { }
 
-		@Override
-		public void onRemoved(ContactModel removedContactModel) { }
-
-		@Override
-		public boolean handle(String identity) {
+		private boolean shouldHandleChange(String identity) {
 			if (avatarData != null && avatarData.getContactModel() != null) {
 				return TestUtil.compare(avatarData.getContactModel().getIdentity(), identity);
 			}
@@ -324,8 +320,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	 */
 	private boolean isLocallySavedAvatar(@NonNull ContactModel contactModel) {
 		boolean showProfilePictures = preferenceService.getProfilePicReceive();
-		boolean hasProfilePicture = fileService.hasContactPhotoFile(contactModel);
-		boolean hasLocallySavedAvatar = fileService.hasContactAvatarFile(contactModel);
+		boolean hasProfilePicture = fileService.hasContactPhotoFile(contactModel.getIdentity());
+		boolean hasLocallySavedAvatar = fileService.hasContactAvatarFile(contactModel.getIdentity());
 
 		return isMyProfilePicture || (hasLocallySavedAvatar && (!showProfilePictures || !hasProfilePicture));
 	}
@@ -479,7 +475,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 				protected Void doInBackground(Void... voids) {
 					if (avatarData.getContactModel() != null) {
 						contactService.removeAvatar(avatarData.getContactModel());
-						fileService.removeContactPhoto(avatarData.getContactModel());
+						fileService.removeContactPhoto(avatarData.getContactModel().getIdentity());
 					} else if (avatarData.getGroupModel() != null) {
 						saveGroupAvatar(null, true);
 					}
@@ -744,7 +740,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	 */
 	private boolean hasAvatar() {
 		if (this.avatarData.getContactModel() != null) {
-			return fileService.hasContactAvatarFile(this.avatarData.getContactModel()) || fileService.hasContactPhotoFile(this.avatarData.getContactModel());
+			return fileService.hasContactAvatarFile(this.avatarData.getContactModel().getIdentity())
+				|| fileService.hasContactPhotoFile(this.avatarData.getContactModel().getIdentity());
 		} else if (this.avatarData.getGroupModel() != null) {
 			return fileService.hasGroupAvatarFile(this.avatarData.getGroupModel());
 		}
@@ -757,7 +754,9 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	 */
 	private boolean isAvatarEditable() {
 		if (this.avatarData.getContactModel() != null) {
-			return isEditable && ContactUtil.canHaveCustomAvatar(this.avatarData.getContactModel()) && !(preferenceService.getProfilePicReceive() && fileService.hasContactPhotoFile(this.avatarData.getContactModel()));
+			return isEditable && ContactUtil.canHaveCustomAvatar(this.avatarData.getContactModel())
+				&& !(preferenceService.getProfilePicReceive()
+				&& fileService.hasContactPhotoFile(this.avatarData.getContactModel().getIdentity()));
 		} else if (this.avatarData.getGroupModel() != null) {
 			GroupModel group = avatarData.getGroupModel();
 			return isEditable && groupService.isGroupCreator(group) && groupService.isGroupMember(group);

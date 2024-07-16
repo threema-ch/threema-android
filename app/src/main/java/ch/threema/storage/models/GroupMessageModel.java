@@ -83,6 +83,8 @@ public class GroupMessageModel extends AbstractMessageModel {
 			.setModifiedAt(sourceModel.getModifiedAt())
 			.setDeliveredAt(sourceModel.getDeliveredAt())
 			.setReadAt(sourceModel.getReadAt())
+			.setEditedAt(sourceModel.getEditedAt())
+			.setDeletedAt(sourceModel.getDeletedAt())
 			.setRead(sourceModel.isRead())
 			.setBody(sourceModel.getBody())
 			.setCaption(sourceModel.getCaption())

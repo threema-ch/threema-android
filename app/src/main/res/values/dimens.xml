@@ -54,7 +54,7 @@
 
 	<!-- section header text -->
 	<dimen name="blue_header_text_size">14sp</dimen>
-	<dimen name="blue_header_text_big_size">18dp</dimen>
+	<dimen name="blue_header_text_big_size">18sp</dimen>
 
     <!-- ballot choice list -->
     <dimen name="ballotchoice_list_item_height">40dp</dimen>
@@ -66,8 +66,13 @@
     <dimen name="ballot_matrix_cell_height">40dp</dimen>
 	<dimen name="ballot_matrix_cell_width">44dp</dimen>
 
+    <dimen name="listitem_min_height_first_line">24dp</dimen>
+    <dimen name="listitem_min_height_second_line">20dp</dimen>
+	<dimen name="listitem_standard_margin_top_bottom">10dp</dimen>
     <dimen name="listitem_standard_margin_left_right">16dp</dimen>
+	<dimen name="listitem_message_margin_top_bottom">10dp</dimen>
 	<dimen name="listitem_message_margin_left_right">16dp</dimen>
+	<dimen name="listitem_contacts_margin_top_bottom">10dp</dimen>
 	<dimen name="listitem_contacts_margin_left_right">16dp</dimen>
 	<dimen name="tablet_standard_padding_left_right">16dp</dimen>
 	<dimen name="listitem_contact_height">64dp</dimen>
@@ -217,7 +222,8 @@
 
 	<dimen name="compose_title_avatar_size">40dp</dimen>
 	<dimen name="compose_bottom_panel_height">56dp</dimen>
-	<dimen name="compose_bottom_panel_padding_vertical">4dp</dimen>
+	<dimen name="compose_bottom_panel_padding_top">4dp</dimen>
+    <dimen name="compose_bottom_panel_padding_bottom">8dp</dimen>
     <dimen name="compose_bottom_panel_padding_horizontal">8dp</dimen>
     <dimen name="compose_textinputlayout_radius">24dp</dimen>
     <dimen name="compose_textinputlayout_radius_expanded">0dp</dimen>

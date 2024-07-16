@@ -77,12 +77,12 @@ private val logger = LoggingUtil.getThreemaLogger("MultiDeviceManagerImpl")
 private const val IS_FS_SUPPORTED_WITH_MD = true // TODO(ANDR-2519): Remove when md supports fs
 
 class MultiDeviceManagerImpl(
-    private val reconnectHandle: ReconnectableServerConnection,
     private val preferenceStore: PreferenceStoreInterface,
     private val serverMessageService: ServerMessageService,
     private val version: Version,
-    private val deviceJoinDataCollector: DeviceJoinDataCollector
-    ) : MultiDeviceManager {
+) : MultiDeviceManager {
+
+    private var reconnectHandle: ReconnectableServerConnection? = null
 
     private var _persistedProperties: PersistedMultiDeviceProperties? = null
     private var _properties = MutableSharedFlow<MultiDeviceProperties?>(1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
@@ -93,6 +93,10 @@ class MultiDeviceManagerImpl(
                 .also {
                     _properties.emit(it?.let(::mapPersistedProperties)) }
         }
+    }
+
+    fun setReconnectHandle(reconnectHandle: ReconnectableServerConnection) {
+        this.reconnectHandle = reconnectHandle
     }
 
     /**
@@ -141,7 +145,7 @@ class MultiDeviceManagerImpl(
         taskManager: TaskManager,
         contactService: ContactService,
         userService: UserService,
-        fsMessageProcessor: ForwardSecurityMessageProcessor
+        fsMessageProcessor: ForwardSecurityMessageProcessor,
     ) {
         logger.info("Activate multi device")
         if (!BuildConfig.MD_ENABLED) {
@@ -205,7 +209,10 @@ class MultiDeviceManagerImpl(
     }
 
     @AnyThread
-    override suspend fun linkDevice(deviceJoinOfferUri: String) {
+    override suspend fun linkDevice(
+        deviceJoinOfferUri: String,
+        deviceJoinDataCollector: DeviceJoinDataCollector,
+    ) {
         logger.debug("Link device: {}", deviceJoinOfferUri)
 
         _linkedDevices.add(deviceJoinOfferUri)
@@ -213,7 +220,7 @@ class MultiDeviceManagerImpl(
 
         return try {
             val deviceJoinData = withContext(Dispatchers.Default) {
-                collectDeviceJoinData()
+                collectDeviceJoinData(deviceJoinDataCollector)
             }
             deviceJoinData.essentialData.toString().lines().forEach {
                 logger.debug("Essential data: {}", it)
@@ -228,7 +235,7 @@ class MultiDeviceManagerImpl(
     }
 
     @WorkerThread
-    private fun collectDeviceJoinData(): DeviceJoinData {
+    private fun collectDeviceJoinData(deviceJoinDataCollector: DeviceJoinDataCollector): DeviceJoinData {
         // TODO(ANDR-2484): Make sure the state of the data cannot change during collection:
         //  - disconnect from server
         //  - do not perform any api calls?
@@ -328,7 +335,7 @@ class MultiDeviceManagerImpl(
 
     private fun reconnect() {
         CoroutineScope(Dispatchers.Default).launch {
-            reconnectHandle.reconnect()
+            reconnectHandle?.reconnect() ?: logger.error("Reconnect handle is null")
         }
     }
 

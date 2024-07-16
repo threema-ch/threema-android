@@ -67,7 +67,7 @@ class IncomingSetProfilePictureTask(
             message.encryptionKey,
             ProtocolDefines.CONTACT_PHOTO_NONCE
         )
-        this.fileService.writeContactPhoto(contactModel, encryptedBlob)
+        this.fileService.writeContactPhoto(contactModel.identity, encryptedBlob)
         this.avatarCacheService.reset(contactModel)
         ListenerManager.contactListeners.handle { listener: ContactListener ->
             listener.onAvatarChanged(contactModel)

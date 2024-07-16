@@ -35,11 +35,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.RequestManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -48,7 +43,13 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.PublicKeyDialog;
@@ -58,15 +59,26 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.protobuf.csp.e2e.fs.Terminate;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
+/**
+ * The adapter for contact details.
+ *
+ * It is comprised of two parts:
+ *
+ * - The header, which contains the Threema ID, nickname, privacy settings, etc
+ * - The items, which contain the group memberships
+ *
+ * Note that this adapter does not need to be reactive. It is simply recreated by the activity
+ * when data changes.
+ */
 public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactDetailAdapter");
 
@@ -76,58 +88,59 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	private final Context context;
 	private ContactService contactService;
 	private GroupService groupService;
-	private UserService userService;
 	private PreferenceService preferenceService;
 	private IdListService excludeFromSyncListService;
 	private IdListService blackListIdentityService;
+	@Deprecated
 	private final ContactModel contactModel;
+	private final @NonNull ContactModelData contactModelData;
 	private final List<GroupModel> values;
 	private OnClickListener onClickListener;
 	private final @NonNull RequestManager requestManager;
 
 	public static class ItemHolder extends RecyclerView.ViewHolder {
-		public final View view;
-		public final TextView nameView;
-		public final ImageView avatarView, statusView;
+		public final @NonNull View view;
+		public final @NonNull TextView nameView;
+		public final @NonNull ImageView avatarView, statusView;
 
-		public ItemHolder(View view) {
+		public ItemHolder(@NonNull View view) {
 			super(view);
 			this.view = view;
-			this.nameView = itemView.findViewById(R.id.contact_name);
-			this.avatarView = itemView.findViewById(R.id.contact_avatar);
-			this.statusView = itemView.findViewById(R.id.status);
+			this.nameView = Objects.requireNonNull(itemView.findViewById(R.id.contact_name));
+			this.avatarView = Objects.requireNonNull(itemView.findViewById(R.id.contact_avatar));
+			this.statusView = Objects.requireNonNull(itemView.findViewById(R.id.status));
 		}
 	}
 
 	public class HeaderHolder extends RecyclerView.ViewHolder {
-		private final VerificationLevelImageView verificationLevelImageView;
-		private final TextView threemaIdView;
-		private final MaterialSwitch synchronize;
-		private final View nicknameContainer, synchronizeContainer;
-		private final ImageView syncSourceIcon;
-		private final TextView publicNickNameView;
-		private final LinearLayout groupMembershipTitle;
-		private final MaterialAutoCompleteTextView readReceiptsSpinner, typingIndicatorsSpinner;
-		private final View clearForwardSecuritySection;
-		private final MaterialButton clearForwardSecurityButton;
+		private final @NonNull VerificationLevelImageView verificationLevelImageView;
+		private final @NonNull TextView threemaIdView;
+		private final @NonNull MaterialSwitch synchronize;
+		private final @NonNull View nicknameContainer, synchronizeContainer;
+		private final @NonNull ImageView syncSourceIcon;
+		private final @NonNull TextView publicNickNameView;
+		private final @NonNull LinearLayout groupMembershipTitle;
+		private final @NonNull MaterialAutoCompleteTextView readReceiptsSpinner, typingIndicatorsSpinner;
+		private final @NonNull View clearForwardSecuritySection;
+		private final @NonNull MaterialButton clearForwardSecurityButton;
 		private int onThreemaIDClickCount = 0;
 
 		public HeaderHolder(View view) {
 			super(view);
 
-			this.threemaIdView = itemView.findViewById(R.id.threema_id);
-			this.verificationLevelImageView = itemView.findViewById(R.id.verification_level_image);
-			ImageView verificationLevelIconView = itemView.findViewById(R.id.verification_information_icon);
-			this.synchronize = itemView.findViewById(R.id.synchronize_contact);
-			this.synchronizeContainer = itemView.findViewById(R.id.synchronize_contact_container);
-			this.nicknameContainer = itemView.findViewById(R.id.nickname_container);
-			this.publicNickNameView = itemView.findViewById(R.id.public_nickname);
-			this.groupMembershipTitle = itemView.findViewById(R.id.group_members_title_container);
-			this.syncSourceIcon = itemView.findViewById(R.id.sync_source_icon);
-			this.readReceiptsSpinner = itemView.findViewById(R.id.read_receipts_spinner);
-			this.typingIndicatorsSpinner = itemView.findViewById(R.id.typing_indicators_spinner);
-			this.clearForwardSecuritySection = itemView.findViewById(R.id.clear_forward_security_section);
-			this.clearForwardSecurityButton = itemView.findViewById(R.id.clear_forward_security);
+			this.threemaIdView = Objects.requireNonNull(itemView.findViewById(R.id.threema_id));
+			this.verificationLevelImageView = Objects.requireNonNull(itemView.findViewById(R.id.verification_level_image));
+			ImageView verificationLevelIconView = Objects.requireNonNull(itemView.findViewById(R.id.verification_information_icon));
+			this.synchronize = Objects.requireNonNull(itemView.findViewById(R.id.synchronize_contact));
+			this.synchronizeContainer = Objects.requireNonNull(itemView.findViewById(R.id.synchronize_contact_container));
+			this.nicknameContainer = Objects.requireNonNull(itemView.findViewById(R.id.nickname_container));
+			this.publicNickNameView = Objects.requireNonNull(itemView.findViewById(R.id.public_nickname));
+			this.groupMembershipTitle = Objects.requireNonNull(itemView.findViewById(R.id.group_members_title_container));
+			this.syncSourceIcon = Objects.requireNonNull(itemView.findViewById(R.id.sync_source_icon));
+			this.readReceiptsSpinner = Objects.requireNonNull(itemView.findViewById(R.id.read_receipts_spinner));
+			this.typingIndicatorsSpinner = Objects.requireNonNull(itemView.findViewById(R.id.typing_indicators_spinner));
+			this.clearForwardSecuritySection = Objects.requireNonNull(itemView.findViewById(R.id.clear_forward_security_section));
+			this.clearForwardSecurityButton = Objects.requireNonNull(itemView.findViewById(R.id.clear_forward_security));
 
 			verificationLevelIconView.setOnClickListener(v -> {
 				if (onClickListener != null) {
@@ -136,8 +149,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			});
 
 			threemaIdView.setOnLongClickListener(ignored -> {
-				String identity = contactModel.getIdentity();
-				copyTextToClipboard(identity, R.string.contact_details_id_copied);
+				copyTextToClipboard(contactModelData.identity, R.string.contact_details_id_copied);
 				return true;
 			});
 
@@ -165,15 +177,15 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			});
 
 			publicNickNameView.setOnLongClickListener(ignored -> {
-				String nickname = contactModel.getPublicNickName();
-				copyTextToClipboard(nickname, R.string.contact_details_nickname_copied);
+				copyTextToClipboard(contactModelData.nickname, R.string.contact_details_nickname_copied);
 				return true;
 			});
 
 
 			itemView.findViewById(R.id.public_key_button).setOnClickListener(v -> {
 				if (context instanceof AppCompatActivity) {
-					PublicKeyDialog.newInstance(context.getString(R.string.public_key_for, contactModel.getIdentity()), contactModel.getPublicKey())
+					PublicKeyDialog
+						.newInstance(context.getString(R.string.public_key_for, contactModelData.identity), contactModelData.publicKey)
 						.show(((AppCompatActivity) context).getSupportFragmentManager(), "pk");
 				}
 			});
@@ -187,27 +199,29 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 		}
 	}
 
+	@UiThread
 	public ContactDetailAdapter(
 		Context context,
 		List<GroupModel>values,
 		ContactModel contactModel,
+		@NonNull ContactModelData contactModelData,
 		@NonNull RequestManager requestManager
 	) {
 		this.context = context;
 		this.values = values;
 		this.contactModel = contactModel;
+		this.contactModelData = contactModelData;
 		this.requestManager = requestManager;
 
 		try {
 			ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
 			this.contactService = serviceManager.getContactService();
 			this.groupService = serviceManager.getGroupService();
-			this.userService = serviceManager.getUserService();
 			this.excludeFromSyncListService = serviceManager.getExcludedSyncIdentitiesService();
 			this.blackListIdentityService = serviceManager.getBlackListService();
 			this.preferenceService = serviceManager.getPreferenceService();
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Failed to set up services", e);
 		}
 	}
 
@@ -257,29 +271,29 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			HeaderHolder headerHolder = (HeaderHolder) holder;
 
 			String identityAdditional = null;
-			if (this.contactModel.getState() != null) {
-				switch (this.contactModel.getState()) {
-					case ACTIVE:
-						if (blackListIdentityService.has(contactModel.getIdentity())) {
-							identityAdditional = context.getString(R.string.blocked);
-						}
-						break;
-					case INACTIVE:
-						identityAdditional = context.getString(R.string.contact_state_inactive);
-						break;
-					case INVALID:
-						identityAdditional = context.getString(R.string.contact_state_invalid);
-						break;
-				}
+			switch (this.contactModelData.activityState) {
+				case ACTIVE:
+					if (blackListIdentityService.has(contactModelData.identity)) {
+						identityAdditional = context.getString(R.string.blocked);
+					}
+					break;
+				case INACTIVE:
+					identityAdditional = context.getString(R.string.contact_state_inactive);
+					break;
+				case INVALID:
+					identityAdditional = context.getString(R.string.contact_state_invalid);
+					break;
 			}
-			headerHolder.threemaIdView.setText(contactModel.getIdentity() + (identityAdditional != null ? " (" + identityAdditional + ")" : ""));
+			headerHolder.threemaIdView.setText(
+				contactModelData.identity + (identityAdditional != null ? " (" + identityAdditional + ")" : "")
+			);
 			headerHolder.verificationLevelImageView.setContactModel(contactModel);
 			headerHolder.verificationLevelImageView.setVisibility(View.VISIBLE);
 
-			boolean isSyncExcluded = excludeFromSyncListService.has(contactModel.getIdentity());
+			boolean isSyncExcluded = excludeFromSyncListService.has(contactModelData.identity);
 
 			if (preferenceService.isSyncContacts()
-				&& (contactModel.getAndroidContactLookupKey() != null || isSyncExcluded)
+				&& (contactModelData.isLinkedToAndroidContact() || isSyncExcluded)
 				&& ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS)
 			) {
 				headerHolder.synchronizeContainer.setVisibility(View.VISIBLE);
@@ -300,18 +314,18 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 				headerHolder.synchronize.setChecked(isSyncExcluded);
 				headerHolder.synchronize.setOnCheckedChangeListener((buttonView, isChecked) -> {
 					if (isChecked) {
-						excludeFromSyncListService.add(contactModel.getIdentity());
+						excludeFromSyncListService.add(contactModelData.identity);
 					} else {
-						excludeFromSyncListService.remove(contactModel.getIdentity());
+						excludeFromSyncListService.remove(contactModelData.identity);
 					}
 				});
 			} else {
 				headerHolder.synchronizeContainer.setVisibility(View.GONE);
 			}
 
-			String nicknameString = contactModel.getPublicNickName();
+			final String nicknameString = contactModelData.nickname;
 			if (nicknameString != null && nicknameString.length() > 0) {
-				headerHolder.publicNickNameView.setText(contactModel.getPublicNickName());
+				headerHolder.publicNickNameView.setText(nicknameString);
 			} else {
 				headerHolder.nicknameContainer.setVisibility(View.GONE);
 			}

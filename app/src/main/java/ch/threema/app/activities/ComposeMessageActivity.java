@@ -67,7 +67,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		logger.debug("onCreate");
+		logger.info("onCreate");
 
 		getWindow().setAllowEnterTransitionOverlap(true);
 		getWindow().setAllowReturnTransitionOverlap(true);
@@ -98,7 +98,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 			return false;
 		}
 
-		logger.debug("initActivity");
+		logger.info("initActivity");
 
 		this.getFragments();
 
@@ -140,7 +140,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 	@Override
 	public void onNewIntent(Intent intent) {
-		logger.debug("onNewIntent");
+		logger.info("onNewIntent");
 
 		super.onNewIntent(intent);
 
@@ -163,6 +163,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 	@Override
 	protected void handleOnBackPressed() {
+		logger.info("handleOnBackPressed");
 		if (ConfigUtils.isTabletLayout()) {
 			if (messageSectionFragment != null) {
 				if (messageSectionFragment.onBackPressed()) {
@@ -190,13 +191,13 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 	@Override
 	public void onStop() {
-		logger.debug("onStop");
+		logger.info("onStop");
 		super.onStop();
 	}
 
 	@Override
 	public void onResume() {
-		logger.debug("onResume");
+		logger.info("onResume");
 		super.onResume();
 
 		// Set the soft input mode to resize when activity resumes because it is set to adjust nothing while it is paused
@@ -206,7 +207,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
 	@Override
 	public void onPause() {
-		logger.debug("onPause");
+		logger.info("onPause");
 		super.onPause();
 
 		// Set the soft input mode to adjust nothing while paused. This is needed when the keyboard is opened to edit the contact before sending.
@@ -271,7 +272,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 		if (messageReceiver != null) {
 			if (serviceManager != null) {
 				DeadlineListService hiddenChatsListService = serviceManager.getHiddenChatsListService();
-				if (hiddenChatsListService != null && hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
+				if (hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
 					if (preferenceService != null && ConfigUtils.hasProtection(preferenceService)) {
 						HiddenChatUtil.launchLockCheckDialog(this, null, preferenceService, requestCode);
 					} else {

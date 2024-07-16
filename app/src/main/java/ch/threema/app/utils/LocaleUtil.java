@@ -24,8 +24,6 @@ package ch.threema.app.utils;
 import android.content.Context;
 import android.text.format.DateUtils;
 
-import org.slf4j.Logger;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -37,16 +35,9 @@ import java.text.Normalizer;
 import java.util.Locale;
 
 import androidx.core.os.LocaleListCompat;
-import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.PreferenceService;
-import ch.threema.base.utils.LoggingUtil;
 
 public class LocaleUtil {
 	public static final String UTF8_ENCODING = "UTF-8";
-	private final static Logger logger = LoggingUtil.getThreemaLogger("LocaleUtil");
-
 	private LocaleUtil() {
 		// Forbidden being instantiated.
 	}
@@ -204,60 +195,6 @@ public class LocaleUtil {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Switch from our custom language preference to the androidx per app language selection. Note
-	 * that this migration code can be removed when enough users have installed this version.
-	 * TODO(ANDR-2462): remove this migration when enough users have updated
-	 */
-	public static void switchToAndroidXPerAppLanguageSelection(
-		@NonNull Context context,
-		@NonNull PreferenceService preferenceService
-	) {
-		String localeOverride = preferenceService.getLocaleOverride();
-		if (localeOverride == null) {
-			return;
-		}
-
-		String newLanguageTag;
-		switch (localeOverride) {
-			case "be-rBY":
-				newLanguageTag = "be-BY";
-				break;
-			case "zh-rCN":
-				newLanguageTag = "zh-hans-CN";
-				break;
-			case "zh-rTW":
-				newLanguageTag = "zh-hant-TW";
-				break;
-			default:
-				newLanguageTag = localeOverride;
-				break;
-		}
-
-		LocaleListCompat localeList;
-
-		if (newLanguageTag.isEmpty()) {
-			// For the default language (which is stored as empty string), we create an empty list
-			localeList = LocaleListCompat.getEmptyLocaleList();
-		} else {
-			// For a custom language preference, we use the new language list
-			localeList = LocaleListCompat.create(Locale.forLanguageTag(newLanguageTag));
-		}
-
-		// Store the language preference in the language framework
-		AppCompatDelegate.setApplicationLocales(localeList);
-		logger.info("Updated per-app language from '{}' to '{}'", localeOverride, newLanguageTag);
-
-		removeDeprecatedLanguageOverrideSetting(context);
-	}
-
-	private static void removeDeprecatedLanguageOverrideSetting(Context context) {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			serviceManager.getPreferenceStore().remove(context.getString(R.string.preferences__language_override));
-		}
 	}
 
 }

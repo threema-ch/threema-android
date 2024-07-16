@@ -90,6 +90,8 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 						.setMessageFlags(cursorFactory.getInt(AbstractMessageModel.COLUMN_MESSAGE_FLAGS))
 						.setDeliveredAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_DELIVERED_AT))
 						.setReadAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_READ_AT))
+						.setEditedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_EDITED_AT))
+						.setDeletedAt(cursorFactory.getDate(AbstractMessageModel.COLUMN_DELETED_AT))
 						.setForwardSecurityMode(forwardSecurityMode)
 						.setDisplayTags(cursorFactory.getInt(AbstractMessageModel.COLUMN_DISPLAY_TAGS))
 				;
@@ -135,6 +137,8 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 		contentValues.put(AbstractMessageModel.COLUMN_MESSAGE_FLAGS, messageModel.getMessageFlags());
 		contentValues.put(AbstractMessageModel.COLUMN_DELIVERED_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getDeliveredAt()));
 		contentValues.put(AbstractMessageModel.COLUMN_READ_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getReadAt()));
+		contentValues.put(AbstractMessageModel.COLUMN_EDITED_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getEditedAt()));
+		contentValues.put(AbstractMessageModel.COLUMN_DELETED_AT, DatabaseUtil.getDateTimeContentValue(messageModel.getDeletedAt()));
 		contentValues.put(AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE, messageModel.getForwardSecurityMode() != null ? messageModel.getForwardSecurityMode().getValue() : null);
 		contentValues.put(AbstractMessageModel.COLUMN_DISPLAY_TAGS, messageModel.getDisplayTags());
 

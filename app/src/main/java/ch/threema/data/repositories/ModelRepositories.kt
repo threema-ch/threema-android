@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2024 Threema GmbH
+ * Copyright (c) 2024 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -19,18 +19,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.domain.models;
+package ch.threema.data.repositories
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.ModelCache
+import ch.threema.data.storage.SqliteDatabaseBackend
+import ch.threema.storage.DatabaseServiceNew
 
-import androidx.annotation.IntDef;
+class ModelRepositories(databaseService: DatabaseServiceNew) {
+    private val logger = LoggingUtil.getThreemaLogger("data.ModelRepositories")
 
-public class IdentityType {
-	public static final int NORMAL = 0;
-	public static final int WORK = 1;
+    private val cache = ModelCache()
+    private val databaseBackend = SqliteDatabaseBackend(databaseService)
 
-	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({ NORMAL, WORK })
-	public @interface Type {}
+    val contacts = ContactModelRepository(cache.contacts, databaseBackend)
+
+    init {
+        logger.debug("Created")
+    }
 }

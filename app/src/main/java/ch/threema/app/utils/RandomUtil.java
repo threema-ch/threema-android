@@ -23,7 +23,7 @@ package ch.threema.app.utils;
 
 import java.security.SecureRandom;
 
-import ch.threema.app.voip.util.UnsignedHelper;
+import ch.threema.base.utils.UnsignedHelper;
 
 public class RandomUtil {
 	private final static SecureRandom secureRandom = new SecureRandom();

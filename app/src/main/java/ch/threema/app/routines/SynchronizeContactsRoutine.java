@@ -271,7 +271,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 				//contact does not exist, create a new one
 				if (contact == null) {
 					contact = new ContactModel(id.getKey(), id.getValue().publicKey);
-					contact.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
+					contact.verificationLevel = VerificationLevel.SERVER_VERIFIED;
 					contact.setDateCreated(new Date());
 					insertedContacts.add(contact);
 
@@ -288,8 +288,8 @@ public class SynchronizeContactsRoutine implements Runnable {
 					AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
 
 					contact.setAcquaintanceLevel(AcquaintanceLevel.DIRECT);
-					if (contact.getVerificationLevel() == VerificationLevel.UNVERIFIED) {
-						contact.setVerificationLevel(VerificationLevel.SERVER_VERIFIED);
+					if (contact.verificationLevel == VerificationLevel.UNVERIFIED) {
+						contact.verificationLevel = VerificationLevel.SERVER_VERIFIED;
 					}
 
 					List<AndroidContactUtil.RawContactInfo> rawContactInfos = existingRawContacts.get(contact.getIdentity());

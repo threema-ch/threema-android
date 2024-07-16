@@ -34,6 +34,7 @@ import ch.threema.app.services.UserService
 import ch.threema.app.utils.ContactUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.IdentityState
+import ch.threema.domain.models.IdentityType
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.storage.models.ContactModel
 
@@ -174,14 +175,21 @@ class ContactUpdateWorker(
                         )
                     }
 
-                    val newType = result.types[i]
+                    val newIdentityType = when (result.types[i]) {
+                        0 -> IdentityType.NORMAL
+                        1 -> IdentityType.WORK
+                        else -> {
+                            logger.warn("Received invalid type {} for identity {}", result.types[i], identity);
+                            IdentityType.NORMAL
+                        }
+                    }
 
                     val newFeatureMask: Long? = result.featureMasks[i]
 
                     updateContactModel(
                         contactModel,
                         newState,
-                        newType,
+                        newIdentityType,
                         newFeatureMask,
                         contactService
                     )
@@ -205,7 +213,7 @@ class ContactUpdateWorker(
         private fun updateContactModel(
             contactModel: ContactModel,
             newState: ContactModel.State?,
-            newType: Int,
+            newIdentityType: IdentityType,
             newFeatureMask: Long?,
             contactService: ContactService,
         ) {
@@ -218,8 +226,8 @@ class ContactUpdateWorker(
                 updated = true
             }
 
-            if (contactModel.identityType != newType) {
-                contactModel.identityType = newType
+            if (contactModel.identityType != newIdentityType) {
+                contactModel.identityType = newIdentityType
                 updated = true
             }
 

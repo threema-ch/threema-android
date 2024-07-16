@@ -62,6 +62,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 	private RecentEmojiRemovePopup recentRemovePopup;
 	private RelativeLayout pickerHeader;
 	private EmojiSearchWidget emojiSearchWidget;
+	private boolean isKeyboardAnimated = false; // whether keyboard animation is enabled for this activity
 
 	private final LinearLayout.LayoutParams searchLayoutParams = new LinearLayout.LayoutParams(
 		ViewGroup.LayoutParams.MATCH_PARENT,
@@ -98,8 +99,9 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 		this.emojiKeyListener = listener;
 	}
 
-	public void init(EmojiService emojiService) {
+	public void init(EmojiService emojiService, boolean isKeyboardAnimated) {
 		this.emojiService = emojiService;
+		this.isKeyboardAnimated = isKeyboardAnimated;
 
 		this.emojiPickerView = LayoutInflater.from(getContext()).inflate(R.layout.emoji_picker, this, true);
 
@@ -164,7 +166,11 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 		this.emojiService.saveRecentEmojis();
 	}
 
-	public void onKeyboardShown() {}
+	public void onKeyboardShown() {
+		if (!isKeyboardAnimated && isShown() &&  !emojiSearchWidget.isShown()) {
+			hide();
+		}
+	}
 
 	public void onKeyboardHidden() {
 		if (emojiSearchWidget.isShown()) {

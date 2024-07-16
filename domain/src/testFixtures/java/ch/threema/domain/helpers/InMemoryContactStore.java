@@ -46,14 +46,6 @@ public class InMemoryContactStore implements ContactStore {
 		this.contacts.put(contact.getIdentity(), contact);
 	}
 
-	/**
-	 * Ignore hide parameter as it is not needed here.
-	 */
-	@Override
-	public void addContact(@NonNull Contact contact, boolean hide) {
-		addContact(contact);
-	}
-
 	@Override
 	public void removeContact(@NonNull Contact contact) {
 		this.contacts.remove(contact.getIdentity());

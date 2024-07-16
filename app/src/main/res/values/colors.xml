@@ -47,7 +47,8 @@
 
 	<!-- Media attacher -->
 	<color name="transparent_activity_overlay">#4C000000</color>
-	<color name="mime_type_marker_background">#55000000</color>
+    <color name="transparent_activity_overlay_darker">#80000000</color>
+    <color name="mime_type_marker_background">#55000000</color>
 	<color name="attach_status_bar_expanded">@android:color/white</color>
 	<color name="attach_status_bar_collapsed">#FFB3B3B3</color>
 	<color name="attach_button_background">#FFF1F1F1</color>
@@ -68,6 +69,7 @@
 	<color name="qrscanner_masking_color">#50000000</color>
 	<color name="mediaviewer_caption_background_color">#77000000</color>
 	<color name="media_attach_button_background_default">#FFEEEEEE</color>
+    <color name="text_color_deleted">#656565</color>
 
 	<!--**********************************************************************************************************-->
 	<!-- theme-agnostic colors -->

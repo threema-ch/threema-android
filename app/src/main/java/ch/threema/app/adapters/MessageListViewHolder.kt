@@ -23,6 +23,7 @@ package ch.threema.app.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Typeface
 import android.view.View
 import android.view.View.GONE
 import android.view.View.INVISIBLE
@@ -278,11 +279,13 @@ class MessageListViewHolder(
 
         initializeMuteAppearance(messageListAdapterItem)
 
-        initializeHiddenAppearance(isHidden)
-
         initializeDeliveryView(messageListAdapterItem, isHidden, draft != null)
 
         initializeGroupCallIndicator(messageListAdapterItem)
+
+        messageListAdapterItem.latestMessage?.isDeleted?.let { initializeDeletedAppearance(it) }
+
+        initializeHiddenAppearance(isHidden)
 
         AdapterUtil.styleConversation(fromView, params.groupService, messageListAdapterItem.conversationModel)
 
@@ -420,6 +423,16 @@ class MessageListViewHolder(
             deliveryView.visibility = GONE
         } else {
             hiddenStatus.visibility = GONE
+        }
+    }
+
+    private fun initializeDeletedAppearance(isDeleted: Boolean) {
+        if (isDeleted) {
+            subjectView.setText(R.string.message_was_deleted)
+            subjectView.setTextColor(context.resources.getColor(R.color.text_color_deleted))
+            subjectView.setTypeface(subjectView.typeface, Typeface.ITALIC)
+            attachmentView.visibility = GONE
+            deliveryView.visibility = GONE
         }
     }
 

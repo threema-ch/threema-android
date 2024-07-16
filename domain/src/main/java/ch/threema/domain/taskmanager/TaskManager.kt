@@ -87,7 +87,10 @@ internal interface InternalTaskManager {
     /**
      * Start the task runner with the given layer 5 codec.
      */
-    suspend fun startRunningTasks(layer5Codec: Layer5Codec)
+    suspend fun startRunningTasks(
+        layer5Codec: Layer5Codec,
+        incomingMessageProcessor: IncomingMessageProcessor,
+    )
 
     /**
      * Pause running tasks as there is no network connection.
@@ -99,19 +102,20 @@ internal interface InternalTaskManager {
  * The task manager that runs the tasks.
  */
 internal class TaskManagerImpl(
-    private val incomingMessageProcessor: IncomingMessageProcessor,
     taskArchiverCreator: () -> TaskArchiver,
     private val deviceCookieManager: DeviceCookieManager,
     private val dispatchers: TaskManagerDispatchers,
 ) : InternalTaskManager, TaskManager {
     private val queueSendCompleteListeners: MutableSet<QueueSendCompleteListener> = mutableSetOf()
 
+    private var incomingMessageProcessor: IncomingMessageProcessor? = null
+
     /**
      * This is the smart task queue that contains the local tasks as well as the incoming message
      * tasks.
      */
     private val taskQueue by lazy {
-        TaskQueue(incomingMessageProcessor, taskArchiverCreator(), dispatchers)
+        TaskQueue(taskArchiverCreator(), dispatchers)
     }
 
     /**
@@ -128,8 +132,13 @@ internal class TaskManagerImpl(
     )
     override fun getMigrationTaskHandle(): ActiveTaskCodec = taskRunner.value.getTaskCodec()
 
-    override suspend fun startRunningTasks(layer5Codec: Layer5Codec) {
-        taskRunner.value.startTaskRunner(layer5Codec)
+    override suspend fun startRunningTasks(
+        layer5Codec: Layer5Codec,
+        incomingMessageProcessor: IncomingMessageProcessor,
+    ) {
+        this.incomingMessageProcessor = incomingMessageProcessor
+
+        taskRunner.value.startTaskRunner(layer5Codec, incomingMessageProcessor)
     }
 
     override suspend fun pauseRunningTasks() {
@@ -187,11 +196,15 @@ internal class TaskManagerImpl(
         )
 
         when (message.payloadType.toInt()) {
-            ProtocolDefines.PLTYPE_ERROR -> incomingMessageProcessor.processIncomingServerError(
+            ProtocolDefines.PLTYPE_ERROR -> incomingMessageProcessor.get {
+                logger.error("Got inbound server error before task manager has been started")
+            }.processIncomingServerError(
                 message.toServerErrorData()
             )
 
-            ProtocolDefines.PLTYPE_ALERT -> incomingMessageProcessor.processIncomingServerAlert(
+            ProtocolDefines.PLTYPE_ALERT -> incomingMessageProcessor.get {
+                logger.error("Got inbound server alert before task manager has been started")
+            }.processIncomingServerAlert(
                 message.toServerAlertData()
             )
 
@@ -243,6 +256,17 @@ internal class TaskManagerImpl(
                 byteArrayOf()
             )
         )
+    }
+
+    /**
+     * Get the incoming message processor. Otherwise throws an illegal state exception.
+     */
+    private fun IncomingMessageProcessor?.get(runIfNull: () -> Unit = { }): IncomingMessageProcessor {
+        if (this == null) {
+            runIfNull()
+            throw IllegalStateException("Cannot access incoming message queue as it is null")
+        }
+        return this
     }
 
     internal interface TaskManagerDispatcherAsserters {

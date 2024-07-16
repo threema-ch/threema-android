@@ -77,7 +77,6 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -149,7 +148,6 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.PowermanagerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -601,7 +599,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	@Override
 	@ExperimentalBadgeUtils
 	protected void onCreate(Bundle savedInstanceState) {
-		logger.debug("onCreate");
+		logger.info("onCreate");
 
 		final boolean isColdStart = savedInstanceState == null;
 
@@ -916,7 +914,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	@Override
 	protected void onDestroy() {
-		logger.debug("onDestroy");
+		logger.info("onDestroy");
 
 		ThreemaApplication.activityDestroyed(this);
 
@@ -1014,12 +1012,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		}
 
 		boolean isAppStart = savedInstanceState == null;
-
-		if (isAppStart) {
-			if (serviceManager != null) {
-				LocaleUtil.switchToAndroidXPerAppLanguageSelection(this, serviceManager.getPreferenceService());
-			}
-		}
 
 		if (serviceManager != null) {
 			this.userService = this.serviceManager.getUserService();
@@ -1391,7 +1383,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 				@Override
 				protected Drawable doInBackground(Void... params) {
 					Bitmap bitmap = contactService.getAvatar(
-						new ContactModel(userService.getIdentity(), null),
+						// Create "fake" contact model for own user
+						new ContactModel(userService.getIdentity(), userService.getPublicKey()),
 						new AvatarOptions.Builder()
 							.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK)
 							.toOptions()
@@ -1752,7 +1745,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	@Override
 	public void onResume() {
-		logger.debug("onResume");
+		logger.info("onResume");
 
 		if (!isWhatsNewShown) {
 			ThreemaApplication.activityResumed(this);
@@ -1791,7 +1784,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
 	@Override
 	protected void onPause() {
-		logger.debug("onPause");
+		logger.info("onPause");
 
 		super.onPause();
 
