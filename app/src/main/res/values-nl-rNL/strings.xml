@@ -1020,6 +1020,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="open_in_maps_app">Openen in Maps-app</string>
     <string name="delete">Verwijderen</string>
     <string name="delete_for_all">Voor iedereen verwijderen</string>
+    <string name="message_was_deleted">Dit bericht is verwijderd</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
     <string name="whatsnew_title">Wat is er nieuw in %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[

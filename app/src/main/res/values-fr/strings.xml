@@ -1018,7 +1018,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="open_in_maps_app">Ouvrir dans l\'app de cartes</string>
     <string name="delete">Supprimer</string>
     <string name="delete_for_all">Supprimer pour tous</string>
-    <string name="message_was_deleted">Message supprimé</string>
+    <string name="message_was_deleted">Ce message a été supprimé</string>
     <string name="continue_recording">Continuer l\'enregistrement</string>
     <string name="whatsnew_title">Quoi de neuf dans %1$s 5.2 ?</string>
     <string name="whatsnew_headline"><![CDATA[

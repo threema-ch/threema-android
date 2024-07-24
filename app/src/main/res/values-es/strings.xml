@@ -1027,6 +1027,7 @@ almacenado.</string>
     <string name="open_in_maps_app">Abrir en Maps</string>
     <string name="delete">Borrar</string>
     <string name="delete_for_all">Eliminar para todos</string>
+    <string name="message_was_deleted">Este mensaje se ha eliminado</string>
     <string name="continue_recording">Continuar grabando</string>
     <string name="whatsnew_title">Novedades de %1$s 5.2</string>
     <string name="whatsnew_headline"><![CDATA[

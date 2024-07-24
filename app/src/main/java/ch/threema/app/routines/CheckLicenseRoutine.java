@@ -99,7 +99,7 @@ public class CheckLicenseRoutine implements Runnable {
 		} else {
 			userService.setCredentials(licenseService.loadCredentials());
 
-			if(licenseService instanceof LicenseServiceThreema) {
+			if (licenseService instanceof LicenseServiceThreema && BuildFlavor.maySelfUpdate()) {
 				LicenseServiceThreema licenseServiceThreema = (LicenseServiceThreema)licenseService;
 				if (licenseServiceThreema.getUpdateMessage() != null && !licenseServiceThreema.isUpdateMessageShown()) {
 					try {

@@ -1,3 +1,2 @@
-* Improved support for large font sizes
-* Improved the display of notifications with media preview
 * Various bug fixes
+* Fixed a bug that could cause the app to freeze occasionally

@@ -307,6 +307,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="state_dialog_created">Oluşturuldu</string>
     <string name="state_dialog_posted">Gönderildi</string>
     <string name="state_dialog_modified">güncellendi</string>
+    <string name="state_dialog_edited">Düzenlendi</string>
+    <string name="state_dialog_deleted">Silindi</string>
     <string name="state_dialog_status">Durum</string>
     <string name="title_tab_recent">En son</string>
     <string name="no_recent_conversations">Sohbet bulunamadı</string>
@@ -739,6 +741,9 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="data_backup_explain">Veri yedeği şunları içerir:\n\n&#9679; Kimliğiniz ve anahtar çiftiniz \n&#9679; Kişiler ve güven düzeyleri\n&#9679; Grup üyelikleri\n&#9679; Sohbetler\n&#9679; Medya ve dosyalar (isteğe bağlı)\n\nVeriler şifreli bir ZIP dosyasına kaydedilecektir. Yedekleme başarıyla tamamlandıktan sonra dosyayı mevcut cihazdan başka bir depolama birimine taşımanız önerilir.</string>
     <string name="draw">Çiz</string>
     <string name="edit">Düzenle</string>
+    <string name="edit_message">Mesajı düzenle</string>
+    <string name="edited">Düzenlendi</string>
+    <string name="confirm_edit_desc">Düzenlemeyi onayla</string>
     <string name="discard_changes">Değişiklikleri silmek ister misiniz?</string>
     <string name="prefs_title_network">Ağ</string>
     <string name="prefs_title_ipv6_preferred">Mesajlar için IPv6</string>
@@ -1009,6 +1014,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="system_default">Sistem varsayılanı</string>
     <string name="open_in_maps_app">Haritalar uygulamasında aç</string>
     <string name="delete">Sil</string>
+    <string name="delete_for_all">Tümünü sil</string>
+    <string name="message_was_deleted">Bu mesaj silindi</string>
     <string name="continue_recording">Kayda devam et</string>
     <string name="whatsnew_title">%1$s 5.2\'deki yenilikler nelerdir?</string>
     <string name="whatsnew_headline"><![CDATA[<p>Yıldızlı mesajlar: Daha sonra kolayca bulmak için, önemli mesajlara uzun süre dokunarak bir yıldızla işaretleyin.</p>
@@ -1534,6 +1541,11 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="media_gallery_animated_webps">Animasyonlu WebP\'ler</string>
     <string name="unsupported_image_type">Desteklenmeyen görüntü türü: %s</string>
     <string name="application_setup_steps_failed">Kişilerinizin durumunu kontrol etmek için aktif bir internet bağlantısı gereklidir. Lütfen internete bağlı olduğunuzdan emin olun ve tekrar deneyin.</string>
+    <string name="add_contact_failed">Kişi ekleme başarısız oldu</string>
+    <string name="edit_message_not_supported_for_contact">Alıcının uygulama sürümü bu özelliği desteklemediği için mesaj düzenlenemiyor.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Aşağıdaki grup üyeleri düzenlemelerinizi göremeyecek: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Hiçbir grup üyesi bu özelliği destekleyen bir uygulama sürümüne sahip olmadığı için mesaj düzenlenemiyor.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Bu mesaj aşağıdaki grup üyeleri için silinmeyecektir: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>
@@ -1633,8 +1645,8 @@ Daha önce alınan istekler yine de kabul edilebilir veya reddedilebilir.</item>
         <item quantity="other">Son mesajdan bu yana %d mesaj kayboldu.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="one">%d mesaj bu cihazdan silinsin mi?</item>
-        <item quantity="other">%d mesaj bu cihazdan silinsin mi?</item>
+        <item quantity="one">%d mesaj silinsin mi?</item>
+        <item quantity="other">%d mesaj silinsin mi?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="one">%d grup üyesi</item>

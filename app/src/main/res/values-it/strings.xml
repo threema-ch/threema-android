@@ -760,6 +760,9 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="data_backup_explain">I dati di backup contengono:\n\n&#9679; Il tuo ID e la tua coppia di chiavi\n&#9679; Contatti e livelli di fiducia\n&#9679; Iscrizioni ai gruppi\n&#9679; Chat\n&#9679; Media e file (facoltativo)\n\nI dati saranno salvati su un file ZIP criptato. Si raccomanda di non mantenere il file sul dispositivo dopo l\'avvenuta esecuzione del backup.</string>
     <string name="draw">Disegna</string>
     <string name="edit">Modifica</string>
+    <string name="edit_message">Modifica messaggio</string>
+    <string name="edited">Modificato</string>
+    <string name="confirm_edit_desc">Conferma modifica</string>
     <string name="discard_changes">Vuoi eliminare le modifiche?</string>
     <string name="prefs_title_network">Rete</string>
     <string name="prefs_title_ipv6_preferred">IPv6 per messaggi</string>

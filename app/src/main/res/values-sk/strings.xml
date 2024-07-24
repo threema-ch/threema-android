@@ -309,6 +309,8 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="state_dialog_created">Vytvorené</string>
     <string name="state_dialog_posted">Odoslané</string>
     <string name="state_dialog_modified">Aktualizované</string>
+    <string name="state_dialog_edited">Upravená</string>
+    <string name="state_dialog_deleted">Vymazaná</string>
     <string name="state_dialog_status">Status</string>
     <string name="title_tab_recent">Nedávne</string>
     <string name="no_recent_conversations">Žiadne konverzácie</string>
@@ -751,6 +753,9 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="data_backup_explain">Záloha údajov obsahuje:\n\n&#9679; Vaše ID a šifrovacie kľúče\n&#9679; Kontakty a ich úroveň overenia\n&#9679; Členstvo v skupinách\n&#9679; Konverzácie\n&#9679; Média a iné súbory (voliteľné)\n\nÚdaje budú uložené v zašifrovanom ZIP súbore. Po úspešnom vytvorení zálohy doporučujeme presunúť tento súbor do iného zariadenia.</string>
     <string name="draw">Kresliť</string>
     <string name="edit">Upraviť</string>
+    <string name="edit_message">Upraviť správu</string>
+    <string name="edited">Upravená</string>
+    <string name="confirm_edit_desc">Potvrďte úpravu</string>
     <string name="discard_changes">Prajete si zrušiť vykonané zmeny?</string>
     <string name="prefs_title_network">Sieť</string>
     <string name="prefs_title_ipv6_preferred">IPv6 pre správy</string>
@@ -1021,12 +1026,14 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="system_default">Predvolený systémom</string>
     <string name="open_in_maps_app">Otvoriť v aplikácii Mapy</string>
     <string name="delete">Odstrániť</string>
+    <string name="delete_for_all">Vymazať pre všetkých</string>
+    <string name="message_was_deleted">Správa bola vymazaná</string>
     <string name="continue_recording">Pokračovať v nahrávaní</string>
     <string name="whatsnew_title">Čo je nové v %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
 <p>Hviezdičkové správy: </p> <p>Dôležité správy môžete označiť hviezdičkou dlhým ťuknutím, aby ste ich neskôr ľahko našli.</p>
  <p>Automatické vymazanie: Po uplynutí zvoleného času môžete svoje konverzácie automaticky vyčistiť. Funkciu automatického mazania správ môžete aktivovať v správe úložiska.</p>
-  <p>Množstvo ďalších vylepšení a optimalizácií.</p>
+  <p>Množstvo ďalších vylepšení a optimalizácií.</p> 
  ]]></string>
     <string name="tap_to_start">Kliknutím sem spustíte aplikáciu %s.</string>
     <string name="two_years">2 roky</string>
@@ -1546,6 +1553,11 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="media_gallery_animated_webps">Animované WebP</string>
     <string name="unsupported_image_type">Nepodporovaný typ obrázka: %s</string>
     <string name="application_setup_steps_failed">Na kontrolu stavu kontaktov je potrebné aktívne internetové pripojenie. Uistite sa, že ste pripojení k internetu a skúste to znova.</string>
+    <string name="add_contact_failed">Pridanie kontaktu zlyhalo</string>
+    <string name="edit_message_not_supported_for_contact">Správu nemožno upraviť, pretože verzia aplikácie príjemcu túto funkciu nepodporuje.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Nasledujúci členovia skupiny nebudú môcť vidieť vaše úpravy: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Správu nemožno upraviť, pretože žiadny člen skupiny nemá verziu aplikácie, ktorá túto funkciu podporuje.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Táto správa nebude vymazaná pre nasledujúcich členov skupiny: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">kontakty</item>
         <item quantity="many">kontakty</item>
@@ -1689,10 +1701,10 @@ Predtým prijaté žiadosti však možno stále prijať alebo odmietnuť.</item>
         <item quantity="other">Od poslednej správy sa stratilo %d správ.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="few">Odstrániť %d správy v tomto zariadení?</item>
-        <item quantity="many">Odstrániť %d správ v tomto zariadení?</item>
-        <item quantity="one">Odstrániť %d správu v tomto zariadení?</item>
-        <item quantity="other">Odstrániť %d správ v tomto zariadení?</item>
+        <item quantity="few">Odstrániť %d správy?</item>
+        <item quantity="many">Odstrániť %d správ?</item>
+        <item quantity="one">Odstrániť %d správu?</item>
+        <item quantity="other">Odstrániť %d správ?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="few">%d členovia skupiny</item>

@@ -253,7 +253,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					} else {
 						showErrorTextAndExit(IntentDataUtil.getMessage(intent));
 					}
-				} else if (IntentDataUtil.ACTION_UPDATE_AVAILABLE.equals(intent.getAction()) && !ConfigUtils.isWorkBuild() && userService != null && userService.hasIdentity()) {
+				} else if (IntentDataUtil.ACTION_UPDATE_AVAILABLE.equals(intent.getAction()) && BuildFlavor.maySelfUpdate() && userService != null && userService.hasIdentity()) {
+					logger.info("App update available. Opening DownloadApkActivity.");
 					new Handler().postDelayed(() -> {
 						Intent dialogIntent = new Intent(intent);
 						dialogIntent.setClass(HomeActivity.this, DownloadApkActivity.class);

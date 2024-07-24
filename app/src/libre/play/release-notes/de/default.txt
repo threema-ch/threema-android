@@ -1,3 +1,2 @@
-* Verbesserte Unterstützung grosser Schriftgrössen
-* Verbesserte Anzeige von Benachrichtigungen mit Medienvorschau
 * Behebung verschiedener Fehler
+* Behebung eines Fehlers, wodurch die App sporadisch einfrieren konnte

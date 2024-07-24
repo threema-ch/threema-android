@@ -84,6 +84,7 @@ public class WizardFragment2 extends WizardFragment {
 					}
 				}
 			});
+			// TODO(ANDR-3180): Consolidate nickname length
 			nicknameText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(ProtocolDefines.PUSH_FROM_LEN)});
 		}
 		this.nicknameText.setOnKeyListener((v, keyCode, event) -> {
@@ -138,6 +139,14 @@ public class WizardFragment2 extends WizardFragment {
 		if (isResumed()) {
 			WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 			String nickname = callback.getNickname();
+			// If the nickname is longer than allowed, we increase the maximum length of the
+			// nickname edit text because in this case the nickname comes from an external MDM as
+			// there are no other possibilities to add such a long nickname.
+			// Note: This is necessary to prevent a crash when calling 'setSelection'.
+			// TODO(ANDR-3180): Consolidate nickname length
+			if (nickname != null && nickname.length() > ProtocolDefines.PUSH_FROM_LEN) {
+				nicknameText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(nickname.length())});
+			}
 			nicknameText.setText(nickname);
 			if (!TestUtil.empty(nickname)) {
 				nicknameText.setSelection(nickname.length());

@@ -314,6 +314,8 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="state_dialog_created">作成</string>
     <string name="state_dialog_posted">送信</string>
     <string name="state_dialog_modified">更新</string>
+    <string name="state_dialog_edited">編集済</string>
+    <string name="state_dialog_deleted">削除済</string>
     <string name="state_dialog_status">状態</string>
     <string name="title_tab_recent">最近</string>
     <string name="no_recent_conversations">トークが見つかりません</string>
@@ -750,6 +752,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="data_backup_explain">データのバックアップは以下を含みます。\n\n&#9679; あなたの ID とキーのペア\n&#9679; 連絡先と信頼度\n&#9679; グループのメンバー\n&#9679; トーク\n&#9679; メディアとファイル (オプション)\n\nデータは暗号化された ZIP ファイルで保存されます。バックアップが完了したら、端末から他の場所にファイルを移動することを推奨します。</string>
     <string name="draw">描画</string>
     <string name="edit">編集</string>
+    <string name="edit_message">メッセージを編集</string>
+    <string name="edited">編集済</string>
     <string name="discard_changes">変更を削除しますか？</string>
     <string name="prefs_title_network">ネットワーク</string>
     <string name="prefs_title_ipv6_preferred">メッセージに IPv6 を使用</string>
@@ -1019,6 +1023,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="system_default">システム設定</string>
     <string name="open_in_maps_app">マップアプリで開く</string>
     <string name="delete">削除</string>
+    <string name="delete_for_all">全員から削除</string>
+    <string name="message_was_deleted">このメッセージは削除されました</string>
     <string name="continue_recording">録音を続ける</string>
     <string name="whatsnew_title">%1$sのバージョン5.2での新機能は何ですか？</string>
     <string name="whatsnew_headline"><![CDATA[<p>スター付きメッセージ: 重要なメッセージを後で簡単に見つけるために、長押しでスターを付けてください。</p>
@@ -1539,6 +1545,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="edit_and_send">編集して送信</string>
     <string name="media_gallery_animated_webps">アニメーションWebP</string>
     <string name="unsupported_image_type">サポート外の画像形式: %s</string>
+    <string name="add_contact_failed">連絡先の追加が失敗しました</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d 連絡先</item>
     </plurals>

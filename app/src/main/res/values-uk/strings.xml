@@ -17,7 +17,7 @@
     <string name="enter_id_hint">Укажіть ID Threema</string>
     <string name="account_links">Зв\'язані контактні дані</string>
     <string name="menu_settings">Налаштування</string>
-    <string name="menu_about">Про Threema</string>
+    <string name="menu_about">Про додаток Threema</string>
     <string name="menu_add_contact">Додати контакт</string>
     <string name="menu_done">OK</string>
     <string name="compose_message_and_enter">Написати…</string>
@@ -66,7 +66,7 @@
     <string name="prefs_inapp_vibrate">Вібрація в додатку</string>
     <string name="prefs_inapp_vibrate_on">Вібрувати, коли надходить повідомлення</string>
     <string name="prefs_inapp_vibrate_off">Не вібрувати, коли надходить повідомлення</string>
-    <string name="workarounds">Спеціальні рішення</string>
+    <string name="workarounds">Додаткові рішення</string>
     <string name="prefs_title_threema_push_switch">Сервіс Threema Push</string>
     <string name="prefs_sum_threema_push_on">Отримувати push-сповіщення про нові повідомлення через сервіс Threema Push</string>
     <string name="prefs_sum_threema_push_off">Отримувати push-сповіщення про нові повідомлення через системний сервіс</string>
@@ -318,6 +318,8 @@
     <string name="state_dialog_created">Створено</string>
     <string name="state_dialog_posted">Надіслано</string>
     <string name="state_dialog_modified">Оновлено</string>
+    <string name="state_dialog_edited">Відредаговано</string>
+    <string name="state_dialog_deleted">Видалено</string>
     <string name="state_dialog_status">Статус</string>
     <string name="title_tab_recent">Нещодавні</string>
     <string name="no_recent_conversations">Чатів не знайдено</string>
@@ -608,7 +610,7 @@
     <string name="fontsize_xlarge">Дуже великий</string>
     <string name="no_app_for_location">На цьому пристрої не знайдено додаток для карт</string>
     <string name="prefs_sendlog">Надіслати журнал</string>
-    <string name="prefs_sendlog_summary">Надішліть нам файл журналу для подальшого аналізу в разі проблем</string>
+    <string name="prefs_sendlog_summary">Надішліть файл журналу для подальшого аналізу несправності</string>
     <string name="prefs_exportlog">Експортувати журнал</string>
     <string name="prefs_exportlog_summary">Поділіться файлом журналу в іншому додатку</string>
     <string name="permission_storage_required">Щоб зберігати та надсилати медіафайли, надайте Threema доступ до сховища.</string>
@@ -719,7 +721,7 @@
     <string name="error_creating_group">Не вдалося створити або оновити групу</string>
     <string name="no_media_found_generic">У цьому чаті не знайдено відповідні медіафайли.</string>
     <string name="max_images_reached">Макс. кількість об\'єктів для одночасного редагування: %d</string>
-    <string name="enter_description">Опишіть помилку або несправність.</string>
+    <string name="enter_description">Опишіть несправність.</string>
     <string name="add_caption_hint">Додати підпис</string>
     <string name="disable">Вимкнути</string>
     <string name="continue_anyway">Продовжити</string>
@@ -785,6 +787,9 @@
     <string name="data_backup_explain">Резервні копії даних містять:\n\n&#9679; Ваші ID та пару ключів.\n&#9679; Контакти й рівні підтвердження.\n&#9679; Інформацію про участь у групах.\n&#9679; Чати.\n&#9679; Медіа- та інші файли (якщо ви їх додали).\n\nДані буде збережено у вигляді зашифрованого ZIP-файлу. Радимо перемістити цей файл на інший пристрій після завершення резервного копіювання.</string>
     <string name="draw">Малювати</string>
     <string name="edit">Редагувати</string>
+    <string name="edit_message">Редагувати повідомлення</string>
+    <string name="edited">Відредаговано</string>
+    <string name="confirm_edit_desc">Підтвердити зміни</string>
     <string name="discard_changes">Справді відхилити зміни?</string>
     <string name="prefs_title_network">Мережа</string>
     <string name="prefs_title_ipv6_preferred">IPv6 для повідомлень</string>
@@ -1055,6 +1060,8 @@
     <string name="system_default">Налаштування системи</string>
     <string name="open_in_maps_app">Відкрити в додатку для карт</string>
     <string name="delete">Видалити</string>
+    <string name="delete_for_all">Видалити для всіх</string>
+    <string name="message_was_deleted">Це повідомлення видалено</string>
     <string name="continue_recording">Продовжити запис</string>
     <string name="whatsnew_title">Що нового в %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
@@ -1139,7 +1146,7 @@
     <string name="ballot_open">Діючі опитування</string>
     <string name="translators">Перекладачі</string>
     <string name="credits">Подяка</string>
-    <string name="translators_thanks">Ми дуже вдячні нашим перекладачам-волонтерам:\n%s</string>
+    <string name="translators_thanks">Щиро дякуємо нашим перекладачам-волонтерам:\n%s</string>
     <string name="ballot_window_hide">Приховати діючі опитування</string>
     <string name="ballot_window_show">Показати діючі опитування</string>
     <string name="single_ballot_really_delete">Видалити це опитування</string>
@@ -1235,7 +1242,7 @@
     <string name="group_request_confirm_send"><![CDATA[Ви збираєтеся надіслати запит на приєднання до групи <b>%1$s</b> адміністратору <b>%2$s</b>. Якщо це посилання дійсне, вас буде додано до групи автоматично, щойно ваш запит надійде на пристрій адміністратора.]]></string>
     <string name="really_delete_group_request_title_singular">Видалити запит на приєднання</string>
     <string name="really_delete_group_request_title_plural">Видалити запити на приєднання</string>
-    <string name="sent_to">Одержувач: %s</string>
+    <string name="sent_to">Отримувач: %s</string>
     <string name="sent_on">Надіслано: %s</string>
     <string name="group_response">Відповідь на запит на приєднання</string>
     <string name="group_response_accepted">Ваш запит на приєднання до групи \"%s\" прийнято</string>
@@ -1499,7 +1506,7 @@
     <string name="prefs_dynamic_colors">Динамічний колір</string>
     <string name="prefs_dynamic_colors_sum">Використовувати кольори системи</string>
     <string name="apply_changes">Застосувати зміни</string>
-    <string name="prefs_threema_work_summary">Чи знали ви, що в компанії Threema також є рішення для робочого спілкування? Натисніть тут, щоб дізнатися більше про Threema Work.</string>
+    <string name="prefs_threema_work_summary">Шукаєте рішення для робочого спілкування? Натисніть тут, щоб дізнатися більше про Threema Work.</string>
     <string name="notification_channel_voice_message_player">Програвач голосових повідомлень</string>
     <string name="voice_message_from">Голосове повідомлення від \"%s\"</string>
     <string name="vm_fg_service_not_allowed">Помилка відтворення голосового повідомлення</string>
@@ -1582,6 +1589,11 @@
     <string name="media_gallery_animated_webps">Анімовані WebP</string>
     <string name="unsupported_image_type">Непідтримуваний тип зображення: %s</string>
     <string name="application_setup_steps_failed">Щоб перевірити стан ваших контактів, потрібно активне з\'єднання з Інтернетом. Переконайтеся, що ваш пристрій підключено до Інтернету, і повторіть спробу.</string>
+    <string name="add_contact_failed">Не вдалося додати контакт</string>
+    <string name="edit_message_not_supported_for_contact">Неможливо редагувати повідомлення, оскільки в отримувача встановлено версію додатка, яка не підтримує цю функцію.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Ваші зміни не бачитимуть такі учасники групи: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Неможливо редагувати повідомлення, оскільки в жодного з учасників групи не встановлено версію додатка, яка підтримує цю функцію.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Це повідомлення не буде видалено для таких учасників групи: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакти</item>
         <item quantity="many">%d контактів</item>
@@ -1731,10 +1743,10 @@
         <item quantity="other">З моменту отримання останнього повідомлення було втрачено %d повідомлення.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="few">Видалити %d повідомлення на цьому пристрої?</item>
-        <item quantity="many">Видалити %d повідомлень на цьому пристрої?</item>
-        <item quantity="one">Видалити %d повідомлення на цьому пристрої?</item>
-        <item quantity="other">Видалити %d повідомлення на цьому пристрої?</item>
+        <item quantity="few">Видалити %d повідомлення?</item>
+        <item quantity="many">Видалити %d повідомлень?</item>
+        <item quantity="one">Видалити %d повідомлення?</item>
+        <item quantity="other">Видалити %d повідомлення?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="few">%d учасники групи</item>

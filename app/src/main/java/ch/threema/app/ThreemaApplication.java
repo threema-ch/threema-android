@@ -1489,6 +1489,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 		}, THREEMA_APPLICATION_LISTENER_TAG);
 
 		ListenerManager.editMessageListener.add(message -> showConversationNotification(message, true));
+		ListenerManager.messageDeletedForAllListener.add(message -> showConversationNotification(message, true));
 
 		ListenerManager.groupJoinResponseListener.add((outgoingGroupJoinRequestModel, status) -> {
 			NotificationService n = serviceManager.getNotificationService();

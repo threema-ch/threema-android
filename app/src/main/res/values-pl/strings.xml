@@ -1034,7 +1034,7 @@ anonimowo?</string>
     <string name="open_in_maps_app">Otwórz w aplikacji Mapy</string>
     <string name="delete">Usuń</string>
     <string name="delete_for_all">Usuń dla wszystkich</string>
-    <string name="message_was_deleted">Wiadomość skasowana</string>
+    <string name="message_was_deleted">Ta wiadomość została usunięta</string>
     <string name="continue_recording">Kontynuuj nagrywanie</string>
     <string name="whatsnew_title">Co nowego w %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[

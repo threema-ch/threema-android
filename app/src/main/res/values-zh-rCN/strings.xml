@@ -316,6 +316,8 @@
     <string name="state_dialog_created">已创建</string>
     <string name="state_dialog_posted">已发送</string>
     <string name="state_dialog_modified">已更新</string>
+    <string name="state_dialog_edited">已编辑</string>
+    <string name="state_dialog_deleted">已删除</string>
     <string name="state_dialog_status">状态</string>
     <string name="title_tab_recent">最近</string>
     <string name="no_recent_conversations">找不到会话记录</string>
@@ -775,6 +777,9 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="data_backup_explain">数据备份包含：\n\n&#9679; 您的ID和密钥对\n&#9679; 联系人和信任级别\n&#9679; 群组成员资格\n&#9679; 会话\n&#9679; 媒体和文件（可选）\n\n数据将保存到加密的 ZIP 文件中。建议备份成功完成后，将文件保存到其他地方。</string>
     <string name="draw">绘画</string>
     <string name="edit">编辑</string>
+    <string name="edit_message">编辑消息</string>
+    <string name="edited">已编辑</string>
+    <string name="confirm_edit_desc">确认编辑</string>
     <string name="discard_changes">您要放弃更改吗？</string>
     <string name="prefs_title_network">网络</string>
     <string name="prefs_title_ipv6_preferred">以 IPv6 发送消息</string>
@@ -1045,10 +1050,12 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="system_default">系统默认</string>
     <string name="open_in_maps_app">在地图应用中打开</string>
     <string name="delete">删除</string>
+    <string name="delete_for_all">为所有人删除</string>
+    <string name="message_was_deleted">此消息已删除</string>
     <string name="continue_recording">继续录音</string>
     <string name="whatsnew_title">%1$s 5.2 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p>
-<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p>
+    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p> 
+<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p> 
 <p>这次更新还有大量其他改进和优化。</p> ]]></string>
     <string name="whatsnew2_title">" "</string>
     <string name="whatsnew2_body">" "</string>
@@ -1570,6 +1577,11 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="media_gallery_animated_webps">动画 WebP 文件</string>
     <string name="unsupported_image_type">不支持的图像类型：%s</string>
     <string name="application_setup_steps_failed">检查联系人状态需要有效的互联网连接。请确保您已连接到互联网，然后重试。</string>
+    <string name="add_contact_failed">添加联系人失败</string>
+    <string name="edit_message_not_supported_for_contact">由于对方使用的应用版本不支持编辑消息功能，因此无法编辑消息。</string>
+    <string name="edit_message_not_supported_for_all_group_members">以下群组成员将无法看到您对消息的编辑：%1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">由于有部分群组成员使用的应用版本不支持编辑消息功能，因此无法编辑消息。</string>
+    <string name="delete_message_not_supported_for_all_group_members">此消息不会为以下群组成员删除：%1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>
@@ -1646,7 +1658,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
         <item quantity="other">自上一条消息以来，已丢失%d条消息。</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="other">删除此设备上的%d条消息？</item>
+        <item quantity="other">删除%d条消息？</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="other">%d个群组成员</item>

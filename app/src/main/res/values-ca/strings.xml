@@ -1001,7 +1001,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="system_default">Igual que el sistema</string>
     <string name="open_in_maps_app">Obrir a l\'App de mapes</string>
     <string name="delete">Eliminar</string>
-    <string name="message_was_deleted">Missatge(s) esborrat(s)</string>
     <string name="continue_recording">Continuar gravant</string>
     <string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
     <string name="two_years">2 anys</string>

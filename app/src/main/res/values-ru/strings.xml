@@ -306,7 +306,7 @@
     <string name="state_dialog_created">Создано</string>
     <string name="state_dialog_posted">Отправлено</string>
     <string name="state_dialog_modified">Обновлено</string>
-    <string name="state_dialog_edited">Отредакт.</string>
+    <string name="state_dialog_edited">Изменено</string>
     <string name="state_dialog_deleted">Удалено</string>
     <string name="state_dialog_status">Статус</string>
     <string name="title_tab_recent">Последний</string>
@@ -744,7 +744,7 @@
     <string name="draw">Рисовать</string>
     <string name="edit">Редактировать</string>
     <string name="edit_message">Изменить сообщение</string>
-    <string name="edited">Отредакт.</string>
+    <string name="edited">Изменено</string>
     <string name="confirm_edit_desc">Подтвердите изменение</string>
     <string name="discard_changes">Отменить изменения?</string>
     <string name="prefs_title_network">Сеть</string>
@@ -1017,7 +1017,7 @@
     <string name="open_in_maps_app">Открыть в приложении «Карты»</string>
     <string name="delete">Удалить</string>
     <string name="delete_for_all">Удалить для всех</string>
-    <string name="message_was_deleted">Сообщение удалено</string>
+    <string name="message_was_deleted">Это сообщение удалено</string>
     <string name="continue_recording">Продолжить запись</string>
     <string name="whatsnew_title">Что нового в версии %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[

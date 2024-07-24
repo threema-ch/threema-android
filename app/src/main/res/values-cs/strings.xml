@@ -306,6 +306,8 @@
     <string name="state_dialog_created">Vytvořeno</string>
     <string name="state_dialog_posted">Odesláno</string>
     <string name="state_dialog_modified">Aktualizováno</string>
+    <string name="state_dialog_edited">Upraveno</string>
+    <string name="state_dialog_deleted">Odstraněno</string>
     <string name="state_dialog_status">Stav</string>
     <string name="title_tab_recent">Nedávné</string>
     <string name="no_recent_conversations">Konverzace nenalezeny</string>
@@ -743,6 +745,9 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="data_backup_explain">Zálohovaná data obsahují: \n\n&#9679; Vaše ID a šifrovací klíče \n&#9679; Kontakty a jejich úrovně ověření \n&#9679; Členství ve skupinách \n&#9679; Konverzace \n&#9679; Obrázky a jiné soubory (volitelné)\n\nData budou uložena do šifrovaného souboru ZIP. Po úspěšném vytvoření zálohy doporučujeme tento soubor překopírovat do jiného zařízení.</string>
     <string name="draw">Kreslit</string>
     <string name="edit">Upravit</string>
+    <string name="edit_message">Upravit zprávu</string>
+    <string name="edited">Upraveno</string>
+    <string name="confirm_edit_desc">Potvrdit úpravu</string>
     <string name="discard_changes">Přejete si zahodit provedené změny?</string>
     <string name="prefs_title_network">Síť</string>
     <string name="prefs_title_ipv6_preferred">IPv6 pro zprávy</string>
@@ -1013,6 +1018,8 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="system_default">Systémové nastavení</string>
     <string name="open_in_maps_app">Otevřít v aplikaci Mapy</string>
     <string name="delete">Odstranit</string>
+    <string name="delete_for_all">Odstranit u všech</string>
+    <string name="message_was_deleted">Tato zpráva byla odstraněna</string>
     <string name="continue_recording">Pokračovat v nahrávání</string>
     <string name="whatsnew_title">Co je nového v aplikaci %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
@@ -1538,6 +1545,11 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="media_gallery_animated_webps">Animované WebP</string>
     <string name="unsupported_image_type">Nepodporovaný typ obrázku: %s</string>
     <string name="application_setup_steps_failed">Ke kontrole stavu vašich kontaktů je vyžadováno aktivní připojení k Internetu. Ujistěte se prosím, že jste připojeni k Internetu a zkuste to znovu.</string>
+    <string name="add_contact_failed">Přidání kontaktu se nezdařilo</string>
+    <string name="edit_message_not_supported_for_contact">Zprávu nelze upravit, protože verze aplikace příjemce tuto funkci nepodporuje.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Následující členové skupiny nebudou moci vidět vaše úpravy: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Zprávu nelze upravit, protože žádný z členů skupiny nemá verzi aplikace, která podporuje tuto funkci.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Tato zpráva nebude smazána pro následující členy skupiny: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>
@@ -1683,10 +1695,10 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
         <item quantity="other">%d zpráv bylo ztraceno od poslední zprávy.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="few">Odstranit %d zprávy z tohoto zařízení?</item>
-        <item quantity="many">Odstranit %d zpráv z tohoto zařízení?</item>
-        <item quantity="one">Odstranit %d zprávu z tohoto zařízení?</item>
-        <item quantity="other">Odstranit %d zpráv z tohoto zařízení?</item>
+        <item quantity="few">Odstranit %d zprávy?</item>
+        <item quantity="many">Odstranit %d zpráv?</item>
+        <item quantity="one">Odstranit %d zprávu?</item>
+        <item quantity="other">Odstranit %d zpráv?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="few">%d členové skupiny</item>

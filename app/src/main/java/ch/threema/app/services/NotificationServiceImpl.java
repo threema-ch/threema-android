@@ -753,7 +753,17 @@ public class NotificationServiceImpl implements NotificationService {
 
 			builder.setContentIntent(openPendingIntent);
 
-			this.notify(newestGroup.getNotificationId(), builder, notificationSchema, NOTIFICATION_CHANNEL_CHAT);
+			if (updateExisting) {
+				List<StatusBarNotification> notifications = notificationManagerCompat.getActiveNotifications();
+				for (StatusBarNotification notification : notifications) {
+					if (notification.getId() == newestGroup.getNotificationId()) {
+						NotificationServiceImpl.this.notify(newestGroup.getNotificationId(), builder, notificationSchema, NOTIFICATION_CHANNEL_CHAT);
+						break;
+					}
+				}
+			} else {
+				this.notify(newestGroup.getNotificationId(), builder, notificationSchema, NOTIFICATION_CHANNEL_CHAT);
+			}
 
 			logger.info("Showing notification {} sound: {}",
 				conversationNotification.getUid(),

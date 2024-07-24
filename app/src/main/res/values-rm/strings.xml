@@ -65,6 +65,7 @@
     <string name="prefs_inapp_vibrate">Vibrar en l\'app</string>
     <string name="prefs_inapp_vibrate_on">Activar la vibraziun cun retschaiver in messadi</string>
     <string name="prefs_inapp_vibrate_off">Nagina vibraziun cura che jau retschaiv in messadi</string>
+    <string name="workarounds">Soluziuns</string>
     <string name="prefs_title_threema_push_switch">Duvrar Threema Push</string>
     <string name="prefs_sum_threema_push_on">Duvrar Threema Push per survegnir infurmaziuns davart novs messadis</string>
     <string name="prefs_sum_threema_push_off">Controllar, sch\'i dat novs messadis cun agid dal servetsch push dal sistem</string>
@@ -108,6 +109,7 @@
     <string name="cancel">Interrumper</string>
     <string name="copy_message_action">Copiar</string>
     <string name="delete_contact_action">Stizzar il contact</string>
+    <string name="delete_multiple_contact_action">Stizzar ils contacts</string>
     <string name="scan_id">Scannar l\'ID</string>
     <string name="id_scanned">Scannà l\'ID</string>
     <string name="id_mismatch">La clav publica che ti has scannà na correspundà betg a la clav ch\'il server ha registrà per quest contact. Quai pudess esser in cas da manipulaziun che periclitescha la communicaziun. P.pl. annunziar quest cas a security@threema.ch e sche pussaivel inditgar l\'ID e las circumstanzas.</string>
@@ -124,6 +126,7 @@
     <string name="whoaaa">Avis</string>
     <string name="really_delete_message_title">Stizzar il(s) messadi(s)</string>
     <string name="really_delete_thread">Stizzar il chat</string>
+    <string name="really_delete_multiple_threads">Stizzar ils chats</string>
     <string name="really_delete_contact">Vuls ti propi stizzar quest contact e tut ils chats cun quel?</string>
     <string name="image_placeholder">Maletg</string>
     <string name="invalid_threema_id">L\'ID da Threema è nunvalaivla</string>
@@ -199,6 +202,7 @@
     <string name="unlinking_email">La colliaziun vegn allontanada</string>
     <string name="unlink">Allontanar</string>
     <string name="threema_version">Versiun</string>
+    <string name="threema_version_code">Code da la versiun</string>
     <string name="wrong_backupid_or_password_or_no_internet_connection">Nagina colliaziun d\'internet, backup da l\'ID nunvalaivel u pled-clav fallà.</string>
     <string name="prefs_header_other">Auter</string>
     <string name="an_error_occurred">Igl ha dà in\'errur</string>
@@ -407,6 +411,12 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="media_gallery_pictures">Maletgs</string>
     <string name="media_gallery_videos">Videos</string>
     <string name="group_membership_title">Commember da questas gruppas</string>
+    <string name="group_description">Descripziun da la gruppa</string>
+    <string name="change_group_description">Midar la descripziun da la gruppa</string>
+    <string name="add_group_description">Agiuntar ina descripziun da la gruppa</string>
+    <string name="read_more">leger dapli</string>
+    <string name="read_less">leger damain</string>
+    <string name="changed_group_desc_date">"Mid\u00e0 sco ultim: "</string>
     <string name="num_items_sected">Tschernì %s</string>
     <string name="really_delete_media">Vuls ti propi stizzar quest(s) %d messadi(s) da medias?</string>
     <string name="check_updates">Tschertgar updates</string>
@@ -468,6 +478,9 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="video_size_large">Bass (mesauna quantitad da datas)</string>
     <string name="video_size_original">Nagina (gronda quantitad da datas)</string>
     <string name="prefs_video_size">Cumprimaziun dal video</string>
+    <string name="menu_video_size_small">Grondezza pitschna</string>
+    <string name="menu_video_size_medium">Grondezza mesauna</string>
+    <string name="menu_video_size_large">Grondezza originala</string>
     <string name="show_contact">Mussar il contact</string>
     <string name="chat_with">Chat cun %1$s</string>
     <string name="kick_user_from_group">Allontanar %1$s da la gruppa</string>
@@ -482,11 +495,13 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="really_remove_wallpapers">Vuls ti propi allontanar tut ils maletgs dal fund davos?</string>
     <string name="wallpapers_removed">Allontanà ils maletgs dal fund davos</string>
     <string name="invalid_backup">Las datas dal backup èn nunvalaivlas. I n\'è betg pussaivel da restaurar.</string>
+    <string name="invalid_zip_restore_failed">Betg reussì da restaurar: datoteca da backup nunvalaivla: %1$s</string>
     <string name="revocation_explain">Il pled-clav che ti endateschas qua pussibilitescha a tai da revocar tia ID sut https://myid.threema.ch/revoke, sche ti l\'has pers u sch\'ella è vegnida engulada.</string>
     <string name="no_unread_messages">Nagins messadis betg legids u bloccada cun PIN activada</string>
     <string name="send_media">Trametter maletgs</string>
     <string name="rotate">Volver</string>
     <string name="remove">Allontanar</string>
+    <string name="item_already_added">Ti has gia tschernì questa datoteca.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">(Almain %d segns)</string>
     <string name="mark_read">Marcar sco legì</string>
     <string name="attach_document">Datoteca</string>
@@ -613,6 +628,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="new_wizard_info_fingerprint">Cun muventar il det creeschas ti datas casualas (in\'uschenumnada entropia) che vegnan utilisadas per crear il pèr da clavs. Quest pèr da clavs vegn collia cun tia nova ID da Threema. El consista d\'ina <b>clav publica</b> che vegn repartida a tes amis e d\'ina <b>clav privata</b> che resta sin tes apparat. Tar tes amis vegn la clav publica utilisada per codar messadis a tai. Mo il possessur da la clav privata e nagin auter na po decodar ils messadis.</string>
     <string name="new_wizard_info_id">Ti has creà cun l\'ID da Threema in pèr da clavs. La clav publica è vegnida tramessa a noss server. La clav privata na banduna mai tes apparat. Quai garantescha che nagin auter na po leger tes messadis.</string>
     <string name="new_wizard_info_sync_contacts">Sche ti activeschas questa opziun, vegnan adressas dad e-mail e numers da telefon da tes cudesch d\'adressas codads en furma da diever unic (furma da hash) avant ch\'els vegnan tramess al server per cumparegliar cun il contact. Nus n\'arcunain naginas datas da cudeschs d\'adressas.</string>
+    <string name="new_wizard_info_sync_contacts_dialog">La sincronisaziun dals contacts gida tai a chattar automaticamain tias amias e tes amis. Sche ti es d\'accord, vegn tes numer da telefonin e tia adressa dad e-mail tramessa a moda codada a noss server e là cumparegliada per chattar contacts correspundents. Las datas na vegnan ni memorisadas ni dadas vinavant.\n\nVuls ti activar la sincronisaziun dals contacts?</string>
     <string name="new_wizard_info_link">Sche ti inditgescha tes numer da telefonin e/u tia adressa dad e-mail, po Threema gidar tes amis da ta chattar automaticamain, sche ti es registrà en lur cudeschs d\'adressas. Las adressas dad e-mail vegnan memorisadas en furma da diever unic (furma da hash) sin noss server. Ti pos era sursiglir quest pass, sche ti vuls utilisar anonimamain Threema.</string>
     <string name="new_wizard_info_link_phone_only">Sche ti inditgescha tes numer da telefonin, po Threema gidar tes amis da ta chattar automaticamain, sche ti es registrà en lur cudeschs d\'adressas. Il numer vegn memorisadas en furma da diever unic (furma da hash) sin noss server. Ti pos era sursiglir quest pass, sche ti vuls utilisar anonimamain Threema.</string>
     <string name="new_wizard_info_nickname">Il surnum vegn visualisà sin insaquants apparats en avis e serva en la glista da contacts sco ulteriura pussaivladad d\'identifitgar partenaris da chat che ti n\'has betg en tia glista dals contacts. Nus cussegliain da duvrar sulettamain il prenum u in pseudonim. Sche ti na tschernas betg in surnum, vegn utilisada tia ID da Threema.</string>
@@ -636,6 +652,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="backup_data">Datas</string>
     <string name="really_leave_group_admin_message">Ti es l\'administratur da questa gruppa. Sche ti la bandunas ussa, pon ils auters commembers  scriver vinavant en il chat, ma els na pon far naginas midadas pli.</string>
     <string name="action_delete_group">Stizzar la gruppa</string>
+    <string name="action_leave_and_delete_group">Bandunar e stizzar la gruppa</string>
+    <string name="action_dissolve_and_delete_group">Annullar e stizzar la gruppa</string>
     <string name="delete_my_group_message">Vuls ti stizzar cumplettamain questa gruppa? Tut ils messadis vegnan allontanads ed ils commembers restants na pon betg pli utilisar la gruppa.</string>
     <string name="error_out_of_memory">Memia pauca capacitad libra per exequir questa acziun</string>
     <string name="configure">Configurar</string>
@@ -720,6 +738,9 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="data_backup_explain">"In backup da las datas segirescha:\n\n&#9679; ID e pèr da clavs\n&#9679; contacts e status da confidenza\n&#9679; commembranzas da las gruppas\n&#9679; chats\n&#9679; medias e datotecas (opziunal)\n\nLas datas vegnan segiradas en in ZIP codà. Il backup duess alura vegnir memorisà en in lieu adattà ordaifer l'apparat. "</string>
     <string name="draw">dissegnar</string>
     <string name="edit">Elavurar</string>
+    <string name="edit_message">Elavurar il messadi</string>
+    <string name="edited">Elavurà</string>
+    <string name="confirm_edit_desc">Confermar l\'elavuraziun</string>
     <string name="discard_changes">Vuls ti stizzar las midadas?</string>
     <string name="prefs_title_network">Rait</string>
     <string name="prefs_title_ipv6_preferred">IPv6 per messadis</string>
@@ -904,6 +925,10 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="empty_chat_title">Svidar il chat</string>
     <string name="empty_chat_confirm">Tut ils messadis en quest chat vegnan stizzads. Cuntinuar?</string>
     <string name="emptying_chat">Il chat vegn svidà</string>
+    <string name="emptying_chat_deleting_messages">Ils messadis vegnan stizzads ...</string>
+    <string name="delete_chat_title">Stizzar il chat</string>
+    <string name="delete_chat_confirm">Tut ils messadis en quest chat vegnan allontanads ed il chat vegn stizzà. Cuntinuar?</string>
+    <string name="deleting_chat">Il chat vegn stizzà</string>
     <string name="set_private">Zuppar il chat</string>
     <string name="unset_private">Mussar il chat</string>
     <string name="delete_group_message">Vuls ti stizzar cumplettamain questa gruppa? Tut ils commembers vegnan allontanads.</string>
@@ -986,6 +1011,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="system_default">Standard</string>
     <string name="open_in_maps_app">Avrir en l\'app Maps</string>
     <string name="delete">Stizzar</string>
+    <string name="delete_for_all">Stizzar per tuts</string>
     <string name="continue_recording">Registrar vinavant</string>
     <string name="tap_to_start">Smatga qua per aviar uss %s.</string>
     <string name="two_years">2 onns</string>
@@ -1065,6 +1091,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="translators_thanks">Grazia fitg a noss translaturs en uffizi d\'onur:\n%s</string>
     <string name="ballot_window_hide">Zuppentar las enquistas avertas</string>
     <string name="ballot_window_show">Mussar las enquistas avertas</string>
+    <string name="single_ballot_really_delete">Stizzar questa enquista</string>
+    <string name="single_ballot_really_delete_text">Vuls ti propi stizzar questa enquista? Las respostas na pon betg pli vegnir restauradas.</string>
     <string name="tooltip_voip_other_party_video_on">Tes partenari da discurs ha cumenzà in videotelefonat. Smatga qua per medemamain activar la camera.</string>
     <string name="tooltip_voip_other_party_video_disabled">Tes partenari da discurs utilisescha ina versiun da l\'app betg actuala u na permetta nagins videotelefonats.</string>
     <string name="biometrics_not_enrolled">Deponì naginas datas biometricas en il sistem.</string>
@@ -1122,6 +1150,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="blur_faces">Disfar las fatschas</string>
     <string name="brush">Penel</string>
     <string name="pencil">Rispli</string>
+    <string name="highlighter">Relevatur</string>
     <string name="error_detecting_faces">Igl ha dà in\'errur tar l\'identificaziun da fatschas</string>
     <string name="no_faces_detected">Chattà naginas fatschas</string>
     <string name="smiley">Smiley</string>
@@ -1153,6 +1182,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="group_request_already_sent"><![CDATA[Ti has gia tramess ina dumonda da gruppa a <b>%s</b> e spetgas ina resposta da l\'administratur. Clicca sin la dumonda sin la glista, sche ti vuls trametter anc ina giada la dumonda. ]]></string>
     <string name="group_link_none">Anc betg generà ina colliaziun</string>
     <string name="group_request_confirm_send"><![CDATA[Ti es per trametter a l\'administratur <b>%2$s</b> ina dumonda da gruppa per <b>%1$s</b>. Sche questa colliaziun n\'è betg vegnida invalidada en il fratemp, vegns ti agiuntà a la gruppa, uschespert che l\'apparat da l\'admin è cuntanschibel.]]></string>
+    <string name="really_delete_group_request_title_singular">Stizzar la dumonda da gruppa</string>
+    <string name="really_delete_group_request_title_plural">Stizzar las dumondas da gruppa</string>
     <string name="sent_to">Tramess a: %s</string>
     <string name="sent_on">Tramess il(s): %s</string>
     <string name="group_response">Resposta a la dumonda da gruppa</string>
@@ -1246,6 +1277,7 @@ Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'
     <string name="group_links_manage_menu">Administrar las colliaziuns da gruppa</string>
     <string name="group_request_sent_menu">Dumonda da gruppa tramessa</string>
     <string name="really_delete_group_link_title">Stizzar las colliaziuns da gruppa</string>
+    <string name="really_delete_multiple_group_links_title">Stizzar colliaziuns da gruppa</string>
     <string name="qr_scan_result_dialog_title">Resultat dal scan QR</string>
     <string name="scan_failure_dialog_title">Betg reussì da scannar</string>
     <string name="no_threema_qr_info">Quai n\'è betg in code QR da Threema. Il cuntegn decodà è:</string>
@@ -1325,6 +1357,13 @@ Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'
     <string name="tooltip_multiple_recipients_title">Plirs destinaturs</string>
     <string name="tooltip_multiple_recipients_text">Tippar ditg per tscherner plirs destinaturs e trametter a tuts il medem messadi.</string>
     <string name="synchronizing">Sincronisaziun …</string>
+    <string name="forward_security">Trametter ils messadis cun Perfect Forward Secrecy</string>
+    <string name="forward_security_mode">Perfect Forward Secrecy</string>
+    <string name="forward_security_mode_none">nagins</string>
+    <string name="clear_forward_security">Stizzar las sesidas da Perfect Forward Secrecy</string>
+    <string name="clear_forward_security_warning">Exequescha questa acziun mo, sch’il support da Threema ta ha dumandà explicitamain da far quai.</string>
+    <string name="forward_security_cleared">Stizzà las sesidas da Perfect Forward Secrecy cun quest contact</string>
+    <string name="message_without_forward_security">Survegnì in messadi senza Perfect Forward Secrecy. Verifitgescha ch\'il speditur haja deactivà cun intenziun Perfect Forward Secrecy.</string>
     <string name="self_updater_installation_failed">Betg reussì da chargiar giu l\'update. P.pl. chargiar giu l\'update da la pagina-web <a href="https://shop.threema.ch/download">https://shop.threema.ch/download</a> ed installar el manualmain.</string>
     <string name="spam_first_contact">Quest chat deriva d\'in contact nunenconuschent</string>
     <string name="spam_report">Annunziar spam</string>

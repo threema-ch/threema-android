@@ -18,9 +18,7 @@
     devices. -->
 	<uses-feature
 		android:glEsVersion="0x00030000"
-		android:required="false"
-        tools:node="remove"
-        tools:selector="org.maplibre.android"/>
+        tools:node="remove"/>
 
 	<!-- DANGEROUS PERMISSIONS -->
 	<!-- android.permission-group.CONTACTS -->
