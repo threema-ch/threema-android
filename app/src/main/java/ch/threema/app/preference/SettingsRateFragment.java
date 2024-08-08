@@ -22,11 +22,8 @@
 package ch.threema.app.preference;
 
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
@@ -133,32 +130,9 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 			case NONE:
 				return true;
 			case GOOGLE_WORK:
-				return isInstalledFromPlayStore();
+				return ConfigUtils.isInstalledFromPlayStore(getAppContext());
 			default:
 				return false;
-		}
-	}
-
-	private boolean isInstalledFromPlayStore() {
-		Context context = getAppContext();
-		if (context == null) {
-			logger.warn("Could not get app context.");
-			return false;
-		}
-
-		try {
-			String installerPackageName;
-			PackageManager packageManager = context.getPackageManager();
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-				installerPackageName = packageManager.getInstallSourceInfo(context.getPackageName()).getInstallingPackageName();
-			} else {
-				installerPackageName = packageManager.getInstallerPackageName(context.getPackageName());
-			}
-
-			return "com.android.vending".equals(installerPackageName);
-		} catch (Exception e) {
-			logger.error("Could not determine package source", e);
-			return false;
 		}
 	}
 }

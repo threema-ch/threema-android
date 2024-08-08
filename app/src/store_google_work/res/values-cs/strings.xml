@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema Work pro Android</string>
-    <string name="enter_serial_body">Threema Work je messenger pro firmy. Zadejte pověření poskytnutá vaší společností nebo organizací.</string>
+    <string name="enter_serial_body">Zadejte prosím přihlašovací údaje společnosti Threema Work poskytnuté vaší společností.</string>
     <string name="serial_required_want_exit">Licence je neplatná. Chcete to zkusit znovu nebo aplikaci Threema Work ukončit?</string>
     <string name="checking_serial">Kontrola pověření</string>
     <string name="username_hint">Uživatelské jméno</string>
@@ -17,7 +17,6 @@
     <string name="new_wizard_info_link">Poskytnete‑li svoje telefonní číslo a e‑mailovou adresu, Threema Work může vašim kontaktům zajistit automatické přidání vašeho ID do jejich adresářů. Data budou uložena jednosměrně šifrovaná (hashovaná) na našem serveru. Tento krok můžete přeskočit, pokud chcete používat funkci Threema Work zcela anonymně. Toto nastavení lze později změnit.</string>
     <string name="threema_contact">Threema Work kontakt</string>
     <string name="menu_about">O aplikaci Threema Work</string>
-    <string name="private_threema_download"><![CDATA[ <a href=%1$s>Zjistěte více o Threema Work</a> <br/><br/> Pro osobní použití prosím <a href=%2$s>klepněte sem</a> pro stažení aplikace Threema.]]></string>
     <string name="directory_search">Hledat v adresáři</string>
     <string name="directory_title">Adresář společnosti</string>
     <string name="directory_empty_view_text">Chcete‑li zahájit vyhledávání v adresáři uživatelů Threema Work ve vaší společnosti, zadejte alespoň 3 znaky jména, nebo vyberte kategorii klepnutím na ikonu filtru.</string>

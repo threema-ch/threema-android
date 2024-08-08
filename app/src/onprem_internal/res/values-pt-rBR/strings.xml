@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema OnPrem para Android</string>
-    <string name="enter_serial_body">Insira as credenciais fornecidas por sua empresa ou organização</string>
+    <string name="enter_serial_body">Insira as credenciais do Threema OnPrem fornecidas pela sua empresa.</string>
     <string name="serial_required_want_exit">A licença é inválida. Você gostaria de tentar novamente ou sair do Threema OnPrem?</string>
     <string name="checking_serial">Verificando credenciais</string>
     <string name="username_hint">Nome de usuário</string>
@@ -22,7 +22,6 @@
 antes de enviá-los ao servidor para procurar contatos correspondentes. Os dados são mantidos apenas na memória e nunca armazenados no servidor.</string>
     <string name="threema_contact">Contato do Threema OnPrem</string>
     <string name="menu_about">Sobre o Threema OnPrem</string>
-    <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Para usuários privados</a>]]></string>
     <string name="directory_search">Pesquisar no diretório</string>
     <string name="directory_title">Diretório da empresa</string>
     <string name="directory_empty_view_text">Insira pelo menos 3 caracteres de um nome para começar a pesquisar no diretório de usuários do Threema OnPrem da sua empresa</string>

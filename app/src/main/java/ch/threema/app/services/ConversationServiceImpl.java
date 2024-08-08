@@ -167,6 +167,7 @@ public class ConversationServiceImpl implements ConversationService {
 		ListenerManager.conversationListeners.handle(listener -> listener.onRemoved(conversationModel));
 	}
 
+	@NonNull
 	@Override
 	public synchronized List<ConversationModel> getAll(boolean forceReloadFromDatabase) {
 		return this.getAll(forceReloadFromDatabase, null);
@@ -177,12 +178,12 @@ public class ConversationServiceImpl implements ConversationService {
 		boolean forceReloadFromDatabase,
 		final @Nullable Filter filter
 	) {
-		logger.debug("getAll forceReloadFromDatabase = " + forceReloadFromDatabase);
+		logger.debug("getAll forceReloadFromDatabase = {}", forceReloadFromDatabase);
 		synchronized (this.conversationCache) {
 			if (forceReloadFromDatabase || !this.initAllLoaded) {
 				this.conversationCache.clear();
 			}
-			if (this.conversationCache.size() == 0) {
+			if (this.conversationCache.isEmpty()) {
 
 				logger.debug("start selecting");
 				for(ConversationModelParser<?, ?, ?> parser: new ConversationModelParser<?, ?, ?>[] {
@@ -639,6 +640,7 @@ public class ConversationServiceImpl implements ConversationService {
 		synchronized (this.conversationCache) {
 			this.conversationCache.clear();
 			logger.debug("Conversation cache reset");
+			this.initAllLoaded = false;
 		}
 		return true;
 	}
@@ -646,7 +648,7 @@ public class ConversationServiceImpl implements ConversationService {
 	@Override
 	public boolean hasConversations() {
 		synchronized (this.conversationCache) {
-			if(this.conversationCache.size() > 0) {
+			if (!this.conversationCache.isEmpty()) {
 				return true;
 			}
 		}
@@ -1108,7 +1110,7 @@ public class ConversationServiceImpl implements ConversationService {
 			boolean addToCache
 		) {
 			// Look up group and create receiver
-			final GroupModel groupModel = groupService.getById(Integer.valueOf(result.identifier));
+			final GroupModel groupModel = groupService.getById(Integer.parseInt(result.identifier));
 			if (groupModel == null) {
 				logger.warn("GroupConversationModelParser: Group with ID {} not found", result.identifier);
 				return null;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema OnPrem pour Android</string>
-    <string name="enter_serial_body">Saisissez les identifiants que vous avez reçus de votre société ou organisation</string>
+    <string name="enter_serial_body">Veuillez saisir les identifiants Threema OnPrem fournis par votre entreprise.</string>
     <string name="serial_required_want_exit">La licence est invalide. Voulez-vous réessayer ou quitter Threema OnPrem?</string>
     <string name="checking_serial">Vérification des identifiants</string>
     <string name="username_hint">Nom d\'utilisateur</string>
@@ -20,7 +20,6 @@ La paire de clés comprend une <b>clé publie</b> distribuée à vos contacts et
 avant de les envoyer au serveur pour chercher des contacts correspondants. Les données sont conservées uniquement en mémoire et ne sont jamais stockées sur le serveur.</string>
     <string name="threema_contact">Contact Threema OnPrem</string>
     <string name="menu_about">À propos de Threema OnPrem</string>
-    <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Pour les utilisateurs privés</a>]]></string>
     <string name="directory_search">Rechercher dans le répertoire</string>
     <string name="directory_title">Répertoire de l\'entreprise</string>
     <string name="directory_empty_view_text">Veuillez saisir au moins 3 caractères d\'un nom pour lancer une recherche dans le répertoire d\'utilisateurs Threema OnPrem de votre entreprise</string>

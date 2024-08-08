@@ -1,2 +1,1 @@
-* Behebung verschiedener Fehler
-* Behebung eines Fehlers, wodurch die App sporadisch einfrieren konnte
+* Bereits gesendete Nachrichten können neu bearbeitet und für alle gelöscht werden

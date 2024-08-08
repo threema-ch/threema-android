@@ -33,7 +33,8 @@ import kotlinx.serialization.Serializable
 import java.util.Date
 
 class OutgoingGroupDeleteMessageTask(
-    private val messageId: Int,
+    private val messageModelId: Int,
+    private val messageId: MessageId,
     private val deletedAt: Date,
     private val recipientIdentities: Set<String>,
     serviceManager: ServiceManager,
@@ -45,10 +46,10 @@ class OutgoingGroupDeleteMessageTask(
     private val messageService by lazy { serviceManager.messageService }
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        val message = messageService.getGroupMessageModel(messageId, true)
-            ?: throw ThreemaException("No group message model found for messageId=$messageId")
+        val message = messageService.getGroupMessageModel(messageModelId, true)
+            ?: throw ThreemaException("No group message model found for messageId=$messageModelId")
 
-        val apiMessageId = MessageId.fromString(message.apiMessageId)
+        val editedMessageIdLong = MessageId.fromString(message.apiMessageId).messageIdLong
 
         val group = groupService.getById(message.groupId)
             ?: throw ThreemaException("No group model found for groupId=${message.groupId}")
@@ -57,8 +58,11 @@ class OutgoingGroupDeleteMessageTask(
             group,
             recipientIdentities,
             null,
-            apiMessageId,
-            createAbstractMessage =  { createDeleteMessage(apiMessageId.messageIdLong, deletedAt) },
+            messageId,
+            createAbstractMessage =  { createDeleteMessage(
+                editedMessageIdLong,
+                deletedAt
+            ) },
             handle
         )
     }
@@ -71,17 +75,24 @@ class OutgoingGroupDeleteMessageTask(
         return deleteMessage
     }
 
-    override fun serialize(): SerializableTaskData = OutgoingGroupDeleteMessageData(messageId, deletedAt.time, recipientIdentities)
+    override fun serialize(): SerializableTaskData = OutgoingGroupDeleteMessageData(
+        messageModelId,
+        messageId.messageId,
+        deletedAt.time,
+        recipientIdentities
+    )
 
     @Serializable
     class OutgoingGroupDeleteMessageData(
-        private val messageId: Int,
+        private val messageModelId: Int,
+        private val messageId: ByteArray,
         private val deletedAt: Long,
         private val recipientIdentities: Set<String>
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupDeleteMessageTask(
-                messageId,
+                messageModelId,
+                MessageId(messageId),
                 Date(deletedAt),
                 recipientIdentities,
                 serviceManager

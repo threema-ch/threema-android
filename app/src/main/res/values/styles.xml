@@ -459,6 +459,7 @@
 	<style name="WizardButtonRegular" parent="WizardButton">
 		<item name="android:background">@drawable/selector_button_green</item>
 		<item name="android:textColor">@color/wizard_button_text_inverse</item>
+        <item name="android:textSize">@dimen/wizard_button_text_size</item>
 	</style>
 
 	<style name="WizardButtonInverse" parent="WizardButton">
@@ -472,7 +473,7 @@
 		<item name="android:textStyle">bold</item>
 		<item name="android:textSize">@dimen/wizard_title_text_size</item>
 		<item name="android:layout_marginTop">@dimen/wizard_title_text_margin_top</item>
-		<item name="android:textColor">@color/wizard_color_primary</item>
+		<item name="android:textColor">@color/wizard_color_text_on_primary</item>
 		<item name="android:textColorHint">?android:attr/textColorHint</item>
 		<item name="android:textColorHighlight">?android:attr/textColorHighlight</item>
 		<item name="android:textColorLink">@color/wizard_color_accent</item>
@@ -506,6 +507,10 @@
 		<item name="android:textColor">?attr/colorOnBackground</item>
 		<item name="android:textSize">@dimen/wizard_summary_body_text_size</item>
 	</style>
+
+    <style name="WorkIntroSubTitleText" parent="@style/WizardSubTitleText">
+        <item name="android:lineHeight">21sp</item>
+    </style>
 
 	<style name="WizardEditTextIcon">
 		<item name="android:height">@dimen/wizard_default_view_height</item>

@@ -515,6 +515,7 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="file_placeholder">Archivo</string>
     <string name="internal_storage">Almacenamiento interno</string>
     <string name="no_activity_for_mime_type">No hay aplicaciones que puedan abrir este archivo.</string>
+    <string name="no_activity_for_intent">No se encontró ninguna app.</string>
     <string name="open_from">Abrir desde</string>
     <string name="file_one_contact_not_supported">%1$s no puede recibir archivos.</string>
     <string name="file_x_contact_not_supported">Aviso: %1$d contactos no pueden recibir el archivo.</string>
@@ -1026,6 +1027,7 @@ almacenado.</string>
     <string name="system_default">Estándar del sistema</string>
     <string name="open_in_maps_app">Abrir en Maps</string>
     <string name="delete">Borrar</string>
+    <string name="delete_from_this_device">Eliminar de este dispositivo</string>
     <string name="delete_for_all">Eliminar para todos</string>
     <string name="message_was_deleted">Este mensaje se ha eliminado</string>
     <string name="continue_recording">Continuar grabando</string>
@@ -1558,6 +1560,13 @@ almacenado.</string>
     <string name="edit_message_not_supported_for_all_group_members">Los siguientes miembros del grupo no podrán ver tus ediciones: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">No es posible editar el mensaje porque ningún miembro del grupo tiene una versión de la aplicación que admita esta función.</string>
     <string name="delete_message_not_supported_for_all_group_members">Este mensaje no se eliminará para los siguientes miembros del grupo: %1$s</string>
+    <string name="work_intro_more_link_text">Obtener más información sobre Threema Work</string>
+    <string name="work_intro_subtitle">El mensajero empresarial seguro\npara empresas.</string>
+    <string name="work_intro_login">Iniciar sesión %1$s</string>
+    <string name="consumer_notice_description">Descarga la aplicación normal de Threema si eres un particular.</string>
+    <string name="consumer_notice_playstore_link_description">Threema en Google Play Store</string>
+    <string name="consumer_notice_appgallery_link_description">Threema en la AppGallery</string>
+    <string name="consumer_notice_subtitle">Para uso privado</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>

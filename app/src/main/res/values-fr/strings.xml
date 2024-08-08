@@ -513,6 +513,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="file_placeholder">Fichier</string>
     <string name="internal_storage">Stockage interne</string>
     <string name="no_activity_for_mime_type">Aucune application trouvée pour ouvrir ce fichier.</string>
+    <string name="no_activity_for_intent">Aucune application trouvée.</string>
     <string name="open_from">Ouvrir depuis</string>
     <string name="file_one_contact_not_supported">%1$s ne peut pas recevoir de fichiers.</string>
     <string name="file_x_contact_not_supported">Attention : %1$d contacts ne peuvent pas recevoir votre fichier.</string>
@@ -1017,6 +1018,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="system_default">Paramètre système par défaut</string>
     <string name="open_in_maps_app">Ouvrir dans l\'app de cartes</string>
     <string name="delete">Supprimer</string>
+    <string name="delete_from_this_device">Supprimer de cet appareil</string>
     <string name="delete_for_all">Supprimer pour tous</string>
     <string name="message_was_deleted">Ce message a été supprimé</string>
     <string name="continue_recording">Continuer l\'enregistrement</string>
@@ -1549,6 +1551,13 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="edit_message_not_supported_for_all_group_members">Les membres suivants groupe ne pourront pas voir vos modifications : %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Impossible de modifier le message, car aucun membre du groupe ne dispose d\'une version de l\'application prenant en charge cette fonctionnalité.</string>
     <string name="delete_message_not_supported_for_all_group_members">Ce message ne sera pas supprimé pour les membres suivants du groupe : %1$s</string>
+    <string name="work_intro_more_link_text">En savoir plus sur Threema Work</string>
+    <string name="work_intro_subtitle">La messagerie instantanée sécurisée\npour les entreprises.</string>
+    <string name="work_intro_login">Connecter %1$s</string>
+    <string name="consumer_notice_description">Veuillez télécharger l\'application Threema standard si vous êtes un utilisateur privé.</string>
+    <string name="consumer_notice_playstore_link_description">Threema sur le Play Store</string>
+    <string name="consumer_notice_appgallery_link_description">Threema dans l\'AppGallery</string>
+    <string name="consumer_notice_subtitle">Pour un usage privé</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

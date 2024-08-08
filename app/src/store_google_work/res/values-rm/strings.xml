@@ -17,5 +17,4 @@
     <string name="new_wizard_info_link">Sche ti inditgescha tes numer da telefonin e/u tia adressa dad e-mail, po Threema Work gidar tes contacts da ta chattar automaticamain, sche ti es registrà en lur cudeschs d\'adressas. Las adressas dad e-mail vegnan memorisadas en furma da diever unic (furma da hash) sin noss server. Ti pos era sursiglir quest pass, sche ti vuls utilisar anonimamain Threema Work.</string>
     <string name="threema_contact">Contact da Threema Work</string>
     <string name="menu_about">Davart Threema Work</string>
-    <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Per utilisaders privats</a>]]></string>
 </resources>

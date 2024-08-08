@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema Work para Android</string>
-    <string name="enter_serial_body">Introduzca los datos de acceso que ha recibido de su empresa u organización</string>
+    <string name="enter_serial_body">Introduzca los datos de acceso de Threema Work que le ha proporcionado su empresa.</string>
     <string name="serial_required_want_exit">Licencia no válida. ¿Intentarlo otra vez o salir de Threema?</string>
     <string name="checking_serial">Comprobando credenciales</string>
     <string name="username_hint">Nombre de usuario</string>
@@ -23,7 +23,6 @@
 		anónimamente.</string>
     <string name="threema_contact">Contactar con Threema Work</string>
     <string name="menu_about">Acerca de Threema Work</string>
-    <string name="private_threema_download"><![CDATA[ <a href=%1$s>Obtenga más información sobre Threema Work</a> <br/><br/> Si es usted un usuario privado, <a href=%2$s>toque aquí</a> para descargarse Threema.]]></string>
     <string name="directory_search">Buscar en el directorio</string>
     <string name="directory_title">Directorio de la empresa</string>
     <string name="directory_empty_view_text">Introduce al menos 3 caracteres de un nombre para comenzar la búsqueda en el directorio de usuarios de Threema Work de tu empresa.</string>

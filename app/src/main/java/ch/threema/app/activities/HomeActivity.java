@@ -621,7 +621,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			startActivityForResult(new Intent(this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
 		} else {
 			if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
-				startActivityForResult(new Intent(this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
+				boolean isInstalledFromStore = ConfigUtils.isInstalledFromStore(ThreemaApplication.getAppContext());
+				if (ConfigUtils.isWorkBuild() && !ConfigUtils.isWorkRestricted() && !hasIdentity() && isInstalledFromStore) {
+					startActivityForResult(new Intent(this, WorkIntroActivity.class), ThreemaActivity.ACTIVITY_ID_WORK_INTRO);
+				} else {
+					startActivityForResult(new Intent(this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
+				}
 				finish();
 			} else {
 				this.startMainActivity(savedInstanceState);
@@ -686,6 +691,15 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					}
 				}
 			}
+		}
+	}
+
+	private boolean hasIdentity() {
+		try {
+			return ThreemaApplication.requireServiceManager().getUserService().hasIdentity();
+		} catch (NullPointerException npe) {
+			logger.error("user service not available");
+			return false;
 		}
 	}
 

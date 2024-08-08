@@ -29,6 +29,7 @@ public class BuildFlavor {
 	private final static String FLAVOR_GREEN = "green";
 	private final static String FLAVOR_SANDBOX_WORK = "sandbox_work";
 	private final static String FLAVOR_ONPREM = "onprem";
+	private final static String FLAVOR_ONPREM_INTERNAL = "onprem_internal";
 	private final static String FLAVOR_BLUE = "blue";
 	private final static String FLAVOR_HMS = "hms";
 	private final static String FLAVOR_HMS_WORK = "hms_work";
@@ -114,6 +115,7 @@ public class BuildFlavor {
 					licenseType = LicenseType.GOOGLE_WORK;
 					break;
 				case FLAVOR_ONPREM:
+				case FLAVOR_ONPREM_INTERNAL:
 					licenseType = LicenseType.ONPREM;
 					break;
 				case FLAVOR_HMS:
@@ -138,6 +140,7 @@ public class BuildFlavor {
 					buildEnvironment = BuildEnvironment.SANDBOX;
 					break;
 				case FLAVOR_ONPREM:
+				case FLAVOR_ONPREM_INTERNAL:
 					buildEnvironment = BuildEnvironment.ONPREM;
 					break;
 				case FLAVOR_NONE:
@@ -175,6 +178,9 @@ public class BuildFlavor {
 					break;
 				case FLAVOR_ONPREM:
 					name = "OnPrem";
+					break;
+				case FLAVOR_ONPREM_INTERNAL:
+					name = "OnPrem Internal";
 					break;
 				case FLAVOR_BLUE:
 					name = "Blue";

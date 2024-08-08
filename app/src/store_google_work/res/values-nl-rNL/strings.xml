@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema Work voor Android</string>
-    <string name="enter_serial_body">Voer de gegevens in die u van uw bedrijf of organisatie heeft ontvangen</string>
+    <string name="enter_serial_body">Voer de Threema Work-gegevens in die u van uw bedrijf hebt ontvangen.</string>
     <string name="serial_required_want_exit">Licentie is ongeldig. Probeer het opnieuw of sluit Threema af.</string>
     <string name="checking_serial">Gegevens controleren</string>
     <string name="username_hint">Gebruikersnaam</string>
@@ -17,7 +17,6 @@
     <string name="new_wizard_info_link">Als je je telefoonnummer en e-mailadres opgeeft, kan Threema Work helpen je vrienden automatisch te vinden als jij in hun lijst van contactpersonen staat. E-mailadressen worden versleuteld (hashed) op onze server opgeslagen. Je kunt deze stap ook overslaan als je Threema Work liever anoniem gebruikt.</string>
     <string name="threema_contact">Contactpersoon Threema Work</string>
     <string name="menu_about">Over Threema Work</string>
-    <string name="private_threema_download"><![CDATA[ <a href=%1$s>Meer informatie over Threema Work</a> <br/><br/> Als je een privégebruiker bent, kun je <a href=%2$s>hier tikken</a> om Threema te downloaden.]]></string>
     <string name="directory_search">Zoeken in de directory</string>
     <string name="directory_title">Bedrijfsdirectory</string>
     <string name="directory_empty_view_text">Voer ten minste 3 tekens van een naam in om in de bedrijfsdirectory naar Threema Work-gebruikers te zoeken</string>

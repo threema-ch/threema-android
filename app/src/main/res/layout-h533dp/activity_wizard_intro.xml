@@ -46,7 +46,7 @@
 			android:layout_height="wrap_content"
 			android:layout_marginTop="8dp"
 			android:text="@string/new_wizard_lets_get_started"
-			android:textColor="@color/wizard_color_primary"
+			android:textColor="@color/wizard_color_text_on_primary"
 			android:textSize="30dp" />
 
 		<TextView

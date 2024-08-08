@@ -395,7 +395,7 @@ public class LinkifyUtil {
 		try {
 			context.startActivity(intent);
 		} catch (ActivityNotFoundException e) {
-			Toast.makeText(context, R.string.no_activity_for_mime_type, Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, R.string.no_activity_for_intent, Toast.LENGTH_SHORT).show();
 		}
 	}
 

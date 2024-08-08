@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="about_title">Threema Work for Android</string>
-	<string name="enter_serial_body">Threema Work is the messenger for companies. Please enter the credentials provided by your company.</string>
+	<string name="enter_serial_body">Please enter the Threema Work credentials provided by your company.</string>
 	<string name="serial_required_want_exit">License is invalid. Would you like to try again or quit Threema Work?</string>
 	<string name="checking_serial">Checking credentials</string>
 	<string name="username_hint">Username</string>
@@ -25,7 +25,6 @@
 	</string>
 	<string name="threema_contact">Threema Work Contact</string>
 	<string name="menu_about">About Threema Work</string>
-	<string name="private_threema_download"><![CDATA[ <a href=%1$s>Learn more about Threema Work</a> <br/><br/> If you are a private user, please <a href=%2$s>tap here</a> to download Threema.]]></string>
 	<string name="directory_search">Search in the directory</string>
 	<string name="directory_title">Company directory</string>
 	<string name="directory_empty_view_text">Please enter at least 3 characters of a name to begin searching in your company\'s directory of Threema Work users or select a category by tapping on the filter icon.</string>

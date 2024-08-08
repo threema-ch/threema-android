@@ -512,6 +512,7 @@
     <string name="file_placeholder">Файл</string>
     <string name="internal_storage">Внутренняя память</string>
     <string name="no_activity_for_mime_type">Приложение для открытия этого файла не найдено.</string>
+    <string name="no_activity_for_intent">Приложение не найдено.</string>
     <string name="open_from">Открыть из</string>
     <string name="file_one_contact_not_supported">%1$s не может принимать файлы.</string>
     <string name="file_x_contact_not_supported">Внимание: %1$d контакта(ов) не могут принять ваш файл.</string>
@@ -1016,6 +1017,7 @@
     <string name="system_default">Системная</string>
     <string name="open_in_maps_app">Открыть в приложении «Карты»</string>
     <string name="delete">Удалить</string>
+    <string name="delete_from_this_device">Удалить с этого устройства</string>
     <string name="delete_for_all">Удалить для всех</string>
     <string name="message_was_deleted">Это сообщение удалено</string>
     <string name="continue_recording">Продолжить запись</string>
@@ -1544,11 +1546,18 @@
     <string name="media_gallery_animated_webps">Анимированные WebPs</string>
     <string name="unsupported_image_type">Неподдерживаемый тип изображения: %s</string>
     <string name="application_setup_steps_failed">Для проверки состояния ваших контактов требуется активное соединение с Интернетом. Убедитесь, что вы подключены к Интернету, и повторите попытку.</string>
-    <string name="add_contact_failed">Не удалось добавить контакт</string>
+    <string name="add_contact_failed">Невозможно добавить контакт</string>
     <string name="edit_message_not_supported_for_contact">Невозможно отредактировать сообщение, поскольку версия приложения получателя не поддерживает эту функцию.</string>
     <string name="edit_message_not_supported_for_all_group_members">Следующие участники группы не смогут увидеть ваши изменения: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Невозможно отредактировать сообщение, так как ни у одного участника группы нет версии приложения, поддерживающей эту функцию.</string>
     <string name="delete_message_not_supported_for_all_group_members">Данное сообщение не будет удалено для следующих участников группы: %1$s</string>
+    <string name="work_intro_more_link_text">Подробнее о Threema Work</string>
+    <string name="work_intro_subtitle">Безопасный бизнес-мессенджер\nдля компаний.</string>
+    <string name="work_intro_login">Войти %1$s</string>
+    <string name="consumer_notice_description">Если вы частный пользователь, скачайте обычное приложение Threema.</string>
+    <string name="consumer_notice_playstore_link_description">Threema в Play Store</string>
+    <string name="consumer_notice_appgallery_link_description">Threema в AppGallery</string>
+    <string name="consumer_notice_subtitle">Для личного использования</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d контакта</item>
         <item quantity="many">%d контактов</item>

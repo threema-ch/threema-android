@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/work_intro_consumer_notice_background"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/consumer_notice_app_icon"
+        android:src="@drawable/ic_app_icon_consumer"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <ImageView
+        android:id="@+id/consumer_notice_app_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:src="@drawable/logo_main_consumer"
+        android:contentDescription="Threema"
+        android:scaleX=".6"
+        android:scaleY=".6"
+        app:layout_constraintTop_toBottomOf="@id/consumer_notice_app_icon"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <!--  negative marginTop because of weird padding around logo  -->
+    <TextView
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:id="@+id/consumer_notice_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-6dp"
+        android:text="@string/consumer_notice_subtitle"
+        android:gravity="center_horizontal"
+        android:textColor="@color/md_theme_light_onSurface"
+        app:layout_constraintTop_toBottomOf="@id/consumer_notice_app_logo"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        style="@style/WizardSmallText"
+        android:id="@+id/consumer_notice_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/consumer_notice_description"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/md_theme_light_onSurface"
+        app:layout_constraintTop_toBottomOf="@id/consumer_notice_subtitle"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        style="@style/WizardButtonRegular"
+        android:id="@+id/consumer_notice_app_store_button"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:text="@string/consumer_notice_playstore_link_description"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/wizard_button_text_inverse_consumer"
+        android:backgroundTint="@color/wizard_color_accent_consumer"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/consumer_notice_description"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

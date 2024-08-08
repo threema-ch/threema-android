@@ -1531,7 +1531,9 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		// save unfinished text
-		saveMessageDraft();
+		if (editMessageActionMode == null) {
+			saveMessageDraft();
+		}
 
 		if(this.typingIndicatorTextWatcher != null) {
 			this.typingIndicatorTextWatcher.stopTyping();
@@ -2506,7 +2508,7 @@ public class ComposeMessageFragment extends Fragment implements
 			getResources().getString(R.string.really_delete_message_title),
 			ConfigUtils.getSafeQuantityString(requireContext(), R.plurals.delete_messages, 1, 1),
 			R.string.delete_for_all,
-			R.string.delete,
+			R.string.delete_from_this_device,
 			R.string.cancel
 		);
 
@@ -3718,6 +3720,11 @@ public class ComposeMessageFragment extends Fragment implements
 	}
 
 	private void startEditingGroupMessage(@NonNull GroupModel groupModel, @NonNull AbstractMessageModel message) {
+		if (groupService.isNotesGroup(groupModel)) {
+			startMessageEditor(message);
+			return;
+		}
+
 		GroupFeatureSupport featureSupport = groupService.getFeatureSupport(groupModel, ThreemaFeature.EDIT_MESSAGES);
 		if (featureSupport.getAdoptionRate() == GroupFeatureAdoptionRate.ALL) {
 			startMessageEditor(message);
@@ -4667,16 +4674,27 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		private boolean isDeletableRemotely(AbstractMessageModel message) {
-			boolean canDelete = canDeleteRemotely(message);
+			// check receiver support
 			if (messageReceiver instanceof GroupMessageReceiver) {
-				GroupFeatureSupport featureSupport = groupService.getFeatureSupport(((GroupMessageReceiver) messageReceiver).getGroup(), ThreemaFeature.DELETE_MESSAGES);
-				if (featureSupport.getAdoptionRate() == GroupFeatureAdoptionRate.NONE) {
-					canDelete = false;
+				GroupModel group = ((GroupMessageReceiver) messageReceiver).getGroup();
+				if (groupService.isNotesGroup(group)) {
+					// delete for all is pointless in notes group
+					return false;
+				} else {
+					GroupFeatureSupport featureSupport = groupService.getFeatureSupport(group, ThreemaFeature.DELETE_MESSAGES);
+					if (featureSupport.getAdoptionRate() == GroupFeatureAdoptionRate.NONE) {
+						// no feature support in group
+						return false;
+					}
 				}
-			} else if (messageReceiver instanceof ContactMessageReceiver && !ThreemaFeature.canDeleteMessages(((ContactMessageReceiver) messageReceiver).getContact().getFeatureMask())) {
-				canDelete = false;
+			} else if (messageReceiver instanceof ContactMessageReceiver
+				&& !ThreemaFeature.canDeleteMessages(((ContactMessageReceiver) messageReceiver).getContact().getFeatureMask())
+			) {
+				// no feature support in 1:1 chat
+				return false;
 			}
-			return canDelete;
+			// check message support
+			return canDeleteRemotely(message);
 		}
 
 		@Override
@@ -4785,6 +4803,15 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
+	private void setMessageTextMaxLength(int max) {
+		for (int i = 0; i < messageText.getFilters().length; i++) {
+			if (messageText.getFilters()[i] instanceof InputFilter.LengthFilter) {
+				messageText.getFilters()[i] = new InputFilter.LengthFilter(max);
+				break;
+			}
+		}
+	}
+
 	private class EditMessageActionMode implements ActionMode.Callback {
 
 		private final AbstractMessageModel messageModel;
@@ -4878,7 +4905,7 @@ public class ComposeMessageFragment extends Fragment implements
 			});
 
 			// usually messages are split into multiple messages if they are too long, but this is not possible when editing a message
-			messageText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(ProtocolDefines.MAX_TEXT_MESSAGE_LEN)});
+			setMessageTextMaxLength(ProtocolDefines.MAX_TEXT_MESSAGE_LEN);
 
 			return true;
 		}
@@ -4938,7 +4965,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 			// restore default max length so long messages can be split again
 			int defaultEditTextMaxLength = getResources().getInteger(R.integer.message_edittext_max_length);
-			messageText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(defaultEditTextMaxLength)});
+			setMessageTextMaxLength(defaultEditTextMaxLength);
 
 			if (typingIndicatorTextWatcher != null) {
 				messageText.addTextChangedListener(typingIndicatorTextWatcher);

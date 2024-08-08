@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema Work Android版</string>
-    <string name="enter_serial_body">请输入贵公司或组织提供的凭据</string>
+    <string name="enter_serial_body">请输入贵公司提供的 Threema Work 凭证。</string>
     <string name="serial_required_want_exit">许可证无效。您想重试还是退出 Threema Work？</string>
     <string name="checking_serial">正在检查凭据</string>
     <string name="username_hint">用户名</string>
@@ -19,7 +19,6 @@
 数据将以单向加密（散列）形式存储在我们的服务器上。如果您想完全匿名使用 Threema Work，则可以跳过此步骤。</string>
     <string name="threema_contact">Threema Work 联系人</string>
     <string name="menu_about">关于 Threema Work</string>
-    <string name="private_threema_download"><![CDATA[<a href=%1$s>了解更多关于 Threema Work 的信息</a> <br/><br/>如果您是私人用户，请<a href=%2$s>点击这里</a> 下载 Threema。]]></string>
     <string name="directory_search">在目录中搜索</string>
     <string name="directory_title">公司目录</string>
     <string name="directory_empty_view_text">找不到结果

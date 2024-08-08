@@ -34,7 +34,8 @@ import java.util.Date
 
 class OutgoingContactDeleteMessageTask(
     private val toIdentity: String,
-    private val messageId: Int,
+    private val messageModelId: Int,
+    private val messageId: MessageId,
     private val deletedAt: Date,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
@@ -43,14 +44,15 @@ class OutgoingContactDeleteMessageTask(
     val messageService by lazy { serviceManager.messageService }
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        val message = messageService.getContactMessageModel(messageId, true)
-            ?: throw ThreemaException("No contact message model found for messageId=$messageId")
+        val message = messageService.getContactMessageModel(messageModelId, true)
+            ?: throw ThreemaException("No contact message model found for messageId=$messageModelId")
 
         val deleteMessage = DeleteMessage(
             DeleteMessageData(messageId = MessageId.fromString(message.apiMessageId).messageIdLong)
         )
         deleteMessage.toIdentity = toIdentity
         deleteMessage.date = deletedAt
+        deleteMessage.messageId = messageId
 
         sendContactMessage(deleteMessage, null, handle)
     }
@@ -58,20 +60,23 @@ class OutgoingContactDeleteMessageTask(
     override fun serialize(): SerializableTaskData =
         OutgoingContactDeleteMessageData(
             toIdentity,
-            messageId,
+            messageModelId,
+            messageId.messageId,
             deletedAt.time
         )
 
     @Serializable
     class OutgoingContactDeleteMessageData(
         private val toIdentity: String,
-        private val messageId: Int,
+        private val messageModelId: Int,
+        private val messageId: ByteArray,
         private val deletedAt: Long,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingContactDeleteMessageTask(
                 toIdentity,
-                messageId,
+                messageModelId,
+                MessageId(messageId),
                 Date(deletedAt),
                 serviceManager
             )

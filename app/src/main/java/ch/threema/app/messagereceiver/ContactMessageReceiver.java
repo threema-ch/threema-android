@@ -413,15 +413,28 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		);
 	}
 
-	public void sendEditMessage(int messageId, @NonNull String newText, @NonNull Date editedAt) {
+	public void sendEditMessage(int messageModelId, @NonNull String newText, @NonNull Date editedAt) {
 		scheduleTask(
-			new OutgoingContactEditMessageTask(contactModel.getIdentity(), messageId, newText, editedAt, serviceManager)
+			new OutgoingContactEditMessageTask(
+				contactModel.getIdentity(),
+				messageModelId,
+				new MessageId(),
+				newText,
+				editedAt,
+				serviceManager
+			)
 		);
 	}
 
-	public void sendDeleteMessage(int messageId, @NonNull Date deletedAt) {
+	public void sendDeleteMessage(int messageModelId, @NonNull Date deletedAt) {
 		scheduleTask(
-			new OutgoingContactDeleteMessageTask(contactModel.getIdentity(), messageId, deletedAt, serviceManager)
+			new OutgoingContactDeleteMessageTask(
+				contactModel.getIdentity(),
+				messageModelId,
+				new MessageId(),
+				deletedAt,
+				serviceManager
+			)
 		);
 	}
 

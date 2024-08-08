@@ -306,6 +306,8 @@
     <string name="state_dialog_created">Erstellt</string>
     <string name="state_dialog_posted">Gschickt</string>
     <string name="state_dialog_modified">Aktualisiert</string>
+    <string name="state_dialog_edited">Bearbeitet</string>
+    <string name="state_dialog_deleted">Glöscht</string>
     <string name="state_dialog_status">Status</string>
     <string name="title_tab_recent">Zletscht</string>
     <string name="no_recent_conversations">Kei Chats gfunde</string>
@@ -1533,6 +1535,11 @@
     <string name="media_gallery_animated_webps">Animierti WebPs</string>
     <string name="unsupported_image_type">Nöd understützte Bildtyp: %s</string>
     <string name="application_setup_steps_failed">Zum de Status vo Ihrne Kontäkt z’überprüefe, bruuchts e aktivi Internetverbindig. Bitte stelled Sie sicher, dass Sie mitem Internet verbunde sind, und versueched Sie’s nomal.</string>
+    <string name="add_contact_failed">De Kontakt hät nöd chöne dezue tah werde</string>
+    <string name="edit_message_not_supported_for_contact">D’Nachricht cha nöd bearbeitet werde, wil d’App-Version vom Empfänger die Funktion nöd understützt.</string>
+    <string name="edit_message_not_supported_for_all_group_members">Di folgende Gruppemitglieder werded Ihri Änderige nöd gseh: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">D’Nachricht cha nöd bearbeitet werde, wil keis Gruppemitglied en App-Version hät, wo die Funktion understützt.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Die Nachricht wird bi folgende Gruppemitglieder nöd glöscht: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d Kontäkt</item>
     </plurals>

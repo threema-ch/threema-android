@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="about_title">Threema Blue für Android</string>
-	<string name="enter_serial_body">Geben Sie die Zugangsdaten ein, die Sie von Ihrem Unternehmen bzw. Ihrer Organisation erhalten haben</string>
+	<string name="enter_serial_body">Geben Sie Ihre Threema Work-Zugangsdaten ein, die Sie von Ihrem Unternehmen erhalten haben.</string>
 	<string name="serial_required_want_exit">Die Lizenz ist ungültig. Möchten Sie es nochmals versuchen oder Threema verlassen?</string>
 	<string name="checking_serial">Zugangsberechtigung wird überprüft</string>
 	<string name="username_hint">Benutzername</string>
@@ -25,7 +25,6 @@
 	</string>
 	<string name="threema_contact">Threema Work-Kontakt</string>
 	<string name="menu_about">Über Threema Blue</string>
-	<string name="private_threema_download"><![CDATA[Wenn Sie die App privat nutzen möchten, laden Sie Threema bitte <a href=%s>hier</a> herunter.]]></string>
 	<string name="directory_search">Im Verzeichnis suchen</string>
 	<string name="directory_title">Unternehmensverzeichnis</string>
 	<string name="directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Unternehmensverzeichnis zu beginnen oder wählen Sie eine Kategorie, indem Sie auf das Filter-Symbol tippen.</string>

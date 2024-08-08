@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema OnPrem per Android</string>
-    <string name="enter_serial_body">Inserire i credenziali ricevuti dalla propria azienda o organizzazione</string>
+    <string name="enter_serial_body">Inserisci le credenziali Threema OnPrem ricevute dalla tua azienda o organizzazione.</string>
     <string name="serial_required_want_exit">La licenza non è valida. Vuoi riprovare o desideri uscire da Threema OnPrem?</string>
     <string name="checking_serial">Controllo credenziali</string>
     <string name="username_hint">Nome utente</string>
@@ -21,7 +21,6 @@ in modo anonimo.</string>
 prima di inviarli al server e cercare i contatti corrispondenti. I dati vengono mantenuti solo in memoria e non sono mai salvati sul server.</string>
     <string name="threema_contact">Contatto Threema OnPrem</string>
     <string name="menu_about">Informazioni su Threema OnPrem</string>
-    <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Per utenti privati</a>]]></string>
     <string name="directory_search">Cerca nella directory</string>
     <string name="directory_title">Directory azienda</string>
     <string name="directory_empty_view_text">Inserisci almeno 3 caratteri di un nome per iniziare a cercare nella directory della tua azienda degli utenti di Threema OnPrem o seleziona una categoria toccando sull\'icona del filtro.</string>

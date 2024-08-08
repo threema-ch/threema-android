@@ -513,6 +513,7 @@ https://myid.threema.ch/revoke</string>
     <string name="file_placeholder">Soubor</string>
     <string name="internal_storage">Vnitřní úložiště</string>
     <string name="no_activity_for_mime_type">Nebyla nalezena žádná aplikace schopná otevřít tento soubor.</string>
+    <string name="no_activity_for_intent">Nebyla nalezena žádná aplikace.</string>
     <string name="open_from">Otevřít z</string>
     <string name="file_one_contact_not_supported">Kontakt %1$s nemůže přijímat soubory.</string>
     <string name="file_x_contact_not_supported">Upozornění: Následující počet kontaktů: %1$d nemůže přijmout váš soubor.</string>
@@ -1018,6 +1019,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="system_default">Systémové nastavení</string>
     <string name="open_in_maps_app">Otevřít v aplikaci Mapy</string>
     <string name="delete">Odstranit</string>
+    <string name="delete_from_this_device">Odstranit z tohoto zařízení</string>
     <string name="delete_for_all">Odstranit u všech</string>
     <string name="message_was_deleted">Tato zpráva byla odstraněna</string>
     <string name="continue_recording">Pokračovat v nahrávání</string>
@@ -1550,6 +1552,13 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="edit_message_not_supported_for_all_group_members">Následující členové skupiny nebudou moci vidět vaše úpravy: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Zprávu nelze upravit, protože žádný z členů skupiny nemá verzi aplikace, která podporuje tuto funkci.</string>
     <string name="delete_message_not_supported_for_all_group_members">Tato zpráva nebude smazána pro následující členy skupiny: %1$s</string>
+    <string name="work_intro_more_link_text">Zjistěte více o Threema Work</string>
+    <string name="work_intro_subtitle">Bezpečný messenger pro firmy.</string>
+    <string name="work_intro_login">Přihlášení %1$s</string>
+    <string name="consumer_notice_description">Jestliže jste soukromý uživatel, stáhněte si standardní aplikaci Threema.</string>
+    <string name="consumer_notice_playstore_link_description">Threema v Obchodu Google Play</string>
+    <string name="consumer_notice_appgallery_link_description">Threema v AppGallery</string>
+    <string name="consumer_notice_subtitle">Pro soukromé účely</string>
     <plurals name="contacts_counter_label">
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>

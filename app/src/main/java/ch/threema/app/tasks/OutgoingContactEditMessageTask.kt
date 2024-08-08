@@ -34,8 +34,9 @@ import java.util.Date
 
 class OutgoingContactEditMessageTask(
     private val toIdentity: String,
-    private val messageId: Int,
-    private val text: String,
+    private val messageModelId: Int,
+    private val messageId: MessageId,
+    private val editedText: String,
     private val editedAt: Date,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
@@ -44,40 +45,44 @@ class OutgoingContactEditMessageTask(
     private val messageService by lazy { serviceManager.messageService }
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        val message = messageService.getContactMessageModel(messageId, true)
-                ?: throw ThreemaException("No contact message model found for messageId=$messageId")
+        val message = messageService.getContactMessageModel(messageModelId, true)
+                ?: throw ThreemaException("No contact message model found for messageId=$messageModelId")
 
         val editMessage = EditMessage(
             EditMessageData(
                 messageId = MessageId.fromString(message.apiMessageId).messageIdLong,
-                text = text
+                text = editedText
             )
         )
         editMessage.toIdentity = toIdentity
         editMessage.date = editedAt
+        editMessage.messageId = messageId
 
         sendContactMessage(editMessage, null, handle)
     }
 
     override fun serialize(): SerializableTaskData = OutgoingContactEditMessageData(
         toIdentity,
-        messageId,
-        text,
+        messageModelId,
+        messageId.messageId,
+        editedText,
         editedAt.time
     )
 
     @Serializable
     class OutgoingContactEditMessageData(
         private val toIdentity: String,
-        private val messageId: Int,
-        private val text: String,
+        private val messageModelId: Int,
+        private val messageId: ByteArray,
+        private val editedText: String,
         private val editedAt: Long
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingContactEditMessageTask(
                 toIdentity,
-                messageId,
-                text,
+                messageModelId,
+                MessageId(messageId),
+                editedText,
                 Date(editedAt),
                 serviceManager
             )

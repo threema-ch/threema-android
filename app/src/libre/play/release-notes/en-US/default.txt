@@ -1,2 +1,1 @@
-* Various bug fixes
-* Fixed a bug that could cause the app to freeze occasionally
+* Sent messages can now be edited or deleted on the recipient’s end

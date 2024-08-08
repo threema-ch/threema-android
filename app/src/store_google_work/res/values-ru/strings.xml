@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema Work для Android</string>
-    <string name="enter_serial_body">Введите учетные данные, предоставленные вашей компанией или организацией</string>
+    <string name="enter_serial_body">Введите учетные данные Threema Work, предоставленные вашей компанией или организацией.</string>
     <string name="serial_required_want_exit">Лицензия недействительна. Повторить попытку или выйти из Threema?</string>
     <string name="checking_serial">Проверка учетных данных</string>
     <string name="username_hint">Имя пользователя</string>
@@ -18,7 +18,6 @@
 Адреса электронной почты будут храниться в зашифрованном (хэшированном) виде на нашем сервере. Вы можете пропустить этот шаг, если хотите использовать Threema Work анонимно.</string>
     <string name="threema_contact">Контакт Threema Work</string>
     <string name="menu_about">О Threema Work</string>
-    <string name="private_threema_download"><![CDATA[Если вы частный пользователь, <a href="https://play.google.com/store/apps/details?id=ch.threema.app">нажмите здесь</a> для скачивания приложения Threema.]]></string>
     <string name="directory_search">Поиск в каталоге</string>
     <string name="directory_title">Каталог компании</string>
     <string name="directory_empty_view_text">Чтобы начать поиск в каталоге пользователей Threema Work в вашей компании, введите по меньшей мере 3 символа имени</string>

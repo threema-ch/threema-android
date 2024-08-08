@@ -516,6 +516,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="file_placeholder">Bestand</string>
     <string name="internal_storage">Interne opslag</string>
     <string name="no_activity_for_mime_type">Geen app gevonden om dit bestand te openen.</string>
+    <string name="no_activity_for_intent">Geen app gevonden.</string>
     <string name="open_from">Openen vanaf</string>
     <string name="file_one_contact_not_supported">%1$s kan geen bestanden ontvangen.</string>
     <string name="file_x_contact_not_supported">Waarschuwing: %1$d contactpersonen kunnen uw bestand niet ontvangen.</string>
@@ -1019,6 +1020,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="system_default">Standaardinstellingen van systeem</string>
     <string name="open_in_maps_app">Openen in Maps-app</string>
     <string name="delete">Verwijderen</string>
+    <string name="delete_from_this_device">Verwijderen van dit apparaat</string>
     <string name="delete_for_all">Voor iedereen verwijderen</string>
     <string name="message_was_deleted">Dit bericht is verwijderd</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
@@ -1551,6 +1553,13 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="edit_message_not_supported_for_all_group_members">De volgende groepsleden kunnen uw bewerkingen niet zien: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Het bericht is niet bewerkt omdat geen van de groepsleden een app-versie heeft die deze functie ondersteunt.</string>
     <string name="delete_message_not_supported_for_all_group_members">Dit bericht wordt niet verwijderd voor de volgende groepsleden: %1$s</string>
+    <string name="work_intro_more_link_text">Kom meer te weten over Threema Work</string>
+    <string name="work_intro_subtitle">De veilige zakelijke messenger \nvoor bedrijven.</string>
+    <string name="work_intro_login">Inloggen bij %1$s</string>
+    <string name="consumer_notice_description">Download de reguliere Threema-app als u een particuliere gebruiker bent.</string>
+    <string name="consumer_notice_playstore_link_description">Threema in de Play Store</string>
+    <string name="consumer_notice_appgallery_link_description">Threema in de AppGallery</string>
+    <string name="consumer_notice_subtitle">Voor privégebruik</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>

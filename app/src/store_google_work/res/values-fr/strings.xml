@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema Work pour Android</string>
-    <string name="enter_serial_body">Saisissez les identifiants que vous avez reçus de votre société ou organisation</string>
+    <string name="enter_serial_body">Veuillez saisir les identifiants Threema Work fournis par votre entreprise.</string>
     <string name="serial_required_want_exit">La licence est invalide. Voulez-vous réessayer ou quitter Threema ?</string>
     <string name="checking_serial">Vérification des identifiants</string>
     <string name="username_hint">Nom d\'utilisateur</string>
@@ -18,7 +18,6 @@ La paire de clés comprend une <b>clé publie</b> distribuée à vos contacts et
     <string name="new_wizard_info_link">En donnant votre numéro de téléphone et votre adresse e-mail, Theema Work peut aider vos amis à vous trouver automatiquement si vous vous trouvez dans leur carnet d\'adresses. Les adresses e-mail seront stockées de manière chiffrée sur notre serveur. Vous pouvez passer cette étape si vous souhaitez utiliser Threema Work de manière anonyme.</string>
     <string name="threema_contact">Contact Threema Work</string>
     <string name="menu_about">À propos de Threema Work</string>
-    <string name="private_threema_download"><![CDATA[ <a href=%1$s>En savoir plus sur Threema Work</a> <br/><br/>Si vous êtes un utilisateur privé, <a href=%2$s>touchez ici</a> pour télécharger Threema.]]></string>
     <string name="directory_search">Rechercher dans le répertoire</string>
     <string name="directory_title">Répertoire de l\'entreprise</string>
     <string name="directory_empty_view_text">Veuillez saisir au moins 3 caractères d\'un nom pour lancer une recherche dans le répertoire d\'utilisateurs Threema Work de votre entreprise</string>

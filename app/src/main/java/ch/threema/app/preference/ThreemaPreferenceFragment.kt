@@ -61,13 +61,13 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
     private var colorTransparent = 0
     private var initialized = false
 
-    var settingsScrollView: NestedScrollView? = null
-    var appBar: AppBarLayout? = null
+    private var settingsScrollView: NestedScrollView? = null
+    private var appBar: AppBarLayout? = null
     var toolbar: MaterialToolbar? = null
-    var toolbarTitle: TextView? = null
+    private var toolbarTitle: TextView? = null
     var title: TextView? = null
-    var connectionIndicator: View? = null
-    var serverConnection: ServerConnection? = null
+    private var connectionIndicator: View? = null
+    private var serverConnection: ServerConnection? = null
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         initialized = true
@@ -336,5 +336,12 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
 
     override fun updateConnectionState(connectionState: ConnectionState?) {
         RuntimeUtil.runOnUiThread { ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState) }
+    }
+
+    override fun onDestroyView() {
+        appBar = null
+        settingsScrollView = null
+
+        super.onDestroyView()
     }
 }

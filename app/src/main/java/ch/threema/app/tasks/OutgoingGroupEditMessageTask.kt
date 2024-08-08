@@ -33,11 +33,12 @@ import kotlinx.serialization.Serializable
 import java.util.Date
 
 class OutgoingGroupEditMessageTask(
-        private val messageId: Int,
-        private val text: String,
-        private val editedAt: Date,
-        private val recipientIdentities: Set<String>,
-        serviceManager: ServiceManager,
+    private val messageModelId: Int,
+    private val messageId: MessageId,
+    private val editedText: String,
+    private val editedAt: Date,
+    private val recipientIdentities: Set<String>,
+    serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
 
     override val type: String = "OutgoingGroupEditMessageTask"
@@ -46,20 +47,20 @@ class OutgoingGroupEditMessageTask(
     private val messageService by lazy { serviceManager.messageService }
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        val message = messageService.getGroupMessageModel(messageId, true)
-                ?: throw ThreemaException("No group message model found for messageId=$messageId")
-
-        val apiMessageId = MessageId.fromString(message.apiMessageId)
+        val message = messageService.getGroupMessageModel(messageModelId, true)
+                ?: throw ThreemaException("No group message model found for messageId=$messageModelId")
 
         val group = groupService.getById(message.groupId)
             ?: throw ThreemaException("No group model found for groupId=${message.groupId}")
+
+        val editedMessageId = MessageId.fromString(message.apiMessageId).messageIdLong
 
         sendGroupMessage(
                 group,
                 groupService.getGroupIdentities(group).toSet(),
                 null,
-                apiMessageId,
-                createAbstractMessage =  { createEditMessage(apiMessageId.messageIdLong, editedAt) },
+                messageId,
+                createAbstractMessage =  { createEditMessage(editedMessageId, editedAt) },
                 handle
         )
     }
@@ -68,7 +69,7 @@ class OutgoingGroupEditMessageTask(
         val editMessage = GroupEditMessage(
             EditMessageData(
                 messageId = messageId,
-                text = text
+                text = editedText
             )
         )
         editMessage.date = date
@@ -76,23 +77,26 @@ class OutgoingGroupEditMessageTask(
     }
 
     override fun serialize(): SerializableTaskData = OutgoingGroupEditMessageData(
-        messageId,
-        text,
+        messageModelId,
+        messageId.messageId,
+        editedText,
         editedAt.time,
         recipientIdentities
     )
 
     @Serializable
     class OutgoingGroupEditMessageData(
-        private val messageId: Int,
-        private val text: String,
+        private val messageModelId: Int,
+        private val messageId: ByteArray,
+        private val editedText: String,
         private val editedAt: Long,
         private val recipientIdentities: Set<String>
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupEditMessageTask(
-                messageId,
-                text,
+                messageModelId,
+                MessageId(messageId),
+                editedText,
                 Date(editedAt),
                 recipientIdentities,
                 serviceManager

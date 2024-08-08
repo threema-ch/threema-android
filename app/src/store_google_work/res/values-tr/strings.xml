@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Android için Threema Work</string>
-    <string name="enter_serial_body">Threema Work, Şirketler için bir mesajlaşma aracıdır. Lütfen şirketiniz tarafından sağlanan kimlik bilgilerini girin.</string>
+    <string name="enter_serial_body">Lütfen şirketiniz tarafından sağlanan Threema Work kimlik bilgilerini girin.</string>
     <string name="serial_required_want_exit">Lisans geçersiz. Tekrar denemek veya Threema Work\'ten çıkmak ister misiniz?</string>
     <string name="checking_serial">Kimlik bilgileri kontrol ediliyor</string>
     <string name="username_hint">Kullanıcı adı</string>
@@ -17,7 +17,6 @@
     <string name="new_wizard_info_link">Threema Work, telefon numaranızı ve e-posta adresinizi sağlayarak, telefonlarının adres defterinde mevcutsanız, kişilerinizin sizi otomatik olarak bulmasına yardımcı olur. Veriler, sunucumuzda tek yönlü şifreli (karma veri) bir biçimde saklanacaktır. Threema Work\'ü anonim olarak kullanmak istiyorsanız bu adımı atlayabilirsiniz.</string>
     <string name="threema_contact">Threema Work kişisi</string>
     <string name="menu_about">Threema Work Hakkında</string>
-    <string name="private_threema_download"><![CDATA[<a href= %1$s>Threema Work hakkında daha fazla bilgi edinin</a> <br/> <br/> Özel bir kullanıcıysanız, Threema\'yı indirmek için lütfen <a href=%2$s>buraya dokunun</a>.]]></string>
     <string name="directory_search">Dizinde ara</string>
     <string name="directory_title">Şirket Rehberi</string>
     <string name="directory_empty_view_text">Threema Work kullanıcılarını şirket rehberinde aramaya başlamak için lütfen bir ismin en az 3 karakterini girin veya filtre simgesine dokunarak kategori seçin.</string>

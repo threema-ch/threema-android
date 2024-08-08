@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.ColorInt;
@@ -1437,7 +1438,10 @@ public class GroupServiceImpl implements GroupService {
 	public GroupFeatureSupport getFeatureSupport(@NonNull GroupModel groupModel, @ThreemaFeature.Feature long feature) {
 		return new GroupFeatureSupport(
 			feature,
-			new ArrayList<>(OutgoingCspMessageUtilsKt.filterBroadcastIdentity(getMembers(groupModel), groupModel))
+			new ArrayList<>(
+				OutgoingCspMessageUtilsKt.filterBroadcastIdentity(getMembers(groupModel), groupModel)
+					.stream().filter((member) -> !userService.isMe(member.getIdentity())).collect(Collectors.toList())
+			)
 		);
 	}
 }

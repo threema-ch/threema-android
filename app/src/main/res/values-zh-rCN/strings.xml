@@ -37,9 +37,9 @@
     <string name="prefs_sum_sync_contacts_on">使用设备通讯录同步 %s 用户</string>
     <string name="prefs_sum_sync_contacts_off">不要将 %s 用户与设备通讯录同步</string>
     <string name="prefs_title_sync_contacts">联系人同步</string>
-    <string name="prefs_sum_block_unknown_off">任何人都可以向您发送信息。
-当第一条信息到达时，新的联系人将被自动添加。</string>
-    <string name="prefs_sum_block_unknown_on">只有您的联系人列表中的人才能向您发送信息。</string>
+    <string name="prefs_sum_block_unknown_off">任何人都可以向您发送消息。
+当第一条消息到达时，新的联系人将被自动添加。</string>
+    <string name="prefs_sum_block_unknown_on">只有您的联系人列表中的人才能向您发送消息。</string>
     <string name="prefs_title_block_unknown">屏蔽未知联系人</string>
     <string name="prefs_title_read_receipts">发送已读回执</string>
     <string name="prefs_title_typing_indicator">发送输入状态</string>
@@ -49,7 +49,7 @@
     <string name="prefs_notification_sound">通知声音</string>
     <string name="prefs_sum_notification_sound">系统默认</string>
     <string name="prefs_vibrate">振动</string>
-    <string name="prefs_sum_vibrate">收到信息时振动</string>
+    <string name="prefs_sum_vibrate">收到消息时振动</string>
     <string name="prefs_light">通知灯</string>
     <string name="prefs_sum_light">白色</string>
     <string name="prefs_title_wallpaper">选择壁纸</string>

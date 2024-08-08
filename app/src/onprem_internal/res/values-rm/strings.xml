@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema OnPrem per Android</string>
-    <string name="enter_serial_body">Il messenger per interpresas.\n\nEndatescha p.pl. tias datas d\'access. Contactescha tes administratur, sche ti na las enconuschas betg.</string>
+    <string name="enter_serial_body">Threema OnPrem è il messenger autogestiunà per interpresas. Endatescha p.pl. las datas d\'access messas a disposiziun da tia interpresa.</string>
     <string name="serial_required_want_exit">La licenza è nunvalaivla. Vuls ti empruvar anc ina giada u bandunar Threema OnPrem?</string>
     <string name="checking_serial">L\'autorisaziun d\'access vegn verifitgada</string>
     <string name="username_hint">Num da l\'utilisader</string>
@@ -17,5 +17,4 @@
     <string name="new_wizard_info_link">Sche ti inditgescha tes numer da telefonin e/u tia adressa dad e-mail, po Threema OnPrem gidar tes contacts da ta chattar automaticamain, sche ti es registrà en lur cudeschs d\'adressas. Las adressas dad e-mail vegnan memorisadas en furma da diever unic (furma da hash) sin noss server. Ti pos era sursiglir quest pass, sche ti vuls utilisar anonimamain Threema OnPrem.</string>
     <string name="threema_contact">Contact da Threema OnPrem</string>
     <string name="menu_about">Davart Threema OnPrem</string>
-    <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Per utilisaders privats</a>]]></string>
 </resources>

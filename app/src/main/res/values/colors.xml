@@ -75,11 +75,13 @@
 	<!-- theme-agnostic colors -->
 
 	<!-- wizard -->
-	<color name="wizard_color_primary">@android:color/white</color>
+	<color name="wizard_color_text_on_primary">@android:color/white</color>
 	<color name="wizard_alpha_background">#33ffffff</color>
 	<color name="wizard_color_accent">@color/md_theme_dark_primary</color>
 	<color name="wizard_color_accent_dark">#323232</color>
 	<color name="wizard_color_button_disabled">#664caf50</color>
+    <!-- primary color of consumer build to use in work build -->
+    <color name="wizard_color_accent_consumer">#05A63F</color>
 
 	<!-- wizard step pager display -->
 	<color name="step_pager_previous_tab_color">#4433b5e5</color>

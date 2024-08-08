@@ -4,7 +4,8 @@
             android:id="@+id/top_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:background="@android:color/black">
 
 	<FrameLayout android:layout_width="match_parent"
 				 android:layout_height="wrap_content">
@@ -28,16 +29,15 @@
 				android:paddingTop="@dimen/wizard_contents_padding"
 				android:paddingBottom="@dimen/wizard_contents_padding">
 
-			<TextView
-					style="@style/WizardTitleText"
-					android:id="@+id/enter_serial_welcome_title"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/app_name"
-					android:gravity="center_horizontal"
-					android:layout_centerHorizontal="true"
-					android:layout_marginTop="8dp"
-			/>
+            <ImageView
+                android:id="@+id/enter_serial_welcome_title"
+                android:src="@drawable/logo_main_white"
+                android:layout_width="wrap_content"
+                android:layout_height="64dp"
+                android:importantForAccessibility="no"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:layout_centerHorizontal="true" />
 
 			<TextView
 					style="@style/WizardMediumText"
@@ -50,7 +50,6 @@
 					android:linksClickable="true"
 					android:autoLink="web"
 					android:text="@string/enter_serial_body"
-					android:layout_marginTop="@dimen/wizard_paragraph_height"
 					android:layout_marginBottom="5dp"
 			/>
 
@@ -156,17 +155,6 @@
 				android:layout_below="@id/unlock_button_work"
 				android:gravity="center_horizontal"
 				android:layout_marginTop="32dp" />
-
-			<TextView
-				style="@style/WizardMediumText"
-				android:id="@+id/private_explain"
-				android:visibility="visible"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@id/work_lost_credential_help"
-				android:layout_alignParentBottom="true"
-				android:gravity="center_horizontal|bottom"
-				android:layout_marginTop="32dp"/>
 
 		</RelativeLayout>
 

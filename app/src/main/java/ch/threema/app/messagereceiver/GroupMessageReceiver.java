@@ -285,10 +285,11 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 		));
 	}
 
-	public void sendEditMessage(int messageId, @NonNull String body, @NonNull Date editedAt) {
+	public void sendEditMessage(int messageModelId, @NonNull String body, @NonNull Date editedAt) {
 		taskManager.schedule(
 			new OutgoingGroupEditMessageTask(
-				messageId,
+				messageModelId,
+				new MessageId(),
 				body,
 				editedAt,
 				GroupUtil.getRecipientIdentitiesByFeatureSupport(
@@ -299,10 +300,11 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 		);
 	}
 
-	public void sendDeleteMessage(int messageId, @NonNull Date deletedAt) {
+	public void sendDeleteMessage(int messageModelId, @NonNull Date deletedAt) {
 		taskManager.schedule(
 			new OutgoingGroupDeleteMessageTask(
-				messageId,
+				messageModelId,
+				new MessageId(),
 				deletedAt,
 				GroupUtil.getRecipientIdentitiesByFeatureSupport(
 					groupService.getFeatureSupport(group, ThreemaFeature.DELETE_MESSAGES)

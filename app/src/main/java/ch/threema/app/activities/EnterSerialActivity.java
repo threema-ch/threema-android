@@ -28,7 +28,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -63,7 +62,6 @@ import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
-import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -75,7 +73,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 	private static final String BUNDLE_LICENSE_KEY = "bulk";
 	private static final String BUNDLE_SERVER = "busv";
 	private static final String DIALOG_TAG_CHECKING = "check";
-	private TextView stateTextView, privateExplainText = null;
+	private TextView stateTextView = null;
 	private EditText licenseKeyOrUsernameText, passwordText, serverText;
 	private MaterialButton unlockButton;
 	private Button loginButton;
@@ -166,20 +164,6 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 	@SuppressLint("StringFormatInvalid")
 	private void setupForWorkBuild() {
-		privateExplainText = findViewById(R.id.private_explain);
-
-		if (privateExplainText != null) {
-			final String workInfoUrl = String.format(getString(R.string.threema_work_url), LocaleUtil.getAppLanguage());
-			privateExplainText.setText(Html.fromHtml(
-				String.format(
-					getString(R.string.private_threema_download),
-					workInfoUrl,
-					getString(R.string.private_download_url)
-				)
-			));
-			privateExplainText.setClickable(true);
-			privateExplainText.setMovementMethod(LinkMovementMethod.getInstance());
-		}
 		licenseKeyOrUsernameText.addTextChangedListener(new TextChangeWatcher());
 		passwordText.addTextChangedListener(new TextChangeWatcher());
 		loginButton = findViewById(getResources().getIdentifier("unlock_button_work", "id", getPackageName()));
@@ -356,9 +340,6 @@ public class EnterSerialActivity extends ThreemaActivity {
 			if (stateTextView != null) {
 				stateTextView.setText("");
 			}
-			if (privateExplainText != null) {
-				privateExplainText.setVisibility(View.VISIBLE);
-			}
 		}
 	}
 
@@ -439,17 +420,6 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 	private void changeState(String state) {
 		this.stateTextView.setText(state);
-	}
-
-	@Override
-	protected boolean enableOnBackPressedCallback() {
-		return true;
-	}
-
-	@Override
-	protected void handleOnBackPressed() {
-		moveTaskToBack(true);
-		finish();
 	}
 
 	@Override

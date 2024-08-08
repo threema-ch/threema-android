@@ -1650,4 +1650,36 @@ public class ConfigUtils {
 
 		return new int[]{x, y, viewableHeight};
 	}
+
+	public static boolean isInstalledFromStore(@Nullable Context context) {
+		String installerPackageName = getInstallerPackageName(context);
+		return "com.android.vending".equals(installerPackageName) || "com.huawei.appmarket".equals(installerPackageName);
+	}
+
+	public static boolean isInstalledFromPlayStore(@Nullable Context context) {
+		String installerPackageName = getInstallerPackageName(context);
+		return "com.android.vending".equals(installerPackageName);
+	}
+
+	private static @Nullable String getInstallerPackageName(@Nullable Context context) {
+		if (context == null) {
+			logger.warn("Could not get context.");
+			return  null;
+		}
+
+		try {
+			String installerPackageName;
+			PackageManager packageManager = context.getPackageManager();
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+				installerPackageName = packageManager.getInstallSourceInfo(context.getPackageName()).getInstallingPackageName();
+			} else {
+				installerPackageName = packageManager.getInstallerPackageName(context.getPackageName());
+			}
+
+			return installerPackageName;
+		} catch (Exception e) {
+			logger.error("Could not determine package source", e);
+			return null;
+		}
+	}
 }

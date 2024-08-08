@@ -375,10 +375,16 @@
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:launchMode="singleTop"
 			android:theme="@style/Theme.Threema.Translucent"/>
+        <activity
+            android:name=".activities.WorkIntroActivity"
+            android:theme="@style/Theme.Threema.Wizard"
+            android:screenOrientation="sensorPortrait"
+            android:exported="false">
+
+        </activity>
 		<activity
 			android:name=".activities.EnterSerialActivity"
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:excludeFromRecents="true"
 			android:launchMode="singleTop"
 			android:screenOrientation="sensorPortrait"
 			android:theme="@style/Theme.Threema.Wizard"

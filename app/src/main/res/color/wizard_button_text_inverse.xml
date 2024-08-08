@@ -4,5 +4,5 @@
 		  android:color="@color/wizard_color_accent"/>
 	<item android:state_focused="true"
 		  android:color="@color/wizard_color_accent"/>
-	<item android:color="@color/wizard_color_primary" />
+	<item android:color="@color/wizard_color_text_on_primary" />
 </selector>

@@ -17,7 +17,6 @@
     <string name="new_wizard_info_link">Ved å oppgi ditt telefonnummer og e-postadresse, så kan Threema Work hjelpe dine kontakter å finne deg automatisk om de har deg i adresseboken på sin enhet. Informasjonen blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke Threema Work helt anonymt, så kan du hoppe over dette trinnet.</string>
     <string name="threema_contact">Threema Work kontakt</string>
     <string name="menu_about">Om Threema Work</string>
-    <string name="private_threema_download"><![CDATA[Om du er en privat bruker, vennligst <a href="https://play.google.com/store/apps/details?id=ch.threema.app">trykk her</a> for å laste ned Threema.]]></string>
     <string name="directory_search">Søk i katalogen</string>
     <string name="directory_title">Bedriftskatalog</string>
     <string name="directory_empty_view_text">Vennligst skriv inn minst 3 tegn av et navn for å kunne søke i bedriftskatalogen etter Threema Work brukere</string>

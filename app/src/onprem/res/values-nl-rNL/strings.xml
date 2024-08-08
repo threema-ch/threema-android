@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_title">Threema OnPrem voor Android</string>
-    <string name="enter_serial_body">Voer de gegevens in die u van uw bedrijf of organisatie heeft ontvangen</string>
+    <string name="enter_serial_body">Voer Threema OnPrem-gegevens in die u van uw bedrijf hebt ontvangen.</string>
     <string name="serial_required_want_exit">Licentie is ongeldig. Probeer het opnieuw of sluit Threema OnPrem af.</string>
     <string name="checking_serial">Gegevens controleren</string>
     <string name="username_hint">Gebruikersnaam</string>
@@ -18,7 +18,6 @@
     <string name="new_wizard_info_sync_contacts">Als u deze optie inschakelt, past Threema OnPrem eenrichtigs-versleuteling (hashfunctie) toe op uw e-mailadressen en telefoonnummers, voordat ze naar de server worden verstuurd om naar overeenkomende contactpersonen te zoeken. De gegevens worden alleen in het geheugen bewaard en nooit op de server opgeslagen.</string>
     <string name="threema_contact">Contactpersoon Threema OnPrem</string>
     <string name="menu_about">Over Threema OnPrem</string>
-    <string name="private_threema_download"><![CDATA[<a href="https://play.google.com/store/apps/details?id=ch.threema.app">Voor privégebruikers</a>]]></string>
     <string name="directory_search">ディレクトリ内検索</string>
     <string name="directory_title">会社のディレクトリ</string>
     <string name="directory_empty_view_text">あなたの会社のThreema OnPremユーザーのディレクトリで検索を開始するには、少なくとも3文字を入力してください。</string>

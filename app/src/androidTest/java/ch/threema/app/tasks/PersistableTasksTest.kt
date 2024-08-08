@@ -236,7 +236,7 @@ class PersistableTasksTest {
     fun testOutgoingContactEditMessageTask() {
         assertValidEncoding(
             OutgoingContactEditMessageTask::class.java,
-            "{\"type\":\"ch.threema.app.tasks.OutgoingContactEditMessageTask.OutgoingContactEditMessageData\",\"toIdentity\":\"01234567\",\"messageId\":0, \"text\":\"test\", \"editedAt\":0}"
+            "{\"type\":\"ch.threema.app.tasks.OutgoingContactEditMessageTask.OutgoingContactEditMessageData\",\"toIdentity\":\"01234567\",\"messageModelId\":0, \"messageId\":[0,0,0,0,0,0,0,0], \"editedText\":\"test\", \"editedAt\":0}"
         )
     }
 
@@ -244,7 +244,7 @@ class PersistableTasksTest {
     fun testOutgoingGroupEditMessageTask() {
         assertValidEncoding(
             OutgoingGroupEditMessageTask::class.java,
-            "{\"type\":\"ch.threema.app.tasks.OutgoingGroupEditMessageTask.OutgoingGroupEditMessageData\",\"messageId\":0, \"text\":\"test\", \"editedAt\":0,\"recipientIdentities\":[\"01234567\",\"01234567\"]}"
+            "{\"type\":\"ch.threema.app.tasks.OutgoingGroupEditMessageTask.OutgoingGroupEditMessageData\",\"messageModelId\":0, \"messageId\":[0,0,0,0,0,0,0,0], \"editedText\":\"test\", \"editedAt\":0,\"recipientIdentities\":[\"01234567\",\"01234567\"]}"
         )
     }
 
@@ -252,7 +252,7 @@ class PersistableTasksTest {
     fun testOutgoingContactDeleteMessageTask() {
         assertValidEncoding(
             OutgoingContactDeleteMessageTask::class.java,
-            "{\"type\":\"ch.threema.app.tasks.OutgoingContactDeleteMessageTask.OutgoingContactDeleteMessageData\",\"toIdentity\":\"01234567\",\"messageId\":0, \"deletedAt\":0}"
+            "{\"type\":\"ch.threema.app.tasks.OutgoingContactDeleteMessageTask.OutgoingContactDeleteMessageData\",\"toIdentity\":\"01234567\",\"messageModelId\":0, \"messageId\":[0,0,0,0,0,0,0,0], \"deletedAt\":0}"
         )
     }
 
@@ -260,7 +260,7 @@ class PersistableTasksTest {
     fun testOutgoingGroupDeleteMessageTask() {
         assertValidEncoding(
             OutgoingGroupDeleteMessageTask::class.java,
-            "{\"type\":\"ch.threema.app.tasks.OutgoingGroupDeleteMessageTask.OutgoingGroupDeleteMessageData\",\"messageId\":0,\"deletedAt\":0,\"recipientIdentities\":[\"01234567\",\"01234567\"]}"
+            "{\"type\":\"ch.threema.app.tasks.OutgoingGroupDeleteMessageTask.OutgoingGroupDeleteMessageData\",\"messageModelId\":0,\"messageId\":[0,0,0,0,0,0,0,0],\"deletedAt\":0,\"recipientIdentities\":[\"01234567\",\"01234567\"]}"
         )
     }
 
