@@ -693,9 +693,9 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 				this.nickname = this.userService.getIdentity();
 				break;
 			case DIALOG_TAG_INVALID_ENTRY:
+			case DIALOG_TAG_PASSWORD_BAD:
 				prevPage();
 				break;
-			case DIALOG_TAG_PASSWORD_BAD:
 			case DIALOG_TAG_THREEMA_SAFE:
 			case DIALOG_TAG_PASSWORD_PRESET_CONFIRM:
 				break;

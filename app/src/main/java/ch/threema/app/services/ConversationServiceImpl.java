@@ -540,7 +540,9 @@ public class ConversationServiceImpl implements ConversationService {
 	@Override
 	public synchronized int empty(final ConversationModel conversation, boolean silentMessageUpdate) {
 		// Remove all messages
-		final List<AbstractMessageModel> messages = this.messageService.getMessagesForReceiver(conversation.getReceiver());
+		MessageReceiver<?> receiver = conversation.getReceiver();
+		final List<AbstractMessageModel> messages = this.messageService.getMessagesForReceiver(receiver);
+		logger.info("Empty conversation with {} messages for receiver {} (type={})", messages.size(), receiver.getUniqueIdString(), receiver.getType());
 		for (AbstractMessageModel m : messages) {
 			this.messageService.remove(m, silentMessageUpdate);
 		}
@@ -572,6 +574,7 @@ public class ConversationServiceImpl implements ConversationService {
 		if (conversationModel != null) {
 			return this.empty(conversationModel, true);
 		}
+		logger.warn("Contact conversation model is null, cannot empty");
 		return 0;
 	}
 
@@ -581,6 +584,7 @@ public class ConversationServiceImpl implements ConversationService {
 		if (conversationModel != null) {
 			return this.empty(conversationModel, true);
 		}
+		logger.warn("Group conversation model is null, cannot empty");
 		return 0;
 	}
 
@@ -590,6 +594,7 @@ public class ConversationServiceImpl implements ConversationService {
 		if (conversationModel != null) {
 			return this.empty(conversationModel, true);
 		}
+		logger.warn("DistributionList conversation model is null, cannot empty");
 		return 0;
 	}
 

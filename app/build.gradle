@@ -18,14 +18,14 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 // version codes
 
 // Only use the scheme "<major>.<minor>.<patch>" for the app_version
-def app_version = "5.5"
+def app_version = "5.5.1"
 
 // beta_suffix with leading dash (e.g. `-beta1`)
 // should be one of (alpha|beta|rc) and an increasing number or empty for a regular release.
 // Note: in nightly builds this will be overwritten with a nightly version "-n12345"
 def beta_suffix = ""
 
-def defaultVersionCode = 996
+def defaultVersionCode = 998
 
 /**
  * Return the git hash, if git is installed.

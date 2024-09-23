@@ -161,7 +161,7 @@
     <string name="support">Поддержка</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">Следующие резервные копии могут быть использованы вместе с выбранным паролем для восстановления вашего Threema ID.</string>
-    <string name="backup_share_subject">Экспорт ID Threema для</string>
+    <string name="backup_share_subject">Экспорт Threema ID для</string>
     <string name="add_attachment">Новое вложение</string>
     <string name="invalid_passphrase">Неправильная кодовая фраза</string>
     <string name="master_key_locked">Главный ключ заблокирован</string>
@@ -1018,7 +1018,7 @@
     <string name="open_in_maps_app">Открыть в приложении «Карты»</string>
     <string name="delete">Удалить</string>
     <string name="delete_from_this_device">Удалить с этого устройства</string>
-    <string name="delete_for_all">Удалить для всех</string>
+    <string name="delete_for_all">Удалить у всех</string>
     <string name="message_was_deleted">Это сообщение удалено</string>
     <string name="continue_recording">Продолжить запись</string>
     <string name="whatsnew_title">Что нового в версии %1$s 5.2?</string>
@@ -1249,7 +1249,7 @@
     <string name="id_backup_info">Восстановить только ID</string>
     <string name="restore_your_id_contacts_and_groups">Восстановить ID, контакты и группы</string>
     <string name="threema_safe_backup">Безопасная рез. копия Threema</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>Забыли пароль?</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Помощь</a>]]></string>
     <string name="download_failed">Невозможно скачать. Код ошибки: %d</string>
     <string name="edit_answer">Изменить ответ</string>
     <string name="share_media">Поделиться с другим приложением…</string>

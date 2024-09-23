@@ -310,8 +310,8 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 		this.backupFile = (File) data;
 		this.backupPassword = text;
 
-		// If the permission is already granted, then start the restore directly
-		if (ConfigUtils.requestNotificationPermission(this, permissionLauncher)) {
+		// If the notification permission is already granted, then start the restore directly
+		if (ConfigUtils.requestNotificationPermission(this, permissionLauncher, preferenceService)) {
 			startRestore();
 		}
 	}

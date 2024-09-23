@@ -32,12 +32,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.biometric.BiometricPrompt;
-
-import org.slf4j.Logger;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
@@ -50,191 +49,192 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class BiometricLockActivity extends ThreemaAppCompatActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("BiometricLockActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BiometricLockActivity");
 
-	private static final int REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK = 551;
-	public static final String INTENT_DATA_AUTHENTICATION_TYPE = "auth_type";
+    private static final int REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK = 551;
+    public static final String INTENT_DATA_AUTHENTICATION_TYPE = "auth_type";
 
-	private LockAppService lockAppService;
-	private PreferenceService preferenceService;
-	private SystemScreenLockService systemScreenLockService;
-	private boolean isCheckOnly = false;
-	private String authenticationType = null;
+    private LockAppService lockAppService;
+    private SystemScreenLockService systemScreenLockService;
+    private boolean isCheckOnly = false;
+    private String authenticationType = null;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		logger.debug("onCreate");
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        logger.debug("onCreate");
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			finish();
-			return;
-		}
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            finish();
+            return;
+        }
 
-		preferenceService = serviceManager.getPreferenceService();
-		lockAppService = serviceManager.getLockAppService();
-		systemScreenLockService = serviceManager.getScreenLockService();
+        lockAppService = serviceManager.getLockAppService();
+        systemScreenLockService = serviceManager.getScreenLockService();
 
-		setContentView(R.layout.activity_biometric_lock);
+        setContentView(R.layout.activity_biometric_lock);
 
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
-		isCheckOnly = getIntent().getBooleanExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, false);
-		if (getIntent().hasExtra(INTENT_DATA_AUTHENTICATION_TYPE)) {
-			authenticationType = getIntent().getStringExtra(INTENT_DATA_AUTHENTICATION_TYPE);
-		}
+        isCheckOnly = getIntent().getBooleanExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, false);
+        if (getIntent().hasExtra(INTENT_DATA_AUTHENTICATION_TYPE)) {
+            authenticationType = getIntent().getStringExtra(INTENT_DATA_AUTHENTICATION_TYPE);
+        }
 
-		if (authenticationType == null) {
-			authenticationType = preferenceService.getLockMechanism();
-		}
+        PreferenceService preferenceService = serviceManager.getPreferenceService();
+        if (authenticationType == null) {
+            authenticationType = preferenceService.getLockMechanism();
+        }
 
-		if (!lockAppService.isLocked() && !isCheckOnly) {
-			finish();
-		}
+        if (!lockAppService.isLocked() && !isCheckOnly) {
+            finish();
+        }
 
-		switch (authenticationType) {
-			case PreferenceService.LockingMech_SYSTEM:
-				showSystemScreenLock();
-				break;
-			case PreferenceService.LockingMech_BIOMETRIC:
-				if (BiometricUtil.isBiometricsSupported(this)) {
-					showBiometricPrompt();
-				} else {
-					// no enrolled fingerprints - try system screen lock
-					showSystemScreenLock();
-				}
-				break;
-			default:
-				break;
-		}
-	}
+        switch (authenticationType) {
+            case PreferenceService.LockingMech_SYSTEM:
+                showSystemScreenLock();
+                break;
+            case PreferenceService.LockingMech_BIOMETRIC:
+                if (BiometricUtil.isBiometricsSupported(this)) {
+                    showBiometricPrompt();
+                } else {
+                    // no enrolled fingerprints - try system screen lock
+                    showSystemScreenLock();
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
-	@Override
-	public void finish() {
-		logger.debug("finish");
-		try {
-			super.finish();
-			overridePendingTransition(0, 0);
-		} catch (Exception ignored) {}
-	}
+    @Override
+    public void finish() {
+        logger.debug("finish");
+        try {
+            super.finish();
+            overridePendingTransition(0, 0);
+        } catch (Exception ignored) {}
+    }
 
-	private void showBiometricPrompt() {
-		KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+    private void showBiometricPrompt() {
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
-		BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
-			.setTitle(getString(R.string.prefs_title_access_protection))
-			.setSubtitle(getString(R.string.biometric_enter_authentication))
-			.setConfirmationRequired(false);
+        BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
+            .setTitle(getString(R.string.prefs_title_access_protection))
+            .setSubtitle(getString(R.string.biometric_enter_authentication))
+            .setConfirmationRequired(false);
 
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && keyguardManager != null && keyguardManager.isDeviceSecure()) {
-			// allow fallback to device credentials such as PIN, passphrase or pattern
-			promptInfoBuilder.setDeviceCredentialAllowed(true);
-		} else {
-			promptInfoBuilder.setNegativeButtonText(getString(R.string.cancel));
-		}
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && keyguardManager != null && keyguardManager.isDeviceSecure()) {
+            // allow fallback to device credentials such as PIN, passphrase or pattern
+            promptInfoBuilder.setDeviceCredentialAllowed(true);
+        } else {
+            promptInfoBuilder.setNegativeButtonText(getString(R.string.cancel));
+        }
 
-		BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
-		BiometricPrompt biometricPrompt = new BiometricPrompt(this, new RuntimeUtil.MainThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
-			@Override
-			public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-				super.onAuthenticationError(errorCode, errString);
-				if (errorCode != BiometricPrompt.ERROR_USER_CANCELED && errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-					Toast.makeText(BiometricLockActivity.this, errString + " (" + errorCode + ")", Toast.LENGTH_LONG).show();
-				}
-				BiometricLockActivity.this.onAuthenticationError(errorCode);
-			}
+        BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
+        BiometricPrompt biometricPrompt = new BiometricPrompt(this, new RuntimeUtil.MainThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                logger.error("Authentication error: (errorCode={}, errString={})", errorCode, errString);
+                if (errorCode != BiometricPrompt.ERROR_USER_CANCELED && errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                    Toast.makeText(BiometricLockActivity.this, errString + " (" + errorCode + ")", Toast.LENGTH_LONG).show();
+                }
+                BiometricLockActivity.this.onAuthenticationError(errorCode);
+            }
 
-			@Override
-			public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-				super.onAuthenticationSucceeded(result);
-				BiometricLockActivity.this.onAuthenticationSuccess();
-			}
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                logger.info("Authentication succeeded");
+                BiometricLockActivity.this.onAuthenticationSuccess();
+            }
 
-			@Override
-			public void onAuthenticationFailed() {
-				super.onAuthenticationFailed();
-				BiometricLockActivity.this.onAuthenticationFailed();
-			}
-		});
-		biometricPrompt.authenticate(promptInfo);
-	}
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                BiometricLockActivity.this.onAuthenticationFailed();
+            }
+        });
+        biometricPrompt.authenticate(promptInfo);
+    }
 
-	private void showSystemScreenLock() {
-		logger.debug("showSystemScreenLock");
-		if (isCheckOnly) {
-			if (systemScreenLockService.tryEncrypt(this, REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK)) {
-				onAuthenticationSuccess();
-			}
-		} else {
-			if (systemScreenLockService.systemUnlock(this)) {
-				onAuthenticationSuccess();
-			}
-		}
-	}
+    private void showSystemScreenLock() {
+        logger.debug("showSystemScreenLock");
+        if (isCheckOnly) {
+            if (systemScreenLockService.tryEncrypt(this, REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK)) {
+                onAuthenticationSuccess();
+            }
+        } else {
+            if (systemScreenLockService.systemUnlock(this)) {
+                onAuthenticationSuccess();
+            }
+        }
+    }
 
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus) {
-			getWindow().getDecorView().setSystemUiVisibility(
-				// Set the content to appear under the system bars so that the
-				// content doesn't resize when the system bars hide and show.
-				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-				| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-				| View.SYSTEM_UI_FLAG_FULLSCREEN
-			);
-		}
-	}
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                // Set the content to appear under the system bars so that the
+                // content doesn't resize when the system bars hide and show.
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+            );
+        }
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-		logger.debug("onActivityResult requestCode: " + requestCode + " result: " + resultCode);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        logger.info("onActivityResult (requestCode={}, resultCode={})", requestCode, resultCode);
 
-		super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == ThreemaActivity.ACTIVITY_ID_CONFIRM_DEVICE_CREDENTIALS || requestCode == REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK) {
-			// Challenge completed, proceed with using cipher
-			if (resultCode != Activity.RESULT_CANCELED) {
-				onAuthenticationSuccess();
-			} else {
-				// The user canceled or didn’t complete the lock screen
-				onAuthenticationFailed();
-			}
-		}
-	}
+        if (requestCode == ThreemaActivity.ACTIVITY_ID_CONFIRM_DEVICE_CREDENTIALS || requestCode == REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK) {
+            // Challenge completed, proceed with using cipher
+            if (resultCode != Activity.RESULT_CANCELED) {
+                onAuthenticationSuccess();
+            } else {
+                // The user canceled or didn’t complete the lock screen
+                onAuthenticationFailed();
+            }
+        }
+    }
 
-	private void onAuthenticationSuccess() {
-		logger.debug("Authentication successful");
-		if (!isCheckOnly) {
-			lockAppService.unlock(null);
-		}
-		this.setResult(RESULT_OK);
-		this.finish();
-	}
+    private void onAuthenticationSuccess() {
+        logger.debug("Authentication successful");
+        if (!isCheckOnly) {
+            lockAppService.unlock(null);
+        }
+        this.setResult(RESULT_OK);
+        this.finish();
+    }
 
-	private void onAuthenticationFailed() {
-		logger.debug("Authentication failed");
-		if (!isCheckOnly) {
-			NavigationUtil.navigateToLauncher(this);
-		}
-		this.setResult(RESULT_CANCELED);
-		this.finish();
-	}
+    private void onAuthenticationFailed() {
+        logger.debug("Authentication failed");
+        if (!isCheckOnly) {
+            NavigationUtil.navigateToLauncher(this);
+        }
+        this.setResult(RESULT_CANCELED);
+        this.finish();
+    }
 
-	private void onAuthenticationError(int errorCode) {
-		logger.debug("Authentication error");
-		if (!isCheckOnly) {
-			NavigationUtil.navigateToLauncher(this);
-			if (errorCode == BiometricPrompt.ERROR_USER_CANCELED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-				// ugly hack for leaking content in app switcher
-				SystemClock.sleep(2000);
-			}
-		}
-		this.setResult(RESULT_CANCELED);
-		this.finish();
-	}
+    private void onAuthenticationError(int errorCode) {
+        logger.debug("Authentication error");
+        if (!isCheckOnly) {
+            NavigationUtil.navigateToLauncher(this);
+            if (errorCode == BiometricPrompt.ERROR_USER_CANCELED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                // ugly hack for leaking content in app switcher
+                SystemClock.sleep(2000);
+            }
+        }
+        this.setResult(RESULT_CANCELED);
+        this.finish();
+    }
 }

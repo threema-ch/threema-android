@@ -145,7 +145,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 		findViewById(R.id.safe_restore_button).setOnClickListener(v -> {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 				// Ask for notification permission
-				if (!ConfigUtils.requestNotificationPermission(WizardSafeRestoreActivity.this, notificationPermissionLauncher)) {
+				if (!ConfigUtils.requestNotificationPermission(WizardSafeRestoreActivity.this, notificationPermissionLauncher, preferenceService)) {
 					return;
 				}
 			}

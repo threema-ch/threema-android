@@ -37,8 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">Падтрымліваць сінхранізацыю карыстальнікаў %s з адраснай кнігай вашай прылады</string>
     <string name="prefs_sum_sync_contacts_off">Не сінхранізаваць карыстальнікаў %s з адраснай кнігай вашай прылады</string>
     <string name="prefs_title_sync_contacts">Сінхраніз. кантактаў</string>
-    <string name="prefs_sum_block_unknown_off">Любы карыстальнік можа адправіць вам паведамленне.  Новыя кантакты будуць дададзены аўтаматычна
-пры атрыманні першага паведамлення.</string>
+    <string name="prefs_sum_block_unknown_off">Любы чалавек можа адправіць вам паведамленне.  Новыя кантакты будуць дададзены аўтаматычна, калі прыйдзе першае паведамленне.</string>
     <string name="prefs_sum_block_unknown_on">Адправіць вам паведамленне могуць толькі людзі з вашага спісу кантактаў.</string>
     <string name="prefs_title_block_unknown">Блакаванне незнаёмых</string>
     <string name="prefs_title_read_receipts">Апавяшчаць аб чытанні</string>
@@ -512,6 +511,7 @@
     <string name="file_placeholder">Файл</string>
     <string name="internal_storage">Унутранае сховішча</string>
     <string name="no_activity_for_mime_type">Не знайшлі праграму для адкрыцця гэтага файла.</string>
+    <string name="no_activity_for_intent">Праграма не знойдзена.</string>
     <string name="open_from">Адкрыць з</string>
     <string name="file_one_contact_not_supported">%1$s не можа прымаць файлы.</string>
     <string name="file_x_contact_not_supported">Увага: %1$d кантакты(аў) не могуць прыняць ваш файл.</string>
@@ -1017,6 +1017,7 @@
     <string name="system_default">Прадвызначаны  сістэмны</string>
     <string name="open_in_maps_app">Адк-ць у праграме \"Мапы\"</string>
     <string name="delete">Выдаліць</string>
+    <string name="delete_from_this_device">Выдаліць з гэтай прылады</string>
     <string name="delete_for_all">Выдаліць для ўсіх</string>
     <string name="message_was_deleted">Гэта паведамленне было выдалена</string>
     <string name="continue_recording">Працягнуць запіс</string>
@@ -1252,7 +1253,7 @@
     <string name="id_backup_info">Аднавіць толькі ID</string>
     <string name="restore_your_id_contacts_and_groups">Аднавіць ID, кантакты і суполкі</string>
     <string name="threema_safe_backup">Бяспечная рэз. копія Threema</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>Забылі пароль?</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Даведка</a>]]></string>
     <string name="download_failed">Не ўдалося спампаваць. Код памылкі: %d</string>
     <string name="edit_answer">Змяніць адказ</string>
     <string name="share_media">Падзяліцца з іншай праграмай…</string>
@@ -1553,9 +1554,16 @@
     <string name="edit_message_not_supported_for_all_group_members">Наступныя ўдзельнікі групы не змогуць бачыць вашыя праўкі: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Немагчыма адрэдагаваць паведамленне, таму што ні ў аднаго члена групы няма версіі праграмы, якая падтрымлівае гэтую функцыю.</string>
     <string name="delete_message_not_supported_for_all_group_members">Гэта паведамленне не будзе выдалена для наступных удзельнікаў групы: %1$s</string>
+    <string name="work_intro_more_link_text">Даведайцеся больш аб Threema Work</string>
+    <string name="work_intro_subtitle">Бяспечны бізнес-месенджэр\nдля кампаній.</string>
+    <string name="work_intro_login">Уваход %1$s</string>
+    <string name="consumer_notice_description">Калі вы з\'яўляецеся радавым карыстальнікам, загрузіце звычайную праграму Threema.</string>
+    <string name="consumer_notice_playstore_link_description">Threema у Play Store</string>
+    <string name="consumer_notice_appgallery_link_description">Threema у AppGallery</string>
+    <string name="consumer_notice_subtitle">Для асабістага карыстання</string>
     <plurals name="contacts_counter_label">
-        <item quantity="few">%d кантактаў</item>
-        <item quantity="many">%d кантакты</item>
+        <item quantity="few">%d кантакты</item>
+        <item quantity="many">%d кантактаў</item>
         <item quantity="one">%d кантакт</item>
         <item quantity="other">%d кантактаў</item>
     </plurals>
@@ -1628,11 +1636,17 @@
         <item quantity="one">На %d гадзіну</item>
         <item quantity="other">На працягу %d гадзін</item>
     </plurals>
+    <plurals name="really_delete_contacts_message">
+        <item quantity="few">Вы сапраўды хочаце выдаліць %1$d кантакты і ўсе звязаныя чаты?</item>
+        <item quantity="many">Вы сапраўды хочаце выдаліць %1$d кантактаў і ўсе звязаныя чаты?</item>
+        <item quantity="one">Вы сапраўды хочаце выдаліць %1$d кантакт і ўсе звязаныя чаты?</item>
+        <item quantity="other">Вы сапраўды хочаце выдаліць %1$d кантактаў і ўсе звязаныя чаты?</item>
+    </plurals>
     <plurals name="some_contacts_not_deleted">
         <item quantity="few">Немагчыма выдаліць %d кантакты, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
-        <item quantity="many">Немагчыма выдаліць %d кантакты, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
+        <item quantity="many">Немагчыма выдаліць %d кантактаў, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
         <item quantity="one">%d кантакт не можа быць выдалены, таму што ён усё яшчэ ўваходзіць у суполку.</item>
-        <item quantity="other">Немагчыма выдаліць %d кантакты, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
+        <item quantity="other">Немагчыма выдаліць %d кантактаў, таму што яны ўсё яшчэ ўваходзяць у суполку.</item>
     </plurals>
     <plurals name="message_archived">
         <item quantity="few">%d чатаў заархівавана</item>

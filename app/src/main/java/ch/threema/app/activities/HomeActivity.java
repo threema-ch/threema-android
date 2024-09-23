@@ -765,7 +765,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			ConfigUtils.isBackgroundRestricted(ThreemaApplication.getAppContext()) ||
 			ConfigUtils.isBackgroundDataRestricted(ThreemaApplication.getAppContext(), false) ||
 			ConfigUtils.isNotificationsDisabled(ThreemaApplication.getAppContext()) ||
-			ConfigUtils.isFullScreenNotificationsDisabled(ThreemaApplication.getAppContext()) ||
+			(preferenceService.isCallsEnabled() && ConfigUtils.isFullScreenNotificationsDisabled(ThreemaApplication.getAppContext())) ||
 			((preferenceService.useThreemaPush() || BuildFlavor.forceThreemaPush()) && !PowermanagerUtil.isIgnoringBatteryOptimizations(ThreemaApplication.getAppContext()));
 	}
 
@@ -775,7 +775,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		if (preferenceService != null) {
 			if (!preferenceService.isLatestVersion(this)) {
 				// so the app has just been updated
-				ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher);
+				ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher, preferenceService);
 
 				if (preferenceService.getPrivacyPolicyAccepted() == null) {
 					preferenceService.setPrivacyPolicyAccepted(new Date(), PreferenceService.PRIVACY_POLICY_ACCEPT_UPDATE);
@@ -1319,6 +1319,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		showWhatsNew();
 
 		notificationService.cancelRestoreNotification();
+
+		if (preferenceService.getLastNotificationPermissionRequestTimestamp() == 0) {
+			ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher, preferenceService);
+		}
 	}
 
 	private void initOngoingCallNotice() {

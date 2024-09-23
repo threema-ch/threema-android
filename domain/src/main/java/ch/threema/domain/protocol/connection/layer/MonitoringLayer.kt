@@ -234,7 +234,7 @@ internal class MonitoringLayer(
         controller.dispatcher.assertDispatcherContext()
 
         lastSentEchoSeq++
-        logger.debug("Sending echo request (seq: $lastSentEchoSeq)")
+        logger.info("Sending echo request (seq: $lastSentEchoSeq)")
         outbound.send(prepareEchoRequest(lastSentEchoSeq))
 
         delay(ProtocolDefines.ECHO_RESPONSE_TIMEOUT * 1000L)

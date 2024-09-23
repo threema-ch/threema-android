@@ -80,7 +80,8 @@
 			android:layout_height="@dimen/emoji_button_width"
 			android:layout_toLeftOf="@+id/add_time"
 			android:drawablePadding="0dp"
-			android:contentDescription="@string/insert_date"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/insert_date"
 			app:srcCompat="@drawable/ic_event"
 			android:background="@drawable/selector_compose_button"
 			app:tint="?attr/colorOnSurface" />
@@ -92,7 +93,8 @@
 			android:layout_height="@dimen/emoji_button_width"
 			android:layout_toLeftOf="@+id/create_choice"
 			android:drawablePadding="0dp"
-			android:contentDescription="@string/insert_datetime"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/insert_datetime"
 			app:srcCompat="@drawable/ic_schedule"
 			android:background="@drawable/selector_compose_button"
 			app:tint="?attr/colorOnSurface" />
@@ -103,6 +105,7 @@
 			android:layout_width="@dimen/emoji_button_width"
 			android:layout_height="@dimen/emoji_button_width"
 			android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
 			android:drawablePadding="0dp"
 			app:srcCompat="@drawable/ic_add_circle_black_24dp"
 			app:tint="@drawable/selector_button_tint"

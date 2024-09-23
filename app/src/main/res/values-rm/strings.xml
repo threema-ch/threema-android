@@ -307,6 +307,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="state_dialog_created">Creà</string>
     <string name="state_dialog_posted">Tramess</string>
     <string name="state_dialog_modified">Actualisà</string>
+    <string name="state_dialog_edited">Elavurà</string>
+    <string name="state_dialog_deleted">Stizzà</string>
     <string name="state_dialog_status">Status</string>
     <string name="title_tab_recent">Ultims</string>
     <string name="no_recent_conversations">Chattà nagins chats</string>
@@ -509,6 +511,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="file_placeholder">Datoteca</string>
     <string name="internal_storage">Arcun intern</string>
     <string name="no_activity_for_mime_type">Chattà nagina app adattada per questa datoteca.</string>
+    <string name="no_activity_for_intent">Chattà nagina app adattada.</string>
     <string name="open_from">Avrir da</string>
     <string name="file_one_contact_not_supported">%1$s na po anc retschaiver naginas datotecas.</string>
     <string name="file_x_contact_not_supported">Attenziun: %1$d contacts na pon retschaiver naginas datotecas.</string>
@@ -1011,8 +1014,18 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="system_default">Standard</string>
     <string name="open_in_maps_app">Avrir en l\'app Maps</string>
     <string name="delete">Stizzar</string>
+    <string name="delete_from_this_device">Stizzar sin quest apparat</string>
     <string name="delete_for_all">Stizzar per tuts</string>
+    <string name="message_was_deleted">Stizzà quest messadi</string>
     <string name="continue_recording">Registrar vinavant</string>
+    <string name="whatsnew_title">Novas funcziuns en %1$s 5.2</string>
+    <string name="whatsnew_headline"><![CDATA[
+<p>Marcar messadis: cun tippar ditg sin in messadi marcheschas ti el cun ina staila, uschia che ti al chattas spert pli tard.</p>
+
+<p>Stizzar automaticamain: ti pos laschar far urden automaticamain cun tes chats suenter in temp che ti defineschas. La funcziun da stizzar automaticamain messadis pos ti activar en il management da l\'arcun.</p>
+
+<p>Numerusas ulteriuras meglieraziuns ed optimaziuns.</p>
+		]]></string>
     <string name="tap_to_start">Smatga qua per aviar uss %s.</string>
     <string name="two_years">2 onns</string>
     <string name="invalid_backup_path">Percurs dal backup nunvalaivel</string>
@@ -1500,6 +1513,11 @@ Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'
     <string name="action_dissolve_group">Annullar la gruppa</string>
     <string name="really_dissolve_group">Sche ti annulleschas sulettamain la gruppa, na po nagin pli trametter novs messadis en la gruppa ed i n\'è betg pli pussaivel d\'administrar ella. Igl è però vinavant pussaivel da clonar la gruppa.</string>
     <string name="status_orphaned_group">*Questa gruppa è orfna*\nLa persuna che ha creà la gruppa l\'ha bandunà. Ella n\'è betg pli administrabla. Ina commembra u in commember da la gruppa restant duai clonar la gruppa (via detagls da la gruppa) per daventar la nova administratura resp. il nov administratur.</string>
+    <string name="group_orphaned_notice">Questa gruppa è orfna, perquai che la persuna che ha creà la gruppa l\'ha bandunà. P.pl. clonar la  gruppar per daventar il nov administratur.</string>
+    <string name="group_not_a_member_notice">Ti n\'es betg pli commember da questa gruppa e na la pos betg pli duvrar.</string>
+    <string name="group_dissolved_notice">Questa gruppa è vegnida schliada e na po betg pli vegnir duvrada.</string>
+    <string name="directory_request_failed">Betg reussì da consultar il register. P.pl. empruvar anc ina giada.</string>
+    <string name="add_shortcut_exists">Igl exista gia ina scursanida per quest object.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

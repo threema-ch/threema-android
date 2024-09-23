@@ -39,7 +39,7 @@
     <string name="voip_reject">Refusar</string>
     <string name="voip_speakerphone">Telefonar a maun liber</string>
     <string name="voip_wired_headset">Uregliers</string>
-    <string name="voip_earpiece">Telefonat</string>
+    <string name="voip_earpiece">Telefon</string>
     <string name="voip_bluetooth">Bluetooth</string>
     <string name="voip_none">Betg a disposiziun</string>
     <string name="voip_call_finished">Terminà il telefonat da Threema</string>

@@ -215,4 +215,5 @@
     <string name="preferences__contact_sync_time" translatable="false">pref_contact_sync_time</string>
 	<string name="preferences__md_unlocked" translatable="false">pref_md_unlocked</string>
 	<string name="preferences__show_last_update_prefix" translatable="false">pref_show_last_update_prefix</string>
+    <string name="preferences__last_notification_request_timestamp" translatable="false">pref_last_notification_request_timestamp</string>
 </resources>

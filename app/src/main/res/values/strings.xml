@@ -1298,7 +1298,7 @@
 	<string name="id_backup_info">Only restore your ID</string>
 	<string name="restore_your_id_contacts_and_groups">Restore your ID, contacts and groups</string>
 	<string name="threema_safe_backup">Threema Safe Backup</string>
-	<string name="forgot_your_password"><![CDATA[<a href=%s>Forgot your password?</a>]]></string>
+	<string name="forgot_your_password"><![CDATA[<a href=%s>Help</a>]]></string>
 	<string name="download_failed">Download unsuccessful. Error code: %d</string>
 	<string name="edit_answer">Edit answer</string>
 	<string name="share_media">Share with another app…</string>

@@ -1,1 +1,3 @@
-* Sent messages can now be edited or deleted on the recipient’s end
+* Improved support for large font sizes in polls
+* Fixed a bug in relation to the chat order in the web client
+* Various improvements and bug fixes

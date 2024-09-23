@@ -854,6 +854,28 @@ public class MessageUtil {
 		);
 	}
 
+    /**
+     * Check whether the given message type allows editing the message. Note that only the message
+     * type is considered. To check whether the user should be able to edit,
+     * {@link #canEdit(AbstractMessageModel)} should be used.
+     */
+    public static boolean canEdit(@Nullable MessageType messageType) {
+        if (messageType == null) {
+            return false;
+        }
+
+        switch (messageType) {
+            case TEXT:
+            case FILE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Check whether the user should be able to edit the given message.
+     */
 	public static boolean canEdit(@NonNull AbstractMessageModel message) {
 		long deltaTime = new Date().getTime() - message.getCreatedAt().getTime();
 		return (message.getType() == MessageType.TEXT || message.getType() == MessageType.FILE)
@@ -866,9 +888,36 @@ public class MessageUtil {
 			&& !message.isDeleted();
 	}
 
+    /**
+     * Check whether the given message type allows remote deletion of messages. Note that only the
+     * message type is considered. To check whether the user should be able to delete a message for
+     * everyone, {@link #canDeleteRemotely(AbstractMessageModel)} should be used.
+     */
+    public static boolean canDeleteRemotely(@Nullable MessageType messageType) {
+        if (messageType == null) {
+            return false;
+        }
+
+        switch (messageType) {
+            case TEXT:
+            case IMAGE:
+            case VIDEO:
+            case VOICEMESSAGE:
+            case LOCATION:
+            case CONTACT:
+            case FILE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Check whether the user should be able to delete the given message remotely.
+     */
 	public static boolean canDeleteRemotely(@NonNull AbstractMessageModel message) {
 		long deltaTime = new Date().getTime() - message.getCreatedAt().getTime();
-		return message.getType() != MessageType.BALLOT
+		return canDeleteRemotely(message.getType())
 			&& !message.isStatusMessage()
 			&& message.isOutbox()
 			&& ConfigUtils.isDeleteMessagesEnabled()

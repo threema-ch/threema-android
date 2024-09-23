@@ -23,6 +23,7 @@ package ch.threema.app.tasks
 
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.MessageService
+import ch.threema.app.utils.MessageUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
@@ -63,7 +64,12 @@ private fun runCommonEditMessageReceiveSteps(
         return null
     }
     if (editMessage.fromIdentity != message.identity) {
-        logger.error("Incoming Edit Message: original message's sender ${message.identity} does not equal edited message's sender ${editMessage.fromIdentity}")
+        logger.warn("Incoming Edit Message: original message's sender ${message.identity} does not equal edited message's sender ${editMessage.fromIdentity}")
+        return null
+    }
+
+    if (!MessageUtil.canEdit(message.type)) {
+        logger.warn("Incoming Edit Message: Message of type {} cannot be edited", message.type)
         return null
     }
 

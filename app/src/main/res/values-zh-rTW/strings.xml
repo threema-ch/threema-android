@@ -37,8 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">使用裝置通訊錄同步 %s 使用者</string>
     <string name="prefs_sum_sync_contacts_off">不要將 %s 使用者與裝置通訊錄同步</string>
     <string name="prefs_title_sync_contacts">聯絡人同步</string>
-    <string name="prefs_sum_block_unknown_off">任何人都可以向您傳送訊息。
-當您收到第一則訊息時，新的聯絡人將被自動新增。</string>
+    <string name="prefs_sum_block_unknown_off">任何人都可以向您傳送訊息。當您收到第一則訊息時，新的聯絡人將被自動新增。</string>
     <string name="prefs_sum_block_unknown_on">只有在您的聯絡人名單中的人才能向您傳送訊息。</string>
     <string name="prefs_title_block_unknown">封鎖未知聯絡人</string>
     <string name="prefs_title_read_receipts">傳送已讀標記</string>
@@ -70,7 +69,7 @@
     <string name="prefs_title_threema_push_switch">使用 Threema Push</string>
     <string name="prefs_sum_threema_push_on">使用 Threema Push 以取得新訊息通知</string>
     <string name="prefs_sum_threema_push_off">使用系統推播服務檢查新訊息</string>
-    <string name="prefs_logging">記錄中</string>
+    <string name="prefs_logging">記錄</string>
     <string name="prefs_title_message_log_switch">記錄至檔案</string>
     <string name="prefs_title_sum_message_log_on">事件和網路訊息將記錄至 debug_log.txt</string>
     <string name="prefs_title_sum_message_log_off">事件將不會被記錄</string>
@@ -527,6 +526,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="file_placeholder">檔案</string>
     <string name="internal_storage">內部儲存</string>
     <string name="no_activity_for_mime_type">找不到開啟此檔案的應用程式。</string>
+    <string name="no_activity_for_intent">找不到應用程式。</string>
     <string name="open_from">從...開啟</string>
     <string name="file_one_contact_not_supported">%1$s 無法接收檔案。</string>
     <string name="file_x_contact_not_supported">警告：%1$d個聯絡人無法接收您的檔案。</string>
@@ -1044,6 +1044,7 @@ Threema 支援的所有表情符號。</string>
     <string name="system_default">系統預設</string>
     <string name="open_in_maps_app">在地圖應用程式中開啟</string>
     <string name="delete">刪除</string>
+    <string name="delete_from_this_device">從此裝置中刪除</string>
     <string name="delete_for_all">為所有人刪除</string>
     <string name="message_was_deleted">此訊息已刪除</string>
     <string name="continue_recording">繼續錄音</string>
@@ -1275,7 +1276,7 @@ Threema 支援的所有表情符號。</string>
     <string name="id_backup_info">僅限還原您的ID</string>
     <string name="restore_your_id_contacts_and_groups">還原您的ID、聯絡人和群組</string>
     <string name="threema_safe_backup">Threema Safe 備份</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>忘記密碼？</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>需要協助？</a>]]></string>
     <string name="download_failed">下載失敗。錯誤代碼：%d</string>
     <string name="edit_answer">編輯答案</string>
     <string name="share_media">與其他應用程式分享...</string>
@@ -1576,6 +1577,13 @@ Threema 支援的所有表情符號。</string>
     <string name="edit_message_not_supported_for_all_group_members">以下群組成員將無法看到您對訊息的編輯：%1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">由於有部分群組成員使用的應用程式版本不支援編輯訊息功能，因此無法編輯訊息。</string>
     <string name="delete_message_not_supported_for_all_group_members">此訊息不會為以下群組成員刪除：%1$s</string>
+    <string name="work_intro_more_link_text">進一步了解 Threema Work</string>
+    <string name="work_intro_subtitle">為公司而設的安全商業版即時通訊工具。</string>
+    <string name="work_intro_login">登入 %1$s</string>
+    <string name="consumer_notice_description">如果您是個人使用者，請下載普通版 Threema 應用程式。</string>
+    <string name="consumer_notice_playstore_link_description">Google Play 商店上的 Threema</string>
+    <string name="consumer_notice_appgallery_link_description">華為 AppGallery 商店上的 Threema</string>
+    <string name="consumer_notice_subtitle">僅限個人使用者使用</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

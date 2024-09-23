@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="color_picker_default_title" msgid="1248663997452044787">"Выберите цвет"</string>
-    <string name="color_swatch_description" msgid="2883438431173736180">"Цвет: <xliff:g id="COLOR_INDEX">%1$d</xliff:g>"</string>
-    <string name="color_swatch_description_selected" msgid="5020921249944943124">"Выбран цвет <xliff:g id="COLOR_INDEX">%1$d</xliff:g>"</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Выберите цвет</string>
+    <!-- Content description for a color square. -->
+    <string name="color_swatch_description">Цвет: <xliff:g id="COLOR_INDEX">%1$d</xliff:g></string>
+    <!-- Content description for a selected color square. -->
+    <string name="color_swatch_description_selected" tools:ignore="PluralsCandidate">Выбран цвет <xliff:g id="COLOR_INDEX">%1$d</xliff:g></string>
 </resources>

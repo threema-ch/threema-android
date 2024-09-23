@@ -37,7 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">Houd %s-gebruikers in sync met het adresboek van uw apparaat</string>
     <string name="prefs_sum_sync_contacts_off">%s-gebruikers niet synchroniseren met het adresboek van uw apparaat</string>
     <string name="prefs_title_sync_contacts">Contactpersonen synchroniseren</string>
-    <string name="prefs_sum_block_unknown_off">Iedereen kan u een bericht sturen. Nieuwe contactpersonen worden automiatisch toegevoegd wanneer het eerste bericht arriveert.</string>
+    <string name="prefs_sum_block_unknown_off">Iedereen kan u een bericht sturen. Nieuwe contactpersonen worden automatisch toegevoegd wanneer het eerste bericht binnenkomt.</string>
     <string name="prefs_sum_block_unknown_on">Alleen mensen in uw adresboek kunnen u berichten sturen.</string>
     <string name="prefs_title_block_unknown">Onbekenden blokkeren</string>
     <string name="prefs_title_read_receipts">Leesbevestiging versturen</string>
@@ -1252,7 +1252,7 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="id_backup_info">Alleen je ID herstellen</string>
     <string name="restore_your_id_contacts_and_groups">Je ID, contactpersonen en groepen herstellen</string>
     <string name="threema_safe_backup">Threema Safe Back-up</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>Je wachtwoord vergeten?</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Help</a>]]></string>
     <string name="download_failed">Niet gedownload. Foutcode: %d</string>
     <string name="edit_answer">Antwoord bewerken</string>
     <string name="share_media">Delen met andere app…</string>

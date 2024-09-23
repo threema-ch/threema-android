@@ -23,6 +23,7 @@ package ch.threema.app.tasks
 
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.MessageService
+import ch.threema.app.utils.MessageUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
@@ -69,6 +70,13 @@ private fun runCommonDeleteMessageReceiveSteps(
     }
     if (deleteMessage.fromIdentity != message.identity) {
         logger.warn("Incoming Delete Message: original message's sender {} does not equal deleted message's sender {}", message.identity, deleteMessage.fromIdentity)
+        return null
+    }
+
+    // 3. If the `message` is not deletable because of its type, discard the message and abort these
+    //    steps.
+    if (!MessageUtil.canDeleteRemotely(message.type)) {
+        logger.warn("Incoming Delete Message: Message of type {} cannot be deleted", message.type)
         return null
     }
 

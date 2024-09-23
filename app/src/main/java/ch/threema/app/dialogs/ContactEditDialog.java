@@ -296,7 +296,7 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 
 		builder.setPositiveButton(getString(R.string.ok), (dialog, whichButton) -> {
 			if (callbackRef.get() != null) {
-				callbackRef.get().onYes(tag, editText1.getText().toString(), editText2.getText().toString(), null);
+				callbackRef.get().onYes(tag, editText1.getText().toString(), editText2.getText().toString(), croppedAvatarFile);
 			}
 		}
 		);

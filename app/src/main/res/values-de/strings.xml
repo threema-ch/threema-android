@@ -1356,7 +1356,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
 	<string name="id_backup_info">Nur Ihre ID wiederherstellen</string>
 	<string name="restore_your_id_contacts_and_groups">Ihre ID, Kontakte und Gruppen wiederherstellen</string>
 	<string name="threema_safe_backup">Threema Safe Backup</string>
-	<string name="forgot_your_password"><![CDATA[<a href=%s>Passwort vergessen?</a>]]></string>
+	<string name="forgot_your_password"><![CDATA[<a href=%s>Hilfe</a>]]></string>
 	<string name="download_failed">Download fehlgeschlagen. Fehlercode: %d</string>
 	<string name="share_media">Mit anderer App teilen…</string>
 	<string name="group_link_administered">Administriert</string>

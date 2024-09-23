@@ -185,8 +185,8 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
 	}
 
 	@Override
-	public Long getLong(String key) {
-		return null;
+	public long getLong(String key) {
+		return 0;
 	}
 
 	@Override

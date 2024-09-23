@@ -1154,14 +1154,22 @@ public class ConfigUtils {
 	 *
 	 * @param context                   the context is needed to check whether the permission is already granted
 	 * @param requestPermissionLauncher the request permission launcher will be used to get the result
+	 * @param preferenceService         the preference service is used to update the last notification permission request timestamp if needed
 	 * @return {@code true} if the permission is already granted, {@code false} otherwise
 	 */
-	public static boolean requestNotificationPermission(@NonNull Context context, @NonNull ActivityResultLauncher<String> requestPermissionLauncher) {
+	public static boolean requestNotificationPermission(
+		@NonNull Context context,
+		@NonNull ActivityResultLauncher<String> requestPermissionLauncher,
+		@Nullable PreferenceService preferenceService
+	) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
 			return true;
 		}
 		String permission = Manifest.permission.POST_NOTIFICATIONS;
 		if (checkIfNeedsPermissionRequest(context, new String[]{permission})) {
+			if (preferenceService != null) {
+				preferenceService.setLastNotificationPermissionRequestTimestamp(System.currentTimeMillis());
+			}
 			requestPermissionLauncher.launch(permission);
 			return false;
 		}

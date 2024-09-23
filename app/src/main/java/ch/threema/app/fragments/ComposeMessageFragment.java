@@ -2535,7 +2535,7 @@ public class ComposeMessageFragment extends Fragment implements
 		if (messageReceiver instanceof ContactMessageReceiver) {
 			ContactMessageReceiver receiver = (ContactMessageReceiver) messageReceiver;
 			deleteContactMessageForAll(receiver, message);
-		} else if (messageReceiver instanceof GroupMessageReceiver && groupModel != null) {
+		} else if (messageReceiver instanceof GroupMessageReceiver && groupModel != null && groupService.isGroupMember(groupModel)) {
 			deleteGroupMessageForAll(message, groupModel);
 		} else {
 			logger.warn("Cannot delete message for receiver of type {}", messageReceiver.getClass().getName());
@@ -4677,7 +4677,9 @@ public class ComposeMessageFragment extends Fragment implements
 			// check receiver support
 			if (messageReceiver instanceof GroupMessageReceiver) {
 				GroupModel group = ((GroupMessageReceiver) messageReceiver).getGroup();
-				if (groupService.isNotesGroup(group)) {
+				if (!groupService.isGroupMember(group)) {
+					return false;
+				} else if (groupService.isNotesGroup(group)) {
 					// delete for all is pointless in notes group
 					return false;
 				} else {

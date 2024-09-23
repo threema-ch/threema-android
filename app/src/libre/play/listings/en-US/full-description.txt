@@ -17,6 +17,7 @@ Threema end-to-end encrypts all your communication, including messages, voice an
 Threema is not only an encrypted and private messenger but also versatile and feature-rich.
 
 · Write text and send voice messages
+· Edit and delete sent messages on the recipient’s end
 · Make voice, video and group calls
 · Share videos pictures and locations
 · Send any type of file (pdf animated gif, mp3, doc, zip, etc.)

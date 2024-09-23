@@ -536,8 +536,12 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	}
 
 	@Override
-	public Long getLong(String key) {
-		return this.getLong(key, false);
+	public long getLong(String key) {
+		Long value = this.getLong(key, false);
+		if (value == null) {
+			return 0;
+		}
+		return value;
 	}
 
 	@Override

@@ -323,6 +323,8 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="state_dialog_created">Creato</string>
     <string name="state_dialog_posted">Impostato</string>
     <string name="state_dialog_modified">Modificato</string>
+    <string name="state_dialog_edited">Modificato</string>
+    <string name="state_dialog_deleted">Cancellato</string>
     <string name="state_dialog_status">Stato</string>
     <string name="title_tab_recent">Ultimo</string>
     <string name="no_recent_conversations">Nessuna chat trovata</string>
@@ -531,6 +533,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="file_placeholder">File</string>
     <string name="internal_storage">Memoria interna</string>
     <string name="no_activity_for_mime_type">Non è stata trovata alcuna app per aprire questo file.</string>
+    <string name="no_activity_for_intent">Non è stata trovata nessuna app adatta.</string>
     <string name="open_from">Apri da</string>
     <string name="file_one_contact_not_supported">%1$s non può ricevere file.</string>
     <string name="file_x_contact_not_supported">Attenzione: %1$d contatti non possono ricevere il tuo file.</string>
@@ -1033,7 +1036,9 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="system_default">Impostazioni predefinite di sistema</string>
     <string name="open_in_maps_app">Apri in Mappe</string>
     <string name="delete">Elimina</string>
+    <string name="delete_from_this_device">Cancella da questo dispositivo</string>
     <string name="delete_for_all">Elimina per tutti</string>
+    <string name="message_was_deleted">Il messaggio è stato cancellato</string>
     <string name="continue_recording">Continua registrazione</string>
     <string name="whatsnew_title">Nuove funzioni in %1$s 5.2</string>
     <string name="whatsnew_headline"><![CDATA[
@@ -1554,6 +1559,18 @@ Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
     <string name="media_gallery_animated_webps">WebP animati</string>
     <string name="unsupported_image_type">Tipo di immagine non supportato: %s</string>
     <string name="application_setup_steps_failed">Per controllare lo stato dei contatti è necessaria una connessione Internet attiva. Assicurati di essere connesso a Internet e riprova.</string>
+    <string name="add_contact_failed">Impossibile aggiungere il contatto</string>
+    <string name="edit_message_not_supported_for_contact">Impossibile modificare il messaggio, poiché la versione dell\'app del destinatario non supporta questa funzione.</string>
+    <string name="edit_message_not_supported_for_all_group_members">I seguenti membri del gruppo non possono vedere le modifiche: %1$s</string>
+    <string name="edit_message_not_supported_for_any_group_members">Impossibile modificare il messaggio, poiché nessun membro del gruppo dispone di una versione dell\'app che supporta questa funzione.</string>
+    <string name="delete_message_not_supported_for_all_group_members">Dai seguenti membri del gruppo il messaggio non sarà cancellato: %1$s</string>
+    <string name="work_intro_more_link_text">Maggiori informazioni su Threema Work</string>
+    <string name="work_intro_subtitle">L\'app di messaggistica sicura per le imprese.</string>
+    <string name="work_intro_login">Accedi %1$s</string>
+    <string name="consumer_notice_description">Se vuoi usare l\'app privatamente sei pregato di scaricare l\'app Threema regolare.</string>
+    <string name="consumer_notice_playstore_link_description">Threema nel Play Store</string>
+    <string name="consumer_notice_appgallery_link_description">Threema nell\'AppGallery</string>
+    <string name="consumer_notice_subtitle">Per uso privato</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contatto</item>
         <item quantity="other">%d contatti</item>
@@ -1635,8 +1652,8 @@ Numerosi altri miglioramenti e ottimizzazioni.</p>]]></string>
         <item quantity="other">Dall\'ultimo messaggio %d messaggi sono andati persi.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="one">Cancellare %d messaggio da questo dispositivo?</item>
-        <item quantity="other">Cancellare %d messaggi da questo dispositivo?</item>
+        <item quantity="one">Cancellare %d messaggio?</item>
+        <item quantity="other">Cancellare %d messaggi?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="one">%d membro del gruppo</item>

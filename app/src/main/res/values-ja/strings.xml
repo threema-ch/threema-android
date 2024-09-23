@@ -1623,7 +1623,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
         <item quantity="other">%d 件のメッセージが最後のメッセージからロストしました。</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="other">%d 件のメッセージをこのデバイスから削除しますか？</item>
+        <item quantity="other">%d 件のメッセージを削除しますか？</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="other">%d名のグループメンバー</item>

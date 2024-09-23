@@ -99,7 +99,14 @@ public interface PreferenceStoreInterface {
 
 	String getHexString(String key, boolean crypt);
 
-	Long getLong(String key);
+	/**
+	 * Get the value as long. Note that 0 is returned if no preference with the provided key is
+	 * stored.
+	 *
+	 * @param key the key of the value
+	 * @return the value as long or 0 if no value for the provided key exists
+	 */
+	long getLong(String key);
 
 	Long getLong(String key, boolean crypt);
 

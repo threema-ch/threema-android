@@ -545,6 +545,7 @@ public interface PreferenceService {
 	void setPipPosition(int pipPosition);
 	int getPipPosition();
 
+	boolean isCallsEnabled();
 	boolean isVideoCallsEnabled();
 
 	boolean isGroupCallsEnabled();
@@ -610,4 +611,15 @@ public interface PreferenceService {
 	boolean isMdUnlocked();
 
 	boolean showConversationLastUpdate();
+
+	/**
+	 * Set the last timestamp when the notification permission has been requested.
+	 */
+	void setLastNotificationPermissionRequestTimestamp(long timestamp);
+
+	/**
+	 * Get the last timestamp when the notification permission has been requested. If the
+	 * notification permission has not yet been requested, 0 is returned.
+	 */
+	long getLastNotificationPermissionRequestTimestamp();
 }

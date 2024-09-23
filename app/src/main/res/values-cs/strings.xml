@@ -1025,7 +1025,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="continue_recording">Pokračovat v nahrávání</string>
     <string name="whatsnew_title">Co je nového v aplikaci %1$s 5.2?</string>
     <string name="whatsnew_headline"><![CDATA[
-		<p>Ohvězdičkované zprávy: Abyste je později snadno našli, označte důležité zprávy hvězdou dlouhým klepnutím.</p>
+		<p>Zprávy s hvězdičkou: Abyste je později snadno našli, označte důležité zprávy hvězdou dlouhým klepnutím.</p>
 		<p>Automatické odstranění: Nechte své konverzace po uplynutí volitelné doby automaticky vyčistit. Funkce automatického odstranění zpráv můžete aktivovat ve správě úložiště.</p>
 		<p>Další četná vylepšení a optimalizace.</p>
 		]]></string>
@@ -1251,7 +1251,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="id_backup_info">Obnovit pouze vaše ID</string>
     <string name="restore_your_id_contacts_and_groups">Obnovit vaše ID, kontakty a skupiny</string>
     <string name="threema_safe_backup">Záloha Threema Safe</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>Zapomněli jste heslo?</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Pomoc</a>]]></string>
     <string name="download_failed">Stažení se nezdařilo. Kód chyby: %d</string>
     <string name="edit_answer">Upravit odpověď</string>
     <string name="share_media">Sdílet v jiné aplikaci…</string>
@@ -1481,14 +1481,14 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="permission_enable_in_settings_rationale">Udělte prosím toto oprávnění v nastavení. Vyberte možnost „Oprávnění“ a poté povolte „%s“.</string>
     <string name="group_name">Název skupiny</string>
     <string name="star_message">Ohvězdičkovat zprávu</string>
-    <string name="starred_message">Ohvězdičkovaná zpráva</string>
-    <string name="starred">Ohvězdičkované</string>
-    <string name="starred_messages">Ohvězdičkované zprávy</string>
+    <string name="starred_message">Zpráva s hvězdičkou</string>
+    <string name="starred">S hvězdičkou</string>
+    <string name="starred_messages">Zprávy s hvězdičkou</string>
     <string name="sorting">Řazení</string>
     <string name="sort_by">Řadit podle…</string>
     <string name="newest_first">od nejnovějších</string>
     <string name="oldest_first">od nejstarších</string>
-    <string name="no_starred_messages">Nebyly nalezeny žádné ohvězdičkované zprávy. Zprávu ohvězdičkujete tak, že na ni dlouze klepnete a vyberete tlačítko s hvězdou.</string>
+    <string name="no_starred_messages">Nebyly nalezeny žádné zprávy s hvězdičkou. Ke zprávě přidáte hvězdičku tak, že na ni dlouze klepnete a vyberete tlačítko s hvězdou.</string>
     <string name="remove_all_stars">Odstranit všechny hvězdy</string>
     <string name="remove_star">Odstranit hvězdu</string>
     <string name="samsung_permission_problem_explain">Aplikace %1$s nemůže přistupovat k mediálním souborům kvůli chybějícímu oprávnění v systémové aplikaci. Chcete‑li tento problém opravit, ujistěte se, že je na následující obrazovce aktivovaný přepínač vedle položky „Externí úložiště“ a restartujte aplikaci %1$s.</string>
@@ -1504,7 +1504,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="keep_messages">Uchovávat zprávy po dobu:</string>
     <string name="clean_up_manually">Vyčistit ručně</string>
     <string name="forever">Navždy</string>
-    <string name="autodelete_explain">Pokud bude nastaveno cokoliv kromě „navždy“, příchozí a odchozí zprávy budou nenávratně odstraněny po uplynutí specifikované doby. Do toho jsou zahrnuty i nepřečtené a neodeslané zprávy. Zprávy ve skupinách pro poznámky a ohvězdičkované zprávy nebudou odstraněny. Proces odstranění je spouštěn periodicky a ne nutně ihned po aktivaci.</string>
+    <string name="autodelete_explain">Pokud bude nastaveno cokoliv kromě „navždy“, příchozí a odchozí zprávy budou nenávratně odstraněny po uplynutí specifikované doby. Do toho jsou zahrnuty i nepřečtené a neodeslané zprávy. Zprávy ve skupinách pro poznámky a zprávy s hvězdičkou nebudou odstraněny. Proces odstranění je spouštěn periodicky a ne nutně ihned po aktivaci.</string>
     <string name="autodelete_confirm">Zprávy budou automaticky odstraněny po %s. Pokračovat?</string>
     <string name="autodelete_activated">Automatické odstranění aktivováno.</string>
     <string name="autodelete_disabled">Automatické odstranění zakázáno.</string>

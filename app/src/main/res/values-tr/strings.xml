@@ -37,7 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">%s kullanıcıyı cihazın adres defteriyle eşitle</string>
     <string name="prefs_sum_sync_contacts_off">%s kullanıcıyı cihazın adres defteriyle eşitleme</string>
     <string name="prefs_title_sync_contacts">Kişileri eşitle</string>
-    <string name="prefs_sum_block_unknown_off">Herhangi biri size mesaj gönderebilir. İlk mesaj geldiğinde yeni kişilere otomatik olarak eklenecektir.</string>
+    <string name="prefs_sum_block_unknown_off">Herkes size mesaj gönderebilir. İlk mesaj geldiğinde yeni kişiler otomatik olarak eklenecektir.</string>
     <string name="prefs_sum_block_unknown_on">Yalnızca adres defterinizdeki kişiler size mesaj gönderebilir.</string>
     <string name="prefs_title_block_unknown">Bilinmeyeni engelle</string>
     <string name="prefs_title_read_receipts">Okundu bilgisini gönder</string>
@@ -511,6 +511,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="file_placeholder">Dosya</string>
     <string name="internal_storage">Dahili depolama</string>
     <string name="no_activity_for_mime_type">Bu dosyayı açacak uygulama bulunamadı.</string>
+    <string name="no_activity_for_intent">Uygulama bulunamadı.</string>
     <string name="open_from">Şuradan aç</string>
     <string name="file_one_contact_not_supported">%1$s dosya alamıyor.</string>
     <string name="file_x_contact_not_supported">Uyarı: %1$d kişi dosyanızı alamıyor.</string>
@@ -1014,7 +1015,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="system_default">Sistem varsayılanı</string>
     <string name="open_in_maps_app">Haritalar uygulamasında aç</string>
     <string name="delete">Sil</string>
-    <string name="delete_for_all">Tümünü sil</string>
+    <string name="delete_from_this_device">Bu cihazdan sil</string>
+    <string name="delete_for_all">Herkesten sil</string>
     <string name="message_was_deleted">Bu mesaj silindi</string>
     <string name="continue_recording">Kayda devam et</string>
     <string name="whatsnew_title">%1$s 5.2\'deki yenilikler nelerdir?</string>
@@ -1245,7 +1247,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="id_backup_info">Yalnızca kimliğinizi geri yükleyin</string>
     <string name="restore_your_id_contacts_and_groups">Kimliğinizi, kişilerinizi ve gruplarınızı geri yükleyin</string>
     <string name="threema_safe_backup">Threema Safe yedekleme</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>Şifrenizi mi unuttunuz?</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Yardım</a>]]></string>
     <string name="download_failed">İndirme başarısız. Hata kodu: %d</string>
     <string name="edit_answer">Cevabı düzenle</string>
     <string name="share_media">Başka bir uygulamayla paylaş…</string>
@@ -1546,6 +1548,13 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="edit_message_not_supported_for_all_group_members">Aşağıdaki grup üyeleri düzenlemelerinizi göremeyecek: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Hiçbir grup üyesi bu özelliği destekleyen bir uygulama sürümüne sahip olmadığı için mesaj düzenlenemiyor.</string>
     <string name="delete_message_not_supported_for_all_group_members">Bu mesaj aşağıdaki grup üyeleri için silinmeyecektir: %1$s</string>
+    <string name="work_intro_more_link_text">Threema Work hakkında daha fazla bilgi edinin</string>
+    <string name="work_intro_subtitle">Şirketler için güvenli mesajlaşma aracı.</string>
+    <string name="work_intro_login">Giriş %1$s</string>
+    <string name="consumer_notice_description">Özel bir kullanıcıysanız lütfen normal Threema uygulamasını indirin.</string>
+    <string name="consumer_notice_playstore_link_description">Play Store\'da Threema</string>
+    <string name="consumer_notice_appgallery_link_description">AppGallery\'de Threema</string>
+    <string name="consumer_notice_subtitle">Özel kullanım için</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>

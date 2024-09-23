@@ -37,7 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">Utrzymuj synchronizację użytkowników %s z książką adresową Twojego urządzenia</string>
     <string name="prefs_sum_sync_contacts_off">Nie synchronizuj użytkowników %s z książką adresową Twojego urządzenia</string>
     <string name="prefs_title_sync_contacts">Synchronizuj kontakty</string>
-    <string name="prefs_sum_block_unknown_off">Każdy może wysłać do Ciebie wiadomość. Nowe kontakty zostaną dodane automatycznie po odebraniu wiadomości.</string>
+    <string name="prefs_sum_block_unknown_off">Każdy może wysłać do Pana/Pani wiadomość. Nowe kontakty zostaną dodane automatycznie po odebraniu pierwszej wiadomości.</string>
     <string name="prefs_sum_block_unknown_on">Tylko osoby z Twojej listy kontaktów mogą wysłać do Ciebie wiadomość.</string>
     <string name="prefs_title_block_unknown">Blokuj nieznajomych</string>
     <string name="prefs_title_read_receipts">Potwierdzaj przeczytane</string>
@@ -1266,7 +1266,7 @@ anonimowo?</string>
     <string name="id_backup_info">Przywróć tylko swoje ID</string>
     <string name="restore_your_id_contacts_and_groups">Przywróć swój identyfikator, kontakty i grupy</string>
     <string name="threema_safe_backup">Threema Safe</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>Nie pamiętasz hasła?</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Pomoc</a>]]></string>
     <string name="download_failed">Pobieranie nie powiodło się. Kod błędu: %d</string>
     <string name="edit_answer">Edytuj odpowiedź</string>
     <string name="share_media">Udostępnij innej aplikacji...</string>

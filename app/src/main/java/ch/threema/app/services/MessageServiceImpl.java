@@ -1387,10 +1387,17 @@ public class MessageServiceImpl implements MessageService {
 			return false;
 		}
 
-		// Bump "lastUpdate" if necessary, depending on the message type
-		if (message.bumpLastUpdate()) {
-			contactService.bumpLastUpdate(senderIdentity);
-		}
+        // As soon as we get a direct message, unhide and unarchive the contact
+        contactService.setIsHidden(senderIdentity, false);
+        contactService.setIsArchived(senderIdentity, false);
+
+        // Bump "lastUpdate" if necessary, depending on the message type. Note that due to the
+        // listeners, we should bump the last update before saving the box message. Saving the box
+        // message will trigger the listeners that, among other things, update the webclient. For
+        // this purpose it is important that the last update flag has already been bumped.
+        if (message.bumpLastUpdate()) {
+            contactService.bumpLastUpdate(senderIdentity);
+        }
 
 		// Handle message depending on subtype
 		final Class<? extends AbstractMessage> messageClass = message.getClass();
@@ -1429,10 +1436,6 @@ public class MessageServiceImpl implements MessageService {
 			logger.info("processIncomingContactMessage: {} FAILED", message.getMessageId());
 			return false;
 		}
-
-		// As soon as we get a direct message, unhide and unarchive the contact
-		contactService.setIsHidden(senderIdentity, false);
-		contactService.setIsArchived(senderIdentity, false);
 
 		logger.info("processIncomingContactMessage: {} SUCCESS - Message ID = {}", message.getMessageId(), messageModel.getId());
 		return true;

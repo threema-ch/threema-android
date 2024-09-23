@@ -34,7 +34,7 @@ object HmsTokenUtil {
     private const val APP_ID_CONFIG_FIELD = "client/app_id"
 
     /**
-     * Obtain the app ID from the agconnect-service.json file.
+     * Obtain the app ID from the agconnect-services.json file.
      *
      * @return The app id or null if it could not be obtained
      */

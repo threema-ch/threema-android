@@ -129,7 +129,11 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 				GroupService groupService = ThreemaApplication.getServiceManager().getGroupService();
 				GroupModel groupModel = groupService.getById(((GroupMessageModel) messageModel).getGroupId());
 				if (groupModel != null) {
-					if (!groupService.isGroupMember(groupModel) || groupService.getOtherMemberCount(groupModel) < 1) {
+					boolean isMember = groupService.isGroupMember(groupModel);
+					if (!isMember) {
+						this.editButton.setVisibility(View.GONE);
+					}
+					if (!isMember|| groupService.getOtherMemberCount(groupModel) < 1) {
 						this.decButton.setVisibility(View.GONE);
 						this.ackButton.setVisibility(View.GONE);
 					}
@@ -147,15 +151,14 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 		}
 
 		this.infoSeparator.setVisibility(View.GONE);
-		if (!messageModel.isDeleted() &&
-			(messageModel.getType().equals(MessageType.TEXT) ||
+		if (messageModel.getType().equals(MessageType.TEXT) ||
 			messageModel.getType().equals(MessageType.FILE) ||
 			messageModel.getType().equals(MessageType.LOCATION) ||
 			messageModel.getType().equals(MessageType.BALLOT) ||
 			messageModel.getType().equals(MessageType.CONTACT) ||
 			messageModel.getType().equals(MessageType.IMAGE) ||
 			messageModel.getType().equals(MessageType.VIDEO) ||
-			messageModel.getType().equals(MessageType.VOICEMESSAGE))
+			messageModel.getType().equals(MessageType.VOICEMESSAGE)
 		) {
 			this.infoButton.setVisibility(View.VISIBLE);
 			this.starButton.setVisibility(messageModel instanceof DistributionListMessageModel ? View.GONE : View.VISIBLE);
@@ -166,12 +169,12 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
 			if ((messageModel.getDisplayTags() & DisplayTag.DISPLAY_TAG_STARRED) == DisplayTag.DISPLAY_TAG_STARRED) {
 				this.starButton.setImageResource(R.drawable.star_outline_off_black_24dp);
 				this.starButton.setColorFilter(ConfigUtils.getColorFromAttribute(parentView.getContext(), R.attr.colorOnSurface));
+			} else if (messageModel.isDeleted()) {
+				starButton.setVisibility(View.GONE);
 			} else {
 				this.starButton.setImageResource(R.drawable.ic_star_golden_24dp);
 				this.starButton.setColorFilter(null);
 			}
-		} else {
-			this.starButton.setVisibility(View.GONE);
 		}
 
 		int[] originLocation = {0, 0};

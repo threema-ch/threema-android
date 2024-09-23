@@ -10,7 +10,7 @@
     <string name="city">Мегаполис</string>
     <string name="city_block">Квартал</string>
     <string name="neighbourhood">Район</string>
-    <string name="locality">Населенный пункт</string>
+    <string name="locality">Местность</string>
     <string name="state">Штат</string>
     <string name="farm">Ферма</string>
     <string name="street">Улица</string>

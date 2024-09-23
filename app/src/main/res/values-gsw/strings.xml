@@ -510,6 +510,7 @@
     <string name="file_placeholder">Datei</string>
     <string name="internal_storage">Int. Speicher</string>
     <string name="no_activity_for_mime_type">Kei passendi App für die Datei gfunde.</string>
+    <string name="no_activity_for_intent">Kei passendi App gfunde.</string>
     <string name="open_from">Ufmache vo</string>
     <string name="file_one_contact_not_supported">%1$s cha no kei Dateie empfange.</string>
     <string name="file_x_contact_not_supported">Warnig: %1$d Kontäkt chönd kei Dateie empfange.</string>
@@ -1012,6 +1013,7 @@
     <string name="system_default">Systemstandard</string>
     <string name="open_in_maps_app">Ide Maps-App ufmache</string>
     <string name="delete">Lösche</string>
+    <string name="delete_from_this_device">Vo dem Grät lösche</string>
     <string name="delete_for_all">Für all lösche</string>
     <string name="message_was_deleted">Die Nachricht isch glöscht worde</string>
     <string name="continue_recording">Wiiter ufneh</string>
@@ -1241,7 +1243,7 @@
     <string name="id_backup_info">Nur Ihri ID wiederherstelle</string>
     <string name="restore_your_id_contacts_and_groups">Ihri ID, Kontäkt und Gruppe wiederherstelle</string>
     <string name="threema_safe_backup">Threema Safe-Backup</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>Passwort vergässe?</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Hilfe</a>]]></string>
     <string name="download_failed">Download fehlgschlage. Fehlercode: %d</string>
     <string name="edit_answer">Antwort bearbeite</string>
     <string name="share_media">Mitere andere App teile…</string>
@@ -1540,6 +1542,13 @@
     <string name="edit_message_not_supported_for_all_group_members">Di folgende Gruppemitglieder werded Ihri Änderige nöd gseh: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">D’Nachricht cha nöd bearbeitet werde, wil keis Gruppemitglied en App-Version hät, wo die Funktion understützt.</string>
     <string name="delete_message_not_supported_for_all_group_members">Die Nachricht wird bi folgende Gruppemitglieder nöd glöscht: %1$s</string>
+    <string name="work_intro_more_link_text">Meh über Threema Work erfahre</string>
+    <string name="work_intro_subtitle">De sicheri Business-Messenger\nfür Undernehme.</string>
+    <string name="work_intro_login">Aamäldig %1$s</string>
+    <string name="consumer_notice_description">Wenn Sie d’App privat nutze wänd, ladet Sie bitte di regulär Threema-App abe.</string>
+    <string name="consumer_notice_playstore_link_description">Threema im Play Store</string>
+    <string name="consumer_notice_appgallery_link_description">Threema ide AppGallery</string>
+    <string name="consumer_notice_subtitle">Für di privat Nutzig</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d Kontäkt</item>
     </plurals>

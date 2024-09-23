@@ -37,7 +37,7 @@
     <string name="prefs_sum_sync_contacts_on">Sincronizar %s usuarios con la libreta de direcciones de su dispositivo</string>
     <string name="prefs_sum_sync_contacts_off">No sincronizar %s usuarios con la libreta de direcciones de su dispositivo</string>
     <string name="prefs_title_sync_contacts">Sincronizar contactos</string>
-    <string name="prefs_sum_block_unknown_off">Todos pueden enviarle mensajes. Con el primer mensaje, los nuevos contactos se agregan de forma automática.</string>
+    <string name="prefs_sum_block_unknown_off">Todos pueden enviarte mensajes. Con el primer mensaje, los nuevos contactos se agregan de forma automática.</string>
     <string name="prefs_sum_block_unknown_on">Solo podrán enviarle mensajes las personas de su lista de contactos.</string>
     <string name="prefs_title_block_unknown">Bloquear desconocidos</string>
     <string name="prefs_title_read_receipts">Enviar confirmaciones de lectura</string>
@@ -1258,7 +1258,7 @@ almacenado.</string>
     <string name="id_backup_info">Restablecer solo su ID</string>
     <string name="restore_your_id_contacts_and_groups">Restablecer su ID, contactos y grupos</string>
     <string name="threema_safe_backup">Copia de seguridad de Threema</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>¿Ha olvidado su contraseña?</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Ayuda</a>]]></string>
     <string name="download_failed">Descarga fallida. Código de error: %d</string>
     <string name="edit_answer">Editar respuesta</string>
     <string name="share_media">Compartir con otra aplicación...</string>

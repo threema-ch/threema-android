@@ -17,6 +17,7 @@ Jegliche Kommunikation, auch Sprach- und Videoanrufe, Gruppen-Chats, Medien, Dat
 Threema schützt Ihre Privatsphäre und bietet zahlreiche und einzigartige Funktionen.
 
 · Senden Sie Text- und Sprachnachrichten
+· Bearbeiten und löschen Sie bereits gesendete Nachrichten für Chatpartner
 · Tätigen Sie Sprach-, Video- und Gruppenanrufe
 · Teilen Sie Videos Bilder und Standorte
 · Senden Sie Dateien beliebigen Formats (pdf animierte gif, mp3, doc, zip usw.)

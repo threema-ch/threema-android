@@ -58,7 +58,7 @@
 
     <!-- ballot choice list -->
     <dimen name="ballotchoice_list_item_height">40dp</dimen>
-	<dimen name="ballotchoice_list_entry_height">44dp</dimen>
+	<dimen name="ballotchoice_list_entry_height">44sp</dimen>
 	<dimen name="ballotchoice_bottom_margin">54dp</dimen>
 
 	<!-- ballot choice list -->

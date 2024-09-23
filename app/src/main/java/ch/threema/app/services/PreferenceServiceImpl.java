@@ -554,11 +554,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public long getLastFeatureMaskTransmission() {
-		Long lastTransmission = this.preferenceStore.getLong(this.getKeyName(R.string.preferences__last_feature_mask_transmission));
-		if (lastTransmission == null) {
-			return 0;
-		}
-		return lastTransmission;
+		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__last_feature_mask_transmission));
 	}
 
 	@Override
@@ -1554,6 +1550,11 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
+	public boolean isCallsEnabled() {
+		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voip_enable));
+	}
+
+	@Override
 	public boolean isVideoCallsEnabled() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voip_video_enable));
 	}
@@ -1774,5 +1775,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean showConversationLastUpdate() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__show_last_update_prefix), false);
+	}
+
+	@Override
+	public void setLastNotificationPermissionRequestTimestamp(long timestamp) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__last_notification_request_timestamp), timestamp);
+	}
+
+	@Override
+	public long getLastNotificationPermissionRequestTimestamp() {
+		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__last_notification_request_timestamp));
 	}
 }

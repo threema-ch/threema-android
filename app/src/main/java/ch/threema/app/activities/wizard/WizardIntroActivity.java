@@ -43,11 +43,8 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import org.slf4j.Logger;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -60,19 +57,10 @@ import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
 
 public class WizardIntroActivity extends WizardBackgroundActivity {
 	private static final int ACTIVITY_RESULT_PRIVACY_POLICY = 9442;
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardIntroActivity");
 	private AnimationDrawable frameAnimation;
-
-	private final ActivityResultLauncher<String> notificationPermissionLauncher =
-		registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-			if (!Boolean.TRUE.equals(isGranted)) {
-				logger.warn("User refused notification permission");
-			}
-		});
 
 	private final ActivityResultLauncher<Void> backupResult = registerForActivityResult(new ActivityResultContract<>() {
 		@NonNull
@@ -163,8 +151,6 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 		findViewById(R.id.setup_threema).setOnClickListener(this::setupThreema);
 
 		isContactSyncSettingConflict();
-
-		ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher);
 	}
 
 	@Override
